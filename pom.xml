@@ -1,48 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>de.rub.nds.tlsattacker</groupId>
-        <artifactId>TLS-Attacker</artifactId>
-        <version>2.0Beta2</version>
-    </parent>
     <artifactId>TLS-Scanner</artifactId>
+    <version>2.0Beta2</version>
     <packaging>jar</packaging>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <!-- Build an executable JAR -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>de.rub.nds.tlsattacker.tlsscanner.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin> 
-                <artifactId>maven-dependency-plugin</artifactId> 
-                <executions> 
-                    <execution> 
-                        <goals> 
-                            <goal>copy-dependencies</goal> 
-                        </goals> 
-                        <configuration> 
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <!--Ensures only runnable dependencies are included-->
-                            <includeScope>compile</includeScope> 
-                        </configuration> 
-                    </execution> 
-                </executions> 
-            </plugin>
-        </plugins>
-    </build>
+    <groupId>de.rub.nds.tlsscanner</groupId>
     <dependencies>
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -69,6 +31,13 @@
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>Utils</artifactId>
             <version>2.0Beta2</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <properties>
