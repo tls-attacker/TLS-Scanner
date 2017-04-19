@@ -7,29 +7,8 @@
     <groupId>de.rub.nds.tlsscanner</groupId>
     <dependencies>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.54</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>1.54</version>
-        </dependency>
-        <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>TLS-Core</artifactId>
-            <version>2.0Beta2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>de.rub.nds.tlsattacker</groupId>
-                    <artifactId>EAP</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>de.rub.nds.tlsattacker</groupId>
-            <artifactId>Utils</artifactId>
             <version>2.0Beta2</version>
         </dependency>
         <dependency>
