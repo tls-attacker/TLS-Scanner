@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner;
 
-import de.rub.nds.tlsattacker.tls.config.delegate.ClientDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -47,7 +47,7 @@ public class ScanJobExecutor {
                 resultList.add(probeResult.get());
             } catch (InterruptedException | ExecutionException ex) {
                 LOGGER.warn("Encoutered Exception while retrieving probeResult");
-                LOGGER.debug(ex);
+                LOGGER.warn(ex);
             }
         }
         executor.shutdown();

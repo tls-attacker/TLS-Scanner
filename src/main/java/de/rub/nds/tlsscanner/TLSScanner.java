@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner;
 
-import de.rub.nds.tlsattacker.tls.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.tls.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.config.Language;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;

@@ -8,9 +8,9 @@
  */
 package de.rub.nds.tlsscanner.probe.certificate;
 
-import de.rub.nds.tlsattacker.tls.constants.HashAlgorithm;
-import de.rub.nds.tlsattacker.tls.constants.SignatureAlgorithm;
-import de.rub.nds.tlsattacker.tls.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.LinkedList;

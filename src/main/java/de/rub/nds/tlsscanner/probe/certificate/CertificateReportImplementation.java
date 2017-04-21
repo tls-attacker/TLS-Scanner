@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe.certificate;
 
-import de.rub.nds.tlsattacker.tls.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import java.security.PublicKey;
 import java.util.Date;
 

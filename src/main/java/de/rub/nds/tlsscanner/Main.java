@@ -10,11 +10,20 @@ package de.rub.nds.tlsscanner;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import de.rub.nds.tlsattacker.tls.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.tls.exceptions.ConfigurationException;
-import de.rub.nds.tlsattacker.tls.workflow.TlsConfig;
+import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
+import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
+import de.rub.nds.tlsscanner.config.Language;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,7 +35,7 @@ public class Main {
 
     private static final Logger LOGGER = LogManager.getLogger("Main");
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
         Exception ex = null;
@@ -52,5 +61,22 @@ public class Main {
             commander.usage();
             ex = E;
         }
+    }
+    
+    public static void scanFile(File f) throws FileNotFoundException, IOException
+    {
+        GeneralDelegate delegate = new GeneralDelegate();
+        delegate.setLogLevel(Level.WARN);
+        delegate.applyDelegate(TlsConfig.createConfig());
+        BufferedReader reader = new BufferedReader(new FileReader(f));
+        String line = null;
+        line = reader.readLine();
+        while((line = reader.readLine()) != null)
+        {
+            String host = line.split(",")[2];
+            TLSScanner scanner = new TLSScanner(host, Language.GERMAN);
+            scanner.scan();
+        }
+        System.exit(1);
     }
 }
