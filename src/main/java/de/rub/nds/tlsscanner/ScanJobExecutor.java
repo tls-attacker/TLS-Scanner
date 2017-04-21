@@ -1,14 +1,14 @@
 /**
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
- * Copyright 2014-2016 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2014-2017 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package de.rub.nds.tlsscanner;
 
-import de.rub.nds.tlsattacker.tls.config.delegate.ClientDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -47,7 +47,7 @@ public class ScanJobExecutor {
                 resultList.add(probeResult.get());
             } catch (InterruptedException | ExecutionException ex) {
                 LOGGER.warn("Encoutered Exception while retrieving probeResult");
-                LOGGER.debug(ex);
+                LOGGER.warn(ex);
             }
         }
         executor.shutdown();
