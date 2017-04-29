@@ -72,7 +72,7 @@ public class ProtocolVersionProbe extends TLSProbe {
         LOGGER.debug("Testing TLS 1.2:");
         result = isProtocolVersionSupported(ProtocolVersion.TLS12);
         resultList.add(new ResultValue("TLS 1.2", "" + result));
-        return new ProbeResult(getProbeName(), resultList, checkList);
+        return new ProbeResult(getProbeName(), "Der Server unterstützt nur sichere Protokollversionen", resultList, checkList);
 
     }
 

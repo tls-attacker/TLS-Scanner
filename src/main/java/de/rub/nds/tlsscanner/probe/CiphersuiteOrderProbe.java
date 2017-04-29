@@ -60,7 +60,7 @@ public class CiphersuiteOrderProbe extends TLSProbe {
         List<TLSCheck> checkList = new LinkedList<>();
         checkList.add(new TLSCheck(firstSelectedCipherSuite != secondSelectedCipherSuite,
                 CheckType.CIPHERSUITEORDER_ENFORCED, getConfig().getLanguage()));
-        return new ProbeResult(getProbeName(), resultList, checkList);
+        return new ProbeResult(getProbeName(), "Der Server wählt CipherSuites selbst", resultList, checkList);
 
     }
 

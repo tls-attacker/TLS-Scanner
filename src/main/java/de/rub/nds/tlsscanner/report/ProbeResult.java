@@ -18,11 +18,13 @@ import java.util.List;
 public class ProbeResult {
 
     private final String probeName;
+    private final String succesfulString;
     private final List<ResultValue> resultList;
     private final List<TLSCheck> checkList;
 
-    public ProbeResult(String probeName, List<ResultValue> resultList, List<TLSCheck> checkList) {
+    public ProbeResult(String probeName, String succesfulString, List<ResultValue> resultList, List<TLSCheck> checkList) {
         this.probeName = probeName;
+        this.succesfulString = succesfulString;
         this.resultList = resultList;
         this.checkList = checkList;
     }
@@ -72,6 +74,10 @@ public class ProbeResult {
                 builder.append(check.getDescription());
                 builder.append(" ");
             }
+        }
+        if(builder.toString().equals(""))
+        {
+            builder.append(succesfulString);
         }
         return builder.toString();
     }

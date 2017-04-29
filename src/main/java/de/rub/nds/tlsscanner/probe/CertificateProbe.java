@@ -34,6 +34,8 @@ public class CertificateProbe extends TLSProbe {
     @Override
     public ProbeResult call() {
         TlsConfig tlsConfig = getConfig().createConfig();
+        tlsConfig.setSniHostname(tlsConfig.getHost());
+        tlsConfig.setAddServerNameIndicationExtension(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
         List<TLSCheck> checkList = new LinkedList<>();
         List<ResultValue> resultList = new LinkedList<>();
@@ -41,6 +43,6 @@ public class CertificateProbe extends TLSProbe {
         CertificateReport report = CertificateReportGenerator.generateReport(serverCert.getCertificateAt(0));
         CertificateJudger judger = new CertificateJudger(serverCert.getCertificateAt(0), getConfig(), report);
         checkList.addAll(judger.getChecks());
-        return new ProbeResult(getProbeName(), resultList, checkList);
+        return new ProbeResult(getProbeName(), "Das Zertifikat ist sicher konfiguriert.", resultList, checkList);
     }
 }
