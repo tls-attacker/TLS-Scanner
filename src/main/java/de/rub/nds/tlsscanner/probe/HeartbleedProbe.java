@@ -18,21 +18,12 @@ import de.rub.nds.tlsscanner.report.ProbeResult;
 public class HeartbleedProbe extends TLSProbe {
 
     public HeartbleedProbe(ScannerConfig config) {
-        super("Heartbleed", config);
+        super(ProbeType.HEARTBLEED, config);
     }
 
     @Override
     public ProbeResult call() {
-        throw new UnsupportedOperationException("Not supported yet."); // To
-                                                                       // change
-                                                                       // body
-                                                                       // of
-                                                                       // generated
-                                                                       // methods,
-                                                                       // choose
-                                                                       // Tools
-                                                                       // |
-                                                                       // Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

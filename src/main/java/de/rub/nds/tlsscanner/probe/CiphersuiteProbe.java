@@ -8,22 +8,15 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
-import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ArbitraryMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
-import de.rub.nds.tlsattacker.core.util.LogLevel;
 import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
 import de.rub.nds.tlsattacker.core.workflow.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
@@ -31,26 +24,16 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.transport.TransportHandler;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
-import de.rub.nds.tlsscanner.flaw.ConfigurationFlaw;
-import de.rub.nds.tlsscanner.flaw.FlawLevel;
 import de.rub.nds.tlsscanner.report.ResultValue;
 import de.rub.nds.tlsscanner.report.check.CheckType;
 import de.rub.nds.tlsscanner.report.check.TLSCheck;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -61,7 +44,7 @@ public class CiphersuiteProbe extends TLSProbe {
     private final List<ProtocolVersion> protocolVersions;
 
     public CiphersuiteProbe(ScannerConfig config) {
-        super("Ciphersuite", config);
+        super(ProbeType.CIPHERSUITE, config);
         protocolVersions = new LinkedList<>();
         protocolVersions.add(ProtocolVersion.TLS10);
         protocolVersions.add(ProtocolVersion.TLS11);
@@ -95,7 +78,7 @@ public class CiphersuiteProbe extends TLSProbe {
         checkList.add(checkNullCiphers(supportedCiphersuites));
         checkList.add(checkRC4Ciphers(supportedCiphersuites));
 
-        return new ProbeResult(getProbeName(), resultList, checkList);
+        return new ProbeResult(getType(), resultList, checkList);
 
     }
 
@@ -146,27 +129,27 @@ public class CiphersuiteProbe extends TLSProbe {
 
     public TLSCheck checkAnonCiphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsAnonCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_ANON, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_ANON);
     }
 
     public TLSCheck checkNullCiphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsNullCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_NULL, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_NULL);
     }
 
     public TLSCheck checkCBCCiphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsCBCCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_CBC, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_CBC);
     }
 
     public TLSCheck checkRC4Ciphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsRC4Ciphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_RC4, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_RC4);
     }
 
     public TLSCheck checkExportCiphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsExportCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_EXPORT, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_EXPORT);
     }
 
     public List<CipherSuite> getSupportedCipherSuitesFromList(List<CipherSuite> toTestList, ProtocolVersion version) {

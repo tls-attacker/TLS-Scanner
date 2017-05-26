@@ -24,9 +24,6 @@ public class ScannerConfig extends TLSDelegateConfig {
     @ParametersDelegate
     private final ClientDelegate clientDelegate;
 
-    @Parameter(names = "-language", required = false, description = "Which language the scanner should output")
-    private Language language = Language.ENGLISH;
-
     @Parameter(names = "-threads", required = false, description = "How many threads should execute Probes")
     private int threads = 1;
 
@@ -38,14 +35,7 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.generalDelegate = delegate;
         clientDelegate = new ClientDelegate();
         addDelegate(clientDelegate);
-    }
-
-    public Language getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(Language language) {
-        this.language = language;
+        addDelegate(generalDelegate);
     }
 
     public int getThreads() {

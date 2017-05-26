@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class SiteReport {
 
-    private List<ProbeResult> resultList;
-    private String host;
+    private final List<ProbeResult> resultList;
+    private final String host;
 
     public SiteReport(String host, List<ProbeResult> resultList) {
         this.resultList = resultList;

@@ -6,13 +6,19 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.config;
+package de.rub.nds.tlsscanner.probe;
 
 /**
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public enum Language {
-    GERMAN,
-    ENGLISH,
+public enum ProbeType {
+    CERTIFICATE,
+    CIPHERSUITE_ORDER,
+    CIPHERSUITE,
+    HEARTBLEED,
+    NAMED_CURVES,
+    PADDING_ORACLE,
+    PROTOCOL_VERSION,
+    SIGNATURE_AND_HASH,
 }

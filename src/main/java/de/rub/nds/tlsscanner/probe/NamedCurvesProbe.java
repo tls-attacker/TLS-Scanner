@@ -18,7 +18,7 @@ import de.rub.nds.tlsscanner.report.ProbeResult;
 public class NamedCurvesProbe extends TLSProbe {
 
     public NamedCurvesProbe(ScannerConfig config) {
-        super("NamedCurves", config);
+        super(ProbeType.NAMED_CURVES, config);
     }
 
     @Override

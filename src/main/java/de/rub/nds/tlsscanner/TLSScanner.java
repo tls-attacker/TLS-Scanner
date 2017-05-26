@@ -10,21 +10,16 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsscanner.config.Language;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
-import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
-import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
-import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.probe.SignatureAndHashAlgorithmProbe;
 import de.rub.nds.tlsscanner.probe.TLSProbe;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Future;
+import org.apache.logging.log4j.Level;
 
 /**
  *
@@ -35,10 +30,10 @@ public class TLSScanner {
     private final ScanJobExecutor executor;
     private final ScannerConfig config;
 
-    public TLSScanner(String websiteHost, Language lang) {
+    public TLSScanner(String websiteHost, boolean attackingScans) {
         this.executor = new ScanJobExecutor(1);
         config = new ScannerConfig(new GeneralDelegate());
-        config.setLanguage(lang);
+        config.getGeneralDelegate().setLogLevel(Level.WARN);
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegateList().get(1);
         clientDelegate.setHost(websiteHost);
     }

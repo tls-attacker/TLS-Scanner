@@ -40,7 +40,7 @@ import org.apache.logging.log4j.Logger;
 public class CiphersuiteOrderProbe extends TLSProbe {
 
     public CiphersuiteOrderProbe(ScannerConfig config) {
-        super("CiphersuiteOrder", config);
+        super(ProbeType.CIPHERSUITE_ORDER, config);
     }
 
     @Override
@@ -59,8 +59,8 @@ public class CiphersuiteOrderProbe extends TLSProbe {
                 + (firstSelectedCipherSuite == secondSelectedCipherSuite)));
         List<TLSCheck> checkList = new LinkedList<>();
         checkList.add(new TLSCheck(firstSelectedCipherSuite != secondSelectedCipherSuite,
-                CheckType.CIPHERSUITEORDER_ENFORCED, getConfig().getLanguage()));
-        return new ProbeResult(getProbeName(), resultList, checkList);
+                CheckType.CIPHERSUITEORDER_ENFORCED));
+        return new ProbeResult(getType(), resultList, checkList);
 
     }
 

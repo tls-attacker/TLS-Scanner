@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import de.rub.nds.tlsscanner.probe.ProbeType;
 import de.rub.nds.tlsscanner.report.check.TLSCheck;
 import java.util.List;
 
@@ -17,19 +18,19 @@ import java.util.List;
  */
 public class ProbeResult {
 
-    private final String probeName;
+    private final ProbeType type;
     private final List<ResultValue> resultList;
     private final List<TLSCheck> checkList;
 
-    public ProbeResult(String probeName, List<ResultValue> resultList, List<TLSCheck> checkList) {
-        this.probeName = probeName;
+    public ProbeResult(ProbeType type, List<ResultValue> resultList, List<TLSCheck> checkList) {
+        this.type = type;
         this.resultList = resultList;
         this.checkList = checkList;
     }
 
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(probeName);
+        builder.append(type.name());
         builder.append(":");
         builder.append("\n");
         for (ResultValue value : resultList) {
@@ -65,18 +66,7 @@ public class ProbeResult {
         return false;
     }
 
-    public String getFailedReasons() {
-        StringBuilder builder = new StringBuilder();
-        for (TLSCheck check : checkList) {
-            if (check.isResult()) {
-                builder.append(check.getDescription());
-                builder.append(" ");
-            }
-        }
-        return builder.toString();
-    }
-
     public String getProbeName() {
-        return probeName;
+        return type.name();
     }
 }

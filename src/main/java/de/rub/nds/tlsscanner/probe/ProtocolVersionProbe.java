@@ -48,7 +48,7 @@ import org.apache.logging.log4j.Logger;
 public class ProtocolVersionProbe extends TLSProbe {
 
     public ProtocolVersionProbe(ScannerConfig config) {
-        super("ProtocolVersion", config);
+        super(ProbeType.PROTOCOL_VERSION, config);
     }
 
     @Override
@@ -58,11 +58,11 @@ public class ProtocolVersionProbe extends TLSProbe {
         LOGGER.debug("Testing SSL2:");
         boolean result = isSSL2Supported();
         resultList.add(new ResultValue("SSL 2", "" + result));
-        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL2, getConfig().getLanguage()));
+        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL2));
         LOGGER.debug("Testing SSL3:");
         result = isProtocolVersionSupported(ProtocolVersion.SSL3);
         resultList.add(new ResultValue("SSL 3", "" + result));
-        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL3, getConfig().getLanguage()));
+        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL3));
         LOGGER.debug("Testing TLS 1.0:");
         result = isProtocolVersionSupported(ProtocolVersion.TLS10);
         resultList.add(new ResultValue("TLS 1.0", "" + result));
@@ -72,7 +72,7 @@ public class ProtocolVersionProbe extends TLSProbe {
         LOGGER.debug("Testing TLS 1.2:");
         result = isProtocolVersionSupported(ProtocolVersion.TLS12);
         resultList.add(new ResultValue("TLS 1.2", "" + result));
-        return new ProbeResult(getProbeName(), resultList, checkList);
+        return new ProbeResult(getType(), resultList, checkList);
 
     }
 
