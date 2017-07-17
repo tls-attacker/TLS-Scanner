@@ -14,16 +14,13 @@ import de.rub.nds.tlsattacker.core.constants.NamedCurve;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
 import de.rub.nds.tlsattacker.core.workflow.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
+import de.rub.nds.tlsattacker.core.workflow.chooser.Chooser;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
 import de.rub.nds.tlsscanner.report.ResultValue;
@@ -129,27 +126,27 @@ public class CiphersuiteProbe extends TLSProbe {
 
     public TLSCheck checkAnonCiphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsAnonCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_ANON, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_ANON, getConfig().getLanguage(),10);
     }
 
     public TLSCheck checkNullCiphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsNullCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_NULL, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_NULL, getConfig().getLanguage(),10);
     }
 
     public TLSCheck checkCBCCiphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsCBCCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_CBC, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_CBC, getConfig().getLanguage(),4);
     }
 
     public TLSCheck checkRC4Ciphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsRC4Ciphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_RC4, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_RC4, getConfig().getLanguage(),4);
     }
 
     public TLSCheck checkExportCiphers(Set<CipherSuite> supportedCiphersuites) {
         boolean result = supportsExportCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_EXPORT, getConfig().getLanguage());
+        return new TLSCheck(result, CheckType.CIPHERSUITE_EXPORT, getConfig().getLanguage(),10);
     }
 
     public List<CipherSuite> getSupportedCipherSuitesFromList(List<CipherSuite> toTestList, ProtocolVersion version) {
@@ -159,21 +156,19 @@ public class CiphersuiteProbe extends TLSProbe {
         boolean supportsMore = false;
         do {
             TlsConfig config = getConfig().createConfig();
-            config.setSupportedCiphersuites(listWeSupport);
+            config.setDefaultClientSupportedCiphersuites(listWeSupport);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
             config.setAddServerNameIndicationExtension(false);
             config.setAddECPointFormatExtension(true);
             config.setAddEllipticCurveExtension(true);
             config.setAddSignatureAndHashAlgrorithmsExtension(true);
+            config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+            config.setQuickReceive(true);
+            config.setEarlyStop(true);
             List<NamedCurve> namedCurves = new LinkedList<>();
             namedCurves.addAll(Arrays.asList(NamedCurve.values()));
             config.setNamedCurves(namedCurves);
-            WorkflowTrace trace = new WorkflowTrace();
-            ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.add(new SendAction(message));
-            trace.add(new ReceiveAction(new ServerHelloMessage()));
-            config.setWorkflowTrace(trace);
             TlsContext tlsContext = new TlsContext(config);
             WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(
                     config.getExecutorType(), tlsContext);
@@ -184,7 +179,7 @@ public class CiphersuiteProbe extends TLSProbe {
                 LOGGER.debug(ex);
                 supportsMore = false;
             }
-            if (!trace.getActuallyRecievedHandshakeMessagesOfType(HandshakeMessageType.SERVER_HELLO).isEmpty()) {
+            if (!tlsContext.getWorkflowTrace().getActuallyRecievedHandshakeMessagesOfType(HandshakeMessageType.SERVER_HELLO).isEmpty()) {
                 if (tlsContext.getSelectedProtocolVersion() != version) {
                     LOGGER.debug("Server does not support " + version);
                     return new LinkedList<>();

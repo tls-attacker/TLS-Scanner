@@ -16,15 +16,15 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
-import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
-import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
-import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.probe.SignatureAndHashAlgorithmProbe;
 import de.rub.nds.tlsscanner.probe.TLSProbe;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Future;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 
 /**
  *
@@ -41,6 +41,11 @@ public class TLSScanner {
         config.setLanguage(lang);
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegateList().get(1);
         clientDelegate.setHost(websiteHost);
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration ctxConfig = ctx.getConfiguration();
+        LoggerConfig loggerConfig = ctxConfig.getLoggerConfig("de.rub.nds.tlsattacker");
+        loggerConfig.setLevel(Level.WARN);
+        ctx.updateLoggers();
     }
 
     public TLSScanner(ScannerConfig config) {

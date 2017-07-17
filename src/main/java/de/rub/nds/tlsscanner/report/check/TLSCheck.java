@@ -21,11 +21,13 @@ public class TLSCheck {
     private final CheckConfig config;
     private final CheckType type;
     private final boolean result;
+    private final int score;
 
-    public TLSCheck(boolean result, CheckType type, Language lang) {
+    public TLSCheck(boolean result, CheckType type, Language lang, int score) {
         this.result = result;
         this.config = CheckConfigCache.getInstance().getCheckConfig(type, lang);
         this.type = type;
+        this.score = score;
     }
 
     public CheckType getType() {
@@ -57,6 +59,10 @@ public class TLSCheck {
         }
     }
 
+    public int getScore() {
+        return score;
+    }
+    
     @Override
     public String toString() {
         return "TLSCheck{" + "name=" + getName() + ", Type=" + type.name() + ", descption=" + getDescription()

@@ -65,7 +65,7 @@ public class CheckConfigCache {
                 return "certificate_not_valid_yet.xml";
             case CERTIFICATE_REVOKED:
                 return "certificate_revoked.xml";
-            case CERTIFICATE_SENT_BY_SERVER:
+            case CERTIFICATE_NOT_SENT_BY_SERVER:
                 return "certificate_sent_by_server.xml";
             case CERTIFICATE_WEAK_HASH_FUNCTION:
                 return "certificate_weak_hash_function.xml";

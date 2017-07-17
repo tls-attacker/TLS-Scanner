@@ -19,9 +19,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.record.layer.RecordLayerType;
-import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
 import de.rub.nds.tlsattacker.core.workflow.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
@@ -30,6 +28,8 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.ExecutorType;
+import de.rub.nds.tlsattacker.core.workflow.chooser.Chooser;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
 import de.rub.nds.tlsscanner.report.ResultValue;
@@ -38,8 +38,6 @@ import de.rub.nds.tlsscanner.report.check.TLSCheck;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -58,11 +56,11 @@ public class ProtocolVersionProbe extends TLSProbe {
         LOGGER.debug("Testing SSL2:");
         boolean result = isSSL2Supported();
         resultList.add(new ResultValue("SSL 2", "" + result));
-        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL2, getConfig().getLanguage()));
+        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL2, getConfig().getLanguage(),10));
         LOGGER.debug("Testing SSL3:");
         result = isProtocolVersionSupported(ProtocolVersion.SSL3);
         resultList.add(new ResultValue("SSL 3", "" + result));
-        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL3, getConfig().getLanguage()));
+        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL3, getConfig().getLanguage(),10));
         LOGGER.debug("Testing TLS 1.0:");
         result = isProtocolVersionSupported(ProtocolVersion.TLS10);
         resultList.add(new ResultValue("TLS 1.0", "" + result));
@@ -81,9 +79,12 @@ public class ProtocolVersionProbe extends TLSProbe {
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        tlsConfig.setSupportedCiphersuites(cipherSuites);
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(toTest);
         tlsConfig.setEnforceSettings(true);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         if (toTest != ProtocolVersion.SSL2) {
             tlsConfig.setAddServerNameIndicationExtension(false);
             tlsConfig.setAddECPointFormatExtension(true);
@@ -119,7 +120,7 @@ public class ProtocolVersionProbe extends TLSProbe {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(trace.toString());
             return false;
-        } else {
+        } else {    
             LOGGER.debug("Received ServerHelloMessage");
             LOGGER.debug(trace.toString());
             LOGGER.debug("Selected Version:" + tlsContext.getSelectedProtocolVersion().name());
@@ -138,7 +139,7 @@ public class ProtocolVersionProbe extends TLSProbe {
         trace.add(new ReceiveAction(new ArbitraryMessage()));
         tlsConfig.setWorkflowTrace(trace);
         TlsContext context = new TlsContext(tlsConfig);
-        context.setSessionID(new byte[0]);
+        context.setClientSessionId(new byte[0]);
         WorkflowExecutor executor = WorkflowExecutorFactory.createWorkflowExecutor(ExecutorType.TLS, context);
         executor.executeWorkflow();
         List<ProtocolMessage> messages = trace.getAllActuallyReceivedMessages();

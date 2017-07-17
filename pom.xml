@@ -21,6 +21,21 @@
     <build>
         <finalName>TLS-Scanner</finalName>              
         <plugins>
+            <plugin> 
+                <artifactId>maven-dependency-plugin</artifactId> 
+                <executions> 
+                    <execution> 
+                        <goals> 
+                            <goal>copy-dependencies</goal> 
+                        </goals> 
+                        <configuration> 
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <!--Ensures only runnable dependencies are included-->
+                            <includeScope>compile</includeScope> 
+                        </configuration> 
+                    </execution> 
+                </executions> 
+            </plugin>
             <plugin>
                 <!-- Build an executable JAR -->
                 <groupId>org.apache.maven.plugins</groupId>

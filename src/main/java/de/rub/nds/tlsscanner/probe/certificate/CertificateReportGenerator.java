@@ -110,7 +110,6 @@ public class CertificateReportGenerator {
         try {
             X509CertificateObject x509Cert = new X509CertificateObject(cert);
             sigAndHashString = x509Cert.getSigAlgName();
-            System.out.println(sigAndHashString);
             String[] algos = sigAndHashString.toUpperCase().split("WITH");
             if (algos.length != 2) {
                 return;
