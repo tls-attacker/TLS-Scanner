@@ -18,21 +18,12 @@ import de.rub.nds.tlsscanner.report.ProbeResult;
 public class PaddingOracleProbe extends TLSProbe {
 
     public PaddingOracleProbe(ScannerConfig config) {
-        super("PaddingOracle", config);
+        super(ProbeType.PADDING_ORACLE, config);
     }
 
     @Override
     public ProbeResult call() {
-        throw new UnsupportedOperationException("Not supported yet."); // To
-                                                                       // change
-                                                                       // body
-                                                                       // of
-                                                                       // generated
-                                                                       // methods,
-                                                                       // choose
-                                                                       // Tools
-                                                                       // |
-                                                                       // Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

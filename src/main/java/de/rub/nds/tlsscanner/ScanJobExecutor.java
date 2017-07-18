@@ -30,10 +30,10 @@ public class ScanJobExecutor {
 
     private static final Logger LOGGER = LogManager.getLogger("ScanJobExecutor");
 
-    private ExecutorService executor;
+    private final ExecutorService executor;
 
     public ScanJobExecutor(int threadCount) {
-        executor = Executors.newFixedThreadPool(1);
+        executor = Executors.newFixedThreadPool(threadCount);
     }
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {

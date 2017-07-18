@@ -12,15 +12,11 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
-import de.rub.nds.tlsattacker.core.protocol.message.ArbitraryMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
 import de.rub.nds.tlsattacker.core.workflow.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
 import de.rub.nds.tlsscanner.report.ResultValue;
@@ -30,8 +26,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -40,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 public class CiphersuiteOrderProbe extends TLSProbe {
 
     public CiphersuiteOrderProbe(ScannerConfig config) {
-        super("CiphersuiteOrder", config);
+        super(ProbeType.CIPHERSUITE_ORDER, config);
     }
 
     @Override
@@ -59,37 +53,35 @@ public class CiphersuiteOrderProbe extends TLSProbe {
                 + (firstSelectedCipherSuite == secondSelectedCipherSuite)));
         List<TLSCheck> checkList = new LinkedList<>();
         checkList.add(new TLSCheck(firstSelectedCipherSuite != secondSelectedCipherSuite,
-                CheckType.CIPHERSUITEORDER_ENFORCED, getConfig().getLanguage()));
-        return new ProbeResult(getProbeName(), resultList, checkList);
+                CheckType.CIPHERSUITEORDER_ENFORCED, 1));
+        return new ProbeResult(getType(), resultList, checkList);
 
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
 
         TlsConfig tlsConfig = getConfig().createConfig();
-        tlsConfig.setSupportedCiphersuites(toTestList);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(true);
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setQuickReceive(true);
         tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());
 
         tlsConfig.setNamedCurves(namedCurves);
-        WorkflowTrace trace = new WorkflowTrace();
-        ClientHelloMessage message = new ClientHelloMessage(tlsConfig);
-        trace.add(new SendAction(message));
-        trace.add(new ReceiveAction(new ArbitraryMessage()));
-        tlsConfig.setWorkflowTrace(trace);
-        TlsContext tlsContext = new TlsContext(tlsConfig);
+        TlsContext context = new TlsContext(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(tlsConfig.getExecutorType(),
-                tlsContext);
+                context);
         try {
             workflowExecutor.executeWorkflow();
         } catch (WorkflowExecutionException ex) {
-            ex.printStackTrace();
+            LOGGER.warn(ex);
         }
-        return tlsContext.getSelectedCipherSuite();
+        return context.getSelectedCipherSuite();
     }
 }
