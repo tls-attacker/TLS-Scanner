@@ -44,7 +44,9 @@ public class Main {
             // Cmd was parsable
             try {
                 TLSScanner scanner = new TLSScanner(config);
+                long time = System.currentTimeMillis();
                 SiteReport report = scanner.scan();
+                LOGGER.info("Scanned in:" + ((time-System.currentTimeMillis())/1000) + "s");
                 LOGGER.info(report.getStringReport());
             } catch (ConfigurationException E) {
                 LOGGER.info("Encountered a ConfigurationException aborting.");
