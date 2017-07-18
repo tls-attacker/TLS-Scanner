@@ -75,6 +75,7 @@ public class ProtocolVersionProbe extends TLSProbe {
     }
 
     public boolean isProtocolVersionSupported(ProtocolVersion toTest) {
+        System.out.println("testing :" + toTest);
         TlsConfig tlsConfig = getConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
@@ -82,8 +83,9 @@ public class ProtocolVersionProbe extends TLSProbe {
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(toTest);
-        tlsConfig.setEnforceSettings(true);
+        tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopRecievingAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         if (toTest != ProtocolVersion.SSL2) {
             tlsConfig.setAddServerNameIndicationExtension(false);
@@ -105,7 +107,7 @@ public class ProtocolVersionProbe extends TLSProbe {
         WorkflowTrace trace = new WorkflowTrace();
         ClientHelloMessage message = new ClientHelloMessage(tlsConfig);
         trace.add(new SendAction(message));
-        trace.add(new ReceiveAction(new ArbitraryMessage()));
+        trace.add(new ReceiveAction());
         tlsConfig.setWorkflowTrace(trace);
         TlsContext tlsContext = new TlsContext(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(tlsConfig.getExecutorType(),
