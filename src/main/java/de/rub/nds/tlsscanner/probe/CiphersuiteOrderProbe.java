@@ -80,7 +80,7 @@ public class CiphersuiteOrderProbe extends TLSProbe {
         try {
             workflowExecutor.executeWorkflow();
         } catch (WorkflowExecutionException ex) {
-            ex.printStackTrace();
+            LOGGER.warn(ex);
         }
         return context.getSelectedCipherSuite();
     }
