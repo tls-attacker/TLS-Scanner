@@ -13,15 +13,12 @@ import com.beust.jcommander.ParameterException;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
-import de.rub.nds.tlsscanner.config.Language;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +35,6 @@ public class Main {
     public static void main(String[] args) throws IOException {
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
-        Exception ex = null;
         try {
             commander.parse(args);
             if (config.getGeneralDelegate().isHelp()) {
@@ -47,7 +43,6 @@ public class Main {
             }
             // Cmd was parsable
             try {
-                TlsConfig tlsConfig = config.createConfig();
                 TLSScanner scanner = new TLSScanner(config);
                 SiteReport report = scanner.scan();
                 LOGGER.info(report.getStringReport());
@@ -59,7 +54,6 @@ public class Main {
             LOGGER.info("Could not parse provided parameters");
             LOGGER.debug(E);
             commander.usage();
-            ex = E;
         }
     }
     
@@ -74,9 +68,9 @@ public class Main {
         while((line = reader.readLine()) != null)
         {
             String host = line.split(",")[2];
-            TLSScanner scanner = new TLSScanner(host, Language.GERMAN);
+            TLSScanner scanner = new TLSScanner(host,false);
             scanner.scan();
         }
-        System.exit(1);
+        System.exit(0);
     }
 }

@@ -33,7 +33,7 @@ public class ScanJobExecutor {
     private final ExecutorService executor;
 
     public ScanJobExecutor(int threadCount) {
-        executor = Executors.newFixedThreadPool(1);
+        executor = Executors.newFixedThreadPool(threadCount);
     }
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {

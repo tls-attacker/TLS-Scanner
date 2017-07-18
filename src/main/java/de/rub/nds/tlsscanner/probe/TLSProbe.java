@@ -23,10 +23,10 @@ public abstract class TLSProbe implements Callable<ProbeResult> {
     protected static final Logger LOGGER = LogManager.getLogger("Probe");
 
     private ScannerConfig config;
-    private String probeName;
+    private ProbeType type;
 
-    public TLSProbe(String testName, ScannerConfig config) {
-        this.probeName = testName;
+    public TLSProbe(ProbeType type, ScannerConfig config) {
+        this.type = type;
         this.config = config;
     }
 
@@ -35,9 +35,13 @@ public abstract class TLSProbe implements Callable<ProbeResult> {
     }
 
     public String getProbeName() {
-        return probeName;
+        return type.name();
     }
 
+    public ProbeType getType() {
+        return type;
+    }
+    
     @Override
     public abstract ProbeResult call();
 }

@@ -16,8 +16,6 @@ import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
 import de.rub.nds.tlsattacker.core.workflow.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
-import de.rub.nds.tlsattacker.core.workflow.chooser.Chooser;
-import de.rub.nds.tlsattacker.core.workflow.chooser.DefaultChooser;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
@@ -36,7 +34,7 @@ import java.util.List;
 public class CiphersuiteOrderProbe extends TLSProbe {
 
     public CiphersuiteOrderProbe(ScannerConfig config) {
-        super("CiphersuiteOrder", config);
+        super(ProbeType.CIPHERSUITE_ORDER, config);
     }
 
     @Override
@@ -55,8 +53,8 @@ public class CiphersuiteOrderProbe extends TLSProbe {
                 + (firstSelectedCipherSuite == secondSelectedCipherSuite)));
         List<TLSCheck> checkList = new LinkedList<>();
         checkList.add(new TLSCheck(firstSelectedCipherSuite != secondSelectedCipherSuite,
-                CheckType.CIPHERSUITEORDER_ENFORCED, getConfig().getLanguage(), 1));
-        return new ProbeResult(getProbeName(), "Der Server wählt CipherSuites selbst", resultList, checkList);
+                CheckType.CIPHERSUITEORDER_ENFORCED, 1));
+        return new ProbeResult(getType(), resultList, checkList);
 
     }
 

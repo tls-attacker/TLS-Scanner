@@ -41,7 +41,7 @@ public class CertificateJudger {
         List<TLSCheck> tlsCheckList = new LinkedList<>();
         boolean receivedCertificate = (certificate != null);
         tlsCheckList
-                .add(new TLSCheck(!receivedCertificate, CheckType.CERTIFICATE_NOT_SENT_BY_SERVER, config.getLanguage(), 10));
+                .add(new TLSCheck(!receivedCertificate, CheckType.CERTIFICATE_NOT_SENT_BY_SERVER, 10));
         if (!receivedCertificate) {
             return tlsCheckList;
         }
@@ -60,27 +60,27 @@ public class CertificateJudger {
 
     public TLSCheck checkExpired() {
         boolean result = isCertificateExpired(report);
-        return new TLSCheck(result, CheckType.CERTIFICATE_EXPIRED, config.getLanguage(),10);
+        return new TLSCheck(result, CheckType.CERTIFICATE_EXPIRED, 10);
     }
 
     public TLSCheck checkNotYetValid() {
         boolean result = isCertificateValidYet(report);
-        return new TLSCheck(result, CheckType.CERTIFICATE_NOT_VALID_YET, config.getLanguage(),10);
+        return new TLSCheck(result, CheckType.CERTIFICATE_NOT_VALID_YET, 10);
     }
 
     public TLSCheck checkCertificateRevoked() {
         boolean result = isRevoked(certificate);
-        return new TLSCheck(result, CheckType.CERTIFICATE_REVOKED, config.getLanguage(),10);
+        return new TLSCheck(result, CheckType.CERTIFICATE_REVOKED, 10);
     }
 
     private TLSCheck checkHashAlgorithm() {
         boolean result = isWeakHashAlgo(report);
-        return new TLSCheck(result, CheckType.CERTIFICATE_WEAK_HASH_FUNCTION, config.getLanguage(),7);
+        return new TLSCheck(result, CheckType.CERTIFICATE_WEAK_HASH_FUNCTION, 7);
     }
 
     private TLSCheck checkSignAlgorithm() {
         boolean result = isWeakSigAlgo(report);
-        return new TLSCheck(result, CheckType.CERTIFICATE_WEAK_SIGN_ALGORITHM, config.getLanguage(),10);
+        return new TLSCheck(result, CheckType.CERTIFICATE_WEAK_SIGN_ALGORITHM, 10);
     }
 
     public boolean isWeakHashAlgo(CertificateReport report) {

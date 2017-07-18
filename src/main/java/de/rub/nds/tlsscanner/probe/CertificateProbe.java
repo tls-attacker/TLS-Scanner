@@ -29,7 +29,7 @@ import org.bouncycastle.crypto.tls.Certificate;
 public class CertificateProbe extends TLSProbe {
 
     public CertificateProbe(ScannerConfig config) {
-        super("Certificate Probe", config);
+        super(ProbeType.CERTIFICATE, config);
     }
 
     @Override
@@ -47,6 +47,6 @@ public class CertificateProbe extends TLSProbe {
         CertificateReport report = CertificateReportGenerator.generateReport(serverCert.getCertificateAt(0));
         CertificateJudger judger = new CertificateJudger(serverCert.getCertificateAt(0), getConfig(), report);
         checkList.addAll(judger.getChecks());
-        return new ProbeResult(getProbeName(), "Das Zertifikat ist sicher konfiguriert.", resultList, checkList);
+        return new ProbeResult(getType(), resultList, checkList);
     }
 }

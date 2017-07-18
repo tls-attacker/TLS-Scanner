@@ -18,7 +18,7 @@ import de.rub.nds.tlsscanner.report.ProbeResult;
 public class SignatureAndHashAlgorithmProbe extends TLSProbe {
 
     public SignatureAndHashAlgorithmProbe(ScannerConfig config) {
-        super("SignatureAndHashAlgorithm", config);
+        super(ProbeType.SIGNATURE_AND_HASH, config);
     }
 
     @Override

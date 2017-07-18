@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsscanner.config.Language;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.CertificateProbe;
@@ -35,10 +34,10 @@ public class TLSScanner {
     private final ScanJobExecutor executor;
     private final ScannerConfig config;
 
-    public TLSScanner(String websiteHost, Language lang) {
+    public TLSScanner(String websiteHost, boolean attackingScans) {
         this.executor = new ScanJobExecutor(1);
         config = new ScannerConfig(new GeneralDelegate());
-        config.setLanguage(lang);
+        config.getGeneralDelegate().setLogLevel(Level.WARN);
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegateList().get(1);
         clientDelegate.setHost(websiteHost);
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
