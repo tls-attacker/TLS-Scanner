@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
 import de.rub.nds.tlsscanner.report.ResultValue;
@@ -34,6 +35,12 @@ public class CertificateProbe extends TLSProbe {
     @Override
     public ProbeResult call() {
         Config tlsConfig = getConfig().createConfig();
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        tlsConfig.setSniHostname(tlsConfig.getHost());
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
         List<TLSCheck> checkList = new LinkedList<>();
         List<ResultValue> resultList = new LinkedList<>();
