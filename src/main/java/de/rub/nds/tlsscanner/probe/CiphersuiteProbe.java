@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
@@ -17,8 +18,7 @@ import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
-import de.rub.nds.tlsattacker.core.workflow.TlsContext;
+import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -158,8 +158,8 @@ public class CiphersuiteProbe extends TLSProbe {
 
         boolean supportsMore = false;
         do {
-            TlsConfig config = getConfig().createConfig();
-            config.setSupportedCiphersuites(listWeSupport);
+            Config config = getConfig().createConfig();
+            config.setDefaultClientSupportedCiphersuites(listWeSupport);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
             config.setAddServerNameIndicationExtension(false);
@@ -171,8 +171,8 @@ public class CiphersuiteProbe extends TLSProbe {
             config.setNamedCurves(namedCurves);
             WorkflowTrace trace = new WorkflowTrace();
             ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.add(new SendAction(message));
-            trace.add(new ReceiveAction(new ServerHelloMessage()));
+            trace.addTlsAction(new SendAction(message));
+            trace.addTlsAction(new ReceiveAction(new ServerHelloMessage()));
             config.setWorkflowTrace(trace);
             TlsContext tlsContext = new TlsContext(config);
             WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(

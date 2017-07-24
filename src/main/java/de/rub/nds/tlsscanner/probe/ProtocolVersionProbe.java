@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
@@ -19,11 +20,8 @@ import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.record.layer.RecordLayerType;
-import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
-import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
-import de.rub.nds.tlsattacker.core.workflow.TlsContext;
+import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -38,8 +36,6 @@ import de.rub.nds.tlsscanner.report.check.TLSCheck;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -77,11 +73,11 @@ public class ProtocolVersionProbe extends TLSProbe {
     }
 
     public boolean isProtocolVersionSupported(ProtocolVersion toTest) {
-        TlsConfig tlsConfig = getConfig().createConfig();
+        Config tlsConfig = getConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        tlsConfig.setSupportedCiphersuites(cipherSuites);
+        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(toTest);
         tlsConfig.setEnforceSettings(true);
         if (toTest != ProtocolVersion.SSL2) {
@@ -103,8 +99,8 @@ public class ProtocolVersionProbe extends TLSProbe {
         tlsConfig.setNamedCurves(namedCurves);
         WorkflowTrace trace = new WorkflowTrace();
         ClientHelloMessage message = new ClientHelloMessage(tlsConfig);
-        trace.add(new SendAction(message));
-        trace.add(new ReceiveAction(new ArbitraryMessage()));
+        trace.addTlsAction(new SendAction(message));
+        trace.addTlsAction(new ReceiveAction(new ArbitraryMessage()));
         tlsConfig.setWorkflowTrace(trace);
         TlsContext tlsContext = new TlsContext(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(tlsConfig.getExecutorType(),
@@ -128,17 +124,17 @@ public class ProtocolVersionProbe extends TLSProbe {
     }
 
     private boolean isSSL2Supported() {
-        TlsConfig tlsConfig = getConfig().createConfig();
+        Config tlsConfig = getConfig().createConfig();
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.SSL2);
         tlsConfig.setEnforceSettings(true);
         tlsConfig.setExecutorType(ExecutorType.SSL2);
         tlsConfig.setRecordLayerType(RecordLayerType.BLOB);
         WorkflowTrace trace = new WorkflowTrace();
-        trace.add(new SendAction(new SSL2ClientHelloMessage(tlsConfig)));
-        trace.add(new ReceiveAction(new ArbitraryMessage()));
+        trace.addTlsAction(new SendAction(new SSL2ClientHelloMessage(tlsConfig)));
+        trace.addTlsAction(new ReceiveAction(new ArbitraryMessage()));
         tlsConfig.setWorkflowTrace(trace);
         TlsContext context = new TlsContext(tlsConfig);
-        context.setSessionID(new byte[0]);
+        context.setClientSessionId(new byte[0]);
         WorkflowExecutor executor = WorkflowExecutorFactory.createWorkflowExecutor(ExecutorType.TLS, context);
         executor.executeWorkflow();
         List<ProtocolMessage> messages = trace.getAllActuallyReceivedMessages();

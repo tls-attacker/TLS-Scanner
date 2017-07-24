@@ -10,9 +10,9 @@ package de.rub.nds.tlsscanner;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
-import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.BufferedReader;
@@ -61,7 +61,7 @@ public class Main {
     {
         GeneralDelegate delegate = new GeneralDelegate();
         delegate.setLogLevel(Level.WARN);
-        delegate.applyDelegate(TlsConfig.createConfig());
+        delegate.applyDelegate(Config.createConfig());
         BufferedReader reader = new BufferedReader(new FileReader(f));
         String line = null;
         line = reader.readLine();
