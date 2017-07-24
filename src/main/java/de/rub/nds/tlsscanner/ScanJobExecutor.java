@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ScanJobExecutor {
 
-    private static final Logger LOGGER = LogManager.getLogger("ScanJobExecutor");
+    private static final Logger LOGGER = LogManager.getLogger(ScanJobExecutor.class.getName());
 
     private final ExecutorService executor;
 

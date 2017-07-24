@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class TLSProbe implements Callable<ProbeResult> {
 
-    protected static final Logger LOGGER = LogManager.getLogger("Probe");
+    protected static final Logger LOGGER = LogManager.getLogger(TLSProbe.class.getName());
 
     private ScannerConfig config;
     private ProbeType type;
