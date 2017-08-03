@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.rub.nds.tlscrawler</groupId>
+    <artifactId>TLS-Crawler</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <developers>
+        <developer>
+            <id>j-fliegenschmidt</id>
+            <name>Janis Fliegenschmidt</name>
+            <email>janis.fliegenschmidt@rub.de</email>
+        </developer>
+    </developers>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.rub.nds.tlsattacker</groupId>
+            <artifactId>TLS-Attacker</artifactId>
+            <version>2.0Beta2</version>
+        </dependency>
+    </dependencies>
+
+</project>
