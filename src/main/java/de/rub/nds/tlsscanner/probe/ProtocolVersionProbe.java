@@ -111,7 +111,7 @@ public class ProtocolVersionProbe extends TLSProbe {
             workflowExecutor.executeWorkflow();
         } catch (WorkflowExecutionException ex) {
         }
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, tlsConfig.getWorkflowTrace())) {
+        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, tlsContext.getWorkflowTrace())) {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(tlsContext.getWorkflowTrace().toString());
             return false;

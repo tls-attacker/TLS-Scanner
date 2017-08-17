@@ -185,7 +185,7 @@ public class CiphersuiteProbe extends TLSProbe {
                 LOGGER.debug(ex);
                 supportsMore = false;
             }
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, config.getWorkflowTrace())) {
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, tlsContext.getWorkflowTrace())) {
                 if (tlsContext.getSelectedProtocolVersion() != version) {
                     LOGGER.debug("Server does not support " + version);
                     return new LinkedList<>();
@@ -200,7 +200,7 @@ public class CiphersuiteProbe extends TLSProbe {
                 LOGGER.debug(tlsContext.getWorkflowTrace().toString());
                 if (tlsContext.isReceivedFatalAlert()) {
                     LOGGER.debug("Received Fatal Alert");
-                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(ProtocolMessageType.ALERT, config.getWorkflowTrace());
+                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(ProtocolMessageType.ALERT, tlsContext.getWorkflowTrace());
                     LOGGER.debug("Type:" + alert.toString());
 
                 }

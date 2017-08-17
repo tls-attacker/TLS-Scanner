@@ -48,6 +48,7 @@ public class ScanJobExecutor {
             } catch (InterruptedException | ExecutionException ex) {
                 LOGGER.warn("Encoutered Exception while retrieving probeResult");
                 LOGGER.warn(ex);
+                ex.printStackTrace();
             }
         }
         executor.shutdown();
