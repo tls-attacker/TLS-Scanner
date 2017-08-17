@@ -127,13 +127,15 @@ public class ProtocolVersionProbe extends TLSProbe {
         Config tlsConfig = getConfig().createConfig();
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.SSL2);
         tlsConfig.setEnforceSettings(true);
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setRecordLayerType(RecordLayerType.BLOB);
         WorkflowTrace trace = new WorkflowTrace();
         trace.addTlsAction(new SendAction(new SSL2ClientHelloMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveAction(new SSL2ServerHelloMessage()));
+        trace.addTlsAction(new ReceiveAction(new SSL2ServerHelloMessage(tlsConfig)));
         tlsConfig.setWorkflowTrace(trace);
         TlsContext context = new TlsContext(tlsConfig);
-        context.setClientSessionId(new byte[0]);
         WorkflowExecutor executor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, context);
         executor.executeWorkflow();
         return trace.executedAsPlanned();
