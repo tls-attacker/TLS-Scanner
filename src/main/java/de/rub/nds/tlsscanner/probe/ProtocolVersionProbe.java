@@ -29,6 +29,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
 import de.rub.nds.tlsscanner.report.ResultValue;
@@ -110,7 +111,7 @@ public class ProtocolVersionProbe extends TLSProbe {
             workflowExecutor.executeWorkflow();
         } catch (WorkflowExecutionException ex) {
         }
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, tlsConfig.getWorkflowTrace())) {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(tlsContext.getWorkflowTrace().toString());
             return false;
