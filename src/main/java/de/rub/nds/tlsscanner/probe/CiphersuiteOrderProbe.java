@@ -8,14 +8,15 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
-import de.rub.nds.tlsattacker.core.workflow.TlsConfig;
-import de.rub.nds.tlsattacker.core.workflow.TlsContext;
+import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
@@ -59,8 +60,7 @@ public class CiphersuiteOrderProbe extends TLSProbe {
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
-
-        TlsConfig tlsConfig = getConfig().createConfig();
+        Config tlsConfig = getConfig().createConfig();
         tlsConfig.setEarlyStop(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
@@ -71,11 +71,12 @@ public class CiphersuiteOrderProbe extends TLSProbe {
         tlsConfig.setQuickReceive(true);
         tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setStopActionsAfterFatal(true);
         List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());
 
         tlsConfig.setNamedCurves(namedCurves);
         TlsContext context = new TlsContext(tlsConfig);
-        WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(tlsConfig.getExecutorType(),
+        WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 context);
         try {
             workflowExecutor.executeWorkflow();

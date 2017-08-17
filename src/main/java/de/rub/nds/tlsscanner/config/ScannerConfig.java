@@ -46,4 +46,7 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.threads = threads;
     }
 
+    public ClientDelegate getClientDelegate() {
+        return clientDelegate;
+    }
 }
