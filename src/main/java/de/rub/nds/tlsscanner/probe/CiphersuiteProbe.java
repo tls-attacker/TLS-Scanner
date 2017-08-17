@@ -16,9 +16,16 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
@@ -170,8 +177,7 @@ public class CiphersuiteProbe extends TLSProbe {
             namedCurves.addAll(Arrays.asList(NamedCurve.values()));
             config.setNamedCurves(namedCurves);
             TlsContext tlsContext = new TlsContext(config);
-            WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(
-                    config.getExecutorType(), tlsContext);
+            WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, tlsContext);
             try {
                 workflowExecutor.executeWorkflow();
             } catch (WorkflowExecutionException ex) {
@@ -179,7 +185,7 @@ public class CiphersuiteProbe extends TLSProbe {
                 LOGGER.debug(ex);
                 supportsMore = false;
             }
-            if (!tlsContext.getWorkflowTrace().getActuallyRecievedHandshakeMessagesOfType(HandshakeMessageType.SERVER_HELLO).isEmpty()) {
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
                 if (tlsContext.getSelectedProtocolVersion() != version) {
                     LOGGER.debug("Server does not support " + version);
                     return new LinkedList<>();
@@ -194,8 +200,7 @@ public class CiphersuiteProbe extends TLSProbe {
                 LOGGER.debug(tlsContext.getWorkflowTrace().toString());
                 if (tlsContext.isReceivedFatalAlert()) {
                     LOGGER.debug("Received Fatal Alert");
-                    AlertMessage alert = (AlertMessage) tlsContext.getWorkflowTrace()
-                            .getActualReceivedProtocolMessagesOfType(ProtocolMessageType.ALERT).get(0);
+                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(ProtocolMessageType.ALERT, trace);
                     LOGGER.debug("Type:" + alert.toString());
 
                 }
