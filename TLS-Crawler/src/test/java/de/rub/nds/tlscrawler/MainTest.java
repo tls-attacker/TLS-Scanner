@@ -32,7 +32,7 @@ public class MainTest {
         try {
             parsed = Main.parseOptions(options);
         } catch (OptionsParsingException ex) {
-            fail();
+            fail("Must not throw.");
         }
 
         assertNotNull(parsed);
@@ -51,9 +51,25 @@ public class MainTest {
 
         try {
             Main.parseOptions(options);
-            fail();
+            fail("Should have thrown.");
         } catch (OptionsParsingException ex) {
             // Should throw
         }
+    }
+
+    @Test
+    public void CLIParsingAutoId() {
+        String[] options = { };
+
+        CLOptions parsed = null;
+        try {
+            parsed = Main.parseOptions(options);
+        } catch (OptionsParsingException ex) {
+            fail("Must not throw.");
+        }
+
+        assertNotNull(parsed);
+        assertNotNull(parsed.instanceId);
+        assertNotEquals("", parsed.instanceId);
     }
 }
