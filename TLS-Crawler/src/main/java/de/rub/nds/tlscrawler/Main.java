@@ -9,8 +9,11 @@ package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.OptionsParser;
 import com.google.devtools.common.options.OptionsParsingException;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -41,9 +44,24 @@ public class Main {
             System.exit(0);
         }
 
-        // Try MongoDB Connection
+        MongoClient mongo = new MongoClient(options.mongoDbConnectionString);
+        try {
+            String address = mongo.getAddress().toString();
+            LOG.info("Connected to MongoDB at " + address);
+        } catch (MongoTimeoutException ex) {
+            LOG.error("Connecting to MongoDB failed.");
+            System.exit(0);
+        }
 
-        // Try Redis Connection
+        String redisEndpoint = options.redisConnectionString;
+        Jedis jedis = new Jedis(redisEndpoint);
+        jedis.connect();
+        if (jedis.isConnected()) {
+            LOG.info("Connected to Redis at " + (redisEndpoint.equals("") ? "localhost" : redisEndpoint));
+        } else {
+            LOG.error("Connecting to Redis failed.");
+            System.exit(0);
+        }
 
         // Set up crawler
 
