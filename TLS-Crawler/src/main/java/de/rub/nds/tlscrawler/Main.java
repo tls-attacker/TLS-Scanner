@@ -31,10 +31,12 @@ public class Main {
         try {
             options = parseOptions(args);
         } catch (OptionsParsingException ex) {
+            LOG.error("Command Line Options could not be parsed.");
             options = null;
         }
 
         if (options == null || options.help) {
+            System.out.println("Could not parse Command Line Options. Try again:");
             System.out.println(usageInfo);
             System.exit(0);
         }
