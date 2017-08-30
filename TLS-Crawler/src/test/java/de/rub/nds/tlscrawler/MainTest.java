@@ -1,9 +1,22 @@
+/**
+ * TLS Crawler
+ *
+ * Licensed under Apache 2.0
+ *
+ * Copyright 2017 Ruhr-University Bochum
+ */
 package de.rub.nds.tlscrawler;
 
+import com.google.devtools.common.options.OptionsParsingException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Tests for the Main class.
+ *
+ * @author janis.fliegenschmidt@rub.de
+ */
 public class MainTest {
 
     @Test
@@ -15,7 +28,12 @@ public class MainTest {
                 "-r", "myredis"
         };
 
-        CLOptions parsed = Main.parseOptions(options);
+        CLOptions parsed = null;
+        try {
+            parsed = Main.parseOptions(options);
+        } catch (OptionsParsingException ex) {
+            fail();
+        }
 
         assertNotNull(parsed);
 
@@ -23,5 +41,19 @@ public class MainTest {
         assertEquals("myinstance", parsed.instanceId);
         assertEquals("mymongo", parsed.mongoDbConnectionString);
         assertEquals("myredis", parsed.redisConnectionString);
+    }
+
+    @Test
+    public void CLIParsingInvalidArgs() {
+        String[] options = {
+                "-d"
+        };
+
+        try {
+            Main.parseOptions(options);
+            fail();
+        } catch (OptionsParsingException ex) {
+            // Should throw
+        }
     }
 }

@@ -8,6 +8,9 @@
 package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.OptionsParser;
+import com.google.devtools.common.options.OptionsParsingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -18,12 +21,20 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class Main {
+    private static Logger LOG = LoggerFactory.getLogger(Main.class);
+
     private static String usageInfo;
 
     public static void main(String[] args) {
-        CLOptions options = parseOptions(args);
+        CLOptions options = null;
 
-        if (options.help) {
+        try {
+            options = parseOptions(args);
+        } catch (OptionsParsingException ex) {
+            options = null;
+        }
+
+        if (options == null || options.help) {
             System.out.println(usageInfo);
             System.exit(0);
         }
@@ -34,18 +45,18 @@ public class Main {
 
         // Set up crawler
 
-        System.out.println("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
+        LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
                 + options.instanceId + ".");
     }
 
-    static CLOptions parseOptions(String[] args) {
+    static CLOptions parseOptions(String[] args) throws OptionsParsingException {
         CLOptions result;
 
         OptionsParser parser = OptionsParser.newOptionsParser(CLOptions.class);
-        parser.parseAndExitUponError(args);
-        result = parser.getOptions(CLOptions.class);
-
         usageInfo = parser.describeOptions(Collections.<String, String>emptyMap(), OptionsParser.HelpVerbosity.LONG);
+
+        parser.parse(args);
+        result = parser.getOptions(CLOptions.class);
 
         if (result.instanceId.equals("")) {
             result.instanceId = UUID.randomUUID().toString();
