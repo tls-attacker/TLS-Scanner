@@ -34,11 +34,11 @@ public class CertificateProbe extends TLSProbe {
 
     @Override
     public ProbeResult call() {
-        Config tlsConfig = getConfig().createConfig();
+        Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        tlsConfig.setSniHostname(tlsConfig.getHost());
+        tlsConfig.setSniHostname(tlsConfig.getConnectionEnd().getHostname());
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
@@ -46,7 +46,7 @@ public class CertificateProbe extends TLSProbe {
         List<ResultValue> resultList = new LinkedList<>();
         List<CertificateReport> reportList = CertificateReportGenerator.generateReports(serverCert);
         CertificateReport report = CertificateReportGenerator.generateReport(serverCert.getCertificateAt(0));
-        CertificateJudger judger = new CertificateJudger(serverCert.getCertificateAt(0), getConfig(), report);
+        CertificateJudger judger = new CertificateJudger(serverCert.getCertificateAt(0), getScannerConfig(), report);
         checkList.addAll(judger.getChecks());
         return new ProbeResult(getType(), resultList, checkList);
     }

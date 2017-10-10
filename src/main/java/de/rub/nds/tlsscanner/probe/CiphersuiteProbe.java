@@ -16,15 +16,11 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -58,6 +54,7 @@ public class CiphersuiteProbe extends TLSProbe {
     public ProbeResult call() {
         LOGGER.debug("Starting CiphersuiteProbe");
         Set<CipherSuite> supportedCiphersuites = new HashSet<>();
+        //Separatly collect tls 1.0 for cbc checks later on
         Set<CipherSuite> tls10Ciphersuites = new HashSet<>();
         for (ProtocolVersion version : protocolVersions) {
             LOGGER.debug("Testing:" + version.name());
@@ -161,7 +158,7 @@ public class CiphersuiteProbe extends TLSProbe {
 
         boolean supportsMore = false;
         do {
-            Config config = getConfig().createConfig();
+            Config config = getScannerConfig().createConfig();
             config.setDefaultClientSupportedCiphersuites(listWeSupport);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
@@ -176,8 +173,8 @@ public class CiphersuiteProbe extends TLSProbe {
             List<NamedCurve> namedCurves = new LinkedList<>();
             namedCurves.addAll(Arrays.asList(NamedCurve.values()));
             config.setNamedCurves(namedCurves);
-            TlsContext tlsContext = new TlsContext(config);
-            WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, tlsContext);
+            State state = new State(config);
+            WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
             try {
                 workflowExecutor.executeWorkflow();
             } catch (WorkflowExecutionException ex) {
@@ -185,22 +182,22 @@ public class CiphersuiteProbe extends TLSProbe {
                 LOGGER.debug(ex);
                 supportsMore = false;
             }
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, tlsContext.getWorkflowTrace())) {
-                if (tlsContext.getSelectedProtocolVersion() != version) {
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+                if (state.getTlsContext().getSelectedProtocolVersion() != version) {
                     LOGGER.debug("Server does not support " + version);
                     return new LinkedList<>();
                 }
-                LOGGER.debug("Server chose " + tlsContext.getSelectedCipherSuite().name());
+                LOGGER.debug("Server chose " + state.getTlsContext().getSelectedCipherSuite().name());
                 supportsMore = true;
-                supported.add(tlsContext.getSelectedCipherSuite());
-                listWeSupport.remove(tlsContext.getSelectedCipherSuite());
+                supported.add(state.getTlsContext().getSelectedCipherSuite());
+                listWeSupport.remove(state.getTlsContext().getSelectedCipherSuite());
             } else {
                 supportsMore = false;
                 LOGGER.debug("Server did not send ServerHello");
-                LOGGER.debug(tlsContext.getWorkflowTrace().toString());
-                if (tlsContext.isReceivedFatalAlert()) {
+                LOGGER.debug(state.getWorkflowTrace().toString());
+                if (state.getTlsContext().isReceivedFatalAlert()) {
                     LOGGER.debug("Received Fatal Alert");
-                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(ProtocolMessageType.ALERT, tlsContext.getWorkflowTrace());
+                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace());
                     LOGGER.debug("Type:" + alert.toString());
 
                 }

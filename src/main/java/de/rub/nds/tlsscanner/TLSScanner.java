@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
 /**
@@ -40,17 +41,19 @@ public class TLSScanner {
         config.getGeneralDelegate().setLogLevel(Level.WARN);
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegateList().get(1);
         clientDelegate.setHost(websiteHost);
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration ctxConfig = ctx.getConfiguration();
-        LoggerConfig loggerConfig = ctxConfig.getLoggerConfig("de.rub.nds.tlsattacker");
-        loggerConfig.setLevel(Level.WARN);
-        ctx.updateLoggers();
+        Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.WARN);
     }
 
     public TLSScanner(ScannerConfig config) {
         this.executor = new ScanJobExecutor(config.getThreads());
         this.config = config;
-
+        if (config.getGeneralDelegate().getLogLevel() == Level.ALL) {
+            Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.ALL);
+        } else if (config.getGeneralDelegate().getLogLevel() == Level.TRACE) {
+            Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
+        } else {
+            Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.OFF);
+        }
     }
 
     public SiteReport scan() {

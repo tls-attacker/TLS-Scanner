@@ -22,16 +22,16 @@ public abstract class TLSProbe implements Callable<ProbeResult> {
 
     protected static final Logger LOGGER = LogManager.getLogger(TLSProbe.class.getName());
 
-    private ScannerConfig config;
-    private ProbeType type;
+    protected final ScannerConfig scannerConfig;
+    protected final ProbeType type;
 
     public TLSProbe(ProbeType type, ScannerConfig config) {
         this.type = type;
-        this.config = config;
+        this.scannerConfig = config;
     }
 
-    public ScannerConfig getConfig() {
-        return config;
+    public ScannerConfig getScannerConfig() {
+        return scannerConfig;
     }
 
     public String getProbeName() {
