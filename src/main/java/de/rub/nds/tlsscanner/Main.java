@@ -45,6 +45,7 @@ public class Main {
             try {
                 TLSScanner scanner = new TLSScanner(config);
                 long time = System.currentTimeMillis();
+                LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
                 LOGGER.info("Scanned in:" + ((System.currentTimeMillis()-time)/1000) + "s");
                 LOGGER.info(report.getStringReport());

@@ -14,13 +14,10 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
-import de.rub.nds.tlsattacker.core.protocol.message.ArbitraryMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.record.layer.RecordLayerType;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
@@ -75,7 +72,7 @@ public class ProtocolVersionProbe extends TLSProbe {
     }
 
     public boolean isProtocolVersionSupported(ProtocolVersion toTest) {
-        Config tlsConfig = getConfig().createConfig();
+        Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
@@ -104,39 +101,39 @@ public class ProtocolVersionProbe extends TLSProbe {
         List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());
 
         tlsConfig.setNamedCurves(namedCurves);
-        TlsContext tlsContext = new TlsContext(tlsConfig);
+        State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
-                tlsContext);
+                state);
         try {
             workflowExecutor.executeWorkflow();
         } catch (WorkflowExecutionException ex) {
         }
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, tlsContext.getWorkflowTrace())) {
+        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             LOGGER.debug("Did not receive ServerHello Message");
-            LOGGER.debug(tlsContext.getWorkflowTrace().toString());
+            LOGGER.debug(state.getWorkflowTrace().toString());
             return false;
         } else {    
             LOGGER.debug("Received ServerHelloMessage");
-            LOGGER.debug(tlsContext.getWorkflowTrace().toString());
-            LOGGER.debug("Selected Version:" + tlsContext.getSelectedProtocolVersion().name());
-            return tlsContext.getSelectedProtocolVersion() == toTest;
+            LOGGER.debug(state.getWorkflowTrace().toString());
+            LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
+            return state.getTlsContext().getSelectedProtocolVersion() == toTest;
         }
     }
 
     private boolean isSSL2Supported() {
-        Config tlsConfig = getConfig().createConfig();
+        Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.SSL2);
         tlsConfig.setEnforceSettings(true);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setRecordLayerType(RecordLayerType.BLOB);
-        WorkflowTrace trace = new WorkflowTrace();
+        WorkflowTrace trace = new WorkflowTrace(tlsConfig);
         trace.addTlsAction(new SendAction(new SSL2ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveAction(new SSL2ServerHelloMessage(tlsConfig)));
         tlsConfig.setWorkflowTrace(trace);
-        TlsContext context = new TlsContext(tlsConfig);
-        WorkflowExecutor executor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, context);
+        State state = new State(tlsConfig,trace);
+        WorkflowExecutor executor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
         executor.executeWorkflow();
         return trace.executedAsPlanned();
     }

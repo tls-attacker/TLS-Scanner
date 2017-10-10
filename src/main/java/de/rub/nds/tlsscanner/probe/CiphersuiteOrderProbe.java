@@ -13,11 +13,13 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsattacker.transport.ClientConnectionEnd;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
 import de.rub.nds.tlsscanner.report.ResultValue;
@@ -60,7 +62,7 @@ public class CiphersuiteOrderProbe extends TLSProbe {
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
-        Config tlsConfig = getConfig().createConfig();
+        Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setEarlyStop(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
@@ -73,16 +75,15 @@ public class CiphersuiteOrderProbe extends TLSProbe {
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setStopActionsAfterFatal(true);
         List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());
-
         tlsConfig.setNamedCurves(namedCurves);
-        TlsContext context = new TlsContext(tlsConfig);
+        State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
-                context);
+                state);
         try {
             workflowExecutor.executeWorkflow();
         } catch (WorkflowExecutionException ex) {
             LOGGER.warn(ex);
         }
-        return context.getSelectedCipherSuite();
+        return state.getTlsContext().getSelectedCipherSuite();
     }
 }

@@ -19,16 +19,17 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
  * @author Robert Merget - robert.merget@rub.de
  */
 public class ScannerConfig extends TLSDelegateConfig {
+
     public static final String COMMAND = "scan";
 
     @ParametersDelegate
-    private final ClientDelegate clientDelegate;
+    private ClientDelegate clientDelegate;
 
     @Parameter(names = "-threads", required = false, description = "How many threads should execute Probes")
     private int threads = 1;
 
     @ParametersDelegate
-    private final GeneralDelegate generalDelegate;
+    private GeneralDelegate generalDelegate;
 
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
