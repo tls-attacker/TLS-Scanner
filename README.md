@@ -1,5 +1,6 @@
 # TLS-Scanner
 TLS-Scanner is a Tool created by the Chair for Network and Data Security from the Ruhr-University Bochum to assist pentesters and security researchers in lthe evaluation of TLS Server configurations. 
+
 **Please note:**  *TLS-Scanner is a research tool intended for TLS developers, pentesters, administrators and researchers. There is no GUI. It is in the first version and may contain some bugs.*
 
 # Compiling
@@ -20,14 +21,16 @@ $ ./mvnw clean install
 ```
 
 For hints on installing the required libraries checkout the corresponding GitHub repositories:
-https://github.com/RUB-NDS/TLS-Attacker-Development
-https://github.com/RUB-NDS/ModifiableVariable
+[TLS-Attacker](https://github.com/RUB-NDS/TLS-Attacker-Development)
+[ModifiableVariables](https://github.com/RUB-NDS/ModifiableVariable)
 
 # Running
 In order to run TLS-Scanner you need to run the jar file in the apps/ folder.
+
 ```bash
 $ java -jar apps/TLS-Scanner.jar -connect localhost:4433
 ```
+
 You can specify a host you want to scan with the -connect parameter. If you want to improve the performance of the scan you can use the -threads parameter (default=1).
 
 
@@ -36,18 +39,18 @@ TLS-Scanner uses the concept of "Checks" which are performed after it collected 
 
 There are currently multiple checks implemented:
 
-CERTIFICATE_EXPIRED - Checks if the Certificate is expired yet
-CERTIFICATE_NOT_VALID_YET - Checks if the Certificate is valid yet
-CERTIFICATE_WEAK_HASH_FUNCTION - Checks if the Server uses a weak Hash algorithm for its Certificate
-CERTIFICATE_WEAK_SIGN_ALGORITHM - Checks if the Server uses a weak Signature algorithm for its Certificate
-CERTIFICATE_NOT_SENT_BY_SERVER - Checks if the Server did sent a Certificate at all
-CIPHERSUITE_ANON - Checks if the Server has Anon Ciphersuites enabled
-CIPHERSUITE_CBC - Checks if the Server has CBC Ciphersuites enabled for TLS 1.0 
-CIPHERSUITE_EXPORT - Checks if the Server has Export Ciphersuites enabled
-CIPHERSUITE_NULL - Checks if the Server has Null Ciphersuites enabled
-CIPHERSUITE_RC4 - Checks if the Server has RC4 Ciphersuites enabled
-CIPHERSUITEORDER_ENFORCED - Checks if the Server does not enforce a Ciphersuite Ordering
-PROTOCOLVERSION_SSL2 - Checks if SSL 2 is enabled
-PROTOCOLVERSION_SSL3 - Checks if SSL 3 is enabled
+⋅⋅* CERTIFICATE_EXPIRED - Checks if the Certificate is expired yet
+⋅⋅* CERTIFICATE_NOT_VALID_YET - Checks if the Certificate is valid yet
+⋅⋅* CERTIFICATE_WEAK_HASH_FUNCTION - Checks if the Server uses a weak Hash algorithm for its Certificate
+⋅⋅* CERTIFICATE_WEAK_SIGN_ALGORITHM - Checks if the Server uses a weak Signature algorithm for its Certificate
+⋅⋅* CERTIFICATE_NOT_SENT_BY_SERVER - Checks if the Server did sent a Certificate at all
+⋅⋅* CIPHERSUITE_ANON - Checks if the Server has Anon Ciphersuites enabled
+⋅⋅* CIPHERSUITE_CBC - Checks if the Server has CBC Ciphersuites enabled for TLS 1.0 
+⋅⋅* CIPHERSUITE_EXPORT - Checks if the Server has Export Ciphersuites enabled
+⋅⋅* CIPHERSUITE_NULL - Checks if the Server has Null Ciphersuites enabled
+⋅⋅* CIPHERSUITE_RC4 - Checks if the Server has RC4 Ciphersuites enabled
+⋅⋅* CIPHERSUITEORDER_ENFORCED - Checks if the Server does not enforce a Ciphersuite Ordering
+⋅⋅* PROTOCOLVERSION_SSL2 - Checks if SSL 2 is enabled
+⋅⋅* PROTOCOLVERSION_SSL3 - Checks if SSL 3 is enabled
 
-**Please note:**  *A Check with a _result_ of true iss considered problematic*
+**Please note:**  *A Check with a _result_ of true is considered non optimal*
