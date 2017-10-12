@@ -20,13 +20,18 @@ import java.util.List;
  * @author janis.fliegenschmidt@rub.de
  */
 public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
-    private List<IScanTask> tasks = new LinkedList<IScanTask>();
+    private Object syncRoot = new Object();
+    private List<IScanTask> tasks = new LinkedList<>();
 
     public IScanTask getScanTask() {
-        return tasks.isEmpty() ? null : tasks.get(0);
+        synchronized (syncRoot) {
+            return tasks.isEmpty() ? null : tasks.get(0);
+        }
     }
 
     public void addScanTask(IScanTask task) {
-        this.tasks.add(task);
+        synchronized (syncRoot) {
+            this.tasks.add(task);
+        }
     }
 }
