@@ -1,10 +1,12 @@
 # TLS-Scanner
-TLS-Scanner is a Tool created by the Chair for Network and Data Security from the Ruhr-University Bochum to assist pentesters and security researchers in lthe evaluation of TLS Server configurations. 
+TLS-Scanner is a tool created by the Chair for Network and Data Security from the Ruhr-University Bochum to assist pentesters and security researchers in the evaluation of TLS Server configurations. 
 
 **Please note:**  *TLS-Scanner is a research tool intended for TLS developers, pentesters, administrators and researchers. There is no GUI. It is in the first version and may contain some bugs.*
 
 # Compiling
-In order to compile and use TLS-Scanner, you need to have Java installed, as well as TLS-Attacker and the ModifiableVariable package. Run the maven command from the TLS-Attacker directory:
+In order to compile and use TLS-Scanner, you need to have Java installed, as well as [TLS-Attacker](https://github.com/RUB-NDS/TLS-Attacker-Development)
+ and the [ModifiableVariables](https://github.com/RUB-NDS/ModifiableVariable).
+ 
 ```bash
 $ cd TLS-Scanner
 $ ./mvnw clean package
@@ -20,11 +22,7 @@ If you want to use TLS-Scanner as a library you need to install it with the foll
 $ ./mvnw clean install
 ```
 
-For hints on installing the required libraries checkout the corresponding GitHub repositories:
-
-[TLS-Attacker](https://github.com/RUB-NDS/TLS-Attacker-Development)
-
-[ModifiableVariables](https://github.com/RUB-NDS/ModifiableVariable)
+For hints on installing the required libraries checkout the corresponding GitHub repositories.
 
 # Running
 In order to run TLS-Scanner you need to run the jar file in the apps/ folder.
@@ -37,7 +35,7 @@ You can specify a host you want to scan with the -connect parameter. If you want
 
 
 # Results
-TLS-Scanner uses the concept of "Checks" which are performed after it collected configuration information. A check which results in "true" is consideres a non optimal choice and is an indicator for a pentester for a possible problem.
+TLS-Scanner uses the concept of "checks" which are performed after it collected configuration information. A check which results in "true" is consideres a non optimal choice and is an indicator for a pentester for a possible problem.
 
 There are currently multiple checks implemented:
 
@@ -58,4 +56,4 @@ There are currently multiple checks implemented:
 | PROTOCOLVERSION_SSL2            | Checks if SSL 2 is enabled                                               |
 | PROTOCOLVERSION_SSL3            | Checks if SSL 3 is enabled                                               |
 
-**Please note:**  *A Check with a _result_ of true is considered non optimal*
+**Please note:**  *A check with a _result_ of true is considered non optimal*
