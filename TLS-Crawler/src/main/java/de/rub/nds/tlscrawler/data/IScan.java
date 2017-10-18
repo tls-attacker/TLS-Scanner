@@ -7,22 +7,25 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.tlscrawler.utility.Tuple;
+
+import java.util.List;
+
 /**
- * Scan interface.
- * This interface should be implemented by the individual scans.
+ * Interface to be implemented by scans.
  *
  * @author janis.fliegenschmidt@rub.de
  */
 public interface IScan {
 
     /**
-     * @return The name of the scan.
+     * @return A unique name.
      */
     String getName();
 
     /**
-     * @param target The target to scan.
-     * @return The scan result.
+     * @param target Target of the scan.
+     * @return The scan's result in key-value pairs.
      */
-    IScanResult perform(IScanTarget target);
+    List<Tuple> scan(IScanTarget target);
 }

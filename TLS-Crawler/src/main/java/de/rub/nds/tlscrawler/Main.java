@@ -11,11 +11,15 @@ import com.google.devtools.common.options.OptionsParser;
 import com.google.devtools.common.options.OptionsParsingException;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoTimeoutException;
+import de.rub.nds.tlscrawler.data.IScan;
+import de.rub.nds.tlscrawler.scans.PingScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -43,6 +47,11 @@ public class Main {
             System.out.println(usageInfo);
             System.exit(0);
         }
+
+        // TODO: Set up scans. TBD: Scan plug-ins.
+        List<IScan> scans = new LinkedList<>();
+        scans.add(new PingScan());
+
 
         MongoClient mongo = new MongoClient(options.mongoDbConnectionString);
         try {
