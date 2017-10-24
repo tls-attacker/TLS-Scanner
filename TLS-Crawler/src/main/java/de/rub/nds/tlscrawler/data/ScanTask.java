@@ -9,6 +9,8 @@ package de.rub.nds.tlscrawler.data;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -25,6 +27,7 @@ public class ScanTask implements IScanTask {
     private String target;
     private Collection<Integer> ports;
     private Collection<String> scans;
+    private Map<String, Object> results;
 
     public ScanTask(UUID id,
                     Instant createdTimestamp,
@@ -42,6 +45,8 @@ public class ScanTask implements IScanTask {
         this.target = target;
         this.ports = ports;
         this.scans = scans;
+
+        this.results = new HashMap<>();
     }
 
     @Override
@@ -87,5 +92,14 @@ public class ScanTask implements IScanTask {
     @Override
     public IScanTarget getScanTarget() {
         return new ScanTarget(this.target, this.ports);
+    }
+
+    @Override
+    public Map<String, Object> getResults() {
+        return this.results;
+    }
+
+    public void addResult(String scanName, Object result) {
+        this.results.put(scanName, result);
     }
 }

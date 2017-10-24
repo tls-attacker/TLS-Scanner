@@ -9,6 +9,7 @@ package de.rub.nds.tlscrawler.data;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -63,4 +64,9 @@ public interface IScanTask {
      * @return Returns the scan target.
      */
     IScanTarget getScanTarget();
+
+    /**
+     * @return Returns the result structure.
+     */
+    Map<String, Object> getResults();
 }
