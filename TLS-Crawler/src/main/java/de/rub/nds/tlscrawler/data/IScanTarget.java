@@ -7,6 +7,8 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import java.util.Collection;
+
 /**
  * Scan target interface.
  *
@@ -20,7 +22,7 @@ public interface IScanTarget {
     String getIp();
 
     /**
-     * @return The port of the target service.
+     * @return The ports of the target services.
      */
-    int getPort();
+    Collection<Integer> getPorts();
 }
