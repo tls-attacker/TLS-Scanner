@@ -58,4 +58,9 @@ public interface IScanTask {
      * @return A list of scans to be performed.
      */
     Collection<String> getScans();
+
+    /**
+     * @return Returns the scan target.
+     */
+    IScanTarget getScanTarget();
 }

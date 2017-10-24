@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,7 +43,13 @@ public class PingScan implements IScan {
 
         result.add(Tuple.create("timestamp", Instant.now().toString()));
         result.add(Tuple.create("timeout", this.timeOutMs));
-        result.add(Tuple.create("isReachable", isReachable(target.getIp(), target.getPort())));
+
+        Collection<Tuple> portwiseScanResult = new LinkedList<>();
+        for (Integer port : target.getPorts()) {
+            portwiseScanResult.add(Tuple.create(port.toString(), isReachable(target.getIp(), port)));
+        }
+
+        result.add(Tuple.create("reachablePorts", portwiseScanResult));
 
         return result;
     }

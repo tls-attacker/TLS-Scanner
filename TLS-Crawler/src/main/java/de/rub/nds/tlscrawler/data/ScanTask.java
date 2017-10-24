@@ -83,4 +83,9 @@ public class ScanTask implements IScanTask {
     public Collection<String> getScans() {
         return this.scans;
     }
+
+    @Override
+    public IScanTarget getScanTarget() {
+        return new ScanTarget(this.target, this.ports);
+    }
 }
