@@ -11,6 +11,8 @@ import com.mongodb.MongoClient;
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTask;
 
+import java.util.UUID;
+
 /**
  * A persistence provider implementation using MongoDB as
  * the persistence layer.
@@ -24,19 +26,14 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         this.mongo = mongo;
     }
 
-    public void taskCreated(IScanTask task) {
-        // Write hollow result structure to db
+    @Override
+    public void save(IScanTask task) {
+        // TODO
     }
 
-    public void taskAccepted(IScanTask task) {
-        // Write task-accepted timestamp to db
-    }
-
-    public void taskStarted(IScanTask task) {
-        // write scan-started timestamp to db
-    }
-
-    public void save(IScanTask task, IScanResult scanResult) {
-        // write scan result to db
+    @Override
+    public IScanTask getScanTask(UUID id) {
+        // TODO
+        return null;
     }
 }

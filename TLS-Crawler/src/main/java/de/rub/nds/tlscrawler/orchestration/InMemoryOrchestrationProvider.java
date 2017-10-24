@@ -9,8 +9,10 @@ package de.rub.nds.tlscrawler.orchestration;
 
 import de.rub.nds.tlscrawler.data.IScanTask;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Simplest implementation of an orchestration provider.
@@ -21,15 +23,30 @@ import java.util.List;
  */
 public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
     private Object syncRoot = new Object();
-    private List<IScanTask> tasks = new LinkedList<>();
+    private List<UUID> tasks = new LinkedList<>();
 
-    public IScanTask getScanTask() {
+    public UUID getScanTask() {
         synchronized (syncRoot) {
             return tasks.isEmpty() ? null : tasks.get(0);
         }
     }
 
-    public void addScanTask(IScanTask task) {
+    @Override
+    public Collection<UUID> getScanTasks(int quantity) {
+        LinkedList<UUID> result = new LinkedList<>();
+
+        synchronized (syncRoot) {
+            for (int i = 0; i < quantity; i++) {
+                if (!this.tasks.isEmpty()) {
+                    result.add(this.tasks.get(0));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public void addScanTask(UUID task) {
         synchronized (syncRoot) {
             this.tasks.add(task);
         }
