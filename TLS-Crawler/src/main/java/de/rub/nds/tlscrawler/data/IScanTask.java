@@ -7,13 +7,13 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
 
 /**
  * Scan task interface.
- * Exposes methods that grant access to data relevant to the
- * individual scan task.
+ * Interface to the document that will eventually be persisted.
  *
  * @author janis.fliegenschmidt@rub.de
  */
@@ -25,12 +25,37 @@ public interface IScanTask {
     UUID getId();
 
     /**
+     * @return The point in time at which the scan was scheduled.
+     */
+    Instant getCreatedTimestamp();
+
+    /**
+     * @return The point in time a slave accepted this task.
+     */
+    Instant getAcceptedTimestamp();
+
+    /**
+     * @return The point in time a slave started working on the task.
+     */
+    Instant getStartedTimestamp();
+
+    /**
+     * @return The point in time the slave finished working on the task.
+     */
+    Instant getCompletedTimestamp();
+
+    /**
      * @return The target that should be scanned.
      */
-    IScanTarget getTarget();
+    String getTargetIp();
+
+    /**
+     * @return A list of Ports to be scanned.
+     */
+    Collection<Integer> getPorts();
 
     /**
      * @return A list of scans to be performed.
      */
-    Collection<IScan> getScans();
+    Collection<String> getScans();
 }
