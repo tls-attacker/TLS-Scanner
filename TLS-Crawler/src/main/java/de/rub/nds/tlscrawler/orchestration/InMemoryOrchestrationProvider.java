@@ -7,8 +7,6 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
-import de.rub.nds.tlscrawler.data.IScanTask;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;

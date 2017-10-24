@@ -8,7 +8,6 @@
 package de.rub.nds.tlscrawler.persistence;
 
 import com.mongodb.MongoClient;
-import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTask;
 
 import java.util.UUID;
