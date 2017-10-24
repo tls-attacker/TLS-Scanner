@@ -102,4 +102,16 @@ public class ScanTask implements IScanTask {
     public void addResult(String scanName, Object result) {
         this.results.put(scanName, result);
     }
+
+    public static ScanTask createFrom(IScanTask scan) {
+        return new ScanTask(
+                scan.getId(),
+                scan.getCreatedTimestamp(),
+                scan.getAcceptedTimestamp(),
+                scan.getStartedTimestamp(),
+                scan.getCompletedTimestamp(),
+                scan.getTargetIp(),
+                scan.getPorts(),
+                scan.getScans());
+    }
 }
