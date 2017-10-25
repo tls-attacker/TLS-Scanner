@@ -41,7 +41,7 @@ public class TLSCrawlerSlave extends TLSCrawler {
         public void run() {
             for (;;) {
                 UUID taskId = this.crawler.getOrchestrationProvider().getScanTask();
-                ScanTask task = ScanTask.createFrom(this.crawler.getPersistenceProvider().getScanTask(taskId));
+                ScanTask task = ScanTask.copyFrom(this.crawler.getPersistenceProvider().getScanTask(taskId));
 
                 for (String scan : task.getScans()) {
                     IScan scanInstance = this.crawler.getScanByName(scan);

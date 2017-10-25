@@ -103,7 +103,7 @@ public class ScanTask implements IScanTask {
         this.results.put(scanName, result);
     }
 
-    public static ScanTask createFrom(IScanTask scan) {
+    public static ScanTask copyFrom(IScanTask scan) {
         return new ScanTask(
                 scan.getId(),
                 scan.getCreatedTimestamp(),
