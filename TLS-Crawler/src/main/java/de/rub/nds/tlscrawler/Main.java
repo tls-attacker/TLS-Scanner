@@ -87,8 +87,20 @@ public class Main {
         parser.parse(args);
         result = parser.getOptions(CLOptions.class);
 
-        if (result.instanceId.equals("")) {
+        if (result != null && result.instanceId.equals("")) {
             result.instanceId = UUID.randomUUID().toString();
+        }
+
+        if (result != null && result.masterOnly && !result.isMaster) {
+            result = null;
+        }
+
+        if (result != null && result.testMode && !result.isMaster) {
+            result = null;
+        }
+
+        if (result != null && result.testMode && !result.inMemoryOrchestration) {
+            result = null;
         }
 
         return result;

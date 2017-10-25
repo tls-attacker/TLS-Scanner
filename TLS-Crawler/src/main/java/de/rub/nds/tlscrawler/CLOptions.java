@@ -56,4 +56,26 @@ public class CLOptions extends OptionsBase {
             defaultValue = ""
     )
     public String redisConnectionString;
+
+    @Option(
+            name = "masterOnly",
+            help = "Spawns a master-only instance, isMaster is implicit.",
+            defaultValue = "false"
+    )
+    public boolean masterOnly;
+
+    @Option(
+            name = "inMemoryOrchestration",
+            help = "Uses an in-memory orchestration provider. Can not be combined with masterOnly.",
+            defaultValue = "false"
+    )
+    public boolean inMemoryOrchestration;
+
+    @Option(
+            name = "testMode",
+            abbrev = 't',
+            help = "Starts TLS Crawler in test mode, using in-memory orchestration and persistence.",
+            defaultValue = "false"
+    )
+    public boolean testMode;
 }
