@@ -9,6 +9,7 @@ package de.rub.nds.tlscrawler.persistence;
 
 import de.rub.nds.tlscrawler.data.IScanTask;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -33,5 +34,22 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
     @Override
     public IScanTask getScanTask(UUID id) {
         return this.tasks.get(id);
+    }
+
+    public void printFirst(int x) {
+        int i = 0;
+
+        for (Map.Entry entry : tasks.entrySet()) {
+            if (i++ > x) {
+                break;
+            }
+
+            IScanTask task = (IScanTask)entry.getValue();
+
+            String a = task.getCreatedTimestamp() == null ? "null" : task.getCreatedTimestamp().toString();
+            String b = task.getCompletedTimestamp() == null ? "null" : task.getCompletedTimestamp().toString();
+
+            System.out.println(String.format("%s %s", a, b));
+        }
     }
 }
