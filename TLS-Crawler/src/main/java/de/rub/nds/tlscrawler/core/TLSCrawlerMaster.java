@@ -68,17 +68,17 @@ public class TLSCrawlerMaster extends TLSCrawler {
 
         if (!allScansValid) {
             String invalidScanList = invalidScans.stream().map(item -> "'" + item + "'").collect(joining(" "));
-            LOG.error("Invalid Scans: %s", invalidScanList);
+            LOG.error(String.format("Invalid Scans: %s", invalidScanList));
         }
 
         if (!allTargetIpsValid) {
             String invalidTargetIpList = invalidTargetIps.stream().map(item -> "'" + item + "'").collect(joining(" "));
-            LOG.error("Invalid Target IPs: %s", invalidTargetIpList);
+            LOG.error(String.format("Invalid Target IPs: %s", invalidTargetIpList));
         }
 
         if (!allPortsValid) {
             String invalidPortsList = invalidPorts.stream().map(item -> "'" + item + "'").collect(joining(" "));
-            LOG.error("Invalid Ports: %s", invalidPortsList);
+            LOG.error(String.format("Invalid Ports: %s", invalidPortsList));
         }
 
         return !(allScansValid && allTargetIpsValid && allPortsValid);
