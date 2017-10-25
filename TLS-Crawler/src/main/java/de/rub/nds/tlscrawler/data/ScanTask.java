@@ -29,7 +29,7 @@ public class ScanTask implements IScanTask {
     private Instant acceptedTimestamp;
     private Instant startedTimestamp;
     private Instant completedTimestamp;
-    private String target;
+    private String targetIp;
     private Collection<Integer> ports;
     private Collection<String> scans;
     private Map<String, Object> results;
@@ -39,7 +39,7 @@ public class ScanTask implements IScanTask {
                     Instant acceptedTimestamp,
                     Instant startedTimestamp,
                     Instant completedTimestamp,
-                    String target,
+                    String targetIp,
                     Collection<Integer> ports,
                     Collection<String> scans) {
         this.id = id;
@@ -47,7 +47,7 @@ public class ScanTask implements IScanTask {
         this.acceptedTimestamp = acceptedTimestamp;
         this.startedTimestamp = startedTimestamp;
         this.completedTimestamp = completedTimestamp;
-        this.target = target;
+        this.targetIp = targetIp;
         this.ports = ports;
         this.scans = scans;
 
@@ -64,9 +64,17 @@ public class ScanTask implements IScanTask {
         return this.createdTimestamp;
     }
 
+    public void setCreatedTimestamp(Instant timestamp) {
+        this.createdTimestamp = timestamp;
+    }
+
     @Override
     public Instant getAcceptedTimestamp() {
         return this.acceptedTimestamp;
+    }
+
+    public void setAcceptedTimestamp(Instant timestamp) {
+        this.acceptedTimestamp = timestamp;
     }
 
     @Override
@@ -74,14 +82,26 @@ public class ScanTask implements IScanTask {
         return this.startedTimestamp;
     }
 
+    public void setStartedTimestamp(Instant timestamp) {
+        this.startedTimestamp = timestamp;
+    }
+
     @Override
     public Instant getCompletedTimestamp() {
         return this.completedTimestamp;
     }
 
+    public void setCompletedTimestamp(Instant timestamp) {
+        this.completedTimestamp = timestamp;
+    }
+
     @Override
     public String getTargetIp() {
-        return this.target;
+        return this.targetIp;
+    }
+
+    public void setTargetIp(String ip) {
+        this.targetIp = ip;
     }
 
     @Override
@@ -96,7 +116,7 @@ public class ScanTask implements IScanTask {
 
     @Override
     public IScanTarget getScanTarget() {
-        return new ScanTarget(this.target, this.ports);
+        return new ScanTarget(this.targetIp, this.ports);
     }
 
     @Override
@@ -113,7 +133,7 @@ public class ScanTask implements IScanTask {
             LOG.error("copyFrom() - 'scan' must not be null.");
             throw new IllegalArgumentException("'scan' must not be null.");
         }
-        
+
         return new ScanTask(
                 scan.getId(),
                 scan.getCreatedTimestamp(),
