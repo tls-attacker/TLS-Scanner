@@ -9,7 +9,6 @@ package de.rub.nds.tlscrawler.persistence;
 
 import de.rub.nds.tlscrawler.data.IScanTask;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -51,5 +50,12 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
 
             System.out.println(String.format("%s %s", a, b));
         }
+    }
+
+    public void printProgress() {
+        long total = this.tasks.size();
+        long completed = this.tasks.entrySet().stream().map(x -> x.getValue().getCompletedTimestamp()).filter(x -> x != null).count();
+
+        System.out.println(String.format("Finished %d/%d", completed, total));
     }
 }

@@ -120,9 +120,12 @@ public class Main {
 
                     master.crawl(chosenScans, targets, ports);
                     break;
+
                 case "print":
                     ((InMemoryPersistenceProvider)persistenceProvider).printFirst(10);
+                    ((InMemoryPersistenceProvider)persistenceProvider).printProgress();
                     break;
+
                 default:
                     System.out.println("Did not understand. Try again.");
             }
