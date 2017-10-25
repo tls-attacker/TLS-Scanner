@@ -8,10 +8,12 @@
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.IScan;
+import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,12 +43,31 @@ public class TLSCrawlerSlave extends TLSCrawler {
         public void run() {
             for (;;) {
                 UUID taskId = this.crawler.getOrchestrationProvider().getScanTask();
-                ScanTask task = ScanTask.copyFrom(this.crawler.getPersistenceProvider().getScanTask(taskId));
 
-                for (String scan : task.getScans()) {
-                    IScan scanInstance = this.crawler.getScanByName(scan);
-                    Object result = scanInstance.scan(task.getScanTarget());
-                    task.addResult(scan, result);
+                IScanTask raw = this.crawler.getPersistenceProvider().getScanTask(taskId);
+                ScanTask task;
+
+                if (raw != null) {
+                    task = ScanTask.copyFrom(raw);
+                    task.setAcceptedTimestamp(Instant.now());
+
+                    task.setStartedTimestamp(Instant.now());
+
+                    for (String scan : task.getScans()) {
+                        IScan scanInstance = this.crawler.getScanByName(scan);
+                        Object result = scanInstance.scan(task.getScanTarget());
+                        task.addResult(scan, result);
+                    }
+
+                    task.setCompletedTimestamp(Instant.now());
+
+                    this.crawler.getPersistenceProvider().save(task);
+                } else {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        // swallow it whole.
+                    }
                 }
             }
         }
