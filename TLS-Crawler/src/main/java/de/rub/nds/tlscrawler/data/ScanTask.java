@@ -7,6 +7,9 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,6 +22,8 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class ScanTask implements IScanTask {
+    private static Logger LOG = LoggerFactory.getLogger(ScanTask.class);
+
     private UUID id;
     private Instant createdTimestamp;
     private Instant acceptedTimestamp;
@@ -104,6 +109,11 @@ public class ScanTask implements IScanTask {
     }
 
     public static ScanTask copyFrom(IScanTask scan) {
+        if (scan == null) {
+            LOG.error("copyFrom() - 'scan' must not be null.");
+            throw new IllegalArgumentException("'scan' must not be null.");
+        }
+        
         return new ScanTask(
                 scan.getId(),
                 scan.getCreatedTimestamp(),
