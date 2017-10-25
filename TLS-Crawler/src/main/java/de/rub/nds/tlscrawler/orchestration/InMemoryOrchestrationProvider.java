@@ -25,7 +25,7 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
 
     public UUID getScanTask() {
         synchronized (syncRoot) {
-            return tasks.isEmpty() ? null : tasks.get(0);
+            return tasks.isEmpty() ? null : tasks.remove(0);
         }
     }
 
@@ -36,7 +36,7 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
         synchronized (syncRoot) {
             for (int i = 0; i < quantity; i++) {
                 if (!this.tasks.isEmpty()) {
-                    result.add(this.tasks.get(0));
+                    result.add(this.tasks.remove(0));
                 }
             }
         }
