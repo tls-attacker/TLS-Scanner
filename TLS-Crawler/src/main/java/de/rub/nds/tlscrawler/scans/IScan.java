@@ -5,8 +5,9 @@
  *
  * Copyright 2017 Ruhr-University Bochum
  */
-package de.rub.nds.tlscrawler.data;
+package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.utility.Tuple;
 
 import java.util.List;

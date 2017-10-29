@@ -13,7 +13,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoTimeoutException;
 import de.rub.nds.tlscrawler.core.TLSCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TLSCrawlerSlave;
-import de.rub.nds.tlscrawler.data.IScan;
+import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;

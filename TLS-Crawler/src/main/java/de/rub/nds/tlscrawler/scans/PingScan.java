@@ -7,7 +7,6 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
-import de.rub.nds.tlscrawler.data.IScan;
 import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;

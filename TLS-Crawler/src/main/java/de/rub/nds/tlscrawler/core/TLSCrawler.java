@@ -7,7 +7,7 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.IScan;
+import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import org.slf4j.Logger;
