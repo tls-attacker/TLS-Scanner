@@ -24,6 +24,15 @@ public class Tuple<T1, T2> {
         this.b = b;
     }
 
+    /**
+     * Convenience factory method.
+     *
+     * @param a First object.
+     * @param b Second object.
+     * @param <A> Type of first object, can be inferred.
+     * @param <B> Type of second object, can be inferred.
+     * @return The tuple (a, b).
+     */
     public static <A, B> Tuple<A, B> create(A a, B b) {
         return new Tuple<A, B>(a, b);
     }

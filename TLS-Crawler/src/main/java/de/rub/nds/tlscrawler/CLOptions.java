@@ -11,7 +11,7 @@ import com.google.devtools.common.options.Option;
 import com.google.devtools.common.options.OptionsBase;
 
 /**
- * Command Line Options class
+ * Command Line Options class.
  *
  * @author janis.fliegenschmidt@rub.de
  */

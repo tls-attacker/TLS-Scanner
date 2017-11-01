@@ -8,6 +8,8 @@
 package de.rub.nds.tlscrawler.persistence;
 
 import de.rub.nds.tlscrawler.data.IScanTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,8 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class InMemoryPersistenceProvider implements IPersistenceProvider {
+    private static Logger LOG = LoggerFactory.getLogger(InMemoryPersistenceProvider.class);
+
     private Map<UUID, IScanTask> tasks;
 
     public InMemoryPersistenceProvider() {
@@ -48,7 +52,7 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
             String a = task.getCreatedTimestamp() == null ? "null" : task.getCreatedTimestamp().toString();
             String b = task.getCompletedTimestamp() == null ? "null" : task.getCompletedTimestamp().toString();
 
-            System.out.println(String.format("%s %s", a, b));
+            LOG.info(String.format("%s %s", a, b));
         }
     }
 
@@ -56,6 +60,6 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
         long total = this.tasks.size();
         long completed = this.tasks.entrySet().stream().map(x -> x.getValue().getCompletedTimestamp()).filter(x -> x != null).count();
 
-        System.out.println(String.format("Finished %d/%d", completed, total));
+        LOG.info(String.format("Finished %d/%d", completed, total));
     }
 }

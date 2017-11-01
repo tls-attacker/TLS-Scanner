@@ -25,6 +25,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         this.redis = redis;
     }
 
+    @Override
     public UUID getScanTask() {
         // TODO: retrieve scan task from redis
         return null;
@@ -36,6 +37,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         return null;
     }
 
+    @Override
     public void addScanTask(UUID task) {
         // TODO: write scan task to redis
     }

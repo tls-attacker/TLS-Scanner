@@ -22,14 +22,23 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
+// TODO: Should also implement scan task monitoring.
+
 /**
- * Implements Scan Task Creation
+ * Implements Scan Task Creation.
  *
  * @author janis.fliegenschmidt@rub.de
  */
 public class TLSCrawlerMaster extends TLSCrawler {
     private static Logger LOG = LoggerFactory.getLogger(TLSCrawlerMaster.class);
 
+    /**
+     * TLS-Crawler master constructor.
+     *
+     * @param orchestrationProvider A non-null orchestration provider.
+     * @param persistenceProvider A non-null persistence provider.
+     * @param scans A neither null nor empty list of available scans.
+     */
     public TLSCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
     }
@@ -38,6 +47,8 @@ public class TLSCrawlerMaster extends TLSCrawler {
         if (areNotValidArgs(scans, targets, ports)) {
             LOG.error("Crawling task has not been established due to invalid arguments.");
         }
+
+        // TODO: This should be parallelized.
 
         for (String target : targets) {
             UUID scanId = UUID.randomUUID();

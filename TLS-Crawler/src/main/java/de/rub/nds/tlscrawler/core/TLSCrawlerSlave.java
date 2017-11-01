@@ -20,39 +20,55 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+// TODO: Also provide stats of this instance.
+
 /**
  * A basic TLS crawler slave implementation.
  *
  * @author janis.fliegenschmidt@rub.de
  */
 public class TLSCrawlerSlave extends TLSCrawler {
+    private static Logger LOG = LoggerFactory.getLogger(TLSCrawlerSlave.class);
+
     private static int NO_THREADS = 256;
     private List<Thread> threads;
 
+    /**
+     * TLS-Crawler slave constructor.
+     *
+     * @param orchestrationProvider A non-null orchestration provider.
+     * @param persistenceProvider A non-null persistence provider.
+     * @param scans A neither null nor empty list of available scans.
+     */
     public TLSCrawlerSlave(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
 
         threads = new LinkedList<>();
 
+        LOG.debug("TLSCrawlerSlave() - Setting up worker threads.");
         for (int i = 0; i < NO_THREADS; i++) {
-            Thread thread = new Thread(new CoordinationLoop(this), String.format("SimpleCrawlerSlave-%d", i));
+            Thread thread = new Thread(new TlsCrawlerSlaveWorker(this), String.format("SimpleCrawlerSlave-%d", i));
             thread.start();
             this.threads.add(thread);
         }
     }
 
-    private class CoordinationLoop implements Runnable {
-        private Logger LOG = LoggerFactory.getLogger(CoordinationLoop.class);
+    /**
+     * Implements logic, to be executed in parallel, of retrieving and performing scans
+     * as well as persisting results.
+     */
+    private class TlsCrawlerSlaveWorker implements Runnable {
+        private Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlaveWorker.class);
 
         private TLSCrawler crawler;
 
-        public CoordinationLoop(TLSCrawler crawler) {
+        public TlsCrawlerSlaveWorker(TLSCrawler crawler) {
             this.crawler = crawler;
         }
 
         @Override
         public void run() {
-            //LOG.debug("run() - Started.");
+            LOG.debug("run() - Started.");
 
             for (;;) {
                 UUID taskId = this.crawler.getOrchestrationProvider().getScanTask();
@@ -61,7 +77,7 @@ public class TLSCrawlerSlave extends TLSCrawler {
                 ScanTask task;
 
                 if (raw != null) {
-                    //LOG.debug("Task started.");
+                    LOG.debug("Task started.");
                     task = ScanTask.copyFrom(raw);
                     task.setAcceptedTimestamp(Instant.now());
 
@@ -76,7 +92,7 @@ public class TLSCrawlerSlave extends TLSCrawler {
                     task.setCompletedTimestamp(Instant.now());
 
                     this.crawler.getPersistenceProvider().save(task);
-                    //LOG.debug("Task completed.");
+                    LOG.debug("Task completed.");
                 } else {
                     try {
                         Thread.sleep(500);

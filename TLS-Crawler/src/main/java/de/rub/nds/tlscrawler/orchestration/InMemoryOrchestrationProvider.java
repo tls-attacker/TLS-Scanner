@@ -23,6 +23,7 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
     private Object syncRoot = new Object();
     private List<UUID> tasks = new LinkedList<>();
 
+    @Override
     public UUID getScanTask() {
         synchronized (syncRoot) {
             return tasks.isEmpty() ? null : tasks.remove(0);
@@ -44,6 +45,7 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
         return result;
     }
 
+    @Override
     public void addScanTask(UUID task) {
         synchronized (syncRoot) {
             this.tasks.add(task);

@@ -55,11 +55,9 @@ public class Main {
             System.exit(0);
         }
 
-        // TODO: Set up scans. TBD: Scan plug-ins.
-        List<IScan> scans = new LinkedList<>();
-        scans.add(new PingScan());
-        scans.add(new NullScan());
+        List<IScan> scans = setUpScans();
 
+        // TODO: extract method
         IOrchestrationProvider orchestrationProvider;
         IPersistenceProvider persistenceProvider;
         if (!options.testMode) {
@@ -96,6 +94,7 @@ public class Main {
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
                 + options.instanceId + ".");
 
+        // TODO: extract method.
         Scanner scanner = new Scanner(System.in);
         for (;;) {
             LOG.info("Starting command reception.");
@@ -132,6 +131,14 @@ public class Main {
         }
     }
 
+    // TODO: Maybe move to CLOptions class.
+    /**
+     * Implements command line argument parsing.
+     *
+     * @param args The argument array.
+     * @return An object containing sane arguments.
+     * @throws OptionsParsingException
+     */
     static CLOptions parseOptions(String[] args) throws OptionsParsingException {
         CLOptions result;
 
@@ -159,6 +166,23 @@ public class Main {
             LOG.warn("Overridden 'inMemoryOrchestration' to true due to 'testMode' option.");
             result.inMemoryOrchestration = true;
         }
+
+        return result;
+    }
+
+    /**
+     * Set up for known scans // TODO and plugin-provided scans.
+     *
+     * @return A list of scans.
+     */
+    private static List<IScan> setUpScans() {
+        List<IScan> result = new LinkedList<>();
+
+        // Set up known scans.
+        result.add(new PingScan());
+        result.add(new NullScan());
+
+        // TODO: Set up plugins
 
         return result;
     }

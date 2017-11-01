@@ -25,6 +25,8 @@ public class NullScan implements IScan {
     private static String NAME = "null_scan";
     private static Integer WAIT_MS = 5000;
 
+    // TODO: This scan should also use the fully qualified class name. TBI with aliases.
+
     @Override
     public String getName() {
         return NullScan.NAME;
