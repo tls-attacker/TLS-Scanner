@@ -69,6 +69,10 @@ public class Main {
     }
 
     private static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(CLOptions options) {
+        if (options == null) {
+            throw new IllegalArgumentException("'options' must not be null.");
+        }
+
         IOrchestrationProvider orchestrationProvider;
         IPersistenceProvider persistenceProvider;
 

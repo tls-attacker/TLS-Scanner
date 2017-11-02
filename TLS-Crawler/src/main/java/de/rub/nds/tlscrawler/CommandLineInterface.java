@@ -30,6 +30,8 @@ public class CommandLineInterface {
     public static void handleInput(TLSCrawlerMaster master, TLSCrawlerSlave slave) {
         Scanner scanner = new Scanner(System.in);
 
+        // TODO: Implement full CLI
+
         for (;;) {
             LOG.info("Starting command reception.");
             String input = scanner.next();
