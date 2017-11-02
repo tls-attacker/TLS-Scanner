@@ -13,7 +13,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoTimeoutException;
 import de.rub.nds.tlscrawler.core.TLSCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TLSCrawlerSlave;
-import de.rub.nds.tlscrawler.data.IMasterStats;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
@@ -23,7 +22,6 @@ import de.rub.nds.tlscrawler.persistence.InMemoryPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.NullScan;
 import de.rub.nds.tlscrawler.scans.PingScan;
-import de.rub.nds.tlscrawler.utility.IpGenerator;
 import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +57,7 @@ public class Main {
 
         List<IScan> scans = setUpScans();
 
-        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = getProviders(options);
+        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
 
         TLSCrawlerSlave slave = new TLSCrawlerSlave(providers.getFirst(), providers.getSecond(), scans);
         TLSCrawlerMaster master = new TLSCrawlerMaster(providers.getFirst(), providers.getSecond(), scans);
@@ -67,45 +65,10 @@ public class Main {
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
                 + options.instanceId + ".");
 
-        // TODO: extract method.
-        Scanner scanner = new Scanner(System.in);
-        for (;;) {
-            LOG.info("Starting command reception.");
-            String input = scanner.next();
-
-            LOG.debug(String.format("Received input: \"%s\"", input));
-
-            switch (input) {
-                case "test_scan":
-                    List<String> chosenScans = new LinkedList<>();
-                    chosenScans.add("null_scan");
-
-                    List<String> targets = IpGenerator.fullRange();
-
-                    List<Integer> ports = new ArrayList<>();
-                    ports.add(32);
-                    ports.add(34);
-                    ports.add(89);
-                    ports.add(254);
-                    ports.add(754);
-                    ports.add(8987);
-
-                    master.crawl(chosenScans, targets, ports);
-                    break;
-
-                case "print":
-                    IMasterStats stats = master.getStats();
-
-                    LOG.info(String.format("Tasks completed: %d/%d", stats.getFinishedTasks(), stats.getTotalTasks()));
-                    break;
-
-                default:
-                    System.out.println("Did not understand. Try again.");
-            }
-        }
+        CommandLineInterface.handleInput(master, slave);
     }
 
-    private static Tuple<IOrchestrationProvider, IPersistenceProvider> getProviders(CLOptions options) {
+    private static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(CLOptions options) {
         IOrchestrationProvider orchestrationProvider;
         IPersistenceProvider persistenceProvider;
 

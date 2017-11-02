@@ -27,7 +27,7 @@ public class IpGenerator {
 
         // This is obviously bull*
         // It serves as a testing device for now, will have to be replaced
-        // Idea: Implement as a JavaRX source -- backpressured stream
+        // TODO: Implement as a JavaRX source -- backpressured stream
         for (int a = 0; a < 256; a++) {
             for (int b = 0; b < 256; b++) {
                 for (int c = 0; c < 1; c++) {
