@@ -13,6 +13,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoTimeoutException;
 import de.rub.nds.tlscrawler.core.TLSCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TLSCrawlerSlave;
+import de.rub.nds.tlscrawler.data.IMasterStats;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
@@ -23,6 +24,7 @@ import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.NullScan;
 import de.rub.nds.tlscrawler.scans.PingScan;
 import de.rub.nds.tlscrawler.utility.IpGenerator;
+import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -57,39 +59,10 @@ public class Main {
 
         List<IScan> scans = setUpScans();
 
-        // TODO: extract method
-        IOrchestrationProvider orchestrationProvider;
-        IPersistenceProvider persistenceProvider;
-        if (!options.testMode) {
-            MongoClient mongo = new MongoClient(options.mongoDbConnectionString);
-            try {
-                String address = mongo.getAddress().toString();
-                LOG.info("Connected to MongoDB at " + address);
-            } catch (MongoTimeoutException ex) {
-                LOG.error("Connecting to MongoDB failed.");
-                System.exit(0);
-            }
+        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = getProviders(options);
 
-            persistenceProvider = new MongoPersistenceProvider(mongo);
-
-            String redisEndpoint = options.redisConnectionString;
-            Jedis jedis = new Jedis(redisEndpoint);
-            jedis.connect();
-            if (jedis.isConnected()) {
-                LOG.info("Connected to Redis at " + (redisEndpoint.equals("") ? "localhost" : redisEndpoint));
-            } else {
-                LOG.error("Connecting to Redis failed.");
-                System.exit(0);
-            }
-
-            orchestrationProvider = new RedisOrchestrationProvider(jedis);
-        } else { // TLS Crawler is in test mode:
-            orchestrationProvider = new InMemoryOrchestrationProvider();
-            persistenceProvider = new InMemoryPersistenceProvider();
-        }
-
-        TLSCrawlerSlave slave = new TLSCrawlerSlave(orchestrationProvider, persistenceProvider, scans);
-        TLSCrawlerMaster master = new TLSCrawlerMaster(orchestrationProvider, persistenceProvider, scans);
+        TLSCrawlerSlave slave = new TLSCrawlerSlave(providers.getFirst(), providers.getSecond(), scans);
+        TLSCrawlerMaster master = new TLSCrawlerMaster(providers.getFirst(), providers.getSecond(), scans);
 
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
                 + options.instanceId + ".");
@@ -121,14 +94,50 @@ public class Main {
                     break;
 
                 case "print":
-                    ((InMemoryPersistenceProvider)persistenceProvider).printFirst(10);
-                    ((InMemoryPersistenceProvider)persistenceProvider).printProgress();
+                    IMasterStats stats = master.getStats();
+
+                    LOG.info(String.format("Tasks completed: %d/%d", stats.getFinishedTasks(), stats.getTotalTasks()));
                     break;
 
                 default:
                     System.out.println("Did not understand. Try again.");
             }
         }
+    }
+
+    private static Tuple<IOrchestrationProvider, IPersistenceProvider> getProviders(CLOptions options) {
+        IOrchestrationProvider orchestrationProvider;
+        IPersistenceProvider persistenceProvider;
+
+        if (!options.testMode) {
+            MongoClient mongo = new MongoClient(options.mongoDbConnectionString);
+            try {
+                String address = mongo.getAddress().toString();
+                LOG.info("Connected to MongoDB at " + address);
+            } catch (MongoTimeoutException ex) {
+                LOG.error("Connecting to MongoDB failed.");
+                System.exit(0);
+            }
+
+            persistenceProvider = new MongoPersistenceProvider(mongo);
+
+            String redisEndpoint = options.redisConnectionString;
+            Jedis jedis = new Jedis(redisEndpoint);
+            jedis.connect();
+            if (jedis.isConnected()) {
+                LOG.info("Connected to Redis at " + (redisEndpoint.equals("") ? "localhost" : redisEndpoint));
+            } else {
+                LOG.error("Connecting to Redis failed.");
+                System.exit(0);
+            }
+
+            orchestrationProvider = new RedisOrchestrationProvider(jedis);
+        } else { // TLS Crawler is in test mode:
+            orchestrationProvider = new InMemoryOrchestrationProvider();
+            persistenceProvider = new InMemoryPersistenceProvider();
+        }
+
+        return Tuple.create(orchestrationProvider, persistenceProvider);
     }
 
     // TODO: Maybe move to CLOptions class.

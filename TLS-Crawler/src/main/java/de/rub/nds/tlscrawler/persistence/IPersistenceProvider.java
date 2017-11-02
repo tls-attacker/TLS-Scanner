@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.persistence;
 
+import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
 import de.rub.nds.tlscrawler.data.IScanTask;
 
 import java.util.UUID;
@@ -34,4 +35,11 @@ public interface IPersistenceProvider {
      * @return The scan task requested by ID.
      */
     IScanTask getScanTask(UUID id);
+
+    /**
+     * Provides information about created tasks.
+     *
+     * @return The stats of this persistence provider.
+     */
+    IPersistenceProviderStats getStats();
 }

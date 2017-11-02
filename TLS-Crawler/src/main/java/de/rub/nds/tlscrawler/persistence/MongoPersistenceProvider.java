@@ -8,6 +8,7 @@
 package de.rub.nds.tlscrawler.persistence;
 
 import com.mongodb.MongoClient;
+import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
 import de.rub.nds.tlscrawler.data.IScanTask;
 
 import java.util.UUID;
@@ -32,6 +33,12 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     @Override
     public IScanTask getScanTask(UUID id) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public IPersistenceProviderStats getStats() {
         // TODO
         return null;
     }

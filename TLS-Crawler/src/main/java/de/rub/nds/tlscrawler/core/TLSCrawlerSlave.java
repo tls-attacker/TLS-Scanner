@@ -7,6 +7,8 @@
  */
 package de.rub.nds.tlscrawler.core;
 
+import de.rub.nds.tlscrawler.data.ISlaveStats;
+import de.rub.nds.tlscrawler.data.SlaveStats;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ScanTask;
@@ -20,8 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-// TODO: Also provide stats of this instance.
-
 /**
  * A basic TLS crawler slave implementation.
  *
@@ -32,6 +32,8 @@ public class TLSCrawlerSlave extends TLSCrawler {
 
     private static int NO_THREADS = 256;
     private List<Thread> threads;
+    private SlaveStats slaveStats;
+    private Object statSyncRoot;
 
     /**
      * TLS-Crawler slave constructor.
@@ -43,13 +45,24 @@ public class TLSCrawlerSlave extends TLSCrawler {
     public TLSCrawlerSlave(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
 
-        threads = new LinkedList<>();
+        this.statSyncRoot = new Object();
+        this.slaveStats = new SlaveStats(0, 0);
+        this.threads = new LinkedList<>();
 
         LOG.debug("TLSCrawlerSlave() - Setting up worker threads.");
         for (int i = 0; i < NO_THREADS; i++) {
             Thread thread = new Thread(new TlsCrawlerSlaveWorker(this), String.format("SimpleCrawlerSlave-%d", i));
             thread.start();
             this.threads.add(thread);
+        }
+    }
+
+    /**
+     * @return Returns this slave's stats.
+     */
+    public ISlaveStats getStats() {
+        synchronized (this.statSyncRoot) {
+            return SlaveStats.copyFrom(this.slaveStats);
         }
     }
 
@@ -72,13 +85,17 @@ public class TLSCrawlerSlave extends TLSCrawler {
 
             for (;;) {
                 UUID taskId = this.crawler.getOrchestrationProvider().getScanTask();
-
                 IScanTask raw = this.crawler.getPersistenceProvider().getScanTask(taskId);
                 ScanTask task;
 
                 if (raw != null) {
                     LOG.debug("Task started.");
                     task = ScanTask.copyFrom(raw);
+
+                    synchronized (statSyncRoot) {
+                        slaveStats.incrementAcceptedTaskCount(1);
+                    }
+
                     task.setAcceptedTimestamp(Instant.now());
 
                     task.setStartedTimestamp(Instant.now());
@@ -90,6 +107,10 @@ public class TLSCrawlerSlave extends TLSCrawler {
                     }
 
                     task.setCompletedTimestamp(Instant.now());
+
+                    synchronized (statSyncRoot) {
+                        slaveStats.incrementCompletedTaskCount(1);
+                    }
 
                     this.crawler.getPersistenceProvider().save(task);
                     LOG.debug("Task completed.");

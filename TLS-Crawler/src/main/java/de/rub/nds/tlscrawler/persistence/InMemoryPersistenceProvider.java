@@ -7,9 +7,9 @@
  */
 package de.rub.nds.tlscrawler.persistence;
 
+import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
 import de.rub.nds.tlscrawler.data.IScanTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.rub.nds.tlscrawler.data.PersistenceProviderStats;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +21,6 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class InMemoryPersistenceProvider implements IPersistenceProvider {
-    private static Logger LOG = LoggerFactory.getLogger(InMemoryPersistenceProvider.class);
-
     private Map<UUID, IScanTask> tasks;
 
     public InMemoryPersistenceProvider() {
@@ -39,27 +37,11 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
         return this.tasks.get(id);
     }
 
-    public void printFirst(int x) {
-        int i = 0;
-
-        for (Map.Entry entry : tasks.entrySet()) {
-            if (i++ > x) {
-                break;
-            }
-
-            IScanTask task = (IScanTask)entry.getValue();
-
-            String a = task.getCreatedTimestamp() == null ? "null" : task.getCreatedTimestamp().toString();
-            String b = task.getCompletedTimestamp() == null ? "null" : task.getCompletedTimestamp().toString();
-
-            LOG.info(String.format("%s %s", a, b));
-        }
-    }
-
-    public void printProgress() {
+    @Override
+    public IPersistenceProviderStats getStats() {
         long total = this.tasks.size();
         long completed = this.tasks.entrySet().stream().map(x -> x.getValue().getCompletedTimestamp()).filter(x -> x != null).count();
 
-        LOG.info(String.format("Finished %d/%d", completed, total));
+        return new PersistenceProviderStats(total, completed, null, null);
     }
 }

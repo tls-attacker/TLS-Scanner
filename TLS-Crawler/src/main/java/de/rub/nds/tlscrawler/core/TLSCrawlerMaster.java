@@ -7,9 +7,8 @@
  */
 package de.rub.nds.tlscrawler.core;
 
+import de.rub.nds.tlscrawler.data.*;
 import de.rub.nds.tlscrawler.scans.IScan;
-import de.rub.nds.tlscrawler.data.IScanTask;
-import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import org.slf4j.Logger;
@@ -21,8 +20,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
-
-// TODO: Should also implement scan task monitoring.
 
 /**
  * Implements Scan Task Creation.
@@ -66,6 +63,15 @@ public class TLSCrawlerMaster extends TLSCrawler {
             this.getPersistenceProvider().save(newTask);
             this.getOrchestrationProvider().addScanTask(newTask.getId());
         }
+    }
+
+    public IMasterStats getStats() {
+        IPersistenceProviderStats ppStats = this.getPersistenceProvider().getStats();
+
+        return new MasterStats(ppStats.getTotalTasks(),
+                ppStats.getFinishedTasks(),
+                ppStats.getEarliestCompletionTimestamp(),
+                ppStats.getEarliestCreatedTimestamp());
     }
 
     private boolean areNotValidArgs(List<String> scans, List<String> targets, List<Integer> ports) {
