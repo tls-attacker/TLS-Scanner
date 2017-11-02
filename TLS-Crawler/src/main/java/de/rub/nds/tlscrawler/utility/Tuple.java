@@ -16,25 +16,33 @@ package de.rub.nds.tlscrawler.utility;
  * @author janis.fliegenschmidt@rub.de
  */
 public class Tuple<T1, T2> {
-    public final T1 a;
-    public final T2 b;
+    private final T1 first;
+    private final T2 second;
 
-    public Tuple(T1 a, T2 b) {
-        this.a = a;
-        this.b = b;
+    public Tuple(T1 first, T2 second) {
+        this.first = first;
+        this.second = second;
+    }
+
+    public T1 getFirst() {
+        return this.first;
+    }
+
+    public T2 getSecond() {
+        return this.second;
     }
 
     /**
      * Convenience factory method.
      *
-     * @param a First object.
-     * @param b Second object.
+     * @param first First object.
+     * @param second Second object.
      * @param <A> Type of first object, can be inferred.
      * @param <B> Type of second object, can be inferred.
-     * @return The tuple (a, b).
+     * @return The tuple (first, second).
      */
-    public static <A, B> Tuple<A, B> create(A a, B b) {
-        return new Tuple<A, B>(a, b);
+    public static <A, B> Tuple<A, B> create(A first, B second) {
+        return new Tuple<A, B>(first, second);
     }
 
     @Override
@@ -45,13 +53,13 @@ public class Tuple<T1, T2> {
 
         Tuple<?, ?> p = (Tuple<?, ?>) o;
 
-        return equal(p.a, this.a) && equal(p.b, this.b);
+        return equal(p.first, this.first) && equal(p.second, this.second);
     }
 
     @Override
     public int hashCode() {
-        return (this.a == null ? 0 : this.a.hashCode())
-                ^ (this.b == null ? 0 : this.b.hashCode());
+        return (this.first == null ? 0 : this.first.hashCode())
+                ^ (this.second == null ? 0 : this.second.hashCode());
     }
 
     private static boolean equal(Object a, Object b) {
