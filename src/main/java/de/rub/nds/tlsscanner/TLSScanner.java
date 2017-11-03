@@ -11,10 +11,13 @@ package de.rub.nds.tlsscanner;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.probe.BleichenbacherProbe;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
+import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
+import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
 import de.rub.nds.tlsscanner.probe.TLSProbe;
 import java.util.LinkedList;
@@ -49,10 +52,14 @@ public class TLSScanner {
         this.config = config;
         if (config.getGeneralDelegate().getLogLevel() == Level.ALL) {
             Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.ALL);
+            Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.ALL);
+
         } else if (config.getGeneralDelegate().getLogLevel() == Level.TRACE) {
             Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
+            Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.INFO);
         } else {
             Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.OFF);
+            Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.OFF);
         }
     }
 
@@ -62,9 +69,10 @@ public class TLSScanner {
         testList.add(new ProtocolVersionProbe(config));
         testList.add(new CiphersuiteProbe(config));
         testList.add(new CiphersuiteOrderProbe(config));
-        // testList.add(new HeartbleedProbe(websiteHost));
+        testList.add(new HeartbleedProbe(config));
         // testList.add(new NamedCurvesProbe(websiteHost));
-        // testList.add(new PaddingOracleProbe(websiteHost));
+        testList.add(new PaddingOracleProbe(config));
+        testList.add(new BleichenbacherProbe(config));
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
         ScanJob job = new ScanJob(testList);
         return executor.execute(config, job);

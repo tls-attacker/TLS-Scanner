@@ -8,8 +8,16 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
+import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
+import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
+import de.rub.nds.tlsscanner.report.ResultValue;
+import de.rub.nds.tlsscanner.report.check.CheckType;
+import de.rub.nds.tlsscanner.report.check.TLSCheck;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -23,7 +31,16 @@ public class PaddingOracleProbe extends TLSProbe {
 
     @Override
     public ProbeResult call() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        LOGGER.debug("Starting BleichenbacherProbe");
+        PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
+        ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
+        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+        PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig);
+        Boolean vulnerable = attacker.isVulnerable();
+        TLSCheck check = new TLSCheck(vulnerable, CheckType.ATTACK_PADDING, 10);
+        List<TLSCheck> checkList = new LinkedList<>();
+        checkList.add(check);
+        return new ProbeResult(getType(), new LinkedList<ResultValue>(), checkList);
     }
 
 }
