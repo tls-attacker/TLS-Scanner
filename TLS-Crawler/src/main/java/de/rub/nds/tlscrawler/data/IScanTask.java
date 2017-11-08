@@ -10,7 +10,6 @@ package de.rub.nds.tlscrawler.data;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Scan task interface.
@@ -23,7 +22,7 @@ public interface IScanTask {
     /**
      * @return The id of the scan task.
      */
-    UUID getId();
+    String getId();
 
     /**
      * @return The point in time at which the scan was scheduled.

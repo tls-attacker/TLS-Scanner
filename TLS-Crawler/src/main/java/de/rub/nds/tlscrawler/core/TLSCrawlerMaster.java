@@ -48,7 +48,7 @@ public class TLSCrawlerMaster extends TLSCrawler {
         // TODO: This should be parallelized.
 
         for (String target : targets) {
-            UUID scanId = UUID.randomUUID();
+            String scanId = UUID.randomUUID().toString();
 
             IScanTask newTask = new ScanTask(
                     scanId,

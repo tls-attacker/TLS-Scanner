@@ -14,7 +14,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Scan task implementation.
@@ -24,7 +23,7 @@ import java.util.UUID;
 public class ScanTask implements IScanTask {
     private static Logger LOG = LoggerFactory.getLogger(ScanTask.class);
 
-    private UUID id;
+    private String id;
     private Instant createdTimestamp;
     private Instant acceptedTimestamp;
     private Instant startedTimestamp;
@@ -34,7 +33,7 @@ public class ScanTask implements IScanTask {
     private Collection<String> scans;
     private Map<String, Object> results;
 
-    public ScanTask(UUID id,
+    public ScanTask(String id,
                     Instant createdTimestamp,
                     Instant acceptedTimestamp,
                     Instant startedTimestamp,
@@ -55,7 +54,7 @@ public class ScanTask implements IScanTask {
     }
 
     @Override
-    public UUID getId() {
+    public String getId() {
         return this.id;
     }
 
