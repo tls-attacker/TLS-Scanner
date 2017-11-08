@@ -7,20 +7,19 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.ISlaveStats;
-import de.rub.nds.tlscrawler.data.SlaveStats;
-import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.data.IScanTask;
+import de.rub.nds.tlscrawler.data.ISlaveStats;
 import de.rub.nds.tlscrawler.data.ScanTask;
+import de.rub.nds.tlscrawler.data.SlaveStats;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
+import de.rub.nds.tlscrawler.scans.IScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * A basic TLS crawler slave implementation.
@@ -84,7 +83,7 @@ public class TLSCrawlerSlave extends TLSCrawler {
             LOG.debug("run() - Started.");
 
             for (;;) {
-                UUID taskId = this.crawler.getOrchestrationProvider().getScanTask();
+                String taskId = this.crawler.getOrchestrationProvider().getScanTask();
                 IScanTask raw = this.crawler.getPersistenceProvider().getScanTask(taskId);
                 ScanTask task;
 

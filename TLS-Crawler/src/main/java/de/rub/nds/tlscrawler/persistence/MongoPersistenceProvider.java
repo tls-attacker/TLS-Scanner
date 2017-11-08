@@ -11,8 +11,6 @@ import com.mongodb.MongoClient;
 import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
 import de.rub.nds.tlscrawler.data.IScanTask;
 
-import java.util.UUID;
-
 /**
  * A persistence provider implementation using MongoDB as
  * the persistence layer.
@@ -27,12 +25,17 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     @Override
+    public void setUpScanTask(IScanTask newTask) {
+        // TODO
+    }
+
+    @Override
     public void save(IScanTask task) {
         // TODO
     }
 
     @Override
-    public IScanTask getScanTask(UUID id) {
+    public IScanTask getScanTask(String id) {
         // TODO
         return null;
     }

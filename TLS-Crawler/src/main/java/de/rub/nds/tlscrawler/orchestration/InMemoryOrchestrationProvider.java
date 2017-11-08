@@ -10,7 +10,6 @@ package de.rub.nds.tlscrawler.orchestration;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Simplest implementation of an orchestration provider.
@@ -21,18 +20,18 @@ import java.util.UUID;
  */
 public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
     private Object syncRoot = new Object();
-    private List<UUID> tasks = new LinkedList<>();
+    private List<String> tasks = new LinkedList<>();
 
     @Override
-    public UUID getScanTask() {
+    public String getScanTask() {
         synchronized (syncRoot) {
             return tasks.isEmpty() ? null : tasks.remove(0);
         }
     }
 
     @Override
-    public Collection<UUID> getScanTasks(int quantity) {
-        LinkedList<UUID> result = new LinkedList<>();
+    public Collection<String> getScanTasks(int quantity) {
+        LinkedList<String> result = new LinkedList<>();
 
         synchronized (syncRoot) {
             for (int i = 0; i < quantity; i++) {
@@ -46,7 +45,7 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
-    public void addScanTask(UUID task) {
+    public void addScanTask(String task) {
         synchronized (syncRoot) {
             this.tasks.add(task);
         }

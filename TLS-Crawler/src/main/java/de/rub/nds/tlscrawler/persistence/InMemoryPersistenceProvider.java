@@ -13,7 +13,6 @@ import de.rub.nds.tlscrawler.data.PersistenceProviderStats;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * In-Memory implementation of a persistence provider.
@@ -21,10 +20,15 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class InMemoryPersistenceProvider implements IPersistenceProvider {
-    private Map<UUID, IScanTask> tasks;
+    private Map<String, IScanTask> tasks;
 
     public InMemoryPersistenceProvider() {
         this.tasks = new HashMap<>();
+    }
+
+    @Override
+    public void setUpScanTask(IScanTask newTask) {
+        // TODO
     }
 
     @Override
@@ -33,7 +37,7 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
     }
 
     @Override
-    public IScanTask getScanTask(UUID id) {
+    public IScanTask getScanTask(String id) {
         return this.tasks.get(id);
     }
 

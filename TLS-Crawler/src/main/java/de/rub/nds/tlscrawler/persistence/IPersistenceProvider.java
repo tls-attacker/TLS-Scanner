@@ -10,8 +10,6 @@ package de.rub.nds.tlscrawler.persistence;
 import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
 import de.rub.nds.tlscrawler.data.IScanTask;
 
-import java.util.UUID;
-
 /**
  * Persistence provider interface.
  * Exposes methods to write out the different stages of a task
@@ -20,6 +18,13 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public interface IPersistenceProvider {
+
+    /**
+     * Accepts new scan tasks without an associated ID.
+     *
+     * @param newTask The scan task.
+     */
+    void setUpScanTask(IScanTask newTask);
 
     /**
      * Updates the database with the scan result.
@@ -34,7 +39,7 @@ public interface IPersistenceProvider {
      * @param id The ID of the requested task.
      * @return The scan task requested by ID.
      */
-    IScanTask getScanTask(UUID id);
+    IScanTask getScanTask(String id);
 
     /**
      * Provides information about created tasks.

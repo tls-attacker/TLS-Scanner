@@ -10,7 +10,6 @@ package de.rub.nds.tlscrawler.orchestration;
 import redis.clients.jedis.Jedis;
 
 import java.util.Collection;
-import java.util.UUID;
 
 /**
  * An orchestration provider implementation using Redis
@@ -26,19 +25,19 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
-    public UUID getScanTask() {
+    public String getScanTask() {
         // TODO: retrieve scan task from redis
         return null;
     }
 
     @Override
-    public Collection<UUID> getScanTasks(int quantity) {
+    public Collection<String> getScanTasks(int quantity) {
         // TODO: retrieve qty scan tasks
         return null;
     }
 
     @Override
-    public void addScanTask(UUID task) {
+    public void addScanTask(String task) {
         // TODO: write scan task to redis
     }
 }
