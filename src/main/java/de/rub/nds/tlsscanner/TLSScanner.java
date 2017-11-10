@@ -18,6 +18,7 @@ import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.Cve20162107Probe;
 import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
+import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
 import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.PoodleProbe;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
@@ -79,6 +80,8 @@ public class TLSScanner {
         testList.add(new PoodleProbe(config));
         testList.add(new TlsPoodleProbe(config));
         testList.add(new Cve20162107Probe(config));
+        testList.add(new InvalidCurveProbe(config));
+        
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
         ScanJob job = new ScanJob(testList);
         return executor.execute(config, job);
