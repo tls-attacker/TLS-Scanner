@@ -10,6 +10,9 @@ package de.rub.nds.tlscrawler.persistence;
 import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
 import de.rub.nds.tlscrawler.data.IScanTask;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * Persistence provider interface.
  * Exposes methods to write out the different stages of a task
@@ -20,18 +23,27 @@ import de.rub.nds.tlscrawler.data.IScanTask;
 public interface IPersistenceProvider {
 
     /**
-     * Accepts new scan tasks without an associated ID.
+     * Accepts new scan task.
+     * ID may or may not be set.
      *
-     * @param newTask The scan task.
+     * @param newTask The new scan task.
      */
     void setUpScanTask(IScanTask newTask);
 
     /**
-     * Updates the database with the scan result.
+     * Accepts new scan tasks.
+     * IDs may or may not be set.
      *
-     * @param task The scan task.
+     * @param newTasks The new scan tasks.
      */
-    void save(IScanTask task);
+    void setUpScanTasks(Collection<IScanTask> newTasks);
+
+    /**
+     *  Updates the database with the scan result.
+     *
+     * @param task The scan task with all fields present.
+     */
+    void updateScanTask(IScanTask task);
 
     /**
      * Returns a scan task by ID.
@@ -40,6 +52,13 @@ public interface IPersistenceProvider {
      * @return The scan task requested by ID.
      */
     IScanTask getScanTask(String id);
+
+    /**
+     * Bulk-returns scan tasks by ID.
+     * @param ids The ids of the requested scans.
+     * @return The requested scan tasks by ID.
+     */
+    Map<String, IScanTask> getScanTasks(Collection<String> ids);
 
     /**
      * Provides information about created tasks.

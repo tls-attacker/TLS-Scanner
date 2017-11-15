@@ -60,7 +60,7 @@ public class TLSCrawlerMaster extends TLSCrawler {
                     ports,
                     scans);
 
-            this.getPersistenceProvider().save(newTask);
+            this.getPersistenceProvider().setUpScanTask(newTask);
             this.getOrchestrationProvider().addScanTask(newTask.getId());
         }
     }
