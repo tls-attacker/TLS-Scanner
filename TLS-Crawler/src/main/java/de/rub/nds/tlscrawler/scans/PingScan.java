@@ -7,7 +7,9 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
+import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A simple scan testing whether a host is available at a given IP address.
@@ -37,18 +40,29 @@ public class PingScan implements IScan {
     }
 
     @Override
-    public List<Tuple> scan(IScanTarget target) {
-        List<Tuple> result = new LinkedList<>();
+    public IScanResult scan(IScanTarget target) {
+        IScanResult result = new ScanResult();
 
-        result.add(Tuple.create("timestamp", Instant.now().toString()));
-        result.add(Tuple.create("timeout", this.timeOutMs));
+        result.addTimestamp("timestamp", Instant.now());
+        result.addLong("timeout", this.timeOutMs);
 
         Collection<Tuple> portwiseScanResult = new LinkedList<>();
         for (Integer port : target.getPorts()) {
-            portwiseScanResult.add(Tuple.create(port.toString(), isReachable(target.getIp(), port)));
+            portwiseScanResult.add(Tuple.create(port, isReachable(target.getIp(), port)));
         }
 
-        result.add(Tuple.create("reachablePorts", portwiseScanResult));
+        List<Long> reachablePorts = portwiseScanResult.stream()
+                .filter(x -> (boolean)x.getSecond())
+                .map(x -> new Long((int)x.getFirst()))
+                .collect(Collectors.toList());
+
+        List<Long> unreachablePorts = portwiseScanResult.stream()
+                .filter(x -> !(boolean)x.getSecond())
+                .map(x -> new Long((int)x.getFirst()))
+                .collect(Collectors.toList());
+
+        result.addLongArray("reachablePorts", reachablePorts);
+        result.addLongArray("unreachablePorts", unreachablePorts);
 
         return result;
     }

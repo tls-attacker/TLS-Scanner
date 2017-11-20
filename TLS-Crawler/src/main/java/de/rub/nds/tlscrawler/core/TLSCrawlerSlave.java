@@ -7,10 +7,7 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.IScanTask;
-import de.rub.nds.tlscrawler.data.ISlaveStats;
-import de.rub.nds.tlscrawler.data.ScanTask;
-import de.rub.nds.tlscrawler.data.SlaveStats;
+import de.rub.nds.tlscrawler.data.*;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
@@ -85,11 +82,10 @@ public class TLSCrawlerSlave extends TLSCrawler {
             for (;;) {
                 String taskId = this.crawler.getOrchestrationProvider().getScanTask();
                 IScanTask raw = this.crawler.getPersistenceProvider().getScanTask(taskId);
-                ScanTask task;
 
                 if (raw != null) {
                     LOG.debug("Task started.");
-                    task = ScanTask.copyFrom(raw);
+                    ScanTask task = ScanTask.copyFrom(raw);
 
                     synchronized (statSyncRoot) {
                         slaveStats.incrementAcceptedTaskCount(1);
@@ -101,17 +97,18 @@ public class TLSCrawlerSlave extends TLSCrawler {
 
                     for (String scan : task.getScans()) {
                         IScan scanInstance = this.crawler.getScanByName(scan);
-                        Object result = scanInstance.scan(task.getScanTarget());
-                        task.addResult(scan, result);
+                        IScanResult result = scanInstance.scan(task.getScanTarget());
+                        task.addResult(result);
                     }
 
                     task.setCompletedTimestamp(Instant.now());
+
+                    this.crawler.getPersistenceProvider().updateScanTask(task);
 
                     synchronized (statSyncRoot) {
                         slaveStats.incrementCompletedTaskCount(1);
                     }
 
-                    this.crawler.getPersistenceProvider().save(task);
                     LOG.debug("Task completed.");
                 } else {
                     try {

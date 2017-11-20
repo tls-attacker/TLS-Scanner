@@ -9,7 +9,6 @@ package de.rub.nds.tlscrawler.data;
 
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Scan task interface.
@@ -65,7 +64,7 @@ public interface IScanTask {
     IScanTarget getScanTarget();
 
     /**
-     * @return Returns the result structure.
+     * @return Returns the scan results.
      */
-    Map<String, Object> getResults();
+    Collection<IScanResult> getResults();
 }

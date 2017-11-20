@@ -7,13 +7,11 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
-import de.rub.nds.tlscrawler.utility.Tuple;
+import de.rub.nds.tlscrawler.data.ScanResult;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import static java.util.stream.Collectors.joining;
+import java.util.stream.Collectors;
 
 /**
  * A null scan that only costs some (IO/processor) time.
@@ -25,7 +23,7 @@ public class NullScan implements IScan {
     private static String NAME = "null_scan";
     private static Integer WAIT_MS = 5000;
 
-    // TODO: This scan should also use the fully qualified class name. TBI with aliases.
+    // TODO This scan should also use the fully qualified class name. TBI with aliases.
 
     @Override
     public String getName() {
@@ -33,17 +31,19 @@ public class NullScan implements IScan {
     }
 
     @Override
-    public List<Tuple> scan(IScanTarget target) {
-        List<Tuple> result = new LinkedList<>();
+    public IScanResult scan(IScanTarget target) {
+        IScanResult result = new ScanResult();
 
-        result.add(Tuple.create("target_ip", target.getIp()));
-        result.add(Tuple.create("target_ports", target.getPorts().stream().map(x -> x.toString()).collect(joining(", "))));
+        result.addString("target_ip", target.getIp());
+        result.addString("target_ports", target.getPorts().stream()
+                .map(x -> x.toString())
+                .collect(Collectors.joining(", ")));
 
         try {
             Thread.sleep(NullScan.WAIT_MS);
-            result.add(Tuple.create("wait_time", NullScan.WAIT_MS.toString()));
+            result.addLong("wait_time", NullScan.WAIT_MS);
         } catch (InterruptedException e) {
-            result.add(Tuple.create("exception", e.toString()));
+            result.addString("exception", e.toString());
         }
 
         return result;
