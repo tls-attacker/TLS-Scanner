@@ -41,7 +41,7 @@ public class NullScan implements IScan {
 
         try {
             Thread.sleep(NullScan.WAIT_MS);
-            result.addLong("wait_time", NullScan.WAIT_MS);
+            result.addInteger("wait_time", NullScan.WAIT_MS);
         } catch (InterruptedException e) {
             result.addString("exception", e.toString());
         }

@@ -7,6 +7,8 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.tlscrawler.utility.ITuple;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -49,7 +51,7 @@ public interface IScanResult {
      * @param key The value's key.
      * @param value The value.
      */
-    void addLong(String key, long value);
+    void addLong(String key, Long value);
 
     /**
      * Adds a long array to the result structure.
@@ -60,12 +62,28 @@ public interface IScanResult {
     void addLongArray(String key, List<Long> value);
 
     /**
+     * Adds an integer value to the result structure.
+     *
+     * @param key The value's key.
+     * @param value The value.
+     */
+    void addInteger(String key, Integer value);
+
+    /**
+     * Adds an integer array to the result structure.
+     *
+     * @param key The arrays's key.
+     * @param value The array.
+     */
+    void addIntegerArray(String key, List<Integer> value);
+
+    /**
      * Adds a double value to the result structure.
      *
      * @param key The value's key.
      * @param value The value.
      */
-    void addDouble(String key, double value);
+    void addDouble(String key, Double value);
 
     /**
      * Adds a double array to the result structure.
@@ -98,4 +116,11 @@ public interface IScanResult {
      * @param substructure The sub-result.
      */
     void addSubResult(String key, IScanResult substructure);
+
+    /**
+     * Returns the result data.
+     *
+     * @return A list of result data tuples.
+     */
+    List<ITuple<String, Object>> getContents();
 }
