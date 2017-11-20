@@ -22,6 +22,12 @@ import java.util.List;
 public interface IScanResult {
 
     /**
+     * IScanResults need to have an ID as well, so they can be identified, i. e. matched with the
+     * scan that produced them. This key ought to be used canonically.
+     */
+    String ID_KEY = "_result_id";
+
+    /**
      * Should canonically be referred to to determine which scan added this result structure.
      * Should be required to be set for every result structure, even substructures.
      *

@@ -21,8 +21,6 @@ import java.util.List;
  * @author janis.fliegenschmidt@rub.de
  */
 public class ScanResult implements IScanResult {
-    private static String ID_KEY = "_result_id";
-
     private Collection<ITuple> elements;
 
     public ScanResult() {
@@ -37,7 +35,7 @@ public class ScanResult implements IScanResult {
 
     @Override
     public void setResultIdentifier(String identifier) {
-        this.checkedAdd(Tuple.create(ScanResult.ID_KEY, identifier));
+        this.checkedAdd(Tuple.create(IScanResult.ID_KEY, identifier));
     }
 
     @Override
