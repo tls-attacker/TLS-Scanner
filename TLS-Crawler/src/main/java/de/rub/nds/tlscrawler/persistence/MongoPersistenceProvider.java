@@ -11,15 +11,13 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
-import de.rub.nds.tlscrawler.data.IScanResult;
-import de.rub.nds.tlscrawler.data.IScanTask;
-import de.rub.nds.tlscrawler.data.ScanTask;
+import de.rub.nds.tlscrawler.data.*;
 import de.rub.nds.tlscrawler.utility.ITuple;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -43,6 +41,90 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     public MongoPersistenceProvider(MongoClientURI mongoUri) {
         this.mongoUri = mongoUri;
+    }
+
+    static Document resultStructureToBsonDoc(Collection<IScanResult> results) {
+        Document result = new Document();
+
+        List<Document> convertedResults = new LinkedList<>();
+        for (IScanResult scanResult : results) {
+            convertedResults.add(iScanResultToBson(scanResult));
+        }
+
+        for (Document doc : convertedResults) {
+            String id = (String) doc.get(IScanResult.ID_KEY);
+
+            assert id != null;
+
+            result.append(id, doc);
+        }
+
+        return result;
+    }
+
+    static Document iScanResultToBson(IScanResult result) {
+        Document bson = new Document();
+
+        for (ITuple<String, Object> x : result.getContents()) {
+            String key = x.getFirst();
+            Object val = x.getSecond();
+
+            assert key != null;
+
+            if (val instanceof IScanResult) {
+                bson.append(key, iScanResultToBson((IScanResult) val));
+            } else {
+                bson.append(key, val);
+            }
+        }
+
+        return bson;
+    }
+
+    static Document bsonDocFromScanTask(IScanTask scanTask) {
+        Document result = new Document(DBKeys.ID, scanTask.getId());
+
+        // These must be available:
+        result.append(DBKeys.CREATED_TIMESTAMP, Date.from(scanTask.getCreatedTimestamp()));
+        result.append(DBKeys.TARGET_IP, scanTask.getTargetIp());
+        result.append(DBKeys.PORTS, new LinkedList(scanTask.getPorts()));
+        result.append(DBKeys.SCANS, new LinkedList(scanTask.getScans()));
+        result.append(DBKeys.RESULTS, null); // Should be null, possible TODO ?
+
+        // These might be null and would throw if they were, so they have to be handled.
+        result.append(DBKeys.ACCEPTED_TIMESTAMP,
+                scanTask.getAcceptedTimestamp() == null ? null : Date.from(scanTask.getAcceptedTimestamp()));
+
+        result.append(DBKeys.STARTED_TIMESTAMP,
+                scanTask.getStartedTimestamp() == null ? null : Date.from(scanTask.getStartedTimestamp()));
+
+        result.append(DBKeys.COMPLETED_TIMESTAMP,
+                scanTask.getCompletedTimestamp() == null ? null : Date.from(scanTask.getCompletedTimestamp()));
+
+        return result;
+    }
+
+    static IScanTask scanTaskFromBsonDoc(Document scanTask) {
+        Collection<Integer> ports = (List<Integer>)scanTask.get(DBKeys.PORTS);
+        Collection<String> scans = (List<String>)scanTask.get(DBKeys.SCANS);
+
+        Date created = scanTask.getDate(DBKeys.CREATED_TIMESTAMP);
+        Date accepted = scanTask.getDate(DBKeys.ACCEPTED_TIMESTAMP);
+        Date started = scanTask.getDate(DBKeys.STARTED_TIMESTAMP);
+        Date completed = scanTask.getDate(DBKeys.COMPLETED_TIMESTAMP);
+
+        ScanTask result = new ScanTask(scanTask.getString(DBKeys.ID),
+                created == null ? null : created.toInstant(),
+                accepted == null ? null : accepted.toInstant(),
+                started == null ? null : started.toInstant(),
+                completed == null ? null : completed.toInstant(),
+                scanTask.getString(DBKeys.TARGET_IP),
+                ports,
+                scans);
+
+        // TODO Add results.
+
+        return result;
     }
 
     public void init(String dbName) {
@@ -93,9 +175,9 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             throw new RuntimeException("Can't update documents without an ID.");
         }
         Document updateDetails = new Document()
-                .append(DBKeys.ACCEPTED_TIMESTAMP, task.getAcceptedTimestamp())
-                .append(DBKeys.STARTED_TIMESTAMP, task.getStartedTimestamp())
-                .append(DBKeys.COMPLETED_TIMESTAMP, task.getCompletedTimestamp())
+                .append(DBKeys.ACCEPTED_TIMESTAMP, Date.from(task.getAcceptedTimestamp()))
+                .append(DBKeys.STARTED_TIMESTAMP, Date.from(task.getStartedTimestamp()))
+                .append(DBKeys.COMPLETED_TIMESTAMP, Date.from(task.getCompletedTimestamp()))
                 .append(DBKeys.RESULTS, resultStructureToBsonDoc(task.getResults()));
 
         Document update = new Document(DBOperations.SET, updateDetails);
@@ -107,9 +189,9 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     public IScanTask getScanTask(String id) {
         this.checkInit();
 
-        Document scanTask = (Document)this.resultCollection.find(eq(DBKeys.ID, id)).first();
+        Document scanTask = (Document) this.resultCollection.find(eq(DBKeys.ID, id)).first();
 
-        return scanTaskFromBsonDoc(scanTask);
+        return scanTask == null ? null : scanTaskFromBsonDoc(scanTask);
     }
 
     @Override
@@ -132,71 +214,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             LOG.error(error);
             throw new RuntimeException(error);
         }
-    }
-
-    static Document resultStructureToBsonDoc(Collection<IScanResult> results) {
-        Document result = new Document();
-
-        List<Document> convertedResults = new LinkedList<>();
-        for (IScanResult scanResult : results) {
-            convertedResults.add(iScanResultToBson(scanResult));
-        }
-
-        for (Document doc : convertedResults) {
-            result.append((String)doc.get(DBKeys.ID), doc);
-        }
-
-        return result;
-    }
-
-    static Document iScanResultToBson(IScanResult result) {
-        Document bson = new Document();
-
-        for (ITuple<String, Object> x : result.getContents()) {
-            String key = x.getFirst();
-            Object val = x.getSecond();
-
-            if (val instanceof IScanResult) {
-                bson.append(key, iScanResultToBson((IScanResult) val));
-            } else {
-                bson.append(key, val);
-            }
-        }
-
-        return bson;
-    }
-
-    static Document bsonDocFromScanTask(IScanTask scanTask) {
-        Document result = new Document();
-
-        result.append(DBKeys.CREATED_TIMESTAMP, Date.from(scanTask.getCreatedTimestamp()))
-                .append(DBKeys.ACCEPTED_TIMESTAMP, Date.from(scanTask.getAcceptedTimestamp()))
-                .append(DBKeys.STARTED_TIMESTAMP, Date.from(scanTask.getStartedTimestamp()))
-                .append(DBKeys.COMPLETED_TIMESTAMP, Date.from(scanTask.getCompletedTimestamp()))
-                .append(DBKeys.TARGET_IP, scanTask.getTargetIp())
-                .append(DBKeys.PORTS, new LinkedList(scanTask.getPorts()))
-                .append(DBKeys.SCANS, new LinkedList(scanTask.getScans()))
-                .append(DBKeys.RESULTS, null);
-
-        return result;
-    }
-
-    static IScanTask scanTaskFromBsonDoc(Document scanTask) {
-        Collection<Integer> ports = Arrays.asList((Integer[])scanTask.get(DBKeys.PORTS));
-        Collection<String> scans = Arrays.asList((String[])scanTask.get(DBKeys.SCANS));
-
-        ScanTask result = new ScanTask(scanTask.getObjectId(DBKeys.ID).toString(),
-                scanTask.getDate(DBKeys.CREATED_TIMESTAMP).toInstant(),
-                scanTask.getDate(DBKeys.ACCEPTED_TIMESTAMP).toInstant(),
-                scanTask.getDate(DBKeys.STARTED_TIMESTAMP).toInstant(),
-                scanTask.getDate(DBKeys.COMPLETED_TIMESTAMP).toInstant(),
-                scanTask.getString(DBKeys.TARGET_IP),
-                ports,
-                scans);
-
-        // TODO Add results.
-
-        return result;
     }
 
     /**
