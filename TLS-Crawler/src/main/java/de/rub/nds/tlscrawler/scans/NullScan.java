@@ -32,7 +32,7 @@ public class NullScan implements IScan {
 
     @Override
     public IScanResult scan(IScanTarget target) {
-        IScanResult result = new ScanResult();
+        IScanResult result = new ScanResult(this.getName());
 
         result.addString("target_ip", target.getIp());
         result.addString("target_ports", target.getPorts().stream()

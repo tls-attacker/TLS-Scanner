@@ -41,7 +41,7 @@ public class PingScan implements IScan {
 
     @Override
     public IScanResult scan(IScanTarget target) {
-        IScanResult result = new ScanResult();
+        IScanResult result = new ScanResult(this.getName());
 
         result.addTimestamp("timestamp", Instant.now());
         result.addInteger("timeout", this.timeOutMs);
