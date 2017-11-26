@@ -194,6 +194,10 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     static Document iScanResultToBson(IScanResult result) {
+        if (result == null) {
+            return null;
+        }
+
         Document bson = new Document();
 
         for (ITuple<String, Object> x : result.getContents()) {
@@ -213,6 +217,10 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     static Document bsonDocFromScanTask(IScanTask scanTask) {
+        if (scanTask == null) {
+            return null;
+        }
+
         Document result = new Document(DBKeys.ID, scanTask.getId());
 
         // These must be available:
@@ -236,6 +244,10 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     static IScanTask scanTaskFromBsonDoc(Document scanTask) {
+        if (scanTask == null) {
+            return null;
+        }
+
         Collection<Integer> ports = (List<Integer>)scanTask.get(DBKeys.PORTS);
         Collection<String> scans = (List<String>)scanTask.get(DBKeys.SCANS);
 
@@ -265,6 +277,10 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     static IScanResult scanResultFromBsonDoc(Document scanResult) {
+        if (scanResult == null) {
+            return null;
+        }
+
         ScanResult result = new ScanResult();
 
         String identifier = scanResult.getString(IScanResult.ID_KEY);
