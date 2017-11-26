@@ -151,12 +151,12 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         long totalTasks = this.resultCollection.count();
 
         Document query = new Document(DBKeys.COMPLETED_TIMESTAMP,
-                new Document(DBOperations.EXISTS, true).append(DBOperations.NOT_EQUAL, ""));
+                new Document(DBOperations.NOT_EQUAL, null));
         long completedTasks = this.resultCollection.count(query);
 
-        Document minCompCreated = new Document()
-                .append("minCompleted", new Document(DBOperations.MIN, DBKeys.COMPLETED_TIMESTAMP))
-                .append("minCreated", new Document(DBOperations.MIN, DBKeys.CREATED_TIMESTAMP));
+        Document minCompCreated = new Document(DBKeys.ID, null)
+                .append("minCompleted", new Document(DBOperations.MIN, String.format("$%s", DBKeys.COMPLETED_TIMESTAMP)))
+                .append("minCreated", new Document(DBOperations.MIN, String.format("$%s", DBKeys.CREATED_TIMESTAMP)));
         Document group = new Document(DBOperations.GROUP, minCompCreated);
         Document result = (Document)this.resultCollection.aggregate(Arrays.asList(group)).first();
 
