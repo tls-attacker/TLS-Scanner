@@ -10,6 +10,7 @@ package de.rub.nds.tlscrawler;
 import com.google.devtools.common.options.OptionsParser;
 import com.google.devtools.common.options.OptionsParsingException;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.mongodb.MongoTimeoutException;
 import de.rub.nds.tlscrawler.core.TLSCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TLSCrawlerSlave;
@@ -77,28 +78,26 @@ public class Main {
         IPersistenceProvider persistenceProvider;
 
         if (!options.testMode) {
-            MongoClient mongo = new MongoClient(options.mongoDbConnectionString);
-            try {
-                String address = mongo.getAddress().toString();
-                LOG.info("Connected to MongoDB at " + address);
-            } catch (MongoTimeoutException ex) {
-                LOG.error("Connecting to MongoDB failed.");
-                System.exit(0);
+            MongoPersistenceProvider mpp = new MongoPersistenceProvider(new MongoClientURI(options.mongoDbConnectionString));
+            mpp.init("myDb");
+
+            persistenceProvider = mpp;
+
+            if (!options.inMemoryOrchestration) {
+                String redisEndpoint = options.redisConnectionString;
+                Jedis jedis = new Jedis(redisEndpoint);
+                jedis.connect();
+                if (jedis.isConnected()) {
+                    LOG.info("Connected to Redis at " + (redisEndpoint.equals("") ? "localhost" : redisEndpoint));
+                } else {
+                    LOG.error("Connecting to Redis failed.");
+                    System.exit(0);
+                }
+
+                orchestrationProvider = new RedisOrchestrationProvider(jedis);
+            } else { // in-memory-orchestration:
+                orchestrationProvider = new InMemoryOrchestrationProvider();
             }
-
-            persistenceProvider = new MongoPersistenceProvider(mongo);
-
-            String redisEndpoint = options.redisConnectionString;
-            Jedis jedis = new Jedis(redisEndpoint);
-            jedis.connect();
-            if (jedis.isConnected()) {
-                LOG.info("Connected to Redis at " + (redisEndpoint.equals("") ? "localhost" : redisEndpoint));
-            } else {
-                LOG.error("Connecting to Redis failed.");
-                System.exit(0);
-            }
-
-            orchestrationProvider = new RedisOrchestrationProvider(jedis);
         } else { // TLS Crawler is in test mode:
             orchestrationProvider = new InMemoryOrchestrationProvider();
             persistenceProvider = new InMemoryPersistenceProvider();

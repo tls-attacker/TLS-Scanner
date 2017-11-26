@@ -41,28 +41,28 @@ public class PingScan implements IScan {
 
     @Override
     public IScanResult scan(IScanTarget target) {
-        IScanResult result = new ScanResult();
+        IScanResult result = new ScanResult(this.getName());
 
         result.addTimestamp("timestamp", Instant.now());
-        result.addLong("timeout", this.timeOutMs);
+        result.addInteger("timeout", this.timeOutMs);
 
         Collection<Tuple> portwiseScanResult = new LinkedList<>();
         for (Integer port : target.getPorts()) {
             portwiseScanResult.add(Tuple.create(port, isReachable(target.getIp(), port)));
         }
 
-        List<Long> reachablePorts = portwiseScanResult.stream()
+        List<Integer> reachablePorts = portwiseScanResult.stream()
                 .filter(x -> (boolean)x.getSecond())
-                .map(x -> new Long((int)x.getFirst()))
+                .map(x -> (int)x.getFirst())
                 .collect(Collectors.toList());
 
-        List<Long> unreachablePorts = portwiseScanResult.stream()
+        List<Integer> unreachablePorts = portwiseScanResult.stream()
                 .filter(x -> !(boolean)x.getSecond())
-                .map(x -> new Long((int)x.getFirst()))
+                .map(x -> (int)x.getFirst())
                 .collect(Collectors.toList());
 
-        result.addLongArray("reachablePorts", reachablePorts);
-        result.addLongArray("unreachablePorts", unreachablePorts);
+        result.addIntegerArray("reachablePorts", reachablePorts);
+        result.addIntegerArray("unreachablePorts", unreachablePorts);
 
         return result;
     }

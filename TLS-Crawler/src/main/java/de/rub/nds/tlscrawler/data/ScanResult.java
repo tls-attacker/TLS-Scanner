@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.tlscrawler.utility.ITuple;
 import de.rub.nds.tlscrawler.utility.Tuple;
 
 import java.time.Instant;
@@ -20,9 +21,7 @@ import java.util.List;
  * @author janis.fliegenschmidt@rub.de
  */
 public class ScanResult implements IScanResult {
-    private static String ID_KEY = "_result_id";
-
-    Collection<Tuple> elements;
+    private Collection<ITuple> elements;
 
     public ScanResult() {
         elements = new LinkedList<>();
@@ -36,7 +35,7 @@ public class ScanResult implements IScanResult {
 
     @Override
     public void setResultIdentifier(String identifier) {
-        this.checkedAdd(Tuple.create(ScanResult.ID_KEY, identifier));
+        this.checkedAdd(Tuple.create(IScanResult.ID_KEY, identifier));
     }
 
     @Override
@@ -50,7 +49,7 @@ public class ScanResult implements IScanResult {
     }
 
     @Override
-    public void addLong(String key, long value) {
+    public void addLong(String key, Long value) {
         this.checkedAdd(Tuple.create(key, value));
     }
 
@@ -60,7 +59,17 @@ public class ScanResult implements IScanResult {
     }
 
     @Override
-    public void addDouble(String key, double value) {
+    public void addInteger(String key, Integer value) {
+        this.checkedAdd(Tuple.create(key, value));
+    }
+
+    @Override
+    public void addIntegerArray(String key, List<Integer> value) {
+        this.checkedAdd(Tuple.create(key, value));
+    }
+
+    @Override
+    public void addDouble(String key, Double value) {
         this.checkedAdd(Tuple.create(key, value));
     }
 
@@ -84,6 +93,17 @@ public class ScanResult implements IScanResult {
         this.checkedAdd(Tuple.create(key, substructure));
     }
 
+    @Override
+    public List<ITuple<String, Object>> getContents() {
+        LinkedList<ITuple<String, Object>> result = new LinkedList<>();
+
+        for (ITuple<String, Object> t : this.elements) {
+            result.add(Tuple.copyFrom(t));
+        }
+
+        return result;
+    }
+
     private void checkedAdd(Tuple newData) {
         assert newData.getFirst() instanceof String;
 
@@ -93,7 +113,7 @@ public class ScanResult implements IScanResult {
             throw new IllegalArgumentException("Key must neither be null nor empty.");
         }
 
-        for (Tuple data : this.elements) {
+        for (ITuple data : this.elements) {
             if (data.getFirst().equals(newData.getFirst())) {
                 throw new IllegalArgumentException("Added data with duplicate key.");
             }

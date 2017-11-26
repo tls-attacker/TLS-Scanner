@@ -12,6 +12,7 @@ import de.rub.nds.tlscrawler.data.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * In-Memory implementation of a persistence provider.
@@ -55,7 +56,10 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
     @Override
     public IPersistenceProviderStats getStats() {
         long total = this.tasks.size();
-        long completed = this.tasks.entrySet().stream().map(x -> x.getValue().getCompletedTimestamp()).filter(x -> x != null).count();
+        long completed = this.tasks.entrySet().stream()
+                .map(x -> x.getValue().getCompletedTimestamp())
+                .filter(Objects::nonNull)
+                .count();
 
         return new PersistenceProviderStats(total, completed, null, null);
     }

@@ -32,7 +32,7 @@ public class NullScan implements IScan {
 
     @Override
     public IScanResult scan(IScanTarget target) {
-        IScanResult result = new ScanResult();
+        IScanResult result = new ScanResult(this.getName());
 
         result.addString("target_ip", target.getIp());
         result.addString("target_ports", target.getPorts().stream()
@@ -41,7 +41,7 @@ public class NullScan implements IScan {
 
         try {
             Thread.sleep(NullScan.WAIT_MS);
-            result.addLong("wait_time", NullScan.WAIT_MS);
+            result.addInteger("wait_time", NullScan.WAIT_MS);
         } catch (InterruptedException e) {
             result.addString("exception", e.toString());
         }
