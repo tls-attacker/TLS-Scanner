@@ -26,8 +26,8 @@ import static java.util.stream.Collectors.joining;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class TLSCrawlerMaster extends TLSCrawler {
-    private static Logger LOG = LoggerFactory.getLogger(TLSCrawlerMaster.class);
+public class TlsCrawlerMaster extends TlsCrawler {
+    private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerMaster.class);
 
     /**
      * TLS-Crawler master constructor.
@@ -36,7 +36,7 @@ public class TLSCrawlerMaster extends TLSCrawler {
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TLSCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
+    public TlsCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
     }
 

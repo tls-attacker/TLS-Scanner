@@ -23,12 +23,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Contains test cases for the TLSCrawler base class.
+ * Contains test cases for the TlsCrawler base class.
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class TLSCrawlerTest {
-    private TLSCrawler subject;
+public class TlsCrawlerTest {
+    private TlsCrawler subject;
 
     @Before
     public void setUp() throws Exception {
@@ -46,7 +46,7 @@ public class TLSCrawlerTest {
 
         List<IScan> scans = Arrays.asList(scan1, scan3);
 
-        this.subject = new TLSCrawler(op, pp, scans);
+        this.subject = new TlsCrawler(op, pp, scans);
     }
 
     @Test
