@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-class TLSCrawler {
-    private static Logger LOG = LoggerFactory.getLogger(TLSCrawler.class);
+class TlsCrawler {
+    private static Logger LOG = LoggerFactory.getLogger(TlsCrawler.class);
 
     private IOrchestrationProvider orchestrationProvider;
     private IPersistenceProvider persistenceProvider;
@@ -37,7 +37,7 @@ class TLSCrawler {
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TLSCrawler(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
+    public TlsCrawler(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         boolean argumentsInvalid = false;
 
         this.orchestrationProvider = orchestrationProvider;
@@ -59,7 +59,7 @@ class TLSCrawler {
         }
 
         if (argumentsInvalid) {
-            throw new IllegalArgumentException("Arguments to TLSCrawler may not be null or empty.");
+            throw new IllegalArgumentException("Arguments to TlsCrawler may not be null or empty.");
         }
     }
 

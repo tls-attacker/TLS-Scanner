@@ -23,8 +23,8 @@ import java.util.List;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class TLSCrawlerSlave extends TLSCrawler {
-    private static Logger LOG = LoggerFactory.getLogger(TLSCrawlerSlave.class);
+public class TlsCrawlerSlave extends TlsCrawler {
+    private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
 
     private static int NO_THREADS = 256;
     private List<Thread> threads;
@@ -38,14 +38,14 @@ public class TLSCrawlerSlave extends TLSCrawler {
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TLSCrawlerSlave(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
+    public TlsCrawlerSlave(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
 
         this.statSyncRoot = new Object();
         this.slaveStats = new SlaveStats(0, 0);
         this.threads = new LinkedList<>();
 
-        LOG.debug("TLSCrawlerSlave() - Setting up worker threads.");
+        LOG.debug("TlsCrawlerSlave() - Setting up worker threads.");
         for (int i = 0; i < NO_THREADS; i++) {
             Thread thread = new Thread(new TlsCrawlerSlaveWorker(this), String.format("SimpleCrawlerSlave-%d", i));
             thread.start();
@@ -69,9 +69,9 @@ public class TLSCrawlerSlave extends TLSCrawler {
     private class TlsCrawlerSlaveWorker implements Runnable {
         private Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlaveWorker.class);
 
-        private TLSCrawler crawler;
+        private TlsCrawler crawler;
 
-        public TlsCrawlerSlaveWorker(TLSCrawler crawler) {
+        public TlsCrawlerSlaveWorker(TlsCrawler crawler) {
             this.crawler = crawler;
         }
 

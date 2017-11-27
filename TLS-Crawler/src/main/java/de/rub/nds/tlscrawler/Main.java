@@ -9,11 +9,9 @@ package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.OptionsParser;
 import com.google.devtools.common.options.OptionsParsingException;
-import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoTimeoutException;
-import de.rub.nds.tlscrawler.core.TLSCrawlerMaster;
-import de.rub.nds.tlscrawler.core.TLSCrawlerSlave;
+import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
+import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
@@ -60,8 +58,8 @@ public class Main {
 
         Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
 
-        TLSCrawlerSlave slave = new TLSCrawlerSlave(providers.getFirst(), providers.getSecond(), scans);
-        TLSCrawlerMaster master = new TLSCrawlerMaster(providers.getFirst(), providers.getSecond(), scans);
+        TlsCrawlerSlave slave = new TlsCrawlerSlave(providers.getFirst(), providers.getSecond(), scans);
+        TlsCrawlerMaster master = new TlsCrawlerMaster(providers.getFirst(), providers.getSecond(), scans);
 
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
                 + options.instanceId + ".");
