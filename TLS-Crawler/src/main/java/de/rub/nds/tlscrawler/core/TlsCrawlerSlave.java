@@ -7,32 +7,43 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.*;
+import de.rub.nds.tlscrawler.data.IScanTask;
+import de.rub.nds.tlscrawler.data.ISlaveStats;
+import de.rub.nds.tlscrawler.data.SlaveStats;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A basic TLS crawler slave implementation.
+ * Take #2 - a more sophisticated slave implementation.
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class TlsCrawlerSlave extends TlsCrawler {
+public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
 
     private static int NO_THREADS = 256;
+    private static int NEW_FETCH_LIMIT = NO_THREADS * 3;
+    private static int FETCH_AMOUNT = NO_THREADS * 2;
+    private static int MIN_NO_TO_PERSIST = 64;
+    private static int ITERATIONS_TO_IGNORE_BULK_LIMITS = 10;
+    private static int ORG_THREAD_SLEEP_MILLIS = 6000;
+
     private List<Thread> threads;
+    private TlsCrawlerSlaveOrgThread orgThread;
     private SlaveStats slaveStats;
-    private Object statSyncRoot;
+    private SynchronizedTaskRouter synchronizedTaskRouter;
 
     /**
-     * TLS-Crawler slave constructor.
+     * TLS-Crawler constructor.
      *
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
@@ -41,81 +52,73 @@ public class TlsCrawlerSlave extends TlsCrawler {
     public TlsCrawlerSlave(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
 
-        this.statSyncRoot = new Object();
+        this.synchronizedTaskRouter = new SynchronizedTaskRouter();
         this.slaveStats = new SlaveStats(0, 0);
         this.threads = new LinkedList<>();
 
-        LOG.debug("TlsCrawlerSlave() - Setting up worker threads.");
         for (int i = 0; i < NO_THREADS; i++) {
-            Thread thread = new Thread(new TlsCrawlerSlaveWorker(this), String.format("SimpleCrawlerSlave-%d", i));
-            thread.start();
-            this.threads.add(thread);
+            Thread t = new SlaveWorkerThread(this.synchronizedTaskRouter, this);
+            t.start();
+            this.threads.add(t);
         }
+
+        this.orgThread = new TlsCrawlerSlaveOrgThread(this, this.synchronizedTaskRouter);
     }
 
-    /**
-     * @return Returns this slave's stats.
-     */
+    @Override
+    public void start() {
+        this.orgThread.start();
+    }
+
+    @Override
     public ISlaveStats getStats() {
-        synchronized (this.statSyncRoot) {
-            return SlaveStats.copyFrom(this.slaveStats);
-        }
+        return SlaveStats.copyFrom(this.slaveStats);
     }
 
-    /**
-     * Implements logic, to be executed in parallel, of retrieving and performing scans
-     * as well as persisting results.
-     */
-    private class TlsCrawlerSlaveWorker implements Runnable {
-        private Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlaveWorker.class);
+    private class TlsCrawlerSlaveOrgThread extends Thread {
+        private AtomicBoolean isRunning = new AtomicBoolean(false);
+        private int iterations = 0;
 
-        private TlsCrawler crawler;
+        private SynchronizedTaskRouter synchronizedTaskRouter;
+        private IOrganizer organizer;
 
-        public TlsCrawlerSlaveWorker(TlsCrawler crawler) {
-            this.crawler = crawler;
+        public TlsCrawlerSlaveOrgThread(IOrganizer organizer, SynchronizedTaskRouter synchronizedTaskRouter) {
+            super();
+            this.organizer = organizer;
+            this.synchronizedTaskRouter = synchronizedTaskRouter;
+        }
+
+        public void stopExecution() {
+            this.isRunning.set(false);
         }
 
         @Override
         public void run() {
-            LOG.debug("run() - Started.");
+            this.isRunning.set(true);
 
-            for (;;) {
-                String taskId = this.crawler.getOrchestrationProvider().getScanTask();
-                IScanTask raw = this.crawler.getPersistenceProvider().getScanTask(taskId);
+            while (this.isRunning.get()) {
+                if (this.synchronizedTaskRouter.getTodoCount() < NEW_FETCH_LIMIT) {
+                    Collection<String> taskIds = this.organizer.getOrchestrationProvider().getScanTasks(FETCH_AMOUNT);
+                    Map<String, IScanTask> tasks =  this.organizer.getPersistenceProvider().getScanTasks(taskIds);
+                    this.synchronizedTaskRouter.addTodo(tasks.values());
+                }
 
-                if (raw != null) {
-                    LOG.debug("Task started.");
-                    ScanTask task = ScanTask.copyFrom(raw);
+                if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
+                        || ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) {
+                    Collection<IScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
 
-                    synchronized (statSyncRoot) {
-                        slaveStats.incrementAcceptedTaskCount(1);
+                    // TODO: Implement bulk operation @IPersistenceProvider
+                    for (IScanTask t : finishedTasks) {
+                        this.organizer.getPersistenceProvider().updateScanTask(t);
                     }
 
-                    task.setAcceptedTimestamp(Instant.now());
+                    this.iterations = 0;
+                }
 
-                    task.setStartedTimestamp(Instant.now());
-
-                    for (String scan : task.getScans()) {
-                        IScan scanInstance = this.crawler.getScanByName(scan);
-                        IScanResult result = scanInstance.scan(task.getScanTarget());
-                        task.addResult(result);
-                    }
-
-                    task.setCompletedTimestamp(Instant.now());
-
-                    this.crawler.getPersistenceProvider().updateScanTask(task);
-
-                    synchronized (statSyncRoot) {
-                        slaveStats.incrementCompletedTaskCount(1);
-                    }
-
-                    LOG.debug("Task completed.");
-                } else {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        // swallow it whole.
-                    }
+                try {
+                    Thread.sleep(ORG_THREAD_SLEEP_MILLIS);
+                } catch (InterruptedException e) {
+                    // Suffer quietly.
                 }
             }
         }
