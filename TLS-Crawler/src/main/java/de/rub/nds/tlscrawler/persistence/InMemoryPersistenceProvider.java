@@ -50,7 +50,13 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
 
     @Override
     public Map<String, IScanTask> getScanTasks(Collection<String> ids) {
-        throw new UnsupportedOperationException("Not implemented.");
+        Map<String, IScanTask> result = new HashMap<>();
+
+        for (String id : ids) {
+            result.put(id, this.tasks.get(id));
+        }
+
+        return result;
     }
 
     @Override
