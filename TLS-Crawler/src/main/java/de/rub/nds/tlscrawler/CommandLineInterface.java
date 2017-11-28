@@ -7,8 +7,8 @@
  */
 package de.rub.nds.tlscrawler;
 
+import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
-import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
 import de.rub.nds.tlscrawler.data.IMasterStats;
 import de.rub.nds.tlscrawler.utility.IpGenerator;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ import java.util.Scanner;
 public class CommandLineInterface {
     private static Logger LOG = LoggerFactory.getLogger(CommandLineInterface.class);
 
-    public static void handleInput(TlsCrawlerMaster master, TlsCrawlerSlave slave) {
+    public static void handleInput(TlsCrawlerMaster master, ITlsCrawlerSlave slave) {
         Scanner scanner = new Scanner(System.in);
 
         // TODO: Implement full CLI

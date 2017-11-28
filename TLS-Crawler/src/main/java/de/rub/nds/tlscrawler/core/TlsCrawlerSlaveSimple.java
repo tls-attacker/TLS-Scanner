@@ -23,8 +23,8 @@ import java.util.List;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class TlsCrawlerSlave extends TlsCrawler {
-    private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
+public class TlsCrawlerSlaveSimple extends TlsCrawler implements ITlsCrawlerSlave {
+    private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlaveSimple.class);
 
     private static int NO_THREADS = 256;
     private List<Thread> threads;
@@ -38,24 +38,31 @@ public class TlsCrawlerSlave extends TlsCrawler {
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TlsCrawlerSlave(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
+    public TlsCrawlerSlaveSimple(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
 
         this.statSyncRoot = new Object();
         this.slaveStats = new SlaveStats(0, 0);
         this.threads = new LinkedList<>();
 
-        LOG.debug("TlsCrawlerSlave() - Setting up worker threads.");
+        LOG.debug("TlsCrawlerSlaveSimple() - Setting up worker threads.");
         for (int i = 0; i < NO_THREADS; i++) {
             Thread thread = new Thread(new TlsCrawlerSlaveWorker(this), String.format("SimpleCrawlerSlave-%d", i));
-            thread.start();
             this.threads.add(thread);
+        }
+    }
+
+    @Override
+    public void start() {
+        for (Thread t : this.threads) {
+            t.start();
         }
     }
 
     /**
      * @return Returns this slave's stats.
      */
+    @Override
     public ISlaveStats getStats() {
         synchronized (this.statSyncRoot) {
             return SlaveStats.copyFrom(this.slaveStats);

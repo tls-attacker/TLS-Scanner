@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-class TlsCrawler {
+class TlsCrawler implements IScanProvider, IOrganizer {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawler.class);
 
     private IOrchestrationProvider orchestrationProvider;
@@ -66,36 +66,48 @@ class TlsCrawler {
     /**
      * @return The orchestration provider.
      */
-    protected IOrchestrationProvider getOrchestrationProvider() {
+    public IOrchestrationProvider getOrchestrationProvider() {
         return this.orchestrationProvider;
     }
 
     /**
      * @return The persistence provider.
      */
-    protected IPersistenceProvider getPersistenceProvider() {
+    public IPersistenceProvider getPersistenceProvider() {
         return this.persistenceProvider;
     }
 
     /**
      * @return The list of available scans.
      */
-    protected List<IScan> getScans() {
+    @Override
+    public List<IScan> getScans() {
         return this.scans;
     }
 
     /**
      * @return A list of names of available scans.
      */
-    protected List<String> getScanNames() {
+    @Override
+    public List<String> getScanNames() {
         return this.scans.stream().map(IScan::getName).collect(Collectors.toList());
+    }
+
+    /**
+     * @param name The name of the scan to check.
+     * @return A boolean indicating whether a scan with the given name is available.
+     */
+    @Override
+    public boolean isScanAvailable(String name) {
+        return this.getScanNames().contains(name);
     }
 
     /**
      * @param name The name of the scan to return.
      * @return The scan if found, null if no such scan is available.
      */
-    protected IScan getScanByName(String name) {
+    @Override
+    public IScan getScanByName(String name) {
         Optional<IScan> result = this.getScans().stream().filter(x -> x.getName().equals(name)).findAny();
 
         if (!result.isPresent()) {
