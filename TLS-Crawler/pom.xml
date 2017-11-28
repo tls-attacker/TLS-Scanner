@@ -23,12 +23,11 @@
     </properties>
 
     <dependencies>
-        <!--dependency>
-            <groupId>de.rub.nds.tlsattacker</groupId>
-            <artifactId>TLS-Attacker</artifactId>
-            <type>pom</type>
-            <version>2.0Beta2</version>
-        </dependency-->
+        <dependency>
+            <groupId>de.rub.nds.tlsscanner</groupId>
+            <artifactId>TLS-Scanner</artifactId>
+            <version>1.0</version>
+        </dependency>
         <dependency>
             <groupId>com.github.pcj</groupId>
             <artifactId>google-options</artifactId>

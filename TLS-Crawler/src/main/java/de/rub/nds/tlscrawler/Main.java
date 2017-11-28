@@ -22,6 +22,7 @@ import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.NullScan;
 import de.rub.nds.tlscrawler.scans.PingScan;
+import de.rub.nds.tlscrawler.scans.TestScan;
 import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class Main {
 
         ITlsCrawlerSlave slave = new TlsCrawlerSlave(providers.getFirst(), providers.getSecond(), scans);
         slave.start();
-        
+
         TlsCrawlerMaster master = new TlsCrawlerMaster(providers.getFirst(), providers.getSecond(), scans);
 
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
@@ -159,6 +160,7 @@ public class Main {
 
         // Set up known scans.
         result.add(new PingScan());
+        result.add(new TestScan());
         result.add(new NullScan());
 
         // TODO: Set up plugins
