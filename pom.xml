@@ -3,18 +3,18 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TLS-Scanner</artifactId>
     <groupId>de.rub.nds.tlsscanner</groupId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>TLS-Core</artifactId>
-            <version>2.0Beta4</version>
+            <version>2.1</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>Attacks</artifactId>
-            <version>2.0Beta4</version>
+            <version>2.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

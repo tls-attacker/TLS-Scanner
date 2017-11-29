@@ -74,7 +74,7 @@ public class TLSScanner {
         testList.add(new CiphersuiteProbe(config));
         testList.add(new CiphersuiteOrderProbe(config));
         testList.add(new HeartbleedProbe(config));
-        // testList.add(new NamedCurvesProbe(websiteHost));
+        //testList.add(new NamedCurvesProbe(websiteHost));
         testList.add(new PaddingOracleProbe(config));
         testList.add(new BleichenbacherProbe(config));
         testList.add(new PoodleProbe(config));

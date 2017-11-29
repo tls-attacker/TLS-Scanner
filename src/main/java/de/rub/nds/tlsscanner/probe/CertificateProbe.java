@@ -38,7 +38,7 @@ public class CertificateProbe extends TLSProbe {
         tlsConfig.setQuickReceive(true);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        tlsConfig.setSniHostname(tlsConfig.getConnectionEnd().getHostname());
+        tlsConfig.setSniHostname(tlsConfig.getDefaultClientConnection().getHostname());
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);

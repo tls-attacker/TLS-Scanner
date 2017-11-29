@@ -9,9 +9,7 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
-import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
-import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.ProbeResult;
@@ -39,9 +37,24 @@ public class InvalidCurveProbe extends TLSProbe {
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig);
         Boolean vulnerable = attacker.isVulnerable();
+        if (vulnerable == null) {
+            vulnerable = false; //TODO
+        }
         TLSCheck check = new TLSCheck(vulnerable, CheckType.ATTACK_INVALID_CURVE, 10);
         List<TLSCheck> checkList = new LinkedList<>();
         checkList.add(check);
+        invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
+        invalidCurveAttackConfig.setEphemeral(true);
+        delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
+        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+        attacker = new InvalidCurveAttacker(invalidCurveAttackConfig);
+        vulnerable = attacker.isVulnerable();
+        if (vulnerable == null) {
+            vulnerable = false; //TODO
+        }
+        check = new TLSCheck(vulnerable, CheckType.ATTACK_INVALID_CURVE_EPHEMERAL, 10);
+        checkList.add(check);
+        
         return new ProbeResult(getType(), new LinkedList<ResultValue>(), checkList);
     }
 }
