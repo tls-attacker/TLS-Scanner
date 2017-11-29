@@ -41,20 +41,31 @@ TLS-Scanner uses the concept of "checks" which are performed after it collected 
 There are currently multiple checks implemented:
 
 
-| Check                           | Meaning                                                                  | 
-| ------------------------------- |:------------------------------------------------------------------------:|
-| CERTIFICATE_EXPIRED             | Checks if the Certificate is expired yet                                 |
-| CERTIFICATE_NOT_VALID_YET       | Checks if the Certificate is valid yet                                   |
-| CERTIFICATE_WEAK_HASH_FUNCTION  | Checks if the Server uses a weak Hash algorithm for its Certificate      |
-| CERTIFICATE_WEAK_SIGN_ALGORITHM | Checks if the Server uses a weak Signature algorithm for its Certificate |
-| CERTIFICATE_NOT_SENT_BY_SERVER  | Checks if the Server did sent a Certificate at all                       |
-| CIPHERSUITE_ANON                | Checks if the Server has Anon Ciphersuites enabled                       |
-| CIPHERSUITE_CBC                 | Checks if the Server has CBC Ciphersuites enabled for TLS 1.0            | 
-| CIPHERSUITE_EXPORT              | Checks if the Server has Export Ciphersuites enabled                     |
-| CIPHERSUITE_NULL                | Checks if the Server has Null Ciphersuites enabled                       |
-| CIPHERSUITE_RC4                 | Checks if the Server has RC4 Ciphersuites enabled                        |
-| CIPHERSUITEORDER_ENFORCED       | Checks if the Server does not enforce a Ciphersuite ordering             |
-| PROTOCOLVERSION_SSL2            | Checks if SSL 2 is enabled                                               |
-| PROTOCOLVERSION_SSL3            | Checks if SSL 3 is enabled                                               |
+| Check                           | Meaning                                                                  	  | 
+| ------------------------------- |:-----------------------------------------------------------------------------:|
+| CERTIFICATE_EXPIRED             | Checks if the Certificate is expired yet                                	  |
+| CERTIFICATE_NOT_VALID_YET       | Checks if the Certificate is valid yet                                   	  |
+| CERTIFICATE_WEAK_HASH_FUNCTION  | Checks if the Server uses a weak Hash algorithm for its Certificate      	  |
+| CERTIFICATE_WEAK_SIGN_ALGORITHM | Checks if the Server uses a weak Signature algorithm for its Certificate	  |
+| CERTIFICATE_NOT_SENT_BY_SERVER  | Checks if the Server did sent a Certificate at all                      	  |
+| CIPHERSUITE_ANON                | Checks if the Server has Anon Ciphersuites enabled                       	  |
+| CIPHERSUITE_CBC                 | Checks if the Server has CBC Ciphersuites enabled for TLS 1.0            	  | 
+| CIPHERSUITE_EXPORT              | Checks if the Server has Export Ciphersuites enabled                    	  |
+| CIPHERSUITE_NULL                | Checks if the Server has Null Ciphersuites enabled                       	  |
+| CIPHERSUITE_RC4                 | Checks if the Server has RC4 Ciphersuites enabled                       	  |
+| CIPHERSUITEORDER_ENFORCED       | Checks if the Server does not enforce a Ciphersuite ordering             	  |
+| PROTOCOLVERSION_SSL2            | Checks if SSL 2 is enabled                                               	  |
+| PROTOCOLVERSION_SSL3            | Checks if SSL 3 is enabled                                              	  |
+| ATTACK_HEARTBLEED               | Checks if the Server is vulnerable to Heartbleed                        	  |
+| ATTACK_PADDING                  | Checks if the Server is vulnerable to a Padding_Oracle Attack (BETA)    	  |
+| ATTACK_BLEICHENBACHER           | Checks if the Server is vulnerable to the Bleichenbacher Attack (BETA)  	  |
+| ATTACK_POODLE			          | Checks if the Server is vulnerable to the Poodle Attack (BETA)           	  |
+| ATTACK_TLS_POODLE               | Checks if the Server is vulnerable to the TLS variant of Poolde (BETA)   	  |
+| ATTACK_CVE20162107              | Checks if the Server is vulnerable to CVE20162107 (BETA)			y	 	  |
+| ATTACK_INVALID_CURVE            | Checks if the Server is vulnerable to the Invalid Curve Attack (BETA)	      |
+| ATTACK_INVALID_CURVE_EPHEMERAL  | Checks if the Server is vulnerable to an Ephemeral Invalid Curve Attack(BETA) |
+
+
+
 
 **Please note:**  *A check with a _result_ of true is considered non optimal*
