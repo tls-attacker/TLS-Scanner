@@ -89,17 +89,7 @@ public class Main {
             persistenceProvider = mpp;
 
             if (!options.inMemoryOrchestration) {
-                String redisEndpoint = options.redisConnectionString;
-                Jedis jedis = new Jedis(redisEndpoint);
-                jedis.connect();
-                if (jedis.isConnected()) {
-                    LOG.info("Connected to Redis at " + (redisEndpoint.equals("") ? "localhost" : redisEndpoint));
-                } else {
-                    LOG.error("Connecting to Redis failed.");
-                    System.exit(0);
-                }
-
-                orchestrationProvider = new RedisOrchestrationProvider(jedis);
+                orchestrationProvider = new RedisOrchestrationProvider(options.redisConnectionString);
             } else { // in-memory-orchestration:
                 orchestrationProvider = new InMemoryOrchestrationProvider();
             }
