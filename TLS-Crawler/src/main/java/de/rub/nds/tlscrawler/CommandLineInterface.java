@@ -10,14 +10,10 @@ package de.rub.nds.tlscrawler;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
 import de.rub.nds.tlscrawler.data.IMasterStats;
-import de.rub.nds.tlscrawler.utility.IpGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Implements the command line interface.
@@ -41,9 +37,9 @@ public class CommandLineInterface {
             switch (input) {
                 case "test_scan":
                     List<String> chosenScans = new LinkedList<>();
-                    chosenScans.add("null_scan");
+                    chosenScans.add("test_scan");
 
-                    List<String> targets = IpGenerator.fullRange();
+                    List<String> targets = Arrays.asList("172.217.22.35");
 
                     List<Integer> ports = new ArrayList<>();
                     ports.add(32);
