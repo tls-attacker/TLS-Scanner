@@ -9,6 +9,7 @@ package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ISlaveStats;
+import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.data.SlaveStats;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
@@ -16,6 +17,7 @@ import de.rub.nds.tlscrawler.scans.IScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -107,6 +109,13 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
                     Collection<String> taskIds = this.organizer.getOrchestrationProvider().getScanTasks(FETCH_AMOUNT);
                     Map<String, IScanTask> tasks =  this.organizer.getPersistenceProvider().getScanTasks(taskIds);
+
+                    for (Map.Entry<String, IScanTask> e : tasks.entrySet()) {
+                        ScanTask t = (ScanTask)e.getValue();
+                        t.setAcceptedTimestamp(Instant.now());
+                        e.setValue(t);
+                    }
+
                     this.synchronizedTaskRouter.addTodo(tasks.values());
                 }
 
