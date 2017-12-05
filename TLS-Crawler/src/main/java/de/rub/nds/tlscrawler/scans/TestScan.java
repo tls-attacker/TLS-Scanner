@@ -1,3 +1,10 @@
+/**
+ * TLS Crawler
+ *
+ * Licensed under Apache 2.0
+ *
+ * Copyright 2017 Ruhr-University Bochum
+ */
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
@@ -8,7 +15,13 @@ import de.rub.nds.tlsscanner.TLSScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
+/**
+ * A simple scan using TLS Scanner to generate a site report.
+ *
+ * @author janis.fliegenschmidt@rub.de
+ */
 public class TestScan implements IScan {
+
     @Override
     public String getName() {
         return "test_scan";
@@ -26,9 +39,7 @@ public class TestScan implements IScan {
 
         SiteReport report = scanner.scan();
 
-        System.out.println(report.getStringReport());
-
-        IScanResult result = new ScanResult(TestScan.class.getName());
+        IScanResult result = new ScanResult(this.getName());
         result.addString("ergebnis", report.getStringReport());
         return result;
     }
