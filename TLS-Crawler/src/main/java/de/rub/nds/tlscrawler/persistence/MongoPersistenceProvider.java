@@ -109,10 +109,15 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             LOG.error("Can't update documents without an ID.");
             throw new RuntimeException("Can't update documents without an ID.");
         }
+
+        Date accTs = task.getAcceptedTimestamp() == null ? null : Date.from(task.getAcceptedTimestamp());
+        Date staTs = task.getStartedTimestamp() == null ? null : Date.from(task.getStartedTimestamp());
+        Date comTs = task.getCompletedTimestamp() == null ? null : Date.from(task.getCompletedTimestamp());
+
         Document updateDetails = new Document()
-                .append(DBKeys.ACCEPTED_TIMESTAMP, Date.from(task.getAcceptedTimestamp()))
-                .append(DBKeys.STARTED_TIMESTAMP, Date.from(task.getStartedTimestamp()))
-                .append(DBKeys.COMPLETED_TIMESTAMP, Date.from(task.getCompletedTimestamp()))
+                .append(DBKeys.ACCEPTED_TIMESTAMP, accTs)
+                .append(DBKeys.STARTED_TIMESTAMP, staTs)
+                .append(DBKeys.COMPLETED_TIMESTAMP, comTs)
                 .append(DBKeys.RESULTS, resultStructureToBsonDoc(task.getResults()));
 
         Document update = new Document(DBOperations.SET, updateDetails);
