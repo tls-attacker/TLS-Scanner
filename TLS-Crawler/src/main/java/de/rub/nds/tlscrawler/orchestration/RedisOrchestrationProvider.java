@@ -56,6 +56,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         Collection<String> result = new ArrayList<>(quantity);
 
         for (int i = 0; i < quantity; i++) {
+            // TODO: Bulk operation possible?
             String scanTaskId = this.getScanTask();
 
             if (scanTaskId != null) {
