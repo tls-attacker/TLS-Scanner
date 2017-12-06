@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
+import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -25,11 +27,13 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     private String redisConnectionString;
     private Jedis redis;
 
+    private String taskListName = "myList";
+
     public RedisOrchestrationProvider(String redisConnString) {
         this.redisConnectionString = redisConnString;
     }
 
-    public void init() {
+    public void init() throws ConnectException {
         this.redis = new Jedis(this.redisConnectionString);
 
         this.redis.connect();
@@ -38,24 +42,34 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
                     (this.redisConnectionString.equals("") ? "localhost" : this.redisConnectionString));
         } else {
             LOG.error("Connecting to Redis failed.");
-            System.exit(0);
+            throw new ConnectException("Could not connect to redis endpoint.");
         }
     }
 
     @Override
     public String getScanTask() {
-        // TODO: retrieve scan task from redis
-        return null;
+        return this.redis.rpop(this.taskListName);
     }
 
     @Override
     public Collection<String> getScanTasks(int quantity) {
-        // TODO: retrieve qty scan tasks
-        return null;
+        Collection<String> result = new ArrayList<>(quantity);
+
+        for (int i = 0; i < quantity; i++) {
+            String scanTaskId = this.getScanTask();
+
+            if (scanTaskId != null) {
+                result.add(scanTaskId);
+            } else {
+                break;
+            }
+        }
+
+        return result;
     }
 
     @Override
     public void addScanTask(String task) {
-        // TODO: write scan task to redis
+        this.redis.lpush(this.taskListName, task);
     }
 }
