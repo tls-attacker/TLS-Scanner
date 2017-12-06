@@ -28,6 +28,9 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-threads", required = false, description = "How many threads should execute Probes")
     private int threads = 1;
 
+    @Parameter(names = "-danger", required = false, description = "Integer value (1 - 10) which specifies how aggressive the Scanner should test. Default 10")
+    private int dangerLevel = 10;
+
     @ParametersDelegate
     private GeneralDelegate generalDelegate;
 
@@ -49,5 +52,13 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public ClientDelegate getClientDelegate() {
         return clientDelegate;
+    }
+
+    public int getDangerLevel() {
+        return dangerLevel;
+    }
+
+    public void setDangerLevel(int dangerLevel) {
+        this.dangerLevel = dangerLevel;
     }
 }
