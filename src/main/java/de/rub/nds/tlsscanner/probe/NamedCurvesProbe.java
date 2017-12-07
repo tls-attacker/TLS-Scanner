@@ -66,7 +66,7 @@ public class NamedCurvesProbe extends TlsProbe {
         do {
             selectedCurve = testCurves(toTestList, tlsConfig);
             if (!toTestList.contains(selectedCurve)) {
-                LOGGER.warn("Server chose a Curve we did not offer!");
+                LOGGER.debug("Server chose a Curve we did not offer!");
                 break;
             }
             if (selectedCurve != null) {

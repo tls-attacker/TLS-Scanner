@@ -10,8 +10,6 @@ package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.check.TlsCheck;
-import java.util.List;
 
 /**
  *

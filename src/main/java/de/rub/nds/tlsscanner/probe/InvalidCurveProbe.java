@@ -45,7 +45,7 @@ public class InvalidCurveProbe extends TlsProbe {
                 vulnerableClassic = false;
             }
             if (vulnerableEphemeral == null) {
-                vulnerableClassic = false;
+                vulnerableEphemeral = false;
             }
         }
         return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral);

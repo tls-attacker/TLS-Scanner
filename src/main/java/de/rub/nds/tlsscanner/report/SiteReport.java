@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
+import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
@@ -166,6 +167,10 @@ public class SiteReport {
         this.host = host;
     }
 
+    public String getHost() {
+        return host;
+    }
+
     public String getStringReport() {
         StringBuilder builder = new StringBuilder();
         builder.append("Report for ");
@@ -216,10 +221,10 @@ public class SiteReport {
                 builder.append(report.toString()).append("\n");
             }
             builder.append("----------Certificate Checks----------\n");
-            prettyAppendRedOnFailure(builder, "Expired Certificates", certificateExpired);
-            prettyAppendRedOnFailure(builder, "Not yet Valid Certificates", certificateNotYetValid);
-            prettyAppendRedOnFailure(builder, "Weak Hash Algorithms", certificateHasWeakHashAlgorithm);
-            prettyAppendRedOnFailure(builder, "Weak Signature Algorithms", certificateHasWeakSignAlgorithm);
+            prettyAppendRedOnSuccess(builder, "Expired Certificates", certificateExpired);
+            prettyAppendRedOnSuccess(builder, "Not yet Valid Certificates", certificateNotYetValid);
+            prettyAppendRedOnSuccess(builder, "Weak Hash Algorithms", certificateHasWeakHashAlgorithm);
+            prettyAppendRedOnSuccess(builder, "Weak Signature Algorithms", certificateHasWeakSignAlgorithm);
             prettyAppendRedOnFailure(builder, "Matches Domain", certificateMachtesDomainName);
             prettyAppendGreenOnSuccess(builder, "Only Trusted", certificateIsTrusted);
             prettyAppendRedOnFailure(builder, "Contains Blacklisted", certificateKeyIsBlacklisted);
@@ -290,7 +295,14 @@ public class SiteReport {
         if (cipherSuites != null) {
             builder.append("----------Supported Ciphersuites----------\n");
             for (CipherSuite suite : cipherSuites) {
-                builder.append(suite.name()).append("\n");
+                prettyPrintCipherSuite(builder, suite);
+            }
+
+            for (VersionSuiteListPair versionSuitePair : versionSuitePairs) {
+                builder.append("----------Supported in " + versionSuitePair.getVersion() + "----------\n");
+                for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
+                    prettyPrintCipherSuite(builder, suite);
+                }
             }
             builder.append("----------Symmetric Supported----------\n");
             prettyAppendRedOnSuccess(builder, "Null", supportsNullCiphers);
@@ -388,6 +400,26 @@ public class SiteReport {
         appendCurves(builder);
         appendSignatureAndHashAlgorithms(builder);
         return builder;
+    }
+
+    private void prettyPrintCipherSuite(StringBuilder builder, CipherSuite suite) {
+        CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
+        switch (grade) {
+            case GOOD:
+                prettyAppendGreen(builder, suite.name());
+                break;
+            case LOW:
+                prettyAppendRed(builder, suite.name());
+                break;
+            case MEDIUM:
+                prettyAppendYellow(builder, suite.name());
+                break;
+            case NONE:
+                prettyAppend(builder, suite.name());
+                break;
+            default:
+                prettyAppend(builder, suite.name());
+        }
     }
 
     private StringBuilder appendCurves(StringBuilder builder) {

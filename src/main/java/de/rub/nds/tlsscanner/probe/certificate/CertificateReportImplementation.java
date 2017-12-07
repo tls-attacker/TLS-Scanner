@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.probe.certificate;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import java.security.PublicKey;
 import java.util.Date;
+import org.bouncycastle.asn1.x509.Certificate;
 
 /**
  *
@@ -35,8 +36,18 @@ class CertificateReportImplementation implements CertificateReport {
     private Boolean revoked;
     private Boolean dnsCAA;
     private Boolean trusted;
+    private Certificate certificate;
 
     public CertificateReportImplementation() {
+    }
+
+    @Override
+    public Certificate getCertificate() {
+        return certificate;
+    }
+
+    public void setCertificate(Certificate certificate) {
+        this.certificate = certificate;
     }
 
     @Override
@@ -119,6 +130,7 @@ class CertificateReportImplementation implements CertificateReport {
         return dnsCAA;
     }
 
+    @Override
     public Boolean getTrusted() {
         return trusted;
     }

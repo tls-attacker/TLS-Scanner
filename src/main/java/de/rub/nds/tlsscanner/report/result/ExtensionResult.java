@@ -29,7 +29,11 @@ public class ExtensionResult extends ProbeResult {
 
     @Override
     public void merge(SiteReport report) {
-        report.setSupportedExtensions(allSupportedExtensions);
+        if (report.getSupportedExtensions() == null) {
+            report.setSupportedExtensions(allSupportedExtensions);
+        } else {
+            report.getSupportedExtensions().addAll(allSupportedExtensions);
+        }
         for (ExtensionType type : allSupportedExtensions) {
             if (type == ExtensionType.ENCRYPT_THEN_MAC) {
                 extendedMasterSecret = true;
