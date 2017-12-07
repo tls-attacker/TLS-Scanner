@@ -34,8 +34,11 @@ public class CertificateReportGenerator {
 
     public static List<CertificateReport> generateReports(Certificate certs) {
         List<CertificateReport> reportList = new LinkedList<>();
-        reportList.add(generateReport(certs.getCertificateAt(0)));
-
+        if (certs != null) {
+            for (org.bouncycastle.asn1.x509.Certificate cert : certs.getCertificateList()) {
+                reportList.add(generateReport(cert));
+            }
+        }
         return reportList;
     }
 

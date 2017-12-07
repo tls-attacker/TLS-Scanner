@@ -43,7 +43,7 @@ public class Main {
             }
             // Cmd was parsable
             try {
-                TLSScanner scanner = new TLSScanner(config);
+                TlsScanner scanner = new TlsScanner(config);
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
@@ -71,7 +71,7 @@ public class Main {
         while((line = reader.readLine()) != null)
         {
             String host = line.split(",")[2];
-            TLSScanner scanner = new TLSScanner(host,false);
+            TlsScanner scanner = new TlsScanner(host,false);
             scanner.scan();
         }
         System.exit(0);

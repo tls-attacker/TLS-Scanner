@@ -24,7 +24,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     protected final ScannerConfig scannerConfig;
     protected final ProbeType type;
-
+    
     private final int danger;
 
     public TlsProbe(ProbeType type, ScannerConfig scannerConfig, int danger) {

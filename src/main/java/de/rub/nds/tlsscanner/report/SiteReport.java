@@ -79,7 +79,7 @@ public class SiteReport {
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
     private Boolean supportsExtendedMasterSecret = null;
-    private Boolean encryptThenMacSecret = null;
+    private Boolean supportsEncryptThenMacSecret = null;
     private Boolean supportsTokenbinding = null;
 
     //Compression
@@ -356,9 +356,9 @@ public class SiteReport {
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 20", supportsTls13Draft20);
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 21", supportsTls13Draft21);
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 22", supportsTls13Draft22);
-            prettyAppend(builder, "DTLS 1.0", supportsDtls10);
-            prettyAppend(builder, "DTLS 1.2", supportsDtls10);
-            prettyAppend(builder, "DTLS 1.3", supportsDtls13);
+            //prettyAppend(builder, "DTLS 1.0", supportsDtls10);
+            //prettyAppend(builder, "DTLS 1.2", supportsDtls10);
+            //prettyAppend(builder, "DTLS 1.3", supportsDtls13);
         }
         return builder;
     }
@@ -373,7 +373,7 @@ public class SiteReport {
         builder.append("----------Extensions----------\n");
         prettyAppendGreenRed(builder, "Secure Renegotiation", supportsSecureRenegotiation);
         prettyAppendGreenOnSuccess(builder, "Supports Extended Master Secret", supportsExtendedMasterSecret);
-        prettyAppendGreenOnSuccess(builder, "Supports Encrypt Then Mac", encryptThenMacSecret);
+        prettyAppendGreenOnSuccess(builder, "Supports Encrypt Then Mac", supportsEncryptThenMacSecret);
         prettyAppendGreenOnSuccess(builder, "Supports Tokenbinding", supportsTokenbinding);
         if (supportsTokenbinding == Boolean.TRUE) {
             builder.append("----------Tokenbinding Versions----------\n");
@@ -1000,12 +1000,12 @@ public class SiteReport {
         this.supportsExtendedMasterSecret = supportsExtendedMasterSecret;
     }
 
-    public Boolean getEncryptThenMacSecret() {
-        return encryptThenMacSecret;
+    public Boolean getSupportsEncryptThenMacSecret() {
+        return supportsEncryptThenMacSecret;
     }
 
-    public void setEncryptThenMacSecret(Boolean encryptThenMacSecret) {
-        this.encryptThenMacSecret = encryptThenMacSecret;
+    public void setSupportsEncryptThenMacSecret(Boolean supportsEncryptThenMacSecret) {
+        this.supportsEncryptThenMacSecret = supportsEncryptThenMacSecret;
     }
 
     public Boolean getSupportsTokenbinding() {

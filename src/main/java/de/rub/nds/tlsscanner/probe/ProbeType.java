@@ -26,4 +26,5 @@ public enum ProbeType {
     PROTOCOL_VERSION,
     INVALID_CURVE,
     SIGNATURE_AND_HASH,
+    EXTENSIONS,
 }

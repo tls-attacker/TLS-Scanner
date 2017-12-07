@@ -44,7 +44,7 @@ public class CiphersuiteProbe extends TlsProbe {
     private final List<ProtocolVersion> protocolVersions;
 
     public CiphersuiteProbe(ScannerConfig config) {
-        super(ProbeType.CIPHERSUITE, config,0);
+        super(ProbeType.CIPHERSUITE, config, 0);
         protocolVersions = new LinkedList<>();
         protocolVersions.add(ProtocolVersion.TLS10);
         protocolVersions.add(ProtocolVersion.TLS11);
@@ -63,7 +63,7 @@ public class CiphersuiteProbe extends TlsProbe {
             List<CipherSuite> versionSupportedSuites = getSupportedCipherSuitesFromList(toTestList, version);
             pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
         }
-        
+
         return new CiphersuiteProbeResult(pairLists);
 
     }
@@ -104,9 +104,14 @@ public class CiphersuiteProbe extends TlsProbe {
                     return new LinkedList<>();
                 }
                 LOGGER.debug("Server chose " + state.getTlsContext().getSelectedCipherSuite().name());
-                supportsMore = true;
-                supported.add(state.getTlsContext().getSelectedCipherSuite());
-                listWeSupport.remove(state.getTlsContext().getSelectedCipherSuite());
+                if (listWeSupport.contains(state.getTlsContext().getSelectedCipherSuite())) {
+                    supportsMore = true;
+                    supported.add(state.getTlsContext().getSelectedCipherSuite());
+                    listWeSupport.remove(state.getTlsContext().getSelectedCipherSuite());
+                } else {
+                    supportsMore = false;
+                    LOGGER.warn("Server chose not proposed Ciphersuite");
+                }
             } else {
                 supportsMore = false;
                 LOGGER.debug("Server did not send ServerHello");

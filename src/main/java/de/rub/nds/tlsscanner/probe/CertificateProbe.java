@@ -44,11 +44,6 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
         List<CertificateReport> reportList = CertificateReportGenerator.generateReports(serverCert);
-        for (org.bouncycastle.asn1.x509.Certificate certificate : serverCert.getCertificateList()) {
-            CertificateReport report = CertificateReportGenerator.generateReport(certificate);
-            CertificateJudger judger = new CertificateJudger(certificate, getScannerConfig(), report);
-            reportList.add(report);
-        }
         return new CertificateResult(getType(), reportList);
     }
 }

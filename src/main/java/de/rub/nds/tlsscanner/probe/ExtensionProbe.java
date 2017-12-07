@@ -8,27 +8,31 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.report.result.NamedCurveResult;
 import de.rub.nds.tlsscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
+import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
+import de.rub.nds.tlsattacker.core.record.layer.RecordLayerType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.ProtocolVersionResult;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,52 +40,59 @@ import java.util.List;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class NamedCurvesProbe extends TlsProbe {
+public class ExtensionProbe extends TlsProbe {
 
-    public NamedCurvesProbe(ScannerConfig config) {
+    public ExtensionProbe(ScannerConfig config) {
         super(ProbeType.PROTOCOL_VERSION, config, 0);
     }
 
     @Override
     public ProbeResult call() {
-        List<NamedCurve> curves = getSupportedNamedCurves();
+        List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
 
-        return new NamedCurveResult(curves);
+        return new ExtensionResult(allSupportedExtensions);
     }
 
-    private List<NamedCurve> getSupportedNamedCurves() {
+    public List<ExtensionType> getSupportedExtensions() {
+        List<ExtensionType> allSupportedExtensions = new LinkedList<>();
+        List<ExtensionType> commonExtensions = getCommonExtension();
+        if (commonExtensions != null) {
+            allSupportedExtensions.addAll(commonExtensions);
+        }
+        return allSupportedExtensions;
+    }
+
+    private List<ExtensionType> getCommonExtension() {
         Config tlsConfig = getScannerConfig().createConfig();
+        List<CipherSuite> cipherSuites = new LinkedList<>();
+        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
+        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopRecievingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+
+        // Dont send extensions if we are in sslv2
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddHeartbeatExtension(true);
+        tlsConfig.setAddMaxFragmentLengthExtenstion(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
+        tlsConfig.setAddAlpnExtension(true);
+        tlsConfig.setAlpnAnnouncedProtocols(new String[]{"http/1.1", "spdy/1", "spdy/2", "spdy/3", "stun.turn", "stun.nat-discovery", "h2", "h2c", "webrtc", "c-webrtc", "ftp", "imap", "pop3", "managesieve"});
+        tlsConfig.setAddEncryptThenMacExtension(true);
+        tlsConfig.setAddExtendedMasterSecretExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
-        List<NamedCurve> toTestList = new ArrayList<>(Arrays.asList(NamedCurve.values()));
-        NamedCurve selectedCurve;
-        List<NamedCurve> supportedNamedCurves = new LinkedList<>();
-        do {
-            selectedCurve = testCurves(toTestList, tlsConfig);
-            if (!toTestList.contains(selectedCurve)) {
-                LOGGER.warn("Server chose a Curve we did not offer!");
-                break;
-            }
-            if (selectedCurve != null) {
-                supportedNamedCurves.add(selectedCurve);
-                toTestList.remove(selectedCurve);
-            }
-        } while (selectedCurve != null || toTestList.size() > 0);
-        return supportedNamedCurves;
-    }
-
-    private NamedCurve testCurves(List<NamedCurve> curveList, Config tlsConfig) {
-        tlsConfig.setNamedCurves(curveList);
+        tlsConfig.setAddSessionTicketTLSExtension(true);
+        tlsConfig.setAddTruncatedHmacExtension(true);
+        
+        List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());
+        tlsConfig.setNamedCurves(namedCurves);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);
@@ -91,21 +102,11 @@ public class NamedCurvesProbe extends TlsProbe {
             LOGGER.debug(ex);
         }
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return state.getTlsContext().getSelectedCurve();
+            return new ArrayList(state.getTlsContext().getNegotiatedExtensionSet());
         } else {
             LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
-    }
-
-    private List<CipherSuite> getEcCiphersuites() {
-        List<CipherSuite> suiteList = new LinkedList<>();
-        for (CipherSuite suite : CipherSuite.values()) {
-            if (suite.name().contains("ECDH")) {
-                suiteList.add(suite);
-            }
-        }
-        return suiteList;
     }
 
 }
