@@ -30,7 +30,6 @@ public class ProtocolVersionResult extends ProbeResult {
     public void merge(SiteReport report) {
         report.setVersions(supportedProtocolVersions);
         for (ProtocolVersion version : supportedProtocolVersions) {
-            System.out.println("supported:" + version);
             if (version == ProtocolVersion.DTLS10) {
                 report.setSupportsDtls10(true);
             }
@@ -85,7 +84,6 @@ public class ProtocolVersionResult extends ProbeResult {
         }
         
         for (ProtocolVersion version : unsupportedProtocolVersions) {
-            System.out.println("unsupported:" + version);
             if (version == ProtocolVersion.DTLS10) {
                 report.setSupportsDtls10(false);
             }
