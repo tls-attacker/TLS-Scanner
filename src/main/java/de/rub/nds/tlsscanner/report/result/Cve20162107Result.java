@@ -18,13 +18,13 @@ public class Cve20162107Result extends ProbeResult {
     private Boolean vulnerable;
 
     public Cve20162107Result(Boolean vulnerable) {
-        super(ProbeType.BLEICHENBACHER);
+        super(ProbeType.CVE20162107);
         this.vulnerable = vulnerable;
     }
 
     @Override
     public void merge(SiteReport report) {
-        report.setBleichenbacherVulnerable(vulnerable);
+        report.setCve20162107Vulnerable(vulnerable);
     }
 
 }
