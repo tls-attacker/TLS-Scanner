@@ -57,7 +57,9 @@ public class CiphersuiteProbe extends TlsProbe {
             toTestList.addAll(Arrays.asList(CipherSuite.values()));
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
             List<CipherSuite> versionSupportedSuites = getSupportedCipherSuitesFromList(toTestList, version);
-            pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
+            if (versionSupportedSuites.size() > 0) {
+                pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
+            }
         }
 
         return new CiphersuiteProbeResult(pairLists);
