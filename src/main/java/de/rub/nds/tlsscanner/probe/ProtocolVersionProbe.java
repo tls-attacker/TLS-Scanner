@@ -27,10 +27,8 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
-import de.rub.nds.tlsscanner.report.ResultValue;
-import de.rub.nds.tlsscanner.report.check.CheckType;
-import de.rub.nds.tlsscanner.report.check.TLSCheck;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.ProtocolVersionResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,38 +37,39 @@ import java.util.List;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class ProtocolVersionProbe extends TLSProbe {
+public class ProtocolVersionProbe extends TlsProbe {
+
+    private List<ProtocolVersion> toTestList;
 
     public ProtocolVersionProbe(ScannerConfig config) {
-        super(ProbeType.PROTOCOL_VERSION, config);
+        super(ProbeType.PROTOCOL_VERSION, config, 0);
+        toTestList = new LinkedList<>();
+        toTestList.add(ProtocolVersion.SSL2);
+        toTestList.add(ProtocolVersion.SSL3);
+        toTestList.add(ProtocolVersion.TLS10);
+        toTestList.add(ProtocolVersion.TLS11);
+        toTestList.add(ProtocolVersion.TLS12);
     }
 
     @Override
     public ProbeResult call() {
-        List<ResultValue> resultList = new LinkedList<>();
-        List<TLSCheck> checkList = new LinkedList<>();
-        LOGGER.debug("Testing SSL2:");
-        boolean result = isSSL2Supported();
-        resultList.add(new ResultValue("SSL 2", "" + result));
-        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL2, 10));
-        LOGGER.debug("Testing SSL3:");
-        result = isProtocolVersionSupported(ProtocolVersion.SSL3);
-        resultList.add(new ResultValue("SSL 3", "" + result));
-        checkList.add(new TLSCheck(result, CheckType.PROTOCOLVERSION_SSL3, 10));
-        LOGGER.debug("Testing TLS 1.0:");
-        result = isProtocolVersionSupported(ProtocolVersion.TLS10);
-        resultList.add(new ResultValue("TLS 1.0", "" + result));
-        LOGGER.debug("Testing TLS 1.1:");
-        result = isProtocolVersionSupported(ProtocolVersion.TLS11);
-        resultList.add(new ResultValue("TLS 1.1", "" + result));
-        LOGGER.debug("Testing TLS 1.2:");
-        result = isProtocolVersionSupported(ProtocolVersion.TLS12);
-        resultList.add(new ResultValue("TLS 1.2", "" + result));
-        return new ProbeResult(getType(), resultList, checkList);
-
+        List<ProtocolVersion> supportedVersionList = new LinkedList<>();
+        List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
+        for (ProtocolVersion version : toTestList) {
+            if (isProtocolVersionSupported(version)) {
+                
+                supportedVersionList.add(version);
+            } else {
+                unsupportedVersionList.add(version);
+            }
+        }
+        return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
     }
 
     public boolean isProtocolVersionSupported(ProtocolVersion toTest) {
+        if (toTest == ProtocolVersion.SSL2) {
+            return isSSL2Supported();
+        }
         Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
@@ -111,7 +110,7 @@ public class ProtocolVersionProbe extends TLSProbe {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(state.getWorkflowTrace().toString());
             return false;
-        } else {    
+        } else {
             LOGGER.debug("Received ServerHelloMessage");
             LOGGER.debug(state.getWorkflowTrace().toString());
             LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
@@ -130,7 +129,7 @@ public class ProtocolVersionProbe extends TLSProbe {
         WorkflowTrace trace = new WorkflowTrace();
         trace.addTlsAction(new SendAction(new SSL2ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveAction(new SSL2ServerHelloMessage(tlsConfig)));
-        State state = new State(tlsConfig,trace);
+        State state = new State(tlsConfig, trace);
         WorkflowExecutor executor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
         executor.executeWorkflow();
         return trace.executedAsPlanned();

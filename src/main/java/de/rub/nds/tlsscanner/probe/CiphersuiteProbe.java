@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsscanner.report.result.CiphersuiteProbeResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -17,17 +18,17 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.ResultValue;
 import de.rub.nds.tlsscanner.report.check.CheckType;
-import de.rub.nds.tlsscanner.report.check.TLSCheck;
+import de.rub.nds.tlsscanner.report.check.TlsCheck;
+import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -38,12 +39,12 @@ import java.util.Set;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class CiphersuiteProbe extends TLSProbe {
+public class CiphersuiteProbe extends TlsProbe {
 
     private final List<ProtocolVersion> protocolVersions;
 
     public CiphersuiteProbe(ScannerConfig config) {
-        super(ProbeType.CIPHERSUITE, config);
+        super(ProbeType.CIPHERSUITE, config,0);
         protocolVersions = new LinkedList<>();
         protocolVersions.add(ProtocolVersion.TLS10);
         protocolVersions.add(ProtocolVersion.TLS11);
@@ -53,103 +54,18 @@ public class CiphersuiteProbe extends TLSProbe {
     @Override
     public ProbeResult call() {
         LOGGER.debug("Starting CiphersuiteProbe");
-        Set<CipherSuite> supportedCiphersuites = new HashSet<>();
-        //Separatly collect tls 1.0 for cbc checks later on
-        Set<CipherSuite> tls10Ciphersuites = new HashSet<>();
+        List<VersionSuiteListPair> pairLists = new LinkedList<>();
         for (ProtocolVersion version : protocolVersions) {
             LOGGER.debug("Testing:" + version.name());
             List<CipherSuite> toTestList = new LinkedList<>();
             toTestList.addAll(Arrays.asList(CipherSuite.values()));
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
             List<CipherSuite> versionSupportedSuites = getSupportedCipherSuitesFromList(toTestList, version);
-            supportedCiphersuites.addAll(versionSupportedSuites);
-            if (version == ProtocolVersion.TLS10) {
-                tls10Ciphersuites.addAll(versionSupportedSuites);
-            }
+            pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
         }
-        List<ResultValue> resultList = new LinkedList<>();
-        List<TLSCheck> checkList = new LinkedList<>();
-        for (CipherSuite suite : supportedCiphersuites) {
-            resultList.add(new ResultValue("Ciphersuite", suite.name()));
-        }
-        checkList.add(checkAnonCiphers(supportedCiphersuites));
-        checkList.add(checkCBCCiphers(tls10Ciphersuites));
-        checkList.add(checkExportCiphers(supportedCiphersuites));
-        checkList.add(checkNullCiphers(supportedCiphersuites));
-        checkList.add(checkRC4Ciphers(supportedCiphersuites));
+        
+        return new CiphersuiteProbeResult(pairLists);
 
-        return new ProbeResult(getType(), resultList, checkList);
-
-    }
-
-    private boolean supportsExportCiphers(Set<CipherSuite> supportedCiphersuites) {
-        for (CipherSuite suite : supportedCiphersuites) {
-            if (suite.name().contains("EXPORT")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean supportsRC4Ciphers(Set<CipherSuite> supportedCiphersuites) {
-        for (CipherSuite suite : supportedCiphersuites) {
-            if (suite.name().contains("RC4")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean supportsAnonCiphers(Set<CipherSuite> supportedCiphersuites) {
-        for (CipherSuite suite : supportedCiphersuites) {
-            if (suite.name().contains("anon")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean supportsCBCCiphers(Set<CipherSuite> supportedCiphersuites) {
-        for (CipherSuite suite : supportedCiphersuites) {
-            if (suite.name().contains("CBC")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean supportsNullCiphers(Set<CipherSuite> supportedCiphersuites) {
-        for (CipherSuite suite : supportedCiphersuites) {
-            if (suite.name().contains("NULL")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public TLSCheck checkAnonCiphers(Set<CipherSuite> supportedCiphersuites) {
-        boolean result = supportsAnonCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_ANON, 10);
-    }
-
-    public TLSCheck checkNullCiphers(Set<CipherSuite> supportedCiphersuites) {
-        boolean result = supportsNullCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_NULL, 10);
-    }
-
-    public TLSCheck checkCBCCiphers(Set<CipherSuite> supportedCiphersuites) {
-        boolean result = supportsCBCCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_CBC, 4);
-    }
-
-    public TLSCheck checkRC4Ciphers(Set<CipherSuite> supportedCiphersuites) {
-        boolean result = supportsRC4Ciphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_RC4, 4);
-    }
-
-    public TLSCheck checkExportCiphers(Set<CipherSuite> supportedCiphersuites) {
-        boolean result = supportsExportCiphers(supportedCiphersuites);
-        return new TLSCheck(result, CheckType.CIPHERSUITE_EXPORT, 10);
     }
 
     public List<CipherSuite> getSupportedCipherSuitesFromList(List<CipherSuite> toTestList, ProtocolVersion version) {

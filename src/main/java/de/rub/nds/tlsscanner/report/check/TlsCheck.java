@@ -12,22 +12,30 @@ package de.rub.nds.tlsscanner.report.check;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class TLSCheck {
+public class TlsCheck {
 
     private final CheckType type;
     private final boolean result;
     private final int score;
+    private final boolean didError;
 
-    public TLSCheck(boolean result, CheckType type,int score) {
+    public TlsCheck(boolean result, CheckType type, int score) {
         this.result = result;
         this.type = type;
         this.score = score;
+        this.didError = false;
+    }
+
+    public TlsCheck(CheckType type, boolean result, int score, boolean didError) {
+        this.type = type;
+        this.result = result;
+        this.score = score;
+        this.didError = didError;
     }
 
     public CheckType getType() {
         return type;
     }
-
 
     public String getName() {
         return type.name();
@@ -40,7 +48,7 @@ public class TLSCheck {
     public int getScore() {
         return score;
     }
-    
+
     @Override
     public String toString() {
         return "name=" + getName() + "\tresult=" + result;

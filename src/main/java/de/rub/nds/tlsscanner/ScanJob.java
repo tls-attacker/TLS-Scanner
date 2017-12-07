@@ -8,7 +8,9 @@
  */
 package de.rub.nds.tlsscanner;
 
-import de.rub.nds.tlsscanner.probe.TLSProbe;
+import de.rub.nds.tlsscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.report.AfterProbe;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -17,13 +19,17 @@ import java.util.List;
  */
 public class ScanJob {
 
-    private final List<TLSProbe> probeList;
+    private final List<TlsProbe> probeList;
 
-    public ScanJob(List<TLSProbe> testList) {
+    public ScanJob(List<TlsProbe> testList) {
         this.probeList = testList;
     }
 
-    public List<TLSProbe> getProbeList() {
+    public List<TlsProbe> getProbeList() {
         return probeList;
+    }
+
+    public List<AfterProbe> getAfterProbes() {
+        return new LinkedList<>();
     }
 }

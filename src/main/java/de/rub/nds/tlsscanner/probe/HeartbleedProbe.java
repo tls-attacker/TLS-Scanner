@@ -14,10 +14,11 @@ import de.rub.nds.tlsattacker.attacks.impl.HeartbleedAttacker;
 import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.ResultValue;
 import de.rub.nds.tlsscanner.report.check.CheckType;
-import de.rub.nds.tlsscanner.report.check.TLSCheck;
+import de.rub.nds.tlsscanner.report.check.TlsCheck;
+import de.rub.nds.tlsscanner.report.result.HeartbleedResult;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,10 +26,10 @@ import java.util.List;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class HeartbleedProbe extends TLSProbe {
+public class HeartbleedProbe extends TlsProbe {
 
     public HeartbleedProbe(ScannerConfig config) {
-        super(ProbeType.HEARTBLEED, config);
+        super(ProbeType.HEARTBLEED, config, 9);
     }
 
     @Override
@@ -39,13 +40,7 @@ public class HeartbleedProbe extends TLSProbe {
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig);
         Boolean vulnerable = attacker.isVulnerable();
-        if (vulnerable == null) {
-            vulnerable = false;
-        }
-        TLSCheck check = new TLSCheck(vulnerable, CheckType.ATTACK_HEARTBLEED, 10);
-        List<TLSCheck> checkList = new LinkedList<>();
-        checkList.add(check);
-        return new ProbeResult(getType(), new LinkedList<ResultValue>(), checkList);
+        return new HeartbleedResult(vulnerable);
     }
 
 }

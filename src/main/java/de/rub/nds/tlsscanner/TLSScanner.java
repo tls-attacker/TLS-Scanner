@@ -22,16 +22,12 @@ import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
 import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.PoodleProbe;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.probe.TLSProbe;
+import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 
 /**
  *
@@ -68,7 +64,7 @@ public class TLSScanner {
     }
 
     public SiteReport scan() {
-        List<TLSProbe> testList = new LinkedList<>();
+        List<TlsProbe> testList = new LinkedList<>();
         testList.add(new CertificateProbe(config));
         testList.add(new ProtocolVersionProbe(config));
         testList.add(new CiphersuiteProbe(config));

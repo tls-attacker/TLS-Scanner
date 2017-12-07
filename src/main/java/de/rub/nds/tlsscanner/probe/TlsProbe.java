@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,16 +18,23 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public abstract class TLSProbe implements Callable<ProbeResult> {
+public abstract class TlsProbe implements Callable<ProbeResult> {
 
-    protected static final Logger LOGGER = LogManager.getLogger(TLSProbe.class.getName());
+    protected static final Logger LOGGER = LogManager.getLogger(TlsProbe.class.getName());
 
     protected final ScannerConfig scannerConfig;
     protected final ProbeType type;
 
-    public TLSProbe(ProbeType type, ScannerConfig config) {
+    private final int danger;
+
+    public TlsProbe(ProbeType type, ScannerConfig scannerConfig, int danger) {
+        this.scannerConfig = scannerConfig;
         this.type = type;
-        this.scannerConfig = config;
+        this.danger = danger;
+    }
+
+    public int getDanger() {
+        return danger;
     }
 
     public ScannerConfig getScannerConfig() {
@@ -41,7 +48,7 @@ public abstract class TLSProbe implements Callable<ProbeResult> {
     public ProbeType getType() {
         return type;
     }
-    
+
     @Override
     public abstract ProbeResult call();
 }

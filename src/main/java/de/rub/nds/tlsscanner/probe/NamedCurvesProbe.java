@@ -9,30 +9,21 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
 /**
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class NamedCurvesProbe extends TLSProbe {
+public class NamedCurvesProbe extends TlsProbe {
 
     public NamedCurvesProbe(ScannerConfig config) {
-        super(ProbeType.NAMED_CURVES, config);
+        super(ProbeType.NAMED_CURVES, config, 0);
     }
 
     @Override
     public ProbeResult call() {
-        throw new UnsupportedOperationException("Not supported yet."); // To
-                                                                       // change
-                                                                       // body
-                                                                       // of
-                                                                       // generated
-                                                                       // methods,
-                                                                       // choose
-                                                                       // Tools
-                                                                       // |
-                                                                       // Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

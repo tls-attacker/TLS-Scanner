@@ -12,35 +12,28 @@ import de.rub.nds.tlsattacker.attacks.config.Cve20162107CommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.Cve20162107Attacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
-import de.rub.nds.tlsscanner.report.ResultValue;
-import de.rub.nds.tlsscanner.report.check.CheckType;
-import de.rub.nds.tlsscanner.report.check.TLSCheck;
-import java.util.LinkedList;
-import java.util.List;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.Cve20162107Result;
 
 /**
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class Cve20162107Probe extends TLSProbe {
+public class Cve20162107Probe extends TlsProbe {
 
     public Cve20162107Probe(ScannerConfig config) {
-        super(ProbeType.CVE20162107, config);
+        super(ProbeType.CVE20162107, config, 10);
     }
 
     @Override
     public ProbeResult call() {
         LOGGER.debug("Starting Cve20162107 Probe");
-        Cve20162107CommandConfig poodleCommandConfig = new Cve20162107CommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
+        Cve20162107CommandConfig cve20162106config = new Cve20162107CommandConfig(getScannerConfig().getGeneralDelegate());
+        ClientDelegate delegate = (ClientDelegate) cve20162106config.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        Cve20162107Attacker attacker = new Cve20162107Attacker(poodleCommandConfig);
+        Cve20162107Attacker attacker = new Cve20162107Attacker(cve20162106config);
         Boolean vulnerable = attacker.isVulnerable();
-        TLSCheck check = new TLSCheck(vulnerable, CheckType.ATTACK_CVE20162107, 10);
-        List<TLSCheck> checkList = new LinkedList<>();
-        checkList.add(check);
-        return new ProbeResult(getType(), new LinkedList<ResultValue>(), checkList);
+        return new Cve20162107Result(vulnerable);
     }
 
 }

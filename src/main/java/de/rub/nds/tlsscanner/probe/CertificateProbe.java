@@ -8,16 +8,17 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsscanner.report.result.CertificateResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.ResultValue;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateJudger;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReportGenerator;
-import de.rub.nds.tlsscanner.report.check.TLSCheck;
+import de.rub.nds.tlsscanner.report.check.TlsCheck;
 import java.util.LinkedList;
 import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
@@ -26,10 +27,10 @@ import org.bouncycastle.crypto.tls.Certificate;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class CertificateProbe extends TLSProbe {
+public class CertificateProbe extends TlsProbe {
 
     public CertificateProbe(ScannerConfig config) {
-        super(ProbeType.CERTIFICATE, config);
+        super(ProbeType.CERTIFICATE, config, 0);
     }
 
     @Override
@@ -42,12 +43,12 @@ public class CertificateProbe extends TLSProbe {
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
-        List<TLSCheck> checkList = new LinkedList<>();
-        List<ResultValue> resultList = new LinkedList<>();
         List<CertificateReport> reportList = CertificateReportGenerator.generateReports(serverCert);
-        CertificateReport report = CertificateReportGenerator.generateReport(serverCert.getCertificateAt(0));
-        CertificateJudger judger = new CertificateJudger(serverCert.getCertificateAt(0), getScannerConfig(), report);
-        checkList.addAll(judger.getChecks());
-        return new ProbeResult(getType(), resultList, checkList);
+        for (org.bouncycastle.asn1.x509.Certificate certificate : serverCert.getCertificateList()) {
+            CertificateReport report = CertificateReportGenerator.generateReport(certificate);
+            CertificateJudger judger = new CertificateJudger(certificate, getScannerConfig(), report);
+            reportList.add(report);
+        }
+        return new CertificateResult(getType(), reportList);
     }
 }
