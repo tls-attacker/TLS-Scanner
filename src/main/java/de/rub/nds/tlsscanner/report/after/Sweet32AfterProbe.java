@@ -16,13 +16,15 @@ public class Sweet32AfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        for (CipherSuite suite : report.getCipherSuites()) {
-            if (suite.name().contains("3DES") || suite.name().contains("IDEA") || suite.name().contains("GOST")) {
-                report.setSweet32Vulnerable(Boolean.TRUE);
-                return;
+        if (report.getCipherSuites() != null) {
+            for (CipherSuite suite : report.getCipherSuites()) {
+                if (suite.name().contains("3DES") || suite.name().contains("IDEA") || suite.name().contains("GOST")) {
+                    report.setSweet32Vulnerable(Boolean.TRUE);
+                    return;
+                }
             }
-        }
-        report.setSweet32Vulnerable(Boolean.FALSE);
-    }
 
+            report.setSweet32Vulnerable(Boolean.FALSE);
+        }
+    }
 }
