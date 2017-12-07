@@ -1,4 +1,6 @@
-package de.rub.nds.tlsscanner.report;
+package de.rub.nds.tlsscanner.report.after;
+
+import de.rub.nds.tlsscanner.report.SiteReport;
 
 /**
  *

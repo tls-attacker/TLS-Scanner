@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
@@ -39,7 +40,14 @@ public class InvalidCurveProbe extends TlsProbe {
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         attacker = new InvalidCurveAttacker(invalidCurveAttackConfig);
         Boolean vulnerableEphemeral = attacker.isVulnerable();
-        
+        if (!getScannerConfig().isImplementation()) {
+            if (vulnerableClassic == null) {
+                vulnerableClassic = false;
+            }
+            if (vulnerableEphemeral == null) {
+                vulnerableClassic = false;
+            }
+        }
         return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral);
     }
 }

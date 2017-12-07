@@ -6,7 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.probe;
+package de.rub.nds.tlsscanner.constants;
 
 /**
  *
@@ -27,4 +27,5 @@ public enum ProbeType {
     INVALID_CURVE,
     SIGNATURE_AND_HASH,
     EXTENSIONS,
+    COMPRESSIONS,
 }

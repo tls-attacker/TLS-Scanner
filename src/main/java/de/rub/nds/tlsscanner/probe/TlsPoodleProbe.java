@@ -8,21 +8,13 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
-import de.rub.nds.tlsattacker.attacks.config.PoodleCommandConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.TLSPoodleCommandConfig;
-import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
-import de.rub.nds.tlsattacker.attacks.impl.PoodleAttacker;
 import de.rub.nds.tlsattacker.attacks.impl.TLSPoodleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.report.ResultValue;
-import de.rub.nds.tlsscanner.report.check.CheckType;
-import de.rub.nds.tlsscanner.report.check.TlsCheck;
 import de.rub.nds.tlsscanner.report.result.TlsPoodleResult;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  *

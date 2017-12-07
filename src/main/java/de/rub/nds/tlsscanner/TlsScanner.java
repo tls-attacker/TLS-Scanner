@@ -16,6 +16,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
+import de.rub.nds.tlsscanner.probe.CompressionsProbe;
 import de.rub.nds.tlsscanner.probe.Cve20162107Probe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
 import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
@@ -26,6 +27,8 @@ import de.rub.nds.tlsscanner.probe.PoodleProbe;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
+import de.rub.nds.tlsscanner.report.after.AfterProbe;
+import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.Level;
@@ -80,9 +83,12 @@ public class TlsScanner {
         testList.add(new Cve20162107Probe(config));
         testList.add(new InvalidCurveProbe(config));
         testList.add(new ExtensionProbe(config));
-
+        testList.add(new CompressionsProbe(config));
+        
+        List<AfterProbe> afterList = new LinkedList<>();
+        afterList.add(new Sweet32AfterProbe());
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
-        ScanJob job = new ScanJob(testList);
+        ScanJob job = new ScanJob(testList, afterList);
         return executor.execute(config, job);
     }
 

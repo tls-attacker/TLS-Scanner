@@ -13,7 +13,7 @@ import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.report.AfterProbe;
+import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;

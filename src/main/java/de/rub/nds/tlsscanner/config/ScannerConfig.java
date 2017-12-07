@@ -34,6 +34,9 @@ public class ScannerConfig extends TLSDelegateConfig {
     @ParametersDelegate
     private GeneralDelegate generalDelegate;
 
+    @Parameter(names = "-implementation", required = false, description = "If you are interessted in the vulnerability of an implementation rather than a specific site")
+    private boolean implementation = false;
+
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
         this.generalDelegate = delegate;
@@ -60,5 +63,13 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setDangerLevel(int dangerLevel) {
         this.dangerLevel = dangerLevel;
+    }
+
+    public boolean isImplementation() {
+        return implementation;
+    }
+
+    public void setImplementation(boolean implementation) {
+        this.implementation = implementation;
     }
 }
