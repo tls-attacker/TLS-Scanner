@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner;
 
+import de.rub.nds.tlsattacker.attacks.connectivity.ConnectivityChecker;
+import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -71,28 +73,38 @@ public class TlsScanner {
 
     public SiteReport scan() {
         List<TlsProbe> testList = new LinkedList<>();
-        testList.add(new NamedCurvesProbe(config));
-        testList.add(new CertificateProbe(config));
-        testList.add(new ProtocolVersionProbe(config));
-        testList.add(new CiphersuiteProbe(config));
-        testList.add(new CiphersuiteOrderProbe(config));
-        testList.add(new HeartbleedProbe(config));
-        testList.add(new PaddingOracleProbe(config));
-        testList.add(new BleichenbacherProbe(config));
-        testList.add(new PoodleProbe(config));
-        testList.add(new TlsPoodleProbe(config));
-        testList.add(new Cve20162107Probe(config));
-        testList.add(new InvalidCurveProbe(config));
-        testList.add(new ExtensionProbe(config));
-        testList.add(new CompressionsProbe(config));
-        
-        List<AfterProbe> afterList = new LinkedList<>();
-        afterList.add(new Sweet32AfterProbe());
-        afterList.add(new DrownAfterProbe());
-        
+
+        if (prechecks()) {
+            testList.add(new NamedCurvesProbe(config));
+            testList.add(new CertificateProbe(config));
+            testList.add(new ProtocolVersionProbe(config));
+            testList.add(new CiphersuiteProbe(config));
+            testList.add(new CiphersuiteOrderProbe(config));
+            testList.add(new HeartbleedProbe(config));
+            testList.add(new PaddingOracleProbe(config));
+            testList.add(new BleichenbacherProbe(config));
+            testList.add(new PoodleProbe(config));
+            testList.add(new TlsPoodleProbe(config));
+            testList.add(new Cve20162107Probe(config));
+            testList.add(new InvalidCurveProbe(config));
+            testList.add(new ExtensionProbe(config));
+            testList.add(new CompressionsProbe(config));
+            List<AfterProbe> afterList = new LinkedList<>();
+            afterList.add(new Sweet32AfterProbe());
+            afterList.add(new DrownAfterProbe());
+            ScanJob job = new ScanJob(testList, afterList);
+            return executor.execute(config, job);
+        }
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
-        ScanJob job = new ScanJob(testList, afterList);
-        return executor.execute(config, job);
+        SiteReport report = new SiteReport(config.getClientDelegate().getHost());
+        report.setServerIsAlive(false);
+        return report;
+    }
+
+    public boolean prechecks() {
+        Config tlsConfig = config.createConfig();
+        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+        return checker.isConnectable();
     }
 
 }
