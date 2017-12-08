@@ -23,7 +23,6 @@ public class Sweet32AfterProbe extends AfterProbe {
                     return;
                 }
             }
-
             report.setSweet32Vulnerable(Boolean.FALSE);
         }
     }

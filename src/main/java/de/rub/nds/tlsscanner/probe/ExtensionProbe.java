@@ -41,9 +41,8 @@ public class ExtensionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
+    public ProbeResult executeTest() {
         List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
-
         return new ExtensionResult(allSupportedExtensions);
     }
 

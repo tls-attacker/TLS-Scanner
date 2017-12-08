@@ -27,8 +27,7 @@ public class TlsPoodleProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
-        LOGGER.debug("Starting TLS-Poodle Probe");
+    public ProbeResult executeTest() {
         TLSPoodleCommandConfig poodleCommandConfig = new TLSPoodleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());

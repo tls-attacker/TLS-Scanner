@@ -27,8 +27,7 @@ public class Cve20162107Probe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
-        LOGGER.debug("Starting Cve20162107 Probe");
+    public ProbeResult executeTest() {
         Cve20162107CommandConfig cve20162106config = new Cve20162107CommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) cve20162106config.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());

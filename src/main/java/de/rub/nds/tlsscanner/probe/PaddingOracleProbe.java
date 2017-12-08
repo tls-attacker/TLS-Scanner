@@ -27,8 +27,7 @@ public class PaddingOracleProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
-        LOGGER.debug("Starting PaddingOracleTest");
+    public ProbeResult executeTest() {
         PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());

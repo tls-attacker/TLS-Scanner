@@ -23,7 +23,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
+    public ProbeResult executeTest() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

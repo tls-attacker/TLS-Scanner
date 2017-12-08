@@ -38,9 +38,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
-        LOGGER.debug("Starting CipherSuiteOrder Test");
-
+    public ProbeResult executeTest() {
         List<CipherSuite> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(CipherSuite.values()));
         toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
@@ -56,7 +54,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
         tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(true);
-        tlsConfig.setAddServerNameIndicationExtension(false);
+        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setQuickReceive(true);

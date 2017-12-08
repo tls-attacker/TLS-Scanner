@@ -31,12 +31,11 @@ public class CertificateProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
+    public ProbeResult executeTest() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        tlsConfig.setSniHostname(tlsConfig.getDefaultClientConnection().getHostname());
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);

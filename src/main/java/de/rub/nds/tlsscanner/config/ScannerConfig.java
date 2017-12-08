@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.config;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
@@ -72,4 +73,13 @@ public class ScannerConfig extends TLSDelegateConfig {
     public void setImplementation(boolean implementation) {
         this.implementation = implementation;
     }
+
+    @Override
+    public Config createConfig() {
+        Config config = super.createConfig(); //To change body of generated methods, choose Tools | Templates.
+        config.setSniHostname(clientDelegate.getHost());
+        return config;
+    }
+    
+    
 }

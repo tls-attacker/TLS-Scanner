@@ -25,7 +25,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     protected final ScannerConfig scannerConfig;
     protected final ProbeType type;
-    
+
     private final int danger;
 
     public TlsProbe(ProbeType type, ScannerConfig scannerConfig, int danger) {
@@ -51,5 +51,16 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     @Override
-    public abstract ProbeResult call();
+    public ProbeResult call() {
+        LOGGER.info("Executing:" + getProbeName());
+        long startTime = System.currentTimeMillis();
+        ProbeResult result = executeTest();
+        long stopTime = System.currentTimeMillis();
+        LOGGER.info("Finisehd " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
+
+        return result;
+    }
+
+    public abstract ProbeResult executeTest();
+
 }

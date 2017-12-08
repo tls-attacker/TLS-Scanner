@@ -27,8 +27,7 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
-        LOGGER.debug("Starting HeartbleedProbe");
+    public ProbeResult executeTest() {
         HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());

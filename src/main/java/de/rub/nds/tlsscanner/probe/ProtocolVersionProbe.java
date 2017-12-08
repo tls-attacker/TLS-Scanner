@@ -66,7 +66,7 @@ public class ProtocolVersionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
+    public ProbeResult executeTest() {
         List<ProtocolVersion> supportedVersionList = new LinkedList<>();
         List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
         for (ProtocolVersion version : toTestList) {
@@ -91,6 +91,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        tlsConfig.setDefaultSelectedProtocolVersion(toTest);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(toTest);
@@ -99,18 +100,18 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setStopRecievingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        if (toTest != ProtocolVersion.SSL2) {
-            tlsConfig.setAddServerNameIndicationExtension(false);
-            tlsConfig.setAddECPointFormatExtension(true);
-            tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
-        } else {
+        if (toTest == ProtocolVersion.SSL2) {
             // Dont send extensions if we are in sslv2
             tlsConfig.setAddECPointFormatExtension(false);
             tlsConfig.setAddEllipticCurveExtension(false);
             tlsConfig.setAddHeartbeatExtension(false);
             tlsConfig.setAddMaxFragmentLengthExtenstion(false);
             tlsConfig.setAddServerNameIndicationExtension(false);
+            tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(false);
+        } else {
+            tlsConfig.setAddServerNameIndicationExtension(true);
+            tlsConfig.setAddECPointFormatExtension(true);
+            tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(false);
         }
         List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());

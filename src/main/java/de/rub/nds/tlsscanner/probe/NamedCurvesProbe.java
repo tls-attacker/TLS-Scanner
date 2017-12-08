@@ -40,9 +40,8 @@ public class NamedCurvesProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
+    public ProbeResult executeTest() {
         List<NamedCurve> curves = getSupportedNamedCurves();
-
         return new NamedCurveResult(curves);
     }
 

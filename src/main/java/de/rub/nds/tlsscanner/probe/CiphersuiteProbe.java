@@ -48,8 +48,7 @@ public class CiphersuiteProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult call() {
-        LOGGER.debug("Starting CiphersuiteProbe");
+    public ProbeResult executeTest() {
         List<VersionSuiteListPair> pairLists = new LinkedList<>();
         for (ProtocolVersion version : protocolVersions) {
             LOGGER.debug("Testing:" + version.name());
@@ -76,10 +75,10 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setDefaultClientSupportedCiphersuites(listWeSupport);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
-            config.setAddServerNameIndicationExtension(false);
-            config.setAddECPointFormatExtension(true);
+            config.setAddServerNameIndicationExtension(true);
             config.setAddEllipticCurveExtension(true);
             config.setAddSignatureAndHashAlgrorithmsExtension(true);
+            config.setAddRenegotiationInfoExtension(true);
             config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
