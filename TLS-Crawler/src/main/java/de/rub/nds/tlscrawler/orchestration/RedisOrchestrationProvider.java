@@ -10,6 +10,7 @@ package de.rub.nds.tlscrawler.orchestration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.net.ConnectException;
 import java.util.ArrayList;
@@ -24,8 +25,9 @@ import java.util.Collection;
 public class RedisOrchestrationProvider implements IOrchestrationProvider {
     private static Logger LOG = LoggerFactory.getLogger(RedisOrchestrationProvider.class);
 
+    private boolean initialized = false;
     private String redisConnectionString;
-    private Jedis redis;
+    private JedisPool jedisPool;
 
     private String taskListName = "myList";
 
@@ -33,44 +35,82 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         this.redisConnectionString = redisConnString;
     }
 
-    public void init() throws ConnectException {
-        this.redis = new Jedis(this.redisConnectionString);
+    public void init(String taskListName) throws ConnectException {
+        LOG.trace("init() - Enter");
+        this.jedisPool = new JedisPool(this.redisConnectionString);
 
-        this.redis.connect();
-        if (this.redis.isConnected()) {
-            LOG.info("Connected to Redis at " +
-                    (this.redisConnectionString.equals("") ? "localhost" : this.redisConnectionString));
-        } else {
-            LOG.error("Connecting to Redis failed.");
-            throw new ConnectException("Could not connect to redis endpoint.");
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            if (jedis.isConnected()) {
+                LOG.info("Connected to Redis at " +
+                        (this.redisConnectionString.equals("") ? "localhost" : this.redisConnectionString));
+            } else {
+                LOG.error("Connecting to Redis failed.");
+                throw new ConnectException("Could not connect to Redis endpoint.");
+            }
+        }
+
+        this.taskListName = taskListName;
+
+        this.initialized = true;
+        LOG.trace("init() - Leave");
+    }
+
+    /**
+     * Convenience method to block method entry in situations where the persistence provider is not initialized.
+     */
+    private void checkInit() {
+        if (!this.initialized) {
+            String error = String.format("%s has not been initialized.",
+                    RedisOrchestrationProvider.class.getName());
+
+            LOG.error(error);
+            throw new RuntimeException(error);
         }
     }
 
     @Override
     public String getScanTask() {
-        return this.redis.rpop(this.taskListName);
-    }
+        this.checkInit();
 
-    @Override
-    public Collection<String> getScanTasks(int quantity) {
-        Collection<String> result = new ArrayList<>(quantity);
+        String result;
 
-        for (int i = 0; i < quantity; i++) {
-            // TODO: Bulk operation possible?
-            String scanTaskId = this.getScanTask();
-
-            if (scanTaskId != null) {
-                result.add(scanTaskId);
-            } else {
-                break;
-            }
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            result = jedis.rpop(this.taskListName);
         }
 
         return result;
     }
 
     @Override
+    public Collection<String> getScanTasks(int quantity) {
+        LOG.trace("getScanTasks() - Enter");
+        this.checkInit();
+
+        Collection<String> result = new ArrayList<>(quantity);
+
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            for (int i = 0; i < quantity; i++) {
+                // TODO: Bulk operation possible?
+                String scanTaskId = jedis.rpop(this.taskListName);
+
+                if (scanTaskId != null) {
+                    result.add(scanTaskId);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        LOG.trace("getScanTasks() - Leave");
+        return result;
+    }
+
+    @Override
     public void addScanTask(String task) {
-        this.redis.lpush(this.taskListName, task);
+        this.checkInit();
+
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            jedis.lpush(this.taskListName, task);
+        }
     }
 }

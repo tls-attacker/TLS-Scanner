@@ -26,8 +26,8 @@ import de.rub.nds.tlscrawler.scans.TestScan;
 import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
 
+import java.net.ConnectException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,7 +89,16 @@ public class Main {
             persistenceProvider = mpp;
 
             if (!options.inMemoryOrchestration) {
-                orchestrationProvider = new RedisOrchestrationProvider(options.redisConnectionString);
+                RedisOrchestrationProvider rop = new RedisOrchestrationProvider(options.redisConnectionString);
+
+                try {
+                    rop.init("myList");
+                } catch (ConnectException e) {
+                    LOG.error("Could not connect to redis.");
+                    System.exit(0);
+                }
+
+                orchestrationProvider = rop;
             } else { // in-memory-orchestration:
                 orchestrationProvider = new InMemoryOrchestrationProvider();
             }
