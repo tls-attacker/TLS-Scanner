@@ -31,7 +31,7 @@ public class TlsCrawlerTest {
     private TlsCrawler subject;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         IPersistenceProvider pp = mock(IPersistenceProvider.class);
         when(pp.getStats()).thenReturn(new PersistenceProviderStats(15, 10, null, null));
 
@@ -50,7 +50,7 @@ public class TlsCrawlerTest {
     }
 
     @Test
-    public void getOrchestrationProvider() throws Exception {
+    public void getOrchestrationProvider() {
         IOrchestrationProvider op = this.subject.getOrchestrationProvider();
 
         Assert.assertNotNull(op);
@@ -58,7 +58,7 @@ public class TlsCrawlerTest {
     }
 
     @Test
-    public void getPersistenceProvider() throws Exception {
+    public void getPersistenceProvider() {
         IPersistenceProvider pp = this.subject.getPersistenceProvider();
 
         Assert.assertNotNull(pp);
@@ -66,23 +66,23 @@ public class TlsCrawlerTest {
     }
 
     @Test
-    public void getScans() throws Exception {
+    public void getScans() {
         List<IScan> scans = this.subject.getScans();
 
         Assert.assertEquals(2, scans.size());
 
-        List<String> scanNames = scans.stream().map(x -> x.getName()).collect(Collectors.toList());
+        List<String> scanNames = scans.stream().map(IScan::getName).collect(Collectors.toList());
         Assert.assertTrue(scanNames.containsAll(Arrays.asList("Scan1", "Scan3")));
     }
 
     @Test
-    public void getScanNames() throws Exception {
+    public void getScanNames() {
         Assert.assertTrue(this.subject.getScanNames().containsAll(Arrays.asList("Scan1", "Scan3")));
         Assert.assertEquals(2, this.subject.getScanNames().size());
     }
 
     @Test
-    public void getScanByName() throws Exception {
+    public void getScanByName() {
         Assert.assertNotNull(this.subject.getScanByName("Scan3"));
         Assert.assertNull(this.subject.getScanByName("Scan2"));
     }
