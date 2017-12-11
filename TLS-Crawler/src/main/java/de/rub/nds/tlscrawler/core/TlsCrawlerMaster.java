@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
@@ -101,8 +102,14 @@ public class TlsCrawlerMaster extends TlsCrawler {
         return !(allScansValid && allTargetIpsValid && allPortsValid);
     }
 
-    private boolean isValidIp(String ip) {
-        // TODO: There's gotta be a better way.
-        return true;
+    private static final String IP_ADDRESS_STRING =
+            "((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
+                    + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
+                    + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
+                    + "|[1-9][0-9]|[0-9]))";
+    public static final Pattern IP_ADDRESS = Pattern.compile(IP_ADDRESS_STRING);
+
+    public boolean isValidIp(String ip) {
+        return IP_ADDRESS.matcher(ip).matches();
     }
 }
