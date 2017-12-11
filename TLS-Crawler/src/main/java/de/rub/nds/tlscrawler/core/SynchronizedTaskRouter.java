@@ -8,6 +8,8 @@
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.IScanTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -20,6 +22,8 @@ import java.util.List;
  * @author janis.fliegenschmidt@rub.de
  */
 public class SynchronizedTaskRouter {
+    private static Logger LOG = LoggerFactory.getLogger(SynchronizedTaskRouter.class);
+
     private final Object _syncrootTodo = new Object();
     private final Object _syncrootFinished = new Object();
 
@@ -32,20 +36,25 @@ public class SynchronizedTaskRouter {
     }
 
     public void addTodo(IScanTask todo) {
+        LOG.trace("addTodo()");
+
         synchronized (_syncrootTodo) {
             this.todo.add(todo);
         }
     }
 
     public void addTodo(Collection<IScanTask> todo) {
+        LOG.trace("addTodo()");
+
         synchronized (_syncrootTodo) {
             this.todo.addAll(todo);
         }
     }
 
     public IScanTask getTodo() {
-        IScanTask result = null;
+        LOG.trace("getTodo()");
 
+        IScanTask result = null;
         synchronized (_syncrootTodo) {
             if (this.todo.size() > 0) {
                 result = this.todo.remove(0);
@@ -56,8 +65,9 @@ public class SynchronizedTaskRouter {
     }
 
     public int getTodoCount() {
-        int result;
+        LOG.trace("getTodoCount()");
 
+        int result;
         synchronized (_syncrootTodo) {
             result = this.todo.size();
         }
@@ -66,14 +76,17 @@ public class SynchronizedTaskRouter {
     }
 
     public void addFinished(IScanTask finished) {
+        LOG.trace("addFinished()");
+
         synchronized (_syncrootFinished) {
             this.finished.add(finished);
         }
     }
 
     public List<IScanTask> getFinished() {
-        List<IScanTask> result = new LinkedList<>();
+        LOG.trace("getFinished()");
 
+        List<IScanTask> result = new LinkedList<>();
         synchronized (_syncrootFinished) {
             while (!this.finished.isEmpty()) {
                 result.add(this.finished.remove(0));
@@ -84,8 +97,9 @@ public class SynchronizedTaskRouter {
     }
 
     public int getFinishedCount() {
-        int result;
+        LOG.trace("getFinishedCount()");
 
+        int result;
         synchronized (_syncrootFinished) {
             result = this.finished.size();
         }

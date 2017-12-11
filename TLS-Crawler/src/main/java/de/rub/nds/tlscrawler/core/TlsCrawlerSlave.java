@@ -54,7 +54,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     public TlsCrawlerSlave(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
 
-        LOG.info("Constructor()");
+        LOG.trace("Constructor()");
 
         this.synchronizedTaskRouter = new SynchronizedTaskRouter();
         this.slaveStats = new SlaveStats(0, 0);
@@ -71,8 +71,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
     @Override
     public void start() {
-        LOG.debug("start()");
-
+        LOG.trace("start()");
         this.orgThread.start();
     }
 
@@ -101,11 +100,11 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         @Override
         public void run() {
             this.isRunning.set(true);
-            LOG.info("run()");
+            LOG.trace("run()");
 
             while (this.isRunning.get()) {
                 if (this.synchronizedTaskRouter.getTodoCount() < NEW_FETCH_LIMIT) {
-                    LOG.info("Fetching tasks.", this.getName());
+                    LOG.trace("Fetching tasks.", this.getName());
 
                     Collection<String> taskIds = this.organizer.getOrchestrationProvider().getScanTasks(FETCH_AMOUNT);
                     Map<String, IScanTask> tasks =  this.organizer.getPersistenceProvider().getScanTasks(taskIds);
@@ -121,7 +120,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
                 if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
                         || ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) {
-                    LOG.info("Persisting results.", this.getName());
+                    LOG.trace("Persisting results.");
                     Collection<IScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
 
                     // TODO: Implement bulk operation @IPersistenceProvider

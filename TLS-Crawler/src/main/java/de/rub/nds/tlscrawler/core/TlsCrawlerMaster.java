@@ -67,6 +67,8 @@ public class TlsCrawlerMaster extends TlsCrawler {
     }
 
     public IMasterStats getStats() {
+        LOG.trace("getStats()");
+
         IPersistenceProviderStats ppStats = this.getPersistenceProvider().getStats();
 
         return new MasterStats(ppStats.getTotalTasks(),
@@ -76,6 +78,8 @@ public class TlsCrawlerMaster extends TlsCrawler {
     }
 
     private boolean areNotValidArgs(List<String> scans, List<String> targets, List<Integer> ports) {
+        LOG.trace("areNotValidArgs()");
+
         List<String> invalidScans = scans.stream().filter(x -> !this.getScanNames().contains(x)).collect(Collectors.toList());
         List<String> invalidTargetIps = targets.stream().filter(x -> !isValidIp(x)).collect(Collectors.toList());
         List<Integer> invalidPorts = ports.stream().filter(x -> x < 1 || x > 65535).collect(Collectors.toList());

@@ -14,6 +14,8 @@ import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlsscanner.TLSScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple scan using TLS Scanner to generate a site report.
@@ -21,6 +23,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
  * @author janis.fliegenschmidt@rub.de
  */
 public class TestScan implements IScan {
+    private static Logger LOG = LoggerFactory.getLogger(TestScan.class);
 
     @Override
     public String getName() {
@@ -29,6 +32,8 @@ public class TestScan implements IScan {
 
     @Override
     public IScanResult scan(IScanTarget target) {
+        LOG.trace("scan()");
+
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
         config.setThreads(1);
 
@@ -41,6 +46,7 @@ public class TestScan implements IScan {
 
         IScanResult result = new ScanResult(this.getName());
         result.addString("ergebnis", report.getStringReport());
+
         return result;
     }
 }

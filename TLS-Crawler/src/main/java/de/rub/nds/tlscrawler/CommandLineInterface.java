@@ -24,6 +24,8 @@ public class CommandLineInterface {
     private static Logger LOG = LoggerFactory.getLogger(CommandLineInterface.class);
 
     public static void handleInput(TlsCrawlerMaster master, ITlsCrawlerSlave slave) {
+        LOG.trace("handleInput()");
+
         Scanner scanner = new Scanner(System.in);
 
         // TODO: Implement full CLI

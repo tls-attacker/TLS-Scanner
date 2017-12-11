@@ -10,6 +10,8 @@ package de.rub.nds.tlscrawler.scans;
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ScanResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
 
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
  * @author janis.fliegenschmidt@rub.de
  */
 public class NullScan implements IScan {
+    private static Logger LOG = LoggerFactory.getLogger(NullScan.class);
+
     private static String NAME = "null_scan";
     private static Integer WAIT_MS = 5000;
 
@@ -32,6 +36,8 @@ public class NullScan implements IScan {
 
     @Override
     public IScanResult scan(IScanTarget target) {
+        LOG.trace("scan()");
+
         IScanResult result = new ScanResult(this.getName());
 
         result.addString("target_ip", target.getIp());
@@ -40,6 +46,7 @@ public class NullScan implements IScan {
                 .collect(Collectors.joining(", ")));
 
         try {
+            LOG.trace("Going to sleep.");
             Thread.sleep(NullScan.WAIT_MS);
             result.addInteger("wait_time", NullScan.WAIT_MS);
         } catch (InterruptedException e) {

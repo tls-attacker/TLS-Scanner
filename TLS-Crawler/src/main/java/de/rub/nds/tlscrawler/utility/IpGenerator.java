@@ -23,6 +23,7 @@ public class IpGenerator {
 
     public static List<String> fullRange() {
         LOG.debug("fullRange() - Start.");
+
         List<String> result = new ArrayList<>();
 
         // This is obviously bull*
@@ -39,6 +40,7 @@ public class IpGenerator {
         }
 
         LOG.debug("fullRange() - Finish.");
+
         return result;
     }
 }

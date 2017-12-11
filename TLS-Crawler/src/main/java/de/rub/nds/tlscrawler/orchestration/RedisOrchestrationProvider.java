@@ -72,8 +72,9 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     public String getScanTask() {
         this.checkInit();
 
-        String result;
+        LOG.trace("getScanTask()");
 
+        String result;
         try (Jedis jedis = this.jedisPool.getResource()) {
             result = jedis.rpop(this.taskListName);
         }
@@ -83,11 +84,11 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
     @Override
     public Collection<String> getScanTasks(int quantity) {
-        LOG.trace("getScanTasks() - Enter");
         this.checkInit();
 
-        Collection<String> result = new ArrayList<>(quantity);
+        LOG.trace("getScanTasks() - Enter");
 
+        Collection<String> result = new ArrayList<>(quantity);
         try (Jedis jedis = this.jedisPool.getResource()) {
             for (int i = 0; i < quantity; i++) {
                 // TODO: Bulk operation possible?
@@ -102,12 +103,15 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         }
 
         LOG.trace("getScanTasks() - Leave");
+
         return result;
     }
 
     @Override
     public void addScanTask(String task) {
         this.checkInit();
+
+        LOG.trace("addScanTask()");
 
         try (Jedis jedis = this.jedisPool.getResource()) {
             jedis.lpush(this.taskListName, task);

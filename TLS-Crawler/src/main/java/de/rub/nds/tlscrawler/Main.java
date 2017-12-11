@@ -75,6 +75,8 @@ public class Main {
     }
 
     private static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(CLOptions options) {
+        LOG.trace("setUpProviders()");
+
         if (options == null) {
             throw new IllegalArgumentException("'options' must not be null.");
         }
@@ -121,6 +123,8 @@ public class Main {
     static CLOptions parseOptions(String[] args) throws OptionsParsingException {
         CLOptions result;
 
+        LOG.trace("parseOptions()");
+
         OptionsParser parser = OptionsParser.newOptionsParser(CLOptions.class);
         usageInfo = parser.describeOptions(Collections.<String, String>emptyMap(), OptionsParser.HelpVerbosity.LONG);
 
@@ -155,6 +159,8 @@ public class Main {
      * @return A list of scans.
      */
     private static List<IScan> setUpScans() {
+        LOG.trace("setUpScans()");
+
         List<IScan> result = new LinkedList<>();
 
         // Set up known scans.

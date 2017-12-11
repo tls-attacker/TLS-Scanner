@@ -41,6 +41,8 @@ public class TlsCrawlerSlaveSimple extends TlsCrawler implements ITlsCrawlerSlav
     public TlsCrawlerSlaveSimple(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
 
+        LOG.trace("Constructor()");
+
         this.statSyncRoot = new Object();
         this.slaveStats = new SlaveStats(0, 0);
         this.threads = new LinkedList<>();
@@ -54,6 +56,8 @@ public class TlsCrawlerSlaveSimple extends TlsCrawler implements ITlsCrawlerSlav
 
     @Override
     public void start() {
+        LOG.trace("start()");
+
         for (Thread t : this.threads) {
             t.start();
         }
@@ -84,7 +88,7 @@ public class TlsCrawlerSlaveSimple extends TlsCrawler implements ITlsCrawlerSlav
 
         @Override
         public void run() {
-            LOG.debug("run() - Started.");
+            LOG.trace("run()");
 
             for (;;) {
                 String taskId = this.crawler.getOrchestrationProvider().getScanTask();
@@ -119,6 +123,7 @@ public class TlsCrawlerSlaveSimple extends TlsCrawler implements ITlsCrawlerSlav
                     LOG.debug("Task completed.");
                 } else {
                     try {
+                        LOG.trace("No task, sleeping.");
                         Thread.sleep(500);
                     } catch (InterruptedException e) {
                         // swallow it whole.

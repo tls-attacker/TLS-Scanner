@@ -41,6 +41,8 @@ public class PingScan implements IScan {
 
     @Override
     public IScanResult scan(IScanTarget target) {
+        LOG.trace("scan()");
+
         IScanResult result = new ScanResult(this.getName());
 
         result.addTimestamp("timestamp", Instant.now());
@@ -70,6 +72,8 @@ public class PingScan implements IScan {
     // Ping, Java style. I. e., 1 of approx. 10^10 possible implementations with unique advantages and disadvantages to
     // each. Yeah. Standard port: Echo service, port nr 7
     private static boolean isReachable(String address, int port) {
+        LOG.trace("isReachable()");
+
         if (port < 1 || port > 65535) {
             LOG.error("Tried connecting to a port outside the 16-bit range.");
             throw new IllegalArgumentException("port must be in range 1-65535.");

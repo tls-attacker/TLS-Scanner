@@ -11,6 +11,8 @@ import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.scans.IScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
@@ -18,6 +20,8 @@ import java.time.Instant;
  * Worker Thread for a more sophisticated TLS crawler slave implementation.
  */
 public class SlaveWorkerThread extends Thread {
+    private static Logger LOG = LoggerFactory.getLogger(SlaveWorkerThread.class);
+
     private final SynchronizedTaskRouter synchronizedTaskRouter;
 
     private IScanProvider scanProvider;
@@ -29,10 +33,14 @@ public class SlaveWorkerThread extends Thread {
 
     @Override
     public void run() {
+        LOG.info("run() started");
+
         for (;;) {
             IScanTask raw = this.synchronizedTaskRouter.getTodo();
 
             if (raw != null) {
+                LOG.trace(String.format("Started work on %s.", raw.getId()));
+
                 ScanTask todo = ScanTask.copyFrom(raw);
 
                 todo.setStartedTimestamp(Instant.now());

@@ -41,6 +41,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     private MongoCollection resultCollection;
 
     public MongoPersistenceProvider(MongoClientURI mongoUri) {
+        LOG.trace("Constructor()");
         this.mongoUri = mongoUri;
     }
 
@@ -50,6 +51,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      * @param dbName Name of the database to use.
      */
     public void init(String dbName) {
+        LOG.trace(String.format("init() with name '%s'", dbName));
+
         this.mongoClient = new MongoClient(this.mongoUri);
         this.database = this.mongoClient.getDatabase(dbName);
         this.resultCollection = this.database.getCollection(COLL_NAME);
@@ -75,6 +78,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     public void setUpScanTask(IScanTask newTask) {
         this.checkInit();
 
+        LOG.trace("setUpScanTask()");
+
         if (newTask.getResults() != null && !newTask.getResults().isEmpty()) {
             throw new IllegalArgumentException("'results' must be null or empty.");
         }
@@ -87,6 +92,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     @Override
     public void setUpScanTasks(Collection<IScanTask> newTasks) {
         this.checkInit();
+
+        LOG.trace("setUpScanTasks()");
 
         List<Document> bsonDocs = new LinkedList<>();
 
@@ -104,6 +111,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     @Override
     public void updateScanTask(IScanTask task) {
         this.checkInit();
+
+        LOG.trace("updateScanTask()");
 
         if (task.getId() == null || task.getId().length() == 0) {
             LOG.error("Can't update documents without an ID.");
@@ -129,6 +138,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     public IScanTask getScanTask(String id) {
         this.checkInit();
 
+        LOG.trace("getScanTask()");
+
         Document scanTask = (Document) this.resultCollection.find(eq(DBKeys.ID, id)).first();
 
         return scanTask == null ? null : scanTaskFromBsonDoc(scanTask);
@@ -137,6 +148,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     @Override
     public Map<String, IScanTask> getScanTasks(Collection<String> ids) {
         this.checkInit();
+
+        LOG.trace("getScanTasks()");
 
         Document query = new Document(DBKeys.ID, new Document(DBOperations.IN, ids));
         FindIterable<Document> results = this.resultCollection.find(query);
@@ -153,6 +166,10 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     @Override
     public IPersistenceProviderStats getStats() {
+        this.checkInit();
+
+        LOG.trace("getStats()");
+
         long totalTasks = this.resultCollection.count();
 
         Document query = new Document(DBKeys.COMPLETED_TIMESTAMP,
@@ -176,6 +193,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     static Document resultStructureToBsonDoc(Collection<IScanResult> results) {
+        LOG.trace("resultStructureToBsonDoc()");
+
         if (results == null) {
             return null;
         }
@@ -199,6 +218,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     static Document iScanResultToBson(IScanResult result) {
+        LOG.trace("iScanResultToBson()");
+
         if (result == null) {
             return null;
         }
@@ -222,6 +243,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     static Document bsonDocFromScanTask(IScanTask scanTask) {
+        LOG.trace("bsonDocFromScanTask()");
+
         if (scanTask == null) {
             return null;
         }
@@ -249,6 +272,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     static IScanTask scanTaskFromBsonDoc(Document scanTask) {
+        LOG.trace("scanTaskFromBsonDoc()");
+
         if (scanTask == null) {
             return null;
         }
@@ -282,6 +307,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     static IScanResult scanResultFromBsonDoc(Document scanResult) {
+        LOG.trace("scanResultFromBsonDoc()");
+
         if (scanResult == null) {
             return null;
         }
