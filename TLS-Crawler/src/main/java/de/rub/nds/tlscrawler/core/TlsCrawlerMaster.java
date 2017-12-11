@@ -113,7 +113,7 @@ public class TlsCrawlerMaster extends TlsCrawler {
                     + "|[1-9][0-9]|[0-9]))";
     public static final Pattern IP_ADDRESS = Pattern.compile(IP_ADDRESS_STRING);
 
-    public boolean isValidIp(String ip) {
+    public static boolean isValidIp(String ip) {
         return IP_ADDRESS.matcher(ip).matches();
     }
 }
