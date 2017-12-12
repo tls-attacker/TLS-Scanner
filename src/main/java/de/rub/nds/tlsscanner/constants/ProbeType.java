@@ -28,4 +28,5 @@ public enum ProbeType {
     SIGNATURE_AND_HASH,
     EXTENSIONS,
     COMPRESSIONS,
+    INTOLERANCES,
 }

@@ -70,17 +70,27 @@ public class ProtocolVersionProbe extends TlsProbe {
         List<ProtocolVersion> supportedVersionList = new LinkedList<>();
         List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
         for (ProtocolVersion version : toTestList) {
-            if (isProtocolVersionSupported(version)) {
+            if (isProtocolVersionSupported(version, false)) {
 
                 supportedVersionList.add(version);
             } else {
                 unsupportedVersionList.add(version);
             }
         }
+        if (supportedVersionList.isEmpty()) {
+            unsupportedVersionList = new LinkedList<>();
+            for (ProtocolVersion version : toTestList) {
+                if (isProtocolVersionSupported(version, true)) {
+                    supportedVersionList.add(version);
+                } else {
+                    unsupportedVersionList.add(version);
+                }
+            }
+        }
         return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
     }
 
-    public boolean isProtocolVersionSupported(ProtocolVersion toTest) {
+    public boolean isProtocolVersionSupported(ProtocolVersion toTest, boolean intolerance) {
         if (toTest == ProtocolVersion.SSL2) {
             return isSSL2Supported();
         }
@@ -89,8 +99,12 @@ public class ProtocolVersionProbe extends TlsProbe {
         }
         Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        if (intolerance) {
+            cipherSuites.addAll(CipherSuite.getImplemented());
+        } else {
+            cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+            cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        }
         tlsConfig.setDefaultSelectedProtocolVersion(toTest);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
@@ -172,6 +186,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setUseRandomUnixTime(true);
         tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);

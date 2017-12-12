@@ -27,6 +27,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,17 +56,25 @@ public class CiphersuiteProbe extends TlsProbe {
             List<CipherSuite> toTestList = new LinkedList<>();
             toTestList.addAll(Arrays.asList(CipherSuite.values()));
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            List<CipherSuite> versionSupportedSuites = getSupportedCipherSuitesFromList(toTestList, version);
+            List<CipherSuite> versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
+            if (versionSupportedSuites.isEmpty()) {
+                versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
+            }
             if (versionSupportedSuites.size() > 0) {
                 pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
             }
+
         }
 
         return new CiphersuiteProbeResult(pairLists);
 
     }
 
-    public List<CipherSuite> getSupportedCipherSuitesFromList(List<CipherSuite> toTestList, ProtocolVersion version) {
+    public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(ProtocolVersion version) {
+        return getSupportedCipherSuitesWithIntolerance(new ArrayList<>(CipherSuite.getImplemented()), version);
+    }
+
+    public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(List<CipherSuite> toTestList, ProtocolVersion version) {
         List<CipherSuite> listWeSupport = new LinkedList<>(toTestList);
         List<CipherSuite> supported = new LinkedList<>();
 

@@ -76,8 +76,9 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Override
     public Config createConfig() {
-        Config config = super.createConfig(); //To change body of generated methods, choose Tools | Templates.
+        Config config = super.createConfig();
         config.setSniHostname(clientDelegate.getHost());
+        config.getDefaultClientConnection().setTimeout(1000);
         return config;
     }
     

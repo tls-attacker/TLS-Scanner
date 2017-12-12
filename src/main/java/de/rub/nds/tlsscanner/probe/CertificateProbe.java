@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.CertificateResult;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -37,9 +38,10 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.values());
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
         List<CertificateReport> reportList = CertificateReportGenerator.generateReports(serverCert);
-        return new CertificateResult(getType(), reportList);
+        return new CertificateResult(getType(), reportList, serverCert);
     }
 }

@@ -15,19 +15,22 @@ import java.util.List;
  * @author Robert Merget <robert.merget@rub.de>
  */
 public class ProtocolVersionResult extends ProbeResult {
-
+    
     private final List<ProtocolVersion> supportedProtocolVersions;
-
+    
     private final List<ProtocolVersion> unsupportedProtocolVersions;
-
+    
     public ProtocolVersionResult(List<ProtocolVersion> supportedProtocolVersions, List<ProtocolVersion> unsupportedProtocolVersions) {
         super(ProbeType.CIPHERSUITE);
         this.supportedProtocolVersions = supportedProtocolVersions;
         this.unsupportedProtocolVersions = unsupportedProtocolVersions;
     }
-
+    
     @Override
     public void merge(SiteReport report) {
+        if (supportedProtocolVersions.size() > 0) {
+            report.setSupportsSslTls(true);
+        }
         report.setVersions(supportedProtocolVersions);
         for (ProtocolVersion version : supportedProtocolVersions) {
             if (version == ProtocolVersion.DTLS10) {
@@ -138,5 +141,5 @@ public class ProtocolVersionResult extends ProbeResult {
         }
         report.setVersions(supportedProtocolVersions);
     }
-
+    
 }

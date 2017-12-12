@@ -162,6 +162,7 @@ public class SiteReport {
     private Boolean extensionIntolerance;
     private Boolean cipherSuiteIntolerance;
     private Boolean supportedCurvesIntolerance;
+    private Boolean clientHelloSizeIntolerance;
 
     public SiteReport(String host) {
         this.host = host;
@@ -1376,6 +1377,14 @@ public class SiteReport {
         this.versionSuitePairs = versionSuitePairs;
     }
 
+    public Boolean getClientHelloSizeIntolerance() {
+        return clientHelloSizeIntolerance;
+    }
+
+    public void setClientHelloSizeIntolerance(Boolean clientHelloSizeIntolerance) {
+        this.clientHelloSizeIntolerance = clientHelloSizeIntolerance;
+    }
+    
     @Override
     public String toString() {
         return getStringReport();
