@@ -577,6 +577,10 @@ public class SiteReport {
         this.supportsTls12 = supportsTls12;
     }
 
+    public Boolean supportsAnyTls13() {
+        return supportsTls13 == Boolean.TRUE || supportsTls13Draft14 == Boolean.TRUE || supportsTls13Draft15 == Boolean.TRUE || supportsTls13Draft16 == Boolean.TRUE || supportsTls13Draft17 == Boolean.TRUE || supportsTls13Draft18 == Boolean.TRUE || supportsTls13Draft19 == Boolean.TRUE || supportsTls13Draft20 == Boolean.TRUE || supportsTls13Draft21 == Boolean.TRUE || supportsTls13Draft22 == Boolean.TRUE;
+    }
+
     public Boolean getSupportsTls13() {
         return supportsTls13;
     }
@@ -1384,7 +1388,7 @@ public class SiteReport {
     public void setClientHelloSizeIntolerance(Boolean clientHelloSizeIntolerance) {
         this.clientHelloSizeIntolerance = clientHelloSizeIntolerance;
     }
-    
+
     @Override
     public String toString() {
         return getStringReport();
