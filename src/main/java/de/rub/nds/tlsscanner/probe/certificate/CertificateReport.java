@@ -11,12 +11,15 @@ package de.rub.nds.tlsscanner.probe.certificate;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import java.security.PublicKey;
 import java.util.Date;
+import org.bouncycastle.asn1.x509.Certificate;
 
 /**
  *
  * @author Robert Merget - robert.merget@rub.de
  */
 public interface CertificateReport {
+
+    public Certificate getCertificate();
 
     public String getSubject();
 

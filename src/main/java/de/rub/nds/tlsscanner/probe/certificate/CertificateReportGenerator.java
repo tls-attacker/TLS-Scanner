@@ -29,16 +29,19 @@ import org.bouncycastle.jce.provider.X509CertificateObject;
  * @author Robert Merget - robert.merget@rub.de
  */
 public class CertificateReportGenerator {
-
+    
     private static final Logger LOGGER = LogManager.getLogger(CertificateReportGenerator.class.getName());
-
+    
     public static List<CertificateReport> generateReports(Certificate certs) {
         List<CertificateReport> reportList = new LinkedList<>();
-        reportList.add(generateReport(certs.getCertificateAt(0)));
-
+        if (certs != null) {
+            for (org.bouncycastle.asn1.x509.Certificate cert : certs.getCertificateList()) {
+                reportList.add(generateReport(cert));
+            }
+        }
         return reportList;
     }
-
+    
     public static CertificateReport generateReport(org.bouncycastle.asn1.x509.Certificate cert) {
         CertificateReportImplementation report = new CertificateReportImplementation();
         setSubject(report, cert);
@@ -58,35 +61,36 @@ public class CertificateReportGenerator {
         setRevoked(report, cert);
         setDnsCCA(report, cert);
         setTrusted(report, cert);
+        report.setCertificate(cert);
         return report;
     }
-
+    
     private static void setSubject(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
         X500Name x500name = cert.getSubject();
         RDN cn = x500name.getRDNs(BCStyle.CN)[0];
         report.setCommonNames(IETFUtils.valueToString(cn.getFirst().getValue()));
     }
-
+    
     private static void setCommonNames(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
         X500Name x500name = cert.getSubject();
         RDN cn = x500name.getRDNs(BCStyle.CN)[0];
         report.setCommonNames(IETFUtils.valueToString(cn.getFirst().getValue()));
     }
-
+    
     private static void setAlternativeNames(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
-
+        
     }
-
+    
     private static void setValidFrom(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
         report.setValidFrom(cert.getStartDate().getDate());
     }
-
+    
     private static void setValidTo(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
         report.setValidTo(cert.getEndDate().getDate());
     }
-
+    
     private static void setPubkey(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
         try {
             X509Certificate x509Cert = new X509CertificateObject(cert);
@@ -95,15 +99,15 @@ public class CertificateReportGenerator {
             // TODO log could not set public key
         }
     }
-
+    
     private static void setWeakDebianKey(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
-
+    
     private static void setIssuer(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
         report.setIssuer(cert.getIssuer().toString());
     }
-
+    
     private static void setSignatureAndHashAlgorithm(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
         String sigAndHashString = null;
@@ -125,34 +129,34 @@ public class CertificateReportGenerator {
             LOGGER.debug("Could not extraxt SignatureAndHashAlgorithm from String:" + sigAndHashString, E);
         }
     }
-
+    
     private static void setExtendedValidation(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
-
+        
     }
-
+    
     private static void setCeritifcateTransparency(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
-
+    
     private static void setOcspMustStaple(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
-
+    
     private static void setCRLSupported(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
-
+    
     private static void setOcspSupported(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
-
+    
     private static void setRevoked(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
-
+    
     private static void setDnsCCA(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
-
+    
     private static void setTrusted(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 }

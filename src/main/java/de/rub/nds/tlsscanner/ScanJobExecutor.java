@@ -10,9 +10,10 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.probe.TLSProbe;
+import de.rub.nds.tlsscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -38,7 +39,7 @@ public class ScanJobExecutor {
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
-        for (TLSProbe probe : scanJob.getProbeList()) {
+        for (TlsProbe probe : scanJob.getProbeList()) {
             futureResults.add(executor.submit(probe));
         }
         List<ProbeResult> resultList = new LinkedList<>();
@@ -54,6 +55,15 @@ public class ScanJobExecutor {
         executor.shutdown();
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegate(ClientDelegate.class);
         String hostname = clientDelegate.getHost();
-        return new SiteReport(hostname, resultList);
+        SiteReport report = new SiteReport(hostname);
+        report.setServerIsAlive(Boolean.TRUE);
+        for (ProbeResult result : resultList) {
+            result.merge(report);
+        }
+        for(AfterProbe afterProbe : scanJob.getAfterProbes())
+        {
+            afterProbe.analyze(report);
+        }
+        return report;
     }
 }

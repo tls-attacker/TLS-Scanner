@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.report.result.CipherSuiteOrderResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
@@ -19,10 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
-import de.rub.nds.tlsscanner.report.ResultValue;
-import de.rub.nds.tlsscanner.report.check.CheckType;
-import de.rub.nds.tlsscanner.report.check.TLSCheck;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -32,31 +31,21 @@ import java.util.List;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class CiphersuiteOrderProbe extends TLSProbe {
+public class CiphersuiteOrderProbe extends TlsProbe {
 
     public CiphersuiteOrderProbe(ScannerConfig config) {
-        super(ProbeType.CIPHERSUITE_ORDER, config);
+        super(ProbeType.CIPHERSUITE_ORDER, config, 0);
     }
 
     @Override
-    public ProbeResult call() {
-        LOGGER.debug("Starting CipherSuiteOrder Test");
-
+    public ProbeResult executeTest() {
         List<CipherSuite> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(CipherSuite.values()));
         toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
         CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
         Collections.reverseOrder();
         CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-
-        List<ResultValue> resultList = new LinkedList<>();
-        resultList.add(new ResultValue("Server Enforces Ciphersuite Order", ""
-                + (firstSelectedCipherSuite == secondSelectedCipherSuite)));
-        List<TLSCheck> checkList = new LinkedList<>();
-        checkList.add(new TLSCheck(firstSelectedCipherSuite != secondSelectedCipherSuite,
-                CheckType.CIPHERSUITEORDER_ENFORCED, 1));
-        return new ProbeResult(getType(), resultList, checkList);
-
+        return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite);
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -65,7 +54,7 @@ public class CiphersuiteOrderProbe extends TLSProbe {
         tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(true);
-        tlsConfig.setAddServerNameIndicationExtension(false);
+        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setQuickReceive(true);

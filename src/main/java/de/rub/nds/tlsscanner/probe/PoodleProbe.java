@@ -8,41 +8,32 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.PoodleCommandConfig;
-import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
 import de.rub.nds.tlsattacker.attacks.impl.PoodleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
-import de.rub.nds.tlsscanner.report.ResultValue;
-import de.rub.nds.tlsscanner.report.check.CheckType;
-import de.rub.nds.tlsscanner.report.check.TLSCheck;
-import java.util.LinkedList;
-import java.util.List;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.PoodleResult;
 
 /**
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class PoodleProbe extends TLSProbe {
+public class PoodleProbe extends TlsProbe {
 
     public PoodleProbe(ScannerConfig config) {
-        super(ProbeType.POODLE, config);
+        super(ProbeType.POODLE, config, 0);
     }
 
     @Override
-    public ProbeResult call() {
-        LOGGER.debug("Starting Poodle Probe");
+    public ProbeResult executeTest() {
         PoodleCommandConfig poodleCommandConfig = new PoodleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         PoodleAttacker attacker = new PoodleAttacker(poodleCommandConfig);
         Boolean vulnerable = attacker.isVulnerable();
-        TLSCheck check = new TLSCheck(vulnerable, CheckType.ATTACK_POODLE, 10);
-        List<TLSCheck> checkList = new LinkedList<>();
-        checkList.add(check);
-        return new ProbeResult(getType(), new LinkedList<ResultValue>(), checkList);
+        return new PoodleResult(vulnerable);
     }
 
 }

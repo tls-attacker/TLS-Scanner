@@ -8,21 +8,22 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
 /**
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class SignatureAndHashAlgorithmProbe extends TLSProbe {
+public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     public SignatureAndHashAlgorithmProbe(ScannerConfig config) {
-        super(ProbeType.SIGNATURE_AND_HASH, config);
+        super(ProbeType.SIGNATURE_AND_HASH, config, 4);
     }
 
     @Override
-    public ProbeResult call() {
+    public ProbeResult executeTest() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

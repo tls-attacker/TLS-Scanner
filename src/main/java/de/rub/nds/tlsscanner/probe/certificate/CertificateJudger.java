@@ -10,14 +10,8 @@ package de.rub.nds.tlsscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
-import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.check.CheckType;
-import de.rub.nds.tlsscanner.report.check.TLSCheck;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import org.bouncycastle.asn1.x509.Certificate;
-
 
 /**
  *
@@ -28,104 +22,81 @@ public class CertificateJudger {
     private final Certificate certificate;
     private final String domainName;
     private final CertificateReport report;
-    private final ScannerConfig config;
 
-    public CertificateJudger(Certificate certificate, ScannerConfig config, CertificateReport report) {
+    public CertificateJudger(Certificate certificate, CertificateReport report, String domainName) {
         this.certificate = certificate;
-        this.config = config;
-        this.domainName = config.createConfig().getSniHostname();
         this.report = report;
+        this.domainName = domainName;
     }
 
-    public List<TLSCheck> getChecks() {
-        List<TLSCheck> tlsCheckList = new LinkedList<>();
-        boolean receivedCertificate = (certificate != null);
-        tlsCheckList
-                .add(new TLSCheck(!receivedCertificate, CheckType.CERTIFICATE_NOT_SENT_BY_SERVER, 10));
-        if (!receivedCertificate) {
-            return tlsCheckList;
-        }
-        // tlsCheckList.add(checkCertificateRevoked());
-        tlsCheckList.add(checkExpired());
-        tlsCheckList.add(checkNotYetValid());
-        tlsCheckList.add(checkHashAlgorithm());
-        tlsCheckList.add(checkSignAlgorithm());
-        // tlsCheckList.add(checkDomainNameMatch());
-        // tlsCheckList.add(checkCertificateTrusted());
-        // tlsCheckList.add(checkSelfSigned());
-        // tlsCheckList.add(checkBlacklistedKey());
-
-        return tlsCheckList;
-    }
-
-    public TLSCheck checkExpired() {
+    public Boolean checkExpired() {
         boolean result = isCertificateExpired(report);
-        return new TLSCheck(result, CheckType.CERTIFICATE_EXPIRED, 10);
+        return result;
     }
 
-    public TLSCheck checkNotYetValid() {
+    public Boolean checkNotYetValid() {
         boolean result = isCertificateValidYet(report);
-        return new TLSCheck(result, CheckType.CERTIFICATE_NOT_VALID_YET, 10);
+        return result;
     }
 
-    public TLSCheck checkCertificateRevoked() {
+    public Boolean checkCertificateRevoked() {
         boolean result = isRevoked(certificate);
-        return new TLSCheck(result, CheckType.CERTIFICATE_REVOKED, 10);
+        return result;
     }
 
-    private TLSCheck checkHashAlgorithm() {
+    private Boolean checkHashAlgorithm() {
         boolean result = isWeakHashAlgo(report);
-        return new TLSCheck(result, CheckType.CERTIFICATE_WEAK_HASH_FUNCTION, 7);
+        return result;
     }
 
-    private TLSCheck checkSignAlgorithm() {
+    private Boolean checkSignAlgorithm() {
         boolean result = isWeakSigAlgo(report);
-        return new TLSCheck(result, CheckType.CERTIFICATE_WEAK_SIGN_ALGORITHM, 10);
+        return result;
     }
 
-    public boolean isWeakHashAlgo(CertificateReport report) {
+    public Boolean isWeakHashAlgo(CertificateReport report) {
         HashAlgorithm algo = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
         return algo == HashAlgorithm.MD5 || algo == HashAlgorithm.NONE || algo == HashAlgorithm.SHA1;
     }
 
-    public boolean isWeakSigAlgo(CertificateReport report) {
+    public Boolean isWeakSigAlgo(CertificateReport report) {
         SignatureAlgorithm algo = report.getSignatureAndHashAlgorithm().getSignatureAlgorithm();
         return algo == SignatureAlgorithm.ANONYMOUS; // TODO is this weak?
     }
 
-    public boolean isWeakKey(CertificateReport report) {
+    public Boolean isWeakKey(CertificateReport report) {
         return report.getWeakDebianKey() == Boolean.TRUE;
     }
 
-    public boolean isCertificateExpired(CertificateReport report) {
+    public Boolean isCertificateExpired(CertificateReport report) {
         return !report.getValidTo().after(new Date(System.currentTimeMillis()));
     }
 
-    public boolean isCertificateValidYet(CertificateReport report) {
+    public Boolean isCertificateValidYet(CertificateReport report) {
         return !report.getValidFrom().before(new Date(System.currentTimeMillis()));
     }
 
-    public boolean isRevoked(Certificate certificate) {
+    public Boolean isRevoked(Certificate certificate) {
         // TODO
         return false;
     }
 
-    public boolean domainNameDoesNotMatch(Certificate certificate, String domainName) {
+    public Boolean domainNameDoesNotMatch(Certificate certificate, String domainName) {
         // TODO
         return false;
     }
 
-    private boolean isNotTrusted(Certificate certificate) {
+    private Boolean isNotTrusted(Certificate certificate) {
         // TODO
         return false;
     }
 
-    private boolean isSelfSigned(Certificate certificate) {
+    private Boolean isSelfSigned(Certificate certificate) {
         return false;
 
     }
 
-    private TLSCheck checkDomainNameMatch() {
+    private Boolean checkDomainNameMatch() {
         // if (domainNameDoesNotMatch(certificate, domainName)) {
         // tlsCheckList.add(new ConfigurationFlaw("Domain nicht zulässig",
         // FlawLevel.FATAL,
@@ -137,7 +108,7 @@ public class CertificateJudger {
         return null;
     }
 
-    private TLSCheck checkCertificateTrusted() {
+    private Boolean checkCertificateTrusted() {
         // if (isNotTrusted(certificate)) {
         // tlsCheckList.add(new
         // ConfigurationFlaw("Zertifikat nicht vertrauenswürdig",
@@ -148,7 +119,7 @@ public class CertificateJudger {
         return null;
     }
 
-    private TLSCheck checkSelfSigned() {
+    private Boolean checkSelfSigned() {
         // if (isSelfSigned(certificate)) {
         // tlsCheckList
         // .add(new ConfigurationFlaw(
@@ -160,7 +131,7 @@ public class CertificateJudger {
         return null;
     }
 
-    private TLSCheck checkBlacklistedKey() {
+    private Boolean checkBlacklistedKey() {
         // if (isWeakKey(report)) {
         // tlsCheckList.add(new ConfigurationFlaw(domainName, FlawLevel.FATAL,
         // domainName, domainName));

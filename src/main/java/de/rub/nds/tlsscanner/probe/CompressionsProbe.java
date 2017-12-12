@@ -8,10 +8,12 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsscanner.report.result.CompressionsResult;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.NamedCurveResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -33,22 +35,25 @@ import java.util.List;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class NamedCurvesProbe extends TlsProbe {
+public class CompressionsProbe extends TlsProbe {
 
-    public NamedCurvesProbe(ScannerConfig config) {
-        super(ProbeType.NAMED_CURVES, config, 0);
+    public CompressionsProbe(ScannerConfig config) {
+        super(ProbeType.COMPRESSIONS, config, 0);
     }
 
     @Override
     public ProbeResult executeTest() {
-        List<NamedCurve> curves = getSupportedNamedCurves();
-        return new NamedCurveResult(curves);
+        List<CompressionMethod> compressions = getSupportedCompressionMethods();
+        return new CompressionsResult(compressions);
     }
 
-    private List<NamedCurve> getSupportedNamedCurves() {
+    private List<CompressionMethod> getSupportedCompressionMethods() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
+        List<CipherSuite> ciphersuites = new LinkedList<>();
+        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
+        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -59,25 +64,27 @@ public class NamedCurvesProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
-        List<NamedCurve> toTestList = new ArrayList<>(Arrays.asList(NamedCurve.values()));
-        NamedCurve selectedCurve;
-        List<NamedCurve> supportedNamedCurves = new LinkedList<>();
+        tlsConfig.setNamedCurves(NamedCurve.values());
+        List<CompressionMethod> toTestList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
+        
+        CompressionMethod selectedCompressionMethod;
+        List<CompressionMethod> supportedCompressionMethods = new LinkedList<>();
         do {
-            selectedCurve = testCurves(toTestList, tlsConfig);
-            if (!toTestList.contains(selectedCurve)) {
-                LOGGER.debug("Server chose a Curve we did not offer!");
+            selectedCompressionMethod = testCompressionMethods(toTestList, tlsConfig);
+            if (!toTestList.contains(selectedCompressionMethod)) {
+                LOGGER.warn("Server chose a CompressionMethod we did not offer!");
                 break;
             }
-            if (selectedCurve != null) {
-                supportedNamedCurves.add(selectedCurve);
-                toTestList.remove(selectedCurve);
+            if (selectedCompressionMethod != null) {
+                supportedCompressionMethods.add(selectedCompressionMethod);
+                toTestList.remove(selectedCompressionMethod);
             }
-        } while (selectedCurve != null || toTestList.size() > 0);
-        return supportedNamedCurves;
+        } while (selectedCompressionMethod != null || toTestList.size() > 0);
+        return supportedCompressionMethods;
     }
 
-    private NamedCurve testCurves(List<NamedCurve> curveList, Config tlsConfig) {
-        tlsConfig.setNamedCurves(curveList);
+    private CompressionMethod testCompressionMethods(List<CompressionMethod> compressionList, Config tlsConfig) {
+        tlsConfig.setDefaultClientSupportedCompressionMethods(compressionList);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);
@@ -87,7 +94,7 @@ public class NamedCurvesProbe extends TlsProbe {
             LOGGER.debug(ex);
         }
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return state.getTlsContext().getSelectedCurve();
+            return state.getTlsContext().getSelectedCompressionMethod();
         } else {
             LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
