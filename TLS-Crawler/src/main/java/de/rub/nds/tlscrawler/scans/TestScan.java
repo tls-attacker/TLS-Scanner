@@ -11,7 +11,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ScanResult;
-import de.rub.nds.tlsscanner.TLSScanner;
+import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class TestScan implements IScan {
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
 
-        TLSScanner scanner = new TLSScanner(config);
+        TlsScanner scanner = new TlsScanner(config);
 
         SiteReport report = scanner.scan();
 
