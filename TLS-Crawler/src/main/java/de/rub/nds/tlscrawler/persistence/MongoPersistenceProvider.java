@@ -182,8 +182,10 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         Document group = new Document(DBOperations.GROUP, minCompCreated);
         Document result = (Document)this.resultCollection.aggregate(Arrays.asList(group)).first();
 
-        Instant earliestCompletionTimestamp = ((Date)result.get("minCompleted")).toInstant();
-        Instant earliestCreatedTimestamp = ((Date)result.get("minCreated")).toInstant();
+        Date minCompDate = (Date)result.get("minCompleted");
+        Instant earliestCompletionTimestamp = minCompDate == null ? null : minCompDate.toInstant();
+        Date minCreaDate = (Date)result.get("minCreated");
+        Instant earliestCreatedTimestamp = minCreaDate == null ? null : minCreaDate.toInstant();
 
         return new PersistenceProviderStats(
                 totalTasks,

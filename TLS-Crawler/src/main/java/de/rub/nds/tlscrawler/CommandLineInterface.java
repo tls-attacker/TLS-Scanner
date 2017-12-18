@@ -37,7 +37,21 @@ public class CommandLineInterface {
             LOG.debug(String.format("Received input: \"%s\"", input));
 
             switch (input) {
-                case "test_scan":
+                case "tls_scan": {
+                    List<String> chosenScans = new LinkedList<>();
+                    chosenScans.add("tls_scan");
+
+                    List<String> targets = Arrays.asList("172.217.22.35");
+
+                    List<Integer> ports = new ArrayList<>();
+                    ports.add(443);
+
+                    master.crawl(chosenScans, targets, ports);
+                }
+
+                break;
+
+                case "test_scan": {
                     List<String> chosenScans = new LinkedList<>();
                     chosenScans.add("test_scan");
 
@@ -52,13 +66,25 @@ public class CommandLineInterface {
                     ports.add(8987);
 
                     master.crawl(chosenScans, targets, ports);
-                    break;
+                }
 
-                case "print":
+                break;
+
+                case "exit": {
+                    // TODO: Graceful teardown
+                    LOG.info("Shutting down. Bye!");
+                    System.exit(0);
+                }
+
+                break;
+
+                case "print": {
                     IMasterStats stats = master.getStats();
 
                     LOG.info(String.format("Tasks completed: %d/%d", stats.getFinishedTasks(), stats.getTotalTasks()));
-                    break;
+                }
+
+                break;
 
                 default:
                     System.out.println("Did not understand. Try again.");
