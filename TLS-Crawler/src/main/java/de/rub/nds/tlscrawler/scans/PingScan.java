@@ -7,7 +7,9 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
+import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A simple scan testing whether a host is available at a given IP address.
@@ -37,18 +40,31 @@ public class PingScan implements IScan {
     }
 
     @Override
-    public List<Tuple> scan(IScanTarget target) {
-        List<Tuple> result = new LinkedList<>();
+    public IScanResult scan(IScanTarget target) {
+        LOG.trace("scan()");
 
-        result.add(Tuple.create("timestamp", Instant.now().toString()));
-        result.add(Tuple.create("timeout", this.timeOutMs));
+        IScanResult result = new ScanResult(this.getName());
+
+        result.addTimestamp("timestamp", Instant.now());
+        result.addInteger("timeout", this.timeOutMs);
 
         Collection<Tuple> portwiseScanResult = new LinkedList<>();
         for (Integer port : target.getPorts()) {
-            portwiseScanResult.add(Tuple.create(port.toString(), isReachable(target.getIp(), port)));
+            portwiseScanResult.add(Tuple.create(port, isReachable(target.getIp(), port)));
         }
 
-        result.add(Tuple.create("reachablePorts", portwiseScanResult));
+        List<Integer> reachablePorts = portwiseScanResult.stream()
+                .filter(x -> (boolean)x.getSecond())
+                .map(x -> (int)x.getFirst())
+                .collect(Collectors.toList());
+
+        List<Integer> unreachablePorts = portwiseScanResult.stream()
+                .filter(x -> !(boolean)x.getSecond())
+                .map(x -> (int)x.getFirst())
+                .collect(Collectors.toList());
+
+        result.addIntegerArray("reachablePorts", reachablePorts);
+        result.addIntegerArray("unreachablePorts", unreachablePorts);
 
         return result;
     }
@@ -56,6 +72,8 @@ public class PingScan implements IScan {
     // Ping, Java style. I. e., 1 of approx. 10^10 possible implementations with unique advantages and disadvantages to
     // each. Yeah. Standard port: Echo service, port nr 7
     private static boolean isReachable(String address, int port) {
+        LOG.trace("isReachable()");
+
         if (port < 1 || port > 65535) {
             LOG.error("Tried connecting to a port outside the 16-bit range.");
             throw new IllegalArgumentException("port must be in range 1-65535.");

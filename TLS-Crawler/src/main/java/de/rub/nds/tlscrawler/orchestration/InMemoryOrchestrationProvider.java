@@ -7,10 +7,12 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Simplest implementation of an orchestration provider.
@@ -20,20 +22,25 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
+    private static Logger LOG = LoggerFactory.getLogger(InMemoryOrchestrationProvider.class);
+
     private Object syncRoot = new Object();
-    private List<UUID> tasks = new LinkedList<>();
+    private List<String> tasks = new LinkedList<>();
 
     @Override
-    public UUID getScanTask() {
+    public String getScanTask() {
+        LOG.trace("getScanTask()");
+
         synchronized (syncRoot) {
             return tasks.isEmpty() ? null : tasks.remove(0);
         }
     }
 
     @Override
-    public Collection<UUID> getScanTasks(int quantity) {
-        LinkedList<UUID> result = new LinkedList<>();
+    public Collection<String> getScanTasks(int quantity) {
+        LOG.trace("getScanTasks()");
 
+        LinkedList<String> result = new LinkedList<>();
         synchronized (syncRoot) {
             for (int i = 0; i < quantity; i++) {
                 if (!this.tasks.isEmpty()) {
@@ -46,7 +53,9 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
-    public void addScanTask(UUID task) {
+    public void addScanTask(String task) {
+        LOG.trace("addScanTask()");
+
         synchronized (syncRoot) {
             this.tasks.add(task);
         }

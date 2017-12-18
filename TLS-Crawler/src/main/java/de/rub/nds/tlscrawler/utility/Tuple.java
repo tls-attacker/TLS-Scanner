@@ -15,7 +15,7 @@ package de.rub.nds.tlscrawler.utility;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class Tuple<T1, T2> {
+public class Tuple<T1, T2> implements ITuple<T1, T2> {
     private final T1 first;
     private final T2 second;
 
@@ -33,7 +33,7 @@ public class Tuple<T1, T2> {
     }
 
     /**
-     * Convenience factory method.
+     * Convenience factory method, creates from two values.
      *
      * @param first First object.
      * @param second Second object.
@@ -43,6 +43,18 @@ public class Tuple<T1, T2> {
      */
     public static <A, B> Tuple<A, B> create(A first, B second) {
         return new Tuple<A, B>(first, second);
+    }
+
+    /**
+     * Convenience factory method, creates from ITuple.
+     *
+     * @param tuple The ITuple to copy.
+     * @param <A> Type of first object, can be inferred.
+     * @param <B> Type of second object, can be inferred.
+     * @return Tuple of (tuple.first, tuple.second).
+     */
+    public static <A, B> Tuple<A, B> copyFrom(ITuple<A, B> tuple) {
+        return create(tuple.getFirst(), tuple.getSecond());
     }
 
     @Override

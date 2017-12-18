@@ -7,17 +7,13 @@
  */
 package de.rub.nds.tlscrawler;
 
-import de.rub.nds.tlscrawler.core.TLSCrawlerMaster;
-import de.rub.nds.tlscrawler.core.TLSCrawlerSlave;
+import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
+import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
 import de.rub.nds.tlscrawler.data.IMasterStats;
-import de.rub.nds.tlscrawler.utility.IpGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Implements the command line interface.
@@ -27,7 +23,9 @@ import java.util.Scanner;
 public class CommandLineInterface {
     private static Logger LOG = LoggerFactory.getLogger(CommandLineInterface.class);
 
-    public static void handleInput(TLSCrawlerMaster master, TLSCrawlerSlave slave) {
+    public static void handleInput(TlsCrawlerMaster master, ITlsCrawlerSlave slave) {
+        LOG.trace("handleInput()");
+
         Scanner scanner = new Scanner(System.in);
 
         // TODO: Implement full CLI
@@ -39,11 +37,26 @@ public class CommandLineInterface {
             LOG.debug(String.format("Received input: \"%s\"", input));
 
             switch (input) {
-                case "test_scan":
-                    List<String> chosenScans = new LinkedList<>();
-                    chosenScans.add("null_scan");
+                case "tls_scan": {
 
-                    List<String> targets = IpGenerator.fullRange();
+                    List<String> chosenScans = new LinkedList<>();
+                    chosenScans.add("tls_scan");
+
+                    List<String> targets = Arrays.asList("172.217.22.35");
+
+                    List<Integer> ports = new ArrayList<>();
+                    ports.add(443);
+
+                    master.crawl(chosenScans, targets, ports);
+                }
+
+                break;
+
+                case "test_scan": {
+                    List<String> chosenScans = new LinkedList<>();
+                    chosenScans.add("test_scan");
+
+                    List<String> targets = Arrays.asList("172.217.22.35");
 
                     List<Integer> ports = new ArrayList<>();
                     ports.add(32);
@@ -54,13 +67,25 @@ public class CommandLineInterface {
                     ports.add(8987);
 
                     master.crawl(chosenScans, targets, ports);
-                    break;
+                    master.crawl(chosenScans, targets, ports);
+                }
 
-                case "print":
+                break;
+
+                case "exit": {
+                    // TODO: Graceful teardown
+                    LOG.info("Shutting down. Bye!");
+                    System.exit(0);
+                }
+
+                break;
+
+                case "print": {
                     IMasterStats stats = master.getStats();
-
                     LOG.info(String.format("Tasks completed: %d/%d", stats.getFinishedTasks(), stats.getTotalTasks()));
-                    break;
+                }
+
+                break;
 
                 default:
                     System.out.println("Did not understand. Try again.");

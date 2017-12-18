@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
@@ -26,8 +27,8 @@ import static java.util.stream.Collectors.joining;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class TLSCrawlerMaster extends TLSCrawler {
-    private static Logger LOG = LoggerFactory.getLogger(TLSCrawlerMaster.class);
+public class TlsCrawlerMaster extends TlsCrawler {
+    private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerMaster.class);
 
     /**
      * TLS-Crawler master constructor.
@@ -36,7 +37,7 @@ public class TLSCrawlerMaster extends TLSCrawler {
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TLSCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
+    public TlsCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
     }
 
@@ -48,7 +49,7 @@ public class TLSCrawlerMaster extends TLSCrawler {
         // TODO: This should be parallelized.
 
         for (String target : targets) {
-            UUID scanId = UUID.randomUUID();
+            String scanId = UUID.randomUUID().toString();
 
             IScanTask newTask = new ScanTask(
                     scanId,
@@ -60,12 +61,14 @@ public class TLSCrawlerMaster extends TLSCrawler {
                     ports,
                     scans);
 
-            this.getPersistenceProvider().save(newTask);
+            this.getPersistenceProvider().setUpScanTask(newTask);
             this.getOrchestrationProvider().addScanTask(newTask.getId());
         }
     }
 
     public IMasterStats getStats() {
+        LOG.trace("getStats()");
+
         IPersistenceProviderStats ppStats = this.getPersistenceProvider().getStats();
 
         return new MasterStats(ppStats.getTotalTasks(),
@@ -75,6 +78,8 @@ public class TLSCrawlerMaster extends TLSCrawler {
     }
 
     private boolean areNotValidArgs(List<String> scans, List<String> targets, List<Integer> ports) {
+        LOG.trace("areNotValidArgs()");
+
         List<String> invalidScans = scans.stream().filter(x -> !this.getScanNames().contains(x)).collect(Collectors.toList());
         List<String> invalidTargetIps = targets.stream().filter(x -> !isValidIp(x)).collect(Collectors.toList());
         List<Integer> invalidPorts = ports.stream().filter(x -> x < 1 || x > 65535).collect(Collectors.toList());
@@ -101,8 +106,14 @@ public class TLSCrawlerMaster extends TLSCrawler {
         return !(allScansValid && allTargetIpsValid && allPortsValid);
     }
 
-    private boolean isValidIp(String ip) {
-        // TODO: There's gotta be a better way.
-        return true;
+    private static final String IP_ADDRESS_STRING =
+            "((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
+                    + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
+                    + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
+                    + "|[1-9][0-9]|[0-9]))";
+    public static final Pattern IP_ADDRESS = Pattern.compile(IP_ADDRESS_STRING);
+
+    public static boolean isValidIp(String ip) {
+        return IP_ADDRESS.matcher(ip).matches();
     }
 }

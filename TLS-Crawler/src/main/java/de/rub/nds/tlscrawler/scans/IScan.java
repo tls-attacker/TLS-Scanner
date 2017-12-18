@@ -7,10 +7,8 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
-import de.rub.nds.tlscrawler.utility.Tuple;
-
-import java.util.List;
 
 /**
  * Interface to be implemented by scans.
@@ -26,7 +24,7 @@ public interface IScan {
 
     /**
      * @param target Target of the scan.
-     * @return The scan's result in key-value pairs.
+     * @return The scan's result in an IScanResult structure.
      */
-    List<Tuple> scan(IScanTarget target);
+    IScanResult scan(IScanTarget target);
 }

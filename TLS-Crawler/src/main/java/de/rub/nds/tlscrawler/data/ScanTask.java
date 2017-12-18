@@ -13,8 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.LinkedList;
 
 /**
  * Scan task implementation.
@@ -24,7 +23,7 @@ import java.util.UUID;
 public class ScanTask implements IScanTask {
     private static Logger LOG = LoggerFactory.getLogger(ScanTask.class);
 
-    private UUID id;
+    private String id;
     private Instant createdTimestamp;
     private Instant acceptedTimestamp;
     private Instant startedTimestamp;
@@ -32,9 +31,9 @@ public class ScanTask implements IScanTask {
     private String targetIp;
     private Collection<Integer> ports;
     private Collection<String> scans;
-    private Map<String, Object> results;
+    private Collection<IScanResult> results;
 
-    public ScanTask(UUID id,
+    public ScanTask(String id,
                     Instant createdTimestamp,
                     Instant acceptedTimestamp,
                     Instant startedTimestamp,
@@ -51,11 +50,11 @@ public class ScanTask implements IScanTask {
         this.ports = ports;
         this.scans = scans;
 
-        this.results = new HashMap<>();
+        this.results = new LinkedList<>();
     }
 
     @Override
-    public UUID getId() {
+    public String getId() {
         return this.id;
     }
 
@@ -120,12 +119,12 @@ public class ScanTask implements IScanTask {
     }
 
     @Override
-    public Map<String, Object> getResults() {
+    public Collection<IScanResult> getResults() {
         return this.results;
     }
 
-    public void addResult(String scanName, Object result) {
-        this.results.put(scanName, result);
+    public void addResult(IScanResult result) {
+        this.results.add(result);
     }
 
     public static ScanTask copyFrom(IScanTask scan) {
@@ -141,7 +140,8 @@ public class ScanTask implements IScanTask {
                 scan.getStartedTimestamp(),
                 scan.getCompletedTimestamp(),
                 scan.getTargetIp(),
-                scan.getPorts(),
-                scan.getScans());
+                new LinkedList(scan.getPorts()),
+                new LinkedList(scan.getScans())
+        );
     }
 }

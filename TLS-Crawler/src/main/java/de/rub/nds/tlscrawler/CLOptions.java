@@ -59,6 +59,7 @@ public class CLOptions extends OptionsBase {
 
     @Option(
             name = "masterOnly",
+            abbrev = 'y',
             help = "Spawns a master-only instance, isMaster is implicit.",
             defaultValue = "false"
     )
@@ -66,6 +67,7 @@ public class CLOptions extends OptionsBase {
 
     @Option(
             name = "inMemoryOrchestration",
+            abbrev = 'x',
             help = "Uses an in-memory orchestration provider. Can not be combined with masterOnly.",
             defaultValue = "false"
     )

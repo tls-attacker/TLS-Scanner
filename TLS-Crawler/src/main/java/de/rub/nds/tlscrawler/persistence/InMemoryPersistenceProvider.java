@@ -7,13 +7,14 @@
  */
 package de.rub.nds.tlscrawler.persistence;
 
-import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
-import de.rub.nds.tlscrawler.data.IScanTask;
-import de.rub.nds.tlscrawler.data.PersistenceProviderStats;
+import de.rub.nds.tlscrawler.data.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Objects;
 
 /**
  * In-Memory implementation of a persistence provider.
@@ -21,26 +22,64 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class InMemoryPersistenceProvider implements IPersistenceProvider {
-    private Map<UUID, IScanTask> tasks;
+    private static Logger LOG = LoggerFactory.getLogger(InMemoryPersistenceProvider.class);
+
+    private Map<String, IScanTask> tasks;
 
     public InMemoryPersistenceProvider() {
+        LOG.trace("Constructor()");
         this.tasks = new HashMap<>();
     }
 
     @Override
-    public void save(IScanTask task) {
+    public void setUpScanTasks(Collection<IScanTask> newTasks) {
+        LOG.trace("setUpScanTasks()");
+
+        for (IScanTask task : newTasks) {
+            this.setUpScanTask(task);
+        }
+    }
+
+    @Override
+    public void updateScanTask(IScanTask task) {
+        LOG.trace("updateScanTask()");
         this.tasks.put(task.getId(), task);
     }
 
     @Override
-    public IScanTask getScanTask(UUID id) {
+    public void setUpScanTask(IScanTask task) {
+        LOG.trace("setUpScanTask()");
+        this.tasks.put(task.getId(), task);
+    }
+
+    @Override
+    public IScanTask getScanTask(String id) {
+        LOG.trace("getScanTask()");
         return this.tasks.get(id);
     }
 
     @Override
+    public Map<String, IScanTask> getScanTasks(Collection<String> ids) {
+        LOG.trace("getScanTasks()");
+
+        Map<String, IScanTask> result = new HashMap<>();
+
+        for (String id : ids) {
+            result.put(id, this.tasks.get(id));
+        }
+
+        return result;
+    }
+
+    @Override
     public IPersistenceProviderStats getStats() {
+        LOG.trace("getStats()");
+
         long total = this.tasks.size();
-        long completed = this.tasks.entrySet().stream().map(x -> x.getValue().getCompletedTimestamp()).filter(x -> x != null).count();
+        long completed = this.tasks.entrySet().stream()
+                .map(x -> x.getValue().getCompletedTimestamp())
+                .filter(Objects::nonNull)
+                .count();
 
         return new PersistenceProviderStats(total, completed, null, null);
     }

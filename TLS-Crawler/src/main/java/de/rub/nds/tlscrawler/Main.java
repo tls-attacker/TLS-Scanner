@@ -9,25 +9,26 @@ package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.OptionsParser;
 import com.google.devtools.common.options.OptionsParsingException;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoTimeoutException;
-import de.rub.nds.tlscrawler.core.TLSCrawlerMaster;
-import de.rub.nds.tlscrawler.core.TLSCrawlerSlave;
-import de.rub.nds.tlscrawler.scans.IScan;
+import com.mongodb.MongoClientURI;
+import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
+import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
+import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.InMemoryPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
-import de.rub.nds.tlscrawler.scans.NullScan;
-import de.rub.nds.tlscrawler.scans.PingScan;
+import de.rub.nds.tlscrawler.scans.*;
 import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.net.ConnectException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * TLS-Crawler's main class.
@@ -59,8 +60,10 @@ public class Main {
 
         Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
 
-        TLSCrawlerSlave slave = new TLSCrawlerSlave(providers.getFirst(), providers.getSecond(), scans);
-        TLSCrawlerMaster master = new TLSCrawlerMaster(providers.getFirst(), providers.getSecond(), scans);
+        ITlsCrawlerSlave slave = new TlsCrawlerSlave(providers.getFirst(), providers.getSecond(), scans);
+        slave.start();
+
+        TlsCrawlerMaster master = new TlsCrawlerMaster(providers.getFirst(), providers.getSecond(), scans);
 
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
                 + options.instanceId + ".");
@@ -69,6 +72,8 @@ public class Main {
     }
 
     private static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(CLOptions options) {
+        LOG.trace("setUpProviders()");
+
         if (options == null) {
             throw new IllegalArgumentException("'options' must not be null.");
         }
@@ -77,28 +82,25 @@ public class Main {
         IPersistenceProvider persistenceProvider;
 
         if (!options.testMode) {
-            MongoClient mongo = new MongoClient(options.mongoDbConnectionString);
-            try {
-                String address = mongo.getAddress().toString();
-                LOG.info("Connected to MongoDB at " + address);
-            } catch (MongoTimeoutException ex) {
-                LOG.error("Connecting to MongoDB failed.");
-                System.exit(0);
+            MongoPersistenceProvider mpp = new MongoPersistenceProvider(new MongoClientURI(options.mongoDbConnectionString));
+            mpp.init("myDb");
+
+            persistenceProvider = mpp;
+
+            if (!options.inMemoryOrchestration) {
+                RedisOrchestrationProvider rop = new RedisOrchestrationProvider(options.redisConnectionString);
+
+                try {
+                    rop.init("myList");
+                } catch (ConnectException e) {
+                    LOG.error("Could not connect to redis.");
+                    System.exit(0);
+                }
+
+                orchestrationProvider = rop;
+            } else { // in-memory-orchestration:
+                orchestrationProvider = new InMemoryOrchestrationProvider();
             }
-
-            persistenceProvider = new MongoPersistenceProvider(mongo);
-
-            String redisEndpoint = options.redisConnectionString;
-            Jedis jedis = new Jedis(redisEndpoint);
-            jedis.connect();
-            if (jedis.isConnected()) {
-                LOG.info("Connected to Redis at " + (redisEndpoint.equals("") ? "localhost" : redisEndpoint));
-            } else {
-                LOG.error("Connecting to Redis failed.");
-                System.exit(0);
-            }
-
-            orchestrationProvider = new RedisOrchestrationProvider(jedis);
         } else { // TLS Crawler is in test mode:
             orchestrationProvider = new InMemoryOrchestrationProvider();
             persistenceProvider = new InMemoryPersistenceProvider();
@@ -117,6 +119,8 @@ public class Main {
      */
     static CLOptions parseOptions(String[] args) throws OptionsParsingException {
         CLOptions result;
+
+        LOG.trace("parseOptions()");
 
         OptionsParser parser = OptionsParser.newOptionsParser(CLOptions.class);
         usageInfo = parser.describeOptions(Collections.<String, String>emptyMap(), OptionsParser.HelpVerbosity.LONG);
@@ -152,11 +156,15 @@ public class Main {
      * @return A list of scans.
      */
     private static List<IScan> setUpScans() {
+        LOG.trace("setUpScans()");
+
         List<IScan> result = new LinkedList<>();
 
         // Set up known scans.
         result.add(new PingScan());
+        result.add(new TestScan());
         result.add(new NullScan());
+        result.add(new TlsScan());
 
         // TODO: Set up plugins
 

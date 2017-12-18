@@ -8,7 +8,6 @@
 package de.rub.nds.tlscrawler.orchestration;
 
 import java.util.Collection;
-import java.util.UUID;
 
 /**
  * Orchestration provider interface.
@@ -24,7 +23,7 @@ public interface IOrchestrationProvider {
      *
      * @return The scan task.
      */
-    UUID getScanTask();
+    String getScanTask();
 
     /**
      * Retrieves a number of scan tasks.
@@ -32,12 +31,12 @@ public interface IOrchestrationProvider {
      * @param quantity Number of tasks to be retrieved.
      * @return A list of scan task IDs.
      */
-    Collection<UUID> getScanTasks(int quantity);
+    Collection<String> getScanTasks(int quantity);
 
     /**
      * Adds a scan task to be distributed to a node.
      *
      * @param task The scan task to cancel.
      */
-    void addScanTask(UUID task);
+    void addScanTask(String taskId);
 }
