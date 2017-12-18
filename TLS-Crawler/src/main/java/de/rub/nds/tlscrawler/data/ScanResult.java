@@ -74,6 +74,11 @@ public class ScanResult implements IScanResult {
     }
 
     @Override
+    public void addBoolean(String key, Boolean value) {
+        this.checkedAdd(Tuple.create(key, value));
+    }
+
+    @Override
     public void addDoubleArray(String key, List<Double> value) {
         this.checkedAdd(Tuple.create(key, value));
     }

@@ -100,6 +100,14 @@ public interface IScanResult {
     void addDoubleArray(String key, List<Double> value);
 
     /**
+     * Adds a boolean value to the result structure.
+     *
+     * @param key The value's key.
+     * @param value the value.
+     */
+    void addBoolean(String key, Boolean value);
+
+    /**
      * Adds a timestamp value to the result structure.
      *
      * @param key The value's key.

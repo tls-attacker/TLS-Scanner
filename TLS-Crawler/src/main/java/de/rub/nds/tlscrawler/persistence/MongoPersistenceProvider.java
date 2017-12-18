@@ -335,6 +335,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
                 result.addDouble(key, (Double)value);
             } else if (value instanceof Instant) {
                 result.addTimestamp(key, (Instant)value);
+            } else if (value instanceof Boolean) {
+                result.addBoolean(key, (Boolean)value);
             } else if (value instanceof List) {
                 List list = (List)value;
                 Object typecheck = list.isEmpty() ? null : list.get(0);
