@@ -19,10 +19,7 @@ import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.InMemoryPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
-import de.rub.nds.tlscrawler.scans.IScan;
-import de.rub.nds.tlscrawler.scans.NullScan;
-import de.rub.nds.tlscrawler.scans.PingScan;
-import de.rub.nds.tlscrawler.scans.TestScan;
+import de.rub.nds.tlscrawler.scans.*;
 import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,6 +164,7 @@ public class Main {
         result.add(new PingScan());
         result.add(new TestScan());
         result.add(new NullScan());
+        result.add(new TlsScan());
 
         // TODO: Set up plugins
 
