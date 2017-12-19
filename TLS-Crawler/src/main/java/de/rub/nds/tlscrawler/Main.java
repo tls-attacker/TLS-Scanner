@@ -38,13 +38,11 @@ import java.util.UUID;
 public class Main {
     private static Logger LOG = LoggerFactory.getLogger(Main.class);
 
-    private static String usageInfo;
-
     public static void main(String[] args) {
         CLOptions options;
 
         try {
-            options = parseOptions(args);
+            options = CLOptions.parseOptions(args);
         } catch (OptionsParsingException ex) {
             LOG.error("Command Line Options could not be parsed.");
             options = null;
@@ -52,7 +50,7 @@ public class Main {
 
         if (options == null || options.help) {
             System.out.println("Could not parse Command Line Options. Try again:");
-            System.out.println(usageInfo);
+            System.out.println(CLOptions.getHelpString());
             System.exit(0);
         }
 
@@ -107,47 +105,6 @@ public class Main {
         }
 
         return Tuple.create(orchestrationProvider, persistenceProvider);
-    }
-
-    // TODO: Maybe move to CLOptions class.
-    /**
-     * Implements command line argument parsing.
-     *
-     * @param args The argument array.
-     * @return An object containing sane arguments.
-     * @throws OptionsParsingException
-     */
-    static CLOptions parseOptions(String[] args) throws OptionsParsingException {
-        CLOptions result;
-
-        LOG.trace("parseOptions()");
-
-        OptionsParser parser = OptionsParser.newOptionsParser(CLOptions.class);
-        usageInfo = parser.describeOptions(Collections.<String, String>emptyMap(), OptionsParser.HelpVerbosity.LONG);
-
-        parser.parse(args);
-        result = parser.getOptions(CLOptions.class);
-
-        if (result != null && result.instanceId.equals("")) {
-            result.instanceId = UUID.randomUUID().toString();
-        }
-
-        if (result != null && result.masterOnly && !result.isMaster) {
-            LOG.warn("Overridden 'isMaster' to true due to 'masterOnly'.");
-            result.isMaster = true;
-        }
-
-        if (result != null && result.testMode && !result.isMaster) {
-            LOG.warn("Overridden 'isMaster' to true due to 'testMode' option.");
-            result.isMaster = true;
-        }
-
-        if (result != null && result.testMode && !result.inMemoryOrchestration) {
-            LOG.warn("Overridden 'inMemoryOrchestration' to true due to 'testMode' option.");
-            result.inMemoryOrchestration = true;
-        }
-
-        return result;
     }
 
     /**

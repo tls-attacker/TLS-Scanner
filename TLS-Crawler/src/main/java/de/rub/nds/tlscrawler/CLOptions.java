@@ -9,6 +9,13 @@ package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.Option;
 import com.google.devtools.common.options.OptionsBase;
+import com.google.devtools.common.options.OptionsParser;
+import com.google.devtools.common.options.OptionsParsingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.UUID;
 
 /**
  * Command Line Options class.
@@ -16,6 +23,9 @@ import com.google.devtools.common.options.OptionsBase;
  * @author janis.fliegenschmidt@rub.de
  */
 public class CLOptions extends OptionsBase {
+    private static Logger LOG = LoggerFactory.getLogger(CLOptions.class);
+
+    private static OptionsParser parser = OptionsParser.newOptionsParser(CLOptions.class);
 
     @Option(
             name = "help",
@@ -80,4 +90,45 @@ public class CLOptions extends OptionsBase {
             defaultValue = "false"
     )
     public boolean testMode;
+
+    /**
+     * Implements command line argument parsing.
+     *
+     * @param args The argument array.
+     * @return An object containing sane arguments.
+     * @throws OptionsParsingException
+     */
+    public static CLOptions parseOptions(String[] args) throws OptionsParsingException {
+        CLOptions result;
+
+        LOG.trace("parseOptions()");
+
+        parser.parse(args);
+        result = parser.getOptions(CLOptions.class);
+
+        if (result != null && result.instanceId.equals("")) {
+            result.instanceId = UUID.randomUUID().toString();
+        }
+
+        if (result != null && result.masterOnly && !result.isMaster) {
+            LOG.warn("Overridden 'isMaster' to true due to 'masterOnly'.");
+            result.isMaster = true;
+        }
+
+        if (result != null && result.testMode && !result.isMaster) {
+            LOG.warn("Overridden 'isMaster' to true due to 'testMode' option.");
+            result.isMaster = true;
+        }
+
+        if (result != null && result.testMode && !result.inMemoryOrchestration) {
+            LOG.warn("Overridden 'inMemoryOrchestration' to true due to 'testMode' option.");
+            result.inMemoryOrchestration = true;
+        }
+
+        return result;
+    }
+
+    public static String getHelpString() {
+        return parser.describeOptions(Collections.<String, String>emptyMap(), OptionsParser.HelpVerbosity.LONG);
+    }
 }
