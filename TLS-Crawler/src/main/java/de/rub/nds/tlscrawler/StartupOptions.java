@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * Command Line Options class.
+ * Command Line Options at startup.
  *
  * @author janis.fliegenschmidt@rub.de
  */
