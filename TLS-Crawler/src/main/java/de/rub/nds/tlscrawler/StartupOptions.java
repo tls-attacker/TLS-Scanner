@@ -22,10 +22,10 @@ import java.util.UUID;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class CLOptions extends OptionsBase {
-    private static Logger LOG = LoggerFactory.getLogger(CLOptions.class);
+public class StartupOptions extends OptionsBase {
+    private static Logger LOG = LoggerFactory.getLogger(StartupOptions.class);
 
-    private static OptionsParser parser = OptionsParser.newOptionsParser(CLOptions.class);
+    private static OptionsParser parser = OptionsParser.newOptionsParser(StartupOptions.class);
 
     @Option(
             name = "help",
@@ -98,13 +98,13 @@ public class CLOptions extends OptionsBase {
      * @return An object containing sane arguments.
      * @throws OptionsParsingException
      */
-    public static CLOptions parseOptions(String[] args) throws OptionsParsingException {
-        CLOptions result;
+    public static StartupOptions parseOptions(String[] args) throws OptionsParsingException {
+        StartupOptions result;
 
         LOG.trace("parseOptions()");
 
         parser.parse(args);
-        result = parser.getOptions(CLOptions.class);
+        result = parser.getOptions(StartupOptions.class);
 
         if (result != null && result.instanceId.equals("")) {
             result.instanceId = UUID.randomUUID().toString();

@@ -7,10 +7,18 @@
  */
 package de.rub.nds.tlscrawler;
 
-import com.google.devtools.common.options.OptionsParsingException;
+import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
+import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
+import de.rub.nds.tlscrawler.scans.IScan;
+import de.rub.nds.tlscrawler.utility.Tuple;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for the Main class.
@@ -20,56 +28,38 @@ import static org.junit.Assert.*;
 public class MainTest {
 
     @Test
-    public void CLIParsingSmokeTest() {
-        String[] options = {
-                "-m",
-                "-i", "myinstance",
-                "-o", "mymongo",
-                "-r", "myredis"
-        };
+    public void setUpScansSmokeTest() {
+        List<IScan> scans = Main.setUpScans();
 
-        CLOptions parsed = null;
-        try {
-            parsed = Main.parseOptions(options);
-        } catch (OptionsParsingException ex) {
-            fail("Must not throw.");
+        for (IScan scan : scans) {
+            assertNotNull(scan);
         }
 
-        assertNotNull(parsed);
+        List<String> scanNames = scans.stream().map(x -> x.getName()).collect(Collectors.toList());
 
-        assertEquals(true, parsed.isMaster);
-        assertEquals("myinstance", parsed.instanceId);
-        assertEquals("mymongo", parsed.mongoDbConnectionString);
-        assertEquals("myredis", parsed.redisConnectionString);
+        for (int i = 0; i < scanNames.size(); i++) {
+            for (int j = 0; j < scanNames.size(); j++) {
+                if (i != j) {
+                    assertNotEquals(scanNames.get(i), scanNames.get(j));
+                }
+            }
+        }
+
+        assertTrue(scanNames.contains("null_scan"));
+        assertTrue(scanNames.contains("test_scan"));
+        assertTrue(scanNames.contains("ping_scan"));
+        assertTrue(scanNames.contains("tls_scan"));
     }
 
     @Test
-    public void CLIParsingInvalidArgs() {
-        String[] options = {
-                "-d"
-        };
+    public void setUpProvidersSmokeTest() {
+        StartupOptions options = mock(StartupOptions.class);
+        options.testMode = true;
 
-        try {
-            Main.parseOptions(options);
-            fail("Should have thrown.");
-        } catch (OptionsParsingException ex) {
-            // Should throw
-        }
-    }
+        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = Main.setUpProviders(options);
 
-    @Test
-    public void CLIParsingAutoId() {
-        String[] options = { };
-
-        CLOptions parsed = null;
-        try {
-            parsed = Main.parseOptions(options);
-        } catch (OptionsParsingException ex) {
-            fail("Must not throw.");
-        }
-
-        assertNotNull(parsed);
-        assertNotNull(parsed.instanceId);
-        assertNotEquals("", parsed.instanceId);
+        assertNotNull(providers);
+        assertNotNull(providers.getFirst());
+        assertNotNull(providers.getSecond());
     }
 }

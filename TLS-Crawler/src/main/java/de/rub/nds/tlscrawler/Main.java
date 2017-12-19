@@ -7,7 +7,6 @@
  */
 package de.rub.nds.tlscrawler;
 
-import com.google.devtools.common.options.OptionsParser;
 import com.google.devtools.common.options.OptionsParsingException;
 import com.mongodb.MongoClientURI;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
@@ -25,10 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.ConnectException;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * TLS-Crawler's main class.
@@ -39,10 +36,10 @@ public class Main {
     private static Logger LOG = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        CLOptions options;
+        StartupOptions options;
 
         try {
-            options = CLOptions.parseOptions(args);
+            options = StartupOptions.parseOptions(args);
         } catch (OptionsParsingException ex) {
             LOG.error("Command Line Options could not be parsed.");
             options = null;
@@ -50,7 +47,7 @@ public class Main {
 
         if (options == null || options.help) {
             System.out.println("Could not parse Command Line Options. Try again:");
-            System.out.println(CLOptions.getHelpString());
+            System.out.println(StartupOptions.getHelpString());
             System.exit(0);
         }
 
@@ -69,7 +66,7 @@ public class Main {
         CommandLineInterface.handleInput(master, slave);
     }
 
-    private static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(CLOptions options) {
+    static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(StartupOptions options) {
         LOG.trace("setUpProviders()");
 
         if (options == null) {
@@ -112,7 +109,7 @@ public class Main {
      *
      * @return A list of scans.
      */
-    private static List<IScan> setUpScans() {
+    static List<IScan> setUpScans() {
         LOG.trace("setUpScans()");
 
         List<IScan> result = new LinkedList<>();
