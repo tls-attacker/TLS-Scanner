@@ -72,4 +72,12 @@ public class StartupOptionsTest {
         assertNotNull(parsed.instanceId);
         assertNotEquals("", parsed.instanceId);
     }
+
+    @Test
+    public void getHelpStringSmokeTest() {
+        String help = StartupOptions.getHelpString();
+
+        assertNotNull(help);
+        assertNotEquals("", help);
+    }
 }
