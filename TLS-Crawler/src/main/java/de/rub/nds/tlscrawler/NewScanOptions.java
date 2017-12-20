@@ -82,12 +82,23 @@ public class NewScanOptions extends OptionsBase {
      * @return An object containing sane arguments.
      * @throws OptionsParsingException
      */
-    public static NewScanOptions parseOptions(String[] args) throws OptionsParsingException {
+    public static NewScanOptions parseOptions(String[] args) {
         NewScanOptions result;
 
         LOG.trace("parseOptions()");
 
-        parser.parse(args);
+        try {
+            parser.parse(args);
+        } catch (OptionsParsingException e) {
+            LOG.warn(e.getMessage());
+            LOG.warn("Creating fallback options.");
+
+            try {
+                parser.parse();
+            } catch (OptionsParsingException e1) {
+                // Can't happen
+            }
+        }
 
         result = parser.getOptions(NewScanOptions.class);
 
