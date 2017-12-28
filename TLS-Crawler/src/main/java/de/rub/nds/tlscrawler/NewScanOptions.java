@@ -71,6 +71,14 @@ public class NewScanOptions extends OptionsBase {
     )
     public List<String> blacklist;
 
+    @Option(
+            name = "ndsBlacklist",
+            abbrev = 'n',
+            help = "Uses the NDS blacklist.",
+            defaultValue = "true"
+    )
+    public boolean ndsBlacklist;
+
     public static String getHelpString() {
         return parser.describeOptions(Collections.<String, String>emptyMap(), OptionsParser.HelpVerbosity.LONG);
     }
