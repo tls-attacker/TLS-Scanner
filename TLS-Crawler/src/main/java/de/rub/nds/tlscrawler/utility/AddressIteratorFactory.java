@@ -78,6 +78,9 @@ public class AddressIteratorFactory {
 
             case NDS_BLACKLIST: {
                 this.reset();
+
+                this.whitelist.add("0.0.0.0/0");
+
                 this.addStandardBlacklistEntries();
                 this.addNdsBlacklistEntries();
             }
@@ -86,6 +89,9 @@ public class AddressIteratorFactory {
 
             case STANDARD_BLACKLIST: {
                 this.reset();
+
+                this.whitelist.add("0.0.0.0/0");
+                
                 this.addStandardBlacklistEntries();
             }
 
