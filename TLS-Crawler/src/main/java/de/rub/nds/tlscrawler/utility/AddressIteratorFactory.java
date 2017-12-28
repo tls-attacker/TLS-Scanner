@@ -114,6 +114,7 @@ public class AddressIteratorFactory {
         this.addToBlacklist("203.0.113.0/24");      // RFC5737: Documentation (TEST-NET-3)
         this.addToBlacklist("240.0.0.0/4");         // RFC1112: Reserved
         this.addToBlacklist("255.255.255.255/32");  // RFC0919: Limited Broadcast
+        this.addToBlacklist("224.0.0.0/4");         // RFC5771: Multicast/Reserved
     }
 
     private void addNdsBlacklistEntries() {
