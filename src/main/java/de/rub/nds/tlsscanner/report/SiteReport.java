@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import java.util.List;
@@ -31,6 +32,8 @@ import org.bouncycastle.crypto.tls.Certificate;
 public class SiteReport {
 
     //general
+    private final List<ProbeType> probeTypeList;
+    
     private final String host;
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
@@ -164,8 +167,9 @@ public class SiteReport {
     private Boolean supportedCurvesIntolerance;
     private Boolean clientHelloSizeIntolerance;
 
-    public SiteReport(String host) {
+    public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
+        this.probeTypeList = probeTypeList;
     }
 
     public String getHost() {
@@ -1394,4 +1398,7 @@ public class SiteReport {
         return getStringReport();
     }
 
+    public List<ProbeType> getProbeTypeList() {
+        return probeTypeList;
+    }
 }

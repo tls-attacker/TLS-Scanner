@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
@@ -38,10 +39,12 @@ public class ScanJobExecutor {
     }
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
+        List<ProbeType> probeTypes = new LinkedList<>();
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
         for (TlsProbe probe : scanJob.getProbeList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
                 futureResults.add(executor.submit(probe));
+                probeTypes.add(probe.getType());
             }
         }
         List<ProbeResult> resultList = new LinkedList<>();
@@ -57,7 +60,7 @@ public class ScanJobExecutor {
         executor.shutdown();
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegate(ClientDelegate.class);
         String hostname = clientDelegate.getHost();
-        SiteReport report = new SiteReport(hostname);
+        SiteReport report = new SiteReport(hostname, probeTypes);
         report.setServerIsAlive(Boolean.TRUE);
         for (ProbeResult result : resultList) {
             result.merge(report);

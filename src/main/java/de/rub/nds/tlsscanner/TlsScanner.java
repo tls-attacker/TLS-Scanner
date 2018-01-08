@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.BleichenbacherProbe;
 import de.rub.nds.tlsscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
@@ -32,6 +33,8 @@ import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.report.after.DrownAfterProbe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.Level;
@@ -96,7 +99,7 @@ public class TlsScanner {
             return executor.execute(config, job);
         }
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
-        SiteReport report = new SiteReport(config.getClientDelegate().getHost());
+        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>());
         report.setServerIsAlive(false);
         return report;
     }
