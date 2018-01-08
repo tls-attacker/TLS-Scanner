@@ -40,7 +40,9 @@ public class ScanJobExecutor {
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
         for (TlsProbe probe : scanJob.getProbeList()) {
-            futureResults.add(executor.submit(probe));
+            if (probe.getDanger() <= config.getDangerLevel()) {
+                futureResults.add(executor.submit(probe));
+            }
         }
         List<ProbeResult> resultList = new LinkedList<>();
         for (Future<ProbeResult> probeResult : futureResults) {
@@ -60,8 +62,7 @@ public class ScanJobExecutor {
         for (ProbeResult result : resultList) {
             result.merge(report);
         }
-        for(AfterProbe afterProbe : scanJob.getAfterProbes())
-        {
+        for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
             afterProbe.analyze(report);
         }
         return report;
