@@ -22,6 +22,7 @@ class AddressGenerator implements IAddressIterator {
         CAVE: This is a NAIVE implementation, as can be told from the
         usage of the private class below.
      */
+
     private static Logger LOG = LoggerFactory.getLogger(AddressGenerator.class);
 
     private SubnetTree blacklist;

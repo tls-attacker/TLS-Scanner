@@ -31,43 +31,39 @@ public class CommandLineInterface {
         // TODO: Implement full CLI
 
         for (;;) {
-            LOG.info("Starting command reception.");
+            LOG.info("Starting command reception. Try \"help\" or \"newscan -h\".");
             String input = scanner.next();
 
             LOG.debug(String.format("Received input: \"%s\"", input));
 
-            switch (input) {
-                case "tls_scan": {
+            String[] in_arr = input.split(" ");
+            String[] args = in_arr.length <= 1 ? new String[] { } : Arrays.copyOfRange(in_arr, 1, in_arr.length);
 
-                    List<String> chosenScans = new LinkedList<>();
-                    chosenScans.add("tls_scan");
+            switch (in_arr[0]) {
+                case "newscan": {
+                    NewScanOptions options = NewScanOptions.parseOptions(args);
+
+                    List<String> chosenScans = options.scans;
+                    List<String> ip_whitelist = options.whitelist;
+                    List<String> ip_blacklist = options.blacklist;
+                    List<Integer> ports = options.ports;
 
                     List<String> targets = Arrays.asList("172.217.22.35");
-
-                    List<Integer> ports = new ArrayList<>();
-                    ports.add(443);
 
                     master.crawl(chosenScans, targets, ports);
                 }
 
                 break;
 
-                case "test_scan": {
-                    List<String> chosenScans = new LinkedList<>();
-                    chosenScans.add("test_scan");
+                case "help": {
+                    LOG.info("Available options: newscan, help, print, exit");
+                }
 
-                    List<String> targets = Arrays.asList("172.217.22.35");
+                break;
 
-                    List<Integer> ports = new ArrayList<>();
-                    ports.add(32);
-                    ports.add(34);
-                    ports.add(89);
-                    ports.add(254);
-                    ports.add(754);
-                    ports.add(8987);
-
-                    master.crawl(chosenScans, targets, ports);
-                    master.crawl(chosenScans, targets, ports);
+                case "print": {
+                    IMasterStats stats = master.getStats();
+                    LOG.info(String.format("Tasks completed: %d/%d", stats.getFinishedTasks(), stats.getTotalTasks()));
                 }
 
                 break;
@@ -80,15 +76,11 @@ public class CommandLineInterface {
 
                 break;
 
-                case "print": {
-                    IMasterStats stats = master.getStats();
-                    LOG.info(String.format("Tasks completed: %d/%d", stats.getFinishedTasks(), stats.getTotalTasks()));
+                default: {
+                    System.out.println("Did not understand. Try again.");
                 }
 
                 break;
-
-                default:
-                    System.out.println("Did not understand. Try again.");
             }
         }
     }
