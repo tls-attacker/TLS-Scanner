@@ -108,7 +108,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
         if (suite.name().contains("_DH")) {
             supportsDh = true;
         }
-        if (suite.name().contains("RSA")) {
+        if (suite.name().contains("TLS_RSA")) {
             supportsRsa = true;
         }
         if (suite.name().contains("ECDH")) {
@@ -126,7 +126,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
         if (suite.name().contains("TLS_PSK_WITH")) {
             supportsPskPlain = true;
         }
-        if (suite.name().contains("DHE_PSK")) {
+        if (suite.name().contains("_DHE_PSK")) {
             supportsPskDhe = true;
         }
         if (suite.name().contains("ECDHE_PSK")) {
