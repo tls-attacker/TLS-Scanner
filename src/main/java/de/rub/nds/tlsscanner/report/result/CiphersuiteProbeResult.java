@@ -71,7 +71,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
         supportsOnlyPfsCiphers = true;
         prefersPfsCiphers = true;
         for (VersionSuiteListPair pair : pairLists) {
-            if (pair.getCiphersuiteList().size() > 0 && pair.getCiphersuiteList().get(0).isEphemeral()) {
+            if (pair.getCiphersuiteList().size() > 0 && !pair.getCiphersuiteList().get(0).isEphemeral()) {
                 prefersPfsCiphers = false;
             }
             allSupported.addAll(pair.getCiphersuiteList());
