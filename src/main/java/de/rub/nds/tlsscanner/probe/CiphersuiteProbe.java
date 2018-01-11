@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedCurve;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -99,7 +100,7 @@ public class CiphersuiteProbe extends TlsProbe {
             WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
             try {
                 workflowExecutor.executeWorkflow();
-            } catch (WorkflowExecutionException ex) {
+            } catch (ConfigurationException | WorkflowExecutionException ex) {
                 LOGGER.warn("Encountered exception while executing WorkflowTrace!");
                 LOGGER.debug(ex);
                 supportsMore = false;
