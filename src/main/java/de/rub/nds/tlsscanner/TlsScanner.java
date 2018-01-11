@@ -33,8 +33,6 @@ import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.report.after.DrownAfterProbe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.Level;
