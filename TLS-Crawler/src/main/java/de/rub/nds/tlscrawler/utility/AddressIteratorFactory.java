@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Builds AddressIterators and provides their configuration options.
@@ -33,6 +34,20 @@ public class AddressIteratorFactory {
         result.reset();
 
         return result;
+    }
+
+    /**
+     * Redis address source can't be configured as of now.
+     *
+     * @param redisConnString Connection string in format "ip:port/listkey"
+     * @return Address iterator reading addresses from a redis queue
+     */
+    public static IAddressIterator getRedisAddressSource(String redisConnString) {
+        String[] split = redisConnString.split(Pattern.quote("/"));
+        String redisEndpoint = split[0];
+        String redisListKey = split[1];
+
+        return new RedisAddressSource(redisEndpoint, redisListKey);
     }
 
     public IAddressIterator build() {
@@ -91,7 +106,7 @@ public class AddressIteratorFactory {
                 this.reset();
 
                 this.whitelist.add("0.0.0.0/0");
-                
+
                 this.addStandardBlacklistEntries();
             }
 
