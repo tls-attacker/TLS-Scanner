@@ -54,6 +54,14 @@ public class NewScanOptions extends OptionsBase {
     public List<Integer> ports;
 
     @Option(
+            name = "targetsFromRedisList",
+            abbrev = 'r',
+            help = "Defines a target source, e. g. Redis.",
+            defaultValue = ""
+    )
+    public String targetsFromRedisList;
+
+    @Option(
             name = "whitelist",
             abbrev = 'w',
             help = "A list of IPs/CIDR-Blocks.",
