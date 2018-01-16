@@ -14,7 +14,7 @@ import java.util.Iterator;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public interface IAddressIterator extends Iterator<String> {
+public interface IAddressIterator extends Iterator<String>, Iterable<String> {
 
     /**
      * Not supported, DO NOT USE.

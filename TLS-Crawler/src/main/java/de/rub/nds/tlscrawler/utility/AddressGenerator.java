@@ -10,6 +10,7 @@ package de.rub.nds.tlscrawler.utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -103,6 +104,11 @@ class AddressGenerator implements IAddressIterator {
         if (this.whitelist == null || this.blacklist == null) {
             throw new RuntimeException("AddressGenerator needs to be initialized.");
         }
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return this;
     }
 
     /**

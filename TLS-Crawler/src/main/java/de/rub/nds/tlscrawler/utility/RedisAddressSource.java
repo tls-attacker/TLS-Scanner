@@ -13,6 +13,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.net.ConnectException;
+import java.util.Iterator;
 
 /**
  * Address Iterator reading scan targets from redis.
@@ -94,5 +95,10 @@ public class RedisAddressSource implements IAddressIterator {
     @Override
     public void remove() {
         throw new RuntimeException("Illegal Action.");
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return this;
     }
 }
