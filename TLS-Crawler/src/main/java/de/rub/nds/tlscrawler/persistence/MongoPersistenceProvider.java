@@ -237,7 +237,11 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
             if (val instanceof IScanResult) {
                 bson.append(key, iScanResultToBson((IScanResult) val));
-            } else {
+            } else if (val instanceof Instant) {
+                bson.append(key, Date.from((Instant)val));
+            }
+            else
+            {
                 bson.append(key, val);
             }
         }
