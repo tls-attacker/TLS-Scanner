@@ -10,6 +10,8 @@ package de.rub.nds.tlscrawler.utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.ConnectException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -43,11 +45,22 @@ public class AddressIteratorFactory {
      * @return Address iterator reading addresses from a redis queue
      */
     public static IAddressIterator getRedisAddressSource(String redisConnString) {
+        RedisAddressSource result;
         String[] split = redisConnString.split(Pattern.quote("/"));
         String redisEndpoint = split[0];
         String redisListKey = split[1];
 
-        return new RedisAddressSource(redisEndpoint, redisListKey);
+        LOG.debug(Arrays.deepToString(split));
+
+        result = new RedisAddressSource(redisEndpoint, redisListKey);
+        try {
+            result.init();
+        } catch (ConnectException e) {
+            LOG.error("Failed to connect to redis (Address source)");
+            return null;
+        }
+
+        return result;
     }
 
     public IAddressIterator build() {
