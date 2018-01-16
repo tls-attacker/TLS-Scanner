@@ -51,7 +51,7 @@ public class NewScanOptions extends OptionsBase {
             allowMultiple = true,
             defaultValue = ""
     )
-    public List<Integer> ports;
+    public List<String> ports;
 
     @Option(
             name = "targetsFromRedisList",
