@@ -10,6 +10,8 @@ package de.rub.nds.tlscrawler;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
 import de.rub.nds.tlscrawler.data.IMasterStats;
+import de.rub.nds.tlscrawler.utility.AddressIteratorFactory;
+import de.rub.nds.tlscrawler.utility.IAddressIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +46,22 @@ public class CommandLineInterface {
                     NewScanOptions options = NewScanOptions.parseOptions(args);
 
                     List<String> chosenScans = options.scans;
-                    List<String> ip_whitelist = options.whitelist;
-                    List<String> ip_blacklist = options.blacklist;
                     List<Integer> ports = options.ports;
 
-                    List<String> targets = Arrays.asList("172.217.22.35");
+                    AddressIteratorFactory addrFac = AddressIteratorFactory.getInstance();
+                    IAddressIterator targets;
+                    if (options.targetsFromRedisList.isEmpty()) {
+                        List<String> ip_whitelist = options.whitelist;
+                        List<String> ip_blacklist = options.blacklist;
+
+                        addrFac.reset();
+                        addrFac.applyDefaultConfig(AddressIteratorFactory.Configurations.NDS_BLACKLIST);
+                        addrFac.addToWhitelist(ip_whitelist);
+                        addrFac.addToBlacklist(ip_blacklist);
+                        targets = addrFac.build();
+                    } else {
+                        targets = AddressIteratorFactory.getRedisAddressSource(options.targetsFromRedisList);
+                    }
 
                     master.crawl(chosenScans, targets, ports);
                 }
