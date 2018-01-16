@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Implements the command line interface.
@@ -34,19 +36,29 @@ public class CommandLineInterface {
 
         for (;;) {
             LOG.info("Starting command reception. Try \"help\" or \"newscan -h\".");
-            String input = scanner.next();
+            String input = scanner.nextLine();
 
             LOG.debug(String.format("Received input: \"%s\"", input));
 
-            String[] in_arr = input.split(" ");
+            String[] in_arr = input.split(Pattern.quote(" "));
             String[] args = in_arr.length <= 1 ? new String[] { } : Arrays.copyOfRange(in_arr, 1, in_arr.length);
+
+            LOG.debug(Arrays.deepToString(in_arr));
+            LOG.debug(Arrays.deepToString(args));
 
             switch (in_arr[0]) {
                 case "newscan": {
                     NewScanOptions options = NewScanOptions.parseOptions(args);
 
+                    if (options.help) {
+                        LOG.info(NewScanOptions.getHelpString());
+                        break;
+                    }
+
                     List<String> chosenScans = options.scans;
-                    List<Integer> ports = options.ports;
+                    List<Integer> ports = options.ports.stream()
+                            .map(x -> Integer.parseInt(x))
+                            .collect(Collectors.toList());
 
                     AddressIteratorFactory addrFac = AddressIteratorFactory.getInstance();
                     IAddressIterator targets;
