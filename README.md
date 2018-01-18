@@ -8,17 +8,17 @@ In order to compile and use TLS-Scanner, you need to have Java installed, as wel
  
 ```bash
 $ cd TLS-Scanner
-$ ./mvnw clean package
+$ mvn clean package
 
 ```
 Alternatively, if you are in hurry, you can skip the tests by using:
 ```bash
-$ ./mvnw clean package -DskipTests=true
+$ mvn clean package -DskipTests=true
 ```
 
 If you want to use TLS-Scanner as a library you need to install it with the following command:
 ```bash
-$ ./mvnw clean install
+$ mvn clean install
 ```
 
 For hints on installing the required libraries checkout the corresponding GitHub repositories.
