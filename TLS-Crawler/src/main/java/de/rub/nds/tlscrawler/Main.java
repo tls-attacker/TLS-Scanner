@@ -119,6 +119,7 @@ public class Main {
         result.add(new TestScan());
         result.add(new NullScan());
         result.add(new TlsScan());
+        result.add(new FriendlyTlsScan());
 
         // TODO: Set up plugins
 

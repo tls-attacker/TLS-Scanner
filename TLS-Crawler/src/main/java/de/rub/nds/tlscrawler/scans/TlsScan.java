@@ -42,7 +42,10 @@ public class TlsScan implements IScan {
     public IScanResult scan(IScanTarget target) {
         LOG.trace("scan()");
 
-        ScannerConfig config = new ScannerConfig(new GeneralDelegate());
+        GeneralDelegate generalDelegate = new GeneralDelegate();
+        generalDelegate.setLogLevel(null);
+
+        ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setThreads(1);
 
         int port = 443;
