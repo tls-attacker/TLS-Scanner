@@ -7,14 +7,12 @@
  */
 package de.rub.nds.tlscrawler;
 
-import com.google.devtools.common.options.Option;
-import com.google.devtools.common.options.OptionsBase;
-import com.google.devtools.common.options.OptionsParser;
-import com.google.devtools.common.options.OptionsParsingException;
+import com.google.devtools.common.options.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,6 +38,7 @@ public class NewScanOptions extends OptionsBase {
             abbrev = 's',
             help = "A list of scans.",
             allowMultiple = true,
+            converter = Converters.CommaSeparatedOptionListConverter.class,
             defaultValue = ""
     )
     public List<String> scans;
@@ -49,6 +48,7 @@ public class NewScanOptions extends OptionsBase {
             abbrev = 'p',
             help = "A list of ports.",
             allowMultiple = true,
+            converter = Converters.CommaSeparatedOptionListConverter.class,
             defaultValue = ""
     )
     public List<String> ports;
@@ -66,6 +66,7 @@ public class NewScanOptions extends OptionsBase {
             abbrev = 'w',
             help = "A list of IPs/CIDR-Blocks.",
             allowMultiple = true,
+            converter = Converters.CommaSeparatedOptionListConverter.class,
             defaultValue = ""
     )
     public List<String> whitelist;
@@ -75,6 +76,7 @@ public class NewScanOptions extends OptionsBase {
             abbrev = 'b',
             help = "A list of IPs/CIDR-Blocks.",
             allowMultiple = true,
+            converter = Converters.CommaSeparatedOptionListConverter.class,
             defaultValue = ""
     )
     public List<String> blacklist;
@@ -99,27 +101,33 @@ public class NewScanOptions extends OptionsBase {
      * @throws OptionsParsingException
      */
     public static NewScanOptions parseOptions(String[] args) {
-        NewScanOptions result;
+        NewScanOptions result = null;
 
         LOG.trace("parseOptions()");
 
         try {
-            parser.parse(args);
+            result = Options.parse(NewScanOptions.class, args).getOptions();
         } catch (OptionsParsingException e) {
             LOG.warn(e.getMessage());
             LOG.warn("Creating fallback options.");
 
-            try {
-                parser.parse();
-            } catch (OptionsParsingException e1) {
-                // Can't happen
-            }
+            result = new NewScanOptions();
+            setDefaultValues(result);
+            result.help = true;
         }
-
-        result = parser.getOptions(NewScanOptions.class);
 
         // TODO sanity check
 
         return result;
+    }
+
+    private static void setDefaultValues(NewScanOptions opts) {
+        opts.ports = new LinkedList<>();
+        opts.help = false;
+        opts.targetsFromRedisList = "";
+        opts.scans = new LinkedList<>();
+        opts.blacklist = new LinkedList<>();
+        opts.whitelist = new LinkedList<>();
+        opts.ndsBlacklist = true;
     }
 }
