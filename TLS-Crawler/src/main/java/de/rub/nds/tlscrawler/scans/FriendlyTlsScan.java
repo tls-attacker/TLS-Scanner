@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A reduced version of the TLS Scan, which does not test for vulnerabilities.
+ *
+ * @author janis.fliegenschmidt@rub.de
  */
 public class FriendlyTlsScan extends TlsScan {
     private static Logger LOG = LoggerFactory.getLogger(PingScan.class);
