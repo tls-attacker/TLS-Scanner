@@ -48,6 +48,11 @@ public class CommandLineInterface {
 
             switch (in_arr[0]) {
                 case "newscan": {
+                    if (args.length < 1)
+                    {
+                        args = new String[] { "-h" };
+                    }
+
                     NewScanOptions options = NewScanOptions.parseOptions(args);
 
                     if (options.help) {
