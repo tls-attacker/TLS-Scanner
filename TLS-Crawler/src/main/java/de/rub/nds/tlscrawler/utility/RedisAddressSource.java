@@ -28,6 +28,8 @@ public class RedisAddressSource implements IAddressIterator {
     private String listKey;
     private JedisPool jedisPool;
 
+    private int nextIndex;
+
     /**
      * Package private, should be build through the factory.
      */
@@ -49,6 +51,8 @@ public class RedisAddressSource implements IAddressIterator {
                 throw new ConnectException("Could not connect to Redis endpoint.");
             }
         }
+
+        this.nextIndex = 0;
 
         this.initialized = true;
     }
@@ -73,7 +77,7 @@ public class RedisAddressSource implements IAddressIterator {
         boolean result;
 
         try (Jedis redis = this.jedisPool.getResource()) {
-            result = redis.llen(this.listKey) > 0;
+            result = redis.llen(this.listKey) > this.nextIndex;
         }
 
         return result;
@@ -86,7 +90,7 @@ public class RedisAddressSource implements IAddressIterator {
         String result;
 
         try (Jedis redis = this.jedisPool.getResource()) {
-            result = redis.rpop(this.listKey);
+            result = redis.lindex(this.listKey, this.nextIndex++);
         }
 
         return result;
