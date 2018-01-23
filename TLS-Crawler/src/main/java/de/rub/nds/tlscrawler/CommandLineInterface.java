@@ -62,7 +62,7 @@ public class CommandLineInterface {
 
                     List<String> chosenScans = options.scans;
                     List<Integer> ports = options.ports.stream()
-                            .map(x -> Integer.parseInt(x))
+                            .map(Integer::parseInt)
                             .collect(Collectors.toList());
 
                     AddressIteratorFactory addrFac = AddressIteratorFactory.getInstance();
