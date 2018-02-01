@@ -205,147 +205,151 @@ public class SiteReport {
     }
 
     private StringBuilder appendRfc(StringBuilder builder) {
-        builder.append("----------RFC----------\n");
-        prettyAppendRedOnFailure(builder, "Checks MAC", checksMac);
+        builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------RFC----------\n\n" + AnsiColors.ANSI_RESET);
+        prettyAppendRedOnFailure(builder, "Checks MAC     ", checksMac);
         prettyAppendRedOnFailure(builder, "Checks Finished", checksFinished);
         return builder;
     }
 
     private StringBuilder appendRenegotiation(StringBuilder builder) {
-        builder.append("----------Renegotiation & SCSV----------\n");
-        prettyAppendYellowOnSuccess(builder, "Clientside Secure", supportsClientSideSecureRenegotiation);
+        builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Renegotiation & SCSV----------\n\n"+ AnsiColors.ANSI_RESET);
+        prettyAppendYellowOnSuccess(builder, "Clientside Secure  ", supportsClientSideSecureRenegotiation);
         prettyAppendRedOnSuccess(builder, "Clientside Insecure", supportsClientSideInsecureRenegotiation);
-        prettyAppendRedOnFailure(builder, "SCSV Fallback", tlsFallbackSCSVsupported);
+        prettyAppendRedOnFailure(builder, "SCSV Fallback\t   ", tlsFallbackSCSVsupported);
         return builder;
     }
 
     private StringBuilder appendCertificate(StringBuilder builder) {
         if (certificateReports != null && !certificateReports.isEmpty()) {
-            builder.append("----------Certificates----------\n");
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Certificates----------\n\n"+ AnsiColors.ANSI_RESET);
             for (CertificateReport report : certificateReports) {
                 builder.append(report.toString()).append("\n");
             }
-            builder.append("----------Certificate Checks----------\n");
-            prettyAppendRedOnSuccess(builder, "Expired Certificates", certificateExpired);
-            prettyAppendRedOnSuccess(builder, "Not yet Valid Certificates", certificateNotYetValid);
-            prettyAppendRedOnSuccess(builder, "Weak Hash Algorithms", certificateHasWeakHashAlgorithm);
-            prettyAppendRedOnSuccess(builder, "Weak Signature Algorithms", certificateHasWeakSignAlgorithm);
-            prettyAppendRedOnFailure(builder, "Matches Domain", certificateMachtesDomainName);
-            prettyAppendGreenOnSuccess(builder, "Only Trusted", certificateIsTrusted);
-            prettyAppendRedOnFailure(builder, "Contains Blacklisted", certificateKeyIsBlacklisted);
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Certificate Checks----------\n\n"+ AnsiColors.ANSI_RESET);
+            prettyAppendRedOnSuccess(builder, "Expired Certificates\t\t", certificateExpired);
+            prettyAppendRedOnSuccess(builder, "Not yet Valid Certificates\t\t", certificateNotYetValid);
+            prettyAppendRedOnSuccess(builder, "Weak Hash Algorithms\t\t", certificateHasWeakHashAlgorithm);
+            prettyAppendRedOnSuccess(builder, "Weak Signature Algorithms\t\t", certificateHasWeakSignAlgorithm);
+            prettyAppendRedOnFailure(builder, "Matches Domain\t\t", certificateMachtesDomainName);
+            prettyAppendGreenOnSuccess(builder, "Only Trusted\t\t", certificateIsTrusted);
+            prettyAppendRedOnFailure(builder, "Contains Blacklisted\t\t", certificateKeyIsBlacklisted);
         }
         return builder;
     }
 
     private StringBuilder appendSession(StringBuilder builder) {
-        builder.append("----------Session----------\n");
+        builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Session----------\n\n"+ AnsiColors.ANSI_RESET);
         prettyAppendYellowOnFailure(builder, "Supports Session resumption", supportsSessionIds);
-        prettyAppendYellowOnFailure(builder, "Supports Session Tickets", supportsSessionTicket);
-        prettyAppend(builder, "Session Ticket Hint:" + sessionTicketLengthHint);
-        prettyAppendYellowOnFailure(builder, "Session Ticket Rotation", sessionTicketGetsRotated);
-        prettyAppendRedOnFailure(builder, "Ticketbleed", vulnerableTicketBleed);
+        prettyAppendYellowOnFailure(builder, "Supports Session Tickets   ", supportsSessionTicket);
+        prettyAppend(builder, "Session Ticket Hint\t   :" + sessionTicketLengthHint);
+        prettyAppendYellowOnFailure(builder, "Session Ticket Rotation    ", sessionTicketGetsRotated);
+        prettyAppendRedOnFailure(builder, "Ticketbleed\t\t   ", vulnerableTicketBleed);
         return builder;
     }
 
     private StringBuilder appendGcm(StringBuilder builder) {
-        builder.append("----------GCM----------\n");
+        builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------GCM----------\n\n"+ AnsiColors.ANSI_RESET);
         prettyAppendRedOnFailure(builder, "GCM Nonce reuse", gcmReuse);
         if (gcmPattern == null) {
-            prettyAppend(builder, "GCM Pattern: Unknown");
+            prettyAppend(builder, "GCM Pattern    : Unknown");
         } else if (gcmPattern == GcmPattern.AKWARD) {
-            prettyAppendYellow(builder, "GCM Pattern: " + gcmPattern.name());
+            prettyAppendYellow(builder, "GCM Pattern    : " + gcmPattern.name());
         } else if (gcmPattern == GcmPattern.INCREMENTING) {
-            prettyAppendGreen(builder, "GCM Pattern: " + gcmPattern.name());
+            prettyAppendGreen(builder, "GCM Pattern    : " + gcmPattern.name());
         } else if (gcmPattern == GcmPattern.RANDOM) {
-            prettyAppendGreen(builder, "GCM Pattern: " + gcmPattern.name());
+            prettyAppendGreen(builder, "GCM Pattern    : " + gcmPattern.name());
         } else if (gcmPattern == GcmPattern.REPEATING) {
-            prettyAppendRed(builder, "GCM Pattern: " + gcmPattern.name());
+            prettyAppendRed(builder, "GCM Pattern    : " + gcmPattern.name());
         } else {
-            prettyAppend(builder, "GCM Pattern: " + gcmPattern.name());
+            prettyAppend(builder, "GCM Pattern    : " + gcmPattern.name());
         }
-        prettyAppendRedOnFailure(builder, "GCM Check", gcmCheck);
+        prettyAppendRedOnFailure(builder, "GCM Check      ", gcmCheck);
         return builder;
     }
 
     private StringBuilder appendIntolerances(StringBuilder builder) {
-        builder.append("----------Intolerances----------\n");
-        prettyAppendRedOnFailure(builder, "Version", versionIntolerance);
+        builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Intolerances----------\n\n"+ AnsiColors.ANSI_RESET);
+        prettyAppendRedOnFailure(builder, "Version\t   ", versionIntolerance);
         prettyAppendRedOnFailure(builder, "Ciphersuite", cipherSuiteIntolerance);
-        prettyAppendRedOnFailure(builder, "Extension", extensionIntolerance);
-        prettyAppendRedOnFailure(builder, "Curves", supportedCurvesIntolerance);
+        prettyAppendRedOnFailure(builder, "Extension  ", extensionIntolerance);
+        prettyAppendRedOnFailure(builder, "Curves\t   ", supportedCurvesIntolerance);
         return builder;
     }
 
     private StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
-        builder.append("----------Attack Vulnerabilities----------\n");
-        prettyAppendRedGreen(builder, "Padding Oracle", paddingOracleVulnerable);
-        prettyAppendRedGreen(builder, "Bleichenbacher", bleichenbacherVulnerable);
-        prettyAppendRedGreen(builder, "CRIME", crimeVulnerable);
-        prettyAppendRedGreen(builder, "Breach", breachVulnerable);
-        prettyAppendRedGreen(builder, "Invalid Curve", invalidCurveVulnerable);
+        builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Attack Vulnerabilities----------\n\n"+ AnsiColors.ANSI_RESET);
+        prettyAppendRedGreen(builder, "Padding Oracle\t\t", paddingOracleVulnerable);
+        prettyAppendRedGreen(builder, "Bleichenbacher\t\t", bleichenbacherVulnerable);
+        prettyAppendRedGreen(builder, "CRIME\t\t\t", crimeVulnerable);
+        prettyAppendRedGreen(builder, "Breach\t\t\t", breachVulnerable);
+        prettyAppendRedGreen(builder, "Invalid Curve\t\t", invalidCurveVulnerable);
         prettyAppendRedGreen(builder, "Invalid Curve Ephemerals", invalidCurveEphermaralVulnerable);
-        prettyAppendRedGreen(builder, "SSL Poodle", poodleVulnerable);
-        prettyAppendRedGreen(builder, "TLS Poodle", tlsPoodleVulnerable);
-        prettyAppendRedGreen(builder, "CVE-20162107", cve20162107Vulnerable);
-        prettyAppendRedGreen(builder, "Logjam", logjamVulnerable);
-        prettyAppendRedGreen(builder, "Sweet 32", sweet32Vulnerable);
-        prettyAppendRedGreen(builder, "DROWN", drownVulnerable);
-        prettyAppendRedGreen(builder, "Lucky13", lucky13Vulnerable);
-        prettyAppendRedGreen(builder, "Heartbleed", heartbleedVulnerable);
-        prettyAppendRedGreen(builder, "EarlyCcs", earlyCcsVulnerable);
+        prettyAppendRedGreen(builder, "SSL Poodle\t\t", poodleVulnerable);
+        prettyAppendRedGreen(builder, "TLS Poodle\t\t", tlsPoodleVulnerable);
+        prettyAppendRedGreen(builder, "CVE-20162107\t\t", cve20162107Vulnerable);
+        prettyAppendRedGreen(builder, "Logjam\t\t\t", logjamVulnerable);
+        prettyAppendRedGreen(builder, "Sweet 32\t\t", sweet32Vulnerable);
+        prettyAppendRedGreen(builder, "DROWN\t\t\t", drownVulnerable);
+        prettyAppendRedGreen(builder, "Lucky13\t\t\t", lucky13Vulnerable);
+        prettyAppendRedGreen(builder, "Heartbleed\t\t", heartbleedVulnerable);
+        prettyAppendRedGreen(builder, "EarlyCcs\t\t", earlyCcsVulnerable);
         return builder;
     }
 
     private StringBuilder appendCipherSuites(StringBuilder builder) {
         if (cipherSuites != null) {
-            builder.append("----------Supported Ciphersuites----------\n");
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Supported Ciphersuites----------\n\n"+ AnsiColors.ANSI_RESET);
             for (CipherSuite suite : cipherSuites) {
                 prettyPrintCipherSuite(builder, suite);
             }
 
             for (VersionSuiteListPair versionSuitePair : versionSuitePairs) {
-                builder.append("----------Supported in " + versionSuitePair.getVersion() + "----------\n");
+                builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Supported in " + versionSuitePair.getVersion() + "----------\n\n"+ AnsiColors.ANSI_RESET);
                 for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
                     prettyPrintCipherSuite(builder, suite);
                 }
             }
-            builder.append("----------Symmetric Supported----------\n");
-            prettyAppendRedOnSuccess(builder, "Null", supportsNullCiphers);
-            prettyAppendRedOnSuccess(builder, "Export", supportsExportCiphers);
-            prettyAppendRedOnSuccess(builder, "Anon", supportsAnonCiphers);
-            prettyAppendRedOnSuccess(builder, "DES", supportsDesCiphers);
-            prettyAppendYellowOnSuccess(builder, "SEED", supportsSeedCiphers);
-            prettyAppendYellowOnSuccess(builder, "IDEA", supportsIdeaCiphers);
-            prettyAppendRedOnSuccess(builder, "RC2", supportsRc2Ciphers);
-            prettyAppendRedOnSuccess(builder, "RC4", supportsRc4Ciphers);
-            prettyAppendYellowOnSuccess(builder, "3DES", supportsTrippleDesCiphers);
-            prettyAppend(builder, "AES", supportsAes);
-            prettyAppend(builder, "CAMELLIA", supportsCamellia);
-            prettyAppend(builder, "ARIA", supportsAria);
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Symmetric Supported----------\n\n"+ AnsiColors.ANSI_RESET);
+            prettyAppendRedOnSuccess(builder, "Null \t\t ", supportsNullCiphers);
+            prettyAppendRedOnSuccess(builder, "Export \t\t ", supportsExportCiphers);
+            prettyAppendRedOnSuccess(builder, "Anon \t\t ", supportsAnonCiphers);
+            prettyAppendRedOnSuccess(builder, "DES \t\t ", supportsDesCiphers);
+            prettyAppendYellowOnSuccess(builder, "SEED \t\t ", supportsSeedCiphers);
+            prettyAppendYellowOnSuccess(builder, "IDEA \t\t ", supportsIdeaCiphers);
+            prettyAppendRedOnSuccess(builder, "RC2 \t\t ", supportsRc2Ciphers);
+            prettyAppendRedOnSuccess(builder, "RC4 \t\t ", supportsRc4Ciphers);
+            prettyAppendYellowOnSuccess(builder, "3DES \t\t ", supportsTrippleDesCiphers);
+            prettyAppend(builder, "AES \t\t ", supportsAes);
+            prettyAppend(builder, "CAMELLIA\t ", supportsCamellia);
+            prettyAppend(builder, "ARIA \t\t ", supportsAria);
             prettyAppendGreenOnSuccess(builder, "CHACHA20 POLY1305", supportsChacha);
-            builder.append("----------KeyExchange Supported----------\n");
-            prettyAppendYellowOnSuccess(builder, "RSA", supportsRsa);
-            prettyAppend(builder, "DH", supportsDh);
-            prettyAppend(builder, "ECDH", supportsEcdh);
-            prettyAppendYellowOnSuccess(builder, "GOST", supportsGost);
-            prettyAppend(builder, "SRP", supportsSrp);
-            prettyAppend(builder, "Kerberos", supportsKerberos);
+            
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------KeyExchange Supported----------\n\n"+ AnsiColors.ANSI_RESET);
+            prettyAppendYellowOnSuccess(builder, "RSA \t ", supportsRsa);
+            prettyAppend(builder, "DH \t ", supportsDh);
+            prettyAppend(builder, "ECDH \t ", supportsEcdh);
+            prettyAppendYellowOnSuccess(builder, "GOST \t ", supportsGost);
+            prettyAppend(builder, "SRP \t ", supportsSrp);
+            prettyAppend(builder, "Kerberos ", supportsKerberos);
             prettyAppend(builder, "Plain PSK", supportsPskPlain);
-            prettyAppend(builder, "PSK RSA", supportsPskRsa);
-            prettyAppend(builder, "PSK DHE", supportsPskDhe);
+            prettyAppend(builder, "PSK RSA  ", supportsPskRsa);
+            prettyAppend(builder, "PSK DHE  ", supportsPskDhe);
             prettyAppend(builder, "PSK ECDHE", supportsPskEcdhe);
-            prettyAppendYellowOnSuccess(builder, "Fortezza", supportsFortezza);
-            prettyAppendGreenOnSuccess(builder, "New Hope", supportsNewHope);
-            prettyAppendGreenOnSuccess(builder, "ECMQV", supportsEcmqv);
-            builder.append("----------Perfect Forward Secrecy----------\n");
-            prettyAppendGreenOnSuccess(builder, "Supports PFS", supportsPfsCiphers);
-            prettyAppendGreenOnSuccess(builder, "Prefers PFS", prefersPfsCiphers);
+            prettyAppendYellowOnSuccess(builder, "Fortezza ", supportsFortezza);
+            prettyAppendGreenOnSuccess(builder, "New Hope ", supportsNewHope);
+            prettyAppendGreenOnSuccess(builder, "ECMQV \t ", supportsEcmqv);
+            
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Perfect Forward Secrecy----------\n\n"+ AnsiColors.ANSI_RESET);
+            prettyAppendGreenOnSuccess(builder, "Supports PFS\t ", supportsPfsCiphers);
+            prettyAppendGreenOnSuccess(builder, "Prefers PFS\t ", prefersPfsCiphers);
             prettyAppendGreenOnSuccess(builder, "Supports Only PFS", supportsOnlyPfsCiphers);
-            builder.append("----------Cipher Types Supports----------\n");
+            
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Cipher Types Supports----------\n\n"+ AnsiColors.ANSI_RESET);
             prettyAppend(builder, "Stream", supportsStreamCiphers);
-            prettyAppend(builder, "Block", supportsBlockCiphers);
-            prettyAppendGreenOnSuccess(builder, "AEAD", supportsAeadCiphers);
-            builder.append("----------Ciphersuite General----------\n");
+            prettyAppend(builder, "Block ", supportsBlockCiphers);
+            prettyAppendGreenOnSuccess(builder, "AEAD  ", supportsAeadCiphers);
+            
+            builder.append(AnsiColors.ANSI_BOLD + "\n----------Ciphersuite General----------\n\n"+ AnsiColors.ANSI_RESET);
             prettyAppendGreenRed(builder, "Enforces Ciphersuite ordering", enforcesCipherSuiteOrdering);
         }
         return builder;
@@ -353,17 +357,17 @@ public class SiteReport {
 
     private StringBuilder appendProtocolVersions(StringBuilder builder) {
         if (versions != null) {
-            builder.append("----------Supported Protocol Versions----------\n");
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Supported Protocol Versions----------\n\n"+ AnsiColors.ANSI_RESET);
             for (ProtocolVersion version : versions) {
                 builder.append(version.name()).append("\n");
             }
-            builder.append("----------Versions----------\n");
-            prettyAppendRedGreen(builder, "SSL 2.0", supportsSsl2);
-            prettyAppendRedGreen(builder, "SSL 3.0", supportsSsl3);
-            prettyAppendYellowOnFailure(builder, "TLS 1.0", supportsTls10);
-            prettyAppendYellowOnFailure(builder, "TLS 1.1", supportsTls11);
-            prettyAppendRedOnFailure(builder, "TLS 1.2", supportsTls12);
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3", supportsTls13);
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Versions----------\n\n"+ AnsiColors.ANSI_RESET);
+            prettyAppendRedGreen(builder, "SSL 2.0\t\t", supportsSsl2);
+            prettyAppendRedGreen(builder, "SSL 3.0\t\t", supportsSsl3);
+            prettyAppendYellowOnFailure(builder, "TLS 1.0\t\t", supportsTls10);
+            prettyAppendYellowOnFailure(builder, "TLS 1.1\t\t", supportsTls11);
+            prettyAppendRedOnFailure(builder, "TLS 1.2\t\t", supportsTls12);
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3\t\t", supportsTls13);
             prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 14", supportsTls13Draft14);
             prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 15", supportsTls13Draft15);
             prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 16", supportsTls13Draft16);
@@ -382,22 +386,23 @@ public class SiteReport {
 
     private StringBuilder appendExtensions(StringBuilder builder) {
         if (supportedExtensions != null) {
-            builder.append("----------Supported Extensions----------\n");
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Supported Extensions----------\n\n"+ AnsiColors.ANSI_RESET);
             for (ExtensionType type : supportedExtensions) {
                 builder.append(type.name()).append("\n");
             }
         }
-        builder.append("----------Extensions----------\n");
-        prettyAppendGreenRed(builder, "Secure Renegotiation", supportsSecureRenegotiation);
-        prettyAppendGreenOnSuccess(builder, "Supports Extended Master Secret", supportsExtendedMasterSecret);
-        prettyAppendGreenOnSuccess(builder, "Supports Encrypt Then Mac", supportsEncryptThenMacSecret);
-        prettyAppendGreenOnSuccess(builder, "Supports Tokenbinding", supportsTokenbinding);
+        builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Extensions----------\n\n"+ AnsiColors.ANSI_RESET);
+        prettyAppendGreenRed(builder, "Secure Renegotiation\t\t", supportsSecureRenegotiation);
+        prettyAppendGreenOnSuccess(builder, "Supports Extended Master Secret ", supportsExtendedMasterSecret);
+        prettyAppendGreenOnSuccess(builder, "Supports Encrypt Then Mac\t", supportsEncryptThenMacSecret);
+        prettyAppendGreenOnSuccess(builder, "Supports Tokenbinding\t\t", supportsTokenbinding);
+        
         if (supportsTokenbinding == Boolean.TRUE) {
-            builder.append("----------Tokenbinding Versions----------\n");
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Tokenbinding Versions----------\n\n"+ AnsiColors.ANSI_RESET);
             for (TokenBindingVersion version : supportedTokenBindingVersion) {
                 builder.append(version.toString()).append("\n");
             }
-            builder.append("----------Tokenbinding Key Paramters----------\n");
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Tokenbinding Key Paramters----------\n\n"+ AnsiColors.ANSI_RESET);
             for (TokenBindingKeyParameters keyParameter : supportedTokenBindingKeyParameters) {
                 builder.append(keyParameter.toString()).append("\n");
             }
@@ -429,7 +434,7 @@ public class SiteReport {
 
     private StringBuilder appendCurves(StringBuilder builder) {
         if (supportedNamedCurves != null) {
-            builder.append("----------Supported Named Curves----------\n");
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Supported Named Curves----------\n\n"+ AnsiColors.ANSI_RESET);
             if (supportedNamedCurves.size() > 0) {
                 for (NamedCurve curve : supportedNamedCurves) {
                     builder.append(curve.name()).append("\n");
@@ -443,7 +448,7 @@ public class SiteReport {
 
     private StringBuilder appendSignatureAndHashAlgorithms(StringBuilder builder) {
         if (supportedSignatureAndHashAlgorithms != null) {
-            builder.append("----------Supported Signature and Hash Algorithms----------\n");
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------Supported Signature and Hash Algorithms----------\n\n"+ AnsiColors.ANSI_RESET);
             if (supportedSignatureAndHashAlgorithms.size() > 0) {
                 for (SignatureAndHashAlgorithm algorithm : supportedSignatureAndHashAlgorithms) {
                     prettyAppend(builder, algorithm.toString());
@@ -457,7 +462,7 @@ public class SiteReport {
 
     private StringBuilder appendCompressions(StringBuilder builder) {
         if (supportedCompressionMethods != null) {
-            builder.append("----------Supported Compressions----------\n");
+            builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "----------Supported Compressions----------\n"+ AnsiColors.ANSI_RESET);
             for (CompressionMethod compression : supportedCompressionMethods) {
                 prettyAppend(builder, compression.name());
             }
