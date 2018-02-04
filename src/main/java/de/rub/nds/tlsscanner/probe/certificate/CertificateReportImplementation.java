@@ -9,9 +9,15 @@
 package de.rub.nds.tlsscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.MessageDigest;
 import java.util.Date;
 import org.bouncycastle.asn1.x509.Certificate;
+
+import javax.xml.bind.DatatypeConverter;
 
 /**
  *
@@ -37,6 +43,8 @@ class CertificateReportImplementation implements CertificateReport {
     private Boolean dnsCAA;
     private Boolean trusted;
     private Certificate certificate;
+    private String sha256FingerprintHex;
+
 
     public CertificateReportImplementation() {
     }
@@ -46,8 +54,21 @@ class CertificateReportImplementation implements CertificateReport {
         return certificate;
     }
 
+    @Override
+    public String getSHA256Fingerprint() {
+        return sha256FingerprintHex;
+    }
+
     public void setCertificate(Certificate certificate) {
         this.certificate = certificate;
+        try {
+            this.sha256FingerprintHex = DatatypeConverter.printHexBinary(
+                    MessageDigest.getInstance("SHA-256").digest(certificate.getEncoded())).toLowerCase();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -206,6 +227,7 @@ class CertificateReportImplementation implements CertificateReport {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
+        builder.append("Fingerprint: ").append(sha256FingerprintHex).append("\n");
         if (subject != null) {
             builder.append("Subject: ").append(subject).append("\n");
         }
