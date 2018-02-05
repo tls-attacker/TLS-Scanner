@@ -15,7 +15,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -64,7 +64,7 @@ public class CompressionsProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setNamedCurves(NamedCurve.values());
+        tlsConfig.setNamedCurves(NamedGroup.values());
         List<CompressionMethod> toTestList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
         
         CompressionMethod selectedCompressionMethod;

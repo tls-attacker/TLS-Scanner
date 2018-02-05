@@ -5,7 +5,7 @@
  */
 package de.rub.nds.tlsscanner.report.result;
 
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -17,9 +17,9 @@ import java.util.List;
  */
 public class NamedCurveResult extends ProbeResult {
     
-    private final List<NamedCurve> namedCurvesList;
+    private final List<NamedGroup> namedCurvesList;
     
-    public NamedCurveResult(List<NamedCurve> curves) {
+    public NamedCurveResult(List<NamedGroup> curves) {
         super(ProbeType.NAMED_CURVES);
         this.namedCurvesList = curves;
     }

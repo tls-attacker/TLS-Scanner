@@ -13,7 +13,7 @@ import de.rub.nds.tlsscanner.report.result.CiphersuiteProbeResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
@@ -93,9 +93,9 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setQuickReceive(true);
             config.setEarlyStop(true);
             config.setStopActionsAfterFatal(true);
-            List<NamedCurve> namedCurves = new LinkedList<>();
-            namedCurves.addAll(Arrays.asList(NamedCurve.values()));
-            config.setNamedCurves(namedCurves);
+            List<NamedGroup> namedCurves = new LinkedList<>();
+            namedCurves.addAll(Arrays.asList(NamedGroup.values()));
+            config.setNamedGroups(namedCurves);
             State state = new State(config);
             WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
             try {

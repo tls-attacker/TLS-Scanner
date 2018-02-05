@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.report;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
@@ -78,7 +78,7 @@ public class SiteReport {
 
     //Extensions
     private List<ExtensionType> supportedExtensions = null;
-    private List<NamedCurve> supportedNamedCurves = null;
+    private List<NamedGroup> supportedNamedCurves = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
@@ -431,7 +431,7 @@ public class SiteReport {
         if (supportedNamedCurves != null) {
             builder.append("----------Supported Named Curves----------\n");
             if (supportedNamedCurves.size() > 0) {
-                for (NamedCurve curve : supportedNamedCurves) {
+                for (NamedGroup curve : supportedNamedCurves) {
                     builder.append(curve.name()).append("\n");
                 }
             } else {
@@ -985,11 +985,11 @@ public class SiteReport {
         this.enforcesCipherSuiteOrdering = enforcesCipherSuiteOrdering;
     }
 
-    public List<NamedCurve> getSupportedNamedCurves() {
+    public List<NamedGroup> getSupportedNamedCurves() {
         return supportedNamedCurves;
     }
 
-    public void setSupportedNamedCurves(List<NamedCurve> supportedNamedCurves) {
+    public void setSupportedNamedCurves(List<NamedGroup> supportedNamedCurves) {
         this.supportedNamedCurves = supportedNamedCurves;
     }
 
