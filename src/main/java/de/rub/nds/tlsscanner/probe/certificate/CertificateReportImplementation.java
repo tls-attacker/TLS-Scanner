@@ -10,14 +10,10 @@ package de.rub.nds.tlsscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.MessageDigest;
 import java.util.Date;
 import org.bouncycastle.asn1.x509.Certificate;
 
-import javax.xml.bind.DatatypeConverter;
 
 /**
  *
