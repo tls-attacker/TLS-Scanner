@@ -45,7 +45,6 @@ class CertificateReportImplementation implements CertificateReport {
     private Certificate certificate;
     private String sha256FingerprintHex;
 
-
     public CertificateReportImplementation() {
     }
 
@@ -59,16 +58,12 @@ class CertificateReportImplementation implements CertificateReport {
         return sha256FingerprintHex;
     }
 
+    public void setSha256FingerprintHex(String sha256FingerprintHex) {
+        this.sha256FingerprintHex = sha256FingerprintHex;
+    }
+
     public void setCertificate(Certificate certificate) {
         this.certificate = certificate;
-        try {
-            this.sha256FingerprintHex = DatatypeConverter.printHexBinary(
-                    MessageDigest.getInstance("SHA-256").digest(certificate.getEncoded())).toLowerCase();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
