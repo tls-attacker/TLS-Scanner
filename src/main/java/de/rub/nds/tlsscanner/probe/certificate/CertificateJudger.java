@@ -30,38 +30,46 @@ public class CertificateJudger {
     }
 
     public Boolean checkExpired() {
-        boolean result = isCertificateExpired(report);
+        Boolean result = isCertificateExpired(report);
         return result;
     }
 
     public Boolean checkNotYetValid() {
-        boolean result = isCertificateValidYet(report);
+        Boolean result = isCertificateValidYet(report);
         return result;
     }
 
     public Boolean checkCertificateRevoked() {
-        boolean result = isRevoked(certificate);
+        Boolean result = isRevoked(certificate);
         return result;
     }
 
     private Boolean checkHashAlgorithm() {
-        boolean result = isWeakHashAlgo(report);
+        Boolean result = isWeakHashAlgo(report);
         return result;
     }
 
     private Boolean checkSignAlgorithm() {
-        boolean result = isWeakSigAlgo(report);
+        Boolean result = isWeakSigAlgo(report);
         return result;
     }
 
     public Boolean isWeakHashAlgo(CertificateReport report) {
-        HashAlgorithm algo = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
-        return algo == HashAlgorithm.MD5 || algo == HashAlgorithm.NONE || algo == HashAlgorithm.SHA1;
+        if (report.getSignatureAndHashAlgorithm() != null) {
+            HashAlgorithm algo = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
+            return algo == HashAlgorithm.MD5 || algo == HashAlgorithm.NONE || algo == HashAlgorithm.SHA1;
+        } else {
+            return null;
+        }
     }
 
     public Boolean isWeakSigAlgo(CertificateReport report) {
-        SignatureAlgorithm algo = report.getSignatureAndHashAlgorithm().getSignatureAlgorithm();
-        return algo == SignatureAlgorithm.ANONYMOUS; // TODO is this weak?
+        if (report.getSignatureAndHashAlgorithm() != null) {
+            SignatureAlgorithm algo = report.getSignatureAndHashAlgorithm().getSignatureAlgorithm();
+            return algo == SignatureAlgorithm.ANONYMOUS; // TODO is this weak?
+        } else {
+            return null;
+        }
     }
 
     public Boolean isWeakKey(CertificateReport report) {
@@ -69,11 +77,19 @@ public class CertificateJudger {
     }
 
     public Boolean isCertificateExpired(CertificateReport report) {
-        return !report.getValidTo().after(new Date(System.currentTimeMillis()));
+        if (report.getValidTo() != null) {
+            return !report.getValidTo().after(new Date(System.currentTimeMillis()));
+        } else {
+            return null;
+        }
     }
 
     public Boolean isCertificateValidYet(CertificateReport report) {
-        return !report.getValidFrom().before(new Date(System.currentTimeMillis()));
+        if (report.getValidFrom() != null) {
+            return !report.getValidFrom().before(new Date(System.currentTimeMillis()));
+        } else {
+            return null;
+        }
     }
 
     public Boolean isRevoked(Certificate certificate) {
