@@ -54,6 +54,7 @@ public class SiteReport {
     private Boolean lucky13Vulnerable = null;
     private Boolean heartbleedVulnerable = null;
     private Boolean earlyCcsVulnerable = null;
+    private Boolean freakVulnerable = null;
 
     //Version
     private List<ProtocolVersion> versions = null;
@@ -294,6 +295,7 @@ public class SiteReport {
         prettyAppendRedGreen(builder, "Lucky13", lucky13Vulnerable);
         prettyAppendRedGreen(builder, "Heartbleed", heartbleedVulnerable);
         prettyAppendRedGreen(builder, "EarlyCcs", earlyCcsVulnerable);
+        prettyAppendRedGreen(builder, "FREAK", freakVulnerable);
         return builder;
     }
 
@@ -517,6 +519,14 @@ public class SiteReport {
 
     private StringBuilder prettyAppendGreen(StringBuilder builder, String value) {
         return builder.append(AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET).append("\n");
+    }
+
+    public Boolean getFreakVulnerable() {
+        return freakVulnerable;
+    }
+
+    public void setFreakVulnerable(Boolean freakVulnerable) {
+        this.freakVulnerable = freakVulnerable;
     }
 
     public Boolean getHeartbleedVulnerable() {
