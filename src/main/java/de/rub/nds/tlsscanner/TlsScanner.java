@@ -31,7 +31,6 @@ import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
 import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
-import de.rub.nds.tlsscanner.report.after.DrownAfterProbe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,7 +94,6 @@ public class TlsScanner {
 
             List<AfterProbe> afterList = new LinkedList<>();
             afterList.add(new Sweet32AfterProbe());
-            afterList.add(new DrownAfterProbe());
             ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
             return executor.execute(config, job);
         }
@@ -110,5 +108,4 @@ public class TlsScanner {
         ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
         return checker.isConnectable();
     }
-
 }
