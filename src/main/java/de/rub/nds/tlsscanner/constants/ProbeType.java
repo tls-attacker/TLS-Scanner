@@ -29,4 +29,5 @@ public enum ProbeType {
     EXTENSIONS,
     COMPRESSIONS,
     INTOLERANCES,
+    SNI,
 }

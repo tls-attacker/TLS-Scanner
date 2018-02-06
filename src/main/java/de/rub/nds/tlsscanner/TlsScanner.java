@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.PoodleProbe;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.probe.SniProbe;
 import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
@@ -77,6 +78,7 @@ public class TlsScanner {
         List<TlsProbe> phaseTwoTestList = new LinkedList<>();
 
         if (prechecks()) {
+            phaseOneTestList.add(new SniProbe(config));
             phaseOneTestList.add(new CompressionsProbe(config));
             phaseOneTestList.add(new NamedCurvesProbe(config));
             phaseOneTestList.add(new CertificateProbe(config));
