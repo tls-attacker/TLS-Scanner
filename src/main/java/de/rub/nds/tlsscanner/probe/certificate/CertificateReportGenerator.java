@@ -67,15 +67,27 @@ public class CertificateReportGenerator {
     
     private static void setSubject(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
         X500Name x500name = cert.getSubject();
-        RDN cn = x500name.getRDNs(BCStyle.CN)[0];
-        report.setCommonNames(IETFUtils.valueToString(cn.getFirst().getValue()));
+        if (x500name != null) {
+            report.setSubject(x500name.toString());
+        } else {
+            report.setSubject("--not specified--");
+        }
     }
     
     private static void setCommonNames(CertificateReportImplementation report,
             org.bouncycastle.asn1.x509.Certificate cert) {
+        StringBuilder commonNames = new StringBuilder();
         X500Name x500name = cert.getSubject();
-        RDN cn = x500name.getRDNs(BCStyle.CN)[0];
-        report.setCommonNames(IETFUtils.valueToString(cn.getFirst().getValue()));
+        if (x500name != null) {
+            RDN[] rdNs = x500name.getRDNs(BCStyle.CN);
+            for (int i = 0; i < rdNs.length; i++) {
+                commonNames.append(IETFUtils.valueToString(rdNs[i]));
+                if (i < rdNs.length - 1) {
+                    commonNames.append(" ,");
+                }
+            }
+        }
+        report.setCommonNames(commonNames.toString());
     }
     
     private static void setAlternativeNames(CertificateReportImplementation report,
@@ -84,19 +96,25 @@ public class CertificateReportGenerator {
     }
     
     private static void setValidFrom(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
-        report.setValidFrom(cert.getStartDate().getDate());
+        if (cert.getStartDate() != null) {
+            report.setValidFrom(cert.getStartDate().getDate());
+        }
     }
     
     private static void setValidTo(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
-        report.setValidTo(cert.getEndDate().getDate());
+        if (cert.getEndDate() != null) {
+            report.setValidTo(cert.getEndDate().getDate());
+        }
     }
     
     private static void setPubkey(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
         try {
             X509Certificate x509Cert = new X509CertificateObject(cert);
-            report.setPublicKey(x509Cert.getPublicKey());
+            if (x509Cert.getPublicKey() != null) {
+                report.setPublicKey(x509Cert.getPublicKey());
+            }
         } catch (CertificateParsingException ex) {
-            // TODO log could not set public key
+            LOGGER.warn("Could not parse PublicKey from certificate", ex);
         }
     }
     
@@ -105,7 +123,9 @@ public class CertificateReportGenerator {
     }
     
     private static void setIssuer(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
-        report.setIssuer(cert.getIssuer().toString());
+        if (cert.getIssuer() != null) {
+            report.setIssuer(cert.getIssuer().toString());
+        }
     }
     
     private static void setSignatureAndHashAlgorithm(CertificateReportImplementation report,
@@ -113,18 +133,27 @@ public class CertificateReportGenerator {
         String sigAndHashString = null;
         try {
             X509CertificateObject x509Cert = new X509CertificateObject(cert);
+
             sigAndHashString = x509Cert.getSigAlgName();
-            String[] algos = sigAndHashString.toUpperCase().split("WITH");
-            if (algos.length != 2) {
-                return;
+            if (sigAndHashString != null) {
+                String[] algos = sigAndHashString.toUpperCase().split("WITH");
+                if (algos.length != 2) {
+                    LOGGER.warn("Could not parse " + sigAndHashString + " into a reasonable SignatureAndHash algorithm");
+                    return;
+                }
+                SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.valueOf(algos[1]);
+                HashAlgorithm hashAlgorithm = HashAlgorithm.valueOf(algos[0]);
+                if (hashAlgorithm == null) {
+                    LOGGER.warn("Parsed an unknown HashAlgorithm");
+                    return;
+                }
+                if (signatureAlgorithm == null) {
+                    LOGGER.warn("Parsed an unknown SignatureAlgorithm");
+                    return;
+                }
+                SignatureAndHashAlgorithm sigHashAlgo = new SignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
+                report.setSignatureAndHashAlgorithm(sigHashAlgo);
             }
-            SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.valueOf(algos[1]);
-            HashAlgorithm hashAlgorithm = HashAlgorithm.valueOf(algos[0]);
-            if (hashAlgorithm == null || signatureAlgorithm == null) {
-                return;
-            }
-            SignatureAndHashAlgorithm sigHashAlgo = new SignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
-            report.setSignatureAndHashAlgorithm(sigHashAlgo);
         } catch (Exception E) {
             LOGGER.debug("Could not extraxt SignatureAndHashAlgorithm from String:" + sigAndHashString, E);
         }
