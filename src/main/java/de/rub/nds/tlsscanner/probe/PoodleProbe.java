@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.attacks.config.PoodleCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.PoodleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.PoodleResult;
 
@@ -36,4 +37,17 @@ public class PoodleProbe extends TlsProbe {
         return new PoodleResult(vulnerable);
     }
 
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return report.getSupportsBlockCiphers();
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return new PoodleResult(Boolean.FALSE);
+    }
 }

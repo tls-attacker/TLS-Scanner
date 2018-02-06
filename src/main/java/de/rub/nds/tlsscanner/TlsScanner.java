@@ -73,27 +73,30 @@ public class TlsScanner {
     }
 
     public SiteReport scan() {
-        List<TlsProbe> testList = new LinkedList<>();
+        List<TlsProbe> phaseOneTestList = new LinkedList<>();
+        List<TlsProbe> phaseTwoTestList = new LinkedList<>();
 
         if (prechecks()) {
-            testList.add(new NamedCurvesProbe(config));
-            testList.add(new CertificateProbe(config));
-            testList.add(new ProtocolVersionProbe(config));
-            testList.add(new CiphersuiteProbe(config));
-            testList.add(new CiphersuiteOrderProbe(config));
-            testList.add(new HeartbleedProbe(config));
-            testList.add(new PaddingOracleProbe(config));
-            testList.add(new BleichenbacherProbe(config));
-            testList.add(new PoodleProbe(config));
-            testList.add(new TlsPoodleProbe(config));
-            testList.add(new Cve20162107Probe(config));
-            testList.add(new InvalidCurveProbe(config));
-            testList.add(new ExtensionProbe(config));
-            testList.add(new CompressionsProbe(config));
+            phaseOneTestList.add(new CompressionsProbe(config));
+            phaseOneTestList.add(new NamedCurvesProbe(config));
+            phaseOneTestList.add(new CertificateProbe(config));
+            phaseOneTestList.add(new ProtocolVersionProbe(config));
+            phaseOneTestList.add(new CiphersuiteProbe(config));
+            phaseOneTestList.add(new CiphersuiteOrderProbe(config));
+            phaseOneTestList.add(new ExtensionProbe(config));
+
+            phaseTwoTestList.add(new HeartbleedProbe(config));
+            phaseTwoTestList.add(new PaddingOracleProbe(config));
+            phaseTwoTestList.add(new BleichenbacherProbe(config));
+            phaseTwoTestList.add(new PoodleProbe(config));
+            phaseTwoTestList.add(new TlsPoodleProbe(config));
+            phaseTwoTestList.add(new Cve20162107Probe(config));
+            phaseTwoTestList.add(new InvalidCurveProbe(config));
+
             List<AfterProbe> afterList = new LinkedList<>();
             afterList.add(new Sweet32AfterProbe());
             afterList.add(new DrownAfterProbe());
-            ScanJob job = new ScanJob(testList, afterList);
+            ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
             return executor.execute(config, job);
         }
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));

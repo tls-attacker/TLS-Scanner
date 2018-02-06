@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.attacks.config.Cve20162107CommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.Cve20162107Attacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.Cve20162107Result;
 
@@ -36,4 +37,17 @@ public class Cve20162107Probe extends TlsProbe {
         return new Cve20162107Result(vulnerable);
     }
 
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return report.getSupportsBlockCiphers() == Boolean.TRUE;
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return new Cve20162107Result(Boolean.FALSE);
+    }
 }

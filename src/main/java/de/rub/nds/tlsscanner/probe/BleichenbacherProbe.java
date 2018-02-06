@@ -11,6 +11,7 @@ import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.BleichenbacherAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
 /**
@@ -34,7 +35,23 @@ public class BleichenbacherProbe extends TlsProbe {
             vulnerable = false;
         }
         return new BleichenbacherResult(vulnerable);
-
     }
 
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        if (report.getSupportsRsa() == Boolean.TRUE) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return new BleichenbacherResult(Boolean.FALSE);
+    }
 }

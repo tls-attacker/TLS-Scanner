@@ -19,16 +19,22 @@ import java.util.List;
  */
 public class ScanJob {
 
-    private final List<TlsProbe> probeList;
+    private final List<TlsProbe> phaseTwoTestList;
+    private final List<TlsProbe> phaseOneTestList;
     private final List<AfterProbe> afterList;
 
-    public ScanJob(List<TlsProbe> testList, List<AfterProbe> afterList) {
-        this.probeList = testList;
+    public ScanJob(List<TlsProbe> phaseOneTestList, List<TlsProbe> phaseTwoTestList, List<AfterProbe> afterList) {
+        this.phaseOneTestList = phaseOneTestList;
+        this.phaseTwoTestList = phaseTwoTestList;
         this.afterList = afterList;
     }
 
-    public List<TlsProbe> getProbeList() {
-        return probeList;
+    public List<TlsProbe> getPhaseOneTestList() {
+        return phaseOneTestList;
+    }
+
+    public List<TlsProbe> getPhaseTwoTestList() {
+        return phaseTwoTestList;
     }
 
     public List<AfterProbe> getAfterProbes() {

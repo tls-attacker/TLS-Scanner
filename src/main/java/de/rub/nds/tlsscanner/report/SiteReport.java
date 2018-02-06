@@ -128,6 +128,7 @@ public class SiteReport {
     private Boolean supportsRsa;
     private Boolean supportsDh;
     private Boolean supportsEcdh;
+    private Boolean supportsStaticEcdh;
     private Boolean supportsGost;
     private Boolean supportsSrp;
     private Boolean supportsKerberos;
@@ -327,6 +328,7 @@ public class SiteReport {
             prettyAppendYellowOnSuccess(builder, "RSA", supportsRsa);
             prettyAppend(builder, "DH", supportsDh);
             prettyAppend(builder, "ECDH", supportsEcdh);
+            prettyAppend(builder, "Static ECDH", supportsStaticEcdh);
             prettyAppendYellowOnSuccess(builder, "GOST", supportsGost);
             prettyAppend(builder, "SRP", supportsSrp);
             prettyAppend(builder, "Kerberos", supportsKerberos);
@@ -1393,6 +1395,14 @@ public class SiteReport {
         this.clientHelloSizeIntolerance = clientHelloSizeIntolerance;
     }
 
+    public Boolean getSupportsStaticEcdh() {
+        return supportsStaticEcdh;
+    }
+
+    public void setSupportsStaticEcdh(Boolean supportsStaticEcdh) {
+        this.supportsStaticEcdh = supportsStaticEcdh;
+    }
+    
     @Override
     public String toString() {
         return getStringReport();

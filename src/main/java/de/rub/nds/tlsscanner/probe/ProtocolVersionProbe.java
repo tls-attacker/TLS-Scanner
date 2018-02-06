@@ -31,6 +31,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.ProtocolVersionResult;
 import java.util.Arrays;
@@ -233,4 +234,17 @@ public class ProtocolVersionProbe extends TlsProbe {
         return tls13Suites;
     }
 
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return true;
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return null;
+    }
 }
