@@ -44,16 +44,6 @@ public class CertificateJudger {
         return result;
     }
 
-    private Boolean checkHashAlgorithm() {
-        Boolean result = isWeakHashAlgo(report);
-        return result;
-    }
-
-    private Boolean checkSignAlgorithm() {
-        Boolean result = isWeakSigAlgo(report);
-        return result;
-    }
-
     public Boolean isWeakHashAlgo(CertificateReport report) {
         if (report.getSignatureAndHashAlgorithm() != null) {
             HashAlgorithm algo = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
