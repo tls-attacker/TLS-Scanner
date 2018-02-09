@@ -41,7 +41,7 @@ public class HeartbleedProbe extends TlsProbe {
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         if (supportedCiphers != null) {
             CiphersuiteDelegate ciphersuiteDelegate = (CiphersuiteDelegate) heartbleedConfig.getDelegate(CiphersuiteDelegate.class);
-            ciphersuiteDelegate.setCipherSuites(supportedCiphers);
+            ciphersuiteDelegate.setCipherSuites(supportedCiphers.get(0));
         }
         heartbleedConfig.setPayloadLength(1);
         HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig);
