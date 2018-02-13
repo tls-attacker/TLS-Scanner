@@ -213,29 +213,29 @@ class CertificateReportImplementation implements CertificateReport {
             builder.append("CommonNames: ").append(commonNames).append("\n");
         }
         if (alternativenames != null) {
-            builder.append("AltNames: ").append(alternativenames).append("\n");
+            builder.append("AltNames   : ").append(alternativenames).append("\n");
         }
         if (validFrom != null) {
-            builder.append("Valid From: ").append(validFrom.toString()).append("\n");
+            builder.append("Valid From : ").append(validFrom.toString()).append("\n");
         }
         if (validTo != null) {
-            builder.append("Valid Till: ").append(validTo.toString()).append("\n");
+            builder.append("Valid Till : ").append(validTo.toString()).append("\n");
         }
         if (publicKey != null) {
-            builder.append("PublicKey: ").append(publicKey.toString()).append("\n");
+            builder.append("PublicKey  : ").append(publicKey.toString()).append("\n");
         }
         if (weakDebianKey != null) {
             builder.append("Weak Debian Key: ").append(weakDebianKey).append("\n");
         }
         if (issuer != null) {
-            builder.append("Issuer: ").append(issuer).append("\n");
+            builder.append("Issuer\t\t   : ").append(issuer).append("\n");
         }
         if (signatureAndHashAlgorithm != null) {
             builder.append("Signature Algorithm: ").append(signatureAndHashAlgorithm.getSignatureAlgorithm().name())
                     .append("\n");
         }
         if (signatureAndHashAlgorithm != null) {
-            builder.append("Hash Algorithm: ").append(signatureAndHashAlgorithm.getHashAlgorithm().name()).append("\n");
+            builder.append("Hash Algorithm     : ").append(signatureAndHashAlgorithm.getHashAlgorithm().name()).append("\n");
         }
         if (extendedValidation != null) {
             builder.append("Extended Validation: ").append(extendedValidation).append("\n");
@@ -244,7 +244,7 @@ class CertificateReportImplementation implements CertificateReport {
             builder.append("Certificate Transparency: ").append(certificateTransparency).append("\n");
         }
         if (ocspMustStaple != null) {
-            builder.append("OCSP must Staple: ").append(ocspMustStaple).append("\n");
+            builder.append("OCSP must Staple   : ").append(ocspMustStaple).append("\n");
         }
         if (crlSupported != null) {
             builder.append("CRL Supported: ").append(crlSupported).append("\n");
