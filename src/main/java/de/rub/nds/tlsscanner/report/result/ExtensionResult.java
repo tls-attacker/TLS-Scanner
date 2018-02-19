@@ -8,7 +8,6 @@ package de.rub.nds.tlsscanner.report.result;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.List;
 
 /**
@@ -36,10 +35,10 @@ public class ExtensionResult extends ProbeResult {
         }
         for (ExtensionType type : allSupportedExtensions) {
             if (type == ExtensionType.ENCRYPT_THEN_MAC) {
-                extendedMasterSecret = true;
+                encryptThenMac = true;
             }
             if (type == ExtensionType.EXTENDED_MASTER_SECRET) {
-                encryptThenMac = true;
+                 extendedMasterSecret = true;
             }
             if (type == ExtensionType.RENEGOTIATION_INFO) {
                 secureRenegotiation = true;
