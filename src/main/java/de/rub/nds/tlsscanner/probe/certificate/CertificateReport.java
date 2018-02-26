@@ -21,6 +21,8 @@ public interface CertificateReport {
 
     public Certificate getCertificate();
 
+    public String getSHA256Fingerprint();
+
     public String getSubject();
 
     public String getCommonNames();
