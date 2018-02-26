@@ -1061,7 +1061,7 @@ public class SiteReport {
     
     @Override
     public String toString(){
-        return "";
+        return getFullReport();
     }
 
     public List<ProbeType> getProbeTypeList() {

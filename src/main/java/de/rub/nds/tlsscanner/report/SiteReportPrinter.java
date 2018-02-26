@@ -63,14 +63,14 @@ public class SiteReportPrinter {
     
     private StringBuilder appendRfc(StringBuilder builder) {
         prettyAppendHeading(builder, "RFC");
-        prettyAppendRedOnFailure(builder, "Checks MAC     ", report.getChecksMac());
+        prettyAppendRedOnFailure(builder, "Checks MAC", report.getChecksMac());
         prettyAppendRedOnFailure(builder, "Checks Finished", report.getChecksFinished());
         return builder;
     }
 
     private StringBuilder appendRenegotiation(StringBuilder builder) {
         prettyAppendHeading(builder, "Renegotioation & SCSV");
-        prettyAppendYellowOnSuccess(builder, "Clientside Secure  ", report.getSupportsClientSideSecureRenegotiation());
+        prettyAppendYellowOnSuccess(builder, "Clientside Secure", report.getSupportsClientSideSecureRenegotiation());
         prettyAppendRedOnSuccess(builder, "Clientside Insecure", report.getSupportsClientSideInsecureRenegotiation());
         prettyAppendRedOnFailure(builder, "SCSV Fallback\t   ", report.getTlsFallbackSCSVsupported());
         return builder;
@@ -83,13 +83,13 @@ public class SiteReportPrinter {
                 builder.append(report.toString()).append("\n");
             }
             prettyAppendHeading(builder, "Certificate Checks");
-            prettyAppendRedOnSuccess(builder, "Expired Certificates\t  "  , report.getCertificateExpired());
+            prettyAppendRedOnSuccess(builder, "Expired Certificates"  , report.getCertificateExpired());
             prettyAppendRedOnSuccess(builder, "Not yet Valid Certificates", report.getCertificateNotYetValid());
-            prettyAppendRedOnSuccess(builder, "Weak Hash Algorithms\t  ", report.getCertificateHasWeakHashAlgorithm());
+            prettyAppendRedOnSuccess(builder, "Weak Hash Algorithms", report.getCertificateHasWeakHashAlgorithm());
             prettyAppendRedOnSuccess(builder, "Weak Signature Algorithms ", report.getCertificateHasWeakSignAlgorithm());
-            prettyAppendRedOnFailure(builder, "Matches Domain\t\t  ", report.getCertificateMachtesDomainName());
-            prettyAppendGreenOnSuccess(builder, "Only Trusted\t\t  ", report.getCertificateIsTrusted());
-            prettyAppendRedOnFailure(builder, "Contains Blacklisted\t  ", report.getCertificateKeyIsBlacklisted());
+            prettyAppendRedOnFailure(builder, "Matches Domain", report.getCertificateMachtesDomainName());
+            prettyAppendGreenOnSuccess(builder, "Only Trusted", report.getCertificateIsTrusted());
+            prettyAppendRedOnFailure(builder, "Contains Blacklisted", report.getCertificateKeyIsBlacklisted());
         }
         return builder;
     }
@@ -97,10 +97,10 @@ public class SiteReportPrinter {
     private StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
         prettyAppendYellowOnFailure(builder, "Supports Session resumption", report.getSupportsSessionIds());
-        prettyAppendYellowOnFailure(builder, "Supports Session Tickets   ", report.getSupportsSessionTicket());
-        prettyAppend(builder, "Session Ticket Hint\t   :" + report.getSessionTicketLengthHint());
-        prettyAppendYellowOnFailure(builder, "Session Ticket Rotation    ", report.getSessionTicketGetsRotated());
-        prettyAppendRedOnFailure(builder, "Ticketbleed\t\t   ", report.getVulnerableTicketBleed());
+        prettyAppendYellowOnFailure(builder, "Supports Session Tickets", report.getSupportsSessionTicket());
+        prettyAppend(builder, "Session Ticket Hint", report.getSessionTicketLengthHint());
+        prettyAppendYellowOnFailure(builder, "Session Ticket Rotation", report.getSessionTicketGetsRotated());
+        prettyAppendRedOnFailure(builder, "Ticketbleed", report.getVulnerableTicketBleed());
         return builder;
     }
 
@@ -108,52 +108,52 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "GCM");
         prettyAppendRedOnFailure(builder, "GCM Nonce reuse", report.getGcmReuse());
         if (null == report.getGcmPattern()) {
-            prettyAppend(builder, "GCM Pattern    : Unknown");
+            prettyAppend(builder, "GCM Pattern");
         } else switch (report.getGcmPattern()) {
             case AKWARD:
-                prettyAppendYellow(builder, "GCM Pattern    : " + report.getGcmPattern().name());
+                prettyAppendYellow(builder, "GCM Pattern" + report.getGcmPattern().name());
                 break;
             case INCREMENTING:
             case RANDOM:
-                prettyAppendGreen(builder, "GCM Pattern    : " + report.getGcmPattern().name());
+                prettyAppendGreen(builder, "GCM Pattern" + report.getGcmPattern().name());
                 break;
             case REPEATING:
-                prettyAppendRed(builder, "GCM Pattern    : " + report.getGcmPattern().name());
+                prettyAppendRed(builder, "GCM Pattern" + report.getGcmPattern().name());
                 break;
             default:
-                prettyAppend(builder, "GCM Pattern    : " + report.getGcmPattern().name());
+                prettyAppend(builder, addIndentations("GCM Pattern") + report.getGcmPattern().name());
                 break;
         }
-        prettyAppendRedOnFailure(builder, "GCM Check      ", report.getGcmCheck());
+        prettyAppendRedOnFailure(builder, "GCM Check", report.getGcmCheck());
         return builder;
     }
 
     private StringBuilder appendIntolerances(StringBuilder builder) {
         prettyAppendHeading(builder, "Intolerances");
-        prettyAppendRedOnFailure(builder, "Version\t   ", report.getVersionIntolerance());
+        prettyAppendRedOnFailure(builder, "Version", report.getVersionIntolerance());
         prettyAppendRedOnFailure(builder, "Ciphersuite", report.getCipherSuiteIntolerance());
-        prettyAppendRedOnFailure(builder, "Extension  ", report.getExtensionIntolerance());
-        prettyAppendRedOnFailure(builder, "Curves\t   ", report.getSupportedCurvesIntolerance());
+        prettyAppendRedOnFailure(builder, "Extension", report.getExtensionIntolerance());
+        prettyAppendRedOnFailure(builder, "Curves", report.getSupportedCurvesIntolerance());
         return builder;
     }
 
     private StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
         prettyAppendHeading(builder, "Attack Vulnerabilities");
-        prettyAppendRedGreen(builder, "Padding Oracle\t\t", report.getPaddingOracleVulnerable());
-        prettyAppendRedGreen(builder, "Bleichenbacher\t\t", report.getBleichenbacherVulnerable());
-        prettyAppendRedGreen(builder, "CRIME\t\t\t", report.getCrimeVulnerable());
-        prettyAppendRedGreen(builder, "Breach\t\t\t", report.getBreachVulnerable());
-        prettyAppendRedGreen(builder, "Invalid Curve\t\t", report.getInvalidCurveVulnerable());
+        prettyAppendRedGreen(builder, "Padding Oracle", report.getPaddingOracleVulnerable());
+        prettyAppendRedGreen(builder, "Bleichenbacher", report.getBleichenbacherVulnerable());
+        prettyAppendRedGreen(builder, "CRIME", report.getCrimeVulnerable());
+        prettyAppendRedGreen(builder, "Breach", report.getBreachVulnerable());
+        prettyAppendRedGreen(builder, "Invalid Curve", report.getInvalidCurveVulnerable());
         prettyAppendRedGreen(builder, "Invalid Curve Ephemerals", report.getInvalidCurveEphermaralVulnerable());
-        prettyAppendRedGreen(builder, "SSL Poodle\t\t", report.getPoodleVulnerable());
-        prettyAppendRedGreen(builder, "TLS Poodle\t\t", report.getTlsPoodleVulnerable());
-        prettyAppendRedGreen(builder, "CVE-20162107\t\t", report.getCve20162107Vulnerable());
-        prettyAppendRedGreen(builder, "Logjam\t\t\t", report.getLogjamVulnerable());
-        prettyAppendRedGreen(builder, "Sweet 32\t\t", report.getSweet32Vulnerable());
-        prettyAppendRedGreen(builder, "DROWN\t\t\t", report.getDrownVulnerable());
-        prettyAppendRedGreen(builder, "Lucky13\t\t\t", report.getLucky13Vulnerable());
-        prettyAppendRedGreen(builder, "Heartbleed\t\t", report.getHeartbleedVulnerable());
-        prettyAppendRedGreen(builder, "EarlyCcs\t\t", report.getEarlyCcsVulnerable());
+        prettyAppendRedGreen(builder, "SSL Poodle", report.getPoodleVulnerable());
+        prettyAppendRedGreen(builder, "TLS Poodle", report.getTlsPoodleVulnerable());
+        prettyAppendRedGreen(builder, "CVE-20162107", report.getCve20162107Vulnerable());
+        prettyAppendRedGreen(builder, "Logjam", report.getLogjamVulnerable());
+        prettyAppendRedGreen(builder, "Sweet 32", report.getSweet32Vulnerable());
+        prettyAppendRedGreen(builder, "DROWN", report.getDrownVulnerable());
+        prettyAppendRedGreen(builder, "Lucky13", report.getLucky13Vulnerable());
+        prettyAppendRedGreen(builder, "Heartbleed", report.getHeartbleedVulnerable());
+        prettyAppendRedGreen(builder, "EarlyCcs", report.getEarlyCcsVulnerable());
         return builder;
     }
 
@@ -171,44 +171,44 @@ public class SiteReportPrinter {
                 }
             }
             prettyAppendHeading(builder, "Symmetric Supported");
-            prettyAppendRedOnSuccess(builder, "Null \t\t ", report.getSupportsNullCiphers());
-            prettyAppendRedOnSuccess(builder, "Export \t\t ", report.getSupportsExportCiphers());
-            prettyAppendRedOnSuccess(builder, "Anon \t\t ", report.getSupportsAnonCiphers());
-            prettyAppendRedOnSuccess(builder, "DES \t\t ", report.getSupportsDesCiphers());
-            prettyAppendYellowOnSuccess(builder, "SEED \t\t ", report.getSupportsSeedCiphers());
-            prettyAppendYellowOnSuccess(builder, "IDEA \t\t ", report.getSupportsIdeaCiphers());
-            prettyAppendRedOnSuccess(builder, "RC2 \t\t ", report.getSupportsRc2Ciphers());
-            prettyAppendRedOnSuccess(builder, "RC4 \t\t ", report.getSupportsRc4Ciphers());
-            prettyAppendYellowOnSuccess(builder, "3DES \t\t ", report.getSupportsTrippleDesCiphers());
-            prettyAppend(builder, "AES \t\t ", report.getSupportsAes());
-            prettyAppend(builder, "CAMELLIA\t ", report.getSupportsCamellia());
-            prettyAppend(builder, "ARIA \t\t ", report.getSupportsAria());
+            prettyAppendRedOnSuccess(builder, "Null", report.getSupportsNullCiphers());
+            prettyAppendRedOnSuccess(builder, "Export", report.getSupportsExportCiphers());
+            prettyAppendRedOnSuccess(builder, "Anon", report.getSupportsAnonCiphers());
+            prettyAppendRedOnSuccess(builder, "DES", report.getSupportsDesCiphers());
+            prettyAppendYellowOnSuccess(builder, "SEED", report.getSupportsSeedCiphers());
+            prettyAppendYellowOnSuccess(builder, "IDEA", report.getSupportsIdeaCiphers());
+            prettyAppendRedOnSuccess(builder, "RC2", report.getSupportsRc2Ciphers());
+            prettyAppendRedOnSuccess(builder, "RC4", report.getSupportsRc4Ciphers());
+            prettyAppendYellowOnSuccess(builder, "3DES", report.getSupportsTrippleDesCiphers());
+            prettyAppend(builder, "AES", report.getSupportsAes());
+            prettyAppend(builder, "CAMELLIA", report.getSupportsCamellia());
+            prettyAppend(builder, "ARIA", report.getSupportsAria());
             prettyAppendGreenOnSuccess(builder, "CHACHA20 POLY1305", report.getSupportsChacha());
             
             prettyAppendHeading(builder, "KeyExchange Supported");
-            prettyAppendYellowOnSuccess(builder, "RSA \t ", report.getSupportsRsa());
-            prettyAppend(builder, "DH \t ", report.getSupportsDh());
-            prettyAppend(builder, "ECDH \t ", report.getSupportsEcdh());
-            prettyAppendYellowOnSuccess(builder, "GOST \t ", report.getSupportsGost());
-            prettyAppend(builder, "SRP \t ", report.getSupportsSrp());
-            prettyAppend(builder, "Kerberos ", report.getSupportsKerberos());
+            prettyAppendYellowOnSuccess(builder, "RSA", report.getSupportsRsa());
+            prettyAppend(builder, "DH", report.getSupportsDh());
+            prettyAppend(builder, "ECDH", report.getSupportsEcdh());
+            prettyAppendYellowOnSuccess(builder, "GOST", report.getSupportsGost());
+            prettyAppend(builder, "SRP", report.getSupportsSrp());
+            prettyAppend(builder, "Kerberos", report.getSupportsKerberos());
             prettyAppend(builder, "Plain PSK", report.getSupportsPskPlain());
-            prettyAppend(builder, "PSK RSA  ", report.getSupportsPskRsa());
-            prettyAppend(builder, "PSK DHE  ", report.getSupportsPskDhe());
+            prettyAppend(builder, "PSK RSA", report.getSupportsPskRsa());
+            prettyAppend(builder, "PSK DHE", report.getSupportsPskDhe());
             prettyAppend(builder, "PSK ECDHE", report.getSupportsPskEcdhe());
-            prettyAppendYellowOnSuccess(builder, "Fortezza ", report.getSupportsFortezza());
-            prettyAppendGreenOnSuccess(builder, "New Hope ", report.getSupportsNewHope());
-            prettyAppendGreenOnSuccess(builder, "ECMQV \t ", report.getSupportsEcmqv());
+            prettyAppendYellowOnSuccess(builder, "Fortezza", report.getSupportsFortezza());
+            prettyAppendGreenOnSuccess(builder, "New Hope", report.getSupportsNewHope());
+            prettyAppendGreenOnSuccess(builder, "ECMQV", report.getSupportsEcmqv());
             
             prettyAppendHeading(builder, "Perfect Forward Secrecy");
-            prettyAppendGreenOnSuccess(builder, "Supports PFS\t ", report.getSupportsPfsCiphers());
-            prettyAppendGreenOnSuccess(builder, "Prefers PFS\t ", report.getPrefersPfsCiphers());
+            prettyAppendGreenOnSuccess(builder, "Supports PFS", report.getSupportsPfsCiphers());
+            prettyAppendGreenOnSuccess(builder, "Prefers PFS", report.getPrefersPfsCiphers());
             prettyAppendGreenOnSuccess(builder, "Supports Only PFS", report.getSupportsOnlyPfsCiphers());
             
             prettyAppendHeading(builder, "Cipher Types Supports");
             prettyAppend(builder, "Stream", report.getSupportsStreamCiphers());
-            prettyAppend(builder, "Block ", report.getSupportsBlockCiphers());
-            prettyAppendGreenOnSuccess(builder, "AEAD  ", report.getSupportsAeadCiphers());
+            prettyAppend(builder, "Block", report.getSupportsBlockCiphers());
+            prettyAppendGreenOnSuccess(builder, "AEAD", report.getSupportsAeadCiphers());
             
             prettyAppendHeading(builder, "Ciphersuite General");
             prettyAppendGreenRed(builder, "Enforces Ciphersuite ordering", report.getEnforcesCipherSuiteOrdering());
@@ -223,12 +223,12 @@ public class SiteReportPrinter {
                 builder.append(version.name()).append("\n");
             }
             prettyAppendHeading(builder, "Versions");
-            prettyAppendRedGreen(builder, "SSL 2.0\t\t", report.getSupportsSsl2());
-            prettyAppendRedGreen(builder, "SSL 3.0\t\t", report.getSupportsSsl3());
-            prettyAppendYellowOnFailure(builder, "TLS 1.0\t\t", report.getSupportsTls10());
-            prettyAppendYellowOnFailure(builder, "TLS 1.1\t\t", report.getSupportsTls11());
-            prettyAppendRedOnFailure(builder, "TLS 1.2\t\t", report.getSupportsTls12());
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3\t\t", report.getSupportsTls13());
+            prettyAppendRedGreen(builder, "SSL 2.0", report.getSupportsSsl2());
+            prettyAppendRedGreen(builder, "SSL 3.0", report.getSupportsSsl3());
+            prettyAppendYellowOnFailure(builder, "TLS 1.0", report.getSupportsTls10());
+            prettyAppendYellowOnFailure(builder, "TLS 1.1", report.getSupportsTls11());
+            prettyAppendRedOnFailure(builder, "TLS 1.2", report.getSupportsTls12());
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3", report.getSupportsTls13());
             prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 14", report.getSupportsTls13Draft14());
             prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 15", report.getSupportsTls13Draft15());
             prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 16", report.getSupportsTls13Draft16());
@@ -253,10 +253,10 @@ public class SiteReportPrinter {
             }
         }
         prettyAppendHeading(builder, "Extensions");
-        prettyAppendGreenRed(builder, "Secure Renegotiation\t\t", report.getSupportsSecureRenegotiation());
-        prettyAppendGreenOnSuccess(builder, "Supports Extended Master Secret ", report.getSupportsExtendedMasterSecret());
-        prettyAppendGreenOnSuccess(builder, "Supports Encrypt Then Mac\t", report.getSupportsEncryptThenMacSecret());
-        prettyAppendGreenOnSuccess(builder, "Supports Tokenbinding\t\t", report.getSupportsTokenbinding());
+        prettyAppendGreenRed(builder, "Secure Renegotiation", report.getSupportsSecureRenegotiation());
+        prettyAppendGreenOnSuccess(builder, "Supports Extended Master Secret", report.getSupportsExtendedMasterSecret());
+        prettyAppendGreenOnSuccess(builder, "Supports Encrypt Then Mac", report.getSupportsEncryptThenMacSecret());
+        prettyAppendGreenOnSuccess(builder, "Supports Tokenbinding", report.getSupportsTokenbinding());
         
         if (report.getSupportsTokenbinding() == Boolean.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");
@@ -331,47 +331,49 @@ public class SiteReportPrinter {
         }
         return builder;
     }
-    
-    
 
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
         return builder.append(value).append("\n");
     }
+    
+    private StringBuilder prettyAppend(StringBuilder builder, String name, Long value) {
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : value).append("\n");
+    }
 
     private StringBuilder prettyAppend(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : value).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : value).append("\n");
     }
 
     private StringBuilder prettyAppendGreenOnSuccess(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
 
     private StringBuilder prettyAppendGreenOnFailure(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendRedOnSuccess(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
 
     private StringBuilder prettyAppendRedOnFailure(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendYellowOnFailure(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendYellowOnSuccess(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
 
     private StringBuilder prettyAppendGreenRed(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET : AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET : AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET : AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET : AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendYellow(StringBuilder builder, String value) {
@@ -388,6 +390,29 @@ public class SiteReportPrinter {
     
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         return builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------" + value + "----------\n\n"+ AnsiColors.ANSI_RESET);
+    }
+    
+    private String addIndentations(String value){
+        StringBuilder builder = new StringBuilder();
+        builder.append(value);
+        if(value.length() < 8)
+        {
+            builder.append("\t\t\t\t ");
+        }
+        else if(value.length() < 16)
+        {
+            builder.append("\t\t\t ");
+        }
+        else if(value.length() < 24)
+        {
+            builder.append("\t\t ");
+        }
+        else if(value.length() < 32)
+        {
+            builder.append("\t ");
+        }
+        
+        return builder.toString();
     }
 }
 
