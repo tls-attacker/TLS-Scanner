@@ -10,8 +10,13 @@ package de.rub.nds.tlsscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
+import java.security.InvalidKeyException;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.util.Date;
+import java.security.cert.X509Certificate;
 import org.bouncycastle.asn1.x509.Certificate;
+import sun.security.x509.X509CertImpl;
 
 /**
  *
@@ -119,16 +124,20 @@ public class CertificateJudger {
         return null;
     }
 
-    private Boolean checkSelfSigned() {
-        // if (isSelfSigned(certificate)) {
-        // tlsCheckList
-        // .add(new ConfigurationFlaw(
-        // "Zertifikat ist selbst signiert",
-        // FlawLevel.FATAL,
-        // "Das eingesetzte Zertifikat legitimiert sich selbst. Besucher ihrer Seite können die Validität dieses Zertifikats nicht überprüfen.",
-        // "Beantragen sie ein Zertifikat bei einer vertrauenswürdigen Zertifizierungsstelle."));
-        // }
-        return null;
+    public Boolean isSelfSigned() {
+        try {
+            // Try to verify certificate signature with its own public key
+            X509Certificate cert = new X509CertImpl(certificate.getEncoded());
+            PublicKey publicKey = cert.getPublicKey();
+            cert.verify(publicKey);
+            return true;
+        } catch (SignatureException | InvalidKeyException ex) {
+            ex.printStackTrace();
+            return false;
+        } catch (Exception E) {
+            E.printStackTrace();
+            return null;
+        }
     }
 
     private Boolean checkBlacklistedKey() {
