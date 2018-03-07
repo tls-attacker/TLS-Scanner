@@ -8,25 +8,24 @@ package de.rub.nds.tlsscanner.report.result;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.List;
 
 /**
  *
  * @author Robert Merget <robert.merget@rub.de>
  */
-public class NamedCurveResult extends ProbeResult {
-    
-    private final List<NamedGroup> namedCurvesList;
-    
-    public NamedCurveResult(List<NamedGroup> curves) {
-        super(ProbeType.NAMED_CURVES);
-        this.namedCurvesList = curves;
+public class NamedGroupResult extends ProbeResult {
+
+    private final List<NamedGroup> namedGroupList;
+
+    public NamedGroupResult(List<NamedGroup> groups) {
+        super(ProbeType.NAMED_GROUPS);
+        this.namedGroupList = groups;
     }
-    
+
     @Override
     public void merge(SiteReport report) {
-        report.setSupportedNamedCurves(namedCurvesList);
+        report.setSupportedNamedGroups(namedGroupList);
     }
-    
+
 }

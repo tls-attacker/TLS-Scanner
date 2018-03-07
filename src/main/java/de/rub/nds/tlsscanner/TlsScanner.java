@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.probe.PoodleProbe;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
 import de.rub.nds.tlsscanner.probe.SniProbe;
+import de.rub.nds.tlsscanner.probe.Tls13Probe;
 import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
@@ -86,6 +87,7 @@ public class TlsScanner {
             phaseOneTestList.add(new CiphersuiteProbe(config));
             phaseOneTestList.add(new CiphersuiteOrderProbe(config));
             phaseOneTestList.add(new ExtensionProbe(config));
+            phaseOneTestList.add(new Tls13Probe(config));
 
             phaseTwoTestList.add(new HeartbleedProbe(config));
             phaseTwoTestList.add(new PaddingOracleProbe(config));

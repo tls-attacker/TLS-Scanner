@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.report.result.NamedCurveResult;
+import de.rub.nds.tlsscanner.report.result.NamedGroupResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -37,13 +37,13 @@ import java.util.List;
 public class NamedCurvesProbe extends TlsProbe {
 
     public NamedCurvesProbe(ScannerConfig config) {
-        super(ProbeType.NAMED_CURVES, config, 0);
+        super(ProbeType.NAMED_GROUPS, config, 0);
     }
 
     @Override
     public ProbeResult executeTest() {
         List<NamedGroup> curves = getSupportedNamedCurves();
-        return new NamedCurveResult(curves);
+        return new NamedGroupResult(curves);
     }
 
     private List<NamedGroup> getSupportedNamedCurves() {

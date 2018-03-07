@@ -18,7 +18,7 @@ public enum ProbeType {
     CIPHERSUITE,
     HEARTBLEED,
     BLEICHENBACHER,
-    NAMED_CURVES,
+    NAMED_GROUPS,
     PADDING_ORACLE,
     CVE20162107,
     POODLE,
@@ -30,4 +30,5 @@ public enum ProbeType {
     COMPRESSIONS,
     INTOLERANCES,
     SNI,
+    TLS13,
 }
