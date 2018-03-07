@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class IntoleranceProbe extends TlsProbe {
         tlsConfig.setAddTruncatedHmacExtension(true);
         
         List<NamedGroup> namedCurves = Arrays.asList(NamedGroup.values());
-        tlsConfig.setNamedGroups(namedCurves);
+        tlsConfig.setDefaultClientNamedGroups(namedCurves);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);
@@ -93,5 +94,19 @@ public class IntoleranceProbe extends TlsProbe {
             LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
+    }
+
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return true;
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return null;
     }
 }

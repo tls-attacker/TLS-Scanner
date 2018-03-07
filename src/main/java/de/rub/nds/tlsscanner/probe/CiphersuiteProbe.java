@@ -26,6 +26,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import java.util.ArrayList;
@@ -95,7 +96,7 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setStopActionsAfterFatal(true);
             List<NamedGroup> namedCurves = new LinkedList<>();
             namedCurves.addAll(Arrays.asList(NamedGroup.values()));
-            config.setNamedGroups(namedCurves);
+            config.setDefaultClientNamedGroups(namedCurves);
             State state = new State(config);
             WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
             try {
@@ -134,4 +135,17 @@ public class CiphersuiteProbe extends TlsProbe {
         return supported;
     }
 
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return true;
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+    
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return null;
+    }
 }
