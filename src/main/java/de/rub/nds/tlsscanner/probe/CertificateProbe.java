@@ -18,6 +18,7 @@ import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReportGenerator;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 
@@ -43,5 +44,19 @@ public class CertificateProbe extends TlsProbe {
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
         List<CertificateReport> reportList = CertificateReportGenerator.generateReports(serverCert);
         return new CertificateResult(getType(), reportList, serverCert);
+    }
+
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return true;
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return null;
     }
 }

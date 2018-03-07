@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
 /**
@@ -36,4 +37,17 @@ public class PaddingOracleProbe extends TlsProbe {
         return new PaddingOracleResult(vulnerable);
     }
 
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return report.getSupportsBlockCiphers();
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return new PaddingOracleResult(Boolean.FALSE);
+    }
 }

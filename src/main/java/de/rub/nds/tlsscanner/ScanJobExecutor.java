@@ -41,7 +41,7 @@ public class ScanJobExecutor {
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<ProbeType> probeTypes = new LinkedList<>();
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
-        for (TlsProbe probe : scanJob.getProbeList()) {
+        for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
                 futureResults.add(executor.submit(probe));
                 probeTypes.add(probe.getType());
@@ -57,7 +57,7 @@ public class ScanJobExecutor {
                 LOGGER.warn(ex);
             }
         }
-        executor.shutdown();
+
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegate(ClientDelegate.class);
         String hostname = clientDelegate.getHost();
         SiteReport report = new SiteReport(hostname, probeTypes);
@@ -65,9 +65,45 @@ public class ScanJobExecutor {
         for (ProbeResult result : resultList) {
             result.merge(report);
         }
+        //Finished phase one starting phase 2
+        //Now all basic tests are merged into the site report, so we launch phase 2 so the scanner
+        //has access to basic server configuration
+        for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
+            probe.adjustConfig(report);
+        }
+        futureResults = new LinkedList<>();
+        resultList = new LinkedList<>();
+        for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
+            if (probe.getDanger() <= config.getDangerLevel()) {
+                if (probe.shouldBeExecuted(report)) {
+                    futureResults.add(executor.submit(probe));
+                    probeTypes.add(probe.getType());
+                } else if (!config.isImplementation()) {
+                    ProbeResult result = probe.getNotExecutedResult();
+                    if (result != null) {
+                        resultList.add(result);
+                    }
+                }
+            }
+        }
+        for (Future<ProbeResult> probeResult : futureResults) {
+            try {
+                resultList.add(probeResult.get());
+            } catch (InterruptedException | ExecutionException ex) {
+                LOGGER.warn("Encoutered Exception while retrieving probeResult");
+                ex.printStackTrace();
+                LOGGER.warn(ex);
+            }
+        }
+        // merge phase 2
+        for (ProbeResult result : resultList) {
+            result.merge(report);
+        }
+        //phase 3 - afterprobes
         for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
             afterProbe.analyze(report);
         }
+        executor.shutdown();
         return report;
     }
 }

@@ -24,6 +24,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,7 +84,7 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSessionTicketTLSExtension(true);
         tlsConfig.setAddTruncatedHmacExtension(true);
-        
+
         List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());
         tlsConfig.setNamedCurves(namedCurves);
         State state = new State(tlsConfig);
@@ -102,4 +103,17 @@ public class ExtensionProbe extends TlsProbe {
         }
     }
 
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return true;
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return null;
+    }
 }
