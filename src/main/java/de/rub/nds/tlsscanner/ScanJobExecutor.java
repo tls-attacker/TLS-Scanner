@@ -9,8 +9,10 @@
 package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.probe.StarttlsProbe;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
@@ -40,6 +42,20 @@ public class ScanJobExecutor {
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<ProbeType> probeTypes = new LinkedList<>();
+        if(config.getStarttlsType() != null && !config.getStarttlsType().isEmpty())
+        {
+            TlsProbe probe = new StarttlsProbe(config);
+            executor.submit(probe);
+            probeTypes.add(ProbeType.STARTTLS);
+            ClientDelegate clientDelegate = (ClientDelegate) config.getDelegate(ClientDelegate.class);
+            String hostname = clientDelegate.getHost();
+            SiteReport report = new SiteReport(hostname, probeTypes);
+            ProbeResult result = probe.executeTest();
+            result.merge(report);
+            executor.shutdown();
+            return report;
+        }
+        
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {

@@ -30,4 +30,5 @@ public enum ProbeType {
     COMPRESSIONS,
     INTOLERANCES,
     SNI,
+    STARTTLS,
 }

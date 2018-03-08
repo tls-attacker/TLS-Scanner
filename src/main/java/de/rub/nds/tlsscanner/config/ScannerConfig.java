@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 
 /**
  *
@@ -37,6 +38,9 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-implementation", required = false, description = "If you are interessted in the vulnerability of an implementation rather than a specific site")
     private boolean implementation = false;
+        
+    @Parameter(names = "-starttls", description = "Test Starttls Types: ftp, imap, pop3, smtp")
+    private String starttlsType;
 
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
@@ -73,7 +77,15 @@ public class ScannerConfig extends TLSDelegateConfig {
     public void setImplementation(boolean implementation) {
         this.implementation = implementation;
     }
+    
+    public String getStarttlsType() {
+        return starttlsType;
+    }
 
+    public void setStarttlsType(String starttlsType) {
+        this.starttlsType = starttlsType;
+    }
+    
     @Override
     public Config createConfig() {
         Config config = super.createConfig();

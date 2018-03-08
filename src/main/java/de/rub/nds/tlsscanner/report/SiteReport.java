@@ -32,7 +32,7 @@ import org.bouncycastle.crypto.tls.Certificate;
 public class SiteReport {
 
     //general
-    private final List<ProbeType> probeTypeList;
+    private List<ProbeType> probeTypeList;
 
     private final String host;
     private Boolean serverIsAlive = null;
@@ -173,7 +173,10 @@ public class SiteReport {
     private Boolean gcmReuse = null;
     private GcmPattern gcmPattern = null;
     private Boolean gcmCheck = null;
-
+    
+    //Starttls
+    private Boolean supportsStarttls = null;
+    
     public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
         this.probeTypeList = probeTypeList;
@@ -196,6 +199,10 @@ public class SiteReport {
             builder.append("Server does not seem to support SSL / TLS");
             return builder.toString();
         }
+        if(supportsStarttls != null) {
+            appendStarttls(builder);
+            return builder.toString();
+        }
 
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
@@ -209,6 +216,12 @@ public class SiteReport {
         appendSession(builder);
         appendRenegotiation(builder);
         return builder.toString();
+    }
+    
+    private StringBuilder appendStarttls(StringBuilder builder) {
+        builder.append("----------STARTTLS----------\n");
+        prettyAppendGreenOnSuccess(builder, "Starttls support", supportsStarttls);
+        return builder;
     }
 
     private StringBuilder appendRfc(StringBuilder builder) {
@@ -1453,6 +1466,14 @@ public class SiteReport {
 
     public void setSupportsStaticEcdh(Boolean supportsStaticEcdh) {
         this.supportsStaticEcdh = supportsStaticEcdh;
+    }
+    
+    public Boolean getSupportsStarttls() {
+        return supportsStarttls;
+    }
+
+    public void setSupportsStarttls(Boolean supportsStarttls) {
+        this.supportsStarttls = supportsStarttls;
     }
 
     @Override
