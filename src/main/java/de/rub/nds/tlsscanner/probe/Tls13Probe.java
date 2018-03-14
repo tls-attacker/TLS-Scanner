@@ -22,10 +22,11 @@ import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.Tls13Result;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -115,7 +116,7 @@ public class Tls13Probe extends TlsProbe {
     }
 
     private List<NamedGroup> getSupportedGroups() {
-        NamedGroup selectedGroup = null;
+        List<NamedGroup> tempSupportedGroups = null;
         List<NamedGroup> toTestList = new LinkedList<>();
         List<NamedGroup> supportedGroups = new LinkedList<>();
         for (NamedGroup group : NamedGroup.values()) {
@@ -124,16 +125,18 @@ public class Tls13Probe extends TlsProbe {
             }
         }
         do {
-            selectedGroup = getSelectedGroup(toTestList);
-            if (selectedGroup != null) {
-                supportedGroups.add(selectedGroup);
-                toTestList.remove(selectedGroup);
+            tempSupportedGroups = getSupportedGroups(toTestList);
+            if (tempSupportedGroups != null) {
+                supportedGroups.addAll(tempSupportedGroups);
+                for (NamedGroup group : tempSupportedGroups) {
+                    toTestList.remove(group);
+                }
             }
-        } while (selectedGroup != null && !toTestList.isEmpty());
+        } while (tempSupportedGroups != null && !toTestList.isEmpty());
         return supportedGroups;
     }
 
-    public NamedGroup getSelectedGroup(List<NamedGroup> group) {
+    public List<NamedGroup> getSupportedGroups(List<NamedGroup> group) {
         Config tlsConfig = getScannerConfig().createConfig();
         List<ProtocolVersion> tls13VersionList = new LinkedList<>();
         for (ProtocolVersion version : ProtocolVersion.values()) {
@@ -175,11 +178,13 @@ public class Tls13Probe extends TlsProbe {
         } catch (WorkflowExecutionException ex) {
             LOGGER.debug(ex);
         }
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (state.getTlsContext().isExtensionNegotiated(ExtensionType.ELLIPTIC_CURVES)) {
+            return state.getTlsContext().getServerNamedGroupsList();
+        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             //ServerHelloMessage message = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
-            return state.getTlsContext().getSelectedGroup();
+            return new ArrayList(Arrays.asList(state.getTlsContext().getSelectedGroup()));
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST, state.getWorkflowTrace())) {
-            return state.getTlsContext().getSelectedGroup();
+            return new ArrayList(Arrays.asList(state.getTlsContext().getSelectedGroup()));
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(state.getWorkflowTrace().toString());
