@@ -138,10 +138,8 @@ public class CertificateJudger {
             cert.verify(publicKey);
             return true;
         } catch (SignatureException | InvalidKeyException ex) {
-            ex.printStackTrace();
             return false;
         } catch (Exception E) {
-            E.printStackTrace();
             return null;
         }
     }
