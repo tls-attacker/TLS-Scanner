@@ -5,11 +5,6 @@
  */
 package de.rub.nds.tlsscanner.report;
 
-/**
- *
- * @author Pierre Tilhaus  <pierre.tilhaus@rub.de>
- */
-
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -21,7 +16,6 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.report.*;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 
 
@@ -389,7 +383,7 @@ public class SiteReportPrinter {
     }
     
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
-        return builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n----------" + value + "----------\n\n"+ AnsiColors.ANSI_RESET);
+        return builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n--------------------------------------------------------\n" + value + "\n\n" + AnsiColors.ANSI_RESET);
     }
     
     private String addIndentations(String value){
@@ -410,8 +404,9 @@ public class SiteReportPrinter {
         else if(value.length() < 32)
         {
             builder.append("\t ");
+        } else {
+            builder.append(" ");
         }
-        
         return builder.toString();
     }
 }

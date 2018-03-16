@@ -1053,10 +1053,8 @@ public class SiteReport {
     }
     
     public String getFullReport()
-    {
-        SiteReportPrinter printer = new SiteReportPrinter(this);
-        
-        return printer.getFullReport();
+    {        
+        return new SiteReportPrinter(this).getFullReport();
     }
     
     @Override
