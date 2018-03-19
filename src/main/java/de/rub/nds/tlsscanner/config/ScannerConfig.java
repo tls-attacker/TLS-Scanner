@@ -91,8 +91,28 @@ public class ScannerConfig extends TLSDelegateConfig {
         Config config = super.createConfig();
         config.setSniHostname(clientDelegate.getHost());
         config.getDefaultClientConnection().setTimeout(1000);
+        if(starttlsType != null && !starttlsType.isEmpty()){
+            switch(starttlsType) {
+                case "ftp": {
+                    config.setStarttlsType(StarttlsType.FTP);
+                    break;
+                }
+                case "imap": {
+                    config.setStarttlsType(StarttlsType.IMAP);
+                    break;
+                }
+                case "pop3": {
+                    config.setStarttlsType(StarttlsType.POP3);
+                    break;
+                }
+                case "smtp": {
+                    config.setStarttlsType(StarttlsType.SMTP);
+                    break;
+                }
+                
+            }
+            
+        }
         return config;
     }
-    
-    
 }
