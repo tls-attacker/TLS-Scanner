@@ -226,6 +226,12 @@ public class TlsScan implements IScan {
             }
         }
 
+        List<String> certificateFingerprints = new LinkedList<>();
+        for (CertificateReport rep : _rawCertificateReports) {
+            certificateFingerprints.add(rep.getSHA256Fingerprint());
+        }
+
+        certificate.addStringArray("certificateFingerprints", certificateFingerprints);
         certificate.addStringArray("certificateReports", _certificateReports);
         certificate.addString("certificate", report.getCertificate() == null ? null : report.getCertificate().toString());
         certificate.addBoolean("certificateExpired", report.getCertificateExpired());
@@ -338,7 +344,6 @@ public class TlsScan implements IScan {
         intolerances.addBoolean("versionIntolerance", report.getVersionIntolerance());
         intolerances.addBoolean("extensionIntolerance", report.getExtensionIntolerance());
         intolerances.addBoolean("cipherSuiteIntolerance", report.getCipherSuiteIntolerance());
-        intolerances.addBoolean("supportedCurvesIntolerance", report.getSupportedCurvesIntolerance());
         intolerances.addBoolean("clientHelloSizeIntolerance", report.getClientHelloSizeIntolerance());
 
         return intolerances;
