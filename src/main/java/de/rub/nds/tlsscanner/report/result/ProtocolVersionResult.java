@@ -54,36 +54,6 @@ public class ProtocolVersionResult extends ProbeResult {
             if (version == ProtocolVersion.TLS12) {
                 report.setSupportsTls12(true);
             }
-            if (version == ProtocolVersion.TLS13) {
-                report.setSupportsTls13(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT14) {
-                report.setSupportsTls13Draft14(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT15) {
-                report.setSupportsTls13Draft15(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT16) {
-                report.setSupportsTls13Draft16(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT17) {
-                report.setSupportsTls13Draft17(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT18) {
-                report.setSupportsTls13Draft18(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT19) {
-                report.setSupportsTls13Draft19(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT20) {
-                report.setSupportsTls13Draft20(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT21) {
-                report.setSupportsTls13Draft21(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT22) {
-                report.setSupportsTls13Draft22(true);
-            }
         }
         
         for (ProtocolVersion version : unsupportedProtocolVersions) {

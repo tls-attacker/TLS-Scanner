@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.report;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
@@ -40,7 +40,7 @@ public class SiteReport {
 
     //Quirks
     private Boolean requiresSni = null;
-    
+
     private Boolean versionIntolerance = null;
     private Boolean extensionIntolerance = null;
     private Boolean cipherSuiteIntolerance = null;
@@ -49,7 +49,7 @@ public class SiteReport {
     private Boolean compressionIntolerance = null;
     private Boolean pointFormatsIntolerance = null;
     private Boolean signatureAndHashAlgorithmIntolerance = null;
-    
+
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
     private Boolean paddingOracleVulnerable = null;
@@ -85,13 +85,18 @@ public class SiteReport {
     private Boolean supportsTls13Draft20 = null;
     private Boolean supportsTls13Draft21 = null;
     private Boolean supportsTls13Draft22 = null;
+    private Boolean supportsTls13Draft23 = null;
+    private Boolean supportsTls13Draft24 = null;
+    private Boolean supportsTls13Draft25 = null;
+    private Boolean supportsTls13Draft26 = null;
     private Boolean supportsDtls10 = null;
     private Boolean supportsDtls12 = null;
     private Boolean supportsDtls13 = null;
 
     //Extensions
     private List<ExtensionType> supportedExtensions = null;
-    private List<NamedCurve> supportedNamedCurves = null;
+    private List<NamedGroup> supportedNamedGroups = null;
+    private List<NamedGroup> supportedTls13Groups = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
@@ -120,6 +125,7 @@ public class SiteReport {
     //Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
     private List<CipherSuite> cipherSuites = null;
+    private List<CipherSuite> supportedTls13CipherSuites = null;
     private Boolean supportsNullCiphers = null;
     private Boolean supportsAnonCiphers = null;
     private Boolean supportsExportCiphers = null;
@@ -361,6 +367,16 @@ public class SiteReport {
             builder.append("----------Ciphersuite General----------\n");
             prettyAppendGreenRed(builder, "Enforces Ciphersuite ordering", enforcesCipherSuiteOrdering);
         }
+        if (supportedTls13CipherSuites != null) {
+            builder.append("----------TLS 1.3 Ciphersuites----------\n");
+            if (supportedTls13CipherSuites.isEmpty()) {
+                prettyAppend(builder, "none");
+            } else {
+                for (CipherSuite suite : supportedTls13CipherSuites) {
+                    prettyPrintCipherSuite(builder, suite);
+                }
+            }
+        }
         return builder;
     }
 
@@ -386,6 +402,10 @@ public class SiteReport {
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 20", supportsTls13Draft20);
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 21", supportsTls13Draft21);
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 22", supportsTls13Draft22);
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 23", supportsTls13Draft23);
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 24", supportsTls13Draft24);
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 25", supportsTls13Draft25);
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 26", supportsTls13Draft26);
             //prettyAppend(builder, "DTLS 1.0", supportsDtls10);
             //prettyAppend(builder, "DTLS 1.2", supportsDtls10);
             //prettyAppend(builder, "DTLS 1.3", supportsDtls13);
@@ -442,11 +462,21 @@ public class SiteReport {
     }
 
     private StringBuilder appendCurves(StringBuilder builder) {
-        if (supportedNamedCurves != null) {
-            builder.append("----------Supported Named Curves----------\n");
-            if (supportedNamedCurves.size() > 0) {
-                for (NamedCurve curve : supportedNamedCurves) {
-                    builder.append(curve.name()).append("\n");
+        if (supportedNamedGroups != null) {
+            builder.append("----------Supported Named Groups----------\n");
+            if (supportedNamedGroups.size() > 0) {
+                for (NamedGroup group : supportedNamedGroups) {
+                    builder.append(group.name()).append("\n");
+                }
+            } else {
+                builder.append("none\n");
+            }
+        }
+        if (supportedTls13Groups != null) {
+            builder.append("----------TLS 1.3 Groups----------\n");
+            if (supportedTls13Groups.size() > 0) {
+                for (NamedGroup group : supportedTls13Groups) {
+                    builder.append(group.name()).append("\n");
                 }
             } else {
                 builder.append("none\n");
@@ -562,7 +592,7 @@ public class SiteReport {
     public void setSignatureAndHashAlgorithmIntolerance(Boolean signatureAndHashAlgorithmIntolerance) {
         this.signatureAndHashAlgorithmIntolerance = signatureAndHashAlgorithmIntolerance;
     }
-    
+
     public Boolean getFreakVulnerable() {
         return freakVulnerable;
     }
@@ -717,6 +747,38 @@ public class SiteReport {
 
     public void setSupportsTls13Draft22(Boolean supportsTls13Draft22) {
         this.supportsTls13Draft22 = supportsTls13Draft22;
+    }
+
+    public Boolean getSupportsTls13Draft23() {
+        return supportsTls13Draft23;
+    }
+
+    public void setSupportsTls13Draft23(Boolean supportsTls13Draft23) {
+        this.supportsTls13Draft23 = supportsTls13Draft23;
+    }
+
+    public Boolean getSupportsTls13Draft24() {
+        return supportsTls13Draft24;
+    }
+
+    public void setSupportsTls13Draft24(Boolean supportsTls13Draft24) {
+        this.supportsTls13Draft24 = supportsTls13Draft24;
+    }
+
+    public Boolean getSupportsTls13Draft25() {
+        return supportsTls13Draft25;
+    }
+
+    public void setSupportsTls13Draft25(Boolean supportsTls13Draft25) {
+        this.supportsTls13Draft25 = supportsTls13Draft25;
+    }
+
+    public Boolean getSupportsTls13Draft26() {
+        return supportsTls13Draft26;
+    }
+
+    public void setSupportsTls13Draft26(Boolean supportsTls13Draft26) {
+        this.supportsTls13Draft26 = supportsTls13Draft26;
     }
 
     public Boolean getSupportsDtls10() {
@@ -951,6 +1013,14 @@ public class SiteReport {
         this.cipherSuites = cipherSuites;
     }
 
+    public List<CipherSuite> getSupportedTls13CipherSuites() {
+        return supportedTls13CipherSuites;
+    }
+
+    public void setSupportedTls13CipherSuites(List<CipherSuite> supportedTls13CipherSuites) {
+        this.supportedTls13CipherSuites = supportedTls13CipherSuites;
+    }
+
     public Certificate getCertificate() {
         return certificate;
     }
@@ -1039,12 +1109,20 @@ public class SiteReport {
         this.enforcesCipherSuiteOrdering = enforcesCipherSuiteOrdering;
     }
 
-    public List<NamedCurve> getSupportedNamedCurves() {
-        return supportedNamedCurves;
+    public List<NamedGroup> getSupportedNamedGroups() {
+        return supportedNamedGroups;
     }
 
-    public void setSupportedNamedCurves(List<NamedCurve> supportedNamedCurves) {
-        this.supportedNamedCurves = supportedNamedCurves;
+    public void setSupportedNamedGroups(List<NamedGroup> supportedNamedGroups) {
+        this.supportedNamedGroups = supportedNamedGroups;
+    }
+
+    public List<NamedGroup> getSupportedTls13Groups() {
+        return supportedTls13Groups;
+    }
+
+    public void setSupportedTls13Groups(List<NamedGroup> supportedTls13Groups) {
+        this.supportedTls13Groups = supportedTls13Groups;
     }
 
     public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {

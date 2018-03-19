@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.CipherSuiteOrderResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -62,8 +62,8 @@ public class CiphersuiteOrderProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setStopActionsAfterFatal(true);
-        List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());
-        tlsConfig.setNamedCurves(namedCurves);
+        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
+        tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);
