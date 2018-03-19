@@ -14,7 +14,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.constants.StarttlsType;
+import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 
 /**
  *
@@ -38,16 +38,18 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-implementation", required = false, description = "If you are interessted in the vulnerability of an implementation rather than a specific site")
     private boolean implementation = false;
-        
-    @Parameter(names = "-starttls", description = "Test Starttls Types: ftp, imap, pop3, smtp")
-    private String starttlsType;
-
+    
+    @ParametersDelegate
+    private StarttlsDelegate starttlsDelegate;
+    
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
         this.generalDelegate = delegate;
         clientDelegate = new ClientDelegate();
+        starttlsDelegate = new StarttlsDelegate();
         addDelegate(clientDelegate);
         addDelegate(generalDelegate);
+        addDelegate(starttlsDelegate);
     }
 
     public int getThreads() {
@@ -60,6 +62,10 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public ClientDelegate getClientDelegate() {
         return clientDelegate;
+    }
+    
+    public StarttlsDelegate getStarttlsDelegate() {
+        return starttlsDelegate;
     }
 
     public int getDangerLevel() {
@@ -78,41 +84,12 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.implementation = implementation;
     }
     
-    public String getStarttlsType() {
-        return starttlsType;
-    }
-
-    public void setStarttlsType(String starttlsType) {
-        this.starttlsType = starttlsType;
-    }
-    
     @Override
     public Config createConfig() {
         Config config = super.createConfig();
         config.setSniHostname(clientDelegate.getHost());
         config.getDefaultClientConnection().setTimeout(1000);
-        if(starttlsType != null && !starttlsType.isEmpty()){
-            switch(starttlsType) {
-                case "ftp": {
-                    config.setStarttlsType(StarttlsType.FTP);
-                    break;
-                }
-                case "imap": {
-                    config.setStarttlsType(StarttlsType.IMAP);
-                    break;
-                }
-                case "pop3": {
-                    config.setStarttlsType(StarttlsType.POP3);
-                    break;
-                }
-                case "smtp": {
-                    config.setStarttlsType(StarttlsType.SMTP);
-                    break;
-                }
-                
-            }
-            
-        }
+        config.setStarttlsType(starttlsDelegate.getStarttlsType());
         return config;
     }
 }
