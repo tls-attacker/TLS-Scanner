@@ -219,19 +219,16 @@ public class TlsScan implements IScan {
         IScanResult certificate = new ScanResult("certificate");
 
         List<String> _certificateReports = new LinkedList<>();
+        List<String> _certificateFingerprints = new LinkedList<>();
         List<CertificateReport> _rawCertificateReports = report.getCertificateReports();
         if (_rawCertificateReports != null) {
             for (CertificateReport x : _rawCertificateReports) {
                 _certificateReports.add(x == null ? null : x.toString());
+                _certificateFingerprints.add(x == null ? "" : x.getSHA256Fingerprint());
             }
         }
 
-        List<String> certificateFingerprints = new LinkedList<>();
-        for (CertificateReport rep : _rawCertificateReports) {
-            certificateFingerprints.add(rep.getSHA256Fingerprint());
-        }
-
-        certificate.addStringArray("certificateFingerprints", certificateFingerprints);
+        certificate.addStringArray("certificateFingerprints", _certificateFingerprints);
         certificate.addStringArray("certificateReports", _certificateReports);
         certificate.addString("certificate", report.getCertificate() == null ? null : report.getCertificate().toString());
         certificate.addBoolean("certificateExpired", report.getCertificateExpired());
