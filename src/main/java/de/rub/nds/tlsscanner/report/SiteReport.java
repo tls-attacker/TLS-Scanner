@@ -33,11 +33,23 @@ public class SiteReport {
 
     //general
     private final List<ProbeType> probeTypeList;
-    
+
     private final String host;
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
 
+    //Quirks
+    private Boolean requiresSni = null;
+    
+    private Boolean versionIntolerance = null;
+    private Boolean extensionIntolerance = null;
+    private Boolean cipherSuiteIntolerance = null;
+    private Boolean groupsIntolerance = null;
+    private Boolean clientHelloSizeIntolerance = null;
+    private Boolean compressionIntolerance = null;
+    private Boolean pointFormatsIntolerance = null;
+    private Boolean signatureAndHashAlgorithmIntolerance = null;
+    
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
     private Boolean paddingOracleVulnerable = null;
@@ -54,6 +66,7 @@ public class SiteReport {
     private Boolean lucky13Vulnerable = null;
     private Boolean heartbleedVulnerable = null;
     private Boolean earlyCcsVulnerable = null;
+    private Boolean freakVulnerable = null;
 
     //Version
     private List<ProtocolVersion> versions = null;
@@ -121,26 +134,27 @@ public class SiteReport {
     private Boolean supportsPfsCiphers = null;
     private Boolean supportsOnlyPfsCiphers = null;
     private Boolean enforcesCipherSuiteOrdering = null;
-    private Boolean supportsAes;
-    private Boolean supportsCamellia;
-    private Boolean supportsAria;
-    private Boolean supportsChacha;
-    private Boolean supportsRsa;
-    private Boolean supportsDh;
-    private Boolean supportsEcdh;
-    private Boolean supportsGost;
-    private Boolean supportsSrp;
-    private Boolean supportsKerberos;
-    private Boolean supportsPskPlain;
-    private Boolean supportsPskRsa;
-    private Boolean supportsPskDhe;
-    private Boolean supportsPskEcdhe;
-    private Boolean supportsFortezza;
-    private Boolean supportsNewHope;
-    private Boolean supportsEcmqv;
-    private Boolean prefersPfsCiphers;
-    private Boolean supportsStreamCiphers;
-    private Boolean supportsBlockCiphers;
+    private Boolean supportsAes = null;
+    private Boolean supportsCamellia = null;
+    private Boolean supportsAria = null;
+    private Boolean supportsChacha = null;
+    private Boolean supportsRsa = null;
+    private Boolean supportsDh = null;
+    private Boolean supportsEcdh = null;
+    private Boolean supportsStaticEcdh = null;
+    private Boolean supportsGost = null;
+    private Boolean supportsSrp = null;
+    private Boolean supportsKerberos = null;
+    private Boolean supportsPskPlain = null;
+    private Boolean supportsPskRsa = null;
+    private Boolean supportsPskDhe = null;
+    private Boolean supportsPskEcdhe = null;
+    private Boolean supportsFortezza = null;
+    private Boolean supportsNewHope = null;
+    private Boolean supportsEcmqv = null;
+    private Boolean prefersPfsCiphers = null;
+    private Boolean supportsStreamCiphers = null;
+    private Boolean supportsBlockCiphers = null;
 
     //Session
     private Boolean supportsSessionTicket = null;
@@ -156,16 +170,9 @@ public class SiteReport {
     private Boolean tlsFallbackSCSVsupported = null;
 
     //GCM Nonces
-    private Boolean gcmReuse;
-    private GcmPattern gcmPattern;
-    private Boolean gcmCheck;
-
-    //Intolerances
-    private Boolean versionIntolerance;
-    private Boolean extensionIntolerance;
-    private Boolean cipherSuiteIntolerance;
-    private Boolean supportedCurvesIntolerance;
-    private Boolean clientHelloSizeIntolerance;
+    private Boolean gcmReuse = null;
+    private GcmPattern gcmPattern = null;
+    private Boolean gcmCheck = null;
 
     public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
@@ -174,6 +181,46 @@ public class SiteReport {
 
     public String getHost() {
         return host;
+    }
+
+    public Boolean getRequiresSni() {
+        return requiresSni;
+    }
+
+    public void setRequiresSni(Boolean requiresSni) {
+        this.requiresSni = requiresSni;
+    }
+
+    public Boolean getCompressionIntolerance() {
+        return compressionIntolerance;
+    }
+
+    public void setCompressionIntolerance(Boolean compressionIntolerance) {
+        this.compressionIntolerance = compressionIntolerance;
+    }
+
+    public Boolean getPointFormatsIntolerance() {
+        return pointFormatsIntolerance;
+    }
+
+    public void setPointFormatsIntolerance(Boolean pointFormatsIntolerance) {
+        this.pointFormatsIntolerance = pointFormatsIntolerance;
+    }
+
+    public Boolean getSignatureAndHashAlgorithmIntolerance() {
+        return signatureAndHashAlgorithmIntolerance;
+    }
+
+    public void setSignatureAndHashAlgorithmIntolerance(Boolean signatureAndHashAlgorithmIntolerance) {
+        this.signatureAndHashAlgorithmIntolerance = signatureAndHashAlgorithmIntolerance;
+    }
+    
+    public Boolean getFreakVulnerable() {
+        return freakVulnerable;
+    }
+
+    public void setFreakVulnerable(Boolean freakVulnerable) {
+        this.freakVulnerable = freakVulnerable;
     }
 
     public Boolean getHeartbleedVulnerable() {
@@ -1004,12 +1051,12 @@ public class SiteReport {
         this.cipherSuiteIntolerance = cipherSuiteIntolerance;
     }
 
-    public Boolean getSupportedCurvesIntolerance() {
-        return supportedCurvesIntolerance;
+    public Boolean getGroupsIntolerance() {
+        return groupsIntolerance;
     }
 
-    public void setSupportedCurvesIntolerance(Boolean supportedCurvesIntolerance) {
-        this.supportedCurvesIntolerance = supportedCurvesIntolerance;
+    public void setGroupsIntolerance(Boolean groupsIntolerance) {
+        this.groupsIntolerance = groupsIntolerance;
     }
 
     public Boolean getLucky13Vulnerable() {
@@ -1051,6 +1098,15 @@ public class SiteReport {
     public void setClientHelloSizeIntolerance(Boolean clientHelloSizeIntolerance) {
         this.clientHelloSizeIntolerance = clientHelloSizeIntolerance;
     }
+
+    public Boolean getSupportsStaticEcdh() {
+        return supportsStaticEcdh;
+    }
+
+    public void setSupportsStaticEcdh(Boolean supportsStaticEcdh) {
+        this.supportsStaticEcdh = supportsStaticEcdh;
+    }
+
     
     public String getFullReport()
     {        

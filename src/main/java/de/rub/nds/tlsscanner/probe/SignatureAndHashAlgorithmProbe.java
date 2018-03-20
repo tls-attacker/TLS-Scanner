@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
 /**
@@ -27,4 +28,17 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return true;
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return null;
+    }
 }

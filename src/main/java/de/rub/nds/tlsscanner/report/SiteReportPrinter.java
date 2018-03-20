@@ -66,7 +66,7 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "Renegotioation & SCSV");
         prettyAppendYellowOnSuccess(builder, "Clientside Secure", report.getSupportsClientSideSecureRenegotiation());
         prettyAppendRedOnSuccess(builder, "Clientside Insecure", report.getSupportsClientSideInsecureRenegotiation());
-        prettyAppendRedOnFailure(builder, "SCSV Fallback\t   ", report.getTlsFallbackSCSVsupported());
+        prettyAppendRedOnFailure(builder, "SCSV Fallback", report.getTlsFallbackSCSVsupported());
         return builder;
     }
 
@@ -127,7 +127,6 @@ public class SiteReportPrinter {
         prettyAppendRedOnFailure(builder, "Version", report.getVersionIntolerance());
         prettyAppendRedOnFailure(builder, "Ciphersuite", report.getCipherSuiteIntolerance());
         prettyAppendRedOnFailure(builder, "Extension", report.getExtensionIntolerance());
-        prettyAppendRedOnFailure(builder, "Curves", report.getSupportedCurvesIntolerance());
         return builder;
     }
 

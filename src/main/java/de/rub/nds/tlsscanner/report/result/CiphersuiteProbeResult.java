@@ -9,12 +9,8 @@ import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CipherType;
-import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +42,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
     private Boolean supportsRsa = false;
     private Boolean supportsDh = false;
     private Boolean supportsEcdh = false;
+    private Boolean supportsStaticEcdh = false;
     private Boolean supportsGost = false;
     private Boolean supportsSrp = null;
     private Boolean supportsKerberos = false;
@@ -110,6 +107,9 @@ public class CiphersuiteProbeResult extends ProbeResult {
         }
         if (suite.name().contains("TLS_RSA")) {
             supportsRsa = true;
+        }
+        if (suite.name().contains("ECDH_")) {
+            supportsStaticEcdh = true;
         }
         if (suite.name().contains("ECDH")) {
             supportsEcdh = true;
@@ -225,6 +225,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
         report.setSupportsChacha(supportsChacha);
         report.setSupportsRsa(supportsRsa);
         report.setSupportsDh(supportsDh);
+        report.setSupportsStaticEcdh(supportsStaticEcdh);
         report.setSupportsEcdh(supportsEcdh);
         report.setSupportsGost(supportsGost);
         report.setSupportsSrp(supportsSrp);

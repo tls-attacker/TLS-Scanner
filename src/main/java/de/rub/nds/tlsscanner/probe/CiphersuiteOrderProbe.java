@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,5 +73,19 @@ public class CiphersuiteOrderProbe extends TlsProbe {
             LOGGER.warn(ex);
         }
         return state.getTlsContext().getSelectedCipherSuite();
+    }
+
+    @Override
+    public boolean shouldBeExecuted(SiteReport report) {
+        return true;
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
+    }
+
+    @Override
+    public ProbeResult getNotExecutedResult() {
+        return null;
     }
 }

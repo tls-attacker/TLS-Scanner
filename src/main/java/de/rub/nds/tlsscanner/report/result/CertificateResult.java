@@ -43,9 +43,10 @@ public class CertificateResult extends ProbeResult {
             CertificateJudger judger = new CertificateJudger(certReport.getCertificate(), certReport, report.getHost());
             expiredCertificates |= judger.checkExpired();
             notYetValidCertificates |= judger.checkNotYetValid();
-            weakHashAlgorithms |= judger.isWeakHashAlgo(certReport);
-            weakSignatureAlgorithms |= judger.isWeakSigAlgo(certReport);
-
+            if (judger.isSelfSigned() != Boolean.TRUE) {
+                weakHashAlgorithms |= judger.isWeakHashAlgo(certReport);
+                weakSignatureAlgorithms = judger.isWeakSigAlgo(certReport);
+            }
         }
         report.setCertificateExpired(expiredCertificates);
         report.setCertificateNotYetValid(notYetValidCertificates);

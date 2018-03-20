@@ -10,8 +10,13 @@ package de.rub.nds.tlsscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
+import java.security.InvalidKeyException;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.util.Date;
+import java.security.cert.X509Certificate;
 import org.bouncycastle.asn1.x509.Certificate;
+import sun.security.x509.X509CertImpl;
 
 /**
  *
@@ -30,38 +35,36 @@ public class CertificateJudger {
     }
 
     public Boolean checkExpired() {
-        boolean result = isCertificateExpired(report);
+        Boolean result = isCertificateExpired(report);
         return result;
     }
 
     public Boolean checkNotYetValid() {
-        boolean result = isCertificateValidYet(report);
+        Boolean result = isCertificateValidYet(report);
         return result;
     }
 
     public Boolean checkCertificateRevoked() {
-        boolean result = isRevoked(certificate);
-        return result;
-    }
-
-    private Boolean checkHashAlgorithm() {
-        boolean result = isWeakHashAlgo(report);
-        return result;
-    }
-
-    private Boolean checkSignAlgorithm() {
-        boolean result = isWeakSigAlgo(report);
+        Boolean result = isRevoked(certificate);
         return result;
     }
 
     public Boolean isWeakHashAlgo(CertificateReport report) {
-        HashAlgorithm algo = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
-        return algo == HashAlgorithm.MD5 || algo == HashAlgorithm.NONE || algo == HashAlgorithm.SHA1;
+        if (report.getSignatureAndHashAlgorithm() != null) {
+            HashAlgorithm algo = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
+            return algo == HashAlgorithm.MD5 || algo == HashAlgorithm.NONE || algo == HashAlgorithm.SHA1;
+        } else {
+            return null;
+        }
     }
 
     public Boolean isWeakSigAlgo(CertificateReport report) {
-        SignatureAlgorithm algo = report.getSignatureAndHashAlgorithm().getSignatureAlgorithm();
-        return algo == SignatureAlgorithm.ANONYMOUS; // TODO is this weak?
+        if (report.getSignatureAndHashAlgorithm() != null) {
+            SignatureAlgorithm algo = report.getSignatureAndHashAlgorithm().getSignatureAlgorithm();
+            return algo == SignatureAlgorithm.ANONYMOUS; // TODO is this weak?
+        } else {
+            return null;
+        }
     }
 
     public Boolean isWeakKey(CertificateReport report) {
@@ -69,11 +72,19 @@ public class CertificateJudger {
     }
 
     public Boolean isCertificateExpired(CertificateReport report) {
-        return !report.getValidTo().after(new Date(System.currentTimeMillis()));
+        if (report.getValidTo() != null) {
+            return !report.getValidTo().after(new Date(System.currentTimeMillis()));
+        } else {
+            return null;
+        }
     }
 
     public Boolean isCertificateValidYet(CertificateReport report) {
-        return !report.getValidFrom().before(new Date(System.currentTimeMillis()));
+        if (report.getValidFrom() != null) {
+            return !report.getValidFrom().before(new Date(System.currentTimeMillis()));
+        } else {
+            return null;
+        }
     }
 
     public Boolean isRevoked(Certificate certificate) {
@@ -119,16 +130,18 @@ public class CertificateJudger {
         return null;
     }
 
-    private Boolean checkSelfSigned() {
-        // if (isSelfSigned(certificate)) {
-        // tlsCheckList
-        // .add(new ConfigurationFlaw(
-        // "Zertifikat ist selbst signiert",
-        // FlawLevel.FATAL,
-        // "Das eingesetzte Zertifikat legitimiert sich selbst. Besucher ihrer Seite können die Validität dieses Zertifikats nicht überprüfen.",
-        // "Beantragen sie ein Zertifikat bei einer vertrauenswürdigen Zertifizierungsstelle."));
-        // }
-        return null;
+    public Boolean isSelfSigned() {
+        try {
+            // Try to verify certificate signature with its own public key
+            X509Certificate cert = new X509CertImpl(certificate.getEncoded());
+            PublicKey publicKey = cert.getPublicKey();
+            cert.verify(publicKey);
+            return true;
+        } catch (SignatureException | InvalidKeyException ex) {
+            return false;
+        } catch (Exception E) {
+            return null;
+        }
     }
 
     private Boolean checkBlacklistedKey() {

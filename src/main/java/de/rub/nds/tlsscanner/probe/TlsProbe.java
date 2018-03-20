@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
@@ -63,4 +64,9 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     public abstract ProbeResult executeTest();
 
+    public abstract boolean shouldBeExecuted(SiteReport report);
+
+    public abstract void adjustConfig(SiteReport report);
+    
+    public abstract ProbeResult getNotExecutedResult();
 }
