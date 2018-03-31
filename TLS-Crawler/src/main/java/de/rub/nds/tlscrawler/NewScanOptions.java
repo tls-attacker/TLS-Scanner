@@ -56,7 +56,7 @@ public class NewScanOptions extends OptionsBase {
     @Option(
             name = "targetsFromRedisList",
             abbrev = 'r',
-            help = "Defines a target source, e. g. Redis.",
+            help = "Fetches targets from redis. Does not combine with blacklist switches.",
             defaultValue = ""
     )
     public String targetsFromRedisList;
@@ -89,6 +89,8 @@ public class NewScanOptions extends OptionsBase {
     )
     public boolean ndsBlacklist;
 
+    public boolean printWarning = false;
+
     public static String getHelpString() {
         return parser.describeOptions(Collections.<String, String>emptyMap(), OptionsParser.HelpVerbosity.LONG);
     }
@@ -111,23 +113,45 @@ public class NewScanOptions extends OptionsBase {
             LOG.warn(e.getMessage());
             LOG.warn("Creating fallback options.");
 
-            result = new NewScanOptions();
-            setDefaultValues(result);
-            result.help = true;
+            return getDefault();
         }
 
-        // TODO sanity check
+        if (result != null
+                && result.ports.isEmpty()) {
+            return getDefault();
+        }
+
+        if (result != null
+                && result.scans.isEmpty()) {
+            return getDefault();
+        }
+
+        if (result != null
+                && !result.targetsFromRedisList.isEmpty()
+                && !result.blacklist.isEmpty()) {
+            return getDefault();
+        }
+
+        if (result != null
+                && !result.targetsFromRedisList.isEmpty()
+                && result.ndsBlacklist) {
+            result.printWarning = true;
+        }
 
         return result;
     }
 
-    private static void setDefaultValues(NewScanOptions opts) {
+    private static NewScanOptions getDefault() {
+        NewScanOptions opts = new NewScanOptions();
+
         opts.ports = new LinkedList<>();
-        opts.help = false;
+        opts.help = true;
         opts.targetsFromRedisList = "";
         opts.scans = new LinkedList<>();
         opts.blacklist = new LinkedList<>();
         opts.whitelist = new LinkedList<>();
         opts.ndsBlacklist = true;
+
+        return opts;
     }
 }

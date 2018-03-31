@@ -35,6 +35,8 @@ public class NewScanOptionsTest {
             "-h"
     };
 
+    private String[] optionsNone = { };
+
     @Test
     public void getHelpStringTest() {
         String subject = NewScanOptions.getHelpString();
@@ -83,6 +85,25 @@ public class NewScanOptionsTest {
     @Test
     public void helpOnlyTest() {
         NewScanOptions opts = NewScanOptions.parseOptions(optionsHelpOnly);
+
+        assertTrue(opts.help);
+
+        assertEquals(0, opts.scans.size());
+
+        assertEquals(0, opts.ports.size());
+
+        assertEquals("", opts.targetsFromRedisList);
+
+        assertEquals(0, opts.whitelist.size());
+
+        assertEquals(0, opts.blacklist.size());
+
+        assertTrue(opts.ndsBlacklist);
+    }
+
+    @Test
+    public void noArgsTest() {
+        NewScanOptions opts = NewScanOptions.parseOptions(optionsNone);
 
         assertTrue(opts.help);
 

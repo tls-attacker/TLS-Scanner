@@ -111,17 +111,17 @@ public class StartupOptions extends OptionsBase {
         }
 
         if (result != null && result.masterOnly && !result.isMaster) {
-            LOG.warn("Overridden 'isMaster' to true due to 'masterOnly'.");
+            LOG.warn("Overwrote 'isMaster' to true due to 'masterOnly'.");
             result.isMaster = true;
         }
 
         if (result != null && result.testMode && !result.isMaster) {
-            LOG.warn("Overridden 'isMaster' to true due to 'testMode' option.");
+            LOG.warn("Overwrote 'isMaster' to true due to 'testMode' option.");
             result.isMaster = true;
         }
 
         if (result != null && result.testMode && !result.inMemoryOrchestration) {
-            LOG.warn("Overridden 'inMemoryOrchestration' to true due to 'testMode' option.");
+            LOG.warn("Overwrote 'inMemoryOrchestration' to true due to 'testMode' option.");
             result.inMemoryOrchestration = true;
         }
 
