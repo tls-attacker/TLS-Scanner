@@ -8,10 +8,12 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
+import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
@@ -40,7 +42,7 @@ public class SiteReport {
 
     //Quirks
     private Boolean requiresSni = null;
-    
+
     private Boolean versionIntolerance = null;
     private Boolean extensionIntolerance = null;
     private Boolean cipherSuiteIntolerance = null;
@@ -49,7 +51,7 @@ public class SiteReport {
     private Boolean compressionIntolerance = null;
     private Boolean pointFormatsIntolerance = null;
     private Boolean signatureAndHashAlgorithmIntolerance = null;
-    
+
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
     private Boolean paddingOracleVulnerable = null;
@@ -61,11 +63,11 @@ public class SiteReport {
     private Boolean crimeVulnerable = null;
     private Boolean breachVulnerable = null;
     private Boolean sweet32Vulnerable = null;
-    private Boolean drownVulnerable = null;
+    private DrownVulnerabilityType drownVulnerable = null;
     private Boolean logjamVulnerable = null;
     private Boolean lucky13Vulnerable = null;
     private Boolean heartbleedVulnerable = null;
-    private Boolean earlyCcsVulnerable = null;
+    private EarlyCcsVulnerabilityType earlyCcsVulnerable = null;
     private Boolean freakVulnerable = null;
 
     //Version
@@ -91,7 +93,7 @@ public class SiteReport {
 
     //Extensions
     private List<ExtensionType> supportedExtensions = null;
-    private List<NamedCurve> supportedNamedCurves = null;
+    private List<NamedGroup> supportedNamedGroups = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
@@ -279,7 +281,7 @@ public class SiteReport {
         prettyAppendRedOnFailure(builder, "Version", versionIntolerance);
         prettyAppendRedOnFailure(builder, "Ciphersuite", cipherSuiteIntolerance);
         prettyAppendRedOnFailure(builder, "Extension", extensionIntolerance);
-        prettyAppendRedOnFailure(builder, "Curves", groupsIntolerance);
+        prettyAppendRedOnFailure(builder, "Groups", groupsIntolerance);
         prettyAppendRedOnFailure(builder, "ClientHello Size", clientHelloSizeIntolerance);
         prettyAppendRedOnFailure(builder, "Compression", compressionIntolerance);
         prettyAppendRedOnFailure(builder, "Signature and Hash", signatureAndHashAlgorithmIntolerance);
@@ -300,10 +302,10 @@ public class SiteReport {
         prettyAppendRedGreen(builder, "CVE-20162107", cve20162107Vulnerable);
         prettyAppendRedGreen(builder, "Logjam", logjamVulnerable);
         prettyAppendRedGreen(builder, "Sweet 32", sweet32Vulnerable);
-        prettyAppendRedGreen(builder, "DROWN", drownVulnerable);
+        prettyAppendDrown(builder, "DROWN", drownVulnerable);
         prettyAppendRedGreen(builder, "Lucky13", lucky13Vulnerable);
         prettyAppendRedGreen(builder, "Heartbleed", heartbleedVulnerable);
-        prettyAppendRedGreen(builder, "EarlyCcs", earlyCcsVulnerable);
+        prettyAppendEarlyCcs(builder, "EarlyCcs", earlyCcsVulnerable);
         prettyAppendRedGreen(builder, "FREAK", freakVulnerable);
         return builder;
     }
@@ -416,7 +418,7 @@ public class SiteReport {
                 builder.append(keyParameter.toString()).append("\n");
             }
         }
-        appendCurves(builder);
+        appendGroups(builder);
         appendSignatureAndHashAlgorithms(builder);
         return builder;
     }
@@ -441,12 +443,12 @@ public class SiteReport {
         }
     }
 
-    private StringBuilder appendCurves(StringBuilder builder) {
-        if (supportedNamedCurves != null) {
-            builder.append("----------Supported Named Curves----------\n");
-            if (supportedNamedCurves.size() > 0) {
-                for (NamedCurve curve : supportedNamedCurves) {
-                    builder.append(curve.name()).append("\n");
+    private StringBuilder appendGroups(StringBuilder builder) {
+        if (supportedNamedGroups != null) {
+            builder.append("----------Supported Named Groups----------\n");
+            if (supportedNamedGroups.size() > 0) {
+                for (NamedGroup group : supportedNamedGroups) {
+                    builder.append(group.name()).append("\n");
                 }
             } else {
                 builder.append("none\n");
@@ -485,6 +487,10 @@ public class SiteReport {
 
     private StringBuilder prettyAppend(StringBuilder builder, String name, Boolean value) {
         return builder.append(name).append(": ").append(value == null ? "Unknown" : value).append("\n");
+    }
+
+    private StringBuilder prettyAppendObject(StringBuilder builder, String name, Object value) {
+        return builder.append(name).append(": ").append(value == null ? "Unknown" : value.toString()).append("\n");
     }
 
     private StringBuilder prettyAppendGreenOnSuccess(StringBuilder builder, String name, Boolean value) {
@@ -531,6 +537,42 @@ public class SiteReport {
         return builder.append(AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET).append("\n");
     }
 
+    private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
+        builder.append(testName).append(": ");
+        switch (drownVulnerable) {
+            case FULL:
+                prettyAppendRed(builder, "true - fully exploitable");
+                break;
+            case SSL2:
+                prettyAppendRed(builder, "true - SSL 2 supported!");
+                break;
+            case NONE:
+                prettyAppendGreen(builder, "false");
+                break;
+            case UNKNOWN:
+                prettyAppend(builder, null);
+                break;
+        }
+    }
+
+    private void prettyAppendEarlyCcs(StringBuilder builder, String testName, EarlyCcsVulnerabilityType earlyCcsVulnerable) {
+        builder.append(testName).append(": ");
+        switch (earlyCcsVulnerable) {
+            case EXPLOITABLE:
+                prettyAppendRed(builder, "true - exploitable");
+                break;
+            case NOT_EXPLOITABLE:
+                prettyAppendRed(builder, "true - probably not exploitable");
+                break;
+            case NOT_VULNERABLE:
+                prettyAppendGreen(builder, "false");
+                break;
+            case UNKNOWN:
+                prettyAppend(builder, "null");
+                break;
+        }
+    }
+
     public Boolean getRequiresSni() {
         return requiresSni;
     }
@@ -562,7 +604,7 @@ public class SiteReport {
     public void setSignatureAndHashAlgorithmIntolerance(Boolean signatureAndHashAlgorithmIntolerance) {
         this.signatureAndHashAlgorithmIntolerance = signatureAndHashAlgorithmIntolerance;
     }
-    
+
     public Boolean getFreakVulnerable() {
         return freakVulnerable;
     }
@@ -579,11 +621,11 @@ public class SiteReport {
         this.heartbleedVulnerable = heartbleedVulnerable;
     }
 
-    public Boolean getEarlyCcsVulnerable() {
+    public EarlyCcsVulnerabilityType getEarlyCcsVulnerable() {
         return earlyCcsVulnerable;
     }
 
-    public void setEarlyCcsVulnerable(Boolean earlyCcsVulnerable) {
+    public void setEarlyCcsVulnerable(EarlyCcsVulnerabilityType earlyCcsVulnerable) {
         this.earlyCcsVulnerable = earlyCcsVulnerable;
     }
 
@@ -1039,12 +1081,12 @@ public class SiteReport {
         this.enforcesCipherSuiteOrdering = enforcesCipherSuiteOrdering;
     }
 
-    public List<NamedCurve> getSupportedNamedCurves() {
-        return supportedNamedCurves;
+    public List<NamedGroup> getSupportedNamedGroups() {
+        return supportedNamedGroups;
     }
 
-    public void setSupportedNamedCurves(List<NamedCurve> supportedNamedCurves) {
-        this.supportedNamedCurves = supportedNamedCurves;
+    public void setSupportedNamedGroups(List<NamedGroup> supportedNamedGroups) {
+        this.supportedNamedGroups = supportedNamedGroups;
     }
 
     public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
@@ -1359,11 +1401,11 @@ public class SiteReport {
         this.sweet32Vulnerable = sweet32Vulnerable;
     }
 
-    public Boolean getDrownVulnerable() {
+    public DrownVulnerabilityType getDrownVulnerable() {
         return drownVulnerable;
     }
 
-    public void setDrownVulnerable(Boolean drownVulnerable) {
+    public void setDrownVulnerable(DrownVulnerabilityType drownVulnerable) {
         this.drownVulnerable = drownVulnerable;
     }
 

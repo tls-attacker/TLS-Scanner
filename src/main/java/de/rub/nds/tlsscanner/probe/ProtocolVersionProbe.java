@@ -13,7 +13,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
@@ -122,16 +122,16 @@ public class ProtocolVersionProbe extends TlsProbe {
             tlsConfig.setAddHeartbeatExtension(false);
             tlsConfig.setAddMaxFragmentLengthExtenstion(false);
             tlsConfig.setAddServerNameIndicationExtension(false);
-            tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(false);
+            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(false);
         } else {
             tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(false);
+            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(false);
         }
-        List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());
+        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
 
-        tlsConfig.setNamedCurves(namedCurves);
+        tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);
@@ -180,11 +180,11 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setStopRecievingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        tlsConfig.setNamedCurves(NamedCurve.ECDH_X25519, NamedCurve.SECP256R1, NamedCurve.SECP384R1, NamedCurve.SECP521R1, NamedCurve.ECDH_X448);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1, NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
         //TODO add support for named groups
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);

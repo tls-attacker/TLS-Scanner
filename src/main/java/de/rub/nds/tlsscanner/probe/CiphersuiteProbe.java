@@ -13,7 +13,7 @@ import de.rub.nds.tlsscanner.report.result.CiphersuiteProbeResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
@@ -34,10 +34,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - robert.merget@rub.de
- */
 public class CiphersuiteProbe extends TlsProbe {
 
     private final List<ProtocolVersion> protocolVersions;
@@ -88,15 +84,15 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setEnforceSettings(true);
             config.setAddServerNameIndicationExtension(true);
             config.setAddEllipticCurveExtension(true);
-            config.setAddSignatureAndHashAlgrorithmsExtension(true);
+            config.setAddSignatureAndHashAlgorithmsExtension(true);
             config.setAddRenegotiationInfoExtension(true);
             config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
             config.setStopActionsAfterFatal(true);
-            List<NamedCurve> namedCurves = new LinkedList<>();
-            namedCurves.addAll(Arrays.asList(NamedCurve.values()));
-            config.setNamedCurves(namedCurves);
+            List<NamedGroup> namedGroup = new LinkedList<>();
+            namedGroup.addAll(Arrays.asList(NamedGroup.values()));
+            config.setDefaultClientNamedGroups(namedGroup);
             State state = new State(config);
             WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
             try {

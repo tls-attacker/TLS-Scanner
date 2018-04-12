@@ -4,7 +4,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -69,7 +69,7 @@ public class IntoleranceProbe extends TlsProbe {
         tlsConfig.setAddHeartbeatExtension(true);
         tlsConfig.setAddMaxFragmentLengthExtenstion(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddAlpnExtension(true);
         tlsConfig.setAlpnAnnouncedProtocols(new String[]{"http/1.1", "spdy/1", "spdy/2", "spdy/3", "stun.turn", "stun.nat-discovery", "h2", "h2c", "webrtc", "c-webrtc", "ftp", "imap", "pop3", "managesieve"});
         tlsConfig.setAddEncryptThenMacExtension(true);
@@ -78,8 +78,8 @@ public class IntoleranceProbe extends TlsProbe {
         tlsConfig.setAddSessionTicketTLSExtension(true);
         tlsConfig.setAddTruncatedHmacExtension(true);
 
-        List<NamedCurve> namedCurves = Arrays.asList(NamedCurve.values());
-        tlsConfig.setNamedCurves(namedCurves);
+        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
+        tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);
