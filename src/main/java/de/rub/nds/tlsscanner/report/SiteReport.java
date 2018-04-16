@@ -539,6 +539,10 @@ public class SiteReport {
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
         builder.append(testName).append(": ");
+        if (drownVulnerable == null) {
+            prettyAppend(builder, null);
+            return;
+        }
         switch (drownVulnerable) {
             case FULL:
                 prettyAppendRed(builder, "true - fully exploitable");
@@ -557,11 +561,15 @@ public class SiteReport {
 
     private void prettyAppendEarlyCcs(StringBuilder builder, String testName, EarlyCcsVulnerabilityType earlyCcsVulnerable) {
         builder.append(testName).append(": ");
+        if (earlyCcsVulnerable == null) {
+            prettyAppend(builder, "null");
+            return;
+        }
         switch (earlyCcsVulnerable) {
-            case EXPLOITABLE:
+            case VULN_EXPLOITABLE:
                 prettyAppendRed(builder, "true - exploitable");
                 break;
-            case NOT_EXPLOITABLE:
+            case VULN_NOT_EXPLOITABLE:
                 prettyAppendRed(builder, "true - probably not exploitable");
                 break;
             case NOT_VULNERABLE:
