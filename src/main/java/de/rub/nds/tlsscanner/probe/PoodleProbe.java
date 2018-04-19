@@ -32,7 +32,7 @@ public class PoodleProbe extends TlsProbe {
         PoodleCommandConfig poodleCommandConfig = new PoodleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        PoodleAttacker attacker = new PoodleAttacker(poodleCommandConfig);
+        PoodleAttacker attacker = new PoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
         return new PoodleResult(vulnerable);
     }

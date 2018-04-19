@@ -105,12 +105,12 @@ public class ProtocolVersionProbe extends TlsProbe {
             tlsConfig.setAddHeartbeatExtension(false);
             tlsConfig.setAddMaxFragmentLengthExtenstion(false);
             tlsConfig.setAddServerNameIndicationExtension(false);
-            tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(false);
+            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(false);
         } else {
             tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(false);
+            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         }
         List<NamedGroup> namedCurves = Arrays.asList(NamedGroup.values());
 

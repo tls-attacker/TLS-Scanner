@@ -31,4 +31,5 @@ public enum ProbeType {
     INTOLERANCES,
     SNI,
     TLS13,
+    MAC,
 }

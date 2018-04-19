@@ -32,7 +32,7 @@ public class PaddingOracleProbe extends TlsProbe {
         PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig);
+        PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
         return new PaddingOracleResult(vulnerable);
     }

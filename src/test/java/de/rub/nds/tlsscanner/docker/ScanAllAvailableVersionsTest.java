@@ -5,13 +5,11 @@
  */
 package de.rub.nds.tlsscanner.docker;
 
+import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.TlsServer;
-import de.rub.nds.tls.subject.docker.DockerSpotifyTlsServerManager;
 import de.rub.nds.tls.subject.docker.DockerTlsServerManagerFactory;
-import de.rub.nds.tls.subject.docker.DockerTlsServerType;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.util.UnlimitedStrengthEnabler;
-import de.rub.nds.tlsattacker.util.tests.DockerTests;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -21,13 +19,10 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(DockerTests.class)
 public class ScanAllAvailableVersionsTest {
     
-    private DockerSpotifyTlsServerManager serverManager;
     private TlsServer server = null;
     
     public ScanAllAvailableVersionsTest() {
@@ -54,16 +49,16 @@ public class ScanAllAvailableVersionsTest {
         }
     }
     
-    @Test
+    //@Test
     public void scanAll() {
-        for (DockerTlsServerType type : DockerTlsServerType.values()) {
-            for (String version : DockerTlsServerManagerFactory.getAvailableVersions(type)) {
+        DockerTlsServerManagerFactory factory = new DockerTlsServerManagerFactory();
+        for (TlsImplementationType type : TlsImplementationType.values()) {
+            for (String version : factory.getAvailableVersions(type)) {
                 System.out.println("Scanning: " +type + ":" + version);
-                serverManager = DockerTlsServerManagerFactory.get(type, version);
                 try {
-                    server = serverManager.getTlsServer();
+                    server = factory.get(type, version);
                     ScannerConfig scannerConfig = new ScannerConfig(new GeneralDelegate());
-                    scannerConfig.getClientDelegate().setHost(server.host + ":" + server.port);
+                    scannerConfig.getClientDelegate().setHost(server.getHost() + ":" + server.getPort());
                     scannerConfig.setDangerLevel(10);
                     TlsScanner scanner = new TlsScanner(scannerConfig);
                     SiteReport siteReport = scanner.scan();

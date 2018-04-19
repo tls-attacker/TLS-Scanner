@@ -88,7 +88,7 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setEnforceSettings(true);
             config.setAddServerNameIndicationExtension(true);
             config.setAddEllipticCurveExtension(true);
-            config.setAddSignatureAndHashAlgrorithmsExtension(true);
+            config.setAddSignatureAndHashAlgorithmsExtension(true);
             config.setAddRenegotiationInfoExtension(true);
             config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
             config.setQuickReceive(true);

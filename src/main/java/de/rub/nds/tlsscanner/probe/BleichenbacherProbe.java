@@ -29,7 +29,7 @@ public class BleichenbacherProbe extends TlsProbe {
         BleichenbacherCommandConfig bleichenbacherConfig = new BleichenbacherCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) bleichenbacherConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig);
+        BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig,bleichenbacherConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
         if (vulnerable == null && !getScannerConfig().isImplementation()) {
             vulnerable = false;

@@ -20,6 +20,7 @@ import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import java.util.List;
@@ -108,7 +109,8 @@ public class SiteReport {
     private List<CompressionMethod> supportedCompressionMethods = null;
 
     //RFC
-    private Boolean checksMac = null;
+    private MacCheckPattern macCheckPatterAppData = null;
+    private MacCheckPattern macCheckPatternFinished = null;
     private Boolean checksFinished = null;
 
     //Certificate
@@ -219,8 +221,9 @@ public class SiteReport {
 
     private StringBuilder appendRfc(StringBuilder builder) {
         builder.append("----------RFC----------\n");
-        prettyAppendRedOnFailure(builder, "Checks MAC", checksMac);
-        prettyAppendRedOnFailure(builder, "Checks Finished", checksFinished);
+        prettyAppendMacCheckPattern(builder, "Checks Mac (in AppData)", macCheckPatterAppData);
+        prettyAppendMacCheckPattern(builder, "Checks Mac (in Finished)", macCheckPatternFinished);
+        prettyAppendRedOnFailure(builder, "Checks VerifyData", checksFinished);
         return builder;
     }
 
@@ -559,6 +562,24 @@ public class SiteReport {
 
     private StringBuilder prettyAppendGreen(StringBuilder builder, String value) {
         return builder.append(AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET).append("\n");
+    }
+
+    private StringBuilder prettyAppendMacCheckPattern(StringBuilder builder, String value, MacCheckPattern pattern) {
+        if (pattern == null) {
+            return builder.append(value).append(": ").append("null");
+        }
+        builder = builder.append(value).append(": ");
+        switch (pattern.getType()) {
+            case CORRECT:
+                return prettyAppendGreen(builder, pattern.toString());
+            case NONE:
+            case PARTIAL:
+                return prettyAppendRed(builder, pattern.toString());
+            case UNKNOWN:
+                return prettyAppend(builder, pattern.toString());
+            default:
+                throw new IllegalArgumentException("Unkown MacCheckPattern Type: " + pattern.getType());
+        }
     }
 
     public Boolean getRequiresSni() {
@@ -1149,12 +1170,12 @@ public class SiteReport {
         this.supportedCompressionMethods = supportedCompressionMethods;
     }
 
-    public Boolean getChecksMac() {
-        return checksMac;
+    public MacCheckPattern getMacCheckPatternAppData() {
+        return macCheckPatterAppData;
     }
 
-    public void setChecksMac(Boolean checksMac) {
-        this.checksMac = checksMac;
+    public void setMacCheckPatterAppData(MacCheckPattern macCheckPatterAppData) {
+        this.macCheckPatterAppData = macCheckPatterAppData;
     }
 
     public Boolean getChecksFinished() {
@@ -1540,5 +1561,13 @@ public class SiteReport {
 
     public List<ProbeType> getProbeTypeList() {
         return probeTypeList;
+    }
+
+    public MacCheckPattern getMacCheckPatternFinished() {
+        return macCheckPatternFinished;
+    }
+
+    public void setMacCheckPatternFinished(MacCheckPattern macCheckPatternFinished) {
+        this.macCheckPatternFinished = macCheckPatternFinished;
     }
 }

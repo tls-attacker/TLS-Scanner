@@ -69,7 +69,7 @@ public class IntoleranceProbe extends TlsProbe {
         tlsConfig.setAddHeartbeatExtension(true);
         tlsConfig.setAddMaxFragmentLengthExtenstion(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddAlpnExtension(true);
         tlsConfig.setAlpnAnnouncedProtocols(new String[]{"http/1.1", "spdy/1", "spdy/2", "spdy/3", "stun.turn", "stun.nat-discovery", "h2", "h2c", "webrtc", "c-webrtc", "ftp", "imap", "pop3", "managesieve"});
         tlsConfig.setAddEncryptThenMacExtension(true);

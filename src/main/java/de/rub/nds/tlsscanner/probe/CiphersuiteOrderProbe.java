@@ -59,7 +59,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setAddSignatureAndHashAlgrorithmsExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setStopActionsAfterFatal(true);
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());

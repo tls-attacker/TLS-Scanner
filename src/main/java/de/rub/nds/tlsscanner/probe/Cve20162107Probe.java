@@ -32,7 +32,7 @@ public class Cve20162107Probe extends TlsProbe {
         Cve20162107CommandConfig cve20162106config = new Cve20162107CommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) cve20162106config.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        Cve20162107Attacker attacker = new Cve20162107Attacker(cve20162106config);
+        Cve20162107Attacker attacker = new Cve20162107Attacker(cve20162106config, cve20162106config.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
         return new Cve20162107Result(vulnerable);
     }

@@ -39,7 +39,7 @@ public class InvalidCurveProbe extends TlsProbe {
             InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig);
+            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
             vulnerableClassic = attacker.isVulnerable();
         }
         if (supportsEphemeral == null || supportsEphemeral == null) {
@@ -47,7 +47,7 @@ public class InvalidCurveProbe extends TlsProbe {
             invalidCurveAttackConfig.setEphemeral(true);
             ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig);
+            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
             vulnerableEphemeral = attacker.isVulnerable();
         }
         if (!getScannerConfig().isImplementation()) {
