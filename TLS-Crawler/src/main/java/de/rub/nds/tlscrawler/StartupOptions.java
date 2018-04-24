@@ -91,6 +91,15 @@ public class StartupOptions extends OptionsBase {
     )
     public boolean testMode;
 
+    @Option(
+            name = "workspace",
+            abbrev = 'w',
+            help = "Instances in the same workspace share the same databases.",
+            defaultValue = ""
+    )
+    public String workspace;
+
+
     /**
      * Implements command line argument parsing.
      *
@@ -105,6 +114,12 @@ public class StartupOptions extends OptionsBase {
 
         parser.parse(args);
         result = parser.getOptions(StartupOptions.class);
+
+        if (result != null && result.workspace.equals("")) {
+            LOG.warn("No workspace name set. This might cause trouble when using" +
+                    "more than a single instance of TLS-Crawler.");
+            result.workspace = UUID.randomUUID().toString();
+        }
 
         if (result != null && result.instanceId.equals("")) {
             result.instanceId = UUID.randomUUID().toString();
