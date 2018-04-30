@@ -99,6 +99,7 @@ public class StartupOptions extends OptionsBase {
     )
     public String workspace;
 
+    private static String DEFAULT_WORKSPACE = "default";
 
     /**
      * Implements command line argument parsing.
@@ -118,7 +119,7 @@ public class StartupOptions extends OptionsBase {
         if (result != null && result.workspace.equals("")) {
             LOG.warn("No workspace name set. This might cause trouble when using" +
                     "more than a single instance of TLS-Crawler.");
-            result.workspace = UUID.randomUUID().toString();
+            result.workspace = DEFAULT_WORKSPACE;
         }
 
         if (result != null && result.instanceId.equals("")) {

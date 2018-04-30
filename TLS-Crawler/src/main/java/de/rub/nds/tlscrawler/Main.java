@@ -76,9 +76,12 @@ public class Main {
         IOrchestrationProvider orchestrationProvider;
         IPersistenceProvider persistenceProvider;
 
+        String workspace = options.workspace;
+        String workspaceWithPrefix = String.format("TLSC-%s", workspace);
+
         if (!options.testMode) {
             MongoPersistenceProvider mpp = new MongoPersistenceProvider(new MongoClientURI(options.mongoDbConnectionString));
-            mpp.init("myDb");
+            mpp.init(workspaceWithPrefix);
 
             persistenceProvider = mpp;
 
@@ -86,7 +89,7 @@ public class Main {
                 RedisOrchestrationProvider rop = new RedisOrchestrationProvider(options.redisConnectionString);
 
                 try {
-                    rop.init("myList");
+                    rop.init(workspaceWithPrefix);
                 } catch (ConnectException e) {
                     LOG.error("Could not connect to redis.");
                     System.exit(0);
