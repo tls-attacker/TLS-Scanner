@@ -28,7 +28,7 @@ class TaskGeneratorThread extends Thread {
     private List<String> scans;
     private IAddressIterator targets;
     private List<Integer> ports;
-    private String id;
+    private String scanId;
     private IOrganizer organizer;
 
     private boolean interrupted = false;
@@ -37,12 +37,12 @@ class TaskGeneratorThread extends Thread {
             List<String> scans,
             IAddressIterator targets,
             List<Integer> ports,
-            String id,
+            String scanId,
             IOrganizer organizer) {
         this.scans = scans;
         this.targets = targets;
         this.ports = ports;
-        this.id = id;
+        this.scanId = scanId;
         this.organizer = organizer;
     }
 
