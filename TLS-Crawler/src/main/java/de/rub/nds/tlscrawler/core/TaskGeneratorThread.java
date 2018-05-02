@@ -57,6 +57,7 @@ class TaskGeneratorThread extends Thread {
 
             IScanTask newTask = new ScanTask(
                     taskId,
+                    this.scanId,
                     Instant.now(),
                     null,
                     null,

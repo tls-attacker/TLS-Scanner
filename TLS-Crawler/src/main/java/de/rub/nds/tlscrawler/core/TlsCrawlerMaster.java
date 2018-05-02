@@ -16,7 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,6 +33,8 @@ import static java.util.stream.Collectors.joining;
 public class TlsCrawlerMaster extends TlsCrawler {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerMaster.class);
 
+    private Map<String, Thread> taskGeneratorThreadList;
+
     /**
      * TLS-Crawler master constructor.
      *
@@ -40,9 +44,11 @@ public class TlsCrawlerMaster extends TlsCrawler {
      */
     public TlsCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
+
+        this.taskGeneratorThreadList = new HashMap<>();
     }
 
-    public void crawl(List<String> scans, IAddressIterator targets, List<Integer> ports) {
+    public void crawl(List<String> scans, IAddressIterator targets, List<Integer> ports, String scanId) {
         if (areNotValidArgs(scans, targets, ports)) {
             LOG.error("Crawling task has not been established due to invalid arguments.");
         }
@@ -50,9 +56,10 @@ public class TlsCrawlerMaster extends TlsCrawler {
         // TODO: This should be parallelized.
 
         for (String target : targets) {
-            String scanId = UUID.randomUUID().toString();
+            String taskId = UUID.randomUUID().toString();
 
             IScanTask newTask = new ScanTask(
+                    taskId,
                     scanId,
                     Instant.now(),
                     null,

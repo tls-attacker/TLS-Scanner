@@ -98,6 +98,6 @@ public class CommandLineInterface {
             targets = AddressIteratorFactory.getRedisAddressSource(options.targetsFromRedisList);
         }
 
-        master.crawl(chosenScans, targets, ports);
+        master.crawl(chosenScans, targets, ports, options.id);
     }
 }
