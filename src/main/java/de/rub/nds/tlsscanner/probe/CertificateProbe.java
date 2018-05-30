@@ -39,6 +39,7 @@ public class CertificateProbe extends TlsProbe {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setEarlyStop(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
         List<CipherSuite> toTestList = new LinkedList<>();

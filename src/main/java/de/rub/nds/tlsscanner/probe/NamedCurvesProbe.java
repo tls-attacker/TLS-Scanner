@@ -60,6 +60,7 @@ public class NamedCurvesProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         List<NamedGroup> toTestList = new ArrayList<>(Arrays.asList(NamedGroup.values()));
         NamedGroup selectedGroup;
         List<NamedGroup> supportedNamedCurves = new LinkedList<>();
