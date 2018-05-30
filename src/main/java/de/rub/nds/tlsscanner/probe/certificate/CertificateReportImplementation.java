@@ -40,6 +40,7 @@ class CertificateReportImplementation implements CertificateReport {
     private Boolean trusted;
     private Certificate certificate;
     private String sha256FingerprintHex;
+    private String publicKeyFingerprint;
 
     public CertificateReportImplementation() {
     }
@@ -274,7 +275,19 @@ class CertificateReportImplementation implements CertificateReport {
         if (trusted != null) {
             builder.append("Trusted: ").append(trusted).append("\n");
         }
+        if (publicKeyFingerprint != null) {
+            builder.append("Fingerprint: ").append(publicKeyFingerprint).append("\n");
+        } else {
+            builder.append("Fingerprint: not found");
+        }
         return builder.toString();
     }
 
+    public String getPublicKeyFingerprint() {
+        return publicKeyFingerprint;
+    }
+
+    public void setPublicKeyFingerprint(String publicKeyFingerprint) {
+        this.publicKeyFingerprint = publicKeyFingerprint;
+    }
 }

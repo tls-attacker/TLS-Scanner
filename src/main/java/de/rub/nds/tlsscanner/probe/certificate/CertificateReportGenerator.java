@@ -8,9 +8,11 @@
  */
 package de.rub.nds.tlsscanner.probe.certificate;
 
+import de.rub.nds.tlsattacker.core.certificate.PemUtil;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +20,8 @@ import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,6 +71,9 @@ public class CertificateReportGenerator {
         setTrusted(report, cert);
         setSha256Hash(report, cert);
         report.setCertificate(cert);
+        if (rocaIsAvailable()) {
+            setPublicKeyFingerprint(report, cert);
+        }
         return report;
     }
 
@@ -201,5 +208,22 @@ public class CertificateReportGenerator {
         } catch (IOException | NoSuchAlgorithmException e) {
             LOGGER.warn("Could not create SHA-256 Hash", e);
         }
+    }
+
+    private static boolean rocaIsAvailable() {
+        return true;
+    }
+
+    private static void setPublicKeyFingerprint(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
+        try {
+            PemUtil.writePublicKey(report.getPublicKey(), new File("test"));
+            ProcessBuilder builder = new ProcessBuilder("roca-test --file-pem test");
+            Process process = builder.start();
+            process.waitFor(10, TimeUnit.SECONDS);
+
+        } catch (IOException | InterruptedException ex) {
+            java.util.logging.Logger.getLogger(CertificateReportGenerator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 }
