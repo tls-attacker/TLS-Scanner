@@ -175,7 +175,7 @@ public class SiteReport {
     private Boolean gcmReuse = null;
     private GcmPattern gcmPattern = null;
     private Boolean gcmCheck = null;
-
+    
     public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
         this.probeTypeList = probeTypeList;
@@ -198,7 +198,7 @@ public class SiteReport {
             builder.append("Server does not seem to support SSL / TLS");
             return builder.toString();
         }
-
+        
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
         appendExtensions(builder);
