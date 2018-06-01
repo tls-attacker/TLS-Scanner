@@ -76,9 +76,9 @@ public class ScanJobExecutor {
         resultList = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
+                probeTypes.add(probe.getType());
                 if (probe.shouldBeExecuted(report)) {
                     futureResults.add(executor.submit(probe));
-                    probeTypes.add(probe.getType());
                 } else if (!config.isImplementation()) {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {
