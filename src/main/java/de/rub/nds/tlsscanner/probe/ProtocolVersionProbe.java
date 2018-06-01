@@ -127,7 +127,7 @@ public class ProtocolVersionProbe extends TlsProbe {
             tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(false);
+            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         }
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
 
