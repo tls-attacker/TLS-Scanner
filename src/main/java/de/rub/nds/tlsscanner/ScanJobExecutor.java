@@ -40,6 +40,7 @@ public class ScanJobExecutor {
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<ProbeType> probeTypes = new LinkedList<>();
+        
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {

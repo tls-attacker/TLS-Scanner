@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.SiteReportPrinter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,7 +49,7 @@ public class Main {
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
                 LOGGER.info("Scanned in:" + ((System.currentTimeMillis()-time)/1000) + "s");
-                LOGGER.info(report.getStringReport());
+                LOGGER.info(report.getFullReport());
             } catch (ConfigurationException E) {
                 LOGGER.info("Encountered a ConfigurationException aborting.");
                 LOGGER.debug(E);

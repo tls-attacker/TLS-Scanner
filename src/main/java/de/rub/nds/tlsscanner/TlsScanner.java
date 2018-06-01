@@ -20,6 +20,8 @@ import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.CompressionsProbe;
 import de.rub.nds.tlsscanner.probe.Cve20162107Probe;
+import de.rub.nds.tlsscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
 import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
 import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
@@ -94,6 +96,8 @@ public class TlsScanner {
             phaseTwoTestList.add(new TlsPoodleProbe(config));
             phaseTwoTestList.add(new Cve20162107Probe(config));
             phaseTwoTestList.add(new InvalidCurveProbe(config));
+            phaseTwoTestList.add(new DrownProbe(config));
+            phaseTwoTestList.add(new EarlyCcsProbe(config));
 
             List<AfterProbe> afterList = new LinkedList<>();
             afterList.add(new Sweet32AfterProbe());

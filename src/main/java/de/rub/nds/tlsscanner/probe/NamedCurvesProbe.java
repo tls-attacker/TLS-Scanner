@@ -9,11 +9,11 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.report.result.NamedCurveResult;
+import de.rub.nds.tlsscanner.report.result.NamedGroupResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -42,11 +42,11 @@ public class NamedCurvesProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<NamedCurve> curves = getSupportedNamedCurves();
-        return new NamedCurveResult(curves);
+        List<NamedGroup> groups = getSupportedNamedGroups();
+        return new NamedGroupResult(groups);
     }
 
-    private List<NamedCurve> getSupportedNamedCurves() {
+    private List<NamedGroup> getSupportedNamedGroups() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
@@ -60,25 +60,26 @@ public class NamedCurvesProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
-        List<NamedCurve> toTestList = new ArrayList<>(Arrays.asList(NamedCurve.values()));
-        NamedCurve selectedCurve;
-        List<NamedCurve> supportedNamedCurves = new LinkedList<>();
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        List<NamedGroup> toTestList = new ArrayList<>(Arrays.asList(NamedGroup.values()));
+        NamedGroup selectedGroup;
+        List<NamedGroup> supportedNamedCurves = new LinkedList<>();
         do {
-            selectedCurve = testCurves(toTestList, tlsConfig);
-            if (!toTestList.contains(selectedCurve)) {
+            selectedGroup = testCurves(toTestList, tlsConfig);
+            if (!toTestList.contains(selectedGroup)) {
                 LOGGER.debug("Server chose a Curve we did not offer!");
                 break;
             }
-            if (selectedCurve != null) {
-                supportedNamedCurves.add(selectedCurve);
-                toTestList.remove(selectedCurve);
+            if (selectedGroup != null) {
+                supportedNamedCurves.add(selectedGroup);
+                toTestList.remove(selectedGroup);
             }
-        } while (selectedCurve != null || toTestList.size() > 0);
+        } while (selectedGroup != null || toTestList.size() > 0);
         return supportedNamedCurves;
     }
 
-    private NamedCurve testCurves(List<NamedCurve> curveList, Config tlsConfig) {
-        tlsConfig.setNamedCurves(curveList);
+    private NamedGroup testCurves(List<NamedGroup> curveList, Config tlsConfig) {
+        tlsConfig.setDefaultClientNamedGroups(curveList);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);
@@ -88,7 +89,7 @@ public class NamedCurvesProbe extends TlsProbe {
             LOGGER.debug(ex);
         }
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return state.getTlsContext().getSelectedCurve();
+            return state.getTlsContext().getSelectedGroup();
         } else {
             LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;

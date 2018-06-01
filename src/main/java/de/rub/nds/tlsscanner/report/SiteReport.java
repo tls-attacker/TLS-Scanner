@@ -8,10 +8,12 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
+import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedCurve;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
@@ -40,7 +42,7 @@ public class SiteReport {
 
     //Quirks
     private Boolean requiresSni = null;
-    
+
     private Boolean versionIntolerance = null;
     private Boolean extensionIntolerance = null;
     private Boolean cipherSuiteIntolerance = null;
@@ -49,7 +51,7 @@ public class SiteReport {
     private Boolean compressionIntolerance = null;
     private Boolean pointFormatsIntolerance = null;
     private Boolean signatureAndHashAlgorithmIntolerance = null;
-    
+
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
     private Boolean paddingOracleVulnerable = null;
@@ -61,11 +63,11 @@ public class SiteReport {
     private Boolean crimeVulnerable = null;
     private Boolean breachVulnerable = null;
     private Boolean sweet32Vulnerable = null;
-    private Boolean drownVulnerable = null;
+    private DrownVulnerabilityType drownVulnerable = null;
     private Boolean logjamVulnerable = null;
     private Boolean lucky13Vulnerable = null;
     private Boolean heartbleedVulnerable = null;
-    private Boolean earlyCcsVulnerable = null;
+    private EarlyCcsVulnerabilityType earlyCcsVulnerable = null;
     private Boolean freakVulnerable = null;
 
     //Version
@@ -91,7 +93,7 @@ public class SiteReport {
 
     //Extensions
     private List<ExtensionType> supportedExtensions = null;
-    private List<NamedCurve> supportedNamedCurves = null;
+    private List<NamedGroup> supportedNamedGroups = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
@@ -173,7 +175,7 @@ public class SiteReport {
     private Boolean gcmReuse = null;
     private GcmPattern gcmPattern = null;
     private Boolean gcmCheck = null;
-
+    
     public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
         this.probeTypeList = probeTypeList;
@@ -181,354 +183,6 @@ public class SiteReport {
 
     public String getHost() {
         return host;
-    }
-
-    public String getStringReport() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Report for ");
-        builder.append(host);
-        builder.append("\n");
-        if (serverIsAlive == Boolean.FALSE) {
-            builder.append("Cannot reach the Server. Is it online?");
-            return builder.toString();
-        }
-        if (supportsSslTls == Boolean.FALSE) {
-            builder.append("Server does not seem to support SSL / TLS");
-            return builder.toString();
-        }
-
-        appendProtocolVersions(builder);
-        appendCipherSuites(builder);
-        appendExtensions(builder);
-        appendCompressions(builder);
-        appendIntolerances(builder);
-        appendAttackVulnerabilities(builder);
-        appendGcm(builder);
-        appendRfc(builder);
-        appendCertificate(builder);
-        appendSession(builder);
-        appendRenegotiation(builder);
-        return builder.toString();
-    }
-
-    private StringBuilder appendRfc(StringBuilder builder) {
-        builder.append("----------RFC----------\n");
-        prettyAppendRedOnFailure(builder, "Checks MAC", checksMac);
-        prettyAppendRedOnFailure(builder, "Checks Finished", checksFinished);
-        return builder;
-    }
-
-    private StringBuilder appendRenegotiation(StringBuilder builder) {
-        builder.append("----------Renegotiation & SCSV----------\n");
-        prettyAppendYellowOnSuccess(builder, "Clientside Secure", supportsClientSideSecureRenegotiation);
-        prettyAppendRedOnSuccess(builder, "Clientside Insecure", supportsClientSideInsecureRenegotiation);
-        prettyAppendRedOnFailure(builder, "SCSV Fallback", tlsFallbackSCSVsupported);
-        return builder;
-    }
-
-    private StringBuilder appendCertificate(StringBuilder builder) {
-        if (certificateReports != null && !certificateReports.isEmpty()) {
-            builder.append("----------Certificates----------\n");
-            for (CertificateReport report : certificateReports) {
-                builder.append(report.toString()).append("\n");
-            }
-            builder.append("----------Certificate Checks----------\n");
-            prettyAppendRedOnSuccess(builder, "Expired Certificates", certificateExpired);
-            prettyAppendRedOnSuccess(builder, "Not yet Valid Certificates", certificateNotYetValid);
-            prettyAppendRedOnSuccess(builder, "Weak Hash Algorithms", certificateHasWeakHashAlgorithm);
-            prettyAppendRedOnSuccess(builder, "Weak Signature Algorithms", certificateHasWeakSignAlgorithm);
-            prettyAppendRedOnFailure(builder, "Matches Domain", certificateMachtesDomainName);
-            prettyAppendGreenOnSuccess(builder, "Only Trusted", certificateIsTrusted);
-            prettyAppendRedOnFailure(builder, "Contains Blacklisted", certificateKeyIsBlacklisted);
-        }
-        return builder;
-    }
-
-    private StringBuilder appendSession(StringBuilder builder) {
-        builder.append("----------Session----------\n");
-        prettyAppendYellowOnFailure(builder, "Supports Session resumption", supportsSessionIds);
-        prettyAppendYellowOnFailure(builder, "Supports Session Tickets", supportsSessionTicket);
-        prettyAppend(builder, "Session Ticket Hint:" + sessionTicketLengthHint);
-        prettyAppendYellowOnFailure(builder, "Session Ticket Rotation", sessionTicketGetsRotated);
-        prettyAppendRedOnFailure(builder, "Ticketbleed", vulnerableTicketBleed);
-        return builder;
-    }
-
-    private StringBuilder appendGcm(StringBuilder builder) {
-        builder.append("----------GCM----------\n");
-        prettyAppendRedOnFailure(builder, "GCM Nonce reuse", gcmReuse);
-        if (gcmPattern == null) {
-            prettyAppend(builder, "GCM Pattern: Unknown");
-        } else if (gcmPattern == GcmPattern.AKWARD) {
-            prettyAppendYellow(builder, "GCM Pattern: " + gcmPattern.name());
-        } else if (gcmPattern == GcmPattern.INCREMENTING) {
-            prettyAppendGreen(builder, "GCM Pattern: " + gcmPattern.name());
-        } else if (gcmPattern == GcmPattern.RANDOM) {
-            prettyAppendGreen(builder, "GCM Pattern: " + gcmPattern.name());
-        } else if (gcmPattern == GcmPattern.REPEATING) {
-            prettyAppendRed(builder, "GCM Pattern: " + gcmPattern.name());
-        } else {
-            prettyAppend(builder, "GCM Pattern: " + gcmPattern.name());
-        }
-        prettyAppendRedOnFailure(builder, "GCM Check", gcmCheck);
-        return builder;
-    }
-
-    private StringBuilder appendIntolerances(StringBuilder builder) {
-        builder.append("----------Intolerances----------\n");
-        prettyAppendRedOnFailure(builder, "Version", versionIntolerance);
-        prettyAppendRedOnFailure(builder, "Ciphersuite", cipherSuiteIntolerance);
-        prettyAppendRedOnFailure(builder, "Extension", extensionIntolerance);
-        prettyAppendRedOnFailure(builder, "Curves", groupsIntolerance);
-        prettyAppendRedOnFailure(builder, "ClientHello Size", clientHelloSizeIntolerance);
-        prettyAppendRedOnFailure(builder, "Compression", compressionIntolerance);
-        prettyAppendRedOnFailure(builder, "Signature and Hash", signatureAndHashAlgorithmIntolerance);
-        prettyAppendRedOnFailure(builder, "Point Formats", pointFormatsIntolerance);
-        return builder;
-    }
-
-    private StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
-        builder.append("----------Attack Vulnerabilities----------\n");
-        prettyAppendRedGreen(builder, "Padding Oracle", paddingOracleVulnerable);
-        prettyAppendRedGreen(builder, "Bleichenbacher", bleichenbacherVulnerable);
-        prettyAppendRedGreen(builder, "CRIME", crimeVulnerable);
-        prettyAppendRedGreen(builder, "Breach", breachVulnerable);
-        prettyAppendRedGreen(builder, "Invalid Curve", invalidCurveVulnerable);
-        prettyAppendRedGreen(builder, "Invalid Curve Ephemerals", invalidCurveEphermaralVulnerable);
-        prettyAppendRedGreen(builder, "SSL Poodle", poodleVulnerable);
-        prettyAppendRedGreen(builder, "TLS Poodle", tlsPoodleVulnerable);
-        prettyAppendRedGreen(builder, "CVE-20162107", cve20162107Vulnerable);
-        prettyAppendRedGreen(builder, "Logjam", logjamVulnerable);
-        prettyAppendRedGreen(builder, "Sweet 32", sweet32Vulnerable);
-        prettyAppendRedGreen(builder, "DROWN", drownVulnerable);
-        prettyAppendRedGreen(builder, "Lucky13", lucky13Vulnerable);
-        prettyAppendRedGreen(builder, "Heartbleed", heartbleedVulnerable);
-        prettyAppendRedGreen(builder, "EarlyCcs", earlyCcsVulnerable);
-        prettyAppendRedGreen(builder, "FREAK", freakVulnerable);
-        return builder;
-    }
-
-    private StringBuilder appendCipherSuites(StringBuilder builder) {
-        if (cipherSuites != null) {
-            builder.append("----------Supported Ciphersuites----------\n");
-            for (CipherSuite suite : cipherSuites) {
-                prettyPrintCipherSuite(builder, suite);
-            }
-
-            for (VersionSuiteListPair versionSuitePair : versionSuitePairs) {
-                builder.append("----------Supported in " + versionSuitePair.getVersion() + "----------\n");
-                for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
-                    prettyPrintCipherSuite(builder, suite);
-                }
-            }
-            builder.append("----------Symmetric Supported----------\n");
-            prettyAppendRedOnSuccess(builder, "Null", supportsNullCiphers);
-            prettyAppendRedOnSuccess(builder, "Export", supportsExportCiphers);
-            prettyAppendRedOnSuccess(builder, "Anon", supportsAnonCiphers);
-            prettyAppendRedOnSuccess(builder, "DES", supportsDesCiphers);
-            prettyAppendYellowOnSuccess(builder, "SEED", supportsSeedCiphers);
-            prettyAppendYellowOnSuccess(builder, "IDEA", supportsIdeaCiphers);
-            prettyAppendRedOnSuccess(builder, "RC2", supportsRc2Ciphers);
-            prettyAppendRedOnSuccess(builder, "RC4", supportsRc4Ciphers);
-            prettyAppendYellowOnSuccess(builder, "3DES", supportsTrippleDesCiphers);
-            prettyAppend(builder, "AES", supportsAes);
-            prettyAppend(builder, "CAMELLIA", supportsCamellia);
-            prettyAppend(builder, "ARIA", supportsAria);
-            prettyAppendGreenOnSuccess(builder, "CHACHA20 POLY1305", supportsChacha);
-            builder.append("----------KeyExchange Supported----------\n");
-            prettyAppendYellowOnSuccess(builder, "RSA", supportsRsa);
-            prettyAppend(builder, "DH", supportsDh);
-            prettyAppend(builder, "ECDH", supportsEcdh);
-            prettyAppend(builder, "Static ECDH", supportsStaticEcdh);
-            prettyAppendYellowOnSuccess(builder, "GOST", supportsGost);
-            prettyAppend(builder, "SRP", supportsSrp);
-            prettyAppend(builder, "Kerberos", supportsKerberos);
-            prettyAppend(builder, "Plain PSK", supportsPskPlain);
-            prettyAppend(builder, "PSK RSA", supportsPskRsa);
-            prettyAppend(builder, "PSK DHE", supportsPskDhe);
-            prettyAppend(builder, "PSK ECDHE", supportsPskEcdhe);
-            prettyAppendYellowOnSuccess(builder, "Fortezza", supportsFortezza);
-            prettyAppendGreenOnSuccess(builder, "New Hope", supportsNewHope);
-            prettyAppendGreenOnSuccess(builder, "ECMQV", supportsEcmqv);
-            builder.append("----------Perfect Forward Secrecy----------\n");
-            prettyAppendGreenOnSuccess(builder, "Supports PFS", supportsPfsCiphers);
-            prettyAppendGreenOnSuccess(builder, "Prefers PFS", prefersPfsCiphers);
-            prettyAppendGreenOnSuccess(builder, "Supports Only PFS", supportsOnlyPfsCiphers);
-            builder.append("----------Cipher Types Supports----------\n");
-            prettyAppend(builder, "Stream", supportsStreamCiphers);
-            prettyAppend(builder, "Block", supportsBlockCiphers);
-            prettyAppendGreenOnSuccess(builder, "AEAD", supportsAeadCiphers);
-            builder.append("----------Ciphersuite General----------\n");
-            prettyAppendGreenRed(builder, "Enforces Ciphersuite ordering", enforcesCipherSuiteOrdering);
-        }
-        return builder;
-    }
-
-    private StringBuilder appendProtocolVersions(StringBuilder builder) {
-        if (versions != null) {
-            builder.append("----------Supported Protocol Versions----------\n");
-            for (ProtocolVersion version : versions) {
-                builder.append(version.name()).append("\n");
-            }
-            builder.append("----------Versions----------\n");
-            prettyAppendRedGreen(builder, "SSL 2.0", supportsSsl2);
-            prettyAppendRedGreen(builder, "SSL 3.0", supportsSsl3);
-            prettyAppendYellowOnFailure(builder, "TLS 1.0", supportsTls10);
-            prettyAppendYellowOnFailure(builder, "TLS 1.1", supportsTls11);
-            prettyAppendRedOnFailure(builder, "TLS 1.2", supportsTls12);
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3", supportsTls13);
-            prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 14", supportsTls13Draft14);
-            prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 15", supportsTls13Draft15);
-            prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 16", supportsTls13Draft16);
-            prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 17", supportsTls13Draft17);
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 18", supportsTls13Draft18);
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 19", supportsTls13Draft19);
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 20", supportsTls13Draft20);
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 21", supportsTls13Draft21);
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 22", supportsTls13Draft22);
-            //prettyAppend(builder, "DTLS 1.0", supportsDtls10);
-            //prettyAppend(builder, "DTLS 1.2", supportsDtls10);
-            //prettyAppend(builder, "DTLS 1.3", supportsDtls13);
-        }
-        return builder;
-    }
-
-    private StringBuilder appendExtensions(StringBuilder builder) {
-        if (supportedExtensions != null) {
-            builder.append("----------Supported Extensions----------\n");
-            for (ExtensionType type : supportedExtensions) {
-                builder.append(type.name()).append("\n");
-            }
-        }
-        builder.append("----------Extensions----------\n");
-        prettyAppendYellowOnSuccess(builder, "Requires SNI", requiresSni);
-        prettyAppendGreenRed(builder, "Secure Renegotiation", supportsSecureRenegotiation);
-        prettyAppendGreenOnSuccess(builder, "Supports Extended Master Secret", supportsExtendedMasterSecret);
-        prettyAppendGreenOnSuccess(builder, "Supports Encrypt Then Mac", supportsEncryptThenMacSecret);
-        prettyAppendGreenOnSuccess(builder, "Supports Tokenbinding", supportsTokenbinding);
-        if (supportsTokenbinding == Boolean.TRUE) {
-            builder.append("----------Tokenbinding Versions----------\n");
-            for (TokenBindingVersion version : supportedTokenBindingVersion) {
-                builder.append(version.toString()).append("\n");
-            }
-            builder.append("----------Tokenbinding Key Paramters----------\n");
-            for (TokenBindingKeyParameters keyParameter : supportedTokenBindingKeyParameters) {
-                builder.append(keyParameter.toString()).append("\n");
-            }
-        }
-        appendCurves(builder);
-        appendSignatureAndHashAlgorithms(builder);
-        return builder;
-    }
-
-    private void prettyPrintCipherSuite(StringBuilder builder, CipherSuite suite) {
-        CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
-        switch (grade) {
-            case GOOD:
-                prettyAppendGreen(builder, suite.name());
-                break;
-            case LOW:
-                prettyAppendRed(builder, suite.name());
-                break;
-            case MEDIUM:
-                prettyAppendYellow(builder, suite.name());
-                break;
-            case NONE:
-                prettyAppend(builder, suite.name());
-                break;
-            default:
-                prettyAppend(builder, suite.name());
-        }
-    }
-
-    private StringBuilder appendCurves(StringBuilder builder) {
-        if (supportedNamedCurves != null) {
-            builder.append("----------Supported Named Curves----------\n");
-            if (supportedNamedCurves.size() > 0) {
-                for (NamedCurve curve : supportedNamedCurves) {
-                    builder.append(curve.name()).append("\n");
-                }
-            } else {
-                builder.append("none\n");
-            }
-        }
-        return builder;
-    }
-
-    private StringBuilder appendSignatureAndHashAlgorithms(StringBuilder builder) {
-        if (supportedSignatureAndHashAlgorithms != null) {
-            builder.append("----------Supported Signature and Hash Algorithms----------\n");
-            if (supportedSignatureAndHashAlgorithms.size() > 0) {
-                for (SignatureAndHashAlgorithm algorithm : supportedSignatureAndHashAlgorithms) {
-                    prettyAppend(builder, algorithm.toString());
-                }
-            } else {
-                builder.append("none\n");
-            }
-        }
-        return builder;
-    }
-
-    private StringBuilder appendCompressions(StringBuilder builder) {
-        if (supportedCompressionMethods != null) {
-            builder.append("----------Supported Compressions----------\n");
-            for (CompressionMethod compression : supportedCompressionMethods) {
-                prettyAppend(builder, compression.name());
-            }
-        }
-        return builder;
-    }
-
-    private StringBuilder prettyAppend(StringBuilder builder, String value) {
-        return builder.append(value).append("\n");
-    }
-
-    private StringBuilder prettyAppend(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : value).append("\n");
-    }
-
-    private StringBuilder prettyAppendGreenOnSuccess(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET : value)).append("\n");
-    }
-
-    private StringBuilder prettyAppendGreenOnFailure(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET)).append("\n");
-    }
-
-    private StringBuilder prettyAppendRedOnSuccess(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET : value)).append("\n");
-    }
-
-    private StringBuilder prettyAppendRedOnFailure(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET)).append("\n");
-    }
-
-    private StringBuilder prettyAppendYellowOnFailure(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET)).append("\n");
-    }
-
-    private StringBuilder prettyAppendYellowOnSuccess(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET : value)).append("\n");
-    }
-
-    private StringBuilder prettyAppendGreenRed(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET : AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET)).append("\n");
-    }
-
-    private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, Boolean value) {
-        return builder.append(name).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET : AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET)).append("\n");
-    }
-
-    private StringBuilder prettyAppendYellow(StringBuilder builder, String value) {
-        return builder.append(AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET).append("\n");
-    }
-
-    private StringBuilder prettyAppendRed(StringBuilder builder, String value) {
-        return builder.append(AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET).append("\n");
-    }
-
-    private StringBuilder prettyAppendGreen(StringBuilder builder, String value) {
-        return builder.append(AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET).append("\n");
     }
 
     public Boolean getRequiresSni() {
@@ -562,7 +216,7 @@ public class SiteReport {
     public void setSignatureAndHashAlgorithmIntolerance(Boolean signatureAndHashAlgorithmIntolerance) {
         this.signatureAndHashAlgorithmIntolerance = signatureAndHashAlgorithmIntolerance;
     }
-    
+
     public Boolean getFreakVulnerable() {
         return freakVulnerable;
     }
@@ -579,11 +233,11 @@ public class SiteReport {
         this.heartbleedVulnerable = heartbleedVulnerable;
     }
 
-    public Boolean getEarlyCcsVulnerable() {
+    public EarlyCcsVulnerabilityType getEarlyCcsVulnerable() {
         return earlyCcsVulnerable;
     }
 
-    public void setEarlyCcsVulnerable(Boolean earlyCcsVulnerable) {
+    public void setEarlyCcsVulnerable(EarlyCcsVulnerabilityType earlyCcsVulnerable) {
         this.earlyCcsVulnerable = earlyCcsVulnerable;
     }
 
@@ -1039,12 +693,12 @@ public class SiteReport {
         this.enforcesCipherSuiteOrdering = enforcesCipherSuiteOrdering;
     }
 
-    public List<NamedCurve> getSupportedNamedCurves() {
-        return supportedNamedCurves;
+    public List<NamedGroup> getSupportedNamedGroups() {
+        return supportedNamedGroups;
     }
 
-    public void setSupportedNamedCurves(List<NamedCurve> supportedNamedCurves) {
-        this.supportedNamedCurves = supportedNamedCurves;
+    public void setSupportedNamedGroups(List<NamedGroup> supportedNamedGroups) {
+        this.supportedNamedGroups = supportedNamedGroups;
     }
 
     public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
@@ -1359,11 +1013,11 @@ public class SiteReport {
         this.sweet32Vulnerable = sweet32Vulnerable;
     }
 
-    public Boolean getDrownVulnerable() {
+    public DrownVulnerabilityType getDrownVulnerable() {
         return drownVulnerable;
     }
 
-    public void setDrownVulnerable(Boolean drownVulnerable) {
+    public void setDrownVulnerable(DrownVulnerabilityType drownVulnerable) {
         this.drownVulnerable = drownVulnerable;
     }
 
@@ -1455,9 +1109,15 @@ public class SiteReport {
         this.supportsStaticEcdh = supportsStaticEcdh;
     }
 
+    
+    public String getFullReport()
+    {        
+        return new SiteReportPrinter(this).getFullReport();
+    }
+    
     @Override
-    public String toString() {
-        return getStringReport();
+    public String toString(){
+        return getFullReport();
     }
 
     public List<ProbeType> getProbeTypeList() {
