@@ -13,15 +13,11 @@ import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import static de.rub.nds.tlsattacker.core.constants.HandshakeMessageType.UNKNOWN;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import static de.rub.nds.tlsattacker.core.constants.NamedGroup.NONE;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.SSL2;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import static de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType.FULL;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
@@ -348,51 +344,51 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder prettyAppendGreenOnSuccess(StringBuilder builder, String name, Boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
 
     private StringBuilder prettyAppendGreenOnFailure(StringBuilder builder, String name, Boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendRedOnSuccess(StringBuilder builder, String name, Boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
 
     private StringBuilder prettyAppendRedOnFailure(StringBuilder builder, String name, Boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : (report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendYellowOnFailure(StringBuilder builder, String name, Boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : (report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendYellowOnSuccess(StringBuilder builder, String name, Boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
 
     private StringBuilder prettyAppendGreenRed(StringBuilder builder, String name, Boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET : AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, Boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET : AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendYellow(StringBuilder builder, String value) {
-        return builder.append(AnsiColors.ANSI_YELLOW + value + AnsiColors.ANSI_RESET).append("\n");
+        return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
     }
 
     private StringBuilder prettyAppendRed(StringBuilder builder, String value) {
-        return builder.append(AnsiColors.ANSI_RED + value + AnsiColors.ANSI_RESET).append("\n");
+        return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
     }
 
     private StringBuilder prettyAppendGreen(StringBuilder builder, String value) {
-        return builder.append(AnsiColors.ANSI_GREEN + value + AnsiColors.ANSI_RESET).append("\n");
+        return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
     }
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
-        return builder.append(AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE + "\n--------------------------------------------------------\n" + value + "\n\n" + AnsiColors.ANSI_RESET);
+        return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE : AnsiColors.ANSI_RESET) + "\n--------------------------------------------------------\n" + value + "\n\n" + AnsiColors.ANSI_RESET);
     }
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {

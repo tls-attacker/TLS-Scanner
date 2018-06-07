@@ -32,6 +32,9 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-danger", required = false, description = "Integer value (1 - 10) which specifies how aggressive the Scanner should test. Default 10")
     private int dangerLevel = 10;
+    
+    @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
+    private Boolean noColor = false;
 
     @ParametersDelegate
     private GeneralDelegate generalDelegate;
@@ -83,6 +86,15 @@ public class ScannerConfig extends TLSDelegateConfig {
     public void setImplementation(boolean implementation) {
         this.implementation = implementation;
     }
+
+    public void setNoColor(Boolean noColour) {
+        this.noColor = noColour;
+    }
+
+    public Boolean isNoColor() {
+        return noColor;
+    }
+    
     
     @Override
     public Config createConfig() {

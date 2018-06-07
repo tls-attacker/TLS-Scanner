@@ -106,7 +106,7 @@ public class TlsScanner {
             return executor.execute(config, job);
         }
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
-        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>());
+        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
         report.setServerIsAlive(false);
         return report;
     }

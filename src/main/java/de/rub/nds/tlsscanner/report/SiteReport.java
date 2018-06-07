@@ -18,8 +18,6 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsscanner.constants.AnsiColors;
-import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
@@ -176,9 +174,13 @@ public class SiteReport {
     private GcmPattern gcmPattern = null;
     private Boolean gcmCheck = null;
     
-    public SiteReport(String host, List<ProbeType> probeTypeList) {
+    //NoColor Flag
+    private boolean noColor = false;
+    
+    public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
         this.host = host;
         this.probeTypeList = probeTypeList;
+        this.noColor = noColor;
     }
 
     public String getHost() {
@@ -1109,6 +1111,9 @@ public class SiteReport {
         this.supportsStaticEcdh = supportsStaticEcdh;
     }
 
+    public boolean isNoColour() {
+        return noColor;
+    }
     
     public String getFullReport()
     {        
