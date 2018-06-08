@@ -25,6 +25,7 @@ public class ScanTask implements IScanTask {
 
     private String id;
     private String scanId;
+    private String slaveId;
     private Instant createdTimestamp;
     private Instant acceptedTimestamp;
     private Instant startedTimestamp;
@@ -36,6 +37,7 @@ public class ScanTask implements IScanTask {
 
     public ScanTask(String id,
                     String scandId,
+                    String slaveId,
                     Instant createdTimestamp,
                     Instant acceptedTimestamp,
                     Instant startedTimestamp,
@@ -45,6 +47,7 @@ public class ScanTask implements IScanTask {
                     Collection<String> scans) {
         this.id = id;
         this.scanId = scandId;
+        this.slaveId = slaveId;
         this.createdTimestamp = createdTimestamp;
         this.acceptedTimestamp = acceptedTimestamp;
         this.startedTimestamp = startedTimestamp;
@@ -65,6 +68,9 @@ public class ScanTask implements IScanTask {
     public String getScanId() {
         return this.scanId;
     }
+
+    @Override
+    public String getSlaveId() { return this.slaveId; }
 
     @Override
     public Instant getCreatedTimestamp() {
@@ -144,6 +150,7 @@ public class ScanTask implements IScanTask {
         return new ScanTask(
                 scan.getId(),
                 scan.getScanId(),
+                scan.getSlaveId(),
                 scan.getCreatedTimestamp(),
                 scan.getAcceptedTimestamp(),
                 scan.getStartedTimestamp(),
