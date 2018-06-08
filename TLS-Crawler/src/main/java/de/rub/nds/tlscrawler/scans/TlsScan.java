@@ -103,11 +103,11 @@ public class TlsScan implements IScan {
         attacks.addBoolean("crimeVulnerable", report.getCrimeVulnerable());
         attacks.addBoolean("breachVulnerable", report.getBreachVulnerable());
         attacks.addBoolean("sweet32Vulnerable", report.getSweet32Vulnerable());
-        attacks.addBoolean("drownVulnerable", report.getDrownVulnerable());
+        attacks.addString("drownVulnerable", report.getDrownVulnerable().name());
         attacks.addBoolean("logjamVulnerable", report.getLogjamVulnerable());
         attacks.addBoolean("lucky13Vulnerable", report.getLucky13Vulnerable());
         attacks.addBoolean("heartbleedVulnerable", report.getHeartbleedVulnerable());
-        attacks.addBoolean("earlyCcsVulnerable", report.getEarlyCcsVulnerable());
+        attacks.addString("earlyCcsVulnerable", report.getEarlyCcsVulnerable().name());
 
         return attacks;
     }
@@ -160,9 +160,9 @@ public class TlsScan implements IScan {
         extensions.addStringArray("supportedExtensions", _supportedExtensions);
 
         List<String> _supportedNamedCurves = new LinkedList<>();
-        List<NamedCurve> _rawSupportedNamedCurves = report.getSupportedNamedCurves();
+        List<NamedGroup> _rawSupportedNamedCurves = report.getSupportedNamedGroups();
         if (_rawSupportedNamedCurves != null) {
-            for (NamedCurve x : _rawSupportedNamedCurves) {
+            for (NamedGroup x : _rawSupportedNamedCurves) {
                 _supportedNamedCurves.add(x == null ? null : x.toString());
             }
         }

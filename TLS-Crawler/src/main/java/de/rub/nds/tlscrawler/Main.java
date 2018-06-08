@@ -119,7 +119,6 @@ public class Main {
 
         // Set up known scans.
         result.add(new PingScan());
-        result.add(new TestScan());
         result.add(new NullScan());
         result.add(new TlsScan());
         result.add(new FriendlyTlsScan());

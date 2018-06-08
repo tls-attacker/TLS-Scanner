@@ -46,7 +46,7 @@ public class MainTest {
         }
 
         assertTrue(scanNames.contains("null_scan"));
-        assertTrue(scanNames.contains("test_scan"));
+        assertTrue(scanNames.contains("friendly_scan"));
         assertTrue(scanNames.contains("ping_scan"));
         assertTrue(scanNames.contains("tls_scan"));
     }
