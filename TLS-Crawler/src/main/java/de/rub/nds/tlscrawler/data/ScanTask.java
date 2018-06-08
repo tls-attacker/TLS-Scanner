@@ -24,6 +24,7 @@ public class ScanTask implements IScanTask {
     private static Logger LOG = LoggerFactory.getLogger(ScanTask.class);
 
     private String id;
+    private String scanId;
     private Instant createdTimestamp;
     private Instant acceptedTimestamp;
     private Instant startedTimestamp;
@@ -34,6 +35,7 @@ public class ScanTask implements IScanTask {
     private Collection<IScanResult> results;
 
     public ScanTask(String id,
+                    String scandId,
                     Instant createdTimestamp,
                     Instant acceptedTimestamp,
                     Instant startedTimestamp,
@@ -42,6 +44,7 @@ public class ScanTask implements IScanTask {
                     Collection<Integer> ports,
                     Collection<String> scans) {
         this.id = id;
+        this.scanId = scandId;
         this.createdTimestamp = createdTimestamp;
         this.acceptedTimestamp = acceptedTimestamp;
         this.startedTimestamp = startedTimestamp;
@@ -56,6 +59,11 @@ public class ScanTask implements IScanTask {
     @Override
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    public String getScanId() {
+        return this.scanId;
     }
 
     @Override
@@ -135,6 +143,7 @@ public class ScanTask implements IScanTask {
 
         return new ScanTask(
                 scan.getId(),
+                scan.getScanId(),
                 scan.getCreatedTimestamp(),
                 scan.getAcceptedTimestamp(),
                 scan.getStartedTimestamp(),

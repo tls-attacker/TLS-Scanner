@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Command Line Options for the interactive command line interface.
@@ -89,6 +90,14 @@ public class NewScanOptions extends OptionsBase {
     )
     public boolean ndsBlacklist;
 
+    @Option(
+            name = "identifier",
+            abbrev = 'i',
+            help = "Scan tasks will be marked with this ID",
+            defaultValue = ""
+    )
+    public String id;
+
     public boolean printWarning = false;
 
     public static String getHelpString() {
@@ -133,6 +142,11 @@ public class NewScanOptions extends OptionsBase {
         }
 
         if (result != null
+                && result.id.equals("")) {
+            result.id = UUID.randomUUID().toString();
+        }
+
+        if (result != null
                 && !result.targetsFromRedisList.isEmpty()
                 && result.ndsBlacklist) {
             result.printWarning = true;
@@ -151,6 +165,7 @@ public class NewScanOptions extends OptionsBase {
         opts.blacklist = new LinkedList<>();
         opts.whitelist = new LinkedList<>();
         opts.ndsBlacklist = true;
+        opts.id = UUID.randomUUID().toString();
 
         return opts;
     }

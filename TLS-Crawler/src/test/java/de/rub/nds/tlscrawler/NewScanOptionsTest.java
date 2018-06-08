@@ -119,4 +119,11 @@ public class NewScanOptionsTest {
 
         assertTrue(opts.ndsBlacklist);
     }
+
+    @Test
+    public void autoId() {
+        NewScanOptions opts = NewScanOptions.parseOptions(optionsNone);
+
+        assertNotEquals("", opts.id);
+    }
 }

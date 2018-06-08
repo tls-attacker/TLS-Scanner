@@ -24,6 +24,14 @@ public interface IScanTask {
     String getId();
 
     /**
+     * Returns the name/id of the entire scan, i. e. all individual
+     * scan tasks that were scheduled due to a single command share this id.
+     *
+     * @return The id of the scan.
+     */
+    String getScanId();
+
+    /**
      * @return The point in time at which the scan was scheduled.
      */
     Instant getCreatedTimestamp();

@@ -80,4 +80,20 @@ public class StartupOptionsTest {
         assertNotNull(help);
         assertNotEquals("", help);
     }
+
+    @Test
+    public void autoWorkspaceTest() {
+        String[] options = { };
+
+        StartupOptions parsed = null;
+        try {
+            parsed = StartupOptions.parseOptions(options);
+        } catch (OptionsParsingException ex) {
+            fail("Must not throw.");
+        }
+
+        assertNotNull(parsed);
+        assertNotNull(parsed.workspace);
+        assertNotEquals("", parsed.workspace);
+    }
 }

@@ -159,6 +159,7 @@ public class MongoPersistenceProviderTest {
         Instant now = Instant.now();
         IScanTask st = new ScanTask(
                 "disId",
+                "disScanId",
                 now,
                 null,
                 null,
