@@ -66,7 +66,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             this.threads.add(t);
         }
 
-        this.orgThread = new TlsCrawlerSlaveOrgThread(this, this.synchronizedTaskRouter);
+        this.orgThread = new TlsCrawlerSlaveOrgThread(this, this, this.synchronizedTaskRouter);
     }
 
     @Override
@@ -86,10 +86,14 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
         private SynchronizedTaskRouter synchronizedTaskRouter;
         private IOrganizer organizer;
+        private IScanProvider scanProvider;
 
-        public TlsCrawlerSlaveOrgThread(IOrganizer organizer, SynchronizedTaskRouter synchronizedTaskRouter) {
+        public TlsCrawlerSlaveOrgThread(IOrganizer organizer,
+                                        IScanProvider scanProvider,
+                                        SynchronizedTaskRouter synchronizedTaskRouter) {
             super(TlsCrawlerSlaveOrgThread.class.getSimpleName());
             this.organizer = organizer;
+            this.scanProvider = scanProvider;
             this.synchronizedTaskRouter = synchronizedTaskRouter;
         }
 
@@ -103,6 +107,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             LOG.trace("run()");
 
             while (this.isRunning.get()) {
+                // Fetch new tasks:
                 if (this.synchronizedTaskRouter.getTodoCount() < NEW_FETCH_LIMIT) {
                     LOG.trace("Fetching tasks.", this.getName());
 
@@ -118,6 +123,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     this.synchronizedTaskRouter.addTodo(tasks.values());
                 }
 
+                // Persist task results:
                 if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
                         || ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) {
                     LOG.trace("Persisting results.");
@@ -131,6 +137,23 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     this.iterations = 0;
                 }
 
+                // Check for dead worker threads and replenish:
+                List<Thread> deadThreads = new LinkedList<>();
+                for (Thread t : threads) {
+                    if (!t.isAlive()) {
+                        deadThreads.add(t);
+                    }
+                }
+
+                threads.removeAll(deadThreads);
+
+                for (int i = 0; i < deadThreads.size(); i++) {
+                    Thread newThread = new SlaveWorkerThread(synchronizedTaskRouter, scanProvider);
+                    newThread.start();
+                    threads.add(newThread);
+                }
+
+                // (Procreate, eat,) sleep, repeat.
                 try {
                     Thread.sleep(ORG_THREAD_SLEEP_MILLIS);
                 } catch (InterruptedException e) {

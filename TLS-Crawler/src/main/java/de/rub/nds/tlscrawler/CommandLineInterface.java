@@ -9,11 +9,16 @@ package de.rub.nds.tlscrawler;
 
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
-import de.rub.nds.tlscrawler.data.IMasterStats;
+import de.rub.nds.tlscrawler.utility.AddressIteratorFactory;
+import de.rub.nds.tlscrawler.utility.IAddressIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Implements the command line interface.
@@ -28,47 +33,21 @@ public class CommandLineInterface {
 
         Scanner scanner = new Scanner(System.in);
 
-        // TODO: Implement full CLI
-
         for (;;) {
-            LOG.info("Starting command reception.");
-            String input = scanner.next();
+            LOG.info("Starting command reception. Try \"help\" or \"newscan -h\".");
+            String input = scanner.nextLine();
 
             LOG.debug(String.format("Received input: \"%s\"", input));
 
-            switch (input) {
-                case "tls_scan": {
+            String[] in_arr = input.split(Pattern.quote(" "));
+            String[] args = in_arr.length <= 1 ? new String[] { } : Arrays.copyOfRange(in_arr, 1, in_arr.length);
 
-                    List<String> chosenScans = new LinkedList<>();
-                    chosenScans.add("tls_scan");
+            LOG.debug(Arrays.deepToString(in_arr));
+            LOG.debug(Arrays.deepToString(args));
 
-                    List<String> targets = Arrays.asList("172.217.22.35");
-
-                    List<Integer> ports = new ArrayList<>();
-                    ports.add(443);
-
-                    master.crawl(chosenScans, targets, ports);
-                }
-
-                break;
-
-                case "test_scan": {
-                    List<String> chosenScans = new LinkedList<>();
-                    chosenScans.add("test_scan");
-
-                    List<String> targets = Arrays.asList("172.217.22.35");
-
-                    List<Integer> ports = new ArrayList<>();
-                    ports.add(32);
-                    ports.add(34);
-                    ports.add(89);
-                    ports.add(254);
-                    ports.add(754);
-                    ports.add(8987);
-
-                    master.crawl(chosenScans, targets, ports);
-                    master.crawl(chosenScans, targets, ports);
-                }
+            switch (in_arr[0]) {
+                case "newscan":
+                    handleNewscan(master, args);
 
                 break;
 
@@ -80,16 +59,45 @@ public class CommandLineInterface {
 
                 break;
 
-                case "print": {
-                    IMasterStats stats = master.getStats();
-                    LOG.info(String.format("Tasks completed: %d/%d", stats.getFinishedTasks(), stats.getTotalTasks()));
+                case "help":
+                default: {
+                    System.out.println("Available options: 'newscan', 'help', 'exit'");
+                    System.out.println("Try 'newscan -h'");
                 }
 
                 break;
-
-                default:
-                    System.out.println("Did not understand. Try again.");
             }
         }
+    }
+
+    private static void handleNewscan(TlsCrawlerMaster master, String[] args) {
+        NewScanOptions options = NewScanOptions.parseOptions(args);
+
+        if (options.help) {
+            LOG.info(NewScanOptions.getHelpString());
+            return;
+        }
+
+        List<String> chosenScans = options.scans;
+        List<Integer> ports = options.ports.stream()
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+        AddressIteratorFactory addrFac = AddressIteratorFactory.getInstance();
+        IAddressIterator targets;
+        if (options.targetsFromRedisList.isEmpty()) {
+            List<String> ip_whitelist = options.whitelist;
+            List<String> ip_blacklist = options.blacklist;
+
+            addrFac.reset();
+            addrFac.applyDefaultConfig(AddressIteratorFactory.Configurations.NDS_BLACKLIST);
+            addrFac.addToWhitelist(ip_whitelist);
+            addrFac.addToBlacklist(ip_blacklist);
+            targets = addrFac.build();
+        } else {
+            targets = AddressIteratorFactory.getRedisAddressSource(options.targetsFromRedisList);
+        }
+
+        master.crawl(chosenScans, targets, ports, options.id);
     }
 }

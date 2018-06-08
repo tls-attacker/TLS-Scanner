@@ -56,7 +56,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     }
 
     /**
-     * Convenience method to block method entry in situations where the persistence provider is not initialized.
+     * Convenience method to block method entry in situations where the orchestration provider is not initialized.
      */
     private void checkInit() {
         if (!this.initialized) {

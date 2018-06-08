@@ -42,7 +42,10 @@ public class TlsScan implements IScan {
     public IScanResult scan(IScanTarget target) {
         LOG.trace("scan()");
 
-        ScannerConfig config = new ScannerConfig(new GeneralDelegate());
+        GeneralDelegate generalDelegate = new GeneralDelegate();
+        generalDelegate.setLogLevel(null);
+
+        ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setThreads(1);
 
         int port = 443;
@@ -216,13 +219,16 @@ public class TlsScan implements IScan {
         IScanResult certificate = new ScanResult("certificate");
 
         List<String> _certificateReports = new LinkedList<>();
+        List<String> _certificateFingerprints = new LinkedList<>();
         List<CertificateReport> _rawCertificateReports = report.getCertificateReports();
         if (_rawCertificateReports != null) {
             for (CertificateReport x : _rawCertificateReports) {
                 _certificateReports.add(x == null ? null : x.toString());
+                _certificateFingerprints.add(x == null ? "" : x.getSHA256Fingerprint());
             }
         }
 
+        certificate.addStringArray("certificateFingerprints", _certificateFingerprints);
         certificate.addStringArray("certificateReports", _certificateReports);
         certificate.addString("certificate", report.getCertificate() == null ? null : report.getCertificate().toString());
         certificate.addBoolean("certificateExpired", report.getCertificateExpired());
@@ -259,39 +265,39 @@ public class TlsScan implements IScan {
 
         ciphers.addStringArray("cipherSuites", _cipherSuites);
         ciphers.addBoolean("supportsNullCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsAnonCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsExportCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsDesCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsSeedCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsIdeaCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsRc2Ciphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsRc4Ciphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsTrippleDesCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsPostQuantumCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsAeadCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsPfsCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsOnlyPfsCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("enforcesCipherSuiteOrdering", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsAes", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsCamellia", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsAria", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsChacha", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsRsa", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsDh", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsEcdh", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsGost", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsSrp", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsKerberos", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsPskPlain", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsPskRsa", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsPskDhe", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsPskEcdhe", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsFortezza", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsNewHope", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsEcmqv", report.getSupportsNullCiphers());
-        ciphers.addBoolean("prefersPfsCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsStreamCiphers", report.getSupportsNullCiphers());
-        ciphers.addBoolean("supportsBlockCiphers", report.getSupportsNullCiphers());
+        ciphers.addBoolean("supportsAnonCiphers", report.getSupportsAnonCiphers());
+        ciphers.addBoolean("supportsExportCiphers", report.getSupportsExportCiphers());
+        ciphers.addBoolean("supportsDesCiphers", report.getSupportsDesCiphers());
+        ciphers.addBoolean("supportsSeedCiphers", report.getSupportsSeedCiphers());
+        ciphers.addBoolean("supportsIdeaCiphers", report.getSupportsIdeaCiphers());
+        ciphers.addBoolean("supportsRc2Ciphers", report.getSupportsRc2Ciphers());
+        ciphers.addBoolean("supportsRc4Ciphers", report.getSupportsRc4Ciphers());
+        ciphers.addBoolean("supportsTrippleDesCiphers", report.getSupportsTrippleDesCiphers());
+        ciphers.addBoolean("supportsPostQuantumCiphers", report.getSupportsPostQuantumCiphers());
+        ciphers.addBoolean("supportsAeadCiphers", report.getSupportsAeadCiphers());
+        ciphers.addBoolean("supportsPfsCiphers", report.getSupportsPfsCiphers());
+        ciphers.addBoolean("supportsOnlyPfsCiphers", report.getSupportsOnlyPfsCiphers());
+        ciphers.addBoolean("enforcesCipherSuiteOrdering", report.getEnforcesCipherSuiteOrdering());
+        ciphers.addBoolean("supportsAes", report.getSupportsAes());
+        ciphers.addBoolean("supportsCamellia", report.getSupportsCamellia());
+        ciphers.addBoolean("supportsAria", report.getSupportsAria());
+        ciphers.addBoolean("supportsChacha", report.getSupportsChacha());
+        ciphers.addBoolean("supportsRsa", report.getSupportsPskRsa());
+        ciphers.addBoolean("supportsDh", report.getSupportsDh());
+        ciphers.addBoolean("supportsEcdh", report.getSupportsEcdh());
+        ciphers.addBoolean("supportsGost", report.getSupportsGost());
+        ciphers.addBoolean("supportsSrp", report.getSupportsSrp());
+        ciphers.addBoolean("supportsKerberos", report.getSupportsKerberos());
+        ciphers.addBoolean("supportsPskPlain", report.getSupportsPskPlain());
+        ciphers.addBoolean("supportsPskRsa", report.getSupportsPskRsa());
+        ciphers.addBoolean("supportsPskDhe", report.getSupportsPskDhe());
+        ciphers.addBoolean("supportsPskEcdhe", report.getSupportsPskEcdhe());
+        ciphers.addBoolean("supportsFortezza", report.getSupportsFortezza());
+        ciphers.addBoolean("supportsNewHope", report.getSupportsNewHope());
+        ciphers.addBoolean("supportsEcmqv", report.getSupportsEcmqv());
+        ciphers.addBoolean("prefersPfsCiphers", report.getPrefersPfsCiphers());
+        ciphers.addBoolean("supportsStreamCiphers", report.getSupportsStreamCiphers());
+        ciphers.addBoolean("supportsBlockCiphers", report.getSupportsBlockCiphers());
 
         return ciphers;
     }
@@ -335,7 +341,6 @@ public class TlsScan implements IScan {
         intolerances.addBoolean("versionIntolerance", report.getVersionIntolerance());
         intolerances.addBoolean("extensionIntolerance", report.getExtensionIntolerance());
         intolerances.addBoolean("cipherSuiteIntolerance", report.getCipherSuiteIntolerance());
-        intolerances.addBoolean("supportedCurvesIntolerance", report.getSupportedCurvesIntolerance());
         intolerances.addBoolean("clientHelloSizeIntolerance", report.getClientHelloSizeIntolerance());
 
         return intolerances;

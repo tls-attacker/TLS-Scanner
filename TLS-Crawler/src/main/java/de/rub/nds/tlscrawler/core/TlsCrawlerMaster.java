@@ -11,11 +11,14 @@ import de.rub.nds.tlscrawler.data.*;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
+import de.rub.nds.tlscrawler.utility.IAddressIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -30,6 +33,8 @@ import static java.util.stream.Collectors.joining;
 public class TlsCrawlerMaster extends TlsCrawler {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerMaster.class);
 
+    private Map<String, Thread> taskGeneratorThreadList;
+
     /**
      * TLS-Crawler master constructor.
      *
@@ -39,9 +44,11 @@ public class TlsCrawlerMaster extends TlsCrawler {
      */
     public TlsCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
         super(orchestrationProvider, persistenceProvider, scans);
+
+        this.taskGeneratorThreadList = new HashMap<>();
     }
 
-    public void crawl(List<String> scans, List<String> targets, List<Integer> ports) {
+    public void crawl(List<String> scans, IAddressIterator targets, List<Integer> ports, String scanId) {
         if (areNotValidArgs(scans, targets, ports)) {
             LOG.error("Crawling task has not been established due to invalid arguments.");
         }
@@ -49,9 +56,10 @@ public class TlsCrawlerMaster extends TlsCrawler {
         // TODO: This should be parallelized.
 
         for (String target : targets) {
-            String scanId = UUID.randomUUID().toString();
+            String taskId = UUID.randomUUID().toString();
 
             IScanTask newTask = new ScanTask(
+                    taskId,
                     scanId,
                     Instant.now(),
                     null,
@@ -77,15 +85,13 @@ public class TlsCrawlerMaster extends TlsCrawler {
                 ppStats.getEarliestCreatedTimestamp());
     }
 
-    private boolean areNotValidArgs(List<String> scans, List<String> targets, List<Integer> ports) {
+    private boolean areNotValidArgs(List<String> scans, IAddressIterator targets, List<Integer> ports) {
         LOG.trace("areNotValidArgs()");
 
         List<String> invalidScans = scans.stream().filter(x -> !this.getScanNames().contains(x)).collect(Collectors.toList());
-        List<String> invalidTargetIps = targets.stream().filter(x -> !isValidIp(x)).collect(Collectors.toList());
         List<Integer> invalidPorts = ports.stream().filter(x -> x < 1 || x > 65535).collect(Collectors.toList());
 
         boolean allScansValid = invalidScans.isEmpty();
-        boolean allTargetIpsValid = invalidTargetIps.isEmpty();
         boolean allPortsValid = invalidPorts.isEmpty();
 
         if (!allScansValid) {
@@ -93,17 +99,12 @@ public class TlsCrawlerMaster extends TlsCrawler {
             LOG.error(String.format("Invalid Scans: %s", invalidScanList));
         }
 
-        if (!allTargetIpsValid) {
-            String invalidTargetIpList = invalidTargetIps.stream().map(item -> "'" + item + "'").collect(joining(" "));
-            LOG.error(String.format("Invalid Target IPs: %s", invalidTargetIpList));
-        }
-
         if (!allPortsValid) {
             String invalidPortsList = invalidPorts.stream().map(item -> "'" + item + "'").collect(joining(" "));
             LOG.error(String.format("Invalid Ports: %s", invalidPortsList));
         }
 
-        return !(allScansValid && allTargetIpsValid && allPortsValid);
+        return !(allScansValid && allPortsValid);
     }
 
     private static final String IP_ADDRESS_STRING =

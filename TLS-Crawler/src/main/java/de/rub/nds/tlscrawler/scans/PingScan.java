@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class PingScan implements IScan {
     private static Logger LOG = LoggerFactory.getLogger(PingScan.class);
 
-    private static final String name = "ping";
+    private static final String name = "ping_scan";
     private static final int timeOutMs = 5000;
 
     @Override
