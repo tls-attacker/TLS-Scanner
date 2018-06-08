@@ -87,10 +87,6 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.implementation = implementation;
     }
 
-    public void setNoColor(Boolean noColour) {
-        this.noColor = noColour;
-    }
-
     public Boolean isNoColor() {
         return noColor;
     }
