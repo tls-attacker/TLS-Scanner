@@ -47,12 +47,16 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     /**
      * TLS-Crawler constructor.
      *
+     * @param instanceId The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TlsCrawlerSlave(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
-        super(orchestrationProvider, persistenceProvider, scans);
+    public TlsCrawlerSlave(String instanceId,
+                           IOrchestrationProvider orchestrationProvider,
+                           IPersistenceProvider persistenceProvider,
+                           List<IScan> scans) {
+        super(instanceId, orchestrationProvider, persistenceProvider, scans);
 
         LOG.trace("Constructor()");
 

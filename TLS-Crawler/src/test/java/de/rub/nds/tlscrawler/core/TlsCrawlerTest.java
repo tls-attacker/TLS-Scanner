@@ -46,7 +46,7 @@ public class TlsCrawlerTest {
 
         List<IScan> scans = Arrays.asList(scan1, scan3);
 
-        this.subject = new TlsCrawler(op, pp, scans);
+        this.subject = new TlsCrawler("slaveId", op, pp, scans);
     }
 
     @Test

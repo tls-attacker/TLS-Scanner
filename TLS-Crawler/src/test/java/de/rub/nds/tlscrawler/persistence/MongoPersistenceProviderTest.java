@@ -160,6 +160,7 @@ public class MongoPersistenceProviderTest {
         IScanTask st = new ScanTask(
                 "disId",
                 "disScanId",
+                "disSlaveId",
                 now,
                 null,
                 null,

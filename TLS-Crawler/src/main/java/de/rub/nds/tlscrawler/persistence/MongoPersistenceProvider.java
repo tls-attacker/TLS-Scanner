@@ -260,6 +260,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
         // These must be available:
         result.append(DBKeys.SCAN_ID, scanTask.getScanId());
+        result.append(DBKeys.INSTANCE_ID, scanTask.getSlaveId());
         result.append(DBKeys.CREATED_TIMESTAMP, Date.from(scanTask.getCreatedTimestamp()));
         result.append(DBKeys.TARGET_IP, scanTask.getTargetIp());
         result.append(DBKeys.PORTS, new LinkedList(scanTask.getPorts()));
@@ -294,12 +295,14 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         Date started = scanTask.getDate(DBKeys.STARTED_TIMESTAMP);
         Date completed = scanTask.getDate(DBKeys.COMPLETED_TIMESTAMP);
 
+        String instanceId = scanTask.getString(DBKeys.INSTANCE_ID);
         String taskId = scanTask.getString(DBKeys.ID);
         String scanId = scanTask.getString(DBKeys.SCAN_ID);
         String targetIp = scanTask.getString(DBKeys.TARGET_IP);
 
         ScanTask result = new ScanTask(taskId,
                 scanId,
+                instanceId,
                 created == null ? null : created.toInstant(),
                 accepted == null ? null : accepted.toInstant(),
                 started == null ? null : started.toInstant(),
@@ -335,8 +338,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         for (Map.Entry<String, Object> e : scanResult.entrySet()) {
             String key = e.getKey();
             Object value = e.getValue();
-
-
 
             if (value instanceof String) {
                 result.addString(key, (String)value);
@@ -383,6 +384,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     static class DBKeys {
         static String ID = "_id";
         static String SCAN_ID = "scanId";
+        static String INSTANCE_ID = "instanceId";
         static String CREATED_TIMESTAMP = "createdTimestamp";
         static String ACCEPTED_TIMESTAMP = "acceptedTimestamp";
         static String STARTED_TIMESTAMP = "startedTimestamp";
