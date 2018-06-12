@@ -77,9 +77,9 @@ public class IntoleranceProbe extends TlsProbe {
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSessionTicketTLSExtension(true);
         tlsConfig.setAddTruncatedHmacExtension(true);
-        
-        List<NamedGroup> namedCurves = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(namedCurves);
+
+        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
+        tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);

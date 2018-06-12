@@ -34,10 +34,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - robert.merget@rub.de
- */
 public class CiphersuiteProbe extends TlsProbe {
 
     private final List<ProtocolVersion> protocolVersions;
@@ -94,9 +90,9 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setQuickReceive(true);
             config.setEarlyStop(true);
             config.setStopActionsAfterFatal(true);
-            List<NamedGroup> namedCurves = new LinkedList<>();
-            namedCurves.addAll(Arrays.asList(NamedGroup.values()));
-            config.setDefaultClientNamedGroups(namedCurves);
+            List<NamedGroup> namedGroup = new LinkedList<>();
+            namedGroup.addAll(Arrays.asList(NamedGroup.values()));
+            config.setDefaultClientNamedGroups(namedGroup);
             State state = new State(config);
             WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
             try {

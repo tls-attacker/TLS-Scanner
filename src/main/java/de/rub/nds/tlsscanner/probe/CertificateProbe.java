@@ -19,6 +19,8 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReportGenerator;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 
@@ -37,9 +39,13 @@ public class CertificateProbe extends TlsProbe {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setEarlyStop(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.values());
+        List<CipherSuite> toTestList = new LinkedList<>();
+        toTestList.addAll(Arrays.asList(CipherSuite.values()));
+        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
         List<CertificateReport> reportList = CertificateReportGenerator.generateReports(serverCert);

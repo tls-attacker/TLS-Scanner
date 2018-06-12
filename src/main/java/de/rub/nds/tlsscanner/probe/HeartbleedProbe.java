@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.attacks.config.HeartbleedCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.HeartbleedAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -38,9 +39,11 @@ public class HeartbleedProbe extends TlsProbe {
         HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
+        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
         if (supportedCiphers != null) {
             CiphersuiteDelegate ciphersuiteDelegate = (CiphersuiteDelegate) heartbleedConfig.getDelegate(CiphersuiteDelegate.class);
-            ciphersuiteDelegate.setCipherSuites(supportedCiphers.get(0));
+            //ciphersuiteDelegate.setCipherSuites(supportedCiphers.get(0));
         }
         HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();

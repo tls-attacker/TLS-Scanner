@@ -40,6 +40,7 @@ public class ScanJobExecutor {
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<ProbeType> probeTypes = new LinkedList<>();
+        
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
@@ -60,7 +61,7 @@ public class ScanJobExecutor {
 
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegate(ClientDelegate.class);
         String hostname = clientDelegate.getHost();
-        SiteReport report = new SiteReport(hostname, probeTypes);
+        SiteReport report = new SiteReport(hostname, probeTypes, config.isNoColor());
         report.setServerIsAlive(Boolean.TRUE);
         for (ProbeResult result : resultList) {
             result.merge(report);
@@ -75,9 +76,9 @@ public class ScanJobExecutor {
         resultList = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
+                probeTypes.add(probe.getType());
                 if (probe.shouldBeExecuted(report)) {
                     futureResults.add(executor.submit(probe));
-                    probeTypes.add(probe.getType());
                 } else if (!config.isImplementation()) {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {

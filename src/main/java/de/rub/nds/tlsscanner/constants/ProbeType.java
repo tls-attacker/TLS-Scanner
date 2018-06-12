@@ -18,6 +18,8 @@ public enum ProbeType {
     CIPHERSUITE,
     HEARTBLEED,
     BLEICHENBACHER,
+    DROWN,
+    EARLY_CCS,
     NAMED_GROUPS,
     PADDING_ORACLE,
     CVE20162107,

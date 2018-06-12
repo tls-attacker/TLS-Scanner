@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -15,17 +10,17 @@ import java.util.List;
  * @author Robert Merget <robert.merget@rub.de>
  */
 public class NamedGroupResult extends ProbeResult {
-
-    private final List<NamedGroup> namedGroupList;
-
+    
+    private final List<NamedGroup> namedGroupsList;
+    
     public NamedGroupResult(List<NamedGroup> groups) {
         super(ProbeType.NAMED_GROUPS);
-        this.namedGroupList = groups;
+        this.namedGroupsList = groups;
     }
-
+    
     @Override
     public void merge(SiteReport report) {
-        report.setSupportedNamedGroups(namedGroupList);
+        report.setSupportedNamedGroups(namedGroupsList);
     }
-
+    
 }

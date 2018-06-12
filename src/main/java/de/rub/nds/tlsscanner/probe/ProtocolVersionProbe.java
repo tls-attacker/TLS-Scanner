@@ -12,8 +12,11 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
@@ -112,9 +115,9 @@ public class ProtocolVersionProbe extends TlsProbe {
             tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         }
-        List<NamedGroup> namedCurves = Arrays.asList(NamedGroup.values());
+        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
 
-        tlsConfig.setDefaultClientNamedGroups(namedCurves);
+        tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);
@@ -150,6 +153,71 @@ public class ProtocolVersionProbe extends TlsProbe {
         WorkflowExecutor executor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT, state);
         executor.executeWorkflow();
         return trace.executedAsPlanned();
+    }
+
+    private boolean isTls13Supported(ProtocolVersion toTest) {
+        Config tlsConfig = getScannerConfig().createConfig();
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(getTls13Suite());
+        tlsConfig.setHighestProtocolVersion(toTest);
+        tlsConfig.setSupportedVersions(toTest);
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopRecievingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1, NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
+        //TODO add support for named groups
+        tlsConfig.setAddECPointFormatExtension(false);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setUseFreshRandom(true);
+        tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
+        State state = new State(tlsConfig);
+        WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
+                state);
+        try {
+            workflowExecutor.executeWorkflow();
+        } catch (WorkflowExecutionException ex) {
+            LOGGER.debug(ex);
+        }
+        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            LOGGER.debug("Did not receive ServerHello Message");
+            LOGGER.debug(state.getWorkflowTrace().toString());
+            return false;
+        } else {
+            LOGGER.debug("Received ServerHelloMessage");
+            LOGGER.debug(state.getWorkflowTrace().toString());
+            LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
+            return state.getTlsContext().getSelectedProtocolVersion() == toTest;
+        }
+    }
+
+    private List<SignatureAndHashAlgorithm> getTls13SignatureAndHashAlgorithms() {
+        List<SignatureAndHashAlgorithm> algos = new LinkedList<>();
+        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA, HashAlgorithm.SHA256));
+        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA, HashAlgorithm.SHA384));
+        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA, HashAlgorithm.SHA512));
+        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.ECDSA, HashAlgorithm.SHA256));
+        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.ECDSA, HashAlgorithm.SHA384));
+        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.ECDSA, HashAlgorithm.SHA512));
+        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA_PSS, HashAlgorithm.SHA256));
+        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA_PSS, HashAlgorithm.SHA384));
+        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA_PSS, HashAlgorithm.SHA512));
+        return algos;
+    }
+
+    private List<CipherSuite> getTls13Suite() {
+        List<CipherSuite> tls13Suites = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.values()) {
+            if (suite.isTLS13()) {
+                tls13Suites.add(suite);
+            }
+        }
+        return tls13Suites;
     }
 
     @Override

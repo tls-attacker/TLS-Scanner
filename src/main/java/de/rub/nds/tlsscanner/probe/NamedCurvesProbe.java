@@ -42,11 +42,11 @@ public class NamedCurvesProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<NamedGroup> curves = getSupportedNamedCurves();
-        return new NamedGroupResult(curves);
+        List<NamedGroup> groups = getSupportedNamedGroups();
+        return new NamedGroupResult(groups);
     }
 
-    private List<NamedGroup> getSupportedNamedCurves() {
+    private List<NamedGroup> getSupportedNamedGroups() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
@@ -60,20 +60,21 @@ public class NamedCurvesProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         List<NamedGroup> toTestList = new ArrayList<>(Arrays.asList(NamedGroup.values()));
-        NamedGroup selectedCurve;
+        NamedGroup selectedGroup;
         List<NamedGroup> supportedNamedCurves = new LinkedList<>();
         do {
-            selectedCurve = testCurves(toTestList, tlsConfig);
-            if (!toTestList.contains(selectedCurve)) {
+            selectedGroup = testCurves(toTestList, tlsConfig);
+            if (!toTestList.contains(selectedGroup)) {
                 LOGGER.debug("Server chose a Curve we did not offer!");
                 break;
             }
-            if (selectedCurve != null) {
-                supportedNamedCurves.add(selectedCurve);
-                toTestList.remove(selectedCurve);
+            if (selectedGroup != null) {
+                supportedNamedCurves.add(selectedGroup);
+                toTestList.remove(selectedGroup);
             }
-        } while (selectedCurve != null || toTestList.size() > 0);
+        } while (selectedGroup != null || toTestList.size() > 0);
         return supportedNamedCurves;
     }
 

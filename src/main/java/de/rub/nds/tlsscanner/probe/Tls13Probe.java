@@ -85,7 +85,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseRandomUnixTime(true);
+        tlsConfig.setUseFreshRandom(true);
         tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         WorkflowTrace workflowTrace = state.getWorkflowTrace();
@@ -160,7 +160,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseRandomUnixTime(true);
+        tlsConfig.setUseFreshRandom(true);
         tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         WorkflowTrace workflowTrace = state.getWorkflowTrace();
@@ -210,7 +210,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseRandomUnixTime(true);
+        tlsConfig.setUseFreshRandom(true);
         tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         WorkflowTrace workflowTrace = state.getWorkflowTrace();
