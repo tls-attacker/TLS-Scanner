@@ -57,7 +57,6 @@ public class MacProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         correctFingerprint = getCorrectAppDataFingerprint();
-        System.out.println("Correct Fingerprint: " + correctFingerprint);
         MacCheckPattern appPattern = getMacCheckPattern(Check.APPDATA);
         MacCheckPattern finishedPattern = getMacCheckPattern(Check.FINISHED);
         return new MacResult(appPattern, finishedPattern);
@@ -150,7 +149,6 @@ public class MacProbe extends TlsProbe {
     }
 
     private boolean[] getMacByteCheckMap(Check check) {
-        System.out.println("Getting CheckMap for : " +check.name());
         CipherSuite suite = suiteList.get(0);
         //TODO Protocolversion not from report
         int macSize = AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite).getSize();
@@ -179,20 +177,14 @@ public class MacProbe extends TlsProbe {
             executor.executeWorkflow();
             if (check == Check.APPDATA) {
                 ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
-                System.out.println("Fingerprint for " + i + " : " + fingerprint.toString());
                 EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint, true);
-                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace)) {
-                    System.out.println("Did not receive a Finished message?!");
-                }
                 if (equalityError != EqualityError.NONE) {
-                    System.out.println("EqualityError:" + equalityError);
                     byteCheckArray[i] = true;
                 } else {
                     byteCheckArray[i] = false;
                 }
             } else {
                 if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace)) {
-                    System.out.println("Did receive Finish:");
                     byteCheckArray[i] = false;
                 } else {
                     byteCheckArray[i] = true;
