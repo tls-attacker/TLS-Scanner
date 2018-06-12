@@ -24,6 +24,7 @@ import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import java.util.List;
+import java.util.Set;
 import org.bouncycastle.crypto.tls.Certificate;
 
 /**
@@ -126,7 +127,7 @@ public class SiteReport {
 
     //Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
-    private List<CipherSuite> cipherSuites = null;
+    private Set<CipherSuite> cipherSuites = null;
     private List<CipherSuite> supportedTls13CipherSuites = null;
     private Boolean supportsNullCiphers = null;
     private Boolean supportsAnonCiphers = null;
@@ -639,11 +640,11 @@ public class SiteReport {
         this.versions = versions;
     }
 
-    public List<CipherSuite> getCipherSuites() {
+    public Set<CipherSuite> getCipherSuites() {
         return cipherSuites;
     }
 
-    public void setCipherSuites(List<CipherSuite> cipherSuites) {
+    public void setCipherSuites(Set<CipherSuite> cipherSuites) {
         this.cipherSuites = cipherSuites;
     }
 

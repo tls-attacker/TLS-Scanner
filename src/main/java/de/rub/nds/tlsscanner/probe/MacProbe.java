@@ -16,7 +16,6 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.record.Record;
@@ -38,8 +37,6 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -212,7 +209,8 @@ public class MacProbe extends TlsProbe {
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        List<CipherSuite> allSuiteList = report.getCipherSuites();
+        List<CipherSuite> allSuiteList = new LinkedList<>();
+        allSuiteList.addAll(report.getCipherSuites());
         if (allSuiteList != null) {
             for (CipherSuite suite : allSuiteList) {
                 if (suite.isUsingMac()) {
@@ -225,7 +223,8 @@ public class MacProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        List<CipherSuite> allSuiteList = report.getCipherSuites();
+        List<CipherSuite> allSuiteList = new LinkedList<>();
+        allSuiteList.addAll(report.getCipherSuites());
         suiteList = new LinkedList<>();
         if (allSuiteList != null) {
             for (CipherSuite suite : allSuiteList) {

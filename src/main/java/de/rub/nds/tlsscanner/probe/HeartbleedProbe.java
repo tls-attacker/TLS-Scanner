@@ -62,7 +62,7 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        supportedCiphers = report.getCipherSuites();
+        //supportedCiphers = report.getCipherSuites();
     }
 
     @Override
