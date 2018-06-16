@@ -239,6 +239,12 @@ public class SiteReportPrinter {
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 20", report.getSupportsTls13Draft20());
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 21", report.getSupportsTls13Draft21());
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 22", report.getSupportsTls13Draft22());
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 23", report.getSupportsTls13Draft23());
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 24", report.getSupportsTls13Draft24());
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 25", report.getSupportsTls13Draft25());
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 26", report.getSupportsTls13Draft26());
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 27", report.getSupportsTls13Draft27());
+            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 28", report.getSupportsTls13Draft28());
             //prettyAppend(builder, "DTLS 1.0", report.getSupportsDtls10());
             //prettyAppend(builder, "DTLS 1.2", report.getSupportsDtls10());
             //prettyAppend(builder, "DTLS 1.3", report.getSupportsDtls13());
@@ -432,14 +438,14 @@ public class SiteReportPrinter {
                 prettyAppendGreen(builder, "false");
                 break;
             case UNKNOWN:
-                prettyAppend(builder, "null");
+                prettyAppend(builder, "Unknown");
                 break;
         }
     }
 
     private StringBuilder prettyAppendMacCheckPattern(StringBuilder builder, String value, MacCheckPattern pattern) {
         if (pattern == null) {
-            return builder.append(value).append(": ").append("null");
+            return builder.append(value).append(": ").append("Unknown\n");
         }
         builder = builder.append(addIndentations(value)).append(": ");
         switch (pattern.getType()) {

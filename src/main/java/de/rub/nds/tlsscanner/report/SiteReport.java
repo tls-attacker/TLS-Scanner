@@ -91,6 +91,8 @@ public class SiteReport {
     private Boolean supportsTls13Draft24 = null;
     private Boolean supportsTls13Draft25 = null;
     private Boolean supportsTls13Draft26 = null;
+    private Boolean supportsTls13Draft27 = null;
+    private Boolean supportsTls13Draft28 = null;
     private Boolean supportsDtls10 = null;
     private Boolean supportsDtls12 = null;
     private Boolean supportsDtls13 = null;
@@ -414,6 +416,22 @@ public class SiteReport {
 
     public void setSupportsTls13Draft26(Boolean supportsTls13Draft26) {
         this.supportsTls13Draft26 = supportsTls13Draft26;
+    }
+
+    public Boolean getSupportsTls13Draft27() {
+        return supportsTls13Draft27;
+    }
+
+    public void setSupportsTls13Draft27(Boolean supportsTls13Draft27) {
+        this.supportsTls13Draft27 = supportsTls13Draft27;
+    }
+
+    public Boolean getSupportsTls13Draft28() {
+        return supportsTls13Draft28;
+    }
+
+    public void setSupportsTls13Draft28(Boolean supportsTls13Draft28) {
+        this.supportsTls13Draft28 = supportsTls13Draft28;
     }
 
     public Boolean getSupportsDtls10() {

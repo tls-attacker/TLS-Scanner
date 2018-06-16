@@ -80,7 +80,7 @@ public class MacProbe extends TlsProbe {
         State state = new State(config, trace);
         WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
         executor.executeWorkflow();
-
+        
         ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
         try {
             state.getTlsContext().getTransportHandler().closeConnection();

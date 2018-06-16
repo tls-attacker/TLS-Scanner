@@ -70,6 +70,12 @@ public class Tls13Result extends ProbeResult {
             if (version == ProtocolVersion.TLS13_DRAFT26) {
                 report.setSupportsTls13Draft26(true);
             }
+            if (version == ProtocolVersion.TLS13_DRAFT27) {
+                report.setSupportsTls13Draft27(true);
+            }
+            if (version == ProtocolVersion.TLS13_DRAFT28) {
+                report.setSupportsTls13Draft28(true);
+            }
         }
         for (ProtocolVersion version : unsupportedProtocolVersion) {
             if (version == ProtocolVersion.TLS13) {
