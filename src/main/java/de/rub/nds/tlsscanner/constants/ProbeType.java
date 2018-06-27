@@ -29,6 +29,7 @@ public enum ProbeType {
     INVALID_CURVE,
     SIGNATURE_AND_HASH,
     EXTENSIONS,
+    TOKENBINDING,
     COMPRESSIONS,
     INTOLERANCES,
     SNI,

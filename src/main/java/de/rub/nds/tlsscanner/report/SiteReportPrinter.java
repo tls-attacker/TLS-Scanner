@@ -445,7 +445,7 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendMacCheckPattern(StringBuilder builder, String value, MacCheckPattern pattern) {
         if (pattern == null) {
-            return builder.append(value).append(": ").append("Unknown\n");
+            return builder.append(addIndentations(value)).append(": ").append("Unknown").append("\n");
         }
         builder = builder.append(addIndentations(value)).append(": ");
         switch (pattern.getType()) {
