@@ -96,8 +96,8 @@ public class SiteReportPrinter {
 
     private StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
-        prettyAppendYellowOnFailure(builder, "Supports Session resumption", report.getSupportsSessionIds());
-        prettyAppendYellowOnFailure(builder, "Supports Session Tickets", report.getSupportsSessionTicket());
+        prettyAppendGreenYellow(builder, "Supports Session resumption", report.getSupportsSessionIds());
+        prettyAppendGreenYellow(builder, "Supports Session Tickets", report.getSupportsSessionTicket());
         prettyAppend(builder, "Session Ticket Hint", report.getSessionTicketLengthHint());
         prettyAppendYellowOnFailure(builder, "Session Ticket Rotation", report.getSessionTicketGetsRotated());
         prettyAppendRedOnFailure(builder, "Ticketbleed", report.getVulnerableTicketBleed());
@@ -381,6 +381,10 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
+    }
+    
+    private StringBuilder prettyAppendGreenYellow(StringBuilder builder, String name, Boolean value) {
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendYellow(StringBuilder builder, String value) {

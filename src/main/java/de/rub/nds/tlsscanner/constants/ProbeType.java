@@ -32,6 +32,7 @@ public enum ProbeType {
     TOKENBINDING,
     COMPRESSIONS,
     INTOLERANCES,
+    RESUMPTION,
     SNI,
     TLS13,
     MAC,
