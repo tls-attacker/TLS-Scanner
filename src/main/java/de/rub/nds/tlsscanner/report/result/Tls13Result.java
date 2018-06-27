@@ -14,7 +14,7 @@ public class Tls13Result extends ProbeResult {
     private final List<ProtocolVersion> unsupportedProtocolVersion;
 
     private final List<NamedGroup> supportedNamedGroups;
-    
+
     private final List<CipherSuite> supportedCipherSuites;
 
     public Tls13Result(List<ProtocolVersion> supportedProtocolVersion, List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups, List<CipherSuite> supportedCipherSuites) {
@@ -120,8 +120,19 @@ public class Tls13Result extends ProbeResult {
             if (version == ProtocolVersion.TLS13_DRAFT26) {
                 report.setSupportsTls13Draft26(false);
             }
+            if (version == ProtocolVersion.TLS13_DRAFT27) {
+                report.setSupportsTls13Draft27(false);
+            }
+            if (version == ProtocolVersion.TLS13_DRAFT28) {
+                report.setSupportsTls13Draft28(false);
+            }
         }
         report.setSupportedTls13Groups(supportedNamedGroups);
         report.setSupportedTls13CipherSuites(supportedCipherSuites);
+        if (report.getVersions() != null) {
+            report.getVersions().addAll(supportedProtocolVersion);
+        } else {
+            report.setVersions(supportedProtocolVersion);
+        }
     }
 }
