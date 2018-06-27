@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateUtils;
+import de.rub.nds.tlsscanner.probe.certificate.roca.BrokenKey;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -74,9 +76,8 @@ public class CertificateReportGenerator {
         setTrusted(report, cert);
         setSha256Hash(report, cert);
         report.setCertificate(cert);
-        if (rocaIsAvailable()) {
-            setPublicKeyFingerprint(report, cert);
-        }
+        setVulnerableRoca(report, cert);
+
         return report;
     }
 
@@ -214,28 +215,15 @@ public class CertificateReportGenerator {
     }
 
     private static boolean rocaIsAvailable() {
-        return true;
+        return false;
     }
 
-    private static void setPublicKeyFingerprint(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
-        try {
-            PemUtil.writeCertificate(new Certificate(new org.bouncycastle.asn1.x509.Certificate[]{cert}), new File("test.pem"));
-            ProcessBuilder builder = new ProcessBuilder("roca-detect", "--file-pem", "test.pem");
-            Process process = builder.start();
-            process.waitFor(10, TimeUnit.SECONDS);
-            InputStreamReader isr = new InputStreamReader(process.getErrorStream());
-            BufferedReader br = new BufferedReader(isr);
-            String line = null;
-            StringBuilder rocaOutputBuilder = new StringBuilder();
-            while ((line = br.readLine()) != null) {
-                rocaOutputBuilder.append(line);
-                LOGGER.trace(line);
-                System.out.println(line);
-            }
-            report.setPublicKeyFingerprint(line);
-        } catch (IOException | InterruptedException ex) {
-            java.util.logging.Logger.getLogger(CertificateReportGenerator.class.getName()).log(Level.SEVERE, null, ex);
+    private static void setVulnerableRoca(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+        if (report.getPublicKey() != null && report.getPublicKey() instanceof RSAPublicKey) {
+            RSAPublicKey pubkey = (RSAPublicKey) report.getPublicKey();
+            report.setRocaVulnerable(BrokenKey.isAffected(pubkey));
+        } else {
+            report.setRocaVulnerable(false);
         }
-
     }
 }
