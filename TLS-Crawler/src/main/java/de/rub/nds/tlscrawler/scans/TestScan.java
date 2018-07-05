@@ -31,7 +31,7 @@ public class TestScan implements IScan {
     }
 
     @Override
-    public IScanResult scan(IScanTarget target) {
+    public IScanResult scan(String slaveInstanceId, IScanTarget target) {
         LOG.trace("scan()");
 
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
@@ -45,6 +45,7 @@ public class TestScan implements IScan {
         SiteReport report = scanner.scan();
 
         IScanResult result = new ScanResult(this.getName());
+        result.addString(SLAVE_INSTANCE_ID, slaveInstanceId);
         result.addString("ergebnis", report.getStringReport());
 
         return result;

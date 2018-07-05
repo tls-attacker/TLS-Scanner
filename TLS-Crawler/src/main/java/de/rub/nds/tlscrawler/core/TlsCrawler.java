@@ -73,6 +73,7 @@ class TlsCrawler implements IScanProvider, IOrganizer {
     /**
      * @return The identifier of this instance.
      */
+    @Override
     public String getInstanceId() {
         return this.instanceId;
     }
@@ -80,6 +81,7 @@ class TlsCrawler implements IScanProvider, IOrganizer {
     /**
      * @return The orchestration provider.
      */
+    @Override
     public IOrchestrationProvider getOrchestrationProvider() {
         return this.orchestrationProvider;
     }
@@ -87,6 +89,7 @@ class TlsCrawler implements IScanProvider, IOrganizer {
     /**
      * @return The persistence provider.
      */
+    @Override
     public IPersistenceProvider getPersistenceProvider() {
         return this.persistenceProvider;
     }

@@ -39,7 +39,7 @@ public class TlsScan implements IScan {
     }
 
     @Override
-    public IScanResult scan(IScanTarget target) {
+    public IScanResult scan(String slaveInstanceId, IScanTarget target) {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
@@ -48,19 +48,21 @@ public class TlsScan implements IScan {
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setThreads(1);
 
+        // TODO: Make port not hardcoded.
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
 
         TlsScanner scanner = new TlsScanner(config);
-
         SiteReport report = scanner.scan();
 
-        return scanResultFromSiteReport(report, SCAN_NAME);
+        IScanResult result = new ScanResult(SCAN_NAME);
+        result.addString(SLAVE_INSTANCE_ID, slaveInstanceId);
+        populateScanResultFromSiteReport(result, report);
+
+        return result;
     }
 
-    IScanResult scanResultFromSiteReport(SiteReport report, String scanName) {
-        IScanResult result = new ScanResult(scanName);
-
+    IScanResult populateScanResultFromSiteReport(IScanResult result, SiteReport report) {
         result.addString("host", report.getHost());
         result.addBoolean("serverIsAlive", report.getServerIsAlive());
         result.addBoolean("supportsSslTls", report.getSupportsSslTls());

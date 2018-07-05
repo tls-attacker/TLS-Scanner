@@ -18,15 +18,23 @@ import java.time.Instant;
 
 /**
  * Worker Thread for a more sophisticated TLS crawler slave implementation.
+ *
+ * // TODO: Graceful exit
+ *
+ * @author janis.fliegenschmidt@rub.de
  */
 public class SlaveWorkerThread extends Thread {
     private static Logger LOG = LoggerFactory.getLogger(SlaveWorkerThread.class);
 
     private final SynchronizedTaskRouter synchronizedTaskRouter;
+    private final String slaveInstanceId;
 
     private IScanProvider scanProvider;
 
-    public SlaveWorkerThread(SynchronizedTaskRouter synchronizedTaskRouter, IScanProvider scanProvider) {
+    public SlaveWorkerThread(String slaveInstanceId,
+                             SynchronizedTaskRouter synchronizedTaskRouter,
+                             IScanProvider scanProvider) {
+        this.slaveInstanceId = slaveInstanceId;
         this.synchronizedTaskRouter = synchronizedTaskRouter;
         this.scanProvider = scanProvider;
     }
@@ -47,7 +55,7 @@ public class SlaveWorkerThread extends Thread {
 
                 for (String scan : todo.getScans()) {
                     IScan scanInstance = this.scanProvider.getScanByName(scan);
-                    IScanResult result = scanInstance.scan(todo.getScanTarget());
+                    IScanResult result = scanInstance.scan(this.slaveInstanceId, todo.getScanTarget());
                     todo.addResult(result);
                 }
 
