@@ -9,6 +9,8 @@ package de.rub.nds.tlscrawler.persistence;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -35,14 +37,16 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     private static String COLL_NAME = "scans";
 
     private boolean initialized = false;
-    private MongoClientURI mongoUri;
+    private ServerAddress address;
+    private MongoCredential credentials;
     private MongoClient mongoClient;
     private MongoDatabase database;
     private MongoCollection resultCollection;
 
-    public MongoPersistenceProvider(MongoClientURI mongoUri) {
+    public MongoPersistenceProvider(ServerAddress address, MongoCredential credentials) {
         LOG.trace("Constructor()");
-        this.mongoUri = mongoUri;
+        this.address = address;
+        this.credentials = credentials;
     }
 
     /**
@@ -53,12 +57,17 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     public void init(String dbName) {
         LOG.trace(String.format("init() with name '%s'", dbName));
 
-        this.mongoClient = new MongoClient(this.mongoUri);
+        if (this.credentials != null) {
+            this.mongoClient = new MongoClient(this.address, Arrays.asList(this.credentials));
+        } else {
+            this.mongoClient = new MongoClient(this.address);
+        }
+
         this.database = this.mongoClient.getDatabase(dbName);
         this.resultCollection = this.database.getCollection(COLL_NAME);
 
         this.initialized = true;
-        LOG.info(String.format("MongoDB persistence provider initialized, connected to %s.", mongoUri.toString()));
+        LOG.info(String.format("MongoDB persistence provider initialized, connected to %s.", address.toString()));
     }
 
     /**

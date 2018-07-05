@@ -9,6 +9,8 @@ package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.OptionsParsingException;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
@@ -80,7 +82,17 @@ public class Main {
         String workspaceWithPrefix = String.format("TLSC-%s", workspace);
 
         if (!options.testMode) {
-            MongoPersistenceProvider mpp = new MongoPersistenceProvider(new MongoClientURI(options.mongoDbConnectionString));
+            ServerAddress address = new ServerAddress(options.mongoDbHost, options.mongoDbPort);
+            MongoCredential credential = null;
+
+            if (!options.mongoDbUser.equals("")) {
+                credential = MongoCredential.createCredential(
+                        options.mongoDbUser,
+                        options.mongoDbAuthSource,
+                        options.mongoDbPass.toCharArray());
+            }
+
+            MongoPersistenceProvider mpp = new MongoPersistenceProvider(address, credential);
             mpp.init(workspaceWithPrefix);
 
             persistenceProvider = mpp;

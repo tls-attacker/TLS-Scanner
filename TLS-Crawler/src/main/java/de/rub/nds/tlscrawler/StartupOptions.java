@@ -52,12 +52,41 @@ public class StartupOptions extends OptionsBase {
     public String instanceId;
 
     @Option(
-            name = "mongoDbConnectionString",
+            name = "mongoDbHost",
             abbrev = 'o',
-            help = "Connection string of the MongoDB instance this crawler saves to.",
+            help = "Host of the MongoDB instance this crawler saves to.",
+            defaultValue = "localhost"
+    )
+    public String mongoDbHost;
+
+    @Option(
+            name = "mongoDbPort",
+            abbrev = 'p',
+            help = "Port of the MongoDB instance this crawler saves to.",
+            defaultValue = "27017"
+    )
+    public int mongoDbPort;
+
+    @Option(
+            name = "mongoDbUser",
+            help = "The username to be used to authenticate with the MongoDB instance.",
             defaultValue = ""
     )
-    public String mongoDbConnectionString;
+    public String mongoDbUser;
+
+    @Option(
+            name = "mongoDbPass",
+            help = "The passwort to be used to authenticate with MongoDB.",
+            defaultValue = ""
+    )
+    public String mongoDbPass;
+
+    @Option(
+            name = "mongoDbAuthSource",
+            help = "The DB within the MongoDB instance, in which the user:pass is defined.",
+            defaultValue = ""
+    )
+    public String mongoDbAuthSource;
 
     @Option(
             name = "redisConnectionString",
@@ -141,10 +170,25 @@ public class StartupOptions extends OptionsBase {
             result.inMemoryOrchestration = true;
         }
 
+        boolean saneMongoLogin = saneMongoLogin(result.mongoDbUser, result.mongoDbPass, result.mongoDbAuthSource);
+        if (result != null && !saneMongoLogin) {
+            LOG.warn("Did not specify a full set of mongo credentials (none is fine for unsecured instances).");
+        }
+
         return result;
     }
 
     public static String getHelpString() {
         return parser.describeOptions(Collections.<String, String>emptyMap(), OptionsParser.HelpVerbosity.LONG);
+    }
+
+    private static boolean saneMongoLogin(String user, String pass, String authSource) {
+        if (user.equals("") && pass.equals("") && authSource.equals("")) {
+            return true;
+        } else if (!user.equals("") && !pass.equals("") && !authSource.equals("")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
