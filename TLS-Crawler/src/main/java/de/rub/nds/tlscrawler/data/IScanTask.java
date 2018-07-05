@@ -32,11 +32,11 @@ public interface IScanTask {
     String getScanId();
 
     /**
-     * Returns the ID of the slave which performed the scan.
+     * Returns the ID of the master which created the scan task.
      *
-     * @return The id of the slave instance.
+     * @return The id of the master instance.
      */
-    String getSlaveId();
+    String getInstanceId();
 
     /**
      * @return The point in time at which the scan was scheduled.

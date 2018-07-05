@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -25,7 +24,7 @@ public class ScanTask implements IScanTask {
 
     private String id;
     private String scanId;
-    private String slaveId;
+    private String instanceId;
     private Instant createdTimestamp;
     private Instant acceptedTimestamp;
     private Instant startedTimestamp;
@@ -36,8 +35,8 @@ public class ScanTask implements IScanTask {
     private Collection<IScanResult> results;
 
     public ScanTask(String id,
-                    String scandId,
-                    String slaveId,
+                    String scanId,
+                    String instanceId,
                     Instant createdTimestamp,
                     Instant acceptedTimestamp,
                     Instant startedTimestamp,
@@ -46,8 +45,8 @@ public class ScanTask implements IScanTask {
                     Collection<Integer> ports,
                     Collection<String> scans) {
         this.id = id;
-        this.scanId = scandId;
-        this.slaveId = slaveId;
+        this.scanId = scanId;
+        this.instanceId = instanceId;
         this.createdTimestamp = createdTimestamp;
         this.acceptedTimestamp = acceptedTimestamp;
         this.startedTimestamp = startedTimestamp;
@@ -70,7 +69,7 @@ public class ScanTask implements IScanTask {
     }
 
     @Override
-    public String getSlaveId() { return this.slaveId; }
+    public String getInstanceId() { return this.instanceId; }
 
     @Override
     public Instant getCreatedTimestamp() {
@@ -150,7 +149,7 @@ public class ScanTask implements IScanTask {
         return new ScanTask(
                 scan.getId(),
                 scan.getScanId(),
-                scan.getSlaveId(),
+                scan.getInstanceId(),
                 scan.getCreatedTimestamp(),
                 scan.getAcceptedTimestamp(),
                 scan.getStartedTimestamp(),
