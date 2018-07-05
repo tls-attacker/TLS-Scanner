@@ -17,6 +17,8 @@ import de.rub.nds.tlscrawler.data.IScanTarget;
  */
 public interface IScan {
 
+    static String SLAVE_INSTANCE_ID = "slaveInstanceId";
+
     /**
      * @return A unique name.
      */
@@ -26,5 +28,5 @@ public interface IScan {
      * @param target Target of the scan.
      * @return The scan's result in an IScanResult structure.
      */
-    IScanResult scan(IScanTarget target);
+    IScanResult scan(String slaveInstanceId, IScanTarget target);
 }

@@ -38,12 +38,16 @@ public class TlsCrawlerMaster extends TlsCrawler {
     /**
      * TLS-Crawler master constructor.
      *
+     * @param instanceId The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TlsCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
-        super(orchestrationProvider, persistenceProvider, scans);
+    public TlsCrawlerMaster(String instanceId,
+                            IOrchestrationProvider orchestrationProvider,
+                            IPersistenceProvider persistenceProvider,
+                            List<IScan> scans) {
+        super(instanceId, orchestrationProvider, persistenceProvider, scans);
 
         this.taskGeneratorThreadList = new HashMap<>();
     }
@@ -61,6 +65,7 @@ public class TlsCrawlerMaster extends TlsCrawler {
             IScanTask newTask = new ScanTask(
                     taskId,
                     scanId,
+                    this.getInstanceId(),
                     Instant.now(),
                     null,
                     null,

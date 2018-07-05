@@ -47,12 +47,16 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     /**
      * TLS-Crawler constructor.
      *
+     * @param instanceId The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TlsCrawlerSlave(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
-        super(orchestrationProvider, persistenceProvider, scans);
+    public TlsCrawlerSlave(String instanceId,
+                           IOrchestrationProvider orchestrationProvider,
+                           IPersistenceProvider persistenceProvider,
+                           List<IScan> scans) {
+        super(instanceId, orchestrationProvider, persistenceProvider, scans);
 
         LOG.trace("Constructor()");
 
@@ -61,7 +65,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         this.threads = new LinkedList<>();
 
         for (int i = 0; i < NO_THREADS; i++) {
-            Thread t = new SlaveWorkerThread(this.synchronizedTaskRouter, this);
+            Thread t = new SlaveWorkerThread(this.getInstanceId(), this.synchronizedTaskRouter, this);
             t.start();
             this.threads.add(t);
         }
@@ -148,7 +152,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                 threads.removeAll(deadThreads);
 
                 for (int i = 0; i < deadThreads.size(); i++) {
-                    Thread newThread = new SlaveWorkerThread(synchronizedTaskRouter, scanProvider);
+                    Thread newThread = new SlaveWorkerThread(organizer.getInstanceId(), synchronizedTaskRouter, scanProvider);
                     newThread.start();
                     threads.add(newThread);
                 }
