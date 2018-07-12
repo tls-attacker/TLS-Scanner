@@ -8,7 +8,6 @@
 package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.OptionsParsingException;
-import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
@@ -98,7 +97,10 @@ public class Main {
             persistenceProvider = mpp;
 
             if (!options.inMemoryOrchestration) {
-                RedisOrchestrationProvider rop = new RedisOrchestrationProvider(options.redisConnectionString);
+                RedisOrchestrationProvider rop = new RedisOrchestrationProvider(
+                        options.redisHost,
+                        options.redisPort,
+                        options.redisPass);
 
                 try {
                     rop.init(workspaceWithPrefix);

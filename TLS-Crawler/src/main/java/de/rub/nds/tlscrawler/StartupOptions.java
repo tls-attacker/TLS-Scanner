@@ -89,12 +89,28 @@ public class StartupOptions extends OptionsBase {
     public String mongoDbAuthSource;
 
     @Option(
-            name = "redisConnectionString",
+            name = "redisHost",
             abbrev = 'r',
-            help = "Connection string of the Redis instance this crawler uses to coordinate.",
+            help = "Host of the Redis instance this crawler uses to coordinate.",
+            defaultValue = "localhost"
+    )
+    public String redisHost;
+
+    @Option(
+            name = "redisPort",
+            abbrev = 'q',
+            help = "Port of the Redis instance this crawler uses to coordinate.",
+            defaultValue = "6379"
+    )
+    public int redisPort;
+
+    @Option(
+            name = "redisPass",
+            abbrev = 'a',
+            help = "Password of the Redis instance this crawler uses to coordinate.",
             defaultValue = ""
     )
-    public String redisConnectionString;
+    public String redisPass;
 
     @Option(
             name = "masterOnly",

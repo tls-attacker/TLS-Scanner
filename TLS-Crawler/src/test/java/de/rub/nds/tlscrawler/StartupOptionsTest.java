@@ -40,7 +40,7 @@ public class StartupOptionsTest {
         assertEquals(true, parsed.isMaster);
         assertEquals("myinstance", parsed.instanceId);
         assertEquals("mymongo", parsed.mongoDbHost);
-        assertEquals("myredis", parsed.redisConnectionString);
+        assertEquals("myredis", parsed.redisHost);
     }
 
     @Test
