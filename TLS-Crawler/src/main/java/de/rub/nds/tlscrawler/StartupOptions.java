@@ -7,10 +7,7 @@
  */
 package de.rub.nds.tlscrawler;
 
-import com.google.devtools.common.options.Option;
-import com.google.devtools.common.options.OptionsBase;
-import com.google.devtools.common.options.OptionsParser;
-import com.google.devtools.common.options.OptionsParsingException;
+import com.google.devtools.common.options.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,12 +151,10 @@ public class StartupOptions extends OptionsBase {
      * @throws OptionsParsingException
      */
     public static StartupOptions parseOptions(String[] args) throws OptionsParsingException {
-        StartupOptions result;
+        StartupOptions result = null;
 
         LOG.trace("parseOptions()");
-
-        parser.parse(args);
-        result = parser.getOptions(StartupOptions.class);
+        result = Options.parse(StartupOptions.class, args).getOptions();
 
         if (result != null && result.workspace.equals("")) {
             LOG.warn("No workspace name set. This might cause trouble when using " +
