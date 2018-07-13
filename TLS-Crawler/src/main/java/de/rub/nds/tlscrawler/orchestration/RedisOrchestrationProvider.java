@@ -27,7 +27,7 @@ import java.util.Collection;
 public class RedisOrchestrationProvider implements IOrchestrationProvider {
     private static Logger LOG = LoggerFactory.getLogger(RedisOrchestrationProvider.class);
 
-    private static int REDIS_TIMEOUT = 3000;
+    private static int REDIS_TIMEOUT = 30000; // in ms
 
     private boolean initialized = false;
 
