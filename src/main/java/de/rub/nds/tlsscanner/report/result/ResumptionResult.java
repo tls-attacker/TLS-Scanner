@@ -22,7 +22,7 @@ public class ResumptionResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setSupportsSessionIds(supportsResumption);
     }
 

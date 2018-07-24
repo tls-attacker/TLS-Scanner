@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 /**
@@ -18,6 +19,8 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 public abstract class ProbeResult {
 
     private final ProbeType type;
+    private long starttime;
+    private long stoptime;
 
     public ProbeResult(ProbeType type) {
         this.type = type;
@@ -27,5 +30,31 @@ public abstract class ProbeResult {
         return type.name();
     }
 
-    public abstract void merge(SiteReport report);
+    public PerformanceData getPerformanceData() {
+        return new PerformanceData(type, starttime, stoptime);
+    }
+
+    public long getStarttime() {
+        return starttime;
+    }
+
+    public void setStarttime(long starttime) {
+        this.starttime = starttime;
+    }
+
+    public long getStoptime() {
+        return stoptime;
+    }
+
+    public void setStoptime(long stoptime) {
+        this.stoptime = stoptime;
+    }
+
+    public void merge(SiteReport report)
+    {
+        report.getPerformanceList().add(getPerformanceData());
+        this.mergeData(report);
+    }
+    
+    protected abstract void mergeData(SiteReport report);
 }

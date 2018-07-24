@@ -23,6 +23,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.bouncycastle.crypto.tls.Certificate;
@@ -35,6 +36,7 @@ public class SiteReport {
 
     //general
     private final List<ProbeType> probeTypeList;
+    private List<PerformanceData> performanceList;
 
     private final String host;
     private Boolean serverIsAlive = null;
@@ -184,14 +186,15 @@ public class SiteReport {
     private Boolean gcmReuse = null;
     private GcmPattern gcmPattern = null;
     private Boolean gcmCheck = null;
-    
+
     //NoColor Flag
     private boolean noColor = false;
-    
+
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
         this.host = host;
         this.probeTypeList = probeTypeList;
         this.noColor = noColor;
+        performanceList = new LinkedList<>();
     }
 
     public String getHost() {
@@ -1189,14 +1192,13 @@ public class SiteReport {
     public boolean isNoColour() {
         return noColor;
     }
-    
-    public String getFullReport()
-    {        
+
+    public String getFullReport() {
         return new SiteReportPrinter(this).getFullReport();
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         return getFullReport();
     }
 
@@ -1210,5 +1212,13 @@ public class SiteReport {
 
     public void setMacCheckPatternFinished(MacCheckPattern macCheckPatternFinished) {
         this.macCheckPatternFinished = macCheckPatternFinished;
+    }
+
+    public List<PerformanceData> getPerformanceList() {
+        return performanceList;
+    }
+
+    public void setPerformanceList(List<PerformanceData> performanceList) {
+        this.performanceList = performanceList;
     }
 }

@@ -96,7 +96,7 @@ public class ScanJobExecutor {
                 LOGGER.warn(ex);
             }
         }
-        // merge phase 2
+        // mergeData phase 2
         for (ProbeResult result : resultList) {
             result.merge(report);
         }

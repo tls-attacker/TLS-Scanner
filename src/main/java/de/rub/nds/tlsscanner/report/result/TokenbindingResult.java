@@ -29,7 +29,7 @@ public class TokenbindingResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setSupportedTokenBindingKeyParameters(supportedTokenBindingKeyParameters);
         report.setSupportedTokenBindingVersion(supportedTokenBindingVersion);
         if (supportedTokenBindingVersion != null && !supportedTokenBindingVersion.isEmpty()) {

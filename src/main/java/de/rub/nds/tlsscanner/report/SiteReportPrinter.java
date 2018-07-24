@@ -23,10 +23,14 @@ import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SiteReportPrinter {
 
-    SiteReport report;
+    private static final Logger LOGGER = LogManager.getLogger(SiteReportPrinter.class.getName());
+
+    private SiteReport report;
 
     public SiteReportPrinter(SiteReport report) {
         this.report = report;
@@ -57,6 +61,9 @@ public class SiteReportPrinter {
         appendCertificate(builder);
         appendSession(builder);
         appendRenegotiation(builder);
+        for (PerformanceData data : report.getPerformanceList()) {
+            LOGGER.debug("Type: " + data.getType() + "   Start: "+ data.getStarttime() + "    Stop: " + data.getStoptime());
+        }
         return builder.toString();
     }
 
@@ -382,7 +389,7 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendGreenYellow(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }

@@ -24,7 +24,7 @@ public class CompressionsResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setSupportedCompressionMethods(compressions);
         if (compressions.size() > 1) {
             report.setCrimeVulnerable(Boolean.TRUE);
