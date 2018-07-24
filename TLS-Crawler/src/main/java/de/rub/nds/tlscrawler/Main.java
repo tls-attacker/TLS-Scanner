@@ -13,6 +13,7 @@ import com.mongodb.ServerAddress;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
+import de.rub.nds.tlscrawler.options.StartupOptions;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;

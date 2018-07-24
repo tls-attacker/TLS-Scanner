@@ -5,9 +5,10 @@
  *
  * Copyright 2017 Ruhr-University Bochum
  */
-package de.rub.nds.tlscrawler;
+package de.rub.nds.tlscrawler.options;
 
 import com.google.devtools.common.options.OptionsParsingException;
+import de.rub.nds.tlscrawler.options.StartupOptions;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -9,6 +9,7 @@ package de.rub.nds.tlscrawler;
 
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
+import de.rub.nds.tlscrawler.options.NewScanOptions;
 import de.rub.nds.tlscrawler.utility.AddressIteratorFactory;
 import de.rub.nds.tlscrawler.utility.IAddressIterator;
 import org.slf4j.Logger;
