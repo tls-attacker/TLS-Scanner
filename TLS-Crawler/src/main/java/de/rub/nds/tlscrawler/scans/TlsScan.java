@@ -43,7 +43,6 @@ public class TlsScan implements IScan {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
-        generalDelegate.setLogLevel(null);
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setThreads(1);
