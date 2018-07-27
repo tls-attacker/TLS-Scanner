@@ -15,11 +15,14 @@ import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -87,6 +90,7 @@ public class TlsScan implements IScan {
         result.addSubResult("renegotiation", getRenegotiationPage(report));
         result.addSubResult("gcm", getGcmPage(report));
         result.addSubResult("intolerances", getIntolerancesPage(report));
+        result.addSubResult("performance", getPerformancePage(report));
 
         return result;
     }
@@ -104,11 +108,11 @@ public class TlsScan implements IScan {
         attacks.addBoolean("crimeVulnerable", report.getCrimeVulnerable());
         attacks.addBoolean("breachVulnerable", report.getBreachVulnerable());
         attacks.addBoolean("sweet32Vulnerable", report.getSweet32Vulnerable());
-        attacks.addString("drownVulnerable", report.getDrownVulnerable().name());
+        attacks.addString("drownVulnerable", report.getDrownVulnerable() != null ? report.getDrownVulnerable().name() : "");
         attacks.addBoolean("logjamVulnerable", report.getLogjamVulnerable());
         attacks.addBoolean("lucky13Vulnerable", report.getLucky13Vulnerable());
         attacks.addBoolean("heartbleedVulnerable", report.getHeartbleedVulnerable());
-        attacks.addString("earlyCcsVulnerable", report.getEarlyCcsVulnerable().name());
+        attacks.addString("earlyCcsVulnerable", report.getEarlyCcsVulnerable() != null ? report.getEarlyCcsVulnerable().name() : "");
 
         return attacks;
     }
@@ -210,7 +214,8 @@ public class TlsScan implements IScan {
     IScanResult getRfcPage(SiteReport report) {
         IScanResult rfc = new ScanResult("rfc");
 
-        rfc.addBoolean("checksMac", report.getChecksMac());
+        rfc.addString("macCheckPatternAppData", report.getMacCheckPatternAppData() != null ? report.getMacCheckPatternAppData().toString() : "");
+        rfc.addString("macCheckPatternFinished", report.getMacCheckPatternFinished() != null ? report.getMacCheckPatternFinished().toString() : "");
         rfc.addBoolean("checksFinished", report.getChecksFinished());
 
         return rfc;
@@ -257,7 +262,7 @@ public class TlsScan implements IScan {
         ciphers.addStringArray("versionSuitePairs", _versionSuitePairs);
 
         List<String> _cipherSuites = new LinkedList<>();
-        List<CipherSuite> _rawCipherSuites = report.getCipherSuites();
+        Collection<CipherSuite> _rawCipherSuites = report.getCipherSuites();
         if (_rawCipherSuites != null) {
             for (CipherSuite x : _rawCipherSuites) {
                 _cipherSuites.add(x == null ? null : x.toString());
@@ -345,5 +350,21 @@ public class TlsScan implements IScan {
         intolerances.addBoolean("clientHelloSizeIntolerance", report.getClientHelloSizeIntolerance());
 
         return intolerances;
+    }
+
+    IScanResult getPerformancePage(SiteReport report) {
+        IScanResult performance = new ScanResult("performance");
+
+        int ctr = 0;
+        Collection<PerformanceData> _perfData = report.getPerformanceList();
+        for (PerformanceData data : _perfData) {
+            IScanResult perfDataPoint = new ScanResult(data.getType().name());
+            perfDataPoint.addTimestamp("Starttime", Instant.ofEpochMilli(data.getStarttime()));
+            perfDataPoint.addTimestamp("Stoptime", Instant.ofEpochMilli(data.getStoptime()));
+
+            performance.addSubResult(ctr++ + " - " + data.getType().name(), perfDataPoint);
+        }
+
+        return performance;
     }
 }
