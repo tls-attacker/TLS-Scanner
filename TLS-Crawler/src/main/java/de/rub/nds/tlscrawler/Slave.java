@@ -8,14 +8,13 @@
 package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.OptionsParsingException;
-import de.rub.nds.tlscrawler.options.SlaveOptions;
+import de.rub.nds.tlscrawler.options.MasterSlaveOptions;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.ScanFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Slave instance main class.
@@ -26,10 +25,10 @@ public class Slave {
     private static Logger LOG = LoggerFactory.getLogger(Slave.class);
 
     public static void main(String[] args) {
-        SlaveOptions options;
+        MasterSlaveOptions options;
 
         try {
-            options = SlaveOptions.parseOptions(args);
+            options = MasterSlaveOptions.parseOptions(args);
         } catch (OptionsParsingException ex) {
             LOG.error("Command Line Options could not be parsed.");
             options = null;
@@ -37,7 +36,7 @@ public class Slave {
 
         if (options == null || options.help) {
             System.out.println("Could not parse Command Line Options. Try again:");
-            System.out.println(SlaveOptions.getHelpString());
+            System.out.println(MasterSlaveOptions.getHelpString());
             System.exit(0);
         }
 

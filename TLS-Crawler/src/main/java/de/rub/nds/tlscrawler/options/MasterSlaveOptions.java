@@ -19,10 +19,10 @@ import java.util.UUID;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class SlaveOptions extends OptionsBase {
-    private static Logger LOG = LoggerFactory.getLogger(SlaveOptions.class);
+public class MasterSlaveOptions extends OptionsBase {
+    private static Logger LOG = LoggerFactory.getLogger(MasterSlaveOptions.class);
 
-    private static OptionsParser parser = OptionsParser.newOptionsParser(SlaveOptions.class);
+    private static OptionsParser parser = OptionsParser.newOptionsParser(MasterSlaveOptions.class);
 
     @Option(
             name = "help",
@@ -125,10 +125,10 @@ public class SlaveOptions extends OptionsBase {
      * @return An object containing sane arguments.
      * @throws OptionsParsingException
      */
-    public static SlaveOptions parseOptions(String[] args) throws OptionsParsingException {
-        SlaveOptions result;
+    public static MasterSlaveOptions parseOptions(String[] args) throws OptionsParsingException {
+        MasterSlaveOptions result;
 
-        result = Options.parse(SlaveOptions.class, args).getOptions();
+        result = Options.parse(MasterSlaveOptions.class, args).getOptions();
 
         if (result != null && result.workspace.equals("")) {
             LOG.warn("No workspace name set. This might cause trouble when using " +

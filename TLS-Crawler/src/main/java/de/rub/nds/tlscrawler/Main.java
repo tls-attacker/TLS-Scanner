@@ -131,7 +131,7 @@ public class Main {
         LOG.trace("setUpScans()");
 
         List<IScan> result = new LinkedList<>(ScanFactory.getInstance().getBuiltInScans());
-        
+
         return result;
     }
 }
