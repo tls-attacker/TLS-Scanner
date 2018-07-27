@@ -123,23 +123,15 @@ public class Main {
     }
 
     /**
-     * Set up for known scans // TODO and plugin-provided scans.
+     * Set up for known scans.
      *
      * @return A list of scans.
      */
     static List<IScan> setUpScans() {
         LOG.trace("setUpScans()");
 
-        List<IScan> result = new LinkedList<>();
-
-        // Set up known scans.
-        result.add(new PingScan());
-        result.add(new NullScan());
-        result.add(new TlsScan());
-        result.add(new FriendlyTlsScan());
-
-        // TODO: Set up plugins
-
+        List<IScan> result = new LinkedList<>(ScanFactory.getInstance().getBuiltInScans());
+        
         return result;
     }
 }

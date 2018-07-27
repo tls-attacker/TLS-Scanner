@@ -10,9 +10,11 @@ package de.rub.nds.tlscrawler;
 import com.google.devtools.common.options.OptionsParsingException;
 import de.rub.nds.tlscrawler.options.SlaveOptions;
 import de.rub.nds.tlscrawler.scans.IScan;
+import de.rub.nds.tlscrawler.scans.ScanFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -39,6 +41,6 @@ public class Slave {
             System.exit(0);
         }
 
-        List<IScan> scans =
+        Collection<IScan> scans = ScanFactory.getInstance().getBuiltInScans();
     }
 }
