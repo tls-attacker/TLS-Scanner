@@ -57,7 +57,10 @@ public class Main {
         Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
 
         ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(), scans);
-        slave.start();
+
+        if (!options.masterOnly) {
+            slave.start();
+        }
 
         TlsCrawlerMaster master = new TlsCrawlerMaster(options.instanceId, providers.getFirst(), providers.getSecond(), scans);
 
