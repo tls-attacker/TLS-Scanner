@@ -127,13 +127,26 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
-    public void addScanTask(String task) {
+    public void addScanTask(String taskId) {
         this.checkInit();
 
         LOG.trace("addScanTask()");
 
         try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.lpush(this.taskListName, task);
+            jedis.lpush(this.taskListName, taskId);
+        }
+    }
+
+    @Override
+    public void addScanTasks(Collection<String> taskIds) {
+        this.checkInit();
+
+        LOG.trace("addScanTasks()");
+
+        String[] tids = taskIds.toArray(new String[taskIds.size()]);
+
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            jedis.lpush(this.taskListName, tids);
         }
     }
 }
