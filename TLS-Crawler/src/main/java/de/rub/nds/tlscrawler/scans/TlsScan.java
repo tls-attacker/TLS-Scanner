@@ -355,14 +355,13 @@ public class TlsScan implements IScan {
     IScanResult getPerformancePage(SiteReport report) {
         IScanResult performance = new ScanResult("performance");
 
-        int ctr = 0;
         Collection<PerformanceData> _perfData = report.getPerformanceList();
         for (PerformanceData data : _perfData) {
             IScanResult perfDataPoint = new ScanResult(data.getType().name());
             perfDataPoint.addTimestamp("Starttime", Instant.ofEpochMilli(data.getStarttime()));
             perfDataPoint.addTimestamp("Stoptime", Instant.ofEpochMilli(data.getStoptime()));
 
-            performance.addSubResult(ctr++ + " - " + data.getType().name(), perfDataPoint);
+            performance.addSubResult(data.getType().name(), perfDataPoint);
         }
 
         return performance;

@@ -16,10 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -59,10 +56,13 @@ public class TlsCrawlerMaster extends TlsCrawler {
 
         // TODO: This should be parallelized.
 
+        int ctr = 0;
+        Collection<IScanTask> bulk = new ArrayList<>(1000);
+
         for (String target : targets) {
             String taskId = UUID.randomUUID().toString();
 
-            IScanTask newTask = new ScanTask(
+            bulk.add(new ScanTask(
                     taskId,
                     scanId,
                     this.getInstanceId(),
@@ -72,11 +72,29 @@ public class TlsCrawlerMaster extends TlsCrawler {
                     null,
                     target,
                     ports,
-                    scans);
+                    scans)
+            );
 
-            this.getPersistenceProvider().setUpScanTask(newTask);
-            this.getOrchestrationProvider().addScanTask(newTask.getId());
+            if (++ctr >= 1000) {
+                setUp(this, bulk);
+                ctr = 0;
+                bulk = new ArrayList<>(1000);
+            }
         }
+
+        if (ctr > 0) {
+            setUp(this, bulk);
+        }
+    }
+
+    private static void setUp(IOrganizer org, Collection<IScanTask> tasks) {
+            org.getPersistenceProvider().setUpScanTasks(tasks);
+
+            Collection<String> tids = tasks.stream()
+                    .map(x -> x.getId())
+                    .collect(Collectors.toList());
+
+            org.getOrchestrationProvider().addScanTasks(tids);
     }
 
     public IMasterStats getStats() {

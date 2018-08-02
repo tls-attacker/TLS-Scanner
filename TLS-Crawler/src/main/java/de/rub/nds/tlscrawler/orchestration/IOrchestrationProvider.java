@@ -36,7 +36,14 @@ public interface IOrchestrationProvider {
     /**
      * Adds a scan task to be distributed to a node.
      *
-     * @param task The scan task to cancel.
+     * @param taskId The scan task to add.
      */
     void addScanTask(String taskId);
+
+    /**
+     * Adds scan tasks to be distributed.
+     *
+     * @param taskIds
+     */
+    void addScanTasks(Collection<String> taskIds);
 }

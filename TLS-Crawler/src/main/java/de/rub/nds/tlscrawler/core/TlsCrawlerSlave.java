@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
 
-    private static int NO_THREADS = 256;
+    private static int NO_THREADS = 64;
     private static int NEW_FETCH_LIMIT = NO_THREADS * 3;
     private static int FETCH_AMOUNT = NO_THREADS * 2;
     private static int MIN_NO_TO_PERSIST = 64;

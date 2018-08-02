@@ -60,4 +60,9 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
             this.tasks.add(task);
         }
     }
+
+    @Override
+    public void addScanTasks(Collection<String> taskIds) {
+        throw new RuntimeException("Not yet implemented.");
+    }
 }
