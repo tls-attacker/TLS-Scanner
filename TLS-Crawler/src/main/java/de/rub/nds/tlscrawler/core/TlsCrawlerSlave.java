@@ -55,7 +55,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     public TlsCrawlerSlave(String instanceId,
                            IOrchestrationProvider orchestrationProvider,
                            IPersistenceProvider persistenceProvider,
-                           List<IScan> scans) {
+                           Collection<IScan> scans) {
         super(instanceId, orchestrationProvider, persistenceProvider, scans);
 
         LOG.trace("Constructor()");

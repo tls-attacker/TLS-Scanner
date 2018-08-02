@@ -13,6 +13,7 @@ import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +30,7 @@ class TlsCrawler implements IScanProvider, IOrganizer {
     private String instanceId;
     private IOrchestrationProvider orchestrationProvider;
     private IPersistenceProvider persistenceProvider;
-    private List<IScan> scans;
+    private Collection<IScan> scans;
 
     /**
      * TLS-Crawler constructor.
@@ -42,7 +43,7 @@ class TlsCrawler implements IScanProvider, IOrganizer {
     public TlsCrawler(String instanceId,
                       IOrchestrationProvider orchestrationProvider,
                       IPersistenceProvider persistenceProvider,
-                      List<IScan> scans) {
+                      Collection<IScan> scans) {
         boolean argumentsInvalid = false;
 
         this.instanceId = instanceId;
@@ -98,7 +99,7 @@ class TlsCrawler implements IScanProvider, IOrganizer {
      * @return The list of available scans.
      */
     @Override
-    public List<IScan> getScans() {
+    public Collection<IScan> getScans() {
         return this.scans;
     }
 

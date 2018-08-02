@@ -9,7 +9,7 @@ package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.scans.IScan;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Interface for objects to be passed to workers to provide them with the
@@ -22,12 +22,12 @@ interface IScanProvider {
     /**
      * @return A list of all available scans.
      */
-    List<IScan> getScans();
+    Collection<IScan> getScans();
 
     /**
      * @return A list of the names of all the available scans.
      */
-    List<String> getScanNames();
+    Collection<String> getScanNames();
 
     /**
      * @param name The name of the scan to check.
