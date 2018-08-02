@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler;
 
+import de.rub.nds.tlscrawler.options.StartupOptions;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
@@ -18,7 +19,6 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for the Main class.

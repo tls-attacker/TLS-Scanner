@@ -5,7 +5,7 @@
  *
  * Copyright 2017 Ruhr-University Bochum
  */
-package de.rub.nds.tlscrawler;
+package de.rub.nds.tlscrawler.options;
 
 import com.google.devtools.common.options.*;
 import org.slf4j.Logger;
@@ -100,6 +100,9 @@ public class NewScanOptions extends OptionsBase {
 
     public boolean printWarning = false;
 
+    /**
+     * @return Command Line Argument description.
+     */
     public static String getHelpString() {
         return parser.describeOptions(Collections.<String, String>emptyMap(), OptionsParser.HelpVerbosity.LONG);
     }
