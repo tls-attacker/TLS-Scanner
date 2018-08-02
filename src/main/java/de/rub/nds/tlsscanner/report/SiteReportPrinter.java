@@ -23,6 +23,7 @@ import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,7 +63,7 @@ public class SiteReportPrinter {
         appendSession(builder);
         appendRenegotiation(builder);
         for (PerformanceData data : report.getPerformanceList()) {
-            LOGGER.debug("Type: " + data.getType() + "   Start: "+ data.getStarttime() + "    Stop: " + data.getStoptime());
+            LOGGER.debug("Type: " + data.getType() + "   Start: " + data.getStarttime() + "    Stop: " + data.getStoptime());
         }
         return builder.toString();
     }
@@ -162,6 +163,21 @@ public class SiteReportPrinter {
         prettyAppendRedGreen(builder, "Lucky13", report.getLucky13Vulnerable());
         prettyAppendRedGreen(builder, "Heartbleed", report.getHeartbleedVulnerable());
         prettyAppendEarlyCcs(builder, "EarlyCcs", report.getEarlyCcsVulnerable());
+        prettyAppendHeading(builder, "PaddingOracle Details");
+        if (report.getPaddingOracleTestResultList().isEmpty()) {
+            prettyAppend(builder, "No Testresults");
+        } else {
+            for (PaddingOracleTestResult testResult : report.getPaddingOracleTestResultList()) {
+                String resultString = "" + padToLength(testResult.getSuite().name(),40) + ":" + testResult.getVersion() + "\t" + testResult.getVectorGeneratorType() + "\t" + testResult.getRecordGeneratorType();
+                if (testResult.getVulnerable() == Boolean.TRUE) {
+                    prettyAppendRed(builder, resultString + "\t VULNERABLE");
+                } else if (testResult.getVulnerable() == Boolean.FALSE) {
+                    prettyAppendGreen(builder, resultString);
+                } else {
+                    prettyAppendYellow(builder, resultString + "\t Error");
+                }
+            }
+        }
         return builder;
     }
 
@@ -268,9 +284,9 @@ public class SiteReportPrinter {
         }
         prettyAppendHeading(builder, "Extensions");
         prettyAppendGreenRed(builder, "Secure Renegotiation", report.getSupportsSecureRenegotiation());
-        prettyAppendGreenOnSuccess(builder, "Supports Extended Master Secret", report.getSupportsExtendedMasterSecret());
-        prettyAppendGreenOnSuccess(builder, "Supports Encrypt Then Mac", report.getSupportsEncryptThenMacSecret());
-        prettyAppendGreenOnSuccess(builder, "Supports Tokenbinding", report.getSupportsTokenbinding());
+        prettyAppendGreenOnSuccess(builder, "Extended Master Secret", report.getSupportsExtendedMasterSecret());
+        prettyAppendGreenOnSuccess(builder, "Encrypt Then Mac", report.getSupportsEncryptThenMacSecret());
+        prettyAppendGreenOnSuccess(builder, "Tokenbinding", report.getSupportsTokenbinding());
 
         if (report.getSupportsTokenbinding() == Boolean.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");
@@ -470,6 +486,16 @@ public class SiteReportPrinter {
             default:
                 throw new IllegalArgumentException("Unkown MacCheckPattern Type: " + pattern.getType());
         }
+    }
+    
+    private String padToLength(String value, int length)
+    {
+        StringBuilder builder = new StringBuilder(value);
+        while(builder.length() < length)
+        {
+            builder.append(" ");
+        }
+        return builder.toString();
     }
 
     private String addIndentations(String value) {

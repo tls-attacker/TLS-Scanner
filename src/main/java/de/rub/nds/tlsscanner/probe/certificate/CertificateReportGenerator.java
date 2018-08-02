@@ -8,16 +8,11 @@
  */
 package de.rub.nds.tlsscanner.probe.certificate;
 
-import de.rub.nds.tlsattacker.core.certificate.PemUtil;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.probe.certificate.roca.BrokenKey;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateParsingException;
@@ -25,8 +20,6 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -154,7 +147,7 @@ public class CertificateReportGenerator {
             if (sigAndHashString != null) {
                 String[] algos = sigAndHashString.toUpperCase().split("WITH");
                 if (algos.length != 2) {
-                    LOGGER.warn("Could not parse " + sigAndHashString + " into a reasonable SignatureAndHash algorithm");
+                    LOGGER.warn("Could not parse " + sigAndHashString + " into a reasonable SignatureAndHashAlgorithm");
                     return;
                 }
                 SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.valueOf(algos[1]);
@@ -167,7 +160,7 @@ public class CertificateReportGenerator {
                     LOGGER.warn("Parsed an unknown SignatureAlgorithm");
                     return;
                 }
-                SignatureAndHashAlgorithm sigHashAlgo = new SignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
+                SignatureAndHashAlgorithm sigHashAlgo = SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
                 report.setSignatureAndHashAlgorithm(sigHashAlgo);
             }
         } catch (Exception E) {

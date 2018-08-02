@@ -23,6 +23,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +58,7 @@ public class SiteReport {
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
     private Boolean paddingOracleVulnerable = null;
+    private List<PaddingOracleTestResult> paddingOracleTestResultList;
     private Boolean invalidCurveVulnerable = null;
     private Boolean invalidCurveEphermaralVulnerable = null;
     private Boolean poodleVulnerable = null;
@@ -1220,5 +1222,13 @@ public class SiteReport {
 
     public void setPerformanceList(List<PerformanceData> performanceList) {
         this.performanceList = performanceList;
+    }
+
+    public List<PaddingOracleTestResult> getPaddingOracleTestResultList() {
+        return paddingOracleTestResultList;
+    }
+
+    public void setPaddingOracleTestResultList(List<PaddingOracleTestResult> paddingOracleTestResultList) {
+        this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 }

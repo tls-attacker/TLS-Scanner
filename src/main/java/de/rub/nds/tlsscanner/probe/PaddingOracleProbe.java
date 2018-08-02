@@ -11,12 +11,20 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.PaddingOracleResult;
 import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
+import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
+import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
+import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -33,9 +41,38 @@ public class PaddingOracleProbe extends TlsProbe {
         PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig());
-        Boolean vulnerable = attacker.isVulnerable();
-        return new PaddingOracleResult(vulnerable);
+        paddingOracleConfig.setRecordGeneratorType(PaddingRecordGeneratorType.VERY_SHORT);
+        paddingOracleConfig.setVectorGeneratorType(PaddingVectorGeneratorType.CLASSIC_DYNAMIC);
+        CiphersuiteDelegate cipherSuiteDelegate = (CiphersuiteDelegate) paddingOracleConfig.getDelegate(CiphersuiteDelegate.class);
+        List<CipherSuite> suiteList = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.getImplemented()) {
+            if (suite.isCBC()) {
+                suiteList.add(suite);
+            }
+        }
+        cipherSuiteDelegate.setCipherSuites(suiteList);
+        List<PaddingOracleTestResult> testResultList = new LinkedList<>();
+        Boolean lastResult = null;
+        do {
+            PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig());
+            lastResult = attacker.isVulnerable();
+            if ((lastResult == true || lastResult == false) && attacker.getTestedSuite() != null && attacker.getTestedVersion() != null) {
+                testResultList.add(new PaddingOracleTestResult(lastResult, attacker.getTestedVersion(), attacker.getTestedSuite(), paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(),attacker.getResponseMap()));
+                String suffix = attacker.getTestedSuite().name().split("WITH_")[1];
+                List<CipherSuite> tempList = new LinkedList<>();
+                for (CipherSuite suite : suiteList) {
+                    if (!suite.name().endsWith(suffix)) {
+                        tempList.add(suite);
+                    }
+                }
+                suiteList = tempList;
+                cipherSuiteDelegate.setCipherSuites(suiteList);
+            } else {
+                lastResult = null;
+            }
+
+        } while (lastResult != null);
+        return new PaddingOracleResult(testResultList);
     }
 
     @Override
@@ -49,6 +86,6 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new PaddingOracleResult(Boolean.FALSE);
+        return new PaddingOracleResult(new LinkedList<PaddingOracleTestResult>());
     }
 }
