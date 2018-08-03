@@ -125,6 +125,11 @@ public class TlsScan implements IScan {
         IScanResult paddingOracle = new ScanResult("paddingOracle");
 
         List<PaddingOracleTestResult> _rawPaddingOracleresult = report.getPaddingOracleTestResultList();
+
+        if (_rawPaddingOracleresult == null) {
+            return null;
+        }
+
         List<IScanResult> paddingOracleResults = new LinkedList<>();
 
         for (PaddingOracleTestResult potr : _rawPaddingOracleresult) {
