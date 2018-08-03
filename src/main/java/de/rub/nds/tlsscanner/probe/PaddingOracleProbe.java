@@ -55,23 +55,23 @@ public class PaddingOracleProbe extends TlsProbe {
         List<PaddingOracleTestResult> testResultList = new LinkedList<>();
         Boolean lastResult = null;
         PaddingRecordGeneratorType recordGeneratorType;
-        if (scannerConfig.getDetail() != ScannerDetail.ALL) {
+        if (scannerConfig.getScanDetail() != ScannerDetail.ALL) {
             recordGeneratorType = PaddingRecordGeneratorType.VERY_SHORT;
         } else {
             recordGeneratorType = PaddingRecordGeneratorType.SHORT;
         }
         List<PaddingVectorGeneratorType> vectorTypeList = new LinkedList<>();
         vectorTypeList.add(PaddingVectorGeneratorType.CLASSIC_DYNAMIC);
-        if (scannerConfig.getDetail() == ScannerDetail.DETAILED || scannerConfig.getDetail() == ScannerDetail.ALL) {
+        if (scannerConfig.getScanDetail() == ScannerDetail.DETAILED || scannerConfig.getScanDetail() == ScannerDetail.ALL) {
             vectorTypeList.add(PaddingVectorGeneratorType.FINISHED);
-            if (scannerConfig.getDetail() == ScannerDetail.ALL) {
+            if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
                 vectorTypeList.add(PaddingVectorGeneratorType.CLOSE_NOTIFY);
                 vectorTypeList.add(PaddingVectorGeneratorType.FINISHED_RESUMPTION);
             }
         }
         List<ProtocolVersion> versionList = new LinkedList<>();
         versionList.add(ProtocolVersion.TLS12);
-        if (scannerConfig.getDetail() == ScannerDetail.DETAILED || scannerConfig.getDetail() == ScannerDetail.ALL) {
+        if (scannerConfig.getScanDetail() == ScannerDetail.DETAILED || scannerConfig.getScanDetail() == ScannerDetail.ALL) {
             versionList.add(ProtocolVersion.TLS11);
             versionList.add(ProtocolVersion.TLS10);
         }
