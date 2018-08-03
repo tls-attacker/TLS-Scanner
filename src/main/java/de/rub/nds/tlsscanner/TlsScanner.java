@@ -79,6 +79,22 @@ public class TlsScanner {
             Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.OFF);
         }
     }
+    
+    public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
+        this.config = config;
+        this.executor = executor;
+        if (config.getGeneralDelegate().getLogLevel() == Level.ALL) {
+            Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.ALL);
+            Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.ALL);
+
+        } else if (config.getGeneralDelegate().getLogLevel() == Level.TRACE) {
+            Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
+            Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.INFO);
+        } else {
+            Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.OFF);
+            Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.OFF);
+        }
+    }
 
     public SiteReport scan() {
         List<TlsProbe> phaseOneTestList = new LinkedList<>();

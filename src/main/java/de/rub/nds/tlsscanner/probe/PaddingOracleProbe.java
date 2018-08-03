@@ -17,9 +17,11 @@ import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
+import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
@@ -41,8 +43,7 @@ public class PaddingOracleProbe extends TlsProbe {
         PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        paddingOracleConfig.setRecordGeneratorType(PaddingRecordGeneratorType.VERY_SHORT);
-        paddingOracleConfig.setVectorGeneratorType(PaddingVectorGeneratorType.CLASSIC_DYNAMIC);
+
         CiphersuiteDelegate cipherSuiteDelegate = (CiphersuiteDelegate) paddingOracleConfig.getDelegate(CiphersuiteDelegate.class);
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.getImplemented()) {
@@ -53,26 +54,67 @@ public class PaddingOracleProbe extends TlsProbe {
         cipherSuiteDelegate.setCipherSuites(suiteList);
         List<PaddingOracleTestResult> testResultList = new LinkedList<>();
         Boolean lastResult = null;
-        do {
-            PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig());
-            lastResult = attacker.isVulnerable();
-            if ((lastResult == true || lastResult == false) && attacker.getTestedSuite() != null && attacker.getTestedVersion() != null) {
-                testResultList.add(new PaddingOracleTestResult(lastResult, attacker.getTestedVersion(), attacker.getTestedSuite(), paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(),attacker.getResponseMap()));
-                String suffix = attacker.getTestedSuite().name().split("WITH_")[1];
-                List<CipherSuite> tempList = new LinkedList<>();
-                for (CipherSuite suite : suiteList) {
-                    if (!suite.name().endsWith(suffix)) {
-                        tempList.add(suite);
-                    }
-                }
-                suiteList = tempList;
-                cipherSuiteDelegate.setCipherSuites(suiteList);
-            } else {
-                lastResult = null;
+        PaddingRecordGeneratorType recordGeneratorType;
+        if (scannerConfig.getDetail() != ScannerDetail.ALL) {
+            recordGeneratorType = PaddingRecordGeneratorType.VERY_SHORT;
+        } else {
+            recordGeneratorType = PaddingRecordGeneratorType.SHORT;
+        }
+        List<PaddingVectorGeneratorType> vectorTypeList = new LinkedList<>();
+        vectorTypeList.add(PaddingVectorGeneratorType.CLASSIC_DYNAMIC);
+        if (scannerConfig.getDetail() == ScannerDetail.DETAILED || scannerConfig.getDetail() == ScannerDetail.ALL) {
+            vectorTypeList.add(PaddingVectorGeneratorType.FINISHED);
+            if (scannerConfig.getDetail() == ScannerDetail.ALL) {
+                vectorTypeList.add(PaddingVectorGeneratorType.CLOSE_NOTIFY);
+                vectorTypeList.add(PaddingVectorGeneratorType.FINISHED_RESUMPTION);
             }
+        }
+        List<ProtocolVersion> versionList = new LinkedList<>();
+        versionList.add(ProtocolVersion.TLS12);
+        if (scannerConfig.getDetail() == ScannerDetail.DETAILED || scannerConfig.getDetail() == ScannerDetail.ALL) {
+            versionList.add(ProtocolVersion.TLS11);
+            versionList.add(ProtocolVersion.TLS10);
+        }
+        ProtocolVersionDelegate versionDelegate = (ProtocolVersionDelegate) paddingOracleConfig.getDelegate(ProtocolVersionDelegate.class);
 
-        } while (lastResult != null);
+        for (ProtocolVersion version : versionList) {
+            for (PaddingVectorGeneratorType vectorType : vectorTypeList) {
+                do {
+                    cipherSuiteDelegate.setCipherSuites(suiteList);
+                    versionDelegate.setProtocolVersion(version);
+                    paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
+                    paddingOracleConfig.setVectorGeneratorType(vectorType);
+                    PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig());
+                    lastResult = attacker.isVulnerable();
+                    if ((lastResult == true || lastResult == false) && attacker.getTestedSuite() != null && attacker.getTestedVersion() != null) {
+                        if (!containsTupleAlready(testResultList, attacker.getTestedVersion(), attacker.getTestedSuite(), vectorType)) {
+                            testResultList.add(new PaddingOracleTestResult(lastResult, attacker.getTestedVersion(), attacker.getTestedSuite(), paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMap()));
+                        }
+                        String suffix = attacker.getTestedSuite().name().split("WITH_")[1];
+                        List<CipherSuite> tempList = new LinkedList<>();
+                        for (CipherSuite suite : suiteList) {
+                            if (!suite.name().endsWith(suffix)) {
+                                tempList.add(suite);
+                            }
+                        }
+                        suiteList = tempList;
+                    } else {
+                        lastResult = null;
+                    }
+
+                } while (lastResult != null);
+            }
+        }
         return new PaddingOracleResult(testResultList);
+    }
+
+    private boolean containsTupleAlready(List<PaddingOracleTestResult> testResultList, ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType) {
+        for (PaddingOracleTestResult result : testResultList) {
+            if (result.getSuite() == suite && result.getVersion() == version && result.getVectorGeneratorType() == vectorGeneratorType) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

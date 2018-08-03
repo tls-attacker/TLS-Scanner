@@ -37,6 +37,10 @@ public class ScanJobExecutor {
     public ScanJobExecutor(int threadCount) {
         executor = Executors.newFixedThreadPool(threadCount);
     }
+    
+    public ScanJobExecutor(ExecutorService executor) {
+        this.executor = executor;
+    }
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<ProbeType> probeTypes = new LinkedList<>();
