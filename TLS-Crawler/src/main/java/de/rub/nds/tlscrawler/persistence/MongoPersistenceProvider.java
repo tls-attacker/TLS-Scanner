@@ -247,9 +247,23 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
                 bson.append(key, iScanResultToBson((IScanResult) val));
             } else if (val instanceof Instant) {
                 bson.append(key, Date.from((Instant)val));
-            }
-            else
-            {
+            } else if (val instanceof List) {
+                List list = (List)val;
+                Object typecheck = list.isEmpty() ? null : list.get(0);
+
+                if (typecheck instanceof IScanResult) {
+                    List<Document> subResultArray = new LinkedList<>();
+
+                    for (Object item : list) {
+                        IScanResult subresult = (IScanResult) item;
+                        subResultArray.add(iScanResultToBson(subresult));
+                    }
+
+                    bson.append(key, subResultArray);
+                } else {
+                    bson.append(key, val);
+                }
+            } else {
                 bson.append(key, val);
             }
         }
@@ -365,14 +379,22 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
                 if (typecheck instanceof String) {
                     result.addStringArray(key, list);
-                } if (typecheck instanceof Long) {
+                } else if (typecheck instanceof Long) {
                     result.addLongArray(key, list);
-                } if (typecheck instanceof Integer) {
+                } else if (typecheck instanceof Integer) {
                     result.addIntegerArray(key, list);
-                } if (typecheck instanceof Double) {
+                } else if (typecheck instanceof Double) {
                     result.addDoubleArray(key, list);
-                } if (typecheck instanceof Byte) {
+                } else if (typecheck instanceof Byte) {
                     result.addBinaryData(key, list);
+                } else if (typecheck instanceof Document) {
+                    List<IScanResult> subresults = new LinkedList<>();
+
+                    for (Object obj : list) {
+                        subresults.add(scanResultFromBsonDoc((Document)obj));
+                    }
+
+                    result.addSubResultArray(key, subresults);
                 } else {
                     throw new RuntimeException("Unexpected Type.");
                 }

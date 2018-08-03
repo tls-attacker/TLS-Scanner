@@ -99,6 +99,11 @@ public class ScanResult implements IScanResult {
     }
 
     @Override
+    public void addSubResultArray(String key, List<IScanResult> substructures) {
+        this.checkedAdd(Tuple.create(key, substructures));
+    }
+
+    @Override
     public List<ITuple<String, Object>> getContents() {
         LinkedList<ITuple<String, Object>> result = new LinkedList<>();
 

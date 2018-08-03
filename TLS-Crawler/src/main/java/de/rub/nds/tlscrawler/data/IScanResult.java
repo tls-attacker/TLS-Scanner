@@ -132,6 +132,14 @@ public interface IScanResult {
     void addSubResult(String key, IScanResult substructure);
 
     /**
+     * Adds an array of documents to a document.
+     *
+     * @param key The arrays' key.
+     * @param substructures The sub-result array.
+     */
+    void addSubResultArray(String key, List<IScanResult> substructures);
+
+    /**
      * Returns the result data.
      *
      * @return A list of result data tuples.
