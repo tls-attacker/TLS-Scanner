@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlscrawler.data.IScanResult;
@@ -18,6 +19,7 @@ import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Scan using TLS Scanner, i. e. TLS Attacker.
@@ -91,6 +94,7 @@ public class TlsScan implements IScan {
         result.addSubResult("gcm", getGcmPage(report));
         result.addSubResult("intolerances", getIntolerancesPage(report));
         result.addSubResult("performance", getPerformancePage(report));
+        result.addSubResult("paddingOracle", getPaddingOraclePage(report));
 
         return result;
     }
@@ -115,6 +119,44 @@ public class TlsScan implements IScan {
         attacks.addString("earlyCcsVulnerable", report.getEarlyCcsVulnerable() != null ? report.getEarlyCcsVulnerable().name() : "");
 
         return attacks;
+    }
+
+    IScanResult getPaddingOraclePage(SiteReport report) {
+        IScanResult paddingOracle = new ScanResult("paddingOracle");
+
+        List<PaddingOracleTestResult> _rawPaddingOracleresult = report.getPaddingOracleTestResultList();
+        List<IScanResult> paddingOracleResults = new LinkedList<>();
+
+        for (PaddingOracleTestResult potr : _rawPaddingOracleresult) {
+            IScanResult tmp = new ScanResult("_paddingOracleResult");
+
+            tmp.addString("getEqualityError", potr.getEqualityError().name());
+            tmp.addString("recordGeneratorType", potr.getRecordGeneratorType().name());
+            tmp.addString("vectorGeneratorType", potr.getVectorGeneratorType().name());
+            tmp.addString("suite", potr.getSuite().name());
+            tmp.addString("version", potr.getVersion().name());
+            tmp.addBoolean("vulnerable", potr.getVulnerable());
+
+            List<IScanResult> map = new LinkedList<>();
+            for (Integer i : potr.getResponseMap().keySet()) {
+                IScanResult response = new ScanResult(i.toString());
+
+                List<ResponseFingerprint> fingerprints = potr.getResponseMap().get(i);
+
+                response.addStringArray("responseFingerprint",
+                        fingerprints.stream()
+                                .map(ResponseFingerprint::toString)
+                                .collect(Collectors.toList()));
+            }
+
+            tmp.addSubResultArray("responseMap", map);
+
+            paddingOracleResults.add(tmp);
+        }
+
+        paddingOracle.addSubResultArray("paddingOracleResults", paddingOracleResults);
+
+        return paddingOracle;
     }
 
     IScanResult getVersionPage(SiteReport report) {
