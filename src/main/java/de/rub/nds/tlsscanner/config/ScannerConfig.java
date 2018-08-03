@@ -43,8 +43,11 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-implementation", required = false, description = "If you are interessted in the vulnerability of an implementation rather than a specific site")
     private boolean implementation = false;
 
-    @Parameter(names = "-detail", required = false, description = "How detailed do you want to scan?")
-    private ScannerDetail detail = ScannerDetail.NORMAL;
+    @Parameter(names = "-scanDetail", required = false, description = "How detailed do you want to scan?")
+    private ScannerDetail scanDetail = ScannerDetail.NORMAL;
+
+    @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
+    private ScannerDetail reportDetail = ScannerDetail.NORMAL;
 
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
@@ -95,14 +98,22 @@ public class ScannerConfig extends TLSDelegateConfig {
         return noColor;
     }
 
-    public ScannerDetail getDetail() {
-        return detail;
+    public ScannerDetail getScanDetail() {
+        return scanDetail;
     }
 
-    public void setDetail(ScannerDetail detail) {
-        this.detail = detail;
+    public void setScanDetail(ScannerDetail scanDetail) {
+        this.scanDetail = scanDetail;
     }
-    
+
+    public ScannerDetail getReportDetail() {
+        return reportDetail;
+    }
+
+    public void setReportDetail(ScannerDetail reportDetail) {
+        this.reportDetail = reportDetail;
+    }
+
     @Override
     public Config createConfig() {
         Config config = super.createConfig();

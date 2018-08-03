@@ -10,6 +10,9 @@ import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
+import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.attacks.util.response.EqualityErrorTranslator;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -20,6 +23,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
+import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
@@ -32,9 +36,11 @@ public class SiteReportPrinter {
     private static final Logger LOGGER = LogManager.getLogger(SiteReportPrinter.class.getName());
 
     private SiteReport report;
+    private final ScannerDetail detail;
 
-    public SiteReportPrinter(SiteReport report) {
+    public SiteReportPrinter(SiteReport report, ScannerDetail detail) {
         this.report = report;
+        this.detail = detail;
     }
 
     public String getFullReport() {
@@ -168,13 +174,22 @@ public class SiteReportPrinter {
             prettyAppend(builder, "No Testresults");
         } else {
             for (PaddingOracleTestResult testResult : report.getPaddingOracleTestResultList()) {
-                String resultString = "" + padToLength(testResult.getSuite().name(),40) + ":" + testResult.getVersion() + "\t" + testResult.getVectorGeneratorType() + "\t" + testResult.getRecordGeneratorType();
+                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + ":" + testResult.getVersion() + "\t" + testResult.getVectorGeneratorType() + "\t" + testResult.getRecordGeneratorType();
                 if (testResult.getVulnerable() == Boolean.TRUE) {
-                    prettyAppendRed(builder, resultString + "\t VULNERABLE");
+                    prettyAppendRed(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE");
                 } else if (testResult.getVulnerable() == Boolean.FALSE) {
-                    prettyAppendGreen(builder, resultString);
+                    prettyAppendGreen(builder, resultString + "\t - No Behavior Difference");
                 } else {
-                    prettyAppendYellow(builder, resultString + "\t Error");
+                    prettyAppendYellow(builder, resultString + "\t # Error during Scan");
+                }
+
+                if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
+                    if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
+                        prettyAppendYellow(builder, "Response Map");
+                        for (ResponseFingerprint fingerprint : testResult.getResponseMap().get(0)) {
+                            prettyAppend(builder, "\t" + fingerprint.toString());
+                        }
+                    }
                 }
             }
         }
@@ -487,12 +502,10 @@ public class SiteReportPrinter {
                 throw new IllegalArgumentException("Unkown MacCheckPattern Type: " + pattern.getType());
         }
     }
-    
-    private String padToLength(String value, int length)
-    {
+
+    private String padToLength(String value, int length) {
         StringBuilder builder = new StringBuilder(value);
-        while(builder.length() < length)
-        {
+        while (builder.length() < length) {
             builder.append(" ");
         }
         return builder.toString();

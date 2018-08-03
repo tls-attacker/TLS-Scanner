@@ -68,6 +68,7 @@ public class PaddingOracleProbe extends TlsProbe {
                 vectorTypeList.add(PaddingVectorGeneratorType.CLOSE_NOTIFY);
                 vectorTypeList.add(PaddingVectorGeneratorType.FINISHED_RESUMPTION);
             }
+
         }
         List<ProtocolVersion> versionList = new LinkedList<>();
         versionList.add(ProtocolVersion.TLS12);
@@ -80,6 +81,7 @@ public class PaddingOracleProbe extends TlsProbe {
         for (ProtocolVersion version : versionList) {
             for (PaddingVectorGeneratorType vectorType : vectorTypeList) {
                 do {
+                    System.out.println("type" + vectorType + " version: " + version);
                     cipherSuiteDelegate.setCipherSuites(suiteList);
                     versionDelegate.setProtocolVersion(version);
                     paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
@@ -88,7 +90,9 @@ public class PaddingOracleProbe extends TlsProbe {
                     lastResult = attacker.isVulnerable();
                     if ((lastResult == true || lastResult == false) && attacker.getTestedSuite() != null && attacker.getTestedVersion() != null) {
                         if (!containsTupleAlready(testResultList, attacker.getTestedVersion(), attacker.getTestedSuite(), vectorType)) {
-                            testResultList.add(new PaddingOracleTestResult(lastResult, attacker.getTestedVersion(), attacker.getTestedSuite(), paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMap()));
+                            testResultList.add(new PaddingOracleTestResult(lastResult, attacker.getTestedVersion(), attacker.getTestedSuite(), paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMap(), attacker.getEqualityError(attacker.getResponseMap())));
+                        } else {
+                            System.out.println("?!");
                         }
                         String suffix = attacker.getTestedSuite().name().split("WITH_")[1];
                         List<CipherSuite> tempList = new LinkedList<>();

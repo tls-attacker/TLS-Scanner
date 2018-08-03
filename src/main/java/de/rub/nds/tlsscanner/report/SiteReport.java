@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
@@ -1195,13 +1196,13 @@ public class SiteReport {
         return noColor;
     }
 
-    public String getFullReport() {
-        return new SiteReportPrinter(this).getFullReport();
+    public String getFullReport(ScannerDetail detail) {
+        return new SiteReportPrinter(this, detail).getFullReport();
     }
 
     @Override
     public String toString() {
-        return getFullReport();
+        return getFullReport(ScannerDetail.NORMAL);
     }
 
     public List<ProbeType> getProbeTypeList() {
