@@ -120,7 +120,7 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        return report.getSupportsBlockCiphers();
+        return report.getSupportsBlockCiphers() == Boolean.TRUE || report.getSupportsBlockCiphers() == null;
     }
 
     @Override
