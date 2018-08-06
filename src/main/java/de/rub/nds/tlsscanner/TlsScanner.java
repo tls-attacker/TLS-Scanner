@@ -56,8 +56,8 @@ public class TlsScanner {
     private final ScannerConfig config;
 
     public TlsScanner(String websiteHost, boolean attackingScans) {
-        this.executor = new ScanJobExecutor(1);
         config = new ScannerConfig(new GeneralDelegate());
+        this.executor = ScanJobExecutorFactory.getScanJobExecutorFactory(config);
         config.getGeneralDelegate().setLogLevel(Level.WARN);
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegateList().get(1);
         clientDelegate.setHost(websiteHost);
@@ -65,7 +65,7 @@ public class TlsScanner {
     }
 
     public TlsScanner(ScannerConfig config) {
-        this.executor = new ScanJobExecutor(config.getThreads());
+        this.executor = ScanJobExecutorFactory.getScanJobExecutorFactory(config);
         this.config = config;
         if (config.getGeneralDelegate().getLogLevel() == Level.ALL) {
             Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.ALL);
