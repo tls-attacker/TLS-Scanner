@@ -10,6 +10,7 @@ package de.rub.nds.tlscrawler.scans;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.tlsattacker.core.util.LogLevel;
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ScanResult;
@@ -20,6 +21,7 @@ import de.rub.nds.tlsscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +51,7 @@ public class TlsScan implements IScan {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
+        generalDelegate.setLogLevel(Level.OFF);
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setThreads(1);
@@ -67,7 +70,7 @@ public class TlsScan implements IScan {
         return result;
     }
 
-    IScanResult populateScanResultFromSiteReport(IScanResult result, SiteReport report) {
+    static IScanResult populateScanResultFromSiteReport(IScanResult result, SiteReport report) {
         result.addString("host", report.getHost());
         result.addBoolean("serverIsAlive", report.getServerIsAlive());
         result.addBoolean("supportsSslTls", report.getSupportsSslTls());
@@ -99,7 +102,7 @@ public class TlsScan implements IScan {
         return result;
     }
 
-    IScanResult getAttacksPage(SiteReport report) {
+    static IScanResult getAttacksPage(SiteReport report) {
         IScanResult attacks = new ScanResult("attacks");
 
         attacks.addBoolean("bleichenbacherVulnerable", report.getBleichenbacherVulnerable());
@@ -121,7 +124,7 @@ public class TlsScan implements IScan {
         return attacks;
     }
 
-    IScanResult getPaddingOraclePage(SiteReport report) {
+    static IScanResult getPaddingOraclePage(SiteReport report) {
         IScanResult paddingOracle = new ScanResult("paddingOracle");
 
         List<PaddingOracleTestResult> _rawPaddingOracleresult = report.getPaddingOracleTestResultList();
@@ -142,6 +145,7 @@ public class TlsScan implements IScan {
             tmp.addString("version", potr.getVersion().name());
             tmp.addBoolean("vulnerable", potr.getVulnerable());
 
+            /*
             List<IScanResult> map = new LinkedList<>();
             for (Integer i : potr.getResponseMap().keySet()) {
                 IScanResult response = new ScanResult(i.toString());
@@ -153,8 +157,14 @@ public class TlsScan implements IScan {
                                 .map(ResponseFingerprint::toString)
                                 .collect(Collectors.toList()));
             }
+            */
 
-            tmp.addSubResultArray("responseMap", map);
+            List<ResponseFingerprint> fp = potr.getResponseMap().size() > 0 ? potr.getResponseMap().get(0) : new LinkedList<>();
+            List<String> fp_toString = fp.stream()
+                    .map(ResponseFingerprint::toString)
+                    .collect(Collectors.toList());
+
+            tmp.addStringArray("responseMap", fp_toString);
 
             paddingOracleResults.add(tmp);
         }
@@ -164,7 +174,7 @@ public class TlsScan implements IScan {
         return paddingOracle;
     }
 
-    IScanResult getVersionPage(SiteReport report) {
+    static IScanResult getVersionPage(SiteReport report) {
         IScanResult version = new ScanResult("version");
 
         List<String> _versions = new LinkedList<>();
@@ -198,7 +208,7 @@ public class TlsScan implements IScan {
         return version;
     }
 
-    IScanResult getExtensionsPage(SiteReport report) {
+    static IScanResult getExtensionsPage(SiteReport report) {
         IScanResult extensions = new ScanResult("extensions");
 
         List<String> _supportedExtensions = new LinkedList<>();
@@ -258,7 +268,7 @@ public class TlsScan implements IScan {
         return extensions;
     }
 
-    IScanResult getRfcPage(SiteReport report) {
+    static IScanResult getRfcPage(SiteReport report) {
         IScanResult rfc = new ScanResult("rfc");
 
         rfc.addString("macCheckPatternAppData", report.getMacCheckPatternAppData() != null ? report.getMacCheckPatternAppData().toString() : "");
@@ -268,7 +278,7 @@ public class TlsScan implements IScan {
         return rfc;
     }
 
-    IScanResult getCertificatePage(SiteReport report) {
+    static IScanResult getCertificatePage(SiteReport report) {
         IScanResult certificate = new ScanResult("certificate");
 
         List<String> _certificateReports = new LinkedList<>();
@@ -295,7 +305,7 @@ public class TlsScan implements IScan {
         return certificate;
     }
 
-    IScanResult getCiphersPage(SiteReport report) {
+    static IScanResult getCiphersPage(SiteReport report) {
         IScanResult ciphers = new ScanResult("ciphers");
 
         List<String> _versionSuitePairs = new LinkedList<>();
@@ -355,7 +365,7 @@ public class TlsScan implements IScan {
         return ciphers;
     }
 
-    IScanResult getSessionPage(SiteReport report) {
+    static IScanResult getSessionPage(SiteReport report) {
         IScanResult session = new ScanResult("session");
 
         session.addBoolean("supportsSessionTicket", report.getSupportsSessionTicket());
@@ -367,7 +377,7 @@ public class TlsScan implements IScan {
         return session;
     }
 
-    IScanResult getRenegotiationPage(SiteReport report) {
+    static IScanResult getRenegotiationPage(SiteReport report) {
         IScanResult renegotiation = new ScanResult("renegotiation");
 
         renegotiation.addBoolean("supportsSecureRenegotiation", report.getSupportsSecureRenegotiation());
@@ -378,7 +388,7 @@ public class TlsScan implements IScan {
         return renegotiation;
     }
 
-    IScanResult getGcmPage(SiteReport report) {
+    static IScanResult getGcmPage(SiteReport report) {
         IScanResult gcm = new ScanResult("gcm");
 
         gcm.addBoolean("gcmReuse", report.getGcmReuse());
@@ -388,7 +398,7 @@ public class TlsScan implements IScan {
         return gcm;
     }
 
-    IScanResult getIntolerancesPage(SiteReport report) {
+    static IScanResult getIntolerancesPage(SiteReport report) {
         IScanResult intolerances = new ScanResult("intolerances");
 
         intolerances.addBoolean("versionIntolerance", report.getVersionIntolerance());
@@ -399,7 +409,7 @@ public class TlsScan implements IScan {
         return intolerances;
     }
 
-    IScanResult getPerformancePage(SiteReport report) {
+    static IScanResult getPerformancePage(SiteReport report) {
         IScanResult performance = new ScanResult("performance");
 
         Collection<PerformanceData> _perfData = report.getPerformanceList();
