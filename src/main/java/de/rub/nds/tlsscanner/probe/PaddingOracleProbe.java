@@ -81,7 +81,6 @@ public class PaddingOracleProbe extends TlsProbe {
         for (ProtocolVersion version : versionList) {
             for (PaddingVectorGeneratorType vectorType : vectorTypeList) {
                 do {
-                    System.out.println("type" + vectorType + " version: " + version);
                     cipherSuiteDelegate.setCipherSuites(suiteList);
                     versionDelegate.setProtocolVersion(version);
                     paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
