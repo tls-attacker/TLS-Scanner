@@ -87,7 +87,7 @@ public class PaddingOracleProbe extends TlsProbe {
                     paddingOracleConfig.setVectorGeneratorType(vectorType);
                     PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig());
                     lastResult = attacker.isVulnerable();
-                    if ((lastResult == true || lastResult == false) && attacker.getTestedSuite() != null && attacker.getTestedVersion() != null) {
+                    if ((lastResult == Boolean.TRUE || lastResult == Boolean.FALSE) && attacker.getTestedSuite() != null && attacker.getTestedVersion() != null) {
                         if (!containsTupleAlready(testResultList, attacker.getTestedVersion(), attacker.getTestedSuite(), vectorType)) {
                             testResultList.add(new PaddingOracleTestResult(lastResult, attacker.getTestedVersion(), attacker.getTestedSuite(), paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMap(), attacker.getEqualityError(attacker.getResponseMap())));
                         }
