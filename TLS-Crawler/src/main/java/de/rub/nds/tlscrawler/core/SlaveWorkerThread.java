@@ -9,6 +9,7 @@ package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTask;
+import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.scans.IScan;
 import org.slf4j.Logger;
@@ -48,14 +49,23 @@ public class SlaveWorkerThread extends Thread {
 
             if (raw != null) {
                 LOG.trace(String.format("Started work on %s.", raw.getId()));
+                this.setName("Thread - " + raw.getTargetIp());
 
                 ScanTask todo = ScanTask.copyFrom(raw);
 
                 todo.setStartedTimestamp(Instant.now());
 
                 for (String scan : todo.getScans()) {
-                    IScan scanInstance = this.scanProvider.getScanByName(scan);
-                    IScanResult result = scanInstance.scan(this.slaveInstanceId, todo.getScanTarget());
+                    IScanResult result;
+
+                    try {
+                        IScan scanInstance = this.scanProvider.getScanByName(scan);
+                        result = scanInstance.scan(this.slaveInstanceId, todo.getScanTarget());
+                    } catch (Exception e) {
+                        result = new ScanResult(scan);
+                        result.addString("failedWithException", e.toString());
+                    }
+
                     todo.addResult(result);
                 }
 

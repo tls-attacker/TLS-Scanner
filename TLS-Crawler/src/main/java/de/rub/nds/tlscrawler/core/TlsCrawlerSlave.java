@@ -96,6 +96,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                                         IScanProvider scanProvider,
                                         SynchronizedTaskRouter synchronizedTaskRouter) {
             super(TlsCrawlerSlaveOrgThread.class.getSimpleName());
+
             this.organizer = organizer;
             this.scanProvider = scanProvider;
             this.synchronizedTaskRouter = synchronizedTaskRouter;
