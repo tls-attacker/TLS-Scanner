@@ -17,10 +17,6 @@ import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,13 +31,14 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor{
     public SingleThreadedScanJobExecutor() {
     }
 
+    @Override
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<ProbeType> probeTypes = new LinkedList<>();
 
         List<ProbeResult> resultList = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
-                resultList.add(probe.executeTest());
+                resultList.add(probe.call());
                 probeTypes.add(probe.getType());
             }
         }
@@ -65,7 +62,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor{
             if (probe.getDanger() <= config.getDangerLevel()) {
                 probeTypes.add(probe.getType());
                 if (probe.shouldBeExecuted(report)) {
-                    resultList.add(probe.executeTest());
+                    resultList.add(probe.call());
                 } else if (!config.isImplementation()) {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {
