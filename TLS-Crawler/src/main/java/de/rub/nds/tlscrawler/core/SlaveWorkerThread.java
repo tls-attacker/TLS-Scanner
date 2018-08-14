@@ -15,6 +15,8 @@ import de.rub.nds.tlscrawler.scans.IScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.time.Instant;
 
 /**
@@ -62,8 +64,12 @@ public class SlaveWorkerThread extends Thread {
                         IScan scanInstance = this.scanProvider.getScanByName(scan);
                         result = scanInstance.scan(this.slaveInstanceId, todo.getScanTarget());
                     } catch (Exception e) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        e.printStackTrace(new PrintStream(out));
+                        String str = new String(out.toByteArray());
+
                         result = new ScanResult(scan);
-                        result.addString("failedWithException", e.toString());
+                        result.addString("failedWithException", str);
                     }
 
                     todo.addResult(result);
