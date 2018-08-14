@@ -58,6 +58,17 @@ public class Slave {
         slave.start();
 
         LOG.info("TLS-Crawler is running as a slave node with id " + options.instanceId + ".");
+
+        new Thread(() -> {
+            for (;;) {
+                LOG.info(slave.getStats().toString());
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    // die!
+                }
+            }
+        }).start();
     }
 
     static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(MasterSlaveOptions options) {
