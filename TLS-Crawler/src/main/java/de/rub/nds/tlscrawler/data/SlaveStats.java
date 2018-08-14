@@ -39,6 +39,13 @@ public class SlaveStats implements ISlaveStats {
         this.completedTaskCount += increment;
     }
 
+    @Override
+    public String toString() {
+        return "### Slave Stats: "
+                + this.acceptedTaskCount + "accepted, "
+                + this.completedTaskCount + "completed.";
+    }
+
     /**
      * @param stats The stats to copy.
      * @return A threadsafe slave stats copy.
