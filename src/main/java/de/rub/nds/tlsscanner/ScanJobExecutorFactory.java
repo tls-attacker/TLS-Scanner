@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.config.ScannerConfig;
  * @author robert
  */
 public class ScanJobExecutorFactory {
-    public static ScanJobExecutor getScanJobExecutorFactory(ScannerConfig config)
+    public static ScanJobExecutor getScanJobExecutor(ScannerConfig config)
     {
         switch(config.getThreads())
         {
