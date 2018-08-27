@@ -156,7 +156,7 @@ public class CertificateReportGenerator {
                     LOGGER.warn("Parsed an unknown SignatureAlgorithm");
                     return;
                 }
-                SignatureAndHashAlgorithm sigHashAlgo = new SignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
+                SignatureAndHashAlgorithm sigHashAlgo = SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
                 report.setSignatureAndHashAlgorithm(sigHashAlgo);
             }
         } catch (Exception E) {

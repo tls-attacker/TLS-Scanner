@@ -188,7 +188,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseRandomUnixTime(true);
+        tlsConfig.setUseFreshRandom(true);
         tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
@@ -212,15 +212,18 @@ public class ProtocolVersionProbe extends TlsProbe {
 
     private List<SignatureAndHashAlgorithm> getTls13SignatureAndHashAlgorithms() {
         List<SignatureAndHashAlgorithm> algos = new LinkedList<>();
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA, HashAlgorithm.SHA256));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA, HashAlgorithm.SHA384));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA, HashAlgorithm.SHA512));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.ECDSA, HashAlgorithm.SHA256));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.ECDSA, HashAlgorithm.SHA384));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.ECDSA, HashAlgorithm.SHA512));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA_PSS, HashAlgorithm.SHA256));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA_PSS, HashAlgorithm.SHA384));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA_PSS, HashAlgorithm.SHA512));
+        algos.add(SignatureAndHashAlgorithm.RSA_SHA256);
+        algos.add(SignatureAndHashAlgorithm.RSA_SHA384);
+        algos.add(SignatureAndHashAlgorithm.RSA_SHA512);
+        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA256);
+        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA384);
+        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA512);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512);
         return algos;
     }
 
