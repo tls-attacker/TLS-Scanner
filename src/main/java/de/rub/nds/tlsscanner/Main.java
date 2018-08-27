@@ -64,7 +64,6 @@ public class Main {
     public static void scanFile(File f) throws FileNotFoundException, IOException
     {
         GeneralDelegate delegate = new GeneralDelegate();
-        delegate.setLogLevel(Level.WARN);
         delegate.applyDelegate(Config.createConfig());
         BufferedReader reader = new BufferedReader(new FileReader(f));
         String line = null;

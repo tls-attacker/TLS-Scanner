@@ -186,8 +186,12 @@ public class SiteReportPrinter {
                 if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppendYellow(builder, "Response Map");
-                        for (ResponseFingerprint fingerprint : testResult.getResponseMap().get(0)) {
-                            prettyAppend(builder, "\t" + fingerprint.toString());
+                        if (testResult.getResponseMap() != null && testResult.getResponseMap().get(0) != null) {
+                            for (ResponseFingerprint fingerprint : testResult.getResponseMap().get(0)) {
+                                prettyAppend(builder, "\t" + fingerprint.toString());
+                            }
+                        } else {
+                            prettyAppend(builder, "\tNULL");
                         }
                     }
                 }
