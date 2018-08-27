@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class SingleThreadedScanJobExecutor extends ScanJobExecutor{
+public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
 
     private static final Logger LOGGER = LogManager.getLogger(SingleThreadedScanJobExecutor.class.getName());
 
@@ -38,7 +38,11 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor{
         List<ProbeResult> resultList = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
-                resultList.add(probe.call());
+                try {
+                    resultList.add(probe.call());
+                } catch (Exception E) {
+                    LOGGER.warn("Could not execute Probe", E);
+                }
                 probeTypes.add(probe.getType());
             }
         }
@@ -48,7 +52,11 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor{
         SiteReport report = new SiteReport(hostname, probeTypes, config.isNoColor());
         report.setServerIsAlive(Boolean.TRUE);
         for (ProbeResult result : resultList) {
-            result.merge(report);
+            try {
+                result.merge(report);
+            } catch (Exception E) {
+                LOGGER.warn("Could not merge SiteReport", E);
+            }
         }
         //Finished phase one starting phase 2
         //Now all basic tests are merged into the site report, so we launch phase 2 so the scanner
@@ -62,7 +70,11 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor{
             if (probe.getDanger() <= config.getDangerLevel()) {
                 probeTypes.add(probe.getType());
                 if (probe.shouldBeExecuted(report)) {
-                    resultList.add(probe.call());
+                    try {
+                        resultList.add(probe.call());
+                    } catch (Exception E) {
+                        LOGGER.warn("Could not execute Probe", E);
+                    }
                 } else if (!config.isImplementation()) {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {
@@ -73,7 +85,11 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor{
         }
         // mergeData phase 2
         for (ProbeResult result : resultList) {
-            result.merge(report);
+            try {
+                result.merge(report);
+            } catch (Exception E) {
+                LOGGER.warn("Could not merge SiteReport", E);
+            }
         }
         //phase 3 - afterprobes
         for (AfterProbe afterProbe : scanJob.getAfterProbes()) {

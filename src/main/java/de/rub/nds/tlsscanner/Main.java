@@ -52,7 +52,7 @@ public class Main {
                 LOGGER.info(report.getFullReport(config.getReportDetail()));
             } catch (ConfigurationException E) {
                 LOGGER.info("Encountered a ConfigurationException aborting.");
-                LOGGER.debug(E);
+                LOGGER.warn(E);
             }
         } catch (ParameterException E) {
             LOGGER.info("Could not parse provided parameters");

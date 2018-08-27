@@ -170,7 +170,7 @@ public class SiteReportPrinter {
         prettyAppendRedGreen(builder, "Heartbleed", report.getHeartbleedVulnerable());
         prettyAppendEarlyCcs(builder, "EarlyCcs", report.getEarlyCcsVulnerable());
         prettyAppendHeading(builder, "PaddingOracle Details");
-        if (report.getPaddingOracleTestResultList().isEmpty()) {
+        if (report.getPaddingOracleTestResultList() == null || report.getPaddingOracleTestResultList().isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
             for (PaddingOracleTestResult testResult : report.getPaddingOracleTestResultList()) {

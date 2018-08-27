@@ -131,15 +131,14 @@ public class Tls13Probe extends TlsProbe {
         }
         do {
             tempSupportedGroups = getSupportedGroups(toTestList);
-            for (NamedGroup group : tempSupportedGroups) {
-                if(!toTestList.contains(group))
-                {
-                    LOGGER.warn("Server chose a group we did not offer");
-                    //TODO add to site report
-                    return supportedGroups;
-                }
-            }
             if (tempSupportedGroups != null) {
+                for (NamedGroup group : tempSupportedGroups) {
+                    if (!toTestList.contains(group)) {
+                        LOGGER.warn("Server chose a group we did not offer");
+                        //TODO add to site report
+                        return supportedGroups;
+                    }
+                }
                 supportedGroups.addAll(tempSupportedGroups);
                 for (NamedGroup group : tempSupportedGroups) {
                     toTestList.remove(group);
