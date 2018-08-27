@@ -47,6 +47,11 @@ public class Tls13Probe extends TlsProbe {
         }
         do {
             selectedSuite = getSelectedCiphersuite(toTestList);
+            if (!toTestList.contains(selectedSuite)) {
+                LOGGER.warn("Server chose a CipherSuite we did not propose!");
+                //TODO write to sitereport
+                break;
+            }
             if (selectedSuite != null) {
                 supportedSuits.add(selectedSuite);
                 toTestList.remove(selectedSuite);
@@ -126,6 +131,14 @@ public class Tls13Probe extends TlsProbe {
         }
         do {
             tempSupportedGroups = getSupportedGroups(toTestList);
+            for (NamedGroup group : tempSupportedGroups) {
+                if(!toTestList.contains(group))
+                {
+                    LOGGER.warn("Server chose a group we did not offer");
+                    //TODO add to site report
+                    return supportedGroups;
+                }
+            }
             if (tempSupportedGroups != null) {
                 supportedGroups.addAll(tempSupportedGroups);
                 for (NamedGroup group : tempSupportedGroups) {
