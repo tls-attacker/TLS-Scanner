@@ -49,10 +49,10 @@ public class Main {
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
                 LOGGER.info("Scanned in:" + ((System.currentTimeMillis()-time)/1000) + "s");
-                LOGGER.info(report.getFullReport());
+                LOGGER.info(report.getFullReport(config.getReportDetail()));
             } catch (ConfigurationException E) {
                 LOGGER.info("Encountered a ConfigurationException aborting.");
-                LOGGER.debug(E);
+                LOGGER.warn(E);
             }
         } catch (ParameterException E) {
             LOGGER.info("Could not parse provided parameters");
@@ -64,7 +64,6 @@ public class Main {
     public static void scanFile(File f) throws FileNotFoundException, IOException
     {
         GeneralDelegate delegate = new GeneralDelegate();
-        delegate.setLogLevel(Level.WARN);
         delegate.applyDelegate(Config.createConfig());
         BufferedReader reader = new BufferedReader(new FileReader(f));
         String line = null;

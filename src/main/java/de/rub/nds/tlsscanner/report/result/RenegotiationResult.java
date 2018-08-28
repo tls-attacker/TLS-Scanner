@@ -24,7 +24,7 @@ public class RenegotiationResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setSupportsClientSideSecureRenegotiation(secureRenegotiation);
         report.setSupportsClientSideInsecureRenegotiation(insecureRenegotiation);
     }

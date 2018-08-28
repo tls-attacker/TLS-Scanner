@@ -23,7 +23,7 @@ public class Cve20162107Result extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setCve20162107Vulnerable(vulnerable);
     }
 

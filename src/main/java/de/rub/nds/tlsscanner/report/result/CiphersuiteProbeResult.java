@@ -64,7 +64,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         Set<CipherSuite> allSupported = new HashSet<>();
         supportsOnlyPfsCiphers = true;
         prefersPfsCiphers = true;

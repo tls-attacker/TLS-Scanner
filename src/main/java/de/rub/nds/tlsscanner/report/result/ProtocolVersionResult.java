@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -10,10 +5,6 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget <robert.merget@rub.de>
- */
 public class ProtocolVersionResult extends ProbeResult {
     
     private final List<ProtocolVersion> supportedProtocolVersions;
@@ -21,13 +12,13 @@ public class ProtocolVersionResult extends ProbeResult {
     private final List<ProtocolVersion> unsupportedProtocolVersions;
     
     public ProtocolVersionResult(List<ProtocolVersion> supportedProtocolVersions, List<ProtocolVersion> unsupportedProtocolVersions) {
-        super(ProbeType.CIPHERSUITE);
+        super(ProbeType.PROTOCOL_VERSION);
         this.supportedProtocolVersions = supportedProtocolVersions;
         this.unsupportedProtocolVersions = unsupportedProtocolVersions;
     }
     
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         if (supportedProtocolVersions.size() > 0) {
             report.setSupportsSslTls(true);
         }

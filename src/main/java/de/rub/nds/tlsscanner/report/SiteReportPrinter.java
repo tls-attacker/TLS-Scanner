@@ -10,6 +10,9 @@ import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
+import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.attacks.util.response.EqualityErrorTranslator;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -21,17 +24,25 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
+import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.Date;
 
 public class SiteReportPrinter {
 
-    SiteReport report;
+    private static final Logger LOGGER = LogManager.getLogger(SiteReportPrinter.class.getName());
 
-    public SiteReportPrinter(SiteReport report) {
+    private SiteReport report;
+    private final ScannerDetail detail;
+
+    public SiteReportPrinter(SiteReport report, ScannerDetail detail) {
         this.report = report;
+        this.detail = detail;
     }
 
     public String getFullReport() {
@@ -59,6 +70,9 @@ public class SiteReportPrinter {
         appendCertificate(builder);
         appendSession(builder);
         appendRenegotiation(builder);
+        for (PerformanceData data : report.getPerformanceList()) {
+            LOGGER.debug("Type: " + data.getType() + "   Start: " + data.getStarttime() + "    Stop: " + data.getStoptime());
+        }
         return builder.toString();
     }
 
@@ -229,6 +243,34 @@ public class SiteReportPrinter {
         prettyAppendRedGreen(builder, "Lucky13", report.getLucky13Vulnerable());
         prettyAppendRedGreen(builder, "Heartbleed", report.getHeartbleedVulnerable());
         prettyAppendEarlyCcs(builder, "EarlyCcs", report.getEarlyCcsVulnerable());
+        prettyAppendHeading(builder, "PaddingOracle Details");
+        if (report.getPaddingOracleTestResultList() == null || report.getPaddingOracleTestResultList().isEmpty()) {
+            prettyAppend(builder, "No Testresults");
+        } else {
+            for (PaddingOracleTestResult testResult : report.getPaddingOracleTestResultList()) {
+                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + ":" + testResult.getVersion() + "\t" + testResult.getVectorGeneratorType() + "\t" + testResult.getRecordGeneratorType();
+                if (testResult.getVulnerable() == Boolean.TRUE) {
+                    prettyAppendRed(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE");
+                } else if (testResult.getVulnerable() == Boolean.FALSE) {
+                    prettyAppendGreen(builder, resultString + "\t - No Behavior Difference");
+                } else {
+                    prettyAppendYellow(builder, resultString + "\t # Error during Scan");
+                }
+
+                if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
+                    if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
+                        prettyAppendYellow(builder, "Response Map");
+                        if (testResult.getResponseMap() != null && testResult.getResponseMap().get(0) != null) {
+                            for (ResponseFingerprint fingerprint : testResult.getResponseMap().get(0)) {
+                                prettyAppend(builder, "\t" + fingerprint.toString());
+                            }
+                        } else {
+                            prettyAppend(builder, "\tNULL");
+                        }
+                    }
+                }
+            }
+        }
         return builder;
     }
 
@@ -335,9 +377,9 @@ public class SiteReportPrinter {
         }
         prettyAppendHeading(builder, "Extensions");
         prettyAppendGreenRed(builder, "Secure Renegotiation", report.getSupportsSecureRenegotiation());
-        prettyAppendGreenOnSuccess(builder, "Supports Extended Master Secret", report.getSupportsExtendedMasterSecret());
-        prettyAppendGreenOnSuccess(builder, "Supports Encrypt Then Mac", report.getSupportsEncryptThenMacSecret());
-        prettyAppendGreenOnSuccess(builder, "Supports Tokenbinding", report.getSupportsTokenbinding());
+        prettyAppendGreenOnSuccess(builder, "Extended Master Secret", report.getSupportsExtendedMasterSecret());
+        prettyAppendGreenOnSuccess(builder, "Encrypt Then Mac", report.getSupportsEncryptThenMacSecret());
+        prettyAppendGreenOnSuccess(builder, "Tokenbinding", report.getSupportsTokenbinding());
 
         if (report.getSupportsTokenbinding() == Boolean.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");
@@ -460,7 +502,7 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendGreenYellow(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
@@ -549,6 +591,14 @@ public class SiteReportPrinter {
             default:
                 throw new IllegalArgumentException("Unkown MacCheckPattern Type: " + pattern.getType());
         }
+    }
+
+    private String padToLength(String value, int length) {
+        StringBuilder builder = new StringBuilder(value);
+        while (builder.length() < length) {
+            builder.append(" ");
+        }
+        return builder.toString();
     }
 
     private String addIndentations(String value) {

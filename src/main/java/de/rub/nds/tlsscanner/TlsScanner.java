@@ -56,28 +56,21 @@ public class TlsScanner {
     private final ScannerConfig config;
 
     public TlsScanner(String websiteHost, boolean attackingScans) {
-        this.executor = new ScanJobExecutor(1);
         config = new ScannerConfig(new GeneralDelegate());
-        config.getGeneralDelegate().setLogLevel(Level.WARN);
+        this.executor = ScanJobExecutorFactory.getScanJobExecutor(config);
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegateList().get(1);
         clientDelegate.setHost(websiteHost);
         Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.WARN);
     }
 
     public TlsScanner(ScannerConfig config) {
-        this.executor = new ScanJobExecutor(config.getThreads());
+        this.executor = ScanJobExecutorFactory.getScanJobExecutor(config);
         this.config = config;
-        if (config.getGeneralDelegate().getLogLevel() == Level.ALL) {
-            Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.ALL);
-            Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.ALL);
-
-        } else if (config.getGeneralDelegate().getLogLevel() == Level.TRACE) {
-            Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
-            Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.INFO);
-        } else {
-            Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.OFF);
-            Configurator.setAllLevels("de.rub.nds.modifiablevariable", Level.OFF);
-        }
+    }
+    
+    public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
+        this.config = config;
+        this.executor = executor;
     }
 
     public SiteReport scan() {

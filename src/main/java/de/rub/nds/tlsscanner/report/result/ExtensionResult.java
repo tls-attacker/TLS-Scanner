@@ -28,7 +28,7 @@ public class ExtensionResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         if (report.getSupportedExtensions() == null) {
             report.setSupportedExtensions(allSupportedExtensions);
         } else {

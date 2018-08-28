@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,11 +32,7 @@ public class ConfigSelector {
         config.setDefaultClientSupportedCiphersuites(CipherSuite.values());
         config.setDefaultSelectedCipherSuite(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
         List<SignatureAndHashAlgorithm> sigHashList = new LinkedList<>();
-        for (SignatureAlgorithm sigAlgo : SignatureAlgorithm.values()) {
-            for (HashAlgorithm hashAlgo : HashAlgorithm.values()) {
-                sigHashList.add(new SignatureAndHashAlgorithm(sigAlgo, hashAlgo));
-            }
-        }
+        sigHashList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashList);
         config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL, CompressionMethod.LZS, CompressionMethod.DEFLATE);
         config.setQuickReceive(true);

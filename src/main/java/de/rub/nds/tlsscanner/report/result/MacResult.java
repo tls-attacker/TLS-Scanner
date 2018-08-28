@@ -16,7 +16,7 @@ public class MacResult extends ProbeResult {
     }
     
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setMacCheckPatterAppData(appDataPattern);
         report.setMacCheckPatternFinished(finishedPattern);
     }

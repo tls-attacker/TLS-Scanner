@@ -47,6 +47,11 @@ public class Tls13Probe extends TlsProbe {
         }
         do {
             selectedSuite = getSelectedCiphersuite(toTestList);
+            if (!toTestList.contains(selectedSuite)) {
+                LOGGER.warn("Server chose a CipherSuite we did not propose!");
+                //TODO write to sitereport
+                break;
+            }
             if (selectedSuite != null) {
                 supportedSuits.add(selectedSuite);
                 toTestList.remove(selectedSuite);
@@ -127,6 +132,13 @@ public class Tls13Probe extends TlsProbe {
         do {
             tempSupportedGroups = getSupportedGroups(toTestList);
             if (tempSupportedGroups != null) {
+                for (NamedGroup group : tempSupportedGroups) {
+                    if (!toTestList.contains(group)) {
+                        LOGGER.warn("Server chose a group we did not offer");
+                        //TODO add to site report
+                        return supportedGroups;
+                    }
+                }
                 supportedGroups.addAll(tempSupportedGroups);
                 for (NamedGroup group : tempSupportedGroups) {
                     toTestList.remove(group);
@@ -242,15 +254,18 @@ public class Tls13Probe extends TlsProbe {
 
     private List<SignatureAndHashAlgorithm> getTls13SignatureAndHashAlgorithms() {
         List<SignatureAndHashAlgorithm> algos = new LinkedList<>();
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA, HashAlgorithm.SHA256));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA, HashAlgorithm.SHA384));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA, HashAlgorithm.SHA512));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.ECDSA, HashAlgorithm.SHA256));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.ECDSA, HashAlgorithm.SHA384));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.ECDSA, HashAlgorithm.SHA512));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA_PSS, HashAlgorithm.SHA256));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA_PSS, HashAlgorithm.SHA384));
-        algos.add(new SignatureAndHashAlgorithm(SignatureAlgorithm.RSA_PSS, HashAlgorithm.SHA512));
+        algos.add(SignatureAndHashAlgorithm.RSA_SHA256);
+        algos.add(SignatureAndHashAlgorithm.RSA_SHA384);
+        algos.add(SignatureAndHashAlgorithm.RSA_SHA512);
+        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA256);
+        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA384);
+        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA512);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512);
         return algos;
     }
 

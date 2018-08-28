@@ -26,7 +26,7 @@ public class Tls13Result extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         for (ProtocolVersion version : supportedProtocolVersion) {
             if (version == ProtocolVersion.TLS13) {
                 report.setSupportsTls13(true);

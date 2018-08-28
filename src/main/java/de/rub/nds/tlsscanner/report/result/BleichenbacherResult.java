@@ -23,7 +23,7 @@ public class BleichenbacherResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setBleichenbacherVulnerable(vulnerable);
     }
 
