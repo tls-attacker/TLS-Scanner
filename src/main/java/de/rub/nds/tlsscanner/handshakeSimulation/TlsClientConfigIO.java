@@ -22,12 +22,8 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 import org.xml.sax.SAXException;
 
 public class TlsClientConfigIO {
-    
-    private static final Logger LOGGER = Logger.getLogger(TlsClientConfigIO.class.getName());
 
-    public TlsClientConfigIO(Level logLevel) {
-        this.LOGGER.setLevel(logLevel);
-        
+    public TlsClientConfigIO() {
     }
 
     public void writeConfigToFile(TlsClientConfig clientConfig, File configFile) {
