@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import java.util.List;
@@ -178,8 +179,7 @@ public class SiteReport {
     private boolean noColor = false;
     
     //Handshake simulation
-    private List<String> testedClientList = null;
-    private List<CipherSuite> selectedCiphersuiteList = null;
+    private List<SimulatedClient> simulatedClientList = null;
     
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
         this.host = host;
@@ -1115,20 +1115,12 @@ public class SiteReport {
         this.supportsStaticEcdh = supportsStaticEcdh;
     }
 
-    public List<String> getTestedClientList() {
-        return testedClientList;
-    }
-    
-    public void setTestedClientList(List<String> testedClientList) {
-        this.testedClientList = testedClientList;
+    public List<SimulatedClient> getSimulatedClientList() {
+        return simulatedClientList;
     }
 
-    public List<CipherSuite> getSelectedCiphersuiteList() {
-        return selectedCiphersuiteList;
-    }
-
-    public void setSelectedCiphersuiteList(List<CipherSuite> selectedCiphersuiteList) {
-        this.selectedCiphersuiteList = selectedCiphersuiteList;
+    public void setSimulatedClientList(List<SimulatedClient> simulatedClientList) {
+        this.simulatedClientList = simulatedClientList;
     }
 
     public boolean isNoColour() {

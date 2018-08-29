@@ -7,7 +7,6 @@ package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
@@ -23,6 +22,7 @@ import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.handshakeSimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.handshakeSimulation.TlsClientConfigIO;
+import de.rub.nds.tlsscanner.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -34,13 +34,11 @@ public class HandshakeSimulationProbe extends TlsProbe {
     
     private static final String RESOURCE_FOLDER = "client_configs";
     
-    private final List<TlsClientConfig> clientConfigList;
-    private final List<CipherSuite> selectedCiphersuiteList;
+    private final List<SimulatedClient> simulatedClientList;
 
     public HandshakeSimulationProbe(ScannerConfig config) {
         super(ProbeType.HANDSHAKE_SIMULATION, config, 0);
-        this.clientConfigList = new LinkedList<>();
-        this.selectedCiphersuiteList = new LinkedList<>();
+        this.simulatedClientList = new LinkedList<>();
     }
 
     @Override
@@ -48,19 +46,19 @@ public class HandshakeSimulationProbe extends TlsProbe {
         TlsClientConfigIO clientConfigIO = new TlsClientConfigIO();
         for (File configFile : clientConfigIO.getClientConfigFileList(RESOURCE_FOLDER)) {
             TlsClientConfig clientConfig = clientConfigIO.readConfigFromFile(configFile);
-            this.clientConfigList.add(clientConfig);
+            SimulatedClient simulatedClient = new SimulatedClient(clientConfig.getType(), clientConfig.getVersion());
             Config config = clientConfig.getConfig();
             getScannerConfig().getClientDelegate().applyDelegate(config);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
             config.setStopActionsAfterFatal(true);
             config.setStopRecievingAfterFatal(true);
-            runClient(clientConfig, config);
+            runClient(clientConfig, config, simulatedClient);
         }
-        return new HandshakeSimulationResult(clientConfigList, selectedCiphersuiteList);
+        return new HandshakeSimulationResult(simulatedClientList);
     }
     
-    private void runClient(TlsClientConfig clientConfig, Config config) {
+    private void runClient(TlsClientConfig clientConfig, Config config, SimulatedClient simulatedClient) {
         ClientHelloMessage msgConfig = (ClientHelloMessage) WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.CLIENT_HELLO, clientConfig.getTrace());
         List<ExtensionMessage> extensions = msgConfig.getExtensions();
         for (ExtensionMessage extension : extensions) {
@@ -76,8 +74,10 @@ public class HandshakeSimulationProbe extends TlsProbe {
         trace.addTlsAction(new ReceiveAction());
         State state = new State(config, trace);
         WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
-        executor.executeWorkflow();      
-        this.selectedCiphersuiteList.add(state.getTlsContext().getSelectedCipherSuite());
+        executor.executeWorkflow();
+        simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
+        simulatedClient.setSelectedCiphersuite(state.getTlsContext().getSelectedCipherSuite());
+        this.simulatedClientList.add(simulatedClient);
     }
 
     @Override

@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
+import de.rub.nds.tlsscanner.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 
@@ -61,15 +62,13 @@ public class SiteReportPrinter {
     }
       
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
-        if (report.getTestedClientList()!= null) {
-            prettyAppendHeading(builder, "Handshake Simulation - tested " + report.getTestedClientList().size() + " TLS Clients");
-            for (int i = 0; i < report.getTestedClientList().size(); i++) {
-                prettyAppend(builder, report.getTestedClientList().get(i));
-                if (report.getSelectedCiphersuiteList().get(i) != null) {
-                    prettyAppendGreenRed(builder, "TLS Handshake", Boolean.TRUE);
-                    prettyPrintSelectedCipherSuite(builder, report.getSelectedCiphersuiteList().get(i));
-                } else {
-                    prettyAppendGreenRed(builder, "TLS Handshake", Boolean.FALSE);
+        if (report.getSimulatedClientList()!= null) {
+            prettyAppendHeading(builder, "Handshake Simulation - tested " + report.getSimulatedClientList().size() + " TLS Clients");
+            for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
+                prettyAppend(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
+                prettyAppendGreenRed(builder, "TLS Handshake", simulatedClient.isReceivedServerHello());
+                if (simulatedClient.isReceivedServerHello()) {
+                    prettyPrintSelectedCipherSuite(builder, simulatedClient.getSelectedCiphersuite());
                 }
                 builder.append("\n");
             }

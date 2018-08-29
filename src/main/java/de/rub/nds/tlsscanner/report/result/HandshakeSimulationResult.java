@@ -5,32 +5,23 @@
  */
 package de.rub.nds.tlsscanner.report.result;
 
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.handshakeSimulation.TlsClientConfig;
+import de.rub.nds.tlsscanner.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import java.util.LinkedList;
 import java.util.List;
 
 public class HandshakeSimulationResult extends ProbeResult {
 
-    private final List<TlsClientConfig> clientConfigList;
-    private final List<CipherSuite> selectedCiphersuiteList;
+    private final List<SimulatedClient> simulatedClientList;
     
-    public HandshakeSimulationResult(List<TlsClientConfig> clientConfigList, List<CipherSuite> selectedCiphersuiteList) {
+    public HandshakeSimulationResult(List<SimulatedClient> simulatedClientList) {
         super(ProbeType.HANDSHAKE_SIMULATION);
-        this.clientConfigList = clientConfigList;
-        this.selectedCiphersuiteList = selectedCiphersuiteList;
+        this.simulatedClientList = simulatedClientList;
     }
 
     @Override
     public void merge(SiteReport report) {
-        List<String> testedClients = new LinkedList<>();
-        for (TlsClientConfig clientConfig : this.clientConfigList)  {
-            testedClients.add(clientConfig.getType() + ":" + clientConfig.getVersion());
-        }
-        report.setTestedClientList(testedClients);
-        report.setSelectedCiphersuiteList(this.selectedCiphersuiteList);
+        report.setSimulatedClientList(this.simulatedClientList);
     }
     
 }
