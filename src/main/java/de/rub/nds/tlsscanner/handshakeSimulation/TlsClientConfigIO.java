@@ -6,12 +6,18 @@
 package de.rub.nds.tlsscanner.handshakeSimulation;
 
 import de.rub.nds.modifiablevariable.util.XMLPrettyPrinter;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXB;
@@ -19,9 +25,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactoryConfigurationException;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 public class TlsClientConfigIO {
+    
+    static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(TlsClientConfigIO.class.getName());
 
     public TlsClientConfigIO() {
     }
@@ -50,5 +59,48 @@ public class TlsClientConfigIO {
     
     public void removeConfigFile(File configFile) {
         configFile.delete();
+    }
+    
+    public List<TlsClientConfig> getAllClientConfigsFromResource(String path) {
+        List<TlsClientConfig> allClientConfigsList = new LinkedList<>();
+        try {
+            for (String filename : getResourceFiles(path)) {
+                File configFile = new File(getResourcePath(path) + "/" + filename);
+                TlsClientConfig clientConfig = readConfigFromFile(configFile);
+                if (clientConfig != null) {
+                    LOGGER.debug("Loaded: " + clientConfig.getType() + " : " + clientConfig.getVersion());
+                    allClientConfigsList.add(clientConfig);
+                }
+            }
+        } catch (IOException ex) {
+            LOGGER.warn("ERROR reading configs", ex);
+            ex.printStackTrace();
+        }
+        return allClientConfigsList;
+    }
+    
+    private List<String> getResourceFiles(String path) throws IOException {
+        List<String> filenames = new ArrayList<>();
+        InputStream in = getResourceAsStream(path);
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String resource;
+        while ((resource = br.readLine()) != null) {
+            filenames.add(resource);
+        }
+        return filenames;
+    }
+    
+    private String getResourcePath(String resource) {
+        String path = getContextClassLoader().getResource(resource).getPath();
+        return path;
+    }
+    
+    private InputStream getResourceAsStream(String resource) {
+        InputStream in = getContextClassLoader().getResourceAsStream(resource);
+        return in == null ? getClass().getResourceAsStream(resource) : in;
+    }
+    
+    private ClassLoader getContextClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
     }
 }
