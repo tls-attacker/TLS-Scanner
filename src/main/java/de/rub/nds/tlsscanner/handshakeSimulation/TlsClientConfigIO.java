@@ -57,26 +57,17 @@ public class TlsClientConfigIO {
         return clientConfig;
     }
     
-    public void removeConfigFile(File configFile) {
-        configFile.delete();
-    }
-    
-    public List<TlsClientConfig> getAllClientConfigsFromResource(String path) {
-        List<TlsClientConfig> allClientConfigsList = new LinkedList<>();
+    public List<File> getClientConfigFileList(String path) {
+        List<File> fileList = new LinkedList<>();
         try {
             for (String filename : getResourceFiles(path)) {
                 File configFile = new File(getResourcePath(path) + "/" + filename);
-                TlsClientConfig clientConfig = readConfigFromFile(configFile);
-                if (clientConfig != null) {
-                    LOGGER.debug("Loaded: " + clientConfig.getType() + " : " + clientConfig.getVersion());
-                    allClientConfigsList.add(clientConfig);
-                }
+                fileList.add(configFile);
             }
         } catch (IOException ex) {
-            LOGGER.warn("ERROR reading configs", ex);
-            ex.printStackTrace();
+            Logger.getLogger(TlsClientConfigIO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return allClientConfigsList;
+        return fileList;
     }
     
     private List<String> getResourceFiles(String path) throws IOException {
