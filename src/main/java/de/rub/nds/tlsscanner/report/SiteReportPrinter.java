@@ -56,9 +56,27 @@ public class SiteReportPrinter {
         appendCertificate(builder);
         appendSession(builder);
         appendRenegotiation(builder);
+        appendHandshakeSimulation(builder);
         return builder.toString();
     }
-
+      
+    private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
+        if (report.getTestedClientList()!= null) {
+            prettyAppendHeading(builder, "Handshake Simulation - tested " + report.getTestedClientList().size() + " TLS Clients");
+            for (int i = 0; i < report.getTestedClientList().size(); i++) {
+                prettyAppend(builder, report.getTestedClientList().get(i));
+                if (report.getSelectedCiphersuiteList().get(i) != null) {
+                    prettyAppendGreenRed(builder, "TLS Handshake", Boolean.TRUE);
+                    prettyPrintSelectedCipherSuite(builder, report.getSelectedCiphersuiteList().get(i));
+                } else {
+                    prettyAppendGreenRed(builder, "TLS Handshake", Boolean.FALSE);
+                }
+                builder.append("\n");
+            }
+        }
+        return builder;
+    }
+    
     private StringBuilder appendRfc(StringBuilder builder) {
         prettyAppendHeading(builder, "RFC");
         prettyAppendRedOnFailure(builder, "Checks MAC", report.getChecksMac());
@@ -160,13 +178,13 @@ public class SiteReportPrinter {
         if (report.getCipherSuites() != null) {
             prettyAppendHeading(builder, "Supported Ciphersuites");
             for (CipherSuite suite : report.getCipherSuites()) {
-                prettyPrintCipherSuite(builder, suite);
+                prettyPrintSupportedCipherSuite(builder, suite);
             }
 
             for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
                 prettyAppendHeading(builder, "Supported in " + versionSuitePair.getVersion());
                 for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
-                    prettyPrintCipherSuite(builder, suite);
+                    prettyPrintSupportedCipherSuite(builder, suite);
                 }
             }
             prettyAppendHeading(builder, "Symmetric Supported");
@@ -273,26 +291,6 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private void prettyPrintCipherSuite(StringBuilder builder, CipherSuite suite) {
-        CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
-        switch (grade) {
-            case GOOD:
-                prettyAppendGreen(builder, suite.name());
-                break;
-            case LOW:
-                prettyAppendRed(builder, suite.name());
-                break;
-            case MEDIUM:
-                prettyAppendYellow(builder, suite.name());
-                break;
-            case NONE:
-                prettyAppend(builder, suite.name());
-                break;
-            default:
-                prettyAppend(builder, suite.name());
-        }
-    }
-
     private StringBuilder appendCurves(StringBuilder builder) {
         if (report.getSupportedNamedGroups() != null) {
             prettyAppendHeading(builder, "Supported Named Groups");
@@ -331,8 +329,52 @@ public class SiteReportPrinter {
         return builder;
     }
 
+    private void prettyPrintSupportedCipherSuite(StringBuilder builder, CipherSuite suite) {
+        CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
+        switch (grade) {
+            case GOOD:
+                prettyAppendGreen(builder, suite.name());
+                break;
+            case LOW:
+                prettyAppendRed(builder, suite.name());
+                break;
+            case MEDIUM:
+                prettyAppendYellow(builder, suite.name());
+                break;
+            case NONE:
+                prettyAppend(builder, suite.name());
+                break;
+            default:
+                prettyAppend(builder, suite.name());
+        }
+    }
+    
+    private void prettyPrintSelectedCipherSuite(StringBuilder builder, CipherSuite suite) {
+        CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
+        switch (grade) {
+            case GOOD:
+                prettyAppendGreen(builder, "Ciphersuite", suite.name());
+                break;
+            case LOW:
+                prettyAppendRed(builder, "Ciphersuite", suite.name());
+                break;
+            case MEDIUM:
+                prettyAppendYellow(builder, "Ciphersuite", suite.name());
+                break;
+            case NONE:
+                prettyAppend(builder, "Ciphersuite", suite.name());
+                break;
+            default:
+                prettyAppend(builder, "Ciphersuite", suite.name());
+        }
+    }    
+    
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
         return builder.append(value).append("\n");
+    }
+    
+    private StringBuilder prettyAppend(StringBuilder builder, String name, String value) {
+        return builder.append(addIndentations(name)).append(": ").append(value).append("\n");
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String name, Long value) {
@@ -378,13 +420,25 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendYellow(StringBuilder builder, String value) {
         return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
     }
+    
+    private StringBuilder prettyAppendYellow(StringBuilder builder, String name, String value) {
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
+    }    
 
     private StringBuilder prettyAppendRed(StringBuilder builder, String value) {
         return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
     }
+    
+    private StringBuilder prettyAppendRed(StringBuilder builder, String name, String value) {
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColour() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
+    }
 
     private StringBuilder prettyAppendGreen(StringBuilder builder, String value) {
         return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
+    }
+    
+    private StringBuilder prettyAppendGreen(StringBuilder builder, String name, String value) {
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
     }
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {

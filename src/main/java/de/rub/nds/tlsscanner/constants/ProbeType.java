@@ -32,4 +32,5 @@ public enum ProbeType {
     COMPRESSIONS,
     INTOLERANCES,
     SNI,
+    HANDSHAKE_SIMULATION,
 }

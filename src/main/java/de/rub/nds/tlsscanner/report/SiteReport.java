@@ -177,6 +177,10 @@ public class SiteReport {
     //NoColor Flag
     private boolean noColor = false;
     
+    //Handshake simulation
+    private List<String> testedClientList = null;
+    private List<CipherSuite> selectedCiphersuiteList = null;
+    
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
         this.host = host;
         this.probeTypeList = probeTypeList;
@@ -1109,6 +1113,22 @@ public class SiteReport {
 
     public void setSupportsStaticEcdh(Boolean supportsStaticEcdh) {
         this.supportsStaticEcdh = supportsStaticEcdh;
+    }
+
+    public List<String> getTestedClientList() {
+        return testedClientList;
+    }
+    
+    public void setTestedClientList(List<String> testedClientList) {
+        this.testedClientList = testedClientList;
+    }
+
+    public List<CipherSuite> getSelectedCiphersuiteList() {
+        return selectedCiphersuiteList;
+    }
+
+    public void setSelectedCiphersuiteList(List<CipherSuite> selectedCiphersuiteList) {
+        this.selectedCiphersuiteList = selectedCiphersuiteList;
     }
 
     public boolean isNoColour() {
