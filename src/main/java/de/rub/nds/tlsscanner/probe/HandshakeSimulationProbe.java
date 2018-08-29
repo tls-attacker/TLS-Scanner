@@ -51,6 +51,9 @@ public class HandshakeSimulationProbe extends TlsProbe {
             this.clientConfigList.add(clientConfig);
             Config config = clientConfig.getConfig();
             getScannerConfig().getClientDelegate().applyDelegate(config);
+            config.setQuickReceive(true);
+            config.setEarlyStop(true);
+            config.setStopActionsAfterFatal(true);
             runClient(clientConfig, config);
         }
         return new HandshakeSimulationResult(clientConfigList, selectedCiphersuiteList);
