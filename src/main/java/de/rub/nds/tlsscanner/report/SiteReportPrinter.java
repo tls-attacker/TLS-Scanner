@@ -86,6 +86,8 @@ public class SiteReportPrinter {
                         prettyAppendYellow(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
                     } else if (simulatedClient.getSelectedProtocolVersion().name().contains("SSL")) {
                         prettyAppendRed(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
+                    } else {
+                        prettyAppend(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
                     }
                     prettyPrintSelectedCipherSuite(builder, simulatedClient.getSelectedCiphersuite());
                     prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.isForwardSecrecy());
