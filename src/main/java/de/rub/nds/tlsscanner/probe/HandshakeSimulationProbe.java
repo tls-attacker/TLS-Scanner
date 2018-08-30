@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -46,7 +47,6 @@ public class HandshakeSimulationProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         TlsClientConfigIO clientConfigIO = new TlsClientConfigIO();
-        int i=0;
         for (File configFile : clientConfigIO.getClientConfigFileList(RESOURCE_FOLDER)) {
             TlsClientConfig clientConfig = clientConfigIO.readConfigFromFile(configFile);
             SimulatedClient simulatedClient = new SimulatedClient(clientConfig.getType(), clientConfig.getVersion());
@@ -57,10 +57,6 @@ public class HandshakeSimulationProbe extends TlsProbe {
             config.setStopActionsAfterFatal(true);
             config.setStopRecievingAfterFatal(true);
             runClient(clientConfig, config, simulatedClient);
-            i++;
-            if (i==4) {
-                break;
-            }
         }
         return new HandshakeSimulationResult(simulatedClientList);
     }
@@ -78,7 +74,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
         msg.setExtensions(extensions);
         WorkflowTrace trace = new WorkflowTrace();
         trace.addTlsAction(new SendAction(msg));
-        trace.addTlsAction(new ReceiveAction());
+        trace.addTlsAction(new GenericReceiveAction());
+        trace.addTlsAction(new GenericReceiveAction());
         State state = new State(config, trace);
         WorkflowExecutor workflowExecutor = new DefaultWorkflowExecutor(state);
         try {
