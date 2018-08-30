@@ -69,6 +69,13 @@ public class SiteReportPrinter {
                 prettyAppendGreenRed(builder, "TLS Handshake", simulatedClient.isReceivedServerHello());
                 if (simulatedClient.isReceivedServerHello()) {
                     prettyPrintSelectedCipherSuite(builder, simulatedClient.getSelectedCiphersuite());
+                    prettyAppend(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
+                    prettyAppend(builder, "Compression Method", simulatedClient.getSelectedCompressionMethod().name());
+                    if (simulatedClient.getSelectedNamedGroup() != null) {
+                        prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup().name());
+                    } else {
+                        prettyAppend(builder, "Named Group", "NULL");
+                    }
                 }
                 builder.append("\n");
             }

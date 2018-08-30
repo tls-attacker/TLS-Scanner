@@ -76,7 +76,12 @@ public class HandshakeSimulationProbe extends TlsProbe {
         WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
         executor.executeWorkflow();
         simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
-        simulatedClient.setSelectedCiphersuite(state.getTlsContext().getSelectedCipherSuite());
+        if (simulatedClient.isReceivedServerHello()) {
+            simulatedClient.setSelectedProtocolVersion(state.getTlsContext().getSelectedProtocolVersion());
+            simulatedClient.setSelectedCiphersuite(state.getTlsContext().getSelectedCipherSuite());
+            simulatedClient.setSelectedCompressionMethod(state.getTlsContext().getSelectedCompressionMethod());
+            simulatedClient.setSelectedNamedGroup(state.getTlsContext().getSelectedGroup());
+        }
         this.simulatedClientList.add(simulatedClient);
     }
 
