@@ -8,6 +8,7 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
@@ -23,6 +24,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.handshakeSimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.handshakeSimulation.TlsClientConfigIO;
 import de.rub.nds.tlsscanner.handshakeSimulation.SimulatedClient;
+import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -44,6 +46,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         TlsClientConfigIO clientConfigIO = new TlsClientConfigIO();
+        int i=0;
         for (File configFile : clientConfigIO.getClientConfigFileList(RESOURCE_FOLDER)) {
             TlsClientConfig clientConfig = clientConfigIO.readConfigFromFile(configFile);
             SimulatedClient simulatedClient = new SimulatedClient(clientConfig.getType(), clientConfig.getVersion());
@@ -54,6 +57,10 @@ public class HandshakeSimulationProbe extends TlsProbe {
             config.setStopActionsAfterFatal(true);
             config.setStopRecievingAfterFatal(true);
             runClient(clientConfig, config, simulatedClient);
+            i++;
+            if (i==4) {
+                break;
+            }
         }
         return new HandshakeSimulationResult(simulatedClientList);
     }
@@ -73,8 +80,12 @@ public class HandshakeSimulationProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(msg));
         trace.addTlsAction(new ReceiveAction());
         State state = new State(config, trace);
-        WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
-        executor.executeWorkflow();
+        WorkflowExecutor workflowExecutor = new DefaultWorkflowExecutor(state);
+        try {
+            workflowExecutor.executeWorkflow();
+        } catch (WorkflowExecutionException ex) {
+            LOGGER.warn(ex);
+        }
         simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
         if (simulatedClient.isReceivedServerHello()) {
             simulatedClient.setSelectedProtocolVersion(state.getTlsContext().getSelectedProtocolVersion());

@@ -63,7 +63,19 @@ public class SiteReportPrinter {
       
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
         if (report.getSimulatedClientList()!= null) {
-            prettyAppendHeading(builder, "Handshake Simulation - tested " + report.getSimulatedClientList().size() + " TLS Clients");
+            prettyAppendHeading(builder, "TLS Handshake Simulation - Overview");
+            prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
+            if (report.getHandshakeSuccessfulCounter()==0) {
+                prettyAppendRed(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
+            } else {
+                prettyAppendGreen(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
+            }
+            if (report.getHandshakeFailedCounter()==0) {
+                prettyAppendGreen(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
+            } else {
+                prettyAppendRed(builder, "Failed Handshakess", Integer.toString(report.getHandshakeFailedCounter()));
+            }
+            prettyAppendHeading(builder, "TLS Handshake Simulation - Detailed Information");
             for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
                 prettyAppend(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
                 prettyAppendGreenRed(builder, "TLS Handshake", simulatedClient.isReceivedServerHello());

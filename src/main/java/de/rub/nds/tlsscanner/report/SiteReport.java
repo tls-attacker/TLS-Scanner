@@ -179,6 +179,8 @@ public class SiteReport {
     private boolean noColor = false;
     
     //Handshake simulation
+    private int handshakeSuccessfulCounter;
+    private int handshakeFailedCounter;
     private List<SimulatedClient> simulatedClientList = null;
     
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
@@ -1113,6 +1115,22 @@ public class SiteReport {
 
     public void setSupportsStaticEcdh(Boolean supportsStaticEcdh) {
         this.supportsStaticEcdh = supportsStaticEcdh;
+    }
+
+    public void setHandshakeSuccessfulCounter(int handshakeSuccessfulCounter) {
+        this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
+    }
+
+    public int getHandshakeSuccessfulCounter() {
+        return handshakeSuccessfulCounter;
+    }
+
+    public void setHandshakeFailedCounter(int handshakeFailedCounter) {
+        this.handshakeFailedCounter = handshakeFailedCounter;
+    }
+    
+    public int getHandshakeFailedCounter() {
+        return handshakeFailedCounter;
     }
 
     public List<SimulatedClient> getSimulatedClientList() {
