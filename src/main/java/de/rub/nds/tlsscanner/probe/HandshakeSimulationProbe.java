@@ -17,7 +17,6 @@ import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -74,8 +73,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         msg.setExtensions(extensions);
         WorkflowTrace trace = new WorkflowTrace();
         trace.addTlsAction(new SendAction(msg));
-        trace.addTlsAction(new GenericReceiveAction());
-        trace.addTlsAction(new GenericReceiveAction());
+        trace.addTlsAction(new ReceiveAction());
         State state = new State(config, trace);
         WorkflowExecutor workflowExecutor = new DefaultWorkflowExecutor(state);
         try {
@@ -87,9 +85,22 @@ public class HandshakeSimulationProbe extends TlsProbe {
         if (simulatedClient.isReceivedServerHello()) {
             simulatedClient.setSelectedProtocolVersion(state.getTlsContext().getSelectedProtocolVersion());
             simulatedClient.setSelectedCiphersuite(state.getTlsContext().getSelectedCipherSuite());
+            if (simulatedClient.getSelectedCiphersuite().toString().contains("_DHE_") || simulatedClient.getSelectedCiphersuite().toString().contains("_ECDHE_")) {
+                simulatedClient.setForwardSecrecy(true);
+            }
             simulatedClient.setSelectedCompressionMethod(state.getTlsContext().getSelectedCompressionMethod());
-            simulatedClient.setSelectedNamedGroup(state.getTlsContext().getSelectedGroup());
+            simulatedClient.setNegotiatedExtensionSet(state.getTlsContext().getNegotiatedExtensionSet());
         }
+        simulatedClient.setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace));
+        if (simulatedClient.isReceivedCertificate()) {
+            simulatedClient.setServerCertificate(state.getTlsContext().getServerCertificate());
+        }
+        simulatedClient.setReceivedServerKeyExchange(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
+        if (simulatedClient.isReceivedServerKeyExchange()) {
+            simulatedClient.setSelectedNamedGroup(state.getTlsContext().getSelectedGroup());    
+        }
+        simulatedClient.setReceivedCertificateRequest(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, trace));
+        simulatedClient.setReceivedServerHelloDone(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
         this.simulatedClientList.add(simulatedClient);
     }
 

@@ -24,10 +24,9 @@ public class HandshakeSimulationResult extends ProbeResult {
         int handshakeSuccessfulCounter = 0;
         int handshakeFailedCounter = 0;
         for (SimulatedClient simulatedClient : this.simulatedClientList) {
-            if (simulatedClient.isReceivedServerHello() == true) {
+            if (simulatedClient.isReceivedServerHelloDone() == true) {
                 handshakeSuccessfulCounter++;
-            }
-            if (simulatedClient.isReceivedServerHello() == false) {
+            } else {
                 handshakeFailedCounter++;
             }
         }

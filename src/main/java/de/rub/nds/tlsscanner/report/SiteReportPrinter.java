@@ -78,16 +78,32 @@ public class SiteReportPrinter {
             prettyAppendHeading(builder, "TLS Handshake Simulation - Detailed Information");
             for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
                 prettyAppend(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
-                prettyAppendGreenRed(builder, "TLS Handshake", simulatedClient.isReceivedServerHello());
+                prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.isReceivedServerHelloDone());
                 if (simulatedClient.isReceivedServerHello()) {
+                    if (simulatedClient.getSelectedProtocolVersion().name().contains("13") || simulatedClient.getSelectedProtocolVersion().name().contains("12")) {
+                        prettyAppendGreen(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
+                    } else if (simulatedClient.getSelectedProtocolVersion().name().contains("11") || simulatedClient.getSelectedProtocolVersion().name().contains("10")) {
+                        prettyAppendYellow(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
+                    } else if (simulatedClient.getSelectedProtocolVersion().name().contains("SSL")) {
+                        prettyAppendRed(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
+                    }
                     prettyPrintSelectedCipherSuite(builder, simulatedClient.getSelectedCiphersuite());
-                    prettyAppend(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
+                    prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.isForwardSecrecy());
                     prettyAppend(builder, "Compression Method", simulatedClient.getSelectedCompressionMethod().name());
+                    prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensionSet().toString());
+                }
+                if (simulatedClient.isReceivedCertificate()) {
+                    //ToDo
+                    //prettyAppend(builder, "Server Certificate", simulatedClient.getServerCertificate());
+                }
+                if (simulatedClient.isReceivedServerKeyExchange()) {
                     if (simulatedClient.getSelectedNamedGroup() != null) {
                         prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup().name());
                     } else {
                         prettyAppend(builder, "Named Group", "NULL");
                     }
+                    //ToDo
+                    //prettyAppend(builder, "Server Public Key Length", simulatedClient.getServerPublicKeyLength());
                 }
                 builder.append("\n");
             }

@@ -7,8 +7,11 @@ package de.rub.nds.tlsscanner.handshakeSimulation;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import java.util.EnumSet;
+import org.bouncycastle.crypto.tls.Certificate;
 
 public class SimulatedClient {
 
@@ -17,15 +20,33 @@ public class SimulatedClient {
     private boolean receivedServerHello;
     private ProtocolVersion selectedProtocolVersion;
     private CipherSuite selectedCiphersuite;
+    private boolean forwardSecrecy;
     private CompressionMethod selectedCompressionMethod;
+    private EnumSet<ExtensionType> negotiatedExtensionSet;
+    private boolean receivedCertificate;
+    private Certificate serverCertificate;
+    private boolean receivedServerKeyExchange;
     private NamedGroup selectedNamedGroup;
+    private int serverPublicKeyLength;
+    private boolean receivedCertificateRequest;
+    private boolean receivedServerHelloDone;
     
     public SimulatedClient(String type, String version) {
         this.type = type;
         this.version = version;
         this.receivedServerHello = false;
+        this.selectedProtocolVersion = null;
         this.selectedCiphersuite = null;
+        this.forwardSecrecy = false;
         this.selectedCompressionMethod = null;
+        this.negotiatedExtensionSet = null;
+        this.receivedCertificate = false;
+        this.serverCertificate = null;
+        this.receivedServerKeyExchange = false;
+        this.selectedNamedGroup = null;
+        this.serverPublicKeyLength = 0;
+        this.receivedCertificateRequest = false;
+        this.receivedServerHelloDone = false;
     }
 
     public String getType() {
@@ -36,44 +57,107 @@ public class SimulatedClient {
         return version;
     }
     
+    public boolean isReceivedServerHello() {
+        return receivedServerHello;
+    }
+    
     public void setReceivedServerHello(boolean receivedServerHello) {
         this.receivedServerHello = receivedServerHello;
     }
     
-    public boolean isReceivedServerHello() {
-        return receivedServerHello;
+    public ProtocolVersion getSelectedProtocolVersion() {
+        return selectedProtocolVersion;
     }
     
     public void setSelectedProtocolVersion(ProtocolVersion selectedProtocolVersion) {
         this.selectedProtocolVersion = selectedProtocolVersion;
     }
-
-    public ProtocolVersion getSelectedProtocolVersion() {
-        return selectedProtocolVersion;
+    
+    public CipherSuite getSelectedCiphersuite() {
+        return selectedCiphersuite;
     }
 
     public void setSelectedCiphersuite(CipherSuite selectedCiphersuite) {
         this.selectedCiphersuite = selectedCiphersuite;
     }
-
-    public CipherSuite getSelectedCiphersuite() {
-        return selectedCiphersuite;
+    
+    public boolean isForwardSecrecy() {
+        return forwardSecrecy;
+    }
+    
+    public void setForwardSecrecy(boolean forwardSecrecy) {
+        this.forwardSecrecy = forwardSecrecy;
+    }
+    
+    public CompressionMethod getSelectedCompressionMethod() {
+        return selectedCompressionMethod;
     }
 
     public void setSelectedCompressionMethod(CompressionMethod selectedCompressionMethod) {
         this.selectedCompressionMethod = selectedCompressionMethod;
     }
+    
+    public EnumSet<ExtensionType> getNegotiatedExtensionSet() {
+        return negotiatedExtensionSet;
+    }
 
-    public CompressionMethod getSelectedCompressionMethod() {
-        return selectedCompressionMethod;
+    public void setNegotiatedExtensionSet(EnumSet<ExtensionType> negotiatedExtensionSet) {
+        this.negotiatedExtensionSet = negotiatedExtensionSet;
+    }
+    
+    public boolean isReceivedCertificate() {
+        return receivedCertificate;
+    }
+
+    public void setReceivedCertificate(boolean receivedCertificate) {
+        this.receivedCertificate = receivedCertificate;
+    }
+    
+    public Certificate getServerCertificate() {
+        return serverCertificate;
+    }
+
+    public void setServerCertificate(Certificate serverCertificate) {
+        this.serverCertificate = serverCertificate;
+    }
+    
+    public boolean isReceivedServerKeyExchange() {
+        return receivedServerKeyExchange;
+    }
+
+    public void setReceivedServerKeyExchange(boolean receivedServerKeyExchange) {
+        this.receivedServerKeyExchange = receivedServerKeyExchange;
+    }
+    
+    public NamedGroup getSelectedNamedGroup() {
+        return selectedNamedGroup;
     }
 
     public void setSelectedNamedGroup(NamedGroup selectedNamedGroup) {
         this.selectedNamedGroup = selectedNamedGroup;
     }
+    
+    public int getServerPublicKeyLength() {
+        return serverPublicKeyLength;
+    }
 
-    public NamedGroup getSelectedNamedGroup() {
-        return selectedNamedGroup;
+    public void setServerPublicKeyLength(int serverPublicKeyLength) {
+        this.serverPublicKeyLength = serverPublicKeyLength;
     }
     
+    public boolean isReceivedCertificateRequest() {
+        return receivedCertificateRequest;
+    }
+
+    public void setReceivedCertificateRequest(boolean receivedCertificateRequest) {
+        this.receivedCertificateRequest = receivedCertificateRequest;
+    }
+    
+    public boolean isReceivedServerHelloDone() {
+        return receivedServerHelloDone;
+    }
+    
+    public void setReceivedServerHelloDone(boolean receivedServerHelloDone) {
+        this.receivedServerHelloDone = receivedServerHelloDone;
+    }
 }

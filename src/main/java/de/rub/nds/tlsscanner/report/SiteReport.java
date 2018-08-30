@@ -32,7 +32,7 @@ import org.bouncycastle.crypto.tls.Certificate;
  */
 public class SiteReport {
 
-    //general
+    //General
     private final List<ProbeType> probeTypeList;
 
     private final String host;
@@ -178,7 +178,7 @@ public class SiteReport {
     //NoColor Flag
     private boolean noColor = false;
     
-    //Handshake simulation
+    //Handshake Simulation
     private int handshakeSuccessfulCounter;
     private int handshakeFailedCounter;
     private List<SimulatedClient> simulatedClientList = null;
@@ -1116,21 +1116,21 @@ public class SiteReport {
     public void setSupportsStaticEcdh(Boolean supportsStaticEcdh) {
         this.supportsStaticEcdh = supportsStaticEcdh;
     }
-
-    public void setHandshakeSuccessfulCounter(int handshakeSuccessfulCounter) {
-        this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
-    }
-
+    
     public int getHandshakeSuccessfulCounter() {
         return handshakeSuccessfulCounter;
     }
 
-    public void setHandshakeFailedCounter(int handshakeFailedCounter) {
-        this.handshakeFailedCounter = handshakeFailedCounter;
+    public void setHandshakeSuccessfulCounter(int handshakeSuccessfulCounter) {
+        this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
     }
     
     public int getHandshakeFailedCounter() {
         return handshakeFailedCounter;
+    }
+
+    public void setHandshakeFailedCounter(int handshakeFailedCounter) {
+        this.handshakeFailedCounter = handshakeFailedCounter;
     }
 
     public List<SimulatedClient> getSimulatedClientList() {
