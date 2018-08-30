@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.rub.nds.tlsscanner.handshakeSimulation;
+package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 
 import de.rub.nds.modifiablevariable.util.XMLPrettyPrinter;
 import java.io.BufferedReader;

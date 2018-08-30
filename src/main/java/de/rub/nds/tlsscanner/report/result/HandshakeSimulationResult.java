@@ -6,7 +6,7 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.handshakeSimulation.SimulatedClient;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.List;
 
