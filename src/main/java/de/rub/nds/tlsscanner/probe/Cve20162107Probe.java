@@ -25,7 +25,7 @@ import de.rub.nds.tlsscanner.report.result.Cve20162107Result;
 public class Cve20162107Probe extends TlsProbe {
 
     public Cve20162107Probe(ScannerConfig config) {
-        super(ProbeType.CVE20162107, config, 10);
+        super(ProbeType.CVE20162107, config, 10, 1);
     }
 
     @Override

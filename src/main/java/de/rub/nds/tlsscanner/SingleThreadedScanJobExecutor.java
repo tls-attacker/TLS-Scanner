@@ -30,16 +30,49 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
 
     public SingleThreadedScanJobExecutor() {
     }
+    
+    private void printBar(int tempWeigth, int totalWeight){
+        System.out.printf("\n\033[0J\r"); // mach eine neue Zeile, damit nicht die vorherige überschrieben wird und löscht alle Zeichen die nach dem Crusor kommen und geht zum Anfang der Zeile zurück
+        double percent = ((double) tempWeigth/ (double) totalWeight)*100;
+        int numberOfBarElements = ((int)percent)/5;
+        System.out.printf("<");
+        for(int i = 0; i < numberOfBarElements; i++){
+            System.out.printf("=");
+        }
+        if(numberOfBarElements < 20){
+            for(int i = numberOfBarElements; i < 20; i++){
+                System.out.printf(" ");
+            }
+        }
+        System.out.printf(">");
+        System.out.printf(" %.2f%% \033[1F",percent); // geht eine Zeile nach oben, sodass es immer die unterste Zeile ist
+    }
 
     @Override
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<ProbeType> probeTypes = new LinkedList<>();
+        int totalWeight = 0;
+        int tempWeight = 0;
 
         List<ProbeResult> resultList = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
+                totalWeight += probe.getWeight();
+            }
+        }
+        for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
+            if (probe.getDanger() <= config.getDangerLevel()) {
+                totalWeight += probe.getWeight();
+            }
+        }
+        
+        for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
+            if (probe.getDanger() <= config.getDangerLevel()) {
                 try {
                     resultList.add(probe.call());
+                    tempWeight += probe.getWeight();
+                    printBar(tempWeight, totalWeight);
+                    
                 } catch (Exception E) {
                     LOGGER.warn("Could not execute Probe", E);
                 }
@@ -72,6 +105,8 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                 if (probe.shouldBeExecuted(report)) {
                     try {
                         resultList.add(probe.call());
+                        tempWeight += probe.getWeight();
+                        printBar(tempWeight, totalWeight);
                     } catch (Exception E) {
                         LOGGER.warn("Could not execute Probe", E);
                     }

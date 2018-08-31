@@ -33,7 +33,7 @@ import java.util.Set;
 public class TokenbindingProbe extends TlsProbe {
 
     public TokenbindingProbe(ScannerConfig config) {
-        super(ProbeType.TOKENBINDING, config, 0);
+        super(ProbeType.TOKENBINDING, config, 0, 1);
     }
 
     @Override

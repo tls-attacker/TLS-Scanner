@@ -26,13 +26,15 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     protected final ScannerConfig scannerConfig;
     protected final ProbeType type;
+    protected final int weight;
 
     private final int danger;
 
-    public TlsProbe(ProbeType type, ScannerConfig scannerConfig, int danger) {
+    public TlsProbe(ProbeType type, ScannerConfig scannerConfig, int danger, int weight) {
         this.scannerConfig = scannerConfig;
         this.type = type;
         this.danger = danger;
+        this.weight = weight;
     }
 
     public int getDanger() {
@@ -59,8 +61,14 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         long stopTime = System.currentTimeMillis();
         result.setStarttime(startTime);
         result.setStoptime(stopTime);
+        System.out.printf("\033[1F\r\033[0K");
         LOGGER.info("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
+        
         return result;
+    }
+    
+    public int getWeight(){
+        return weight;
     }
     
     public abstract ProbeResult executeTest();

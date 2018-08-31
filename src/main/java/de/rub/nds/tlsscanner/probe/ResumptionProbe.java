@@ -34,7 +34,7 @@ public class ResumptionProbe extends TlsProbe {
     private Set<CipherSuite> supportedSuites;
 
     public ResumptionProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.RESUMPTION, scannerConfig, 0);
+        super(ProbeType.RESUMPTION, scannerConfig, 0, 1);
     }
 
     @Override

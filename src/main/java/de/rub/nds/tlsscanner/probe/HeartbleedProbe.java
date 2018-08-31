@@ -31,7 +31,7 @@ public class HeartbleedProbe extends TlsProbe {
     private List<CipherSuite> supportedCiphers;
 
     public HeartbleedProbe(ScannerConfig config) {
-        super(ProbeType.HEARTBLEED, config, 9);
+        super(ProbeType.HEARTBLEED, config, 9, 1);
     }
 
     @Override

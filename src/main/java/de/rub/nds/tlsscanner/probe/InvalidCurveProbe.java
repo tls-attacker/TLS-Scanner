@@ -29,7 +29,7 @@ public class InvalidCurveProbe extends TlsProbe {
     private Boolean supportsStatic;
 
     public InvalidCurveProbe(ScannerConfig config) {
-        super(ProbeType.INVALID_CURVE, config, 10);
+        super(ProbeType.INVALID_CURVE, config, 10, 1);
     }
 
     @Override

@@ -51,7 +51,7 @@ public class MacProbe extends TlsProbe {
     private ResponseFingerprint correctFingerprint;
 
     public MacProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.MAC, scannerConfig, 4);
+        super(ProbeType.MAC, scannerConfig, 4, 1);
     }
 
     @Override

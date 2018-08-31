@@ -20,7 +20,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     public SignatureAndHashAlgorithmProbe(ScannerConfig config) {
-        super(ProbeType.SIGNATURE_AND_HASH, config, 4);
+        super(ProbeType.SIGNATURE_AND_HASH, config, 4, 1);
     }
 
     @Override

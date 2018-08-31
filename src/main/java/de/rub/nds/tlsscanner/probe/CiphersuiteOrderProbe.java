@@ -35,7 +35,7 @@ import java.util.List;
 public class CiphersuiteOrderProbe extends TlsProbe {
 
     public CiphersuiteOrderProbe(ScannerConfig config) {
-        super(ProbeType.CIPHERSUITE_ORDER, config, 0);
+        super(ProbeType.CIPHERSUITE_ORDER, config, 0, 1);
     }
 
     @Override

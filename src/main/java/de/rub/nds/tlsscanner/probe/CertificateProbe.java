@@ -31,7 +31,7 @@ import org.bouncycastle.crypto.tls.Certificate;
 public class CertificateProbe extends TlsProbe {
 
     public CertificateProbe(ScannerConfig config) {
-        super(ProbeType.CERTIFICATE, config, 0);
+        super(ProbeType.CERTIFICATE, config, 0, 1);
     }
 
     @Override
