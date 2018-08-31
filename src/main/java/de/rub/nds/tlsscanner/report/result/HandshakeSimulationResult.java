@@ -30,17 +30,19 @@ public class HandshakeSimulationResult extends ProbeResult {
             } else {
                 handshakeFailedCounter++;
             }
-            if (simulatedClient.getSelectedProtocolVersion().equals(simulatedClient.getHighestClientProtocolVersion())) {
-                simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
-            } else {
-                boolean serverProvidesClientVersion = false;
-                for (ProtocolVersion version : report.getVersions()) {
-                    if (version.equals(simulatedClient.getHighestClientProtocolVersion())) {
-                        serverProvidesClientVersion = true;
-                    }
-                }
-                if (!serverProvidesClientVersion) {
+            if (simulatedClient.isReceivedServerHello()) {
+                if (simulatedClient.getSelectedProtocolVersion().equals(simulatedClient.getHighestClientProtocolVersion())) {
                     simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
+                } else {
+                    boolean serverProvidesClientVersion = false;
+                    for (ProtocolVersion version : report.getVersions()) {
+                        if (version.equals(simulatedClient.getHighestClientProtocolVersion())) {
+                            serverProvidesClientVersion = true;
+                        }
+                    }
+                    if (!serverProvidesClientVersion) {
+                        simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
+                    }
                 }
             }
         }
