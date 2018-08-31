@@ -179,8 +179,8 @@ public class SiteReport {
     private boolean noColor = false;
     
     //Handshake Simulation
-    private int handshakeSuccessfulCounter;
-    private int handshakeFailedCounter;
+    private int handshakeSuccessfulCounter = 0;
+    private int handshakeFailedCounter = 0;
     private List<SimulatedClient> simulatedClientList = null;
     
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
@@ -1145,8 +1145,7 @@ public class SiteReport {
         return noColor;
     }
     
-    public String getFullReport()
-    {        
+    public String getFullReport() {        
         return new SiteReportPrinter(this).getFullReport();
     }
     

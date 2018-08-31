@@ -80,16 +80,10 @@ public class SiteReportPrinter {
                 prettyAppend(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
                 prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.isReceivedServerHelloDone());
                 if (simulatedClient.isReceivedServerHello()) {
-                    if (simulatedClient.getSelectedProtocolVersion().name().contains("13") || simulatedClient.getSelectedProtocolVersion().name().contains("12")) {
-                        prettyAppendGreen(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
-                    } else if (simulatedClient.getSelectedProtocolVersion().name().contains("11") || simulatedClient.getSelectedProtocolVersion().name().contains("10")) {
-                        prettyAppendYellow(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
-                    } else if (simulatedClient.getSelectedProtocolVersion().name().contains("SSL")) {
-                        prettyAppendRed(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
-                    } else {
-                        prettyAppend(builder, "Protocol Version", simulatedClient.getSelectedProtocolVersion().name());
-                    }
-                    prettyPrintSelectedCipherSuite(builder, simulatedClient.getSelectedCiphersuite());
+                    prettyAppendProtocolVersion(builder, "Protocol Version Client", simulatedClient.getHighestClientProtocolVersion());
+                    prettyAppendProtocolVersion(builder, "Protocol Version Selected", simulatedClient.getSelectedProtocolVersion());
+                    prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.isHighestPossibleProtocolVersionSeleceted());
+                    prettyAppendSelectedCipherSuite(builder, "Selected Ciphersuite", simulatedClient.getSelectedCiphersuite());
                     prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.isForwardSecrecy());
                     prettyAppend(builder, "Compression Method", simulatedClient.getSelectedCompressionMethod().name());
                     prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensionSet().toString());
@@ -214,13 +208,13 @@ public class SiteReportPrinter {
         if (report.getCipherSuites() != null) {
             prettyAppendHeading(builder, "Supported Ciphersuites");
             for (CipherSuite suite : report.getCipherSuites()) {
-                prettyPrintSupportedCipherSuite(builder, suite);
+                prettyAppendSupportedCipherSuite(builder, suite);
             }
 
             for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
                 prettyAppendHeading(builder, "Supported in " + versionSuitePair.getVersion());
                 for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
-                    prettyPrintSupportedCipherSuite(builder, suite);
+                    prettyAppendSupportedCipherSuite(builder, suite);
                 }
             }
             prettyAppendHeading(builder, "Symmetric Supported");
@@ -364,8 +358,20 @@ public class SiteReportPrinter {
         }
         return builder;
     }
+    
+    private void prettyAppendProtocolVersion(StringBuilder builder, String name, ProtocolVersion version) {
+        if (version.name().contains("13") || version.name().contains("12")) {
+            prettyAppendGreen(builder, name, version.name());
+        } else if (version.name().contains("11") || version.name().contains("10")) {
+            prettyAppendYellow(builder, name, version.name());
+        } else if (version.name().contains("SSL")) {
+            prettyAppendRed(builder, name, version.name());
+        } else {
+            prettyAppend(builder, name, version.name());
+        }
+    }
 
-    private void prettyPrintSupportedCipherSuite(StringBuilder builder, CipherSuite suite) {
+    private void prettyAppendSupportedCipherSuite(StringBuilder builder, CipherSuite suite) {
         CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
         switch (grade) {
             case GOOD:
@@ -385,23 +391,23 @@ public class SiteReportPrinter {
         }
     }
     
-    private void prettyPrintSelectedCipherSuite(StringBuilder builder, CipherSuite suite) {
+    private void prettyAppendSelectedCipherSuite(StringBuilder builder, String name, CipherSuite suite) {
         CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
         switch (grade) {
             case GOOD:
-                prettyAppendGreen(builder, "Ciphersuite", suite.name());
+                prettyAppendGreen(builder, name, suite.name());
                 break;
             case LOW:
-                prettyAppendRed(builder, "Ciphersuite", suite.name());
+                prettyAppendRed(builder, name, suite.name());
                 break;
             case MEDIUM:
-                prettyAppendYellow(builder, "Ciphersuite", suite.name());
+                prettyAppendYellow(builder, name, suite.name());
                 break;
             case NONE:
-                prettyAppend(builder, "Ciphersuite", suite.name());
+                prettyAppend(builder, name, suite.name());
                 break;
             default:
-                prettyAppend(builder, "Ciphersuite", suite.name());
+                prettyAppend(builder, name, suite.name());
         }
     }    
     

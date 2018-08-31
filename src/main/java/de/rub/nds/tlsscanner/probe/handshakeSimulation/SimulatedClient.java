@@ -18,7 +18,9 @@ public class SimulatedClient {
     private final String type;
     private final String version;
     private boolean receivedServerHello;
+    private ProtocolVersion highestClientProtocolVersion;
     private ProtocolVersion selectedProtocolVersion;
+    private boolean highestPossibleProtocolVersionSeleceted;
     private CipherSuite selectedCiphersuite;
     private boolean forwardSecrecy;
     private CompressionMethod selectedCompressionMethod;
@@ -35,7 +37,9 @@ public class SimulatedClient {
         this.type = type;
         this.version = version;
         this.receivedServerHello = false;
+        this.highestClientProtocolVersion = null;
         this.selectedProtocolVersion = null;
+        this.highestPossibleProtocolVersionSeleceted = false;
         this.selectedCiphersuite = null;
         this.forwardSecrecy = false;
         this.selectedCompressionMethod = null;
@@ -65,12 +69,28 @@ public class SimulatedClient {
         this.receivedServerHello = receivedServerHello;
     }
     
+    public ProtocolVersion getHighestClientProtocolVersion() {
+        return highestClientProtocolVersion;
+    }
+
+    public void setHighestClientProtocolVersion(ProtocolVersion highestClientProtocolVersion) {
+        this.highestClientProtocolVersion = highestClientProtocolVersion;
+    }
+    
     public ProtocolVersion getSelectedProtocolVersion() {
         return selectedProtocolVersion;
     }
     
     public void setSelectedProtocolVersion(ProtocolVersion selectedProtocolVersion) {
         this.selectedProtocolVersion = selectedProtocolVersion;
+    }
+    
+    public boolean isHighestPossibleProtocolVersionSeleceted() {
+        return highestPossibleProtocolVersionSeleceted;
+    }
+
+    public void setHighestPossibleProtocolVersionSeleceted(boolean highestPossibleProtocolVersionSeleceted) {
+        this.highestPossibleProtocolVersionSeleceted = highestPossibleProtocolVersionSeleceted;
     }
     
     public CipherSuite getSelectedCiphersuite() {

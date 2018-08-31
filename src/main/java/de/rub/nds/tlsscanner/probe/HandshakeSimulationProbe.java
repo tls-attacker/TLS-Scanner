@@ -8,6 +8,7 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
@@ -83,6 +84,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
         simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
         if (simulatedClient.isReceivedServerHello()) {
+            simulatedClient.setHighestClientProtocolVersion(state.getTlsContext().getHighestClientProtocolVersion());
             simulatedClient.setSelectedProtocolVersion(state.getTlsContext().getSelectedProtocolVersion());
             simulatedClient.setSelectedCiphersuite(state.getTlsContext().getSelectedCipherSuite());
             if (simulatedClient.getSelectedCiphersuite().toString().contains("_DHE_") || simulatedClient.getSelectedCiphersuite().toString().contains("_ECDHE_")) {

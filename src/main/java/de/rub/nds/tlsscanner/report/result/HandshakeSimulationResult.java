@@ -5,6 +5,7 @@
  */
 package de.rub.nds.tlsscanner.report.result;
 
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -29,10 +30,23 @@ public class HandshakeSimulationResult extends ProbeResult {
             } else {
                 handshakeFailedCounter++;
             }
+            if (simulatedClient.getSelectedProtocolVersion().equals(simulatedClient.getHighestClientProtocolVersion())) {
+                simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
+            } else {
+                boolean serverProvidesClientVersion = false;
+                for (ProtocolVersion version : report.getVersions()) {
+                    if (version.equals(simulatedClient.getHighestClientProtocolVersion())) {
+                        serverProvidesClientVersion = true;
+                    }
+                }
+                if (!serverProvidesClientVersion) {
+                    simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
+                }
+            }
         }
-        report.setSimulatedClientList(this.simulatedClientList);
         report.setHandshakeSuccessfulCounter(handshakeSuccessfulCounter);
         report.setHandshakeFailedCounter(handshakeFailedCounter);
+        report.setSimulatedClientList(this.simulatedClientList);
     }
     
 }
