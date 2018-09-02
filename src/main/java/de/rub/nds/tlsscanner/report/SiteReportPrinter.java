@@ -100,11 +100,11 @@ public class SiteReportPrinter {
                     }
                     prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.isBleichenbacherBug());
                     if (simulatedClient.isBleichenbacherBug()) {
-                        builder.append("-> Deactivate Ciphersuite ").append(simulatedClient.getSelectedCiphersuite().name()).append("\n");
+                        builder.append("-> Deactivate Selected Ciphersuite").append("\n");
                     }
                     prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.isPaddingOracleBug());
                     if (simulatedClient.isPaddingOracleBug()) {
-                        builder.append("-> Deactivate Ciphersuite ").append(simulatedClient.getSelectedCiphersuite().name()).append("\n");
+                        builder.append("-> Deactivate Selected Ciphersuite").append("\n");
                     }
                 }
             }

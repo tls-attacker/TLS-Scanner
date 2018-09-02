@@ -45,15 +45,15 @@ public class HandshakeSimulationResult extends ProbeResult {
                         simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
                     }
                 }
-            }
-            if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
-                simulatedClient.setCrimeBug(true);
-            }
-            if (report.getBleichenbacherVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
-                simulatedClient.setBleichenbacherBug(true);
-            }
-            if (report.getPaddingOracleVulnerable() && simulatedClient.getSelectedCiphersuite().isCBC()) {
-                simulatedClient.setPaddingOracleBug(true);
+                if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
+                    simulatedClient.setCrimeBug(true);
+                }
+                if (report.getBleichenbacherVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
+                    simulatedClient.setBleichenbacherBug(true);
+                }
+                if (report.getPaddingOracleVulnerable() && simulatedClient.getSelectedCiphersuite().isCBC()) {
+                    simulatedClient.setPaddingOracleBug(true);
+                }
             }
         }
         report.setHandshakeSuccessfulCounter(handshakeSuccessfulCounter);
