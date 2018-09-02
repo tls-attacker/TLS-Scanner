@@ -8,10 +8,8 @@ package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import java.util.EnumSet;
-import org.bouncycastle.crypto.tls.Certificate;
 
 public class SimulatedClient {
 
@@ -26,12 +24,14 @@ public class SimulatedClient {
     private CompressionMethod selectedCompressionMethod;
     private EnumSet<ExtensionType> negotiatedExtensionSet;
     private boolean receivedCertificate;
-    private Certificate serverCertificate;
     private boolean receivedServerKeyExchange;
-    private NamedGroup selectedNamedGroup;
-    private int serverPublicKeyLength;
+    private String selectedNamedGroup;
+    private String serverPublicKeyLength;
     private boolean receivedCertificateRequest;
     private boolean receivedServerHelloDone;
+    private boolean crimeBug;
+    private boolean bleichenbacherBug;
+    private boolean paddingOracleBug;
     
     public SimulatedClient(String type, String version) {
         this.type = type;
@@ -45,12 +45,14 @@ public class SimulatedClient {
         this.selectedCompressionMethod = null;
         this.negotiatedExtensionSet = null;
         this.receivedCertificate = false;
-        this.serverCertificate = null;
         this.receivedServerKeyExchange = false;
         this.selectedNamedGroup = null;
-        this.serverPublicKeyLength = 0;
+        this.serverPublicKeyLength = null;
         this.receivedCertificateRequest = false;
         this.receivedServerHelloDone = false;
+        this.crimeBug = false;
+        this.bleichenbacherBug = false;
+        this.paddingOracleBug = false;
     }
 
     public String getType() {
@@ -133,14 +135,6 @@ public class SimulatedClient {
         this.receivedCertificate = receivedCertificate;
     }
     
-    public Certificate getServerCertificate() {
-        return serverCertificate;
-    }
-
-    public void setServerCertificate(Certificate serverCertificate) {
-        this.serverCertificate = serverCertificate;
-    }
-    
     public boolean isReceivedServerKeyExchange() {
         return receivedServerKeyExchange;
     }
@@ -149,19 +143,19 @@ public class SimulatedClient {
         this.receivedServerKeyExchange = receivedServerKeyExchange;
     }
     
-    public NamedGroup getSelectedNamedGroup() {
+    public String getSelectedNamedGroup() {
         return selectedNamedGroup;
     }
 
-    public void setSelectedNamedGroup(NamedGroup selectedNamedGroup) {
+    public void setSelectedNamedGroup(String selectedNamedGroup) {
         this.selectedNamedGroup = selectedNamedGroup;
     }
     
-    public int getServerPublicKeyLength() {
+    public String getServerPublicKeyLength() {
         return serverPublicKeyLength;
     }
 
-    public void setServerPublicKeyLength(int serverPublicKeyLength) {
+    public void setServerPublicKeyLength(String serverPublicKeyLength) {
         this.serverPublicKeyLength = serverPublicKeyLength;
     }
     
@@ -179,5 +173,29 @@ public class SimulatedClient {
     
     public void setReceivedServerHelloDone(boolean receivedServerHelloDone) {
         this.receivedServerHelloDone = receivedServerHelloDone;
+    }
+
+    public boolean isCrimeBug() {
+        return crimeBug;
+    }
+
+    public void setCrimeBug(boolean crimeBug) {
+        this.crimeBug = crimeBug;
+    }
+
+    public boolean isBleichenbacherBug() {
+        return bleichenbacherBug;
+    }
+
+    public void setBleichenbacherBug(boolean bleichenbacherBug) {
+        this.bleichenbacherBug = bleichenbacherBug;
+    }
+
+    public boolean isPaddingOracleBug() {
+        return paddingOracleBug;
+    }
+
+    public void setPaddingOracleBug(boolean paddingOracleBug) {
+        this.paddingOracleBug = paddingOracleBug;
     }
 }

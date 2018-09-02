@@ -63,7 +63,7 @@ public class SiteReportPrinter {
       
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
         if (report.getSimulatedClientList()!= null) {
-            prettyAppendHeading(builder, "TLS Handshake Simulation - Overview");
+            prettyAppendHeading(builder, "TLS Handshake Simulation");
             prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
             if (report.getHandshakeSuccessfulCounter()==0) {
                 prettyAppendRed(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
@@ -75,33 +75,38 @@ public class SiteReportPrinter {
             } else {
                 prettyAppendRed(builder, "Failed Handshakess", Integer.toString(report.getHandshakeFailedCounter()));
             }
-            prettyAppendHeading(builder, "TLS Handshake Simulation - Detailed Information");
             for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
-                prettyAppend(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
+                prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
                 prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.isReceivedServerHelloDone());
+                builder.append("\n");
                 if (simulatedClient.isReceivedServerHello()) {
                     prettyAppendProtocolVersion(builder, "Protocol Version Client", simulatedClient.getHighestClientProtocolVersion());
                     prettyAppendProtocolVersion(builder, "Protocol Version Selected", simulatedClient.getSelectedProtocolVersion());
                     prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.isHighestPossibleProtocolVersionSeleceted());
+                    builder.append("\n");
                     prettyAppendSelectedCipherSuite(builder, "Selected Ciphersuite", simulatedClient.getSelectedCiphersuite());
                     prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.isForwardSecrecy());
-                    prettyAppend(builder, "Compression Method", simulatedClient.getSelectedCompressionMethod().name());
+                    prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup());
+                    prettyAppend(builder, "Server Public Key Length", simulatedClient.getServerPublicKeyLength());
+                    builder.append("\n");
+                    prettyAppend(builder, "Selected Compression Method", simulatedClient.getSelectedCompressionMethod().name());
                     prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensionSet().toString());
-                }
-                if (simulatedClient.isReceivedCertificate()) {
-                    //ToDo
-                    //prettyAppend(builder, "Server Certificate", simulatedClient.getServerCertificate());
-                }
-                if (simulatedClient.isReceivedServerKeyExchange()) {
-                    if (simulatedClient.getSelectedNamedGroup() != null) {
-                        prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup().name());
-                    } else {
-                        prettyAppend(builder, "Named Group", "NULL");
+                    builder.append("\n");
+                    builder.append("Configuration Issues").append("\n");
+                    builder.append("\n");
+                    prettyAppendRedGreen(builder, "Crime", simulatedClient.isCrimeBug());
+                    if (simulatedClient.isCrimeBug()) {
+                        builder.append("-> Deactivate Compression");
                     }
-                    //ToDo
-                    //prettyAppend(builder, "Server Public Key Length", simulatedClient.getServerPublicKeyLength());
+                    prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.isBleichenbacherBug());
+                    if (simulatedClient.isBleichenbacherBug()) {
+                        builder.append("-> Deactivate Ciphersuite ").append(simulatedClient.getSelectedCiphersuite().name()).append("\n");
+                    }
+                    prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.isPaddingOracleBug());
+                    if (simulatedClient.isPaddingOracleBug()) {
+                        builder.append("-> Deactivate Ciphersuite ").append(simulatedClient.getSelectedCiphersuite().name()).append("\n");
+                    }
                 }
-                builder.append("\n");
             }
         }
         return builder;
@@ -416,7 +421,7 @@ public class SiteReportPrinter {
     }
     
     private StringBuilder prettyAppend(StringBuilder builder, String name, String value) {
-        return builder.append(addIndentations(name)).append(": ").append(value).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : value).append("\n");
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String name, Long value) {

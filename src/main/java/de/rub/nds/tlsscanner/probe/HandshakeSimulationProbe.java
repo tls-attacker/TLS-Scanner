@@ -8,7 +8,6 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
@@ -95,11 +94,12 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
         simulatedClient.setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace));
         if (simulatedClient.isReceivedCertificate()) {
-            simulatedClient.setServerCertificate(state.getTlsContext().getServerCertificate());
+            //Do something
         }
         simulatedClient.setReceivedServerKeyExchange(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
         if (simulatedClient.isReceivedServerKeyExchange()) {
-            simulatedClient.setSelectedNamedGroup(state.getTlsContext().getSelectedGroup());    
+            //ToDo: Set PubKey length
+            simulatedClient.setSelectedNamedGroup(state.getTlsContext().getSelectedGroup().name());
         }
         simulatedClient.setReceivedCertificateRequest(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, trace));
         simulatedClient.setReceivedServerHelloDone(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
@@ -108,7 +108,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        return true;
+        return report.getVersions()!=null;
     }
 
     @Override
