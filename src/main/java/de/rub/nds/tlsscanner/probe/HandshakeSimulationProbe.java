@@ -121,8 +121,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
             }
             simulatedClient.setSelectedNamedGroup(state.getTlsContext().getSelectedGroup().name());
         }
-        if (simulatedClient.getServerPublicKeyLength()==null && state.getTlsContext().getServerRSAPublicKey()!=null) {
-            simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerRSAPublicKey().bitLength()));
+        if (simulatedClient.getServerPublicKeyLength()==null && state.getTlsContext().getServerRsaModulus()!=null) {
+            simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerRsaModulus().bitLength()));
         }
         simulatedClient.setReceivedCertificateRequest(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, trace));
         simulatedClient.setReceivedServerHelloDone(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
