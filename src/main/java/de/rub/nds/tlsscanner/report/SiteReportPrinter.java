@@ -93,20 +93,13 @@ public class SiteReportPrinter {
                     prettyAppend(builder, "Selected Compression Method", simulatedClient.getSelectedCompressionMethod().name());
                     prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensionSet().toString());
                     builder.append("\n");
-                    builder.append("Configuration Issues").append("\n");
+                    builder.append("Vulnerabilities").append("\n");
                     builder.append("\n");
-                    prettyAppendRedGreen(builder, "Crime", simulatedClient.isCrimeBug());
-                    if (simulatedClient.isCrimeBug()) {
-                        builder.append("-> Deactivate Compression");
-                    }
-                    prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.isBleichenbacherBug());
-                    if (simulatedClient.isBleichenbacherBug()) {
-                        builder.append("-> Deactivate Selected Ciphersuite").append("\n");
-                    }
-                    prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.isPaddingOracleBug());
-                    if (simulatedClient.isPaddingOracleBug()) {
-                        builder.append("-> Deactivate Selected Ciphersuite").append("\n");
-                    }
+                    prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.isPaddingOracleVulnerable());
+                    prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.isBleichenbacherVulnerable());
+                    prettyAppendRedGreen(builder, "Crime", simulatedClient.isCrimeVulnerable());
+                    prettyAppendRedGreen(builder, "Invalid Curve", simulatedClient.isInvalidCurveVulnarable());
+                    prettyAppendRedGreen(builder, "Invalid Curve Ephemeral", simulatedClient.isInvalidCurveEphemeralVulnarable());
                 }
             }
         }

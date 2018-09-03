@@ -100,23 +100,17 @@ public class HandshakeSimulationProbe extends TlsProbe {
         if (simulatedClient.isReceivedServerKeyExchange()) {
             if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA") && state.getTlsContext().getServerRSAPublicKey()!=null) {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerRSAPublicKey().bitLength()));
-            }
-            if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH") && state.getTlsContext().getServerDhPublicKey()!=null) {
+            } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH") && state.getTlsContext().getServerDhPublicKey()!=null) {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerDhPublicKey().bitLength()));
-            }
-            if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_PSK") && state.getTlsContext().getServerPSKPublicKey()!=null) {
+            } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_PSK") && state.getTlsContext().getServerPSKPublicKey()!=null) {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerPSKPublicKey().bitLength()));
-            }
-            if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_SRP") && state.getTlsContext().getServerSRPPublicKey()!=null) {
+            } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_SRP") && state.getTlsContext().getServerSRPPublicKey()!=null) {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerSRPPublicKey().bitLength()));
-            }
-            if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH") && state.getTlsContext().getServerEcPublicKey()!=null) {
+            } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH") && state.getTlsContext().getServerEcPublicKey()!=null) {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerEcPublicKey().getByteX().length*8));
-            }
-            if (simulatedClient.getSelectedCiphersuite().usesGOSTR3411() && state.getTlsContext().getServerGostEc01PublicKey()!=null) {
+            } else if (simulatedClient.getSelectedCiphersuite().usesGOSTR3411() && state.getTlsContext().getServerGostEc01PublicKey()!=null) {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerGostEc01PublicKey().getByteX().length*8));
-            }
-            if (simulatedClient.getSelectedCiphersuite().usesGOSTR34112012() && state.getTlsContext().getServerGostEc12PublicKey()!=null) {
+            } else if (simulatedClient.getSelectedCiphersuite().usesGOSTR34112012() && state.getTlsContext().getServerGostEc12PublicKey()!=null) {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerGostEc12PublicKey().getByteX().length*8));
             }
             simulatedClient.setSelectedNamedGroup(state.getTlsContext().getSelectedGroup().name());

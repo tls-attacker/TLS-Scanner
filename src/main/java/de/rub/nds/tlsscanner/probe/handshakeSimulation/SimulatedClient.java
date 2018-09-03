@@ -29,9 +29,12 @@ public class SimulatedClient {
     private String serverPublicKeyLength;
     private boolean receivedCertificateRequest;
     private boolean receivedServerHelloDone;
-    private boolean crimeBug;
-    private boolean bleichenbacherBug;
-    private boolean paddingOracleBug;
+    private boolean connectionSecure;
+    private boolean paddingOracleVulnerable;
+    private boolean bleichenbacherVulnerable;
+    private boolean crimeVulnerable;
+    private boolean invalidCurveVulnarable;
+    private boolean invalidCurveEphemeralVulnarable;
     
     public SimulatedClient(String type, String version) {
         this.type = type;
@@ -50,9 +53,12 @@ public class SimulatedClient {
         this.serverPublicKeyLength = null;
         this.receivedCertificateRequest = false;
         this.receivedServerHelloDone = false;
-        this.crimeBug = false;
-        this.bleichenbacherBug = false;
-        this.paddingOracleBug = false;
+        this.connectionSecure = false;
+        this.paddingOracleVulnerable = false;
+        this.bleichenbacherVulnerable = false;
+        this.crimeVulnerable = false;
+        this.invalidCurveVulnarable = false;
+        this.invalidCurveEphemeralVulnarable = false;
     }
 
     public String getType() {
@@ -175,27 +181,51 @@ public class SimulatedClient {
         this.receivedServerHelloDone = receivedServerHelloDone;
     }
 
-    public boolean isCrimeBug() {
-        return crimeBug;
+    public boolean isConnectionSecure() {
+        return connectionSecure;
     }
 
-    public void setCrimeBug(boolean crimeBug) {
-        this.crimeBug = crimeBug;
+    public void setConnectionSecure(boolean connectionSecure) {
+        this.connectionSecure = connectionSecure;
+    }
+    
+    public boolean isPaddingOracleVulnerable() {
+        return paddingOracleVulnerable;
     }
 
-    public boolean isBleichenbacherBug() {
-        return bleichenbacherBug;
+    public void setPaddingOracleVulnerable(boolean paddingOracleVulnerable) {
+        this.paddingOracleVulnerable = paddingOracleVulnerable;
     }
 
-    public void setBleichenbacherBug(boolean bleichenbacherBug) {
-        this.bleichenbacherBug = bleichenbacherBug;
+    public boolean isBleichenbacherVulnerable() {
+        return bleichenbacherVulnerable;
     }
 
-    public boolean isPaddingOracleBug() {
-        return paddingOracleBug;
+    public void setBleichenbacherVulnerable(boolean bleichenbacherVulnerable) {
+        this.bleichenbacherVulnerable = bleichenbacherVulnerable;
+    }
+    
+    public boolean isCrimeVulnerable() {
+        return crimeVulnerable;
     }
 
-    public void setPaddingOracleBug(boolean paddingOracleBug) {
-        this.paddingOracleBug = paddingOracleBug;
+    public void setCrimeVulnerable(boolean crimeVulnerable) {
+        this.crimeVulnerable = crimeVulnerable;
+    }
+
+    public boolean isInvalidCurveVulnarable() {
+        return invalidCurveVulnarable;
+    }
+
+    public void setInvalidCurveVulnarable(boolean invalidCurveVulnarable) {
+        this.invalidCurveVulnarable = invalidCurveVulnarable;
+    }
+
+    public boolean isInvalidCurveEphemeralVulnarable() {
+        return invalidCurveEphemeralVulnarable;
+    }
+
+    public void setInvalidCurveEphemeralVulnarable(boolean invalidCurveEphemeralVulnarable) {
+        this.invalidCurveEphemeralVulnarable = invalidCurveEphemeralVulnarable;
     }
 }

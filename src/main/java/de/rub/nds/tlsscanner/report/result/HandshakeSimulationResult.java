@@ -47,14 +47,20 @@ public class HandshakeSimulationResult extends ProbeResult {
                 }
             }
             if (simulatedClient.isReceivedServerHelloDone()) {
-                if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
-                    simulatedClient.setCrimeBug(true);
+                if (report.getPaddingOracleVulnerable() && simulatedClient.getSelectedCiphersuite().isCBC()) {
+                    simulatedClient.setPaddingOracleVulnerable(true);
                 }
                 if (report.getBleichenbacherVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
-                    simulatedClient.setBleichenbacherBug(true);
+                    simulatedClient.setBleichenbacherVulnerable(true);
                 }
-                if (report.getPaddingOracleVulnerable() && simulatedClient.getSelectedCiphersuite().isCBC()) {
-                    simulatedClient.setPaddingOracleBug(true);
+                if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
+                    simulatedClient.setCrimeVulnerable(true);
+                }
+                if (report.getInvalidCurveVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH")) {
+                    simulatedClient.setInvalidCurveVulnarable(true);
+                }
+                if (report.getInvalidCurveEphermaralVulnerable()&& simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDHE")) {
+                    simulatedClient.setInvalidCurveEphemeralVulnarable(true);
                 }
             }
         }
