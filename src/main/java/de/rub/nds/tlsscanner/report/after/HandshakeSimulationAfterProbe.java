@@ -13,6 +13,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
+        int secureConnections = 0;
         for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
             if (simulatedClient.isReceivedServerHelloDone()) {
                 if (report.getPaddingOracleVulnerable() && simulatedClient.getSelectedCiphersuite().isCBC()) {
@@ -43,8 +44,13 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                         simulatedClient.setConnectionSecure(false);
                     }
                 }
+                if (simulatedClient.isConnectionSecure()==true) {
+                    secureConnections++;
+                }
             }
         }
+        report.setConnectionSecureCounter(secureConnections);
+        report.setConnectionInsecureCounter(report.getHandshakeSuccessfulCounter()-secureConnections);
     }
     
 }

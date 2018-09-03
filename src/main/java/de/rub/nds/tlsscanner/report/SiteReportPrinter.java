@@ -73,7 +73,17 @@ public class SiteReportPrinter {
             if (report.getHandshakeFailedCounter()==0) {
                 prettyAppendGreen(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
             } else {
-                prettyAppendRed(builder, "Failed Handshakess", Integer.toString(report.getHandshakeFailedCounter()));
+                prettyAppendRed(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
+            }
+            if (report.getConnectionSecureCounter()==0) {
+                prettyAppendRed(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
+            } else {
+                prettyAppendGreen(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
+            }
+            if (report.getConnectionInsecureCounter()==0) {
+                prettyAppendGreen(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
+            } else {
+                prettyAppendRed(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
             }
             for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
                 prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());

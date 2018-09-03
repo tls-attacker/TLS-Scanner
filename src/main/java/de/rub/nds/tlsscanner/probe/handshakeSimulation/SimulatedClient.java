@@ -15,52 +15,31 @@ public class SimulatedClient {
 
     private final String type;
     private final String version;
-    private boolean receivedServerHello;
-    private ProtocolVersion highestClientProtocolVersion;
-    private ProtocolVersion selectedProtocolVersion;
-    private boolean highestPossibleProtocolVersionSeleceted;
-    private CipherSuite selectedCiphersuite;
-    private boolean forwardSecrecy;
-    private CompressionMethod selectedCompressionMethod;
-    private EnumSet<ExtensionType> negotiatedExtensionSet;
-    private boolean receivedCertificate;
-    private boolean receivedServerKeyExchange;
-    private String selectedNamedGroup;
-    private String serverPublicKeyLength;
-    private boolean receivedCertificateRequest;
-    private boolean receivedServerHelloDone;
-    private boolean connectionSecure;
-    private boolean paddingOracleVulnerable;
-    private boolean bleichenbacherVulnerable;
-    private boolean crimeVulnerable;
-    private boolean invalidCurveVulnerable;
-    private boolean invalidCurveEphemeralVulnerable;
-    private boolean sweet32Vulnerable;
+    private boolean receivedServerHello = false;
+    private ProtocolVersion highestClientProtocolVersion = null;
+    private ProtocolVersion selectedProtocolVersion = null;
+    private boolean highestPossibleProtocolVersionSeleceted = false;
+    private CipherSuite selectedCiphersuite = null;
+    private boolean forwardSecrecy = false;
+    private CompressionMethod selectedCompressionMethod = null;
+    private EnumSet<ExtensionType> negotiatedExtensionSet = null;
+    private boolean receivedCertificate = false;
+    private boolean receivedServerKeyExchange = false;
+    private String selectedNamedGroup = null;
+    private String serverPublicKeyLength = null;
+    private boolean receivedCertificateRequest = false;
+    private boolean receivedServerHelloDone = false;
+    private boolean connectionSecure = true;
+    private boolean paddingOracleVulnerable = false;
+    private boolean bleichenbacherVulnerable = false;
+    private boolean crimeVulnerable = false;
+    private boolean invalidCurveVulnerable = false;
+    private boolean invalidCurveEphemeralVulnerable = false;
+    private boolean sweet32Vulnerable = false;
     
     public SimulatedClient(String type, String version) {
         this.type = type;
         this.version = version;
-        this.receivedServerHello = false;
-        this.highestClientProtocolVersion = null;
-        this.selectedProtocolVersion = null;
-        this.highestPossibleProtocolVersionSeleceted = false;
-        this.selectedCiphersuite = null;
-        this.forwardSecrecy = false;
-        this.selectedCompressionMethod = null;
-        this.negotiatedExtensionSet = null;
-        this.receivedCertificate = false;
-        this.receivedServerKeyExchange = false;
-        this.selectedNamedGroup = null;
-        this.serverPublicKeyLength = null;
-        this.receivedCertificateRequest = false;
-        this.receivedServerHelloDone = false;
-        this.connectionSecure = false;
-        this.paddingOracleVulnerable = false;
-        this.bleichenbacherVulnerable = false;
-        this.crimeVulnerable = false;
-        this.invalidCurveVulnerable = false;
-        this.invalidCurveEphemeralVulnerable = false;
-        this.sweet32Vulnerable = false;
     }
 
     public String getType() {
