@@ -45,6 +45,8 @@ public class HandshakeSimulationResult extends ProbeResult {
                         simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
                     }
                 }
+            }
+            if (simulatedClient.isReceivedServerHelloDone()) {
                 if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
                     simulatedClient.setCrimeBug(true);
                 }
@@ -60,5 +62,5 @@ public class HandshakeSimulationResult extends ProbeResult {
         report.setHandshakeFailedCounter(handshakeFailedCounter);
         report.setSimulatedClientList(this.simulatedClientList);
     }
-    
+
 }

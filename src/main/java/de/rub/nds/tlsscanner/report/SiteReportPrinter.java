@@ -86,8 +86,9 @@ public class SiteReportPrinter {
                     builder.append("\n");
                     prettyAppendSelectedCipherSuite(builder, "Selected Ciphersuite", simulatedClient.getSelectedCiphersuite());
                     prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.isForwardSecrecy());
+                    builder.append("\n");
+                    prettyAppend(builder, "Server Public Key Length (Bits)", simulatedClient.getServerPublicKeyLength());
                     prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup());
-                    prettyAppend(builder, "Server Public Key Length", simulatedClient.getServerPublicKeyLength());
                     builder.append("\n");
                     prettyAppend(builder, "Selected Compression Method", simulatedClient.getSelectedCompressionMethod().name());
                     prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensionSet().toString());
