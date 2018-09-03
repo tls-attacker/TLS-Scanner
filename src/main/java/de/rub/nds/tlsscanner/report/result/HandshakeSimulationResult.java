@@ -5,7 +5,6 @@
  */
 package de.rub.nds.tlsscanner.report.result;
 
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
@@ -44,23 +43,6 @@ public class HandshakeSimulationResult extends ProbeResult {
                     if (!serverProvidesClientVersion) {
                         simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
                     }
-                }
-            }
-            if (simulatedClient.isReceivedServerHelloDone()) {
-                if (report.getPaddingOracleVulnerable() && simulatedClient.getSelectedCiphersuite().isCBC()) {
-                    simulatedClient.setPaddingOracleVulnerable(true);
-                }
-                if (report.getBleichenbacherVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
-                    simulatedClient.setBleichenbacherVulnerable(true);
-                }
-                if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
-                    simulatedClient.setCrimeVulnerable(true);
-                }
-                if (report.getInvalidCurveVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH")) {
-                    simulatedClient.setInvalidCurveVulnarable(true);
-                }
-                if (report.getInvalidCurveEphermaralVulnerable()&& simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDHE")) {
-                    simulatedClient.setInvalidCurveEphemeralVulnarable(true);
                 }
             }
         }

@@ -36,7 +36,7 @@ public class ScanJob {
         return phaseTwoTestList;
     }
 
-    public List<AfterProbe> getAfterProbes() {
+    public List<AfterProbe> getAfterList() {
         return afterList;
     }
 }

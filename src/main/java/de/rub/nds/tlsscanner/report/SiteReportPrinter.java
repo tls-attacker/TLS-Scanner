@@ -98,8 +98,9 @@ public class SiteReportPrinter {
                     prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.isPaddingOracleVulnerable());
                     prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.isBleichenbacherVulnerable());
                     prettyAppendRedGreen(builder, "Crime", simulatedClient.isCrimeVulnerable());
-                    prettyAppendRedGreen(builder, "Invalid Curve", simulatedClient.isInvalidCurveVulnarable());
-                    prettyAppendRedGreen(builder, "Invalid Curve Ephemeral", simulatedClient.isInvalidCurveEphemeralVulnarable());
+                    prettyAppendRedGreen(builder, "Invalid Curve", simulatedClient.isInvalidCurveVulnerable());
+                    prettyAppendRedGreen(builder, "Invalid Curve Ephemeral", simulatedClient.isInvalidCurveEphemeralVulnerable());
+                    prettyAppendRedGreen(builder, "Sweet 32", simulatedClient.isSweet32Vulnerable());
                 }
             }
         }

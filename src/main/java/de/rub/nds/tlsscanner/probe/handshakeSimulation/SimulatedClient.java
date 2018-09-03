@@ -33,8 +33,9 @@ public class SimulatedClient {
     private boolean paddingOracleVulnerable;
     private boolean bleichenbacherVulnerable;
     private boolean crimeVulnerable;
-    private boolean invalidCurveVulnarable;
-    private boolean invalidCurveEphemeralVulnarable;
+    private boolean invalidCurveVulnerable;
+    private boolean invalidCurveEphemeralVulnerable;
+    private boolean sweet32Vulnerable;
     
     public SimulatedClient(String type, String version) {
         this.type = type;
@@ -57,8 +58,9 @@ public class SimulatedClient {
         this.paddingOracleVulnerable = false;
         this.bleichenbacherVulnerable = false;
         this.crimeVulnerable = false;
-        this.invalidCurveVulnarable = false;
-        this.invalidCurveEphemeralVulnarable = false;
+        this.invalidCurveVulnerable = false;
+        this.invalidCurveEphemeralVulnerable = false;
+        this.sweet32Vulnerable = false;
     }
 
     public String getType() {
@@ -213,19 +215,27 @@ public class SimulatedClient {
         this.crimeVulnerable = crimeVulnerable;
     }
 
-    public boolean isInvalidCurveVulnarable() {
-        return invalidCurveVulnarable;
+    public boolean isInvalidCurveVulnerable() {
+        return invalidCurveVulnerable;
     }
 
-    public void setInvalidCurveVulnarable(boolean invalidCurveVulnarable) {
-        this.invalidCurveVulnarable = invalidCurveVulnarable;
+    public void setInvalidCurveVulnerable(boolean invalidCurveVulnerable) {
+        this.invalidCurveVulnerable = invalidCurveVulnerable;
     }
 
-    public boolean isInvalidCurveEphemeralVulnarable() {
-        return invalidCurveEphemeralVulnarable;
+    public boolean isInvalidCurveEphemeralVulnerable() {
+        return invalidCurveEphemeralVulnerable;
     }
 
-    public void setInvalidCurveEphemeralVulnarable(boolean invalidCurveEphemeralVulnarable) {
-        this.invalidCurveEphemeralVulnarable = invalidCurveEphemeralVulnarable;
+    public void setInvalidCurveEphemeralVulnerable(boolean invalidCurveEphemeralVulnerable) {
+        this.invalidCurveEphemeralVulnerable = invalidCurveEphemeralVulnerable;
+    }
+
+    public boolean isSweet32Vulnerable() {
+        return sweet32Vulnerable;
+    }
+
+    public void setSweet32Vulnerable(boolean sweet32Vulnerable) {
+        this.sweet32Vulnerable = sweet32Vulnerable;
     }
 }

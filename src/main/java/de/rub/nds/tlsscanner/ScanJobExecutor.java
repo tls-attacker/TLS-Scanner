@@ -101,7 +101,7 @@ public class ScanJobExecutor {
             result.merge(report);
         }
         //phase 3 - afterprobes
-        for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
+        for (AfterProbe afterProbe : scanJob.getAfterList()) {
             afterProbe.analyze(report);
         }
         executor.shutdown();
