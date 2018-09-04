@@ -126,6 +126,7 @@ public class SiteReportPrinter {
                 prettyAppendRedGreen(builder, "Invalid Curve", simulatedClient.getInvalidCurveVulnerable());
                 prettyAppendRedGreen(builder, "Invalid Curve Ephemeral", simulatedClient.getInvalidCurveEphemeralVulnerable());
                 prettyAppendRedGreen(builder, "Sweet 32", simulatedClient.getSweet32Vulnerable());
+                prettyAppendRedGreen(builder, "DROWN", simulatedClient.getDrownVulnerable());
             }
         }
         return builder;

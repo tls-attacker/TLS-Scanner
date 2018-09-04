@@ -5,7 +5,9 @@
  */
 package de.rub.nds.tlsscanner.report.after;
 
+import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
@@ -56,6 +58,11 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                     } else {
                         simulatedClient.setSweet32Vulnerable(false);
                     }
+                }
+                if (report.getDrownVulnerable().equals(DrownVulnerabilityType.SSL2) && simulatedClient.getSelectedProtocolVersion().equals(ProtocolVersion.SSL2)) {
+                    simulatedClient.setDrownVulnerable(true);
+                } else {
+                    simulatedClient.setDrownVulnerable(false);
                 }
                 if (simulatedClient.getConnectionSecure()) {
                     secureConnectionCounter++;
