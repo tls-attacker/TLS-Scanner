@@ -39,7 +39,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     private final List<SimulatedClient> simulatedClientList;
 
     public HandshakeSimulationProbe(ScannerConfig config) {
-        super(ProbeType.HANDSHAKE_SIMULATION, config, 0);
+        super(ProbeType.HANDSHAKE_SIMULATION, config, 10);
         this.simulatedClientList = new LinkedList<>();
     }
 
@@ -82,12 +82,14 @@ public class HandshakeSimulationProbe extends TlsProbe {
             LOGGER.warn(ex);
         }
         simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
+        simulatedClient.setHighestClientProtocolVersion(state.getTlsContext().getHighestClientProtocolVersion());
         if (simulatedClient.isReceivedServerHello()) {
-            simulatedClient.setHighestClientProtocolVersion(state.getTlsContext().getHighestClientProtocolVersion());
             simulatedClient.setSelectedProtocolVersion(state.getTlsContext().getSelectedProtocolVersion());
             simulatedClient.setSelectedCiphersuite(state.getTlsContext().getSelectedCipherSuite());
             if (simulatedClient.getSelectedCiphersuite().toString().contains("_DHE_") || simulatedClient.getSelectedCiphersuite().toString().contains("_ECDHE_")) {
                 simulatedClient.setForwardSecrecy(true);
+            } else {
+                simulatedClient.setForwardSecrecy(false);
             }
             simulatedClient.setSelectedCompressionMethod(state.getTlsContext().getSelectedCompressionMethod());
             simulatedClient.setNegotiatedExtensionSet(state.getTlsContext().getNegotiatedExtensionSet());

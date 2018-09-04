@@ -15,27 +15,27 @@ public class SimulatedClient {
 
     private final String type;
     private final String version;
-    private boolean receivedServerHello = false;
+    private Boolean receivedServerHello = null;
     private ProtocolVersion highestClientProtocolVersion = null;
     private ProtocolVersion selectedProtocolVersion = null;
-    private boolean highestPossibleProtocolVersionSeleceted = false;
+    private Boolean highestPossibleProtocolVersionSeleceted = null;
     private CipherSuite selectedCiphersuite = null;
-    private boolean forwardSecrecy = false;
+    private Boolean forwardSecrecy = null;
     private CompressionMethod selectedCompressionMethod = null;
     private EnumSet<ExtensionType> negotiatedExtensionSet = null;
-    private boolean receivedCertificate = false;
-    private boolean receivedServerKeyExchange = false;
+    private Boolean receivedCertificate = null;
+    private Boolean receivedServerKeyExchange = null;
     private String selectedNamedGroup = null;
     private String serverPublicKeyLength = null;
-    private boolean receivedCertificateRequest = false;
-    private boolean receivedServerHelloDone = false;
-    private boolean connectionSecure = true;
-    private boolean paddingOracleVulnerable = false;
-    private boolean bleichenbacherVulnerable = false;
-    private boolean crimeVulnerable = false;
-    private boolean invalidCurveVulnerable = false;
-    private boolean invalidCurveEphemeralVulnerable = false;
-    private boolean sweet32Vulnerable = false;
+    private Boolean receivedCertificateRequest = null;
+    private Boolean receivedServerHelloDone = null;
+    private Boolean connectionSecure = null;
+    private Boolean paddingOracleVulnerable = null;
+    private Boolean bleichenbacherVulnerable = null;
+    private Boolean crimeVulnerable = null;
+    private Boolean invalidCurveVulnerable = null;
+    private Boolean invalidCurveEphemeralVulnerable = null;
+    private Boolean sweet32Vulnerable = null;
     
     public SimulatedClient(String type, String version) {
         this.type = type;
@@ -50,11 +50,11 @@ public class SimulatedClient {
         return version;
     }
     
-    public boolean isReceivedServerHello() {
+    public Boolean isReceivedServerHello() {
         return receivedServerHello;
     }
     
-    public void setReceivedServerHello(boolean receivedServerHello) {
+    public void setReceivedServerHello(Boolean receivedServerHello) {
         this.receivedServerHello = receivedServerHello;
     }
     
@@ -74,11 +74,11 @@ public class SimulatedClient {
         this.selectedProtocolVersion = selectedProtocolVersion;
     }
     
-    public boolean isHighestPossibleProtocolVersionSeleceted() {
+    public Boolean isHighestPossibleProtocolVersionSeleceted() {
         return highestPossibleProtocolVersionSeleceted;
     }
 
-    public void setHighestPossibleProtocolVersionSeleceted(boolean highestPossibleProtocolVersionSeleceted) {
+    public void setHighestPossibleProtocolVersionSeleceted(Boolean highestPossibleProtocolVersionSeleceted) {
         this.highestPossibleProtocolVersionSeleceted = highestPossibleProtocolVersionSeleceted;
     }
     
@@ -90,11 +90,11 @@ public class SimulatedClient {
         this.selectedCiphersuite = selectedCiphersuite;
     }
     
-    public boolean isForwardSecrecy() {
+    public Boolean isForwardSecrecy() {
         return forwardSecrecy;
     }
     
-    public void setForwardSecrecy(boolean forwardSecrecy) {
+    public void setForwardSecrecy(Boolean forwardSecrecy) {
         this.forwardSecrecy = forwardSecrecy;
     }
     
@@ -114,19 +114,19 @@ public class SimulatedClient {
         this.negotiatedExtensionSet = negotiatedExtensionSet;
     }
     
-    public boolean isReceivedCertificate() {
+    public Boolean isReceivedCertificate() {
         return receivedCertificate;
     }
 
-    public void setReceivedCertificate(boolean receivedCertificate) {
+    public void setReceivedCertificate(Boolean receivedCertificate) {
         this.receivedCertificate = receivedCertificate;
     }
     
-    public boolean isReceivedServerKeyExchange() {
+    public Boolean isReceivedServerKeyExchange() {
         return receivedServerKeyExchange;
     }
 
-    public void setReceivedServerKeyExchange(boolean receivedServerKeyExchange) {
+    public void setReceivedServerKeyExchange(Boolean receivedServerKeyExchange) {
         this.receivedServerKeyExchange = receivedServerKeyExchange;
     }
     
@@ -146,75 +146,75 @@ public class SimulatedClient {
         this.serverPublicKeyLength = serverPublicKeyLength;
     }
     
-    public boolean isReceivedCertificateRequest() {
+    public Boolean isReceivedCertificateRequest() {
         return receivedCertificateRequest;
     }
 
-    public void setReceivedCertificateRequest(boolean receivedCertificateRequest) {
+    public void setReceivedCertificateRequest(Boolean receivedCertificateRequest) {
         this.receivedCertificateRequest = receivedCertificateRequest;
     }
     
-    public boolean isReceivedServerHelloDone() {
+    public Boolean isReceivedServerHelloDone() {
         return receivedServerHelloDone;
     }
     
-    public void setReceivedServerHelloDone(boolean receivedServerHelloDone) {
+    public void setReceivedServerHelloDone(Boolean receivedServerHelloDone) {
         this.receivedServerHelloDone = receivedServerHelloDone;
     }
 
-    public boolean isConnectionSecure() {
+    public Boolean isConnectionSecure() {
         return connectionSecure;
     }
 
-    public void setConnectionSecure(boolean connectionSecure) {
+    public void setConnectionSecure(Boolean connectionSecure) {
         this.connectionSecure = connectionSecure;
     }
     
-    public boolean isPaddingOracleVulnerable() {
+    public Boolean isPaddingOracleVulnerable() {
         return paddingOracleVulnerable;
     }
 
-    public void setPaddingOracleVulnerable(boolean paddingOracleVulnerable) {
+    public void setPaddingOracleVulnerable(Boolean paddingOracleVulnerable) {
         this.paddingOracleVulnerable = paddingOracleVulnerable;
     }
 
-    public boolean isBleichenbacherVulnerable() {
+    public Boolean isBleichenbacherVulnerable() {
         return bleichenbacherVulnerable;
     }
 
-    public void setBleichenbacherVulnerable(boolean bleichenbacherVulnerable) {
+    public void setBleichenbacherVulnerable(Boolean bleichenbacherVulnerable) {
         this.bleichenbacherVulnerable = bleichenbacherVulnerable;
     }
     
-    public boolean isCrimeVulnerable() {
+    public Boolean isCrimeVulnerable() {
         return crimeVulnerable;
     }
 
-    public void setCrimeVulnerable(boolean crimeVulnerable) {
+    public void setCrimeVulnerable(Boolean crimeVulnerable) {
         this.crimeVulnerable = crimeVulnerable;
     }
 
-    public boolean isInvalidCurveVulnerable() {
+    public Boolean isInvalidCurveVulnerable() {
         return invalidCurveVulnerable;
     }
 
-    public void setInvalidCurveVulnerable(boolean invalidCurveVulnerable) {
+    public void setInvalidCurveVulnerable(Boolean invalidCurveVulnerable) {
         this.invalidCurveVulnerable = invalidCurveVulnerable;
     }
 
-    public boolean isInvalidCurveEphemeralVulnerable() {
+    public Boolean isInvalidCurveEphemeralVulnerable() {
         return invalidCurveEphemeralVulnerable;
     }
 
-    public void setInvalidCurveEphemeralVulnerable(boolean invalidCurveEphemeralVulnerable) {
+    public void setInvalidCurveEphemeralVulnerable(Boolean invalidCurveEphemeralVulnerable) {
         this.invalidCurveEphemeralVulnerable = invalidCurveEphemeralVulnerable;
     }
 
-    public boolean isSweet32Vulnerable() {
+    public Boolean isSweet32Vulnerable() {
         return sweet32Vulnerable;
     }
 
-    public void setSweet32Vulnerable(boolean sweet32Vulnerable) {
+    public void setSweet32Vulnerable(Boolean sweet32Vulnerable) {
         this.sweet32Vulnerable = sweet32Vulnerable;
     }
 }

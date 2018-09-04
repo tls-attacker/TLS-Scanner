@@ -88,9 +88,9 @@ public class SiteReportPrinter {
             for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
                 prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
                 prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.isReceivedServerHelloDone());
-                prettyAppendGreenRed(builder, "Connection Secure", simulatedClient.isConnectionSecure());
-                builder.append("\n");
-                if (simulatedClient.isReceivedServerHello()) {
+                if (simulatedClient.isReceivedServerHelloDone()) {
+                    prettyAppendGreenRed(builder, "Connection Secure", simulatedClient.isConnectionSecure());
+                    builder.append("\n");
                     prettyAppendProtocolVersion(builder, "Protocol Version Client", simulatedClient.getHighestClientProtocolVersion());
                     prettyAppendProtocolVersion(builder, "Protocol Version Selected", simulatedClient.getSelectedProtocolVersion());
                     prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.isHighestPossibleProtocolVersionSeleceted());

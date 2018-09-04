@@ -42,6 +42,8 @@ public class HandshakeSimulationResult extends ProbeResult {
                     }
                     if (!serverProvidesClientVersion) {
                         simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
+                    } else {
+                        simulatedClient.setHighestPossibleProtocolVersionSeleceted(false);
                     }
                 }
             }

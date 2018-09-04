@@ -16,25 +16,36 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         int secureConnectionCounter = 0;
         for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
             if (simulatedClient.isReceivedServerHelloDone()) {
+                simulatedClient.setConnectionSecure(true);
                 if (report.getPaddingOracleVulnerable() && simulatedClient.getSelectedCiphersuite().isCBC()) {
                     simulatedClient.setPaddingOracleVulnerable(true);
                     simulatedClient.setConnectionSecure(false);
+                } else {
+                    simulatedClient.setPaddingOracleVulnerable(false);
                 }
                 if (report.getBleichenbacherVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
                     simulatedClient.setBleichenbacherVulnerable(true);
                     simulatedClient.setConnectionSecure(false);
+                } else {
+                    simulatedClient.setBleichenbacherVulnerable(false);
                 }
                 if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
                     simulatedClient.setCrimeVulnerable(true);
                     simulatedClient.setConnectionSecure(false);
+                } else {
+                    simulatedClient.setCrimeVulnerable(false);
                 }
                 if (report.getInvalidCurveVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH")) {
                     simulatedClient.setInvalidCurveVulnerable(true);
                     simulatedClient.setConnectionSecure(false);
+                } else {
+                    simulatedClient.setInvalidCurveVulnerable(false);
                 }
                 if (report.getInvalidCurveEphermaralVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDHE")) {
                     simulatedClient.setInvalidCurveEphemeralVulnerable(true);
                     simulatedClient.setConnectionSecure(false);
+                } else {
+                    simulatedClient.setInvalidCurveEphemeralVulnerable(false);
                 }
                 if (report.getSweet32Vulnerable()) {
                     if (simulatedClient.getSelectedCiphersuite().name().contains("3DES") || 
@@ -42,6 +53,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                             simulatedClient.getSelectedCiphersuite().name().contains("GOST")) {
                         simulatedClient.setSweet32Vulnerable(true);
                         simulatedClient.setConnectionSecure(false);
+                    } else {
+                        simulatedClient.setSweet32Vulnerable(false);
                     }
                 }
                 if (simulatedClient.isConnectionSecure()==true) {
