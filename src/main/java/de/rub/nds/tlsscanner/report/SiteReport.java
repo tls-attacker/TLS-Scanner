@@ -178,6 +178,9 @@ public class SiteReport {
     //NoColor Flag
     private boolean noColor = false;
     
+    //Detailed Flag
+    private boolean detailed = false;
+    
     //Handshake Simulation
     private int handshakeSuccessfulCounter = 0;
     private int handshakeFailedCounter = 0;
@@ -185,14 +188,27 @@ public class SiteReport {
     private int connectionInsecureCounter = 0;
     private List<SimulatedClient> simulatedClientList = null;
     
-    public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
+    public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor, boolean detailed) {
         this.host = host;
         this.probeTypeList = probeTypeList;
         this.noColor = noColor;
+        this.detailed = detailed;
     }
 
     public String getHost() {
         return host;
+    }
+    
+    public List<ProbeType> getProbeTypeList() {
+        return probeTypeList;
+    }
+
+    public boolean isNoColor() {
+        return noColor;
+    }
+
+    public boolean isDetailed() {
+        return detailed;
     }
 
     public Boolean getRequiresSni() {
@@ -1158,10 +1174,6 @@ public class SiteReport {
     public void setConnectionInsecureCounter(int connectionInsecureCounter) {
         this.connectionInsecureCounter = connectionInsecureCounter;
     }
-
-    public boolean isNoColour() {
-        return noColor;
-    }
     
     public String getFullReport() {        
         return new SiteReportPrinter(this).getFullReport();
@@ -1170,9 +1182,5 @@ public class SiteReport {
     @Override
     public String toString(){
         return getFullReport();
-    }
-
-    public List<ProbeType> getProbeTypeList() {
-        return probeTypeList;
     }
 }

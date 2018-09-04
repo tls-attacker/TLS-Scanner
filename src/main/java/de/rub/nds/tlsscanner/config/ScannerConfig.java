@@ -34,13 +34,16 @@ public class ScannerConfig extends TLSDelegateConfig {
     private int dangerLevel = 10;
     
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
-    private Boolean noColor = false;
+    private boolean noColor = false;
 
     @ParametersDelegate
     private GeneralDelegate generalDelegate;
 
     @Parameter(names = "-implementation", required = false, description = "If you are interessted in the vulnerability of an implementation rather than a specific site")
     private boolean implementation = false;
+    
+    @Parameter(names = "-detailed", required = false, description = "If you want a detailed report")
+    private boolean detailed = false;
     
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
@@ -87,8 +90,12 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.implementation = implementation;
     }
 
-    public Boolean isNoColor() {
+    public boolean isNoColor() {
         return noColor;
+    }
+
+    public boolean isDetailed() {
+        return detailed;
     }
     
     
