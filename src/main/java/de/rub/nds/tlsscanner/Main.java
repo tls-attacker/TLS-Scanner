@@ -15,7 +15,6 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.SiteReportPrinter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

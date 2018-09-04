@@ -37,11 +37,11 @@ public class SiteReportPrinter {
         builder.append("Report for ");
         builder.append(report.getHost());
         builder.append("\n");
-        if (report.getServerIsAlive() == Boolean.FALSE) {
+        if (report.getServerIsAlive() == false) {
             builder.append("Cannot reach the Server. Is it online?");
             return builder.toString();
         }
-        if (report.getSupportsSslTls() == Boolean.FALSE) {
+        if (report.getSupportsSslTls() == false) {
             builder.append("Server does not seem to support SSL / TLS");
             return builder.toString();
         }
@@ -63,15 +63,17 @@ public class SiteReportPrinter {
       
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
         if (report.getSimulatedClientList()!= null) {
-            appendHandshakeSimulationOverview(builder);
-            if (report.isDetailed()) {
-                appendHandshakeSimulationDetailed(builder);
+            appendHSOverview(builder);
+            if (report.getDetailLevel()==2) {
+                appendHSDetail2(builder);
+            } else if (report.getDetailLevel()==3) {
+                appendHSDetail3(builder);
             }
         }
         return builder;
     }
     
-    private StringBuilder appendHandshakeSimulationOverview(StringBuilder builder) {
+    private StringBuilder appendHSOverview(StringBuilder builder) {
         prettyAppendHeading(builder, "TLS Handshake Simulation - Overview");
         prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
         if (report.getHandshakeSuccessfulCounter() == 0) {
@@ -97,8 +99,57 @@ public class SiteReportPrinter {
         return builder;
     }
     
-    private StringBuilder appendHandshakeSimulationDetailed(StringBuilder builder) {
-        prettyAppendHeading(builder, "TLS Handshake Simulation - Detailed");
+    private StringBuilder appendHSDetail2(StringBuilder builder) {
+        prettyAppendHeading(builder, "TLS Handshake Simulation - Level of Detail: 2");
+        prettyAppendHSDetail2Row(builder, "TLS Client", "TLS Version", "Ciphersuite", "Forward Secrecy", "Server Public Key", "Connection");
+        builder.append("\n");
+        for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
+            if (simulatedClient.getReceivedServerHelloDone()) {
+                prettyAppendHSDetail2Row(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion(), 
+                        simulatedClient.getSelectedProtocolVersion().name(), simulatedClient.getSelectedCiphersuite().name(),
+                        simulatedClient.getForwardSecrecy(), simulatedClient.getServerPublicKeyLength(),
+                        simulatedClient.getConnectionSecure());
+            } else {
+                prettyAppendHSDetail2Row(builder, String.format("%-28s", simulatedClient.getType() + ":" + simulatedClient.getVersion()), "Handshake failed");
+            }
+        }
+        return builder;
+    }
+    
+    private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String value1, String value2) {
+        return builder.append(value1).append("| ").append((report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value2 + AnsiColors.ANSI_RESET).append("\n");
+    }
+    
+    private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String tlsClient, String tlsVersion, String ciphersuite, String forwardSecrecy, String keyLength, String connection) {
+        builder.append(String.format("%-28s", tlsClient));
+        builder.append(String.format("| %-14s", tlsVersion));
+        builder.append(String.format("| %-52s", ciphersuite));
+        builder.append(String.format("| %-19s", forwardSecrecy));
+        builder.append(String.format("| %-17s", keyLength));
+        builder.append(String.format("| %s", connection));
+        builder.append("\n");
+        return builder;
+    }
+    
+    private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String tlsClient, String tlsVersion, String ciphersuite, Boolean forwardSecrecy, String keyLength, Boolean connection) {
+        String newFs;
+        String newSecure;
+        if (forwardSecrecy) {
+            newFs = "Forward Secrecy";
+        } else {
+            newFs = "No Forward Secrecy";
+        }
+        if (connection) {
+            newSecure = "Secure";
+        } else {
+            newSecure = "Insecure";
+        }
+        prettyAppendHSDetail2Row(builder, tlsClient, tlsVersion, ciphersuite, newFs, keyLength+" Bit", newSecure);
+        return builder;
+    }
+    
+    private StringBuilder appendHSDetail3(StringBuilder builder) {
+        prettyAppendHeading(builder, "TLS Handshake Simulation - Level of Detail: 3");
         for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
             prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
             prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.getReceivedServerHelloDone());
