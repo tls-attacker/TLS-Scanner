@@ -6,17 +6,17 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.List;
 
 public class ProtocolVersionResult extends ProbeResult {
-    
+
     private final List<ProtocolVersion> supportedProtocolVersions;
-    
+
     private final List<ProtocolVersion> unsupportedProtocolVersions;
-    
+
     public ProtocolVersionResult(List<ProtocolVersion> supportedProtocolVersions, List<ProtocolVersion> unsupportedProtocolVersions) {
         super(ProbeType.PROTOCOL_VERSION);
         this.supportedProtocolVersions = supportedProtocolVersions;
         this.unsupportedProtocolVersions = unsupportedProtocolVersions;
     }
-    
+
     @Override
     public void mergeData(SiteReport report) {
         if (supportedProtocolVersions.size() > 0) {
@@ -46,7 +46,7 @@ public class ProtocolVersionResult extends ProbeResult {
                 report.setSupportsTls12(true);
             }
         }
-        
+
         for (ProtocolVersion version : unsupportedProtocolVersions) {
             if (version == ProtocolVersion.DTLS10) {
                 report.setSupportsDtls10(false);
@@ -102,5 +102,5 @@ public class ProtocolVersionResult extends ProbeResult {
         }
         report.setVersions(supportedProtocolVersions);
     }
-    
+
 }

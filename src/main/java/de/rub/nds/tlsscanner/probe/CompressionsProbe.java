@@ -67,7 +67,7 @@ public class CompressionsProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
         List<CompressionMethod> toTestList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-        
+
         CompressionMethod selectedCompressionMethod;
         List<CompressionMethod> supportedCompressionMethods = new LinkedList<>();
         do {
@@ -120,7 +120,7 @@ public class CompressionsProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
     }
-    
+
     @Override
     public ProbeResult getNotExecutedResult() {
         return null;

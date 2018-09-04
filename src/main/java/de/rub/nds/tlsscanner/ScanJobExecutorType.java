@@ -10,5 +10,5 @@ package de.rub.nds.tlsscanner;
  * @author robert
  */
 public enum ScanJobExecutorType {
-    SINGLE,MULTI
+    SINGLE, MULTI
 }

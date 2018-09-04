@@ -4,7 +4,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 public class FreakAfterProbe extends AfterProbe {
-    
+
     @Override
     public void analyze(SiteReport report) {
         Boolean vulnerable = null;

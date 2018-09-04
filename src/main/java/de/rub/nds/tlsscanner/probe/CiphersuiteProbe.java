@@ -139,7 +139,7 @@ public class CiphersuiteProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
     }
-    
+
     @Override
     public ProbeResult getNotExecutedResult() {
         return null;

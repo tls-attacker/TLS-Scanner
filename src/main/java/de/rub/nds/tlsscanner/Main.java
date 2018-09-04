@@ -48,7 +48,7 @@ public class Main {
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
-                LOGGER.info("Scanned in:" + ((System.currentTimeMillis()-time)/1000) + "s");
+                LOGGER.info("Scanned in:" + ((System.currentTimeMillis() - time) / 1000) + "s");
                 LOGGER.info(report.getFullReport(config.getReportDetail()));
             } catch (ConfigurationException E) {
                 LOGGER.info("Encountered a ConfigurationException aborting.");
@@ -60,18 +60,16 @@ public class Main {
             commander.usage();
         }
     }
-    
-    public static void scanFile(File f) throws FileNotFoundException, IOException
-    {
+
+    public static void scanFile(File f) throws FileNotFoundException, IOException {
         GeneralDelegate delegate = new GeneralDelegate();
         delegate.applyDelegate(Config.createConfig());
         BufferedReader reader = new BufferedReader(new FileReader(f));
         String line = null;
         line = reader.readLine();
-        while((line = reader.readLine()) != null)
-        {
+        while ((line = reader.readLine()) != null) {
             String host = line.split(",")[2];
-            TlsScanner scanner = new TlsScanner(host,false);
+            TlsScanner scanner = new TlsScanner(host, false);
             scanner.scan();
         }
         System.exit(0);

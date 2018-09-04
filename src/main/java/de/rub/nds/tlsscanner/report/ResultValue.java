@@ -13,6 +13,7 @@ package de.rub.nds.tlsscanner.report;
  * @author Robert Merget - robert.merget@rub.de
  */
 public class ResultValue {
+
     private String field;
     private String value;
 

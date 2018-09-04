@@ -5,7 +5,7 @@ import de.rub.nds.tlsscanner.constants.MacCheckPatternType;
 public class MacCheckPattern {
 
     private MacCheckPatternType type;
-    
+
     private boolean foundFinishedAndAlert;
 
     private boolean[] bytePattern;
@@ -39,8 +39,6 @@ public class MacCheckPattern {
     public void setFoundFinishedAndAlert(boolean foundFinishedAndAlert) {
         this.foundFinishedAndAlert = foundFinishedAndAlert;
     }
-    
-    
 
     @Override
     public String toString() {
@@ -51,8 +49,7 @@ public class MacCheckPattern {
                 return "!!NONE!!" + (foundFinishedAndAlert ? " - found finished and Alert" : "");
             case PARTIAL:
                 StringBuilder builder = new StringBuilder("Partial");
-                if(foundFinishedAndAlert)
-                {
+                if (foundFinishedAndAlert) {
                     builder.append(" - found finished and alert");
                 }
                 for (boolean b : bytePattern) {

@@ -14,14 +14,14 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
  * @author Robert Merget <robert.merget@rub.de>
  */
 public class CipherSuiteOrderResult extends ProbeResult {
-    
+
     private Boolean enforced;
-    
+
     public CipherSuiteOrderResult(Boolean enforced) {
         super(ProbeType.CIPHERSUITE_ORDER);
         this.enforced = enforced;
     }
-    
+
     @Override
     public void mergeData(SiteReport report) {
         report.setEnforcesCipherSuiteOrdering(enforced);

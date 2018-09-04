@@ -62,7 +62,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         LOGGER.info("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
         return result;
     }
-    
+
     public abstract ProbeResult executeTest();
 
     public abstract boolean shouldBeExecuted(SiteReport report);
