@@ -36,6 +36,7 @@ import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.report.after.FreakAfterProbe;
+import de.rub.nds.tlsscanner.report.after.HandshakeSimulationAfterProbe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
@@ -100,11 +101,12 @@ public class TlsScanner {
             phaseTwoTestList.add(new DrownProbe(config));
             phaseTwoTestList.add(new EarlyCcsProbe(config));
             
-            phaseTwoTestList.add(new HandshakeSimulationProbe(config));
+           phaseTwoTestList.add(new HandshakeSimulationProbe(config));
 
             List<AfterProbe> afterList = new LinkedList<>();
             afterList.add(new Sweet32AfterProbe());
             afterList.add(new FreakAfterProbe());
+            afterList.add(new HandshakeSimulationAfterProbe());
             ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
             return executor.execute(config, job);
         }
