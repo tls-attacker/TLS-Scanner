@@ -179,7 +179,7 @@ public class SiteReport {
     private boolean noColor = false;
     
     //Detailed Flag
-    private boolean detailed = false;
+    private int detailLevel = 1;
     
     //Handshake Simulation
     private int handshakeSuccessfulCounter = 0;
@@ -188,11 +188,11 @@ public class SiteReport {
     private int connectionInsecureCounter = 0;
     private List<SimulatedClient> simulatedClientList = null;
     
-    public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor, boolean detailed) {
+    public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor, int detailLevel) {
         this.host = host;
         this.probeTypeList = probeTypeList;
         this.noColor = noColor;
-        this.detailed = detailed;
+        this.detailLevel = detailLevel;
     }
 
     public String getHost() {
@@ -207,8 +207,8 @@ public class SiteReport {
         return noColor;
     }
 
-    public boolean isDetailed() {
-        return detailed;
+    public int getDetailLevel() {
+        return detailLevel;
     }
 
     public Boolean getRequiresSni() {

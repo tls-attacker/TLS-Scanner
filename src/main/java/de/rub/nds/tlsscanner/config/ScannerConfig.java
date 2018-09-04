@@ -42,8 +42,8 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-implementation", required = false, description = "If you are interessted in the vulnerability of an implementation rather than a specific site")
     private boolean implementation = false;
     
-    @Parameter(names = "-detailed", required = false, description = "If you want a detailed report")
-    private boolean detailed = false;
+    @Parameter(names = "-detail", required = false, description = "Integer value (1 - 3) which specifies how detailed the reporting of the Handshake Simulation is. Default 1")
+    private int detailLevel = 1;
     
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
@@ -94,10 +94,9 @@ public class ScannerConfig extends TLSDelegateConfig {
         return noColor;
     }
 
-    public boolean isDetailed() {
-        return detailed;
+    public int getDetailLevel() {
+        return detailLevel;
     }
-    
     
     @Override
     public Config createConfig() {

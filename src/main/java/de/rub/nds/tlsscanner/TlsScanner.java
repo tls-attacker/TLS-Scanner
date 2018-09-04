@@ -81,7 +81,7 @@ public class TlsScanner {
         List<TlsProbe> phaseOneTestList = new LinkedList<>();
         List<TlsProbe> phaseTwoTestList = new LinkedList<>();
         
-        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor(), config.isDetailed());
+        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor(), config.getDetailLevel());
         
         if (prechecks()) {
             phaseOneTestList.add(new SniProbe(config));
