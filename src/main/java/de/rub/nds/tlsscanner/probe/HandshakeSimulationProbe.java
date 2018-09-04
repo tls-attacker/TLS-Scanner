@@ -83,7 +83,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
         simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
         simulatedClient.setHighestClientProtocolVersion(state.getTlsContext().getHighestClientProtocolVersion());
-        if (simulatedClient.isReceivedServerHello()) {
+        if (simulatedClient.getReceivedServerHello()) {
             simulatedClient.setSelectedProtocolVersion(state.getTlsContext().getSelectedProtocolVersion());
             simulatedClient.setSelectedCiphersuite(state.getTlsContext().getSelectedCipherSuite());
             if (simulatedClient.getSelectedCiphersuite().toString().contains("_DHE_") || simulatedClient.getSelectedCiphersuite().toString().contains("_ECDHE_")) {
@@ -95,11 +95,11 @@ public class HandshakeSimulationProbe extends TlsProbe {
             simulatedClient.setNegotiatedExtensionSet(state.getTlsContext().getNegotiatedExtensionSet());
         }
         simulatedClient.setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace));
-        if (simulatedClient.isReceivedCertificate()) {
+        if (simulatedClient.getReceivedCertificate()) {
             //Do something
         }
         simulatedClient.setReceivedServerKeyExchange(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
-        if (simulatedClient.isReceivedServerKeyExchange()) {
+        if (simulatedClient.getReceivedServerKeyExchange()) {
             if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA") && state.getTlsContext().getServerRSAPublicKey()!=null) {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerRSAPublicKey().bitLength()));
             } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH") && state.getTlsContext().getServerDhPublicKey()!=null) {

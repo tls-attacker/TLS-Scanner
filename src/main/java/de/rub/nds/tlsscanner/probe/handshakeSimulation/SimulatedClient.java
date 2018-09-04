@@ -36,6 +36,7 @@ public class SimulatedClient {
     private Boolean invalidCurveVulnerable = null;
     private Boolean invalidCurveEphemeralVulnerable = null;
     private Boolean sweet32Vulnerable = null;
+    private Boolean drownVulnerable = null;
     
     public SimulatedClient(String type, String version) {
         this.type = type;
@@ -50,7 +51,7 @@ public class SimulatedClient {
         return version;
     }
     
-    public Boolean isReceivedServerHello() {
+    public Boolean getReceivedServerHello() {
         return receivedServerHello;
     }
     
@@ -74,7 +75,7 @@ public class SimulatedClient {
         this.selectedProtocolVersion = selectedProtocolVersion;
     }
     
-    public Boolean isHighestPossibleProtocolVersionSeleceted() {
+    public Boolean getHighestPossibleProtocolVersionSeleceted() {
         return highestPossibleProtocolVersionSeleceted;
     }
 
@@ -90,7 +91,7 @@ public class SimulatedClient {
         this.selectedCiphersuite = selectedCiphersuite;
     }
     
-    public Boolean isForwardSecrecy() {
+    public Boolean getForwardSecrecy() {
         return forwardSecrecy;
     }
     
@@ -114,7 +115,7 @@ public class SimulatedClient {
         this.negotiatedExtensionSet = negotiatedExtensionSet;
     }
     
-    public Boolean isReceivedCertificate() {
+    public Boolean getReceivedCertificate() {
         return receivedCertificate;
     }
 
@@ -122,7 +123,7 @@ public class SimulatedClient {
         this.receivedCertificate = receivedCertificate;
     }
     
-    public Boolean isReceivedServerKeyExchange() {
+    public Boolean getReceivedServerKeyExchange() {
         return receivedServerKeyExchange;
     }
 
@@ -146,7 +147,7 @@ public class SimulatedClient {
         this.serverPublicKeyLength = serverPublicKeyLength;
     }
     
-    public Boolean isReceivedCertificateRequest() {
+    public Boolean getReceivedCertificateRequest() {
         return receivedCertificateRequest;
     }
 
@@ -154,7 +155,7 @@ public class SimulatedClient {
         this.receivedCertificateRequest = receivedCertificateRequest;
     }
     
-    public Boolean isReceivedServerHelloDone() {
+    public Boolean getReceivedServerHelloDone() {
         return receivedServerHelloDone;
     }
     
@@ -162,7 +163,7 @@ public class SimulatedClient {
         this.receivedServerHelloDone = receivedServerHelloDone;
     }
 
-    public Boolean isConnectionSecure() {
+    public Boolean getConnectionSecure() {
         return connectionSecure;
     }
 
@@ -170,7 +171,7 @@ public class SimulatedClient {
         this.connectionSecure = connectionSecure;
     }
     
-    public Boolean isPaddingOracleVulnerable() {
+    public Boolean getPaddingOracleVulnerable() {
         return paddingOracleVulnerable;
     }
 
@@ -178,7 +179,7 @@ public class SimulatedClient {
         this.paddingOracleVulnerable = paddingOracleVulnerable;
     }
 
-    public Boolean isBleichenbacherVulnerable() {
+    public Boolean getBleichenbacherVulnerable() {
         return bleichenbacherVulnerable;
     }
 
@@ -186,7 +187,7 @@ public class SimulatedClient {
         this.bleichenbacherVulnerable = bleichenbacherVulnerable;
     }
     
-    public Boolean isCrimeVulnerable() {
+    public Boolean getCrimeVulnerable() {
         return crimeVulnerable;
     }
 
@@ -194,7 +195,7 @@ public class SimulatedClient {
         this.crimeVulnerable = crimeVulnerable;
     }
 
-    public Boolean isInvalidCurveVulnerable() {
+    public Boolean getInvalidCurveVulnerable() {
         return invalidCurveVulnerable;
     }
 
@@ -202,7 +203,7 @@ public class SimulatedClient {
         this.invalidCurveVulnerable = invalidCurveVulnerable;
     }
 
-    public Boolean isInvalidCurveEphemeralVulnerable() {
+    public Boolean getInvalidCurveEphemeralVulnerable() {
         return invalidCurveEphemeralVulnerable;
     }
 
@@ -210,11 +211,19 @@ public class SimulatedClient {
         this.invalidCurveEphemeralVulnerable = invalidCurveEphemeralVulnerable;
     }
 
-    public Boolean isSweet32Vulnerable() {
+    public Boolean getSweet32Vulnerable() {
         return sweet32Vulnerable;
     }
 
     public void setSweet32Vulnerable(Boolean sweet32Vulnerable) {
         this.sweet32Vulnerable = sweet32Vulnerable;
+    }
+
+    public Boolean getDrownVulnerable() {
+        return drownVulnerable;
+    }
+
+    public void setDrownVulnerable(Boolean drownVulnerable) {
+        this.drownVulnerable = drownVulnerable;
     }
 }

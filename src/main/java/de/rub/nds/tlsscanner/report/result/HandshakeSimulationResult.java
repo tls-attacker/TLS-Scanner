@@ -25,12 +25,12 @@ public class HandshakeSimulationResult extends ProbeResult {
         int handshakeSuccessfulCounter = 0;
         int handshakeFailedCounter = 0;
         for (SimulatedClient simulatedClient : this.simulatedClientList) {
-            if (simulatedClient.isReceivedServerHelloDone() == true) {
+            if (simulatedClient.getReceivedServerHelloDone()) {
                 handshakeSuccessfulCounter++;
             } else {
                 handshakeFailedCounter++;
             }
-            if (simulatedClient.isReceivedServerHello()) {
+            if (simulatedClient.getReceivedServerHello()) {
                 if (simulatedClient.getSelectedProtocolVersion().equals(simulatedClient.getHighestClientProtocolVersion())) {
                     simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
                 } else {

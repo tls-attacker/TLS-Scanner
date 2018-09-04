@@ -88,16 +88,16 @@ public class SiteReportPrinter {
             if (report.isDetailed()) {
                 for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
                     prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
-                    prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.isReceivedServerHelloDone());
-                    if (simulatedClient.isReceivedServerHelloDone()) {
-                        prettyAppendGreenRed(builder, "Connection Secure", simulatedClient.isConnectionSecure());
+                    prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.getReceivedServerHelloDone());
+                    if (simulatedClient.getReceivedServerHelloDone()) {
+                        prettyAppendGreenRed(builder, "Connection Secure", simulatedClient.getConnectionSecure());
                         builder.append("\n");
                         prettyAppendProtocolVersion(builder, "Protocol Version Client", simulatedClient.getHighestClientProtocolVersion());
                         prettyAppendProtocolVersion(builder, "Protocol Version Selected", simulatedClient.getSelectedProtocolVersion());
-                        prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.isHighestPossibleProtocolVersionSeleceted());
+                        prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.getHighestPossibleProtocolVersionSeleceted());
                         builder.append("\n");
                         prettyAppendSelectedCipherSuite(builder, "Selected Ciphersuite", simulatedClient.getSelectedCiphersuite());
-                        prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.isForwardSecrecy());
+                        prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy());
                         builder.append("\n");
                         prettyAppend(builder, "Server Public Key Length (Bits)", simulatedClient.getServerPublicKeyLength());
                         prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup());
@@ -107,12 +107,12 @@ public class SiteReportPrinter {
                         builder.append("\n");
                         builder.append("Vulnerabilities").append("\n");
                         builder.append("\n");
-                        prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.isPaddingOracleVulnerable());
-                        prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.isBleichenbacherVulnerable());
-                        prettyAppendRedGreen(builder, "Crime", simulatedClient.isCrimeVulnerable());
-                        prettyAppendRedGreen(builder, "Invalid Curve", simulatedClient.isInvalidCurveVulnerable());
-                        prettyAppendRedGreen(builder, "Invalid Curve Ephemeral", simulatedClient.isInvalidCurveEphemeralVulnerable());
-                        prettyAppendRedGreen(builder, "Sweet 32", simulatedClient.isSweet32Vulnerable());
+                        prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.getPaddingOracleVulnerable());
+                        prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.getBleichenbacherVulnerable());
+                        prettyAppendRedGreen(builder, "Crime", simulatedClient.getCrimeVulnerable());
+                        prettyAppendRedGreen(builder, "Invalid Curve", simulatedClient.getInvalidCurveVulnerable());
+                        prettyAppendRedGreen(builder, "Invalid Curve Ephemeral", simulatedClient.getInvalidCurveEphemeralVulnerable());
+                        prettyAppendRedGreen(builder, "Sweet 32", simulatedClient.getSweet32Vulnerable());
                     }
                 }
             }
