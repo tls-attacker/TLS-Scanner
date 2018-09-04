@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner;
 
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -38,7 +37,7 @@ public class ScanJobExecutor {
         executor = Executors.newFixedThreadPool(threadCount);
     }
 
-    public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
+    public SiteReport execute(ScannerConfig config, ScanJob scanJob, SiteReport report) {
         List<ProbeType> probeTypes = new LinkedList<>();
         
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
@@ -59,9 +58,6 @@ public class ScanJobExecutor {
             }
         }
 
-        ClientDelegate clientDelegate = (ClientDelegate) config.getDelegate(ClientDelegate.class);
-        String hostname = clientDelegate.getHost();
-        SiteReport report = new SiteReport(hostname, probeTypes, config.isNoColor());
         report.setServerIsAlive(Boolean.TRUE);
         for (ProbeResult result : resultList) {
             result.merge(report);

@@ -80,7 +80,9 @@ public class TlsScanner {
     public SiteReport scan() {
         List<TlsProbe> phaseOneTestList = new LinkedList<>();
         List<TlsProbe> phaseTwoTestList = new LinkedList<>();
-
+        
+        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor(), config.isDetailed());
+        
         if (prechecks()) {
             phaseOneTestList.add(new SniProbe(config));
             phaseOneTestList.add(new CompressionsProbe(config));
@@ -108,12 +110,11 @@ public class TlsScanner {
             afterList.add(new FreakAfterProbe());
             afterList.add(new HandshakeSimulationAfterProbe());
             ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
-            return executor.execute(config, job);
+            return executor.execute(config, job, report);
+        } else {
+            report.setServerIsAlive(false);
+            return report;
         }
-        // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
-        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
-        report.setServerIsAlive(false);
-        return report;
     }
 
     public boolean prechecks() {
