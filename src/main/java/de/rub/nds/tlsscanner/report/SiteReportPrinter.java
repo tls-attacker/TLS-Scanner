@@ -63,58 +63,69 @@ public class SiteReportPrinter {
       
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
         if (report.getSimulatedClientList()!= null) {
-            prettyAppendHeading(builder, "TLS Handshake Simulation");
-            prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
-            if (report.getHandshakeSuccessfulCounter()==0) {
-                prettyAppendRed(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
-            } else {
-                prettyAppendGreen(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
-            }
-            if (report.getHandshakeFailedCounter()==0) {
-                prettyAppendGreen(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
-            } else {
-                prettyAppendRed(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
-            }
-            if (report.getConnectionSecureCounter()==0) {
-                prettyAppendRed(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
-            } else {
-                prettyAppendGreen(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
-            }
-            if (report.getConnectionInsecureCounter()==0) {
-                prettyAppendGreen(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
-            } else {
-                prettyAppendRed(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
-            }
+            appendHandshakeSimulationOverview(builder);
             if (report.isDetailed()) {
-                for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
-                    prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
-                    prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.getReceivedServerHelloDone());
-                    if (simulatedClient.getReceivedServerHelloDone()) {
-                        prettyAppendGreenRed(builder, "Connection Secure", simulatedClient.getConnectionSecure());
-                        builder.append("\n");
-                        prettyAppendProtocolVersion(builder, "Protocol Version Client", simulatedClient.getHighestClientProtocolVersion());
-                        prettyAppendProtocolVersion(builder, "Protocol Version Selected", simulatedClient.getSelectedProtocolVersion());
-                        prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.getHighestPossibleProtocolVersionSeleceted());
-                        builder.append("\n");
-                        prettyAppendSelectedCipherSuite(builder, "Selected Ciphersuite", simulatedClient.getSelectedCiphersuite());
-                        prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy());
-                        builder.append("\n");
-                        prettyAppend(builder, "Server Public Key Length (Bits)", simulatedClient.getServerPublicKeyLength());
-                        prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup());
-                        builder.append("\n");
-                        prettyAppend(builder, "Selected Compression Method", simulatedClient.getSelectedCompressionMethod().name());
-                        prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensionSet().toString());
-                        builder.append("\n");
-                        builder.append("Vulnerabilities").append("\n");
-                        builder.append("\n");
-                        prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.getPaddingOracleVulnerable());
-                        prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.getBleichenbacherVulnerable());
-                        prettyAppendRedGreen(builder, "Crime", simulatedClient.getCrimeVulnerable());
-                        prettyAppendRedGreen(builder, "Invalid Curve", simulatedClient.getInvalidCurveVulnerable());
-                        prettyAppendRedGreen(builder, "Invalid Curve Ephemeral", simulatedClient.getInvalidCurveEphemeralVulnerable());
-                        prettyAppendRedGreen(builder, "Sweet 32", simulatedClient.getSweet32Vulnerable());
-                    }
-                }
+                appendHandshakeSimulationDetailed(builder);
+            }
+        }
+        return builder;
+    }
+    
+    private StringBuilder appendHandshakeSimulationOverview(StringBuilder builder) {
+        prettyAppendHeading(builder, "TLS Handshake Simulation - Overview");
+        prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
+        if (report.getHandshakeSuccessfulCounter() == 0) {
+            prettyAppendRed(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
+        } else {
+            prettyAppendGreen(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
+        }
+        if (report.getHandshakeFailedCounter() == 0) {
+            prettyAppendGreen(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
+        } else {
+            prettyAppendRed(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
+        }
+        if (report.getConnectionSecureCounter() == 0) {
+            prettyAppendRed(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
+        } else {
+            prettyAppendGreen(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
+        }
+        if (report.getConnectionInsecureCounter() == 0) {
+            prettyAppendGreen(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
+        } else {
+            prettyAppendRed(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
+        }
+        return builder;
+    }
+    
+    private StringBuilder appendHandshakeSimulationDetailed(StringBuilder builder) {
+        prettyAppendHeading(builder, "TLS Handshake Simulation - Detailed");
+        for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
+            prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
+            prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.getReceivedServerHelloDone());
+            if (simulatedClient.getReceivedServerHelloDone()) {
+                prettyAppendGreenRed(builder, "Connection Secure", simulatedClient.getConnectionSecure());
+                builder.append("\n");
+                prettyAppendProtocolVersion(builder, "Protocol Version Client", simulatedClient.getHighestClientProtocolVersion());
+                prettyAppendProtocolVersion(builder, "Protocol Version Selected", simulatedClient.getSelectedProtocolVersion());
+                prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.getHighestPossibleProtocolVersionSeleceted());
+                builder.append("\n");
+                prettyAppendSelectedCipherSuite(builder, "Selected Ciphersuite", simulatedClient.getSelectedCiphersuite());
+                prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy());
+                builder.append("\n");
+                prettyAppend(builder, "Server Public Key Length (Bits)", simulatedClient.getServerPublicKeyLength());
+                prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup());
+                builder.append("\n");
+                prettyAppend(builder, "Selected Compression Method", simulatedClient.getSelectedCompressionMethod().name());
+                prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensionSet().toString());
+                builder.append("\n");
+                builder.append("Vulnerabilities").append("\n");
+                builder.append("\n");
+                prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.getPaddingOracleVulnerable());
+                prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.getBleichenbacherVulnerable());
+                prettyAppendRedGreen(builder, "Crime", simulatedClient.getCrimeVulnerable());
+                prettyAppendRedGreen(builder, "Invalid Curve", simulatedClient.getInvalidCurveVulnerable());
+                prettyAppendRedGreen(builder, "Invalid Curve Ephemeral", simulatedClient.getInvalidCurveEphemeralVulnerable());
+                prettyAppendRedGreen(builder, "Sweet 32", simulatedClient.getSweet32Vulnerable());
             }
         }
         return builder;
