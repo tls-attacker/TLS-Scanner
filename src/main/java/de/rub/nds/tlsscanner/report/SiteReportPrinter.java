@@ -78,24 +78,24 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "TLS Handshake Simulation - Overview");
         prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
         if (report.getHandshakeSuccessfulCounter() == 0) {
-            prettyAppendRed(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
+            prettyAppendRed(builder, getGreenString("Successful Handshakes", "%-32s"), Integer.toString(report.getHandshakeSuccessfulCounter()));
         } else {
-            prettyAppendGreen(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
+            prettyAppendGreen(builder, getGreenString("Successful Handshakes", "%-32s"), Integer.toString(report.getHandshakeSuccessfulCounter()));
         }
         if (report.getHandshakeFailedCounter() == 0) {
-            prettyAppendGreen(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
+            prettyAppendGreen(builder, getRedString("Failed Handshakes", "%-32s"), Integer.toString(report.getHandshakeFailedCounter()));
         } else {
-            prettyAppendRed(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
+            prettyAppendRed(builder, getRedString("Failed Handshakes", "%-32s"), Integer.toString(report.getHandshakeFailedCounter()));
         }
         if (report.getConnectionSecureCounter() == 0) {
-            prettyAppendRed(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
+            prettyAppendRed(builder, getGreenString("Secure Connections", "%-32s"), Integer.toString(report.getConnectionSecureCounter()));
         } else {
-            prettyAppendGreen(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
+            prettyAppendGreen(builder, getGreenString("Secure Connections", "%-32s"), Integer.toString(report.getConnectionSecureCounter()));
         }
         if (report.getConnectionInsecureCounter() == 0) {
-            prettyAppendGreen(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
+            prettyAppendGreen(builder, getRedString("Insecure Connections", "%-32s"), Integer.toString(report.getConnectionInsecureCounter()));
         } else {
-            prettyAppendRed(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
+            prettyAppendRed(builder, getRedString("Insecure Connections", "%-32s"), Integer.toString(report.getConnectionInsecureCounter()));
         }
         return builder;
     }
