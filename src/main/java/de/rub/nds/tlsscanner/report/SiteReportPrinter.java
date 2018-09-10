@@ -67,6 +67,7 @@ public class SiteReportPrinter {
             if (report.getDetailLevel()==2) {
                 appendHSDetail2(builder);
             } else if (report.getDetailLevel()==3) {
+                appendHSDetail2(builder);
                 appendHSDetail3(builder);
             }
         }
@@ -101,50 +102,92 @@ public class SiteReportPrinter {
     
     private StringBuilder appendHSDetail2(StringBuilder builder) {
         prettyAppendHeading(builder, "TLS Handshake Simulation - Level of Detail: 2");
-        prettyAppendHSDetail2Row(builder, "TLS Client", "TLS Version", "Ciphersuite", "Forward Secrecy", "Server Public Key", "Connection");
+        prettyAppendHSDetail2Row(builder, "TLS Client", "TLS Version", "Ciphersuite", "Forward Secrecy", "Server Public Key");
         builder.append("\n");
         for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
             if (simulatedClient.getReceivedServerHelloDone()) {
-                prettyAppendHSDetail2Row(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion(), 
-                        simulatedClient.getSelectedProtocolVersion().name(), simulatedClient.getSelectedCiphersuite().name(),
-                        simulatedClient.getForwardSecrecy(), simulatedClient.getServerPublicKeyLength(),
-                        simulatedClient.getConnectionSecure());
+                prettyAppendHSDetail2Row(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion(),
+                        simulatedClient.getConnectionSecure(), simulatedClient.getSelectedProtocolVersion(), 
+                        simulatedClient.getSelectedCiphersuite(), simulatedClient.getForwardSecrecy(),
+                        simulatedClient.getServerPublicKeyLength());
             } else {
-                prettyAppendHSDetail2Row(builder, String.format("%-28s", simulatedClient.getType() + ":" + simulatedClient.getVersion()), "Handshake failed");
+                prettyAppendHSDetail2Row(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
             }
         }
         return builder;
     }
     
-    private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String value1, String value2) {
-        return builder.append(value1).append("| ").append((report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value2 + AnsiColors.ANSI_RESET).append("\n");
+    private String getCipherSuiteColour(CipherSuite suite, String format) {
+        CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
+        switch (grade) {
+            case GOOD:
+                return getGreenString(suite.name(), format);
+            case LOW:
+                return getRedString(suite.name(), format);
+            case MEDIUM:
+                return getYellowString(suite.name(), format);
+            case NONE:
+                return getBlackString(suite.name(), format);
+            default:
+                return getBlackString(suite.name(), format);
+        }
+    }   
+    
+    private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String value1) {
+        builder.append((report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + String.format("%-28s",value1) + AnsiColors.ANSI_RESET);
+        builder.append("| ");
+        builder.append((report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + "TLS Handshake failed" + AnsiColors.ANSI_RESET);
+        builder.append("\n");
+        return builder;
     }
     
-    private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String tlsClient, String tlsVersion, String ciphersuite, String forwardSecrecy, String keyLength, String connection) {
+    private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String tlsClient, String tlsVersion, String ciphersuite, String forwardSecrecy, String keyLength) {
         builder.append(String.format("%-28s", tlsClient));
         builder.append(String.format("| %-14s", tlsVersion));
         builder.append(String.format("| %-52s", ciphersuite));
         builder.append(String.format("| %-19s", forwardSecrecy));
         builder.append(String.format("| %-17s", keyLength));
-        builder.append(String.format("| %s", connection));
         builder.append("\n");
         return builder;
     }
     
-    private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String tlsClient, String tlsVersion, String ciphersuite, Boolean forwardSecrecy, String keyLength, Boolean connection) {
-        String newFs;
-        String newSecure;
+    private String getBlackString(String value, String format) {
+        return String.format(format,value);
+    }
+    
+    private String getGreenString(String value, String format) {
+        return (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + String.format(format,value) + AnsiColors.ANSI_RESET;
+    }
+    
+    private String getYellowString(String value, String format) {
+        return (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + String.format(format,value) + AnsiColors.ANSI_RESET;
+    }
+    
+    private String getRedString(String value, String format) {
+        return (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + String.format(format,value) + AnsiColors.ANSI_RESET;
+    }
+    
+    private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String tlsClient, Boolean secure, ProtocolVersion tlsVersion, CipherSuite ciphersuite, Boolean forwardSecrecy, String keyLength) {
+        String newTlsClient;
+        if (secure) {
+            newTlsClient = getGreenString(tlsClient, "%-28s");
+        } else {
+            newTlsClient = getRedString(tlsClient, "%-28s");
+        }
+        String newTlsVersion = getProtocolVersionColour(tlsVersion, "%-14s");
+        String newCipherSuite = getCipherSuiteColour(ciphersuite, "%-52s");
+        String newForwardSecrecy;
         if (forwardSecrecy) {
-            newFs = "Forward Secrecy";
+            newForwardSecrecy = getGreenString("Forward Secrecy", "%-19s");
         } else {
-            newFs = "No Forward Secrecy";
+            newForwardSecrecy = getRedString("No Forward Secrecy", "%-19s");
         }
-        if (connection) {
-            newSecure = "Secure";
-        } else {
-            newSecure = "Insecure";
-        }
-        prettyAppendHSDetail2Row(builder, tlsClient, tlsVersion, ciphersuite, newFs, keyLength+" Bit", newSecure);
+        builder.append(newTlsClient);
+        builder.append("| ").append(newTlsVersion);
+        builder.append("| ").append(newCipherSuite);
+        builder.append("| ").append(newForwardSecrecy);
+        builder.append("| ").append(getBlackString(keyLength+" Bit", "%-17s"));
+        builder.append("\n");
         return builder;
     }
     
@@ -156,8 +199,8 @@ public class SiteReportPrinter {
             if (simulatedClient.getReceivedServerHelloDone()) {
                 prettyAppendGreenRed(builder, "Connection Secure", simulatedClient.getConnectionSecure());
                 builder.append("\n");
-                prettyAppendProtocolVersion(builder, "Protocol Version Client", simulatedClient.getHighestClientProtocolVersion());
-                prettyAppendProtocolVersion(builder, "Protocol Version Selected", simulatedClient.getSelectedProtocolVersion());
+                prettyAppend(builder, "Protocol Version Client", getProtocolVersionColour(simulatedClient.getHighestClientProtocolVersion(),"%s"));
+                prettyAppend(builder, "Protocol Version Selected", getProtocolVersionColour(simulatedClient.getSelectedProtocolVersion(),"%s"));
                 prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.getHighestPossibleProtocolVersionSeleceted());
                 builder.append("\n");
                 prettyAppendSelectedCipherSuite(builder, "Selected Ciphersuite", simulatedClient.getSelectedCiphersuite());
@@ -181,6 +224,18 @@ public class SiteReportPrinter {
             }
         }
         return builder;
+    }
+    
+    private String getProtocolVersionColour(ProtocolVersion version, String format) {
+        if (version.name().contains("13") || version.name().contains("12")) {
+            return getGreenString(version.name(),format);
+        } else if (version.name().contains("11") || version.name().contains("10")) {
+            return getYellowString(version.name(),format);
+        } else if (version.name().contains("SSL")) {
+            return getRedString(version.name(),format);
+        } else {
+            return getBlackString(version.name(),format);
+        }
     }
     
     private StringBuilder appendRfc(StringBuilder builder) {
@@ -433,18 +488,6 @@ public class SiteReportPrinter {
             }
         }
         return builder;
-    }
-    
-    private void prettyAppendProtocolVersion(StringBuilder builder, String name, ProtocolVersion version) {
-        if (version.name().contains("13") || version.name().contains("12")) {
-            prettyAppendGreen(builder, name, version.name());
-        } else if (version.name().contains("11") || version.name().contains("10")) {
-            prettyAppendYellow(builder, name, version.name());
-        } else if (version.name().contains("SSL")) {
-            prettyAppendRed(builder, name, version.name());
-        } else {
-            prettyAppend(builder, name, version.name());
-        }
     }
 
     private void prettyAppendSupportedCipherSuite(StringBuilder builder, CipherSuite suite) {
