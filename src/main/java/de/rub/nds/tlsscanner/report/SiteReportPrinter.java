@@ -117,6 +117,18 @@ public class SiteReportPrinter {
         return builder;
     }
     
+    private String getProtocolVersionColour(ProtocolVersion version, String format) {
+        if (version.name().contains("13") || version.name().contains("12")) {
+            return getGreenString(version.name(), format);
+        } else if (version.name().contains("11") || version.name().contains("10")) {
+            return getYellowString(version.name(), format);
+        } else if (version.name().contains("SSL")) {
+            return getRedString(version.name(), format);
+        } else {
+            return getBlackString(version.name(), format);
+        }
+    }
+    
     private String getCipherSuiteColour(CipherSuite suite, String format) {
         CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
         switch (grade) {
@@ -151,22 +163,6 @@ public class SiteReportPrinter {
         return builder;
     }
     
-    private String getBlackString(String value, String format) {
-        return String.format(format,value);
-    }
-    
-    private String getGreenString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + String.format(format,value) + AnsiColors.ANSI_RESET;
-    }
-    
-    private String getYellowString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + String.format(format,value) + AnsiColors.ANSI_RESET;
-    }
-    
-    private String getRedString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + String.format(format,value) + AnsiColors.ANSI_RESET;
-    }
-    
     private StringBuilder prettyAppendHSDetail2Row(StringBuilder builder, String tlsClient, Boolean secure, ProtocolVersion tlsVersion, CipherSuite ciphersuite, Boolean forwardSecrecy, String keyLength) {
         String newTlsClient;
         if (secure) {
@@ -199,11 +195,11 @@ public class SiteReportPrinter {
             if (simulatedClient.getReceivedServerHelloDone()) {
                 prettyAppendGreenRed(builder, "Connection Secure", simulatedClient.getConnectionSecure());
                 builder.append("\n");
-                prettyAppend(builder, "Protocol Version Client", getProtocolVersionColour(simulatedClient.getHighestClientProtocolVersion(),"%s"));
-                prettyAppend(builder, "Protocol Version Selected", getProtocolVersionColour(simulatedClient.getSelectedProtocolVersion(),"%s"));
+                prettyAppend(builder, "Protocol Version Client", getProtocolVersionColour(simulatedClient.getHighestClientProtocolVersion(), "%s"));
+                prettyAppend(builder, "Protocol Version Selected", getProtocolVersionColour(simulatedClient.getSelectedProtocolVersion(), "%s"));
                 prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.getHighestPossibleProtocolVersionSeleceted());
                 builder.append("\n");
-                prettyAppendSelectedCipherSuite(builder, "Selected Ciphersuite", simulatedClient.getSelectedCiphersuite());
+                prettyAppend(builder, "Selected Ciphersuite", getCipherSuiteColour(simulatedClient.getSelectedCiphersuite(), "%s"));
                 prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy());
                 builder.append("\n");
                 prettyAppend(builder, "Server Public Key Length (Bits)", simulatedClient.getServerPublicKeyLength());
@@ -222,18 +218,6 @@ public class SiteReportPrinter {
             }
         }
         return builder;
-    }
-    
-    private String getProtocolVersionColour(ProtocolVersion version, String format) {
-        if (version.name().contains("13") || version.name().contains("12")) {
-            return getGreenString(version.name(),format);
-        } else if (version.name().contains("11") || version.name().contains("10")) {
-            return getYellowString(version.name(),format);
-        } else if (version.name().contains("SSL")) {
-            return getRedString(version.name(),format);
-        } else {
-            return getBlackString(version.name(),format);
-        }
     }
     
     private StringBuilder appendRfc(StringBuilder builder) {
@@ -337,13 +321,13 @@ public class SiteReportPrinter {
         if (report.getCipherSuites() != null) {
             prettyAppendHeading(builder, "Supported Ciphersuites");
             for (CipherSuite suite : report.getCipherSuites()) {
-                prettyAppendSupportedCipherSuite(builder, suite);
+                builder.append(getCipherSuiteColour(suite, "%s")).append("\n");
             }
 
             for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
                 prettyAppendHeading(builder, "Supported in " + versionSuitePair.getVersion());
                 for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
-                    prettyAppendSupportedCipherSuite(builder, suite);
+                    builder.append(getCipherSuiteColour(suite, "%s")).append("\n");
                 }
             }
             prettyAppendHeading(builder, "Symmetric Supported");
@@ -487,46 +471,22 @@ public class SiteReportPrinter {
         }
         return builder;
     }
-
-    private void prettyAppendSupportedCipherSuite(StringBuilder builder, CipherSuite suite) {
-        CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
-        switch (grade) {
-            case GOOD:
-                prettyAppendGreen(builder, suite.name());
-                break;
-            case LOW:
-                prettyAppendRed(builder, suite.name());
-                break;
-            case MEDIUM:
-                prettyAppendYellow(builder, suite.name());
-                break;
-            case NONE:
-                prettyAppend(builder, suite.name());
-                break;
-            default:
-                prettyAppend(builder, suite.name());
-        }
+    
+    private String getBlackString(String value, String format) {
+        return String.format(format, value);
     }
     
-    private void prettyAppendSelectedCipherSuite(StringBuilder builder, String name, CipherSuite suite) {
-        CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
-        switch (grade) {
-            case GOOD:
-                prettyAppendGreen(builder, name, suite.name());
-                break;
-            case LOW:
-                prettyAppendRed(builder, name, suite.name());
-                break;
-            case MEDIUM:
-                prettyAppendYellow(builder, name, suite.name());
-                break;
-            case NONE:
-                prettyAppend(builder, name, suite.name());
-                break;
-            default:
-                prettyAppend(builder, name, suite.name());
-        }
-    }    
+    private String getGreenString(String value, String format) {
+        return (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + String.format(format, value) + AnsiColors.ANSI_RESET;
+    }
+    
+    private String getYellowString(String value, String format) {
+        return (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + String.format(format, value) + AnsiColors.ANSI_RESET;
+    }
+    
+    private String getRedString(String value, String format) {
+        return (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + String.format(format, value) + AnsiColors.ANSI_RESET;
+    }
     
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
         return builder.append(value).append("\n");
