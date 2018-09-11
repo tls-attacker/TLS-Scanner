@@ -217,8 +217,6 @@ public class SiteReportPrinter {
                 prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.getPaddingOracleVulnerable());
                 prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.getBleichenbacherVulnerable());
                 prettyAppendRedGreen(builder, "Crime", simulatedClient.getCrimeVulnerable());
-                prettyAppendRedGreen(builder, "Invalid Curve", simulatedClient.getInvalidCurveVulnerable());
-                prettyAppendRedGreen(builder, "Invalid Curve Ephemeral", simulatedClient.getInvalidCurveEphemeralVulnerable());
                 prettyAppendRedGreen(builder, "Sweet 32", simulatedClient.getSweet32Vulnerable());
                 prettyAppendRedGreen(builder, "DROWN", simulatedClient.getDrownVulnerable());
             }

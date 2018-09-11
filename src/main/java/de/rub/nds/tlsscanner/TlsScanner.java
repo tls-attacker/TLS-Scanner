@@ -103,7 +103,7 @@ public class TlsScanner {
             phaseTwoTestList.add(new DrownProbe(config));
             phaseTwoTestList.add(new EarlyCcsProbe(config));
             
-           phaseTwoTestList.add(new HandshakeSimulationProbe(config));
+            phaseTwoTestList.add(new HandshakeSimulationProbe(config));
 
             List<AfterProbe> afterList = new LinkedList<>();
             afterList.add(new Sweet32AfterProbe());

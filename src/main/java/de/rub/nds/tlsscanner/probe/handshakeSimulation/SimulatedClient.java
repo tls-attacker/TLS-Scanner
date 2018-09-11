@@ -33,8 +33,6 @@ public class SimulatedClient {
     private Boolean paddingOracleVulnerable = null;
     private Boolean bleichenbacherVulnerable = null;
     private Boolean crimeVulnerable = null;
-    private Boolean invalidCurveVulnerable = null;
-    private Boolean invalidCurveEphemeralVulnerable = null;
     private Boolean sweet32Vulnerable = null;
     private Boolean drownVulnerable = null;
     
@@ -193,22 +191,6 @@ public class SimulatedClient {
 
     public void setCrimeVulnerable(Boolean crimeVulnerable) {
         this.crimeVulnerable = crimeVulnerable;
-    }
-
-    public Boolean getInvalidCurveVulnerable() {
-        return invalidCurveVulnerable;
-    }
-
-    public void setInvalidCurveVulnerable(Boolean invalidCurveVulnerable) {
-        this.invalidCurveVulnerable = invalidCurveVulnerable;
-    }
-
-    public Boolean getInvalidCurveEphemeralVulnerable() {
-        return invalidCurveEphemeralVulnerable;
-    }
-
-    public void setInvalidCurveEphemeralVulnerable(Boolean invalidCurveEphemeralVulnerable) {
-        this.invalidCurveEphemeralVulnerable = invalidCurveEphemeralVulnerable;
     }
 
     public Boolean getSweet32Vulnerable() {

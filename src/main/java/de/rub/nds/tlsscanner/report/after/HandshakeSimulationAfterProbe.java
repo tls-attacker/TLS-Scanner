@@ -37,18 +37,6 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                 } else {
                     simulatedClient.setCrimeVulnerable(false);
                 }
-                if (report.getInvalidCurveVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH")) {
-                    simulatedClient.setInvalidCurveVulnerable(true);
-                    simulatedClient.setConnectionSecure(false);
-                } else {
-                    simulatedClient.setInvalidCurveVulnerable(false);
-                }
-                if (report.getInvalidCurveEphermaralVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDHE")) {
-                    simulatedClient.setInvalidCurveEphemeralVulnerable(true);
-                    simulatedClient.setConnectionSecure(false);
-                } else {
-                    simulatedClient.setInvalidCurveEphemeralVulnerable(false);
-                }
                 if (report.getSweet32Vulnerable()) {
                     if (simulatedClient.getSelectedCiphersuite().name().contains("3DES") || 
                             simulatedClient.getSelectedCiphersuite().name().contains("IDEA") || 
