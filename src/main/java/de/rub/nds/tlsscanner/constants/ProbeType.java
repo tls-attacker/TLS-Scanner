@@ -17,6 +17,7 @@ public enum ProbeType {
     CIPHERSUITE_ORDER,
     CIPHERSUITE,
     HEARTBLEED,
+    HTTP_HEADER,
     BLEICHENBACHER,
     DROWN,
     EARLY_CCS,

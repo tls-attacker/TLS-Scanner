@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
+import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
@@ -189,6 +190,13 @@ public class SiteReport {
     private Boolean gcmReuse = null;
     private GcmPattern gcmPattern = null;
     private Boolean gcmCheck = null;
+
+    //HTTPS Header
+    private Boolean speaksHttps;
+    private List<HttpsHeader> headerList = null;
+    private Boolean supportsHsts = null;
+    private Boolean supportsHstsPreloading = null;
+    private Boolean supportsHpkp = null;
 
     //NoColor Flag
     private boolean noColor = false;
@@ -1231,5 +1239,45 @@ public class SiteReport {
 
     public void setPaddingOracleTestResultList(List<PaddingOracleTestResult> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
+    }
+
+    public List<HttpsHeader> getHeaderList() {
+        return headerList;
+    }
+
+    public void setHeaderList(List<HttpsHeader> headerList) {
+        this.headerList = headerList;
+    }
+
+    public Boolean getSupportsHsts() {
+        return supportsHsts;
+    }
+
+    public void setSupportsHsts(Boolean supportsHsts) {
+        this.supportsHsts = supportsHsts;
+    }
+
+    public Boolean getSupportsHstsPreloading() {
+        return supportsHstsPreloading;
+    }
+
+    public void setSupportsHstsPreloading(Boolean supportsHstsPreloading) {
+        this.supportsHstsPreloading = supportsHstsPreloading;
+    }
+
+    public Boolean getSupportsHpkp() {
+        return supportsHpkp;
+    }
+
+    public void setSupportsHpkp(Boolean supportsHpkp) {
+        this.supportsHpkp = supportsHpkp;
+    }
+
+    public Boolean getSpeaksHttps() {
+        return speaksHttps;
+    }
+
+    public void setSpeaksHttps(Boolean speaksHttps) {
+        this.speaksHttps = speaksHttps;
     }
 }

@@ -24,6 +24,7 @@ import de.rub.nds.tlsscanner.probe.DrownProbe;
 import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
 import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
+import de.rub.nds.tlsscanner.probe.HttpHeaderProbe;
 import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
 import de.rub.nds.tlsscanner.probe.MacProbe;
 import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
@@ -88,6 +89,7 @@ public class TlsScanner {
             phaseOneTestList.add(new ExtensionProbe(config));
             phaseOneTestList.add(new Tls13Probe(config));
             phaseOneTestList.add(new TokenbindingProbe(config));
+            phaseOneTestList.add(new HttpHeaderProbe(config));
 
             phaseTwoTestList.add(new ResumptionProbe(config));
             phaseTwoTestList.add(new RenegotiationProbe(config));

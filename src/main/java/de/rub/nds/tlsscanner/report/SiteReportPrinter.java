@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
+import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
@@ -68,6 +69,7 @@ public class SiteReportPrinter {
         appendCertificate(builder);
         appendSession(builder);
         appendRenegotiation(builder);
+        appendHttps(builder);
         for (PerformanceData data : report.getPerformanceList()) {
             LOGGER.debug("Type: " + data.getType() + "   Start: " + data.getStarttime() + "    Stop: " + data.getStoptime());
         }
@@ -290,6 +292,24 @@ public class SiteReportPrinter {
             //prettyAppend(builder, "DTLS 1.0", report.getSupportsDtls10());
             //prettyAppend(builder, "DTLS 1.2", report.getSupportsDtls10());
             //prettyAppend(builder, "DTLS 1.3", report.getSupportsDtls13());
+        }
+        return builder;
+    }
+
+    private StringBuilder appendHttps(StringBuilder builder) {
+        if (report.getSpeaksHttps() != null) {
+            prettyAppendHeading(builder, "HTTPS");
+            if (report.getSpeaksHttps()) {
+                prettyAppendGreenOnSuccess(builder, "HPKP", report.getSupportsHpkp());
+                prettyAppendGreenOnSuccess(builder, "HSTS", report.getSupportsHsts());
+                prettyAppendGreenOnSuccess(builder, "HSTS Preloading", report.getSupportsHstsPreloading());
+                prettyAppendHeading(builder, "HTTPS Response Header");
+                for (HttpsHeader header : report.getHeaderList()) {
+                    prettyAppend(builder, header.getHeaderName().getValue() + ":" + header.getHeaderValue().getValue());
+                }
+            } else {
+                prettyAppend(builder, "Not supported");
+            }
         }
         return builder;
     }
