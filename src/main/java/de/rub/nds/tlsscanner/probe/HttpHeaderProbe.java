@@ -125,5 +125,4 @@ public class HttpHeaderProbe extends TlsProbe {
     public ProbeResult getNotExecutedResult() {
         return new HttpHeaderResult(false, null);
     }
-
 }
