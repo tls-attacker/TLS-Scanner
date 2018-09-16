@@ -47,12 +47,13 @@ public class Tls13Probe extends TlsProbe {
         }
         do {
             selectedSuite = getSelectedCiphersuite(toTestList);
-            if (!toTestList.contains(selectedSuite)) {
-                LOGGER.warn("Server chose a CipherSuite we did not propose!");
-                //TODO write to sitereport
-                break;
-            }
+
             if (selectedSuite != null) {
+                if (!toTestList.contains(selectedSuite)) {
+                    LOGGER.warn("Server chose a CipherSuite we did not propose!");
+                    //TODO write to sitereport
+                    break;
+                }
                 supportedSuits.add(selectedSuite);
                 toTestList.remove(selectedSuite);
             }
