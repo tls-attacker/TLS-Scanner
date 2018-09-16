@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +37,7 @@ public class SiteReportPrinter {
 
     private static final Logger LOGGER = LogManager.getLogger(SiteReportPrinter.class.getName());
 
-    private SiteReport report;
+    private final SiteReport report;
     private final ScannerDetail detail;
 
     public SiteReportPrinter(SiteReport report, ScannerDetail detail) {
@@ -297,18 +298,41 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendHttps(StringBuilder builder) {
-        if (report.getSpeaksHttps() != null) {
-            prettyAppendHeading(builder, "HTTPS");
-            if (report.getSpeaksHttps()) {
-                prettyAppendGreenOnSuccess(builder, "HPKP", report.getSupportsHpkp());
+        if (report.getSpeaksHttps() == true) {
+            prettyAppendHeading(builder, "HSTS");
+            if (report.getSupportsHsts() == Boolean.TRUE) {
                 prettyAppendGreenOnSuccess(builder, "HSTS", report.getSupportsHsts());
                 prettyAppendGreenOnSuccess(builder, "HSTS Preloading", report.getSupportsHstsPreloading());
-                prettyAppendHeading(builder, "HTTPS Response Header");
-                for (HttpsHeader header : report.getHeaderList()) {
-                    prettyAppend(builder, header.getHeaderName().getValue() + ":" + header.getHeaderValue().getValue());
-                }
+                prettyAppend(builder, "max-age (seconds)", (long) report.getHstsMaxAge());
             } else {
                 prettyAppend(builder, "Not supported");
+            }
+            prettyAppendHeading(builder, "HPKP");
+            if (report.getSupportsHpkp() == Boolean.TRUE || report.getSupportsHpkpReportOnly() == Boolean.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "HPKP", report.getSupportsHpkp());
+                prettyAppendGreenOnSuccess(builder, "HPKP (report only)", report.getSupportsHpkpReportOnly());
+                prettyAppend(builder, "max-age (seconds)", (long) report.getHpkpMaxAge());
+                if (report.getNormalHpkpPins().size() > 0) {
+                    prettyAppend(builder, "");
+                    prettyAppendGreen(builder, "HPKP-Pins:");
+                    for (HpkpPin pin : report.getNormalHpkpPins()) {
+                        prettyAppend(builder, pin.toString());
+                    }
+                }
+                if (report.getReportOnlyHpkpPins().size() > 0) {
+                    prettyAppend(builder, "");
+                    prettyAppendGreen(builder, "Report Only HPKP-Pins:");
+                    for (HpkpPin pin : report.getReportOnlyHpkpPins()) {
+                        prettyAppend(builder, pin.toString());
+                    }
+                }
+
+            } else {
+                prettyAppend(builder, "Not supported");
+            }
+            prettyAppendHeading(builder, "HTTPS Response Header");
+            for (HttpsHeader header : report.getHeaderList()) {
+                prettyAppend(builder, header.getHeaderName().getValue() + ":" + header.getHeaderValue().getValue());
             }
         }
         return builder;

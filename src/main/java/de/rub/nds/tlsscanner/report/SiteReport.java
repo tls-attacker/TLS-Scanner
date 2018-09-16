@@ -25,6 +25,7 @@ import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
 import java.util.LinkedList;
 import java.util.List;
@@ -195,9 +196,13 @@ public class SiteReport {
     private Boolean speaksHttps;
     private List<HttpsHeader> headerList = null;
     private Boolean supportsHsts = null;
+    private Integer hstsMaxAge = null;
     private Boolean supportsHstsPreloading = null;
     private Boolean supportsHpkp = null;
-
+    private Boolean supportsHpkpReportOnly = null;
+    private Integer hpkpMaxAge = null;
+    private List<HpkpPin> normalHpkpPins;
+    private List<HpkpPin> reportOnlyHpkpPins;
     //NoColor Flag
     private boolean noColor = false;
 
@@ -1279,5 +1284,45 @@ public class SiteReport {
 
     public void setSpeaksHttps(Boolean speaksHttps) {
         this.speaksHttps = speaksHttps;
+    }
+
+    public Integer getHstsMaxAge() {
+        return hstsMaxAge;
+    }
+
+    public void setHstsMaxAge(Integer hstsMaxAge) {
+        this.hstsMaxAge = hstsMaxAge;
+    }
+
+    public Integer getHpkpMaxAge() {
+        return hpkpMaxAge;
+    }
+
+    public void setHpkpMaxAge(Integer hpkpMaxAge) {
+        this.hpkpMaxAge = hpkpMaxAge;
+    }
+
+    public List<HpkpPin> getNormalHpkpPins() {
+        return normalHpkpPins;
+    }
+
+    public void setNormalHpkpPins(List<HpkpPin> normalHpkpPins) {
+        this.normalHpkpPins = normalHpkpPins;
+    }
+
+    public List<HpkpPin> getReportOnlyHpkpPins() {
+        return reportOnlyHpkpPins;
+    }
+
+    public void setReportOnlyHpkpPins(List<HpkpPin> reportOnlyHpkpPins) {
+        this.reportOnlyHpkpPins = reportOnlyHpkpPins;
+    }
+
+    public Boolean getSupportsHpkpReportOnly() {
+        return supportsHpkpReportOnly;
+    }
+
+    public void setSupportsHpkpReportOnly(Boolean supportsHpkpReportOnly) {
+        this.supportsHpkpReportOnly = supportsHpkpReportOnly;
     }
 }
