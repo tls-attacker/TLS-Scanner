@@ -214,6 +214,12 @@ public class SiteReportPrinter {
                     prettyPrintCipherSuite(builder, suite);
                 }
             }
+            if (report.getSupportedTls13CipherSuites().size() > 0) {
+                prettyAppendHeading(builder, "Supported in TLS13");
+                for (CipherSuite suite : report.getSupportedTls13CipherSuites()) {
+                    prettyPrintCipherSuite(builder, suite);
+                }
+            }
             prettyAppendHeading(builder, "Symmetric Supported");
             prettyAppendRedOnSuccess(builder, "Null", report.getSupportsNullCiphers());
             prettyAppendRedOnSuccess(builder, "Export", report.getSupportsExportCiphers());
@@ -360,6 +366,7 @@ public class SiteReportPrinter {
                 builder.append(keyParameter.toString()).append("\n");
             }
         }
+        appendTls13Groups(builder);
         appendCurves(builder);
         appendSignatureAndHashAlgorithms(builder);
         return builder;
@@ -572,5 +579,19 @@ public class SiteReportPrinter {
             builder.append(" ");
         }
         return builder.toString();
+    }
+
+    private StringBuilder appendTls13Groups(StringBuilder builder) {
+        if (report.getSupportedTls13Groups() != null) {
+            prettyAppendHeading(builder, "TLS 1.3 Named Groups");
+            if (report.getSupportedNamedGroups().size() > 0) {
+                for (NamedGroup group : report.getSupportedNamedGroups()) {
+                    builder.append(group.name()).append("\n");
+                }
+            } else {
+                builder.append("none\n");
+            }
+        }
+        return builder;
     }
 }
