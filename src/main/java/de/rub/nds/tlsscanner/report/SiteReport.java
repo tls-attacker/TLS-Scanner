@@ -72,7 +72,6 @@ public class SiteReport {
     private Boolean sweet32Vulnerable = null;
     private DrownVulnerabilityType drownVulnerable = null;
     private Boolean logjamVulnerable = null;
-    private Boolean lucky13Vulnerable = null;
     private Boolean heartbleedVulnerable = null;
     private EarlyCcsVulnerabilityType earlyCcsVulnerable = null;
     private Boolean freakVulnerable = null;
@@ -1155,14 +1154,6 @@ public class SiteReport {
 
     public void setGroupsIntolerance(Boolean groupsIntolerance) {
         this.groupsIntolerance = groupsIntolerance;
-    }
-
-    public Boolean getLucky13Vulnerable() {
-        return lucky13Vulnerable;
-    }
-
-    public void setLucky13Vulnerable(Boolean lucky13Vulnerable) {
-        this.lucky13Vulnerable = lucky13Vulnerable;
     }
 
     public Boolean getGcmReuse() {

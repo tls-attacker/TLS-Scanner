@@ -12,18 +12,18 @@ import de.rub.nds.tlsscanner.report.SiteReport;
  *
  * @author Robert Merget <robert.merget@rub.de>
  */
-public class Sweet32AfterProbe extends AfterProbe {
+public class LogjamAfterprobe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
         if (report.getCipherSuites() != null) {
             for (CipherSuite suite : report.getCipherSuites()) {
-                if (suite.name().contains("3DES") || suite.name().contains("IDEA")) {
-                    report.setSweet32Vulnerable(Boolean.TRUE);
+                if (suite.name().contains("DH_anon_EXPORT") || suite.name().contains("DH_DSS_EXPORT") || suite.name().contains("DH_RSA_EXPORT") || suite.name().contains("DHE_DSS_EXPORT") || suite.name().contains("DHE_RSA_EXPORT")) {
+                    report.setLogjamVulnerable(Boolean.TRUE);
                     return;
                 }
             }
-            report.setSweet32Vulnerable(Boolean.FALSE);
+            report.setLogjamVulnerable(Boolean.FALSE);
         }
     }
 }

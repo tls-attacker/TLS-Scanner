@@ -79,7 +79,7 @@ public class HttpHeaderProbe extends TlsProbe {
         httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
         httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept",
                 "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept-Encoding", "identity"));
+        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
         httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
         httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
         httpsRequestMessage.getHeader().add(new GenericHttpsHeader(

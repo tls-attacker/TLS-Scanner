@@ -11,7 +11,6 @@ import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.EqualityErrorTranslator;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -169,7 +168,6 @@ public class SiteReportPrinter {
         prettyAppendRedGreen(builder, "Logjam", report.getLogjamVulnerable());
         prettyAppendRedGreen(builder, "Sweet 32", report.getSweet32Vulnerable());
         prettyAppendDrown(builder, "DROWN", report.getDrownVulnerable());
-        prettyAppendRedGreen(builder, "Lucky13", report.getLucky13Vulnerable());
         prettyAppendRedGreen(builder, "Heartbleed", report.getHeartbleedVulnerable());
         prettyAppendEarlyCcs(builder, "EarlyCcs", report.getEarlyCcsVulnerable());
         prettyAppendHeading(builder, "PaddingOracle Details");

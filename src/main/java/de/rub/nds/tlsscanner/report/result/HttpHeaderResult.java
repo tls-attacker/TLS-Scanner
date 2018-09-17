@@ -21,7 +21,9 @@ public class HttpHeaderResult extends ProbeResult {
     private Boolean supportsHstsPreloading = false;
     private Boolean hstsNotParseable = null;
     private Boolean hpkpNotParseable = null;
-    private Boolean supportsHpkp = null;
+    private Boolean supportsHpkp = false;
+    private Boolean supportsHpkpReportOnly = false;
+    private Boolean vulnerableBreach = false;
 
     public HttpHeaderResult(boolean speaksHttps, List<HttpsHeader> headerList) {
         super(ProbeType.HTTP_HEADER);
@@ -84,16 +86,14 @@ public class HttpHeaderResult extends ProbeResult {
                         }
                     }
                     if (value.trim().startsWith("pin-")) {
-                        System.out.println(value);
                         String[] pinString = value.split("=");
-                        System.out.println(pinString[1]);
                         HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(pinString[1].replace("\"", "")));
                         pinList.add(pin);
                     }
                 }
             }
             if (header.getHeaderName().getValue().equals("Public-Key-Pins-Report-Only")) {
-                supportsHpkp = true;
+                supportsHpkpReportOnly = true;
                 String[] values = header.getHeaderValue().getValue().split(";");
                 for (String value : values) {
                     if (value.trim().startsWith("includeSubDomains")) {
@@ -114,9 +114,17 @@ public class HttpHeaderResult extends ProbeResult {
                     }
                     if (value.trim().startsWith("pin-")) {
                         String[] pinString = value.split("=");
-                        System.out.println(value);
                         HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(pinString[1].replace("\"", "")));
                         reportOnlyPinList.add(pin);
+                    }
+                }
+            }
+            if (header.getHeaderName().getValue().equals("Content-Encoding")) {
+                String compressionHeaderValue = header.getHeaderValue().getValue();
+                String[] compressionAlgorithms = {"compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma", "xz"};
+                for (String compression : compressionAlgorithms) {
+                    if (compressionHeaderValue.contains(compression)) {
+                        vulnerableBreach = true;
                     }
                 }
             }
@@ -125,10 +133,11 @@ public class HttpHeaderResult extends ProbeResult {
         report.setSupportsHsts(supportsHsts);
         report.setSupportsHstsPreloading(supportsHstsPreloading);
         report.setSupportsHpkp(supportsHpkp);
+        report.setSupportsHpkpReportOnly(supportsHpkpReportOnly);
         report.setHpkpMaxAge(hpkpMaxAge);
         report.setNormalHpkpPins(pinList);
         report.setReportOnlyHpkpPins(reportOnlyPinList);
-
+        report.setBreachVulnerable(vulnerableBreach);
     }
 
 }
