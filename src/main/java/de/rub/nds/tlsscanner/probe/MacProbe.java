@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -31,6 +32,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.MacCheckPatternType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.probe.mac.StateIndexPair;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.MacResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -153,18 +155,19 @@ public class MacProbe extends TlsProbe {
         //TODO Protocolversion not from report
         int macSize = AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite).getSize();
         boolean[] byteCheckArray = new boolean[macSize];
+        List<State> stateList = new LinkedList<>();
+        Config config = scannerConfig.createConfig();
+        config.setAddRenegotiationInfoExtension(true);
+        config.setQuickReceive(true);
+        config.setDefaultClientSupportedCiphersuites(suite);
+        config.setDefaultSelectedCipherSuite(suite);
+        config.setAddServerNameIndicationExtension(true);
+        config.setWorkflowExecutorShouldClose(false);
+        config.setDefaultApplicationMessageData("GET / HTTP/1.0\n"
+                + "Host: " + scannerConfig.getClientDelegate().getHost() + "\n"
+                + "\n\n");
+        List<StateIndexPair> stateIndexList = new LinkedList<>();
         for (int i = 0; i < macSize; i++) {
-
-            Config config = scannerConfig.createConfig();
-            config.setAddRenegotiationInfoExtension(true);
-            config.setQuickReceive(true);
-            config.setDefaultClientSupportedCiphersuites(suite);
-            config.setDefaultSelectedCipherSuite(suite);
-            config.setAddServerNameIndicationExtension(true);
-            config.setWorkflowExecutorShouldClose(false);
-            config.setDefaultApplicationMessageData("GET / HTTP/1.0\n"
-                    + "Host: " + scannerConfig.getClientDelegate().getHost() + "\n"
-                    + "\n\n");
 
             WorkflowTrace trace;
             if (check == Check.APPDATA) {
@@ -173,25 +176,30 @@ public class MacProbe extends TlsProbe {
                 trace = getFinishedTrace(config, i);
             }
             State state = new State(config, trace);
-            WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
-            executor.executeWorkflow();
+            stateList.add(state);
+            stateIndexList.add(new StateIndexPair(i, state));
+
+        }
+        ParallelExecutor executor = new ParallelExecutor(macSize, 3);
+        executor.bulkExecute(stateList);
+        for (StateIndexPair stateIndexPair : stateIndexList) {
             if (check == Check.APPDATA) {
-                ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
+                ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
                 EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint, true);
                 if (equalityError != EqualityError.NONE) {
-                    byteCheckArray[i] = true;
+                    byteCheckArray[stateIndexPair.getIndex()] = true;
                 } else {
-                    byteCheckArray[i] = false;
+                    byteCheckArray[stateIndexPair.getIndex()] = false;
                 }
             } else {
-                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace)) {
-                    byteCheckArray[i] = false;
+                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, stateIndexPair.getState().getWorkflowTrace())) {
+                    byteCheckArray[stateIndexPair.getIndex()] = false;
                 } else {
-                    byteCheckArray[i] = true;
+                    byteCheckArray[stateIndexPair.getIndex()] = true;
                 }
             }
             try {
-                state.getTlsContext().getTransportHandler().closeConnection();
+                stateIndexPair.getState().getTlsContext().getTransportHandler().closeConnection();
             } catch (IOException ex) {
                 LOGGER.warn("Could not close TransportHandler");
             }

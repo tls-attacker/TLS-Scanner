@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -86,7 +87,7 @@ public class PaddingOracleProbe extends TlsProbe {
                     versionDelegate.setProtocolVersion(version);
                     paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
                     paddingOracleConfig.setVectorGeneratorType(vectorType);
-                    PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig());
+                    PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig(), new ParallelExecutor(20, 3));
                     try {
                         lastResult = attacker.isVulnerable();
                     } catch (PaddingOracleUnstableException E) {

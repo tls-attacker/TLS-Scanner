@@ -584,8 +584,8 @@ public class SiteReportPrinter {
     private StringBuilder appendTls13Groups(StringBuilder builder) {
         if (report.getSupportedTls13Groups() != null) {
             prettyAppendHeading(builder, "TLS 1.3 Named Groups");
-            if (report.getSupportedNamedGroups().size() > 0) {
-                for (NamedGroup group : report.getSupportedNamedGroups()) {
+            if (report.getSupportedTls13Groups().size() > 0) {
+                for (NamedGroup group : report.getSupportedTls13Groups()) {
                     builder.append(group.name()).append("\n");
                 }
             } else {
