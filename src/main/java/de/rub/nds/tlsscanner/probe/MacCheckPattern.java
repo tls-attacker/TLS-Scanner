@@ -1,6 +1,7 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsscanner.constants.MacCheckPatternType;
+import de.rub.nds.tlsscanner.probe.mac.ByteCheckStatus;
 
 public class MacCheckPattern {
 
@@ -8,9 +9,9 @@ public class MacCheckPattern {
 
     private boolean foundFinishedAndAlert;
 
-    private boolean[] bytePattern;
+    private ByteCheckStatus[] bytePattern;
 
-    public MacCheckPattern(MacCheckPatternType type, boolean foundFinishedAndAlert, boolean[] bytePattern) {
+    public MacCheckPattern(MacCheckPatternType type, boolean foundFinishedAndAlert, ByteCheckStatus[] bytePattern) {
         this.type = type;
         this.foundFinishedAndAlert = foundFinishedAndAlert;
         this.bytePattern = bytePattern;
@@ -24,11 +25,11 @@ public class MacCheckPattern {
         this.type = type;
     }
 
-    public boolean[] getBytePattern() {
+    public ByteCheckStatus[] getBytePattern() {
         return bytePattern;
     }
 
-    public void setBytePattern(boolean[] bytePattern) {
+    public void setBytePattern(ByteCheckStatus[] bytePattern) {
         this.bytePattern = bytePattern;
     }
 
@@ -46,15 +47,15 @@ public class MacCheckPattern {
             case CORRECT:
                 return "correct";
             case NONE:
-                return "!!NONE!!" + (foundFinishedAndAlert ? " - found finished and Alert" : "");
+                return "not checked" + (foundFinishedAndAlert ? " - found finished and Alert" : "");
             case PARTIAL:
                 StringBuilder builder = new StringBuilder("Partial");
                 if (foundFinishedAndAlert) {
                     builder.append(" - found finished and alert");
                 }
-                for (boolean b : bytePattern) {
+                for (ByteCheckStatus b : bytePattern) {
                     builder.append(" - ");
-                    builder.append(b ? "checked" : "not checked");
+                    builder.append(b == ByteCheckStatus.CHECKED ? "checked" : "not checked");
                 }
                 return builder.toString();
             case UNKNOWN:

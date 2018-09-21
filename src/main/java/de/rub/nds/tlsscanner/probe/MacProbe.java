@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.record.Record;
@@ -32,6 +33,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.MacCheckPatternType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.probe.mac.ByteCheckStatus;
 import de.rub.nds.tlsscanner.probe.mac.StateIndexPair;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.MacResult;
@@ -47,8 +49,6 @@ import java.util.List;
 public class MacProbe extends TlsProbe {
 
     private List<CipherSuite> suiteList;
-
-    private Boolean didReceiveFinishedAndAlert = null;
 
     private ResponseFingerprint correctFingerprint;
 
@@ -121,18 +121,21 @@ public class MacProbe extends TlsProbe {
 
     private MacCheckPattern getMacCheckPattern(Check check) {
         //We do not check all ciphersuite select one and test that one
-        boolean[] macByteCheckMap = getMacByteCheckMap(check);
+        ByteCheckStatus[] macByteCheckMap = getMacByteCheckMap(check);
         boolean allTrue = true;
         boolean allFalse = true;
+        boolean checkedWithFinished = false;
         for (int i = 0; i < macByteCheckMap.length; i++) {
-            if (!macByteCheckMap[i]) {
+            if (macByteCheckMap[i] == ByteCheckStatus.NOT_CHECKED) {
                 allTrue = false;
             }
-        }
-        for (int i = 0; i < macByteCheckMap.length; i++) {
-            if (macByteCheckMap[i]) {
+            if (macByteCheckMap[i] == ByteCheckStatus.CHECKED) {
                 allFalse = false;
             }
+            if (macByteCheckMap[i] == ByteCheckStatus.CHECKED_WITH_FIN) {
+                checkedWithFinished = true;
+            }
+            
         }
         MacCheckPatternType type;
         if (allFalse) {
@@ -142,7 +145,7 @@ public class MacProbe extends TlsProbe {
         } else {
             type = MacCheckPatternType.PARTIAL;
         }
-        return new MacCheckPattern(type, false, macByteCheckMap);
+        return new MacCheckPattern(type, checkedWithFinished, macByteCheckMap);
 
     }
 
@@ -150,11 +153,11 @@ public class MacProbe extends TlsProbe {
         FINISHED, APPDATA
     }
 
-    private boolean[] getMacByteCheckMap(Check check) {
+    private ByteCheckStatus[] getMacByteCheckMap(Check check) {
         CipherSuite suite = suiteList.get(0);
         //TODO Protocolversion not from report
         int macSize = AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite).getSize();
-        boolean[] byteCheckArray = new boolean[macSize];
+        ByteCheckStatus[] byteCheckArray = new ByteCheckStatus[macSize];
         List<State> stateList = new LinkedList<>();
         Config config = scannerConfig.createConfig();
         config.setAddRenegotiationInfoExtension(true);
@@ -168,7 +171,6 @@ public class MacProbe extends TlsProbe {
                 + "\n\n");
         List<StateIndexPair> stateIndexList = new LinkedList<>();
         for (int i = 0; i < macSize; i++) {
-
             WorkflowTrace trace;
             if (check == Check.APPDATA) {
                 trace = getAppDataTrace(config, i);
@@ -183,19 +185,22 @@ public class MacProbe extends TlsProbe {
         ParallelExecutor executor = new ParallelExecutor(macSize, 3);
         executor.bulkExecute(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
+            WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
             if (check == Check.APPDATA) {
                 ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
                 EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint, true);
                 if (equalityError != EqualityError.NONE) {
-                    byteCheckArray[stateIndexPair.getIndex()] = true;
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
                 } else {
-                    byteCheckArray[stateIndexPair.getIndex()] = false;
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
                 }
             } else {
-                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, stateIndexPair.getState().getWorkflowTrace())) {
-                    byteCheckArray[stateIndexPair.getIndex()] = false;
+                if (receviedOnlyFinAndCcs(trace)) {
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
+                } else if (receviedFinAndCcs(trace)) {
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
                 } else {
-                    byteCheckArray[stateIndexPair.getIndex()] = true;
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
                 }
             }
             try {
@@ -207,15 +212,21 @@ public class MacProbe extends TlsProbe {
         return byteCheckArray;
     }
 
+    public boolean receviedOnlyFinAndCcs(WorkflowTrace trace) {
+        return trace.getLastReceivingAction().getReceivedMessages().size() == 2 && receviedFinAndCcs(trace);
+    }
+
+    public boolean receviedFinAndCcs(WorkflowTrace trace) {
+        return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace) && WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.CHANGE_CIPHER_SPEC, trace);
+    }
+
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
         allSuiteList.addAll(report.getCipherSuites());
-        if (allSuiteList != null) {
-            for (CipherSuite suite : allSuiteList) {
-                if (suite.isUsingMac()) {
-                    return true;
-                }
+        for (CipherSuite suite : allSuiteList) {
+            if (suite.isUsingMac()) {
+                return true;
             }
         }
         return false;
@@ -226,11 +237,9 @@ public class MacProbe extends TlsProbe {
         List<CipherSuite> allSuiteList = new LinkedList<>();
         allSuiteList.addAll(report.getCipherSuites());
         suiteList = new LinkedList<>();
-        if (allSuiteList != null) {
-            for (CipherSuite suite : allSuiteList) {
-                if (suite.isUsingMac()) {
-                    suiteList.add(suite);
-                }
+        for (CipherSuite suite : allSuiteList) {
+            if (suite.isUsingMac()) {
+                suiteList.add(suite);
             }
         }
     }
