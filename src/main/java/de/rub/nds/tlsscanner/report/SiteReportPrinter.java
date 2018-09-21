@@ -147,10 +147,23 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendIntolerances(StringBuilder builder) {
-        prettyAppendHeading(builder, "Intolerances");
-        prettyAppendRedOnFailure(builder, "Version", report.getVersionIntolerance());
-        prettyAppendRedOnFailure(builder, "Ciphersuite", report.getCipherSuiteIntolerance());
-        prettyAppendRedOnFailure(builder, "Extension", report.getExtensionIntolerance());
+        prettyAppendHeading(builder, "Common Bugs");
+        prettyAppendRedGreen(builder, "Version Intolerant", report.getVersionIntolerance());
+        prettyAppendRedGreen(builder, "Ciphersuite Intolerant", report.getCipherSuiteIntolerance());
+        prettyAppendRedGreen(builder, "Extension Intolerant", report.getExtensionIntolerance());
+        prettyAppendRedGreen(builder, "CS Length Intolerant (>512 Byte)", report.getCipherSuiteLengthIntolerance512());
+        prettyAppendRedGreen(builder, "Compression Intolerant", report.getCompressionIntolerance());
+        prettyAppendRedGreen(builder, "ALPN Intolerant", report.getAlpnIntolerance());
+        prettyAppendRedGreen(builder, "CH Length Intolerant", report.getClientHelloLengthIntolerance());
+        prettyAppendRedGreen(builder, "NamedGroup Intolerant", report.getNamedGroupIntolerant());
+        prettyAppendRedGreen(builder, "Empty last Extension Intolerant", report.getEmptyLastExtensionIntolerance());
+        prettyAppendRedGreen(builder, "SigHashAlgo Intolerant", report.getNamedSignatureAndHashAlgorithmIntolerance());
+        prettyAppendRedGreen(builder, "Big ClientHello Intolerant", report.getMaxLengthClientHelloIntolerant());
+        prettyAppendRedGreen(builder, "2nd Ciphersuite Byte Bug", report.getOnlySecondCiphersuiteByteEvaluated());
+        prettyAppendRedGreen(builder, "Ignores offered Ciphersuites", report.getIgnoresCipherSuiteOffering());
+        prettyAppendRedGreen(builder, "Reflects offered Ciphersuites", report.getReflectsCipherSuiteOffering());
+        prettyAppendRedGreen(builder, "Ignores offered NamedGroups", report.getIgnoresOfferedNamedGroups());
+        prettyAppendRedGreen(builder, "Ignores offered SigHashAlgos", report.getIgnoresOfferedSignatureAndHashAlgorithms());
         return builder;
     }
 

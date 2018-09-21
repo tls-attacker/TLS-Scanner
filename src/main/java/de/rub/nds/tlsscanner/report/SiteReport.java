@@ -49,15 +49,24 @@ public class SiteReport {
     //Quirks
     private Boolean requiresSni = null;
 
-    private Boolean versionIntolerance = null;
-    private Boolean extensionIntolerance = null;
-    private Boolean cipherSuiteIntolerance = null;
-    private Boolean groupsIntolerance = null;
-    private Boolean clientHelloSizeIntolerance = null;
-    private Boolean compressionIntolerance = null;
-    private Boolean pointFormatsIntolerance = null;
-    private Boolean signatureAndHashAlgorithmIntolerance = null;
-
+    //common bugs
+    private Boolean extensionIntolerance; //does it handle unknown extenstions correctly?
+    private Boolean versionIntolerance; //does it handle unknown versions correctly?
+    private Boolean cipherSuiteIntolerance; //does it handle unknown ciphersuites correctly?
+    private Boolean cipherSuiteLengthIntolerance512; //does it handle long ciphersuite length values correctly?
+    private Boolean compressionIntolerance; //does it handle unknown compression algorithms correctly
+    private Boolean alpnIntolerance; //does it handle unknown alpn strings correctly?
+    private Boolean clientHelloLengthIntolerance; // 256 - 511 <-- ch should be bigger than this
+    private Boolean namedGroupIntolerant; // does it handle unknown groups correctly
+    private Boolean emptyLastExtensionIntolerance; //does it break on empty last extension
+    private Boolean namedSignatureAndHashAlgorithmIntolerance; // does it handle signature and hash algorithms correctly
+    private Boolean maxLengthClientHelloIntolerant; // server does not like really big client hello messages
+    private Boolean onlySecondCiphersuiteByteEvaluated; //is only the second byte of the ciphersuite evaluated
+    private Boolean ignoresCipherSuiteOffering; //does it ignore the offered ciphersuites
+    private Boolean reflectsCipherSuiteOffering; //does it ignore the offered ciphersuites
+    private Boolean ignoresOfferedNamedGroups; //does it ignore the offered named groups
+    private Boolean ignoresOfferedSignatureAndHashAlgorithms; //does it ignore the sig hash algorithms
+    
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
     private Boolean paddingOracleVulnerable = null;
@@ -232,20 +241,100 @@ public class SiteReport {
         this.compressionIntolerance = compressionIntolerance;
     }
 
-    public Boolean getPointFormatsIntolerance() {
-        return pointFormatsIntolerance;
+    public Boolean getCipherSuiteLengthIntolerance512() {
+        return cipherSuiteLengthIntolerance512;
     }
 
-    public void setPointFormatsIntolerance(Boolean pointFormatsIntolerance) {
-        this.pointFormatsIntolerance = pointFormatsIntolerance;
+    public void setCipherSuiteLengthIntolerance512(Boolean cipherSuiteLengthIntolerance512) {
+        this.cipherSuiteLengthIntolerance512 = cipherSuiteLengthIntolerance512;
     }
 
-    public Boolean getSignatureAndHashAlgorithmIntolerance() {
-        return signatureAndHashAlgorithmIntolerance;
+    public Boolean getAlpnIntolerance() {
+        return alpnIntolerance;
     }
 
-    public void setSignatureAndHashAlgorithmIntolerance(Boolean signatureAndHashAlgorithmIntolerance) {
-        this.signatureAndHashAlgorithmIntolerance = signatureAndHashAlgorithmIntolerance;
+    public void setAlpnIntolerance(Boolean alpnIntolerance) {
+        this.alpnIntolerance = alpnIntolerance;
+    }
+
+    public Boolean getClientHelloLengthIntolerance() {
+        return clientHelloLengthIntolerance;
+    }
+
+    public void setClientHelloLengthIntolerance(Boolean clientHelloLengthIntolerance) {
+        this.clientHelloLengthIntolerance = clientHelloLengthIntolerance;
+    }
+
+    public Boolean getEmptyLastExtensionIntolerance() {
+        return emptyLastExtensionIntolerance;
+    }
+
+    public void setEmptyLastExtensionIntolerance(Boolean emptyLastExtensionIntolerance) {
+        this.emptyLastExtensionIntolerance = emptyLastExtensionIntolerance;
+    }
+
+    public Boolean getOnlySecondCiphersuiteByteEvaluated() {
+        return onlySecondCiphersuiteByteEvaluated;
+    }
+
+    public void setOnlySecondCiphersuiteByteEvaluated(Boolean onlySecondCiphersuiteByteEvaluated) {
+        this.onlySecondCiphersuiteByteEvaluated = onlySecondCiphersuiteByteEvaluated;
+    }
+
+    public Boolean getNamedGroupIntolerant() {
+        return namedGroupIntolerant;
+    }
+
+    public void setNamedGroupIntolerant(Boolean namedGroupIntolerant) {
+        this.namedGroupIntolerant = namedGroupIntolerant;
+    }
+
+    public Boolean getNamedSignatureAndHashAlgorithmIntolerance() {
+        return namedSignatureAndHashAlgorithmIntolerance;
+    }
+
+    public void setNamedSignatureAndHashAlgorithmIntolerance(Boolean namedSignatureAndHashAlgorithmIntolerance) {
+        this.namedSignatureAndHashAlgorithmIntolerance = namedSignatureAndHashAlgorithmIntolerance;
+    }
+
+    public Boolean getIgnoresCipherSuiteOffering() {
+        return ignoresCipherSuiteOffering;
+    }
+
+    public void setIgnoresCipherSuiteOffering(Boolean ignoresCipherSuiteOffering) {
+        this.ignoresCipherSuiteOffering = ignoresCipherSuiteOffering;
+    }
+
+    public Boolean getReflectsCipherSuiteOffering() {
+        return reflectsCipherSuiteOffering;
+    }
+
+    public void setReflectsCipherSuiteOffering(Boolean reflectsCipherSuiteOffering) {
+        this.reflectsCipherSuiteOffering = reflectsCipherSuiteOffering;
+    }
+
+    public Boolean getIgnoresOfferedNamedGroups() {
+        return ignoresOfferedNamedGroups;
+    }
+
+    public void setIgnoresOfferedNamedGroups(Boolean ignoresOfferedNamedGroups) {
+        this.ignoresOfferedNamedGroups = ignoresOfferedNamedGroups;
+    }
+
+    public Boolean getIgnoresOfferedSignatureAndHashAlgorithms() {
+        return ignoresOfferedSignatureAndHashAlgorithms;
+    }
+
+    public void setIgnoresOfferedSignatureAndHashAlgorithms(Boolean ignoresOfferedSignatureAndHashAlgorithms) {
+        this.ignoresOfferedSignatureAndHashAlgorithms = ignoresOfferedSignatureAndHashAlgorithms;
+    }
+
+    public Boolean getMaxLengthClientHelloIntolerant() {
+        return maxLengthClientHelloIntolerant;
+    }
+
+    public void setMaxLengthClientHelloIntolerant(Boolean maxLengthClientHelloIntolerant) {
+        this.maxLengthClientHelloIntolerant = maxLengthClientHelloIntolerant;
     }
 
     public Boolean getFreakVulnerable() {
@@ -1148,14 +1237,6 @@ public class SiteReport {
         this.cipherSuiteIntolerance = cipherSuiteIntolerance;
     }
 
-    public Boolean getGroupsIntolerance() {
-        return groupsIntolerance;
-    }
-
-    public void setGroupsIntolerance(Boolean groupsIntolerance) {
-        this.groupsIntolerance = groupsIntolerance;
-    }
-
     public Boolean getGcmReuse() {
         return gcmReuse;
     }
@@ -1178,14 +1259,6 @@ public class SiteReport {
 
     public void setVersionSuitePairs(List<VersionSuiteListPair> versionSuitePairs) {
         this.versionSuitePairs = versionSuitePairs;
-    }
-
-    public Boolean getClientHelloSizeIntolerance() {
-        return clientHelloSizeIntolerance;
-    }
-
-    public void setClientHelloSizeIntolerance(Boolean clientHelloSizeIntolerance) {
-        this.clientHelloSizeIntolerance = clientHelloSizeIntolerance;
     }
 
     public Boolean getSupportsStaticEcdh() {

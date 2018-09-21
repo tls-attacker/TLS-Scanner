@@ -32,7 +32,7 @@ public enum ProbeType {
     EXTENSIONS,
     TOKENBINDING,
     COMPRESSIONS,
-    INTOLERANCES,
+    COMMON_BUGS,
     RESUMPTION,
     RENEGOTIATION,
     SNI,
