@@ -390,6 +390,5 @@ public class CommonBugProbe extends TlsProbe {
         State state = new State(config, trace);
         parallelExecutor.bulkExecute(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-
     }
 }
