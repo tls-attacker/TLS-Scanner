@@ -108,7 +108,7 @@ public class HttpHeaderProbe extends TlsProbe {
             }
         }
         boolean speaksHttps = responseMessage != null;
-        List<HttpsHeader> headerList = null;
+        List<HttpsHeader> headerList;
         if (speaksHttps) {
             headerList = responseMessage.getHeader();
         } else {
