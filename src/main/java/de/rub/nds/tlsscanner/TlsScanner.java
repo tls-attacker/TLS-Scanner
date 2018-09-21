@@ -12,6 +12,7 @@ import de.rub.nds.tlsattacker.attacks.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.BleichenbacherProbe;
@@ -55,6 +56,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 public class TlsScanner {
 
     private final ScanJobExecutor executor;
+    private final ParallelExecutor parallelExecutor;
     private final ScannerConfig config;
 
     public TlsScanner(String websiteHost, boolean attackingScans) {
@@ -63,16 +65,25 @@ public class TlsScanner {
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegateList().get(1);
         clientDelegate.setHost(websiteHost);
         Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.WARN);
+        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3);
     }
 
     public TlsScanner(ScannerConfig config) {
         this.executor = ScanJobExecutorFactory.getScanJobExecutor(config);
         this.config = config;
+        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3);
     }
 
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
         this.config = config;
         this.executor = executor;
+        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3);
+    }
+
+    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor) {
+        this.config = config;
+        this.executor = executor;
+        this.parallelExecutor = parallelExecutor;
     }
 
     public SiteReport scan() {
@@ -80,30 +91,30 @@ public class TlsScanner {
         List<TlsProbe> phaseTwoTestList = new LinkedList<>();
 
         if (prechecks()) {
-            phaseOneTestList.add(new SniProbe(config));
-            phaseOneTestList.add(new CompressionsProbe(config));
-            phaseOneTestList.add(new NamedCurvesProbe(config));
-            phaseOneTestList.add(new CertificateProbe(config));
-            phaseOneTestList.add(new ProtocolVersionProbe(config));
-            phaseOneTestList.add(new CiphersuiteProbe(config));
-            phaseOneTestList.add(new CiphersuiteOrderProbe(config));
-            phaseOneTestList.add(new ExtensionProbe(config));
-            phaseOneTestList.add(new Tls13Probe(config));
-            phaseOneTestList.add(new TokenbindingProbe(config));
-            phaseOneTestList.add(new HttpHeaderProbe(config));
+            phaseOneTestList.add(new SniProbe(config, parallelExecutor));
+            phaseOneTestList.add(new CompressionsProbe(config, parallelExecutor));
+            phaseOneTestList.add(new NamedCurvesProbe(config, parallelExecutor));
+            phaseOneTestList.add(new CertificateProbe(config, parallelExecutor));
+            phaseOneTestList.add(new ProtocolVersionProbe(config, parallelExecutor));
+            phaseOneTestList.add(new CiphersuiteProbe(config, parallelExecutor));
+            phaseOneTestList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
+            phaseOneTestList.add(new ExtensionProbe(config, parallelExecutor));
+            phaseOneTestList.add(new Tls13Probe(config, parallelExecutor));
+            phaseOneTestList.add(new TokenbindingProbe(config, parallelExecutor));
+            phaseOneTestList.add(new HttpHeaderProbe(config, parallelExecutor));
 
-            phaseTwoTestList.add(new ResumptionProbe(config));
-            phaseTwoTestList.add(new RenegotiationProbe(config));
-            phaseTwoTestList.add(new HeartbleedProbe(config));
-            phaseTwoTestList.add(new PaddingOracleProbe(config));
-            phaseTwoTestList.add(new BleichenbacherProbe(config));
-            phaseTwoTestList.add(new PoodleProbe(config));
-            phaseTwoTestList.add(new TlsPoodleProbe(config));
-            phaseTwoTestList.add(new Cve20162107Probe(config));
-            phaseTwoTestList.add(new InvalidCurveProbe(config));
-            phaseTwoTestList.add(new DrownProbe(config));
-            phaseTwoTestList.add(new EarlyCcsProbe(config));
-            phaseTwoTestList.add(new MacProbe(config));
+            phaseTwoTestList.add(new ResumptionProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new RenegotiationProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new HeartbleedProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new PaddingOracleProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new BleichenbacherProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new PoodleProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new TlsPoodleProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new Cve20162107Probe(config, parallelExecutor));
+            phaseTwoTestList.add(new InvalidCurveProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new DrownProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new EarlyCcsProbe(config, parallelExecutor));
+            phaseTwoTestList.add(new MacProbe(config, parallelExecutor));
 
             List<AfterProbe> afterList = new LinkedList<>();
             afterList.add(new Sweet32AfterProbe());
@@ -115,6 +126,7 @@ public class TlsScanner {
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
         SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
         report.setServerIsAlive(false);
+        
         return report;
     }
 

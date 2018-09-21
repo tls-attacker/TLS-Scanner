@@ -9,6 +9,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
@@ -32,8 +33,8 @@ import java.util.Set;
  */
 public class TokenbindingProbe extends TlsProbe {
 
-    public TokenbindingProbe(ScannerConfig config) {
-        super(ProbeType.TOKENBINDING, config, 0);
+    public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.TOKENBINDING, config, 0);
     }
 
     @Override

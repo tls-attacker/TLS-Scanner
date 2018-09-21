@@ -22,6 +22,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.record.layer.RecordLayerType;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -46,8 +47,8 @@ public class ProtocolVersionProbe extends TlsProbe {
 
     private List<ProtocolVersion> toTestList;
 
-    public ProtocolVersionProbe(ScannerConfig config) {
-        super(ProbeType.PROTOCOL_VERSION, config, 0);
+    public ProtocolVersionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.PROTOCOL_VERSION, config, 0);
         toTestList = new LinkedList<>();
         toTestList.add(ProtocolVersion.SSL2);
         toTestList.add(ProtocolVersion.SSL3);

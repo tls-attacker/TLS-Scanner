@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -30,8 +31,8 @@ public class HeartbleedProbe extends TlsProbe {
 
     private List<CipherSuite> supportedCiphers;
 
-    public HeartbleedProbe(ScannerConfig config) {
-        super(ProbeType.HEARTBLEED, config, 9);
+    public HeartbleedProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.HEARTBLEED, config, 9);
     }
 
     @Override

@@ -17,7 +17,6 @@ import de.rub.nds.tlsattacker.attacks.exception.PaddingOracleUnstableException;
 import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -36,8 +35,8 @@ import java.util.List;
  */
 public class PaddingOracleProbe extends TlsProbe {
 
-    public PaddingOracleProbe(ScannerConfig config) {
-        super(ProbeType.PADDING_ORACLE, config, 9);
+    public PaddingOracleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.PADDING_ORACLE, config, 9);
     }
 
     @Override

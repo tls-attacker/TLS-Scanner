@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -38,8 +39,8 @@ import java.util.List;
 
 public class HttpHeaderProbe extends TlsProbe {
 
-    public HttpHeaderProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.HTTP_HEADER, scannerConfig, 0);
+    public HttpHeaderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig, 0);
     }
 
     @Override

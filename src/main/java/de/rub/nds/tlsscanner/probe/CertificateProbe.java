@@ -13,6 +13,7 @@ import de.rub.nds.tlsscanner.report.result.CertificateResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -30,8 +31,8 @@ import org.bouncycastle.crypto.tls.Certificate;
  */
 public class CertificateProbe extends TlsProbe {
 
-    public CertificateProbe(ScannerConfig config) {
-        super(ProbeType.CERTIFICATE, config, 0);
+    public CertificateProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.CERTIFICATE, config, 0);
     }
 
     @Override

@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
@@ -34,8 +35,8 @@ import java.util.List;
  */
 public class CiphersuiteOrderProbe extends TlsProbe {
 
-    public CiphersuiteOrderProbe(ScannerConfig config) {
-        super(ProbeType.CIPHERSUITE_ORDER, config, 0);
+    public CiphersuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.CIPHERSUITE_ORDER, config, 0);
     }
 
     @Override

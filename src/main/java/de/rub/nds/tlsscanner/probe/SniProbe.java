@@ -5,6 +5,7 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -18,8 +19,8 @@ import de.rub.nds.tlsscanner.report.result.SniResult;
 
 public class SniProbe extends TlsProbe {
 
-    public SniProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.SNI, scannerConfig, 0);
+    public SniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.SNI, scannerConfig, 0);
     }
 
     @Override
