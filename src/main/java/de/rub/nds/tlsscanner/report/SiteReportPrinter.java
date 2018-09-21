@@ -214,7 +214,7 @@ public class SiteReportPrinter {
                     prettyPrintCipherSuite(builder, suite);
                 }
             }
-            if (report.getSupportedTls13CipherSuites().size() > 0) {
+            if (report.getSupportedTls13CipherSuites() != null && report.getSupportedTls13CipherSuites().size() > 0) {
                 prettyAppendHeading(builder, "Supported in TLS13");
                 for (CipherSuite suite : report.getSupportedTls13CipherSuites()) {
                     prettyPrintCipherSuite(builder, suite);
@@ -302,7 +302,7 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendHttps(StringBuilder builder) {
-        if (report.getSpeaksHttps() == true) {
+        if (report.getSpeaksHttps() == Boolean.TRUE) {
             prettyAppendHeading(builder, "HSTS");
             if (report.getSupportsHsts() == Boolean.TRUE) {
                 prettyAppendGreenOnSuccess(builder, "HSTS", report.getSupportsHsts());

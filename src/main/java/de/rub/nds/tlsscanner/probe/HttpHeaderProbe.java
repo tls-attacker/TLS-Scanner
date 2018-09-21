@@ -99,16 +99,20 @@ public class HttpHeaderProbe extends TlsProbe {
         }
         ReceivingAction action = trace.getLastReceivingAction();
         HttpsResponseMessage responseMessage = null;
-        for (ProtocolMessage message : action.getReceivedMessages()) {
-            if (message instanceof HttpsResponseMessage) {
-                responseMessage = (HttpsResponseMessage) message;
-                break;
+        if (action.getReceivedMessages() != null) {
+            for (ProtocolMessage message : action.getReceivedMessages()) {
+                if (message instanceof HttpsResponseMessage) {
+                    responseMessage = (HttpsResponseMessage) message;
+                    break;
+                }
             }
         }
         boolean speaksHttps = responseMessage != null;
         List<HttpsHeader> headerList = null;
         if (speaksHttps) {
             headerList = responseMessage.getHeader();
+        } else {
+            headerList = new LinkedList<>();
         }
         return new HttpHeaderResult(speaksHttps, headerList);
     }

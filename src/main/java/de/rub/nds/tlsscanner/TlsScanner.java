@@ -126,7 +126,7 @@ public class TlsScanner {
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
         SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
         report.setServerIsAlive(false);
-        
+
         return report;
     }
 
