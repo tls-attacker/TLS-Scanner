@@ -37,7 +37,7 @@ public class FriendlyTlsScan extends TlsScan {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
-        generalDelegate.setLogLevel(null);
+        generalDelegate.setQuiet(true);
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setDangerLevel(4);

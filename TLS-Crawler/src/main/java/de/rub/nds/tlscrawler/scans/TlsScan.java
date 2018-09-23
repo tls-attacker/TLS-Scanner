@@ -20,7 +20,6 @@ import de.rub.nds.tlsscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
-import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +49,7 @@ public class TlsScan implements IScan {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
-        generalDelegate.setLogLevel(Level.OFF);
+        generalDelegate.setQuiet(true);
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setThreads(1);
