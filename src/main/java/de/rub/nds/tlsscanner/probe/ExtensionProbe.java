@@ -74,7 +74,7 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddHeartbeatExtension(true);
-        tlsConfig.setAddMaxFragmentLengthExtenstion(true);
+        tlsConfig.setAddMaxFragmentLengthExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddAlpnExtension(true);

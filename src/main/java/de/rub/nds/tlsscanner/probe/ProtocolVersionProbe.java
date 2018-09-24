@@ -12,10 +12,8 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
@@ -107,7 +105,7 @@ public class ProtocolVersionProbe extends TlsProbe {
             tlsConfig.setAddECPointFormatExtension(false);
             tlsConfig.setAddEllipticCurveExtension(false);
             tlsConfig.setAddHeartbeatExtension(false);
-            tlsConfig.setAddMaxFragmentLengthExtenstion(false);
+            tlsConfig.setAddMaxFragmentLengthExtension(false);
             tlsConfig.setAddServerNameIndicationExtension(false);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(false);
         } else {
