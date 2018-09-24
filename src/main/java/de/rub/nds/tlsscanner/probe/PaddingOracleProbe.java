@@ -86,7 +86,7 @@ public class PaddingOracleProbe extends TlsProbe {
                     versionDelegate.setProtocolVersion(version);
                     paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
                     paddingOracleConfig.setVectorGeneratorType(vectorType);
-                    PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig(), new ParallelExecutor(20, 3));
+                    PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig(), parallelExecutor);
                     try {
                         lastResult = attacker.isVulnerable();
                     } catch (PaddingOracleUnstableException E) {

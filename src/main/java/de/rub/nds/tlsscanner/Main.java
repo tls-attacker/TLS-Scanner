@@ -67,7 +67,9 @@ public class Main {
         line = reader.readLine();
         while ((line = reader.readLine()) != null) {
             String host = line.split(",")[2];
-            TlsScanner scanner = new TlsScanner(host, false);
+            ScannerConfig config = new ScannerConfig(delegate);
+            config.getClientDelegate().setHost(host);
+            TlsScanner scanner = new TlsScanner(config);
             scanner.scan();
         }
         System.exit(0);

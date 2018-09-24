@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner;
 
+import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -34,8 +35,8 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
 
     private final ExecutorService executor;
 
-    public MultiThreadedScanJobExecutor(int threadCount) {
-        executor = Executors.newFixedThreadPool(threadCount);
+    public MultiThreadedScanJobExecutor(int threadCount, String prefix) {
+        executor = Executors.newFixedThreadPool(threadCount, new NamedThreadFactory(prefix));
     }
 
     public MultiThreadedScanJobExecutor(ExecutorService executor) {
@@ -108,7 +109,11 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
         for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
             afterProbe.analyze(report);
         }
-        executor.shutdown();
         return report;
+    }
+
+    @Override
+    public void shutdown() {
+        executor.shutdown();
     }
 }

@@ -183,8 +183,7 @@ public class MacProbe extends TlsProbe {
             stateIndexList.add(new StateIndexPair(i, state));
 
         }
-        ParallelExecutor executor = new ParallelExecutor(macSize, 3);
-        executor.bulkExecute(stateList);
+        parallelExecutor.bulkExecute(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
             if (check == Check.APPDATA) {

@@ -12,6 +12,7 @@ import de.rub.nds.tlsattacker.attacks.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -59,32 +60,31 @@ public class TlsScanner {
     private final ScanJobExecutor executor;
     private final ParallelExecutor parallelExecutor;
     private final ScannerConfig config;
-
-    public TlsScanner(String websiteHost, boolean attackingScans) {
-        config = new ScannerConfig(new GeneralDelegate());
-        this.executor = ScanJobExecutorFactory.getScanJobExecutor(config);
-        ClientDelegate clientDelegate = (ClientDelegate) config.getDelegateList().get(1);
-        clientDelegate.setHost(websiteHost);
-        Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.WARN);
-        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3);
-    }
+    private final boolean closeAfterFinish;
+    private final boolean closeAfterFinishParallel;
 
     public TlsScanner(ScannerConfig config) {
         this.executor = ScanJobExecutorFactory.getScanJobExecutor(config);
         this.config = config;
-        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3);
+        closeAfterFinish = true;
+        closeAfterFinishParallel = true;
+        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
     }
 
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
         this.config = config;
         this.executor = executor;
-        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3);
+        closeAfterFinish = false;
+        closeAfterFinishParallel = true;
+        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
     }
 
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor) {
         this.config = config;
         this.executor = executor;
         this.parallelExecutor = parallelExecutor;
+        closeAfterFinish = false;
+        closeAfterFinishParallel = false;
     }
 
     public SiteReport scan() {
@@ -123,12 +123,25 @@ public class TlsScanner {
             afterList.add(new FreakAfterProbe());
             afterList.add(new LogjamAfterprobe());
             ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
-            return executor.execute(config, job);
+
+            SiteReport report = executor.execute(config, job);
+            if (closeAfterFinish) {
+                executor.shutdown();
+            }
+            if (closeAfterFinishParallel) {
+                parallelExecutor.shutdown();
+            }
+            return report;
         }
         // testList.add(new SignatureAndHashAlgorithmProbe(websiteHost));
         SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
         report.setServerIsAlive(false);
-
+        if (closeAfterFinish) {
+            executor.shutdown();
+        }
+        if (closeAfterFinishParallel) {
+            parallelExecutor.shutdown();
+        }
         return report;
     }
 

@@ -510,7 +510,7 @@ public class SiteReportPrinter {
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
         builder.append(addIndentations(testName)).append(": ");
         if (drownVulnerable == null) {
-            prettyAppend(builder, null);
+            prettyAppend(builder, "Unknown");
             return;
         }
         switch (drownVulnerable) {
@@ -524,7 +524,7 @@ public class SiteReportPrinter {
                 prettyAppendGreen(builder, "false");
                 break;
             case UNKNOWN:
-                prettyAppend(builder, null);
+                prettyAppend(builder, "Unknown");
                 break;
         }
     }
@@ -532,7 +532,7 @@ public class SiteReportPrinter {
     private void prettyAppendEarlyCcs(StringBuilder builder, String testName, EarlyCcsVulnerabilityType earlyCcsVulnerable) {
         builder.append(addIndentations(testName)).append(": ");
         if (earlyCcsVulnerable == null) {
-            prettyAppend(builder, "null");
+            prettyAppend(builder, "Unknown");
             return;
         }
         switch (earlyCcsVulnerable) {

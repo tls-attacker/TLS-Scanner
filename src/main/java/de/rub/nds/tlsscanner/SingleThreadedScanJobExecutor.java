@@ -97,4 +97,8 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
         }
         return report;
     }
+
+    @Override
+    public void shutdown() {
+    }
 }
