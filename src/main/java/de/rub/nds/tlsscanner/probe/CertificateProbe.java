@@ -49,7 +49,6 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         List<CipherSuite> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(CipherSuite.values()));
-        //toTestList.addAll(CipherSuite.getImplemented());
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
         List<SignatureAndHashAlgorithm> sigHashAlgos = Arrays.asList(SignatureAndHashAlgorithm.values());
