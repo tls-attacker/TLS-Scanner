@@ -5,6 +5,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsscanner.probe.mac.MacCheckPattern;
 import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;

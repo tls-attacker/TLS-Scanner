@@ -24,7 +24,7 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.probe.MacCheckPattern;
+import de.rub.nds.tlsscanner.probe.mac.MacCheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;

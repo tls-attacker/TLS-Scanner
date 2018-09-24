@@ -90,6 +90,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         } else {
             cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
             cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+            cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         }
         tlsConfig.setDefaultSelectedProtocolVersion(toTest);
         tlsConfig.setQuickReceive(true);

@@ -1,6 +1,7 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -16,6 +17,9 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.SniResult;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SniProbe extends TlsProbe {
 
@@ -32,6 +36,11 @@ public class SniProbe extends TlsProbe {
         config.setEarlyStop(true);
         config.setStopRecievingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
+        List<CipherSuite> toTestList = new LinkedList<>();
+        toTestList.addAll(Arrays.asList(CipherSuite.values()));
+        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        config.setDefaultClientSupportedCiphersuites(toTestList);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
         State state = new State(config, trace);
         WorkflowExecutor executor = new DefaultWorkflowExecutor(state);

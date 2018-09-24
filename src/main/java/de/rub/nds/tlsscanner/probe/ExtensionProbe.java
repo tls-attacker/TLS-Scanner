@@ -62,6 +62,7 @@ public class ExtensionProbe extends TlsProbe {
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);

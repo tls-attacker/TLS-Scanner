@@ -1,4 +1,4 @@
-package de.rub.nds.tlsscanner.probe;
+package de.rub.nds.tlsscanner.probe.mac;
 
 import de.rub.nds.tlsscanner.constants.MacCheckPatternType;
 import de.rub.nds.tlsscanner.probe.mac.ByteCheckStatus;
