@@ -31,7 +31,7 @@ import java.util.List;
 public class IntoleranceProbe extends TlsProbe {
 
     public IntoleranceProbe(ScannerConfig config) {
-        super(ProbeType.INTOLERANCES, config, 0, 1);
+        super(ProbeType.INTOLERANCES, config, 0, 10);
     }
 
     @Override

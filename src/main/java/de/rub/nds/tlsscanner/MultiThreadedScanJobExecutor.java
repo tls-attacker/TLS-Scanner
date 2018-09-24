@@ -48,7 +48,8 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<ProbeType> probeTypes = new LinkedList<>();
 
-        try(ProgressBar pb = new ProgressBar("Executing", (scanJob.getPhaseOneTestList().size()+scanJob.getPhaseTwoTestList().size()))){
+        try(ProgressBar pb = new ProgressBar("", (scanJob.getPhaseOneTestList().size()+scanJob.getPhaseTwoTestList().size()))){
+            pb.setExtraMessage("Executing Probes");
             List<Future<ProbeResult>> futureResults = new LinkedList<>();
             for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
                 if (probe.getDanger() <= config.getDangerLevel()) {
@@ -120,6 +121,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
                 afterProbe.analyze(report);
             }
             executor.shutdown();
+            pb.setExtraMessage("Finished");
             return report;
         }
     }
@@ -143,6 +145,5 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
                 }
             }
         }
-    }
-        
+    }   
 }

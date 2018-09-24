@@ -31,32 +31,17 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
 
     public SingleThreadedScanJobExecutor() {
     }
-    
-    private void printBar(int tempWeigth, int totalWeight, String probeName){ 
-        double percent = ((double) tempWeigth/ (double) totalWeight)*100;
-        int numberOfBarElements = ((int)percent)/5;
-        System.out.printf("\0338<");
-        for(int i = 0; i < numberOfBarElements; i++){
-            System.out.printf("#");
-        }
-        if(numberOfBarElements < 20){
-            for(int i = numberOfBarElements; i < 20; i++){
-                System.out.printf("-");
-            }
-        }
-        System.out.printf(">");
-        System.out.printf(" %.2f%% executing %s\n",percent,probeName);
-    }
 
     @Override
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         List<ProbeType> probeTypes = new LinkedList<>();
         List<ProbeResult> resultList = new LinkedList<>();
         
-        try(ProgressBar pb = new ProgressBar("Executing", (scanJob.getPhaseOneTestList().size()+scanJob.getPhaseTwoTestList().size()))){
+        try(ProgressBar pb = new ProgressBar("", (scanJob.getPhaseOneTestList().size()+scanJob.getPhaseTwoTestList().size()))){
             for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
                 if (probe.getDanger() <= config.getDangerLevel()) {
                     try {
+                        pb.setExtraMessage("Executing " + probe.getProbeName());
                         resultList.add(probe.call());
                         pb.step();
                     } catch (Exception E) {
@@ -90,6 +75,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                     probeTypes.add(probe.getType());
                     if (probe.shouldBeExecuted(report)) {
                         try {
+                            pb.setExtraMessage("Executing " + probe.getProbeName());
                             resultList.add(probe.call());
                             pb.step();
                         } catch (Exception E) {
@@ -99,6 +85,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                         ProbeResult result = probe.getNotExecutedResult();
                         if (result != null) {
                             resultList.add(result);
+                            pb.step();
                         }
                     }
                 }
@@ -115,6 +102,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
             for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
                 afterProbe.analyze(report);
             }
+            pb.setExtraMessage("Finished");
             return report;
         }
     }

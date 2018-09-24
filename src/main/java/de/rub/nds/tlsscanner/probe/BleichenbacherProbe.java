@@ -22,7 +22,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 public class BleichenbacherProbe extends TlsProbe {
 
     public BleichenbacherProbe(ScannerConfig config) {
-        super(ProbeType.BLEICHENBACHER, config, 10, 5);
+        super(ProbeType.BLEICHENBACHER, config, 10, 384);
     }
 
     @Override
