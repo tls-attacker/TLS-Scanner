@@ -31,6 +31,14 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
 
     public SingleThreadedScanJobExecutor() {
     }
+    
+    private String getPaddedProbeName( String probeName){
+        StringBuilder sb = new StringBuilder(probeName);
+        while(sb.length() < 30){
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
 
     @Override
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
@@ -41,7 +49,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
             for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
                 if (probe.getDanger() <= config.getDangerLevel()) {
                     try {
-                        pb.setExtraMessage("Executing " + probe.getProbeName());
+                        pb.setExtraMessage("Executing " + getPaddedProbeName(probe.getProbeName()));
                         resultList.add(probe.call());
                         pb.step();
                     } catch (Exception E) {
@@ -75,7 +83,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                     probeTypes.add(probe.getType());
                     if (probe.shouldBeExecuted(report)) {
                         try {
-                            pb.setExtraMessage("Executing " + probe.getProbeName());
+                            pb.setExtraMessage("Executing " + getPaddedProbeName(probe.getProbeName()));
                             resultList.add(probe.call());
                             pb.step();
                         } catch (Exception E) {
@@ -102,7 +110,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
             for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
                 afterProbe.analyze(report);
             }
-            pb.setExtraMessage("Finished");
+            pb.setExtraMessage(getPaddedProbeName("Finished"));
             return report;
         }
     }
