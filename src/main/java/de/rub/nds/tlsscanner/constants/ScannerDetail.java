@@ -10,5 +10,5 @@ package de.rub.nds.tlsscanner.constants;
  * @author robert
  */
 public enum ScannerDetail {
-    ALL,DETAILED,NORMAL,
+    ALL, DETAILED, NORMAL,
 }

@@ -13,6 +13,7 @@ package de.rub.nds.tlsscanner.flaw;
  * @author Robert Merget - robert.merget@rub.de
  */
 public class ConfigurationFlaw {
+
     private String flawName;
     private FlawLevel flawLevel;
     private String flawDescription;

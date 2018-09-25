@@ -67,7 +67,7 @@ public class TlsScanner {
         this.executor = ScanJobExecutorFactory.getScanJobExecutor(config);
         this.config = config;
     }
-    
+
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
         this.config = config;
         this.executor = executor;
@@ -88,7 +88,7 @@ public class TlsScanner {
             phaseOneTestList.add(new ExtensionProbe(config));
             phaseOneTestList.add(new Tls13Probe(config));
             phaseOneTestList.add(new TokenbindingProbe(config));
-            
+
             phaseTwoTestList.add(new ResumptionProbe(config));
             phaseTwoTestList.add(new RenegotiationProbe(config));
             phaseTwoTestList.add(new HeartbleedProbe(config));

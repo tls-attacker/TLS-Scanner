@@ -24,7 +24,7 @@ public class DrownProbe extends TlsProbe {
         DrownCommandConfig drownCommandConfig = new DrownCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        DrownAttacker attacker = new DrownAttacker(drownCommandConfig,drownCommandConfig.createConfig());
+        DrownAttacker attacker = new DrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
         DrownVulnerabilityType drownVulnerabilityType = attacker.getDrownVulnerabilityType();
         return new DrownResult(drownVulnerabilityType);
     }

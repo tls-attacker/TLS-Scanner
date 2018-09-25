@@ -22,7 +22,7 @@ public class EarlyCcsProbe extends TlsProbe {
         EarlyCCSCommandConfig earlyCcsCommandConfig = new EarlyCCSCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) earlyCcsCommandConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        EarlyCCSAttacker attacker = new EarlyCCSAttacker(earlyCcsCommandConfig,earlyCcsCommandConfig.createConfig());
+        EarlyCCSAttacker attacker = new EarlyCCSAttacker(earlyCcsCommandConfig, earlyCcsCommandConfig.createConfig());
         EarlyCcsVulnerabilityType earlyCcsVulnerabilityType = attacker.getEarlyCcsVulnerabilityType();
         return new EarlyCcsResult(earlyCcsVulnerabilityType);
     }

@@ -56,7 +56,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         ProbeResult result = executeTest();
         return result;
     }
-    
+
     public abstract ProbeResult executeTest();
 
     public abstract boolean shouldBeExecuted(SiteReport report);

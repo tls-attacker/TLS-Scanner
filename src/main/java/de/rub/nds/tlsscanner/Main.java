@@ -15,13 +15,11 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.SiteReportPrinter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,18 +58,16 @@ public class Main {
             commander.usage();
         }
     }
-    
-    public static void scanFile(File f) throws FileNotFoundException, IOException
-    {
+
+    public static void scanFile(File f) throws FileNotFoundException, IOException {
         GeneralDelegate delegate = new GeneralDelegate();
         delegate.applyDelegate(Config.createConfig());
         BufferedReader reader = new BufferedReader(new FileReader(f));
         String line = null;
         line = reader.readLine();
-        while((line = reader.readLine()) != null)
-        {
+        while ((line = reader.readLine()) != null) {
             String host = line.split(",")[2];
-            TlsScanner scanner = new TlsScanner(host,false);
+            TlsScanner scanner = new TlsScanner(host, false);
             scanner.scan();
         }
         System.exit(0);

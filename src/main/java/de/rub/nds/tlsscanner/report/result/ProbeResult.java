@@ -50,11 +50,10 @@ public abstract class ProbeResult {
         this.stoptime = stoptime;
     }
 
-    public void merge(SiteReport report)
-    {
+    public void merge(SiteReport report) {
         report.getPerformanceList().add(getPerformanceData());
         this.mergeData(report);
     }
-    
+
     protected abstract void mergeData(SiteReport report);
 }
