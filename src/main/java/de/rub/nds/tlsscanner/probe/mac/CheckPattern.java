@@ -1,27 +1,39 @@
 package de.rub.nds.tlsscanner.probe.mac;
 
-import de.rub.nds.tlsscanner.constants.MacCheckPatternType;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.constants.CheckPatternType;
 import de.rub.nds.tlsscanner.probe.mac.ByteCheckStatus;
+import java.util.List;
 
-public class MacCheckPattern {
+public class CheckPattern {
 
-    private MacCheckPatternType type;
+    private CheckPatternType type;
 
     private boolean foundFinishedAndAlert;
 
     private ByteCheckStatus[] bytePattern;
+    
+    private List<ResponseFingerprint> responseFingerprintList = null;
 
-    public MacCheckPattern(MacCheckPatternType type, boolean foundFinishedAndAlert, ByteCheckStatus[] bytePattern) {
+    public CheckPattern(CheckPatternType type, boolean foundFinishedAndAlert, ByteCheckStatus[] bytePattern) {
         this.type = type;
         this.foundFinishedAndAlert = foundFinishedAndAlert;
         this.bytePattern = bytePattern;
     }
 
-    public MacCheckPatternType getType() {
+    public List<ResponseFingerprint> getResponseFingerprintList() {
+        return responseFingerprintList;
+    }
+
+    public void setResponseFingerprintList(List<ResponseFingerprint> responseFingerprintList) {
+        this.responseFingerprintList = responseFingerprintList;
+    }
+
+    public CheckPatternType getType() {
         return type;
     }
 
-    public void setType(MacCheckPatternType type) {
+    public void setType(CheckPatternType type) {
         this.type = type;
     }
 

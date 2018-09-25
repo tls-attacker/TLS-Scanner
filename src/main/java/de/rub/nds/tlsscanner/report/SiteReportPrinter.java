@@ -24,7 +24,7 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.probe.mac.MacCheckPattern;
+import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
@@ -78,9 +78,9 @@ public class SiteReportPrinter {
 
     private StringBuilder appendRfc(StringBuilder builder) {
         prettyAppendHeading(builder, "RFC");
-        prettyAppendMacCheckPattern(builder, "Checks MAC (AppData)", report.getMacCheckPatternAppData());
-        prettyAppendMacCheckPattern(builder, "Checks MAC (Finished)", report.getMacCheckPatternFinished());
-        prettyAppendRedOnFailure(builder, "Checks Finished", report.getChecksFinished());
+        prettyAppendCheckPattern(builder, "Checks MAC (AppData)", report.getMacCheckPatternAppData());
+        prettyAppendCheckPattern(builder, "Checks MAC (Finished)", report.getMacCheckPatternFinished());
+        prettyAppendCheckPattern(builder, "Checks VerifyData", report.getVerifyCheckPattern());
         return builder;
     }
 
@@ -147,7 +147,7 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendIntolerances(StringBuilder builder) {
-        prettyAppendHeading(builder, "Common Bugs");
+        prettyAppendHeading(builder, "Common Bugs [EXPERIMENTAL]");
         prettyAppendRedGreen(builder, "Version Intolerant", report.getVersionIntolerance());
         prettyAppendRedGreen(builder, "Ciphersuite Intolerant", report.getCipherSuiteIntolerance());
         prettyAppendRedGreen(builder, "Extension Intolerant", report.getExtensionIntolerance());
@@ -551,7 +551,7 @@ public class SiteReportPrinter {
         }
     }
 
-    private StringBuilder prettyAppendMacCheckPattern(StringBuilder builder, String value, MacCheckPattern pattern) {
+    private StringBuilder prettyAppendCheckPattern(StringBuilder builder, String value, CheckPattern pattern) {
         if (pattern == null) {
             return builder.append(addIndentations(value)).append(": ").append("Unknown").append("\n");
         }

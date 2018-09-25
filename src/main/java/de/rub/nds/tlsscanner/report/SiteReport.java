@@ -22,7 +22,7 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.probe.mac.MacCheckPattern;
+import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
@@ -66,7 +66,7 @@ public class SiteReport {
     private Boolean reflectsCipherSuiteOffering; //does it ignore the offered ciphersuites
     private Boolean ignoresOfferedNamedGroups; //does it ignore the offered named groups
     private Boolean ignoresOfferedSignatureAndHashAlgorithms; //does it ignore the sig hash algorithms
-    
+
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
     private Boolean paddingOracleVulnerable = null;
@@ -127,9 +127,9 @@ public class SiteReport {
     private List<CompressionMethod> supportedCompressionMethods = null;
 
     //RFC
-    private MacCheckPattern macCheckPatterAppData = null;
-    private MacCheckPattern macCheckPatternFinished = null;
-    private Boolean checksFinished = null;
+    private CheckPattern macCheckPatterAppData = null;
+    private CheckPattern macCheckPatternFinished = null;
+    private CheckPattern verifyCheckPattern = null;
 
     //Certificate
     private Certificate certificate = null;
@@ -909,20 +909,20 @@ public class SiteReport {
         this.supportedCompressionMethods = supportedCompressionMethods;
     }
 
-    public MacCheckPattern getMacCheckPatternAppData() {
+    public CheckPattern getMacCheckPatternAppData() {
         return macCheckPatterAppData;
     }
 
-    public void setMacCheckPatterAppData(MacCheckPattern macCheckPatterAppData) {
+    public void setMacCheckPatterAppData(CheckPattern macCheckPatterAppData) {
         this.macCheckPatterAppData = macCheckPatterAppData;
     }
 
-    public Boolean getChecksFinished() {
-        return checksFinished;
+    public CheckPattern getVerifyCheckPattern() {
+        return verifyCheckPattern;
     }
 
-    public void setChecksFinished(Boolean checksFinished) {
-        this.checksFinished = checksFinished;
+    public void setVerifyCheckPattern(CheckPattern verifyCheckPattern) {
+        this.verifyCheckPattern = verifyCheckPattern;
     }
 
     public Boolean getSupportsExtendedMasterSecret() {
@@ -1286,11 +1286,11 @@ public class SiteReport {
         return probeTypeList;
     }
 
-    public MacCheckPattern getMacCheckPatternFinished() {
+    public CheckPattern getMacCheckPatternFinished() {
         return macCheckPatternFinished;
     }
 
-    public void setMacCheckPatternFinished(MacCheckPattern macCheckPatternFinished) {
+    public void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
         this.macCheckPatternFinished = macCheckPatternFinished;
     }
 

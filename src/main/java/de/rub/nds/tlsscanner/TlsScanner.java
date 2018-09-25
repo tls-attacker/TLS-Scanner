@@ -92,30 +92,30 @@ public class TlsScanner {
         List<TlsProbe> phaseTwoTestList = new LinkedList<>();
 
         if (prechecks()) {
-            phaseOneTestList.add(new CommonBugProbe(config, parallelExecutor));
-            phaseOneTestList.add(new SniProbe(config, parallelExecutor));
-            phaseOneTestList.add(new CompressionsProbe(config, parallelExecutor));
-            phaseOneTestList.add(new NamedCurvesProbe(config, parallelExecutor));
-            phaseOneTestList.add(new CertificateProbe(config, parallelExecutor));
-            phaseOneTestList.add(new ProtocolVersionProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new CommonBugProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new SniProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new CompressionsProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new NamedCurvesProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new CertificateProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new ProtocolVersionProbe(config, parallelExecutor));
             phaseOneTestList.add(new CiphersuiteProbe(config, parallelExecutor));
-            phaseOneTestList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
-            phaseOneTestList.add(new ExtensionProbe(config, parallelExecutor));
-            phaseOneTestList.add(new Tls13Probe(config, parallelExecutor));
-            phaseOneTestList.add(new TokenbindingProbe(config, parallelExecutor));
-            phaseOneTestList.add(new HttpHeaderProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new ExtensionProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new Tls13Probe(config, parallelExecutor));
+            //phaseOneTestList.add(new TokenbindingProbe(config, parallelExecutor));
+            //phaseOneTestList.add(new HttpHeaderProbe(config, parallelExecutor));
 
-            phaseTwoTestList.add(new ResumptionProbe(config, parallelExecutor));
-            phaseTwoTestList.add(new RenegotiationProbe(config, parallelExecutor));
-            phaseTwoTestList.add(new HeartbleedProbe(config, parallelExecutor));
-            phaseTwoTestList.add(new PaddingOracleProbe(config, parallelExecutor));
-            phaseTwoTestList.add(new BleichenbacherProbe(config, parallelExecutor));
-            phaseTwoTestList.add(new PoodleProbe(config, parallelExecutor));
-            phaseTwoTestList.add(new TlsPoodleProbe(config, parallelExecutor));
-            phaseTwoTestList.add(new Cve20162107Probe(config, parallelExecutor));
-            phaseTwoTestList.add(new InvalidCurveProbe(config, parallelExecutor));
-            phaseTwoTestList.add(new DrownProbe(config, parallelExecutor));
-            phaseTwoTestList.add(new EarlyCcsProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new ResumptionProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new RenegotiationProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new HeartbleedProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new PaddingOracleProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new BleichenbacherProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new PoodleProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new TlsPoodleProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new Cve20162107Probe(config, parallelExecutor));
+            //phaseTwoTestList.add(new InvalidCurveProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new DrownProbe(config, parallelExecutor));
+            //phaseTwoTestList.add(new EarlyCcsProbe(config, parallelExecutor));
             phaseTwoTestList.add(new MacProbe(config, parallelExecutor));
 
             List<AfterProbe> afterList = new LinkedList<>();
