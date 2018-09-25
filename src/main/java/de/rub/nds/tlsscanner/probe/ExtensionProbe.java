@@ -38,7 +38,7 @@ import java.util.List;
 public class ExtensionProbe extends TlsProbe {
 
     public ExtensionProbe(ScannerConfig config) {
-        super(ProbeType.EXTENSIONS, config, 0, 5);
+        super(ProbeType.EXTENSIONS, config, 0);
     }
 
     @Override

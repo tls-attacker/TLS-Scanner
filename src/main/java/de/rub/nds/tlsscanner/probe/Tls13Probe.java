@@ -33,7 +33,7 @@ import java.util.List;
 public class Tls13Probe extends TlsProbe {
 
     public Tls13Probe(ScannerConfig scannerConfig) {
-        super(ProbeType.TLS13, scannerConfig, 0, 10);
+        super(ProbeType.TLS13, scannerConfig, 0);
     }
 
     private List<CipherSuite> getSupportedCiphersuites() {

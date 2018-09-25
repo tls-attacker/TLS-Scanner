@@ -16,7 +16,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 public class DrownProbe extends TlsProbe {
 
     public DrownProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.DROWN, scannerConfig, 8, 2);
+        super(ProbeType.DROWN, scannerConfig, 8);
     }
 
     @Override

@@ -14,7 +14,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 public class EarlyCcsProbe extends TlsProbe {
 
     public EarlyCcsProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.EARLY_CCS, scannerConfig, 8, 1);
+        super(ProbeType.EARLY_CCS, scannerConfig, 8);
     }
 
     @Override

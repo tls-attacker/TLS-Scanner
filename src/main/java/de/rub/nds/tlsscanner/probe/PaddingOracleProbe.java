@@ -36,7 +36,7 @@ import java.util.List;
 public class PaddingOracleProbe extends TlsProbe {
 
     public PaddingOracleProbe(ScannerConfig config) {
-        super(ProbeType.PADDING_ORACLE, config, 9, 224);
+        super(ProbeType.PADDING_ORACLE, config, 9);
     }
 
     @Override

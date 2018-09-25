@@ -26,15 +26,13 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     protected final ScannerConfig scannerConfig;
     protected final ProbeType type;
-    protected final int weight;
 
     private final int danger;
 
-    public TlsProbe(ProbeType type, ScannerConfig scannerConfig, int danger, int weight) {
+    public TlsProbe(ProbeType type, ScannerConfig scannerConfig, int danger) {
         this.scannerConfig = scannerConfig;
         this.type = type;
         this.danger = danger;
-        this.weight = weight;
     }
 
     public int getDanger() {
@@ -57,10 +55,6 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     public ProbeResult call() {
         ProbeResult result = executeTest();
         return result;
-    }
-    
-    public int getWeight(){
-        return weight;
     }
     
     public abstract ProbeResult executeTest();

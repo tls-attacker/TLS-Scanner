@@ -36,7 +36,7 @@ public class RenegotiationProbe extends TlsProbe {
     private boolean supportsRenegotiationExtension;
 
     public RenegotiationProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.RENEGOTIATION, scannerConfig, 0, 2);
+        super(ProbeType.RENEGOTIATION, scannerConfig, 0);
     }
 
     @Override

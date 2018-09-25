@@ -25,7 +25,7 @@ import de.rub.nds.tlsscanner.report.result.PoodleResult;
 public class PoodleProbe extends TlsProbe {
 
     public PoodleProbe(ScannerConfig config) {
-        super(ProbeType.POODLE, config, 0, 1);
+        super(ProbeType.POODLE, config, 0);
     }
 
     @Override

@@ -19,7 +19,7 @@ import de.rub.nds.tlsscanner.report.result.SniResult;
 public class SniProbe extends TlsProbe {
 
     public SniProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.SNI, scannerConfig, 0, 1);
+        super(ProbeType.SNI, scannerConfig, 0);
     }
 
     @Override

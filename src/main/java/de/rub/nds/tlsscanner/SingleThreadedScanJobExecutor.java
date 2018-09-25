@@ -45,7 +45,20 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
         List<ProbeType> probeTypes = new LinkedList<>();
         List<ProbeResult> resultList = new LinkedList<>();
         
-        try(ProgressBar pb = new ProgressBar("", (scanJob.getPhaseOneTestList().size()+scanJob.getPhaseTwoTestList().size()))){
+        int numberOfProbes = 0;
+        for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
+                if (probe.getDanger() <= config.getDangerLevel()) {
+                    numberOfProbes++;
+                }
+        }
+        for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
+                if (probe.getDanger() <= config.getDangerLevel()) {
+                    numberOfProbes++;
+                }
+        }
+        
+        
+        try(ProgressBar pb = new ProgressBar("", numberOfProbes)){
             for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
                 if (probe.getDanger() <= config.getDangerLevel()) {
                     try {

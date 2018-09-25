@@ -37,7 +37,7 @@ import java.util.List;
 public class NamedCurvesProbe extends TlsProbe {
 
     public NamedCurvesProbe(ScannerConfig config) {
-        super(ProbeType.NAMED_GROUPS, config, 0, 6);
+        super(ProbeType.NAMED_GROUPS, config, 0);
     }
 
     @Override

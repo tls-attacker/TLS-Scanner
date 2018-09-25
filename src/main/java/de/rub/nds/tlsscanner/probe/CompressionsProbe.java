@@ -38,7 +38,7 @@ import java.util.List;
 public class CompressionsProbe extends TlsProbe {
 
     public CompressionsProbe(ScannerConfig config) {
-        super(ProbeType.COMPRESSIONS, config, 0, 1);
+        super(ProbeType.COMPRESSIONS, config, 0);
     }
 
     @Override
