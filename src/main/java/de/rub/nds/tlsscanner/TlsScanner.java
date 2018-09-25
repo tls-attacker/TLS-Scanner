@@ -10,8 +10,6 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsattacker.attacks.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -48,8 +46,6 @@ import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 
 /**
  *
@@ -100,6 +96,17 @@ public class TlsScanner {
         this.phaseTwoTestList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         fillDefaultProbeLists();
+    }
+
+    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor, List<TlsProbe> phaseOneTestList, List<TlsProbe> phaseTwoTestList, List<AfterProbe> afterList) {
+        this.executor = executor;
+        this.parallelExecutor = parallelExecutor;
+        this.config = config;
+        this.phaseOneTestList = phaseOneTestList;
+        this.phaseTwoTestList = phaseTwoTestList;
+        this.afterList = afterList;
+        closeAfterFinish = false;
+        closeAfterFinishParallel = false;
     }
 
     private void fillDefaultProbeLists() {
