@@ -134,6 +134,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
             }
             executor.shutdown();
             pb.setExtraMessage("Finished");
+            LOGGER.info("Finished scan for: " + hostname);
             return report;
         }
     }

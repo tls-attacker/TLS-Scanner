@@ -124,6 +124,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                 afterProbe.analyze(report);
             }
             pb.setExtraMessage(getPaddedProbeName("Finished"));
+            LOGGER.info("Finished scan for: " + hostname);
             return report;
         }
     }
