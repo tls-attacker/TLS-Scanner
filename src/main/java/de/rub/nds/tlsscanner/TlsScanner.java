@@ -46,12 +46,16 @@ import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Robert Merget - robert.merget@rub.de
  */
 public class TlsScanner {
+
+    private final Logger LOGGER = LogManager.getLogger();
 
     private final ScanJobExecutor executor;
     private final ParallelExecutor parallelExecutor;
@@ -140,16 +144,20 @@ public class TlsScanner {
     }
 
     public SiteReport scan() {
-        if (prechecks()) {
-            ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
-            SiteReport report = executor.execute(config, job);
-            if (closeAfterFinish) {
-                executor.shutdown();
+        if (isConnectable()) {
+            LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
+            if (speaksTls()) {
+                LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
+                ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
+                SiteReport report = executor.execute(config, job);
+                if (closeAfterFinish) {
+                    executor.shutdown();
+                }
+                if (closeAfterFinishParallel) {
+                    parallelExecutor.shutdown();
+                }
+                return report;
             }
-            if (closeAfterFinishParallel) {
-                parallelExecutor.shutdown();
-            }
-            return report;
         }
         SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
         report.setServerIsAlive(false);
@@ -162,9 +170,15 @@ public class TlsScanner {
         return report;
     }
 
-    public boolean prechecks() {
+    public boolean isConnectable() {
         Config tlsConfig = config.createConfig();
         ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
         return checker.isConnectable();
+    }
+
+    private boolean speaksTls() {
+        Config tlsConfig = config.createConfig();
+        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+        return checker.speaksTls(tlsConfig);
     }
 }
