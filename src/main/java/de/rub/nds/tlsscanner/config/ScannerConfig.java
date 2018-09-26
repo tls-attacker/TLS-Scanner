@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsscanner.constants.ScannerDetail;
 
 /**
  *
@@ -32,7 +33,7 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-danger", required = false, description = "Integer value (1 - 10) which specifies how aggressive the Scanner should test. Default 10")
     private int dangerLevel = 10;
-    
+
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
     private Boolean noColor = false;
 
@@ -41,10 +42,19 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-implementation", required = false, description = "If you are interessted in the vulnerability of an implementation rather than a specific site")
     private boolean implementation = false;
-    
+
+    @Parameter(names = "-scanDetail", required = false, description = "How detailed do you want to scan?")
+    private ScannerDetail scanDetail = ScannerDetail.NORMAL;
+
+    @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
+    private ScannerDetail reportDetail = ScannerDetail.NORMAL;
+
+    @Parameter(names = "-aggressiv", required = false, description = "The level of concurrent handshakes (only applies to some resource intensive tests)")
+    private int aggroLevel = 1;
+
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
-    
+
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
         this.generalDelegate = delegate;
@@ -53,6 +63,14 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(clientDelegate);
         addDelegate(generalDelegate);
         addDelegate(starttlsDelegate);
+    }
+
+    public int getAggroLevel() {
+        return aggroLevel;
+    }
+
+    public void setAggroLevel(int aggroLevel) {
+        this.aggroLevel = aggroLevel;
     }
 
     public int getThreads() {
@@ -66,7 +84,7 @@ public class ScannerConfig extends TLSDelegateConfig {
     public ClientDelegate getClientDelegate() {
         return clientDelegate;
     }
-    
+
     public StarttlsDelegate getStarttlsDelegate() {
         return starttlsDelegate;
     }
@@ -90,8 +108,23 @@ public class ScannerConfig extends TLSDelegateConfig {
     public Boolean isNoColor() {
         return noColor;
     }
-    
-    
+
+    public ScannerDetail getScanDetail() {
+        return scanDetail;
+    }
+
+    public void setScanDetail(ScannerDetail scanDetail) {
+        this.scanDetail = scanDetail;
+    }
+
+    public ScannerDetail getReportDetail() {
+        return reportDetail;
+    }
+
+    public void setReportDetail(ScannerDetail reportDetail) {
+        this.reportDetail = reportDetail;
+    }
+
     @Override
     public Config createConfig() {
         Config config = super.createConfig();

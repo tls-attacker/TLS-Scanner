@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -37,8 +38,8 @@ import java.util.List;
  */
 public class ExtensionProbe extends TlsProbe {
 
-    public ExtensionProbe(ScannerConfig config) {
-        super(ProbeType.EXTENSIONS, config, 0);
+    public ExtensionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.EXTENSIONS, config, 0);
     }
 
     @Override
@@ -61,6 +62,7 @@ public class ExtensionProbe extends TlsProbe {
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
@@ -69,12 +71,11 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setStopRecievingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-
         // Dont send extensions if we are in sslv2
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddHeartbeatExtension(true);
-        tlsConfig.setAddMaxFragmentLengthExtenstion(true);
+        tlsConfig.setAddMaxFragmentLengthExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddAlpnExtension(true);

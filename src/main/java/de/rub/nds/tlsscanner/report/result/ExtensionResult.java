@@ -20,6 +20,7 @@ public class ExtensionResult extends ProbeResult {
     private boolean extendedMasterSecret = false;
     private boolean encryptThenMac = false;
     private boolean secureRenegotiation = false;
+    private boolean sessionTickets = false;
 
     public ExtensionResult(List<ExtensionType> allSupportedExtensions) {
         super(ProbeType.EXTENSIONS);
@@ -27,7 +28,7 @@ public class ExtensionResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         if (report.getSupportedExtensions() == null) {
             report.setSupportedExtensions(allSupportedExtensions);
         } else {
@@ -38,15 +39,19 @@ public class ExtensionResult extends ProbeResult {
                 encryptThenMac = true;
             }
             if (type == ExtensionType.EXTENDED_MASTER_SECRET) {
-                 extendedMasterSecret = true;
+                extendedMasterSecret = true;
             }
             if (type == ExtensionType.RENEGOTIATION_INFO) {
                 secureRenegotiation = true;
+            }
+            if (type == ExtensionType.SESSION_TICKET) {
+                sessionTickets = true;
             }
         }
         report.setSupportsExtendedMasterSecret(extendedMasterSecret);
         report.setSupportsEncryptThenMacSecret(encryptThenMac);
         report.setSupportsSecureRenegotiation(secureRenegotiation);
+        report.setSupportsSessionTicket(sessionTickets);
     }
 
 }

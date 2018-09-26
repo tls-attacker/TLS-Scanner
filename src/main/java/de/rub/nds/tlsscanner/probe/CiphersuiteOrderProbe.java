@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
@@ -34,8 +35,8 @@ import java.util.List;
  */
 public class CiphersuiteOrderProbe extends TlsProbe {
 
-    public CiphersuiteOrderProbe(ScannerConfig config) {
-        super(ProbeType.CIPHERSUITE_ORDER, config, 0);
+    public CiphersuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.CIPHERSUITE_ORDER, config, 0);
     }
 
     @Override
@@ -43,6 +44,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
         List<CipherSuite> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(CipherSuite.values()));
         toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
         Collections.reverseOrder();
         CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
@@ -62,8 +64,8 @@ public class CiphersuiteOrderProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setStopActionsAfterFatal(true);
-        List<NamedGroup> namedCurves = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(namedCurves);
+        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
+        tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
                 state);

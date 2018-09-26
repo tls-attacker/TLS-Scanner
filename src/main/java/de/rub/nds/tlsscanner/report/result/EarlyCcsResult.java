@@ -7,15 +7,15 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 public class EarlyCcsResult extends ProbeResult {
 
     private EarlyCcsVulnerabilityType earlyCcsVulnerabilityType;
-    
+
     public EarlyCcsResult(EarlyCcsVulnerabilityType earlyCcsVulnerabilityType) {
         super(ProbeType.EARLY_CCS);
         this.earlyCcsVulnerabilityType = earlyCcsVulnerabilityType;
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setEarlyCcsVulnerable(earlyCcsVulnerabilityType);
     }
-    
+
 }

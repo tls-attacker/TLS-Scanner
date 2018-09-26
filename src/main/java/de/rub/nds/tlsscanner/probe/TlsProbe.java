@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -29,10 +30,13 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     private final int danger;
 
-    public TlsProbe(ProbeType type, ScannerConfig scannerConfig, int danger) {
+    protected final ParallelExecutor parallelExecutor;
+
+    public TlsProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig, int danger) {
         this.scannerConfig = scannerConfig;
         this.type = type;
         this.danger = danger;
+        this.parallelExecutor = parallelExecutor;
     }
 
     public int getDanger() {
@@ -57,8 +61,9 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         long startTime = System.currentTimeMillis();
         ProbeResult result = executeTest();
         long stopTime = System.currentTimeMillis();
+        result.setStarttime(startTime);
+        result.setStoptime(stopTime);
         LOGGER.info("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
-
         return result;
     }
 
@@ -67,6 +72,6 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     public abstract boolean shouldBeExecuted(SiteReport report);
 
     public abstract void adjustConfig(SiteReport report);
-    
+
     public abstract ProbeResult getNotExecutedResult();
 }

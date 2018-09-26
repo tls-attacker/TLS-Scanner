@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -36,8 +37,8 @@ import java.util.List;
  */
 public class NamedCurvesProbe extends TlsProbe {
 
-    public NamedCurvesProbe(ScannerConfig config) {
-        super(ProbeType.NAMED_CURVES, config, 0);
+    public NamedCurvesProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.NAMED_GROUPS, config, 0);
     }
 
     @Override

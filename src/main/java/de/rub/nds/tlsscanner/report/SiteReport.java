@@ -18,11 +18,18 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
+import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import org.bouncycastle.crypto.tls.Certificate;
 
 /**
@@ -33,6 +40,7 @@ public class SiteReport {
 
     //general
     private final List<ProbeType> probeTypeList;
+    private List<PerformanceData> performanceList;
 
     private final String host;
     private Boolean serverIsAlive = null;
@@ -41,18 +49,28 @@ public class SiteReport {
     //Quirks
     private Boolean requiresSni = null;
 
-    private Boolean versionIntolerance = null;
-    private Boolean extensionIntolerance = null;
-    private Boolean cipherSuiteIntolerance = null;
-    private Boolean groupsIntolerance = null;
-    private Boolean clientHelloSizeIntolerance = null;
-    private Boolean compressionIntolerance = null;
-    private Boolean pointFormatsIntolerance = null;
-    private Boolean signatureAndHashAlgorithmIntolerance = null;
+    //common bugs
+    private Boolean extensionIntolerance; //does it handle unknown extenstions correctly?
+    private Boolean versionIntolerance; //does it handle unknown versions correctly?
+    private Boolean cipherSuiteIntolerance; //does it handle unknown ciphersuites correctly?
+    private Boolean cipherSuiteLengthIntolerance512; //does it handle long ciphersuite length values correctly?
+    private Boolean compressionIntolerance; //does it handle unknown compression algorithms correctly
+    private Boolean alpnIntolerance; //does it handle unknown alpn strings correctly?
+    private Boolean clientHelloLengthIntolerance; // 256 - 511 <-- ch should be bigger than this
+    private Boolean namedGroupIntolerant; // does it handle unknown groups correctly
+    private Boolean emptyLastExtensionIntolerance; //does it break on empty last extension
+    private Boolean namedSignatureAndHashAlgorithmIntolerance; // does it handle signature and hash algorithms correctly
+    private Boolean maxLengthClientHelloIntolerant; // server does not like really big client hello messages
+    private Boolean onlySecondCiphersuiteByteEvaluated; //is only the second byte of the ciphersuite evaluated
+    private Boolean ignoresCipherSuiteOffering; //does it ignore the offered ciphersuites
+    private Boolean reflectsCipherSuiteOffering; //does it ignore the offered ciphersuites
+    private Boolean ignoresOfferedNamedGroups; //does it ignore the offered named groups
+    private Boolean ignoresOfferedSignatureAndHashAlgorithms; //does it ignore the sig hash algorithms
 
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
     private Boolean paddingOracleVulnerable = null;
+    private List<PaddingOracleTestResult> paddingOracleTestResultList;
     private Boolean invalidCurveVulnerable = null;
     private Boolean invalidCurveEphermaralVulnerable = null;
     private Boolean poodleVulnerable = null;
@@ -63,7 +81,6 @@ public class SiteReport {
     private Boolean sweet32Vulnerable = null;
     private DrownVulnerabilityType drownVulnerable = null;
     private Boolean logjamVulnerable = null;
-    private Boolean lucky13Vulnerable = null;
     private Boolean heartbleedVulnerable = null;
     private EarlyCcsVulnerabilityType earlyCcsVulnerable = null;
     private Boolean freakVulnerable = null;
@@ -85,6 +102,12 @@ public class SiteReport {
     private Boolean supportsTls13Draft20 = null;
     private Boolean supportsTls13Draft21 = null;
     private Boolean supportsTls13Draft22 = null;
+    private Boolean supportsTls13Draft23 = null;
+    private Boolean supportsTls13Draft24 = null;
+    private Boolean supportsTls13Draft25 = null;
+    private Boolean supportsTls13Draft26 = null;
+    private Boolean supportsTls13Draft27 = null;
+    private Boolean supportsTls13Draft28 = null;
     private Boolean supportsDtls10 = null;
     private Boolean supportsDtls12 = null;
     private Boolean supportsDtls13 = null;
@@ -92,6 +115,7 @@ public class SiteReport {
     //Extensions
     private List<ExtensionType> supportedExtensions = null;
     private List<NamedGroup> supportedNamedGroups = null;
+    private List<NamedGroup> supportedTls13Groups = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
@@ -103,8 +127,9 @@ public class SiteReport {
     private List<CompressionMethod> supportedCompressionMethods = null;
 
     //RFC
-    private Boolean checksMac = null;
-    private Boolean checksFinished = null;
+    private CheckPattern macCheckPatterAppData = null;
+    private CheckPattern macCheckPatternFinished = null;
+    private CheckPattern verifyCheckPattern = null;
 
     //Certificate
     private Certificate certificate = null;
@@ -119,7 +144,8 @@ public class SiteReport {
 
     //Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
-    private List<CipherSuite> cipherSuites = null;
+    private Set<CipherSuite> cipherSuites = null;
+    private List<CipherSuite> supportedTls13CipherSuites = null;
     private Boolean supportsNullCiphers = null;
     private Boolean supportsAnonCiphers = null;
     private Boolean supportsExportCiphers = null;
@@ -173,14 +199,26 @@ public class SiteReport {
     private Boolean gcmReuse = null;
     private GcmPattern gcmPattern = null;
     private Boolean gcmCheck = null;
-    
+
+    //HTTPS Header
+    private Boolean speaksHttps;
+    private List<HttpsHeader> headerList = null;
+    private Boolean supportsHsts = null;
+    private Integer hstsMaxAge = null;
+    private Boolean supportsHstsPreloading = null;
+    private Boolean supportsHpkp = null;
+    private Boolean supportsHpkpReportOnly = null;
+    private Integer hpkpMaxAge = null;
+    private List<HpkpPin> normalHpkpPins;
+    private List<HpkpPin> reportOnlyHpkpPins;
     //NoColor Flag
     private boolean noColor = false;
-    
+
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
         this.host = host;
         this.probeTypeList = probeTypeList;
         this.noColor = noColor;
+        performanceList = new LinkedList<>();
     }
 
     public String getHost() {
@@ -203,20 +241,100 @@ public class SiteReport {
         this.compressionIntolerance = compressionIntolerance;
     }
 
-    public Boolean getPointFormatsIntolerance() {
-        return pointFormatsIntolerance;
+    public Boolean getCipherSuiteLengthIntolerance512() {
+        return cipherSuiteLengthIntolerance512;
     }
 
-    public void setPointFormatsIntolerance(Boolean pointFormatsIntolerance) {
-        this.pointFormatsIntolerance = pointFormatsIntolerance;
+    public void setCipherSuiteLengthIntolerance512(Boolean cipherSuiteLengthIntolerance512) {
+        this.cipherSuiteLengthIntolerance512 = cipherSuiteLengthIntolerance512;
     }
 
-    public Boolean getSignatureAndHashAlgorithmIntolerance() {
-        return signatureAndHashAlgorithmIntolerance;
+    public Boolean getAlpnIntolerance() {
+        return alpnIntolerance;
     }
 
-    public void setSignatureAndHashAlgorithmIntolerance(Boolean signatureAndHashAlgorithmIntolerance) {
-        this.signatureAndHashAlgorithmIntolerance = signatureAndHashAlgorithmIntolerance;
+    public void setAlpnIntolerance(Boolean alpnIntolerance) {
+        this.alpnIntolerance = alpnIntolerance;
+    }
+
+    public Boolean getClientHelloLengthIntolerance() {
+        return clientHelloLengthIntolerance;
+    }
+
+    public void setClientHelloLengthIntolerance(Boolean clientHelloLengthIntolerance) {
+        this.clientHelloLengthIntolerance = clientHelloLengthIntolerance;
+    }
+
+    public Boolean getEmptyLastExtensionIntolerance() {
+        return emptyLastExtensionIntolerance;
+    }
+
+    public void setEmptyLastExtensionIntolerance(Boolean emptyLastExtensionIntolerance) {
+        this.emptyLastExtensionIntolerance = emptyLastExtensionIntolerance;
+    }
+
+    public Boolean getOnlySecondCiphersuiteByteEvaluated() {
+        return onlySecondCiphersuiteByteEvaluated;
+    }
+
+    public void setOnlySecondCiphersuiteByteEvaluated(Boolean onlySecondCiphersuiteByteEvaluated) {
+        this.onlySecondCiphersuiteByteEvaluated = onlySecondCiphersuiteByteEvaluated;
+    }
+
+    public Boolean getNamedGroupIntolerant() {
+        return namedGroupIntolerant;
+    }
+
+    public void setNamedGroupIntolerant(Boolean namedGroupIntolerant) {
+        this.namedGroupIntolerant = namedGroupIntolerant;
+    }
+
+    public Boolean getNamedSignatureAndHashAlgorithmIntolerance() {
+        return namedSignatureAndHashAlgorithmIntolerance;
+    }
+
+    public void setNamedSignatureAndHashAlgorithmIntolerance(Boolean namedSignatureAndHashAlgorithmIntolerance) {
+        this.namedSignatureAndHashAlgorithmIntolerance = namedSignatureAndHashAlgorithmIntolerance;
+    }
+
+    public Boolean getIgnoresCipherSuiteOffering() {
+        return ignoresCipherSuiteOffering;
+    }
+
+    public void setIgnoresCipherSuiteOffering(Boolean ignoresCipherSuiteOffering) {
+        this.ignoresCipherSuiteOffering = ignoresCipherSuiteOffering;
+    }
+
+    public Boolean getReflectsCipherSuiteOffering() {
+        return reflectsCipherSuiteOffering;
+    }
+
+    public void setReflectsCipherSuiteOffering(Boolean reflectsCipherSuiteOffering) {
+        this.reflectsCipherSuiteOffering = reflectsCipherSuiteOffering;
+    }
+
+    public Boolean getIgnoresOfferedNamedGroups() {
+        return ignoresOfferedNamedGroups;
+    }
+
+    public void setIgnoresOfferedNamedGroups(Boolean ignoresOfferedNamedGroups) {
+        this.ignoresOfferedNamedGroups = ignoresOfferedNamedGroups;
+    }
+
+    public Boolean getIgnoresOfferedSignatureAndHashAlgorithms() {
+        return ignoresOfferedSignatureAndHashAlgorithms;
+    }
+
+    public void setIgnoresOfferedSignatureAndHashAlgorithms(Boolean ignoresOfferedSignatureAndHashAlgorithms) {
+        this.ignoresOfferedSignatureAndHashAlgorithms = ignoresOfferedSignatureAndHashAlgorithms;
+    }
+
+    public Boolean getMaxLengthClientHelloIntolerant() {
+        return maxLengthClientHelloIntolerant;
+    }
+
+    public void setMaxLengthClientHelloIntolerant(Boolean maxLengthClientHelloIntolerant) {
+        this.maxLengthClientHelloIntolerant = maxLengthClientHelloIntolerant;
     }
 
     public Boolean getFreakVulnerable() {
@@ -373,6 +491,54 @@ public class SiteReport {
 
     public void setSupportsTls13Draft22(Boolean supportsTls13Draft22) {
         this.supportsTls13Draft22 = supportsTls13Draft22;
+    }
+
+    public Boolean getSupportsTls13Draft23() {
+        return supportsTls13Draft23;
+    }
+
+    public void setSupportsTls13Draft23(Boolean supportsTls13Draft23) {
+        this.supportsTls13Draft23 = supportsTls13Draft23;
+    }
+
+    public Boolean getSupportsTls13Draft24() {
+        return supportsTls13Draft24;
+    }
+
+    public void setSupportsTls13Draft24(Boolean supportsTls13Draft24) {
+        this.supportsTls13Draft24 = supportsTls13Draft24;
+    }
+
+    public Boolean getSupportsTls13Draft25() {
+        return supportsTls13Draft25;
+    }
+
+    public void setSupportsTls13Draft25(Boolean supportsTls13Draft25) {
+        this.supportsTls13Draft25 = supportsTls13Draft25;
+    }
+
+    public Boolean getSupportsTls13Draft26() {
+        return supportsTls13Draft26;
+    }
+
+    public void setSupportsTls13Draft26(Boolean supportsTls13Draft26) {
+        this.supportsTls13Draft26 = supportsTls13Draft26;
+    }
+
+    public Boolean getSupportsTls13Draft27() {
+        return supportsTls13Draft27;
+    }
+
+    public void setSupportsTls13Draft27(Boolean supportsTls13Draft27) {
+        this.supportsTls13Draft27 = supportsTls13Draft27;
+    }
+
+    public Boolean getSupportsTls13Draft28() {
+        return supportsTls13Draft28;
+    }
+
+    public void setSupportsTls13Draft28(Boolean supportsTls13Draft28) {
+        this.supportsTls13Draft28 = supportsTls13Draft28;
     }
 
     public Boolean getSupportsDtls10() {
@@ -599,12 +765,20 @@ public class SiteReport {
         this.versions = versions;
     }
 
-    public List<CipherSuite> getCipherSuites() {
+    public Set<CipherSuite> getCipherSuites() {
         return cipherSuites;
     }
 
-    public void setCipherSuites(List<CipherSuite> cipherSuites) {
+    public void setCipherSuites(Set<CipherSuite> cipherSuites) {
         this.cipherSuites = cipherSuites;
+    }
+
+    public List<CipherSuite> getSupportedTls13CipherSuites() {
+        return supportedTls13CipherSuites;
+    }
+
+    public void setSupportedTls13CipherSuites(List<CipherSuite> supportedTls13CipherSuites) {
+        this.supportedTls13CipherSuites = supportedTls13CipherSuites;
     }
 
     public Certificate getCertificate() {
@@ -703,6 +877,14 @@ public class SiteReport {
         this.supportedNamedGroups = supportedNamedGroups;
     }
 
+    public List<NamedGroup> getSupportedTls13Groups() {
+        return supportedTls13Groups;
+    }
+
+    public void setSupportedTls13Groups(List<NamedGroup> supportedTls13Groups) {
+        this.supportedTls13Groups = supportedTls13Groups;
+    }
+
     public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
         return supportedSignatureAndHashAlgorithms;
     }
@@ -727,20 +909,20 @@ public class SiteReport {
         this.supportedCompressionMethods = supportedCompressionMethods;
     }
 
-    public Boolean getChecksMac() {
-        return checksMac;
+    public CheckPattern getMacCheckPatternAppData() {
+        return macCheckPatterAppData;
     }
 
-    public void setChecksMac(Boolean checksMac) {
-        this.checksMac = checksMac;
+    public void setMacCheckPatterAppData(CheckPattern macCheckPatterAppData) {
+        this.macCheckPatterAppData = macCheckPatterAppData;
     }
 
-    public Boolean getChecksFinished() {
-        return checksFinished;
+    public CheckPattern getVerifyCheckPattern() {
+        return verifyCheckPattern;
     }
 
-    public void setChecksFinished(Boolean checksFinished) {
-        this.checksFinished = checksFinished;
+    public void setVerifyCheckPattern(CheckPattern verifyCheckPattern) {
+        this.verifyCheckPattern = verifyCheckPattern;
     }
 
     public Boolean getSupportsExtendedMasterSecret() {
@@ -1055,22 +1237,6 @@ public class SiteReport {
         this.cipherSuiteIntolerance = cipherSuiteIntolerance;
     }
 
-    public Boolean getGroupsIntolerance() {
-        return groupsIntolerance;
-    }
-
-    public void setGroupsIntolerance(Boolean groupsIntolerance) {
-        this.groupsIntolerance = groupsIntolerance;
-    }
-
-    public Boolean getLucky13Vulnerable() {
-        return lucky13Vulnerable;
-    }
-
-    public void setLucky13Vulnerable(Boolean lucky13Vulnerable) {
-        this.lucky13Vulnerable = lucky13Vulnerable;
-    }
-
     public Boolean getGcmReuse() {
         return gcmReuse;
     }
@@ -1095,14 +1261,6 @@ public class SiteReport {
         this.versionSuitePairs = versionSuitePairs;
     }
 
-    public Boolean getClientHelloSizeIntolerance() {
-        return clientHelloSizeIntolerance;
-    }
-
-    public void setClientHelloSizeIntolerance(Boolean clientHelloSizeIntolerance) {
-        this.clientHelloSizeIntolerance = clientHelloSizeIntolerance;
-    }
-
     public Boolean getSupportsStaticEcdh() {
         return supportsStaticEcdh;
     }
@@ -1114,18 +1272,121 @@ public class SiteReport {
     public boolean isNoColour() {
         return noColor;
     }
-    
-    public String getFullReport()
-    {        
-        return new SiteReportPrinter(this).getFullReport();
+
+    public String getFullReport(ScannerDetail detail) {
+        return new SiteReportPrinter(this, detail).getFullReport();
     }
-    
+
     @Override
-    public String toString(){
-        return getFullReport();
+    public String toString() {
+        return getFullReport(ScannerDetail.NORMAL);
     }
 
     public List<ProbeType> getProbeTypeList() {
         return probeTypeList;
+    }
+
+    public CheckPattern getMacCheckPatternFinished() {
+        return macCheckPatternFinished;
+    }
+
+    public void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
+        this.macCheckPatternFinished = macCheckPatternFinished;
+    }
+
+    public List<PerformanceData> getPerformanceList() {
+        return performanceList;
+    }
+
+    public void setPerformanceList(List<PerformanceData> performanceList) {
+        this.performanceList = performanceList;
+    }
+
+    public List<PaddingOracleTestResult> getPaddingOracleTestResultList() {
+        return paddingOracleTestResultList;
+    }
+
+    public void setPaddingOracleTestResultList(List<PaddingOracleTestResult> paddingOracleTestResultList) {
+        this.paddingOracleTestResultList = paddingOracleTestResultList;
+    }
+
+    public List<HttpsHeader> getHeaderList() {
+        return headerList;
+    }
+
+    public void setHeaderList(List<HttpsHeader> headerList) {
+        this.headerList = headerList;
+    }
+
+    public Boolean getSupportsHsts() {
+        return supportsHsts;
+    }
+
+    public void setSupportsHsts(Boolean supportsHsts) {
+        this.supportsHsts = supportsHsts;
+    }
+
+    public Boolean getSupportsHstsPreloading() {
+        return supportsHstsPreloading;
+    }
+
+    public void setSupportsHstsPreloading(Boolean supportsHstsPreloading) {
+        this.supportsHstsPreloading = supportsHstsPreloading;
+    }
+
+    public Boolean getSupportsHpkp() {
+        return supportsHpkp;
+    }
+
+    public void setSupportsHpkp(Boolean supportsHpkp) {
+        this.supportsHpkp = supportsHpkp;
+    }
+
+    public Boolean getSpeaksHttps() {
+        return speaksHttps;
+    }
+
+    public void setSpeaksHttps(Boolean speaksHttps) {
+        this.speaksHttps = speaksHttps;
+    }
+
+    public Integer getHstsMaxAge() {
+        return hstsMaxAge;
+    }
+
+    public void setHstsMaxAge(Integer hstsMaxAge) {
+        this.hstsMaxAge = hstsMaxAge;
+    }
+
+    public Integer getHpkpMaxAge() {
+        return hpkpMaxAge;
+    }
+
+    public void setHpkpMaxAge(Integer hpkpMaxAge) {
+        this.hpkpMaxAge = hpkpMaxAge;
+    }
+
+    public List<HpkpPin> getNormalHpkpPins() {
+        return normalHpkpPins;
+    }
+
+    public void setNormalHpkpPins(List<HpkpPin> normalHpkpPins) {
+        this.normalHpkpPins = normalHpkpPins;
+    }
+
+    public List<HpkpPin> getReportOnlyHpkpPins() {
+        return reportOnlyHpkpPins;
+    }
+
+    public void setReportOnlyHpkpPins(List<HpkpPin> reportOnlyHpkpPins) {
+        this.reportOnlyHpkpPins = reportOnlyHpkpPins;
+    }
+
+    public Boolean getSupportsHpkpReportOnly() {
+        return supportsHpkpReportOnly;
+    }
+
+    public void setSupportsHpkpReportOnly(Boolean supportsHpkpReportOnly) {
+        this.supportsHpkpReportOnly = supportsHpkpReportOnly;
     }
 }

@@ -24,7 +24,7 @@ public class InvalidCurveResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setInvalidCurveVulnerable(vulnerableClassic);
         report.setInvalidCurveEphermaralVulnerable(vulnerableEphemeral);
     }

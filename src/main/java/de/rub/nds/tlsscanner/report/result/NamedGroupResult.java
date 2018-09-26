@@ -10,17 +10,17 @@ import java.util.List;
  * @author Robert Merget <robert.merget@rub.de>
  */
 public class NamedGroupResult extends ProbeResult {
-    
+
     private final List<NamedGroup> namedGroupsList;
-    
+
     public NamedGroupResult(List<NamedGroup> groups) {
-        super(ProbeType.NAMED_CURVES);
+        super(ProbeType.NAMED_GROUPS);
         this.namedGroupsList = groups;
     }
-    
+
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setSupportedNamedGroups(namedGroupsList);
     }
-    
+
 }

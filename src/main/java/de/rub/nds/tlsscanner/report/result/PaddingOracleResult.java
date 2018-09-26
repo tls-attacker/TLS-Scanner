@@ -7,6 +7,8 @@ package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import java.util.List;
 
 /**
  *
@@ -14,15 +16,27 @@ import de.rub.nds.tlsscanner.report.SiteReport;
  */
 public class PaddingOracleResult extends ProbeResult {
 
-    private final Boolean vulnerable;
+    private List<PaddingOracleTestResult> resultList;
 
-    public PaddingOracleResult(Boolean vulnerable) {
+    public PaddingOracleResult(List<PaddingOracleTestResult> resultList) {
         super(ProbeType.PADDING_ORACLE);
-        this.vulnerable = vulnerable;
+        this.resultList = resultList;
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
+        Boolean vulnerable = null;
+        if (resultList.isEmpty()) {
+            vulnerable = false;
+        }
+        for (PaddingOracleTestResult result : resultList) {
+            if (result.getVulnerable() == true) {
+                vulnerable = true;
+            } else if (result.getVulnerable() == false && vulnerable == null) {
+                vulnerable = false;
+            }
+        }
+        report.setPaddingOracleTestResultList(resultList);
         report.setPaddingOracleVulnerable(vulnerable);
     }
 }
