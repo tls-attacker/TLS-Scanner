@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

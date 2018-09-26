@@ -49,6 +49,9 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
     private ScannerDetail reportDetail = ScannerDetail.NORMAL;
 
+    @Parameter(names = "-aggressiv", required = false, description = "The level of concurrent handshakes (only applies to some resource intensive tests)")
+    private int aggroLevel = 1;
+
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
 
@@ -60,6 +63,14 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(clientDelegate);
         addDelegate(generalDelegate);
         addDelegate(starttlsDelegate);
+    }
+
+    public int getAggroLevel() {
+        return aggroLevel;
+    }
+
+    public void setAggroLevel(int aggroLevel) {
+        this.aggroLevel = aggroLevel;
     }
 
     public int getThreads() {

@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.Cve20162107CommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.Cve20162107Attacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -24,8 +24,8 @@ import de.rub.nds.tlsscanner.report.result.Cve20162107Result;
  */
 public class Cve20162107Probe extends TlsProbe {
 
-    public Cve20162107Probe(ScannerConfig config) {
-        super(ProbeType.CVE20162107, config, 10);
+    public Cve20162107Probe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.CVE20162107, config, 10);
     }
 
     @Override

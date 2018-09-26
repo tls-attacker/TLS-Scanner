@@ -17,10 +17,10 @@ import de.rub.nds.tlsattacker.attacks.exception.PaddingOracleUnstableException;
 import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -35,8 +35,8 @@ import java.util.List;
  */
 public class PaddingOracleProbe extends TlsProbe {
 
-    public PaddingOracleProbe(ScannerConfig config) {
-        super(ProbeType.PADDING_ORACLE, config, 9);
+    public PaddingOracleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.PADDING_ORACLE, config, 9);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class PaddingOracleProbe extends TlsProbe {
                     versionDelegate.setProtocolVersion(version);
                     paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
                     paddingOracleConfig.setVectorGeneratorType(vectorType);
-                    PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig());
+                    PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig(), parallelExecutor);
                     try {
                         lastResult = attacker.isVulnerable();
                     } catch (PaddingOracleUnstableException E) {

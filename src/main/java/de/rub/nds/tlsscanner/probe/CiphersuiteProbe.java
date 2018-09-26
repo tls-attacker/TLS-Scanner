@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -38,8 +39,8 @@ public class CiphersuiteProbe extends TlsProbe {
 
     private final List<ProtocolVersion> protocolVersions;
 
-    public CiphersuiteProbe(ScannerConfig config) {
-        super(ProbeType.CIPHERSUITE, config, 0);
+    public CiphersuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.CIPHERSUITE, config, 0);
         protocolVersions = new LinkedList<>();
         protocolVersions.add(ProtocolVersion.TLS10);
         protocolVersions.add(ProtocolVersion.TLS11);
@@ -54,6 +55,7 @@ public class CiphersuiteProbe extends TlsProbe {
             List<CipherSuite> toTestList = new LinkedList<>();
             toTestList.addAll(Arrays.asList(CipherSuite.values()));
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             List<CipherSuite> versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
             if (versionSupportedSuites.isEmpty()) {
                 versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);

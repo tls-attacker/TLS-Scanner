@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.TLSPoodleCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.TLSPoodleAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -24,8 +24,8 @@ import de.rub.nds.tlsscanner.report.result.TlsPoodleResult;
  */
 public class TlsPoodleProbe extends TlsProbe {
 
-    public TlsPoodleProbe(ScannerConfig config) {
-        super(ProbeType.TLS_POODLE, config, 8);
+    public TlsPoodleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.TLS_POODLE, config, 8);
     }
 
     @Override

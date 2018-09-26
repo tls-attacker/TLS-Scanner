@@ -11,6 +11,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
@@ -35,8 +36,8 @@ public class RenegotiationProbe extends TlsProbe {
     private Set<CipherSuite> supportedSuites;
     private boolean supportsRenegotiationExtension;
 
-    public RenegotiationProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.RENEGOTIATION, scannerConfig, 0);
+    public RenegotiationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.RENEGOTIATION, scannerConfig, 0);
     }
 
     @Override

@@ -11,6 +11,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
@@ -33,8 +34,8 @@ public class ResumptionProbe extends TlsProbe {
 
     private Set<CipherSuite> supportedSuites;
 
-    public ResumptionProbe(ScannerConfig scannerConfig) {
-        super(ProbeType.RESUMPTION, scannerConfig, 0);
+    public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig, 0);
     }
 
     @Override

@@ -15,4 +15,6 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 public abstract class ScanJobExecutor {
 
     public abstract SiteReport execute(ScannerConfig config, ScanJob scanJob);
+
+    public abstract void shutdown();
 }

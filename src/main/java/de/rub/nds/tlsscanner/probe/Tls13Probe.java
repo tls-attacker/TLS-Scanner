@@ -4,16 +4,15 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KS.KeyShareEntry;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -32,8 +31,8 @@ import java.util.List;
 
 public class Tls13Probe extends TlsProbe {
 
-    public Tls13Probe(ScannerConfig scannerConfig) {
-        super(ProbeType.TLS13, scannerConfig, 0);
+    public Tls13Probe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.TLS13, scannerConfig, 0);
     }
 
     private List<CipherSuite> getSupportedCiphersuites() {
@@ -47,12 +46,13 @@ public class Tls13Probe extends TlsProbe {
         }
         do {
             selectedSuite = getSelectedCiphersuite(toTestList);
-            if (!toTestList.contains(selectedSuite)) {
-                LOGGER.warn("Server chose a CipherSuite we did not propose!");
-                //TODO write to sitereport
-                break;
-            }
+
             if (selectedSuite != null) {
+                if (!toTestList.contains(selectedSuite)) {
+                    LOGGER.warn("Server chose a CipherSuite we did not propose!");
+                    //TODO write to sitereport
+                    break;
+                }
                 supportedSuits.add(selectedSuite);
                 toTestList.remove(selectedSuite);
             }
