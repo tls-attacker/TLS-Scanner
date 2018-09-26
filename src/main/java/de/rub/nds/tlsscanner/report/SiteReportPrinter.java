@@ -54,7 +54,7 @@ public class SiteReportPrinter {
             return builder.toString();
         }
         if (report.getSupportsSslTls() == Boolean.FALSE) {
-            builder.append("Server does not seem to support SSL / TLS");
+            builder.append("Server does not seem to support SSL / TLS on the scanned port");
             return builder.toString();
         }
 

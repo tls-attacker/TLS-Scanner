@@ -144,30 +144,35 @@ public class TlsScanner {
     }
 
     public SiteReport scan() {
-        if (isConnectable()) {
-            LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-            if (speaksTls()) {
+        boolean isConnectable = false;
+        try {
+            if (isConnectable()) {
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-                ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
-                SiteReport report = executor.execute(config, job);
-                if (closeAfterFinish) {
-                    executor.shutdown();
+                if (speaksTls()) {
+                    LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
+                    ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
+                    SiteReport report = executor.execute(config, job);
+                    return report;
+                } else {
+                    isConnectable = true;
                 }
-                if (closeAfterFinishParallel) {
-                    parallelExecutor.shutdown();
-                }
-                return report;
             }
+            SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
+            report.setServerIsAlive(isConnectable);
+            report.setSupportsSslTls(false);
+            return report;
+        } finally {
+            closeExecutorsIfNeeded();
         }
-        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
-        report.setServerIsAlive(false);
+    }
+
+    private void closeExecutorsIfNeeded() {
         if (closeAfterFinish) {
             executor.shutdown();
         }
         if (closeAfterFinishParallel) {
             parallelExecutor.shutdown();
         }
-        return report;
     }
 
     public boolean isConnectable() {
