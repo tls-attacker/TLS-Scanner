@@ -27,8 +27,6 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws IOException {
-//        scanFile(new File(args[0]));
-        
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
         try {
