@@ -114,7 +114,7 @@ public class MacProbe extends TlsProbe {
         trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
 
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
 
         ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
         try {
@@ -233,7 +233,7 @@ public class MacProbe extends TlsProbe {
             stateList.add(state);
             stateIndexList.add(new StateIndexPair(i, state));
         }
-        parallelExecutor.bulkExecute(stateList);
+        executeState(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
             if (receviedOnlyFinAndCcs(trace)) {
@@ -279,7 +279,7 @@ public class MacProbe extends TlsProbe {
             stateIndexList.add(new StateIndexPair(i, state));
 
         }
-        parallelExecutor.bulkExecute(stateList);
+        executeState(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
             if (check == Check.APPDATA) {

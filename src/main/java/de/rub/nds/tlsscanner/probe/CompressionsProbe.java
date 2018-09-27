@@ -85,7 +85,7 @@ public class CompressionsProbe extends TlsProbe {
     private CompressionMethod testCompressionMethods(List<CompressionMethod> compressionList, Config tlsConfig) {
         tlsConfig.setDefaultClientSupportedCompressionMethods(compressionList);
         State state = new State(tlsConfig);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCompressionMethod();
         } else {

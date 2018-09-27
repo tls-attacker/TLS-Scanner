@@ -76,7 +76,7 @@ public class TokenbindingProbe extends TlsProbe {
         while (!toTestList.isEmpty()) {
             tlsConfig.setDefaultTokenBindingKeyParameters(toTestList);
             State state = new State(tlsConfig);
-            parallelExecutor.bulkExecute(state);
+            executeState(state);
             if (state.getTlsContext().isExtensionNegotiated(ExtensionType.TOKEN_BINDING)) {
                 supportedParameters.addAll(state.getTlsContext().getTokenBindingKeyParameters());
                 for (TokenBindingKeyParameters param : state.getTlsContext().getTokenBindingKeyParameters()) {
@@ -116,7 +116,7 @@ public class TokenbindingProbe extends TlsProbe {
             try {
                 tlsConfig.setDefaultTokenBindingVersion(version);
                 State state = new State(tlsConfig);
-                parallelExecutor.bulkExecute(state);
+                executeState(state);
                 if (state.getTlsContext().isExtensionNegotiated(ExtensionType.TOKEN_BINDING)) {
                     supportedVersions.add(state.getTlsContext().getTokenBindingVersion());
                 }

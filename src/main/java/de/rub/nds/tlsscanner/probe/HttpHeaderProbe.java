@@ -86,7 +86,7 @@ public class HttpHeaderProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(httpsRequestMessage));
         trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
         State state = new State(tlsConfig, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         ReceivingAction action = trace.getLastReceivingAction();
         HttpsResponseMessage responseMessage = null;
         if (action.getReceivedMessages() != null) {

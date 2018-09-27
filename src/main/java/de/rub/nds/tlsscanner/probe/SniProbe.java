@@ -41,7 +41,7 @@ public class SniProbe extends TlsProbe {
         config.setDefaultClientSupportedCiphersuites(toTestList);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
             return new SniResult(Boolean.FALSE);
         }
@@ -49,7 +49,7 @@ public class SniProbe extends TlsProbe {
         config.setAddServerNameIndicationExtension(true);
         trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
         state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
             return new SniResult(Boolean.TRUE);
         }

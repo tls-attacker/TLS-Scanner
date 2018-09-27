@@ -63,7 +63,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return state.getTlsContext().getSelectedCipherSuite();
     }
 

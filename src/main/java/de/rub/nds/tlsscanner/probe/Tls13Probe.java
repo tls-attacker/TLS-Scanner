@@ -97,7 +97,7 @@ public class Tls13Probe extends TlsProbe {
         if (keyShareExtension != null) {
             ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
         }
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             //ServerHelloMessage message = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
             return state.getTlsContext().getSelectedCipherSuite();
@@ -173,7 +173,7 @@ public class Tls13Probe extends TlsProbe {
         if (keyShareExtension != null) {
             ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
         }
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         if (state.getTlsContext().isExtensionNegotiated(ExtensionType.ELLIPTIC_CURVES)) {
             return state.getTlsContext().getServerNamedGroupsList();
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -217,7 +217,7 @@ public class Tls13Probe extends TlsProbe {
         if (keyShareExtension != null) {
             ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
         }
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(state.getWorkflowTrace().toString());

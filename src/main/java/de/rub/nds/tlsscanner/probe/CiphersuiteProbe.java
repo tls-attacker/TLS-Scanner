@@ -91,7 +91,7 @@ public class CiphersuiteProbe extends TlsProbe {
             namedGroup.addAll(Arrays.asList(NamedGroup.values()));
             config.setDefaultClientNamedGroups(namedGroup);
             State state = new State(config);
-            parallelExecutor.bulkExecute(state);
+            executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
                 if (state.getTlsContext().getSelectedProtocolVersion() != version) {
                     LOGGER.debug("Server does not support " + version);

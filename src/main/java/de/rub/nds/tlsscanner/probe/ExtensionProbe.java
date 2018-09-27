@@ -85,7 +85,7 @@ public class ExtensionProbe extends TlsProbe {
         List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(nameGroups);
         State state = new State(tlsConfig);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return new ArrayList(state.getTlsContext().getNegotiatedExtensionSet());
         } else {

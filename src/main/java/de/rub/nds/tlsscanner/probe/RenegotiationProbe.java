@@ -70,7 +70,7 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
         State state = new State(tlsConfig);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return state.getWorkflowTrace().executedAsPlanned();
     }
 
@@ -96,7 +96,7 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
         State state = new State(tlsConfig);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return state.getWorkflowTrace().executedAsPlanned();
     }
 

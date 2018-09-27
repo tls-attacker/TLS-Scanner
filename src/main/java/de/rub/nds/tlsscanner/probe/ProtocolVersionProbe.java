@@ -114,7 +114,7 @@ public class ProtocolVersionProbe extends TlsProbe {
 
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
         State state = new State(tlsConfig);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(state.getWorkflowTrace().toString());
@@ -139,7 +139,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(new SSL2ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveAction(new SSL2ServerHelloMessage(tlsConfig)));
         State state = new State(tlsConfig, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return trace.executedAsPlanned();
     }
 

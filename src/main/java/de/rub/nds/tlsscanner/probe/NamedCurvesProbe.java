@@ -78,7 +78,7 @@ public class NamedCurvesProbe extends TlsProbe {
     private NamedGroup testCurves(List<NamedGroup> curveList, Config tlsConfig) {
         tlsConfig.setDefaultClientNamedGroups(curveList);
         State state = new State(tlsConfig);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedGroup();
         } else {
