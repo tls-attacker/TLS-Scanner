@@ -41,9 +41,12 @@ public class Main {
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
-                LOGGER.info("Scanned in:" + ((System.currentTimeMillis()-time)/1000) + "s");
+                LOGGER.info("Scanned in:" + ((System.currentTimeMillis()-time)/1000) + "s\n");
                 // ANSI escape sequences to erase the progressbar
-                ConsoleLogger.CONSOLE.info("\033[1A\033[2KScanned in: " + ((System.currentTimeMillis()-time)/1000) + "s\n" + report.getFullReport(config.getReportDetail()));
+                if(!config.getGeneralDelegate().isDebug()){
+                    ConsoleLogger.CONSOLE.info("\033[1A\033[2K");
+                }
+                ConsoleLogger.CONSOLE.info("Scanned in: " + ((System.currentTimeMillis()-time)/1000) + "s\n" + report.getFullReport(config.getReportDetail()));
             } catch (ConfigurationException E) {
                 LOGGER.info("Encountered a ConfigurationException aborting.");
                 LOGGER.warn(E);

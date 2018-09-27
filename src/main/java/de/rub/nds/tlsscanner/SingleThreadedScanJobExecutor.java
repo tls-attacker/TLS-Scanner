@@ -142,9 +142,6 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
         for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
             afterProbe.analyze(report);
         }
-        if (pb != null) {
-            pb.setExtraMessage(getPaddedProbeName("Finished"));
-        }
         LOGGER.info("Finished scan for: " + hostname);
         return report;
     }

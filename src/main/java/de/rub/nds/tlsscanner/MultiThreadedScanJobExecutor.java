@@ -146,9 +146,6 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
             afterProbe.analyze(report);
         }
         executor.shutdown();
-        if(pb != null){
-            pb.setExtraMessage("Finished");
-        }
         LOGGER.info("Finished scan for: " + hostname);
         return report;
     }
