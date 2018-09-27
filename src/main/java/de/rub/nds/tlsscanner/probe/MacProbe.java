@@ -26,13 +26,10 @@ import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
@@ -117,8 +114,7 @@ public class MacProbe extends TlsProbe {
         trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
 
         State state = new State(config, trace);
-        WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
-        executor.executeWorkflow();
+        parallelExecutor.bulkExecute(state);
 
         ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
         try {
