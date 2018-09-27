@@ -13,6 +13,7 @@ import com.beust.jcommander.ParameterException;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.AnsiEscapeSequence;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
@@ -42,9 +43,9 @@ public class Main {
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
                 LOGGER.info("Scanned in:" + ((System.currentTimeMillis()-time)/1000) + "s\n");
-                // ANSI escape sequences to erase the progressbar
                 if(!config.getGeneralDelegate().isDebug()){
-                    ConsoleLogger.CONSOLE.info("\033[1A\033[2K");
+                    // ANSI escape sequences to erase the progressbar
+                    ConsoleLogger.CONSOLE.info(AnsiEscapeSequence.ANSI_ONE_LINE_UP + AnsiEscapeSequence.ANSI_ERASE_LINE);
                 }
                 ConsoleLogger.CONSOLE.info("Scanned in: " + ((System.currentTimeMillis()-time)/1000) + "s\n" + report.getFullReport(config.getReportDetail()));
             } catch (ConfigurationException E) {
