@@ -74,6 +74,7 @@ public class SiteReportPrinter {
         appendRenegotiation(builder);
         appendHttps(builder);
         appendRandom(builder);
+        appendPublicKeyIssues(builder);
         for (PerformanceData data : report.getPerformanceList()) {
             LOGGER.debug("Type: " + data.getType() + "   Start: " + data.getStarttime() + "    Stop: " + data.getStoptime());
         }
@@ -464,7 +465,14 @@ public class SiteReportPrinter {
     private void appendRandom(StringBuilder builder) {
         prettyAppendHeading(builder, "Nonce");
         prettyAppendRandom(builder, "Random", report.getRandomEvaluationResult());
+    }
 
+    private void appendPublicKeyIssues(StringBuilder builder) {
+        prettyAppendHeading(builder, "Nonce");
+        prettyAppendRedGreen(builder, "EC PublicKey reuse", report.getEcPubkeyReuse());
+        prettyAppendRedGreen(builder, "DH PublicKey reuse", report.getDhPubkeyReuse());
+        prettyAppendRedGreen(builder, "Uses Common DH Primes", report.getUsesCommonDhPrimes());
+        prettyAppendRedGreen(builder, "Uses Nonsafe-Prime Moduli", report.getUsesNonSafePrimeModuli());
     }
 
     private void prettyPrintCipherSuite(StringBuilder builder, CipherSuite suite) {

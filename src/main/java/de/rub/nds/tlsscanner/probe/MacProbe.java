@@ -46,6 +46,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.MacResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -332,12 +333,17 @@ public class MacProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
-        allSuiteList.addAll(report.getCipherSuites());
-        suiteList = new LinkedList<>();
-        for (CipherSuite suite : allSuiteList) {
-            if (suite.isUsingMac()) {
-                suiteList.add(suite);
+        if (report.getCipherSuites() != null) {
+
+            allSuiteList.addAll(report.getCipherSuites());
+            suiteList = new LinkedList<>();
+            for (CipherSuite suite : allSuiteList) {
+                if (suite.isUsingMac()) {
+                    suiteList.add(suite);
+                }
             }
+        } else {
+            allSuiteList = CipherSuite.getImplemented();
         }
     }
 

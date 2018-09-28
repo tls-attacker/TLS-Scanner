@@ -7,7 +7,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.List;
 
-public class EvaluateRandomnessProbe extends AfterProbe {
+public class EvaluateRandomnessAfterProbe extends AfterProbe {
     
     @Override
     public void analyze(SiteReport report) {

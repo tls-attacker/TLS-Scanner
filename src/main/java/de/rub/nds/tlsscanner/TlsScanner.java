@@ -41,7 +41,9 @@ import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
-import de.rub.nds.tlsscanner.report.after.EvaluateRandomnessProbe;
+import de.rub.nds.tlsscanner.report.after.DhPublicKeyAfterProbe;
+import de.rub.nds.tlsscanner.report.after.EcPublicKeyAfterProbe;
+import de.rub.nds.tlsscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
@@ -142,7 +144,9 @@ public class TlsScanner {
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterprobe());
-        afterList.add(new EvaluateRandomnessProbe());
+        afterList.add(new EvaluateRandomnessAfterProbe());
+        afterList.add(new EcPublicKeyAfterProbe());
+        afterList.add(new DhPublicKeyAfterProbe());
     }
 
     public SiteReport scan() {

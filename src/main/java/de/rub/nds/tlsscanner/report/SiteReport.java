@@ -34,10 +34,6 @@ import java.util.List;
 import java.util.Set;
 import org.bouncycastle.crypto.tls.Certificate;
 
-/**
- *
- * @author Robert Merget - robert.merget@rub.de
- */
 public class SiteReport {
 
     //general
@@ -217,6 +213,12 @@ public class SiteReport {
     //Randomness
     private List<ExtractedValueContainer> extractedValueContainerList;
     private RandomEvaluationResult randomEvaluationResult;
+
+    //PublicKey Params
+    private Boolean ecPubkeyReuse = null;
+    private Boolean dhPubkeyReuse = null;
+    private Boolean usesCommonDhPrimes = null;
+    private Boolean usesNonSafePrimeModuli = null;
 
     //NoColor Flag
     private boolean noColor = false;
@@ -1412,5 +1414,37 @@ public class SiteReport {
 
     public void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
         this.randomEvaluationResult = randomEvaluationResult;
+    }
+
+    public Boolean getEcPubkeyReuse() {
+        return ecPubkeyReuse;
+    }
+
+    public void setEcPubkeyReuse(Boolean ecPubkeyReuse) {
+        this.ecPubkeyReuse = ecPubkeyReuse;
+    }
+
+    public Boolean getDhPubkeyReuse() {
+        return dhPubkeyReuse;
+    }
+
+    public void setDhPubkeyReuse(Boolean dhPubkeyReuse) {
+        this.dhPubkeyReuse = dhPubkeyReuse;
+    }
+
+    public Boolean getUsesCommonDhPrimes() {
+        return usesCommonDhPrimes;
+    }
+
+    public void setUsesCommonDhPrimes(Boolean usesCommonDhPrimes) {
+        this.usesCommonDhPrimes = usesCommonDhPrimes;
+    }
+
+    public Boolean getUsesNonSafePrimeModuli() {
+        return usesNonSafePrimeModuli;
+    }
+
+    public void setUsesNonSafePrimeModuli(Boolean usesNonSafePrimeModuli) {
+        this.usesNonSafePrimeModuli = usesNonSafePrimeModuli;
     }
 }
