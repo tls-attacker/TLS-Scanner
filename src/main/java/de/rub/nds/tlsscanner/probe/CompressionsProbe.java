@@ -71,7 +71,7 @@ public class CompressionsProbe extends TlsProbe {
         do {
             selectedCompressionMethod = testCompressionMethods(toTestList, tlsConfig);
             if (!toTestList.contains(selectedCompressionMethod)) {
-                LOGGER.warn("Server chose a CompressionMethod we did not offer!");
+                LOGGER.debug("Server chose a CompressionMethod we did not offer!");
                 break;
             }
             if (selectedCompressionMethod != null) {

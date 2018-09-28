@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import me.tongfei.progressbar.*;
 
 /**
  *
@@ -30,16 +31,54 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
 
     public SingleThreadedScanJobExecutor() {
     }
+    
+    private String getPaddedProbeName( String probeName){
+        StringBuilder sb = new StringBuilder(probeName);
+        while(sb.length() < 30){
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
 
     @Override
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
+        
+        if(config.getGeneralDelegate().isDebug() || config.isNoProgressbar()){
+            return scan(config, scanJob, null);
+        } else {
+            int numberOfProbes = 0;
+            for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
+                if (probe.getDanger() <= config.getDangerLevel()) {
+                    numberOfProbes++;
+                }
+            }
+            for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
+                if (probe.getDanger() <= config.getDangerLevel()) {
+                    numberOfProbes++;
+                }
+            }
+            try(ProgressBar pb = new ProgressBar("", numberOfProbes)){
+                return scan(config, scanJob, pb);
+            }
+        }
+        
+            
+    }
+    
+    private SiteReport scan(ScannerConfig config, ScanJob scanJob, ProgressBar pb){
         List<ProbeType> probeTypes = new LinkedList<>();
-
         List<ProbeResult> resultList = new LinkedList<>();
+        
         for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
                 try {
+                    if(pb != null){
+                        pb.setExtraMessage("Executing " + getPaddedProbeName(probe.getProbeName()));
+                    }
                     resultList.add(probe.call());
+                    if(pb != null){
+                        pb.step();
+                    }
                 } catch (Exception E) {
                     LOGGER.warn("Could not execute Probe", E);
                 }
@@ -65,13 +104,18 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
             probe.adjustConfig(report);
         }
         resultList = new LinkedList<>();
-        resultList = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
                 probeTypes.add(probe.getType());
                 if (probe.shouldBeExecuted(report)) {
                     try {
+                        if(pb != null){
+                            pb.setExtraMessage("Executing " + getPaddedProbeName(probe.getProbeName()));
+                        }
                         resultList.add(probe.call());
+                        if(pb != null){
+                            pb.step();
+                        }
                     } catch (Exception E) {
                         LOGGER.warn("Could not execute Probe", E);
                     }
@@ -79,6 +123,9 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {
                         resultList.add(result);
+                        if(pb != null){
+                            pb.step();
+                        }
                     }
                 }
             }
@@ -95,6 +142,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
         for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
             afterProbe.analyze(report);
         }
+        LOGGER.info("Finished scan for: " + hostname);
         return report;
     }
 
