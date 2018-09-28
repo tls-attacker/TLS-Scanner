@@ -23,8 +23,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,8 +45,8 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
     }
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
-        
-        if(config.getGeneralDelegate().isDebug()){
+
+        if (config.getGeneralDelegate().isDebug() || config.isNoProgressbar()) {
             return scan(config, scanJob, null);
         } else {
             int numberOfProbes = 0;
@@ -67,10 +65,10 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
             }
         }
     }
-    
+
     private SiteReport scan(ScannerConfig config, ScanJob scanJob, ProgressBar pb) {
         List<ProbeType> probeTypes = new LinkedList<>();
-        if(pb != null){
+        if (pb != null) {
             pb.setExtraMessage("Executing Probes");
         }
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
@@ -118,7 +116,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {
                         resultList.add(result);
-                        if(pb != null){
+                        if (pb != null) {
                             pb.step();
                         }
                     }
@@ -149,8 +147,8 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
         LOGGER.info("Finished scan for: " + hostname);
         return report;
     }
-    
-    private void checkProbesDone(List<Future<ProbeResult>> futureResults, ProgressBar pb){
+
+    private void checkProbesDone(List<Future<ProbeResult>> futureResults, ProgressBar pb) {
         boolean isNotReady = true;
         int done = 0;
         int tempDone = 0;
@@ -161,7 +159,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
                     tempDone++;
                 }
                 if (done < tempDone) {
-                    if(pb != null){
+                    if (pb != null) {
                         pb.step();
                     }
                     done = tempDone;
@@ -171,7 +169,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
                 }
             }
         }
-    }   
+    }
 
     @Override
     public void shutdown() {

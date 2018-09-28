@@ -43,7 +43,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
     @Override
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
         
-        if(config.getGeneralDelegate().isDebug()){
+        if(config.getGeneralDelegate().isDebug() || config.isNoProgressbar()){
             return scan(config, scanJob, null);
         } else {
             int numberOfProbes = 0;
