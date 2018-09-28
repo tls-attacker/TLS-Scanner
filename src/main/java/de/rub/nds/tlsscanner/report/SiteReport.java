@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -213,7 +214,9 @@ public class SiteReport {
     private List<HpkpPin> normalHpkpPins;
     private List<HpkpPin> reportOnlyHpkpPins;
 
+    //Randomness
     private List<ExtractedValueContainer> extractedValueContainerList;
+    private RandomEvaluationResult randomEvaluationResult;
 
     //NoColor Flag
     private boolean noColor = false;
@@ -1401,5 +1404,13 @@ public class SiteReport {
 
     public void setExtractedValueContainerList(List<ExtractedValueContainer> extractedValueContainerList) {
         this.extractedValueContainerList = extractedValueContainerList;
+    }
+
+    public RandomEvaluationResult getRandomEvaluationResult() {
+        return randomEvaluationResult;
+    }
+
+    public void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
+        this.randomEvaluationResult = randomEvaluationResult;
     }
 }
