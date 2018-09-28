@@ -25,6 +25,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.CommonBugProbeResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.selector.ConfigSelector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -80,7 +81,7 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     private Config getWorkingConfig() {
-        Config config = scannerConfig.createConfig();
+        Config config = ConfigSelector.getNiceConfig(scannerConfig);
 
         return config;
     }
@@ -374,7 +375,7 @@ public class CommonBugProbe extends TlsProbe {
         Config config = getWorkingConfig();
         config.setAddAlpnExtension(true);
         config.setAddPaddingExtension(true);
-        
+
         WorkflowTrace trace = new WorkflowTrace();
         ClientHelloMessage message = new ClientHelloMessage(config);
         int newLength = 384 - getClientHelloLength(message, config) - config.getPaddingLength();

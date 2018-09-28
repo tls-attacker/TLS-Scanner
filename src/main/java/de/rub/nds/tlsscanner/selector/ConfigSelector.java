@@ -28,6 +28,8 @@ public class ConfigSelector {
         config.setAddSignatureAndHashAlgorithmsExtension(Boolean.TRUE);
         config.setAddRenegotiationInfoExtension(Boolean.TRUE);
         config.setDefaultClientSupportedCiphersuites(CipherSuite.values());
+        config.getDefaultClientSupportedCiphersuites().remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        config.getDefaultClientSupportedCiphersuites().remove(CipherSuite.TLS_FALLBACK_SCSV);
         config.setDefaultSelectedCipherSuite(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
         List<SignatureAndHashAlgorithm> sigHashList = new LinkedList<>();
         sigHashList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
@@ -36,14 +38,14 @@ public class ConfigSelector {
         config.setQuickReceive(true);
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);
-        cleanupConfig(config);
+        //cleanupConfig(config);
         return config;
     }
 
     public static Config cleanupConfig(Config config) {
         boolean hasEcCipherSuite = false;
         for (CipherSuite suite : config.getDefaultClientSupportedCiphersuites()) {
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).name().toUpperCase().contains("EC")) {
+            if (suite.name().toUpperCase().contains("_EC")) {
                 hasEcCipherSuite = true;
             }
         }
