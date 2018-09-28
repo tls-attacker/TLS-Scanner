@@ -52,6 +52,8 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-aggressiv", required = false, description = "The level of concurrent handshakes (only applies to some resource intensive tests)")
     private int aggroLevel = 1;
 
+    private boolean noProgressbar = false;
+
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
 
@@ -63,6 +65,14 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(clientDelegate);
         addDelegate(generalDelegate);
         addDelegate(starttlsDelegate);
+    }
+
+    public boolean isNoProgressbar() {
+        return noProgressbar;
+    }
+
+    public void setNoProgressbar(boolean noProgressbar) {
+        this.noProgressbar = noProgressbar;
     }
 
     public int getAggroLevel() {

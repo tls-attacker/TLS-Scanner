@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import me.tongfei.progressbar.ProgressBar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,8 +45,32 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
     }
 
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
-        List<ProbeType> probeTypes = new LinkedList<>();
 
+        if (config.getGeneralDelegate().isDebug() || config.isNoProgressbar()) {
+            return scan(config, scanJob, null);
+        } else {
+            int numberOfProbes = 0;
+            for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
+                if (probe.getDanger() <= config.getDangerLevel()) {
+                    numberOfProbes++;
+                }
+            }
+            for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
+                if (probe.getDanger() <= config.getDangerLevel()) {
+                    numberOfProbes++;
+                }
+            }
+            try (ProgressBar pb = new ProgressBar("", numberOfProbes)) {
+                return scan(config, scanJob, pb);
+            }
+        }
+    }
+
+    private SiteReport scan(ScannerConfig config, ScanJob scanJob, ProgressBar pb) {
+        List<ProbeType> probeTypes = new LinkedList<>();
+        if (pb != null) {
+            pb.setExtraMessage("Executing Probes");
+        }
         List<Future<ProbeResult>> futureResults = new LinkedList<>();
         for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
@@ -54,6 +79,9 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
             }
         }
         List<ProbeResult> resultList = new LinkedList<>();
+
+        checkProbesDone(futureResults, pb);
+
         for (Future<ProbeResult> probeResult : futureResults) {
             try {
                 resultList.add(probeResult.get());
@@ -88,10 +116,16 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {
                         resultList.add(result);
+                        if (pb != null) {
+                            pb.step();
+                        }
                     }
                 }
             }
         }
+
+        checkProbesDone(futureResults, pb);
+
         for (Future<ProbeResult> probeResult : futureResults) {
             try {
                 resultList.add(probeResult.get());
@@ -109,7 +143,32 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
         for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
             afterProbe.analyze(report);
         }
+        executor.shutdown();
+        LOGGER.info("Finished scan for: " + hostname);
         return report;
+    }
+
+    private void checkProbesDone(List<Future<ProbeResult>> futureResults, ProgressBar pb) {
+        boolean isNotReady = true;
+        int done = 0;
+        int tempDone = 0;
+        while (isNotReady) {
+            tempDone = 0;
+            for (Future<ProbeResult> probeResult : futureResults) {
+                if (probeResult.isDone()) {
+                    tempDone++;
+                }
+                if (done < tempDone) {
+                    if (pb != null) {
+                        pb.step();
+                    }
+                    done = tempDone;
+                    if (done == futureResults.size()) {
+                        isNotReady = false;
+                    }
+                }
+            }
+        }
     }
 
     @Override
