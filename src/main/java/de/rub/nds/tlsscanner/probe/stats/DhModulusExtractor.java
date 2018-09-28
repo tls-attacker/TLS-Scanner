@@ -9,10 +9,6 @@ package de.rub.nds.tlsscanner.probe.stats;
  *
  * @author robert
  */
-public enum TrackableValueType {
-    RANDOM,
-    DH_PUBKEY,
-    DH_MODULUS,
-    ECDHE_PUBKEY,
-    GCM_NONCE_EXPLICIT
+public class DhModulusExtractor {
+    
 }

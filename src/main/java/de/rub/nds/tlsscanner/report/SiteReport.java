@@ -24,6 +24,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
@@ -211,6 +212,9 @@ public class SiteReport {
     private Integer hpkpMaxAge = null;
     private List<HpkpPin> normalHpkpPins;
     private List<HpkpPin> reportOnlyHpkpPins;
+
+    private List<ExtractedValueContainer> extractedValueContainerList;
+
     //NoColor Flag
     private boolean noColor = false;
 
@@ -219,6 +223,7 @@ public class SiteReport {
         this.probeTypeList = probeTypeList;
         this.noColor = noColor;
         performanceList = new LinkedList<>();
+        extractedValueContainerList = new LinkedList<>();
     }
 
     public String getHost() {
@@ -1388,5 +1393,13 @@ public class SiteReport {
 
     public void setSupportsHpkpReportOnly(Boolean supportsHpkpReportOnly) {
         this.supportsHpkpReportOnly = supportsHpkpReportOnly;
+    }
+
+    public List<ExtractedValueContainer> getExtractedValueContainerList() {
+        return extractedValueContainerList;
+    }
+
+    public void setExtractedValueContainerList(List<ExtractedValueContainer> extractedValueContainerList) {
+        this.extractedValueContainerList = extractedValueContainerList;
     }
 }

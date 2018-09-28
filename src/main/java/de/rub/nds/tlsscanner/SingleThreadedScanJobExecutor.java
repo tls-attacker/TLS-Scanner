@@ -14,6 +14,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,10 +32,10 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
 
     public SingleThreadedScanJobExecutor() {
     }
-    
-    private String getPaddedProbeName( String probeName){
+
+    private String getPaddedProbeName(String probeName) {
         StringBuilder sb = new StringBuilder(probeName);
-        while(sb.length() < 30){
+        while (sb.length() < 30) {
             sb.append(" ");
         }
         return sb.toString();
@@ -42,8 +43,8 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
 
     @Override
     public SiteReport execute(ScannerConfig config, ScanJob scanJob) {
-        
-        if(config.getGeneralDelegate().isDebug() || config.isNoProgressbar()){
+
+        if (config.getGeneralDelegate().isDebug() || config.isNoProgressbar()) {
             return scan(config, scanJob, null);
         } else {
             int numberOfProbes = 0;
@@ -57,26 +58,25 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                     numberOfProbes++;
                 }
             }
-            try(ProgressBar pb = new ProgressBar("", numberOfProbes)){
+            try (ProgressBar pb = new ProgressBar("", numberOfProbes)) {
                 return scan(config, scanJob, pb);
             }
         }
-        
-            
+
     }
-    
-    private SiteReport scan(ScannerConfig config, ScanJob scanJob, ProgressBar pb){
+
+    private SiteReport scan(ScannerConfig config, ScanJob scanJob, ProgressBar pb) {
         List<ProbeType> probeTypes = new LinkedList<>();
         List<ProbeResult> resultList = new LinkedList<>();
-        
+
         for (TlsProbe probe : scanJob.getPhaseOneTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
                 try {
-                    if(pb != null){
+                    if (pb != null) {
                         pb.setExtraMessage("Executing " + getPaddedProbeName(probe.getProbeName()));
                     }
                     resultList.add(probe.call());
-                    if(pb != null){
+                    if (pb != null) {
                         pb.step();
                     }
                 } catch (Exception E) {
@@ -109,11 +109,11 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                 probeTypes.add(probe.getType());
                 if (probe.shouldBeExecuted(report)) {
                     try {
-                        if(pb != null){
+                        if (pb != null) {
                             pb.setExtraMessage("Executing " + getPaddedProbeName(probe.getProbeName()));
                         }
                         resultList.add(probe.call());
-                        if(pb != null){
+                        if (pb != null) {
                             pb.step();
                         }
                     } catch (Exception E) {
@@ -123,7 +123,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {
                         resultList.add(result);
-                        if(pb != null){
+                        if (pb != null) {
                             pb.step();
                         }
                     }
@@ -142,7 +142,29 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
         for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
             afterProbe.analyze(report);
         }
+        //phase 4 - collect statistics
+        List<TlsProbe> allProbes = scanJob.getJoinedProbes();
+        List<ExtractedValueContainer> globalContainerList = new LinkedList<>();
+        for (TlsProbe probe : allProbes) {
+            List<ExtractedValueContainer> tempContainerList = probe.getWriter().getCumulatedExtractedValues();
+            for (ExtractedValueContainer tempContainer : tempContainerList) {
+                //Try to find the original container , if it not found add it
+                ExtractedValueContainer targetContainer = null;
+                for (ExtractedValueContainer globalContainer : globalContainerList) {
+                    if (tempContainer.getType() == globalContainer.getType()) {
+                        targetContainer = globalContainer;
+                        break;
+                    }
+                }
+                if (targetContainer == null) {
+                    targetContainer = new ExtractedValueContainer(tempContainer.getType());
+                    globalContainerList.add(targetContainer);
+                }
+                targetContainer.getExtractedValueList().addAll(tempContainer.getExtractedValueList());
+            }
+        }
         LOGGER.info("Finished scan for: " + hostname);
+        report.setExtractedValueContainerList(globalContainerList);
         return report;
     }
 

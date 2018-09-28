@@ -14,8 +14,11 @@ public class ExtractedValueContainer<T> {
 
     private final List<T> extractedValueList;
 
-    public ExtractedValueContainer() {
+    private final TrackableValueType type;
+
+    public ExtractedValueContainer(TrackableValueType type) {
         extractedValueList = new LinkedList<>();
+        this.type = type;
     }
 
     public boolean areAllValuesIdentical() {
@@ -42,5 +45,13 @@ public class ExtractedValueContainer<T> {
 
     public int getNumberOfExtractedValues() {
         return extractedValueList.size();
+    }
+
+    public void put(T t) {
+        extractedValueList.add(t);
+    }
+
+    public TrackableValueType getType() {
+        return type;
     }
 }

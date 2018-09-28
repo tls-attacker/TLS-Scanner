@@ -14,6 +14,7 @@ public class StatsWriter {
 
     public StatsWriter() {
         extractorList = new LinkedList<>();
+        extractorList.add(new RandomExtractor());
     }
 
     public void extract(State state) {
@@ -25,7 +26,7 @@ public class StatsWriter {
     public List<ExtractedValueContainer> getCumulatedExtractedValues() {
         List<ExtractedValueContainer> containerList = new LinkedList<>();
         for (StatExtractor extractor : extractorList) {
-            containerList.add(extractor.getContainerList());
+            containerList.add(extractor.getContainer());
         }
         return containerList;
     }
