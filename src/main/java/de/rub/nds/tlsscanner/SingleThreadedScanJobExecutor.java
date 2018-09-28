@@ -138,11 +138,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                 LOGGER.warn("Could not merge SiteReport", E);
             }
         }
-        //phase 3 - afterprobes
-        for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
-            afterProbe.analyze(report);
-        }
-        //phase 4 - collect statistics
+        //phase 3 - collect statistics
         List<TlsProbe> allProbes = scanJob.getJoinedProbes();
         List<ExtractedValueContainer> globalContainerList = new LinkedList<>();
         for (TlsProbe probe : allProbes) {
@@ -163,8 +159,13 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                 targetContainer.getExtractedValueList().addAll(tempContainer.getExtractedValueList());
             }
         }
-        LOGGER.info("Finished scan for: " + hostname);
         report.setExtractedValueContainerList(globalContainerList);
+        //phase 4 - afterprobes
+        for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
+            afterProbe.analyze(report);
+        }
+
+        LOGGER.info("Finished scan for: " + hostname);
         return report;
     }
 

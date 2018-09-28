@@ -140,11 +140,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
         for (ProbeResult result : resultList) {
             result.merge(report);
         }
-        //phase 3 - afterprobes
-        for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
-            afterProbe.analyze(report);
-        }
-        //phase 4
+        //phase 3 - collect statistics
         List<TlsProbe> allProbes = scanJob.getJoinedProbes();
         List<ExtractedValueContainer> globalContainerList = new LinkedList<>();
         for (TlsProbe probe : allProbes) {
@@ -166,6 +162,10 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
             }
         }
         report.setExtractedValueContainerList(globalContainerList);
+        //phase 4 - afterprobes
+        for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
+            afterProbe.analyze(report);
+        }
         LOGGER.info("Finished scan for: " + hostname);
         return report;
     }
