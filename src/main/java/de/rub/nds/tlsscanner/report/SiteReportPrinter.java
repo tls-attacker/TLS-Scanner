@@ -27,6 +27,7 @@ import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
@@ -468,10 +469,16 @@ public class SiteReportPrinter {
     }
 
     private void appendPublicKeyIssues(StringBuilder builder) {
-        prettyAppendHeading(builder, "Nonce");
+        prettyAppendHeading(builder, "PublicKey Parameter");
         prettyAppendRedGreen(builder, "EC PublicKey reuse", report.getEcPubkeyReuse());
         prettyAppendRedGreen(builder, "DH PublicKey reuse", report.getDhPubkeyReuse());
         prettyAppendRedGreen(builder, "Uses Common DH Primes", report.getUsesCommonDhPrimes());
+        if (report.getUsedCommonDhValueList().size() != 0) {
+            for (CommonDhValues value : report.getUsedCommonDhValueList()) {
+                prettyAppendRed(builder, "\t" + value.getName());
+            }
+        }
+        prettyAppendRedGreen(builder, "Uses Non-Prime Moduli", report.getUsesNonPrimeModuli());
         prettyAppendRedGreen(builder, "Uses Nonsafe-Prime Moduli", report.getUsesNonSafePrimeModuli());
     }
 

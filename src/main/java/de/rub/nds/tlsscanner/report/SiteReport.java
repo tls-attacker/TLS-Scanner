@@ -25,6 +25,7 @@ import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
@@ -218,7 +219,9 @@ public class SiteReport {
     private Boolean ecPubkeyReuse = null;
     private Boolean dhPubkeyReuse = null;
     private Boolean usesCommonDhPrimes = null;
+    private Boolean usesNonPrimeModuli = null;
     private Boolean usesNonSafePrimeModuli = null;
+    private List<CommonDhValues> usedCommonDhValueList = null;
 
     //NoColor Flag
     private boolean noColor = false;
@@ -1446,5 +1449,21 @@ public class SiteReport {
 
     public void setUsesNonSafePrimeModuli(Boolean usesNonSafePrimeModuli) {
         this.usesNonSafePrimeModuli = usesNonSafePrimeModuli;
+    }
+
+    public List<CommonDhValues> getUsedCommonDhValueList() {
+        return usedCommonDhValueList;
+    }
+
+    public void setUsedCommonDhValueList(List<CommonDhValues> usedCommonDhValueList) {
+        this.usedCommonDhValueList = usedCommonDhValueList;
+    }
+
+    public Boolean getUsesNonPrimeModuli() {
+        return usesNonPrimeModuli;
+    }
+
+    public void setUsesNonPrimeModuli(Boolean usesNonPrimeModuli) {
+        this.usesNonPrimeModuli = usesNonPrimeModuli;
     }
 }
