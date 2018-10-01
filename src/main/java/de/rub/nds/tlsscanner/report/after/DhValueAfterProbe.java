@@ -32,7 +32,7 @@ public class DhValueAfterProbe extends AfterProbe {
                         onlyPrime = false;
                     }
                     if (onlySafePrime && !isSafePrime((BigInteger) o)) {
-                        onlyPrime = false;
+                        onlySafePrime = false;
                     }
 
                     for (CommonDhValues value : loadedCommonDhValues) {
