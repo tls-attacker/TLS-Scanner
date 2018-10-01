@@ -6,8 +6,10 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhLoader;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class DhValueAfterProbe extends AfterProbe {
 
@@ -15,7 +17,7 @@ public class DhValueAfterProbe extends AfterProbe {
     public void analyze(SiteReport report) {
         List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
         List<CommonDhValues> loadedCommonDhValues = CommonDhLoader.loadCommonDhValues();
-        List<CommonDhValues> usedCommonValues = new LinkedList<>();
+        Set<CommonDhValues> usedCommonValues = new HashSet<>();
         Boolean onlyPrime = true;
         Boolean onlySafePrime = true;
         Boolean reuse = false;

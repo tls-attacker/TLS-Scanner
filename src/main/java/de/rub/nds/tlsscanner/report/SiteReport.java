@@ -221,7 +221,7 @@ public class SiteReport {
     private Boolean usesCommonDhPrimes = null;
     private Boolean usesNonPrimeModuli = null;
     private Boolean usesNonSafePrimeModuli = null;
-    private List<CommonDhValues> usedCommonDhValueList = null;
+    private Set<CommonDhValues> usedCommonDhValueList = null;
 
     //NoColor Flag
     private boolean noColor = false;
@@ -1451,11 +1451,11 @@ public class SiteReport {
         this.usesNonSafePrimeModuli = usesNonSafePrimeModuli;
     }
 
-    public List<CommonDhValues> getUsedCommonDhValueList() {
+    public Set<CommonDhValues> getUsedCommonDhValueList() {
         return usedCommonDhValueList;
     }
 
-    public void setUsedCommonDhValueList(List<CommonDhValues> usedCommonDhValueList) {
+    public void setUsedCommonDhValueList(Set<CommonDhValues> usedCommonDhValueList) {
         this.usedCommonDhValueList = usedCommonDhValueList;
     }
 
