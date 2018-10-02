@@ -346,7 +346,7 @@ public class SiteReportPrinter {
                 }
             }
             if (report.getSupportedTls13CipherSuites() != null && report.getSupportedTls13CipherSuites().size() > 0) {
-                prettyAppendHeading(builder, "Supported in TLS13");
+                prettyAppendHeading(builder, "Supported in TLS 1.3");
                 for (CipherSuite suite : report.getSupportedTls13CipherSuites()) {
                     prettyPrintCipherSuite(builder, suite);
                 }
@@ -389,7 +389,7 @@ public class SiteReportPrinter {
             prettyAppendHeading(builder, "Cipher Types Supports");
             prettyAppend(builder, "Stream", report.getSupportsStreamCiphers());
             prettyAppend(builder, "Block", report.getSupportsBlockCiphers());
-            prettyAppendGreenOnSuccess(builder, "AEAD", report.getSupportsAeadCiphers());
+            prettyAppendGreenYellow(builder, "AEAD", report.getSupportsAeadCiphers());
 
             prettyAppendHeading(builder, "Ciphersuite General");
             prettyAppendGreenRed(builder, "Enforces Ciphersuite ordering", report.getEnforcesCipherSuiteOrdering());
