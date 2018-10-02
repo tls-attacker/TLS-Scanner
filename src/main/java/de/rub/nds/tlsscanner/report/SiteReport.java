@@ -222,6 +222,7 @@ public class SiteReport {
     private Boolean usesNonPrimeModuli = null;
     private Boolean usesNonSafePrimeModuli = null;
     private Set<CommonDhValues> usedCommonDhValueList = null;
+    private Integer weakestDhStrength = null;
 
     //NoColor Flag
     private boolean noColor = false;
@@ -1465,5 +1466,13 @@ public class SiteReport {
 
     public void setUsesNonPrimeModuli(Boolean usesNonPrimeModuli) {
         this.usesNonPrimeModuli = usesNonPrimeModuli;
+    }
+
+    public Integer getWeakestDhStrength() {
+        return weakestDhStrength;
+    }
+
+    public void setWeakestDhStrength(Integer weakestDhStrength) {
+        this.weakestDhStrength = weakestDhStrength;
     }
 }

@@ -7,12 +7,11 @@ import de.rub.nds.tlsscanner.report.after.prime.CommonDhLoader;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import java.math.BigInteger;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 public class DhValueAfterProbe extends AfterProbe {
-
+    
     @Override
     public void analyze(SiteReport report) {
         List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
@@ -21,6 +20,7 @@ public class DhValueAfterProbe extends AfterProbe {
         Boolean onlyPrime = true;
         Boolean onlySafePrime = true;
         Boolean reuse = false;
+        int shortestBitLength = Integer.MAX_VALUE;
         for (ExtractedValueContainer container : extractedValueContainerList) {
             if (container.getType() == TrackableValueType.DH_PUBKEY) {
                 if (!container.areAllValuesDiffernt()) {
@@ -36,12 +36,16 @@ public class DhValueAfterProbe extends AfterProbe {
                     if (onlySafePrime && !isSafePrime((BigInteger) o)) {
                         onlySafePrime = false;
                     }
-
+                    
                     for (CommonDhValues value : loadedCommonDhValues) {
                         if (value.getModulus().equals(o)) {
                             usedCommonValues.add(value);
                             break;
                         }
+                    }
+                    
+                    if (shortestBitLength > ((BigInteger) o).bitLength()) {
+                        shortestBitLength = ((BigInteger) o).bitLength();
                     }
                 }
             }
@@ -55,11 +59,13 @@ public class DhValueAfterProbe extends AfterProbe {
         report.setUsesNonSafePrimeModuli(!onlySafePrime);
         report.setUsedCommonDhValueList(usedCommonValues);
         report.setDhPubkeyReuse(reuse);
-
+        if (shortestBitLength != Integer.MAX_VALUE) {
+            report.setWeakestDhStrength(shortestBitLength);
+        }
     }
-
+    
     private boolean isSafePrime(BigInteger bigInteger) {
         return bigInteger.shiftRight(1).isProbablePrime(30);
     }
-
+    
 }

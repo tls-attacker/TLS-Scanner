@@ -480,6 +480,17 @@ public class SiteReportPrinter {
         }
         prettyAppendRedGreen(builder, "Uses Non-Prime Moduli", report.getUsesNonPrimeModuli());
         prettyAppendRedGreen(builder, "Uses Nonsafe-Prime Moduli", report.getUsesNonSafePrimeModuli());
+        if (report.getWeakestDhStrength() != null) {
+            if (report.getWeakestDhStrength() < 1000) {
+                prettyAppendRed(builder, "DH Strength", "" + report.getWeakestDhStrength());
+            } else if (report.getWeakestDhStrength() < 2000) {
+                prettyAppendYellow(builder, "DH Strength", "" + report.getWeakestDhStrength());
+            } else if (report.getWeakestDhStrength() < 4100) {
+                prettyAppendGreen(builder, "DH Strength", "" + report.getWeakestDhStrength());
+            } else {
+                prettyAppendYellow(builder, "DH Strength", "" + report.getWeakestDhStrength());
+            }
+        }
     }
 
     private void prettyPrintCipherSuite(StringBuilder builder, CipherSuite suite) {
@@ -610,6 +621,10 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendGreen(StringBuilder builder, String name, String value) {
         return builder.append(addIndentations(name)).append(": ").append((report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
+    }
+
+    private StringBuilder prettyAppendYellow(StringBuilder builder, String name, String value) {
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
     }
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
