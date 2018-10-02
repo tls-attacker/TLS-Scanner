@@ -17,6 +17,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.ResumptionResult;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +28,7 @@ import java.util.Set;
  */
 public class ResumptionProbe extends TlsProbe {
 
-    private Set<CipherSuite> supportedSuites;
+    private List<CipherSuite> supportedSuites;
 
     public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig, 0);
@@ -67,7 +68,11 @@ public class ResumptionProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        supportedSuites = report.getCipherSuites();
+        if (report.getCipherSuites() != null && !report.getCipherSuites().isEmpty()) {
+            supportedSuites = new ArrayList<>(report.getCipherSuites());
+        } else {
+            supportedSuites = CipherSuite.getImplemented();
+        }
     }
 
     @Override
