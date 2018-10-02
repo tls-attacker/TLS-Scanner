@@ -385,9 +385,6 @@ public class SiteReportPrinter {
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 26", report.getSupportsTls13Draft26());
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 27", report.getSupportsTls13Draft27());
             prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 28", report.getSupportsTls13Draft28());
-            //prettyAppend(builder, "DTLS 1.0", report.getSupportsDtls10());
-            //prettyAppend(builder, "DTLS 1.2", report.getSupportsDtls10());
-            //prettyAppend(builder, "DTLS 1.3", report.getSupportsDtls13());
         }
         return builder;
     }
