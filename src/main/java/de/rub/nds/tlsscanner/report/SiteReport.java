@@ -27,6 +27,7 @@ import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
@@ -68,6 +69,7 @@ public class SiteReport {
 
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
+    private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private Boolean paddingOracleVulnerable = null;
     private List<PaddingOracleTestResult> paddingOracleTestResultList;
     private Boolean invalidCurveVulnerable = null;
@@ -1474,5 +1476,13 @@ public class SiteReport {
 
     public void setWeakestDhStrength(Integer weakestDhStrength) {
         this.weakestDhStrength = weakestDhStrength;
+    }
+
+    public List<BleichenbacherTestResult> getBleichenbacherTestResultList() {
+        return bleichenbacherTestResultList;
+    }
+
+    public void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
+        this.bleichenbacherTestResultList = bleichenbacherTestResultList;
     }
 }

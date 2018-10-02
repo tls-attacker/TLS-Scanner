@@ -10,6 +10,7 @@ import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
+import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -29,6 +30,7 @@ import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
@@ -68,6 +70,8 @@ public class SiteReportPrinter {
         appendCompressions(builder);
         appendIntolerances(builder);
         appendAttackVulnerabilities(builder);
+        appendPaddingOracleResults(builder);
+        appendBleichenbacherResults(builder);
         appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
@@ -261,12 +265,16 @@ public class SiteReportPrinter {
         prettyAppendDrown(builder, "DROWN", report.getDrownVulnerable());
         prettyAppendRedGreen(builder, "Heartbleed", report.getHeartbleedVulnerable());
         prettyAppendEarlyCcs(builder, "EarlyCcs", report.getEarlyCcsVulnerable());
+        return builder;
+    }
+
+    private StringBuilder appendPaddingOracleResults(StringBuilder builder) {
         prettyAppendHeading(builder, "PaddingOracle Details");
         if (report.getPaddingOracleTestResultList() == null || report.getPaddingOracleTestResultList().isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
             for (PaddingOracleTestResult testResult : report.getPaddingOracleTestResultList()) {
-                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + ":" + testResult.getVersion() + "\t" + testResult.getVectorGeneratorType() + "\t" + testResult.getRecordGeneratorType();
+                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
                 if (testResult.getVulnerable() == Boolean.TRUE) {
                     prettyAppendRed(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE");
                 } else if (testResult.getVulnerable() == Boolean.FALSE) {
@@ -281,6 +289,38 @@ public class SiteReportPrinter {
                         if (testResult.getResponseMap() != null && testResult.getResponseMap().get(0) != null) {
                             for (ResponseFingerprint fingerprint : testResult.getResponseMap().get(0)) {
                                 prettyAppend(builder, "\t" + fingerprint.toString());
+                            }
+                        } else {
+                            prettyAppend(builder, "\tNULL");
+                        }
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+
+    private StringBuilder appendBleichenbacherResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "Bleichenbacher Details");
+        if (report.getBleichenbacherTestResultList() == null || report.getBleichenbacherTestResultList().isEmpty()) {
+            prettyAppend(builder, "No Testresults");
+        } else {
+            for (BleichenbacherTestResult testResult : report.getBleichenbacherTestResultList()) {
+                String resultString = "" + padToLength(testResult.getWorkflowType().name(), 40);
+                if (testResult.getVulnerable() == Boolean.TRUE) {
+                    prettyAppendRed(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE");
+                } else if (testResult.getVulnerable() == Boolean.FALSE) {
+                    prettyAppendGreen(builder, resultString + "\t - No Behavior Difference");
+                } else {
+                    prettyAppendYellow(builder, resultString + "\t # Error during Scan");
+                }
+
+                if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
+                    if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
+                        prettyAppendYellow(builder, "Response Map");
+                        if (testResult.getVectorFingerPrintPairList() != null && !testResult.getVectorFingerPrintPairList().isEmpty()) {
+                            for (VectorFingerprintPair vectorFingerPrintPair : testResult.getVectorFingerPrintPairList()) {
+                                prettyAppend(builder, "\t" + vectorFingerPrintPair.getVector().getDescription() + " - " + vectorFingerPrintPair.getFingerprint().toString());
                             }
                         } else {
                             prettyAppend(builder, "\tNULL");
