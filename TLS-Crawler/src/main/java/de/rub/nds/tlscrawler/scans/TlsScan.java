@@ -10,14 +10,21 @@ package de.rub.nds.tlscrawler.scans;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ScanResult;
+import de.rub.nds.tlsscanner.MultiThreadedScanJobExecutor;
+import de.rub.nds.tlsscanner.ScanJobExecutor;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
+import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
 import org.slf4j.Logger;
@@ -27,6 +34,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +47,17 @@ public class TlsScan implements IScan {
     private static Logger LOG = LoggerFactory.getLogger(TlsScan.class);
 
     private static String SCAN_NAME = "tls_scan";
+    
+    private ScanJobExecutor executor;
+
+    private final ParallelExecutor parallelExecutor;
+    
+    public TlsScan() {
+        this.parallelExecutor = new ParallelExecutor(200, 3);
+        this.executor = new MultiThreadedScanJobExecutor(100, SCAN_NAME);
+    }
+    
+    
 
     @Override
     public String getName() {
@@ -51,15 +70,20 @@ public class TlsScan implements IScan {
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
         generalDelegate.setQuiet(true);
-
+        
         ScannerConfig config = new ScannerConfig(generalDelegate);
-        config.setThreads(1);
+        config.setNoProgressbar(true);
 
         // TODO: Make port not hardcoded.
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
-
-        TlsScanner scanner = new TlsScanner(config);
+        List<TlsProbe> phaseOneList =new LinkedList<>();
+        phaseOneList.add(new CiphersuiteProbe(config, parallelExecutor));
+        List<TlsProbe> phaseTwoList =new LinkedList<>();
+        
+        phaseTwoList.add(new PaddingOracleProbe(config, parallelExecutor));
+        List<AfterProbe> afterList =new LinkedList<>();
+        TlsScanner scanner = new TlsScanner(config,executor, parallelExecutor, phaseOneList, phaseTwoList, afterList);
         SiteReport report = scanner.scan();
 
         IScanResult result = new ScanResult(SCAN_NAME);
