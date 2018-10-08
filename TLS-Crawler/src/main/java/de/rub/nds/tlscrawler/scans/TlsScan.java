@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
  * @author janis.fliegenschmidt@rub.de
  */
 public class TlsScan implements IScan {
+
     private static Logger LOG = LoggerFactory.getLogger(TlsScan.class);
 
     private static String SCAN_NAME = "tls_scan";
@@ -115,7 +116,6 @@ public class TlsScan implements IScan {
         attacks.addBoolean("sweet32Vulnerable", report.getSweet32Vulnerable());
         attacks.addString("drownVulnerable", report.getDrownVulnerable() != null ? report.getDrownVulnerable().name() : "");
         attacks.addBoolean("logjamVulnerable", report.getLogjamVulnerable());
-        attacks.addBoolean("lucky13Vulnerable", report.getLucky13Vulnerable());
         attacks.addBoolean("heartbleedVulnerable", report.getHeartbleedVulnerable());
         attacks.addString("earlyCcsVulnerable", report.getEarlyCcsVulnerable() != null ? report.getEarlyCcsVulnerable().name() : "");
 
@@ -155,8 +155,7 @@ public class TlsScan implements IScan {
                                 .map(ResponseFingerprint::toString)
                                 .collect(Collectors.toList()));
             }
-            */
-
+             */
             List<ResponseFingerprint> fp = potr.getResponseMap().size() > 0 ? potr.getResponseMap().get(0) : new LinkedList<>();
             List<String> fp_toString = fp.stream()
                     .map(ResponseFingerprint::toString)
@@ -271,7 +270,7 @@ public class TlsScan implements IScan {
 
         rfc.addString("macCheckPatternAppData", report.getMacCheckPatternAppData() != null ? report.getMacCheckPatternAppData().toString() : "");
         rfc.addString("macCheckPatternFinished", report.getMacCheckPatternFinished() != null ? report.getMacCheckPatternFinished().toString() : "");
-        rfc.addBoolean("checksFinished", report.getChecksFinished());
+        rfc.addString("checksFinished", report.getVerifyCheckPattern() != null ? report.getVerifyCheckPattern().getType().toString() : "");
 
         return rfc;
     }
@@ -402,7 +401,7 @@ public class TlsScan implements IScan {
         intolerances.addBoolean("versionIntolerance", report.getVersionIntolerance());
         intolerances.addBoolean("extensionIntolerance", report.getExtensionIntolerance());
         intolerances.addBoolean("cipherSuiteIntolerance", report.getCipherSuiteIntolerance());
-        intolerances.addBoolean("clientHelloSizeIntolerance", report.getClientHelloSizeIntolerance());
+        intolerances.addBoolean("clientHelloSizeIntolerance", report.getClientHelloLengthIntolerance());
 
         return intolerances;
     }
