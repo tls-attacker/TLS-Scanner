@@ -16,6 +16,7 @@ import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlsscanner.MultiThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.ScanJobExecutor;
+import de.rub.nds.tlsscanner.SingleThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
@@ -47,17 +48,12 @@ public class TlsScan implements IScan {
     private static Logger LOG = LoggerFactory.getLogger(TlsScan.class);
 
     private static String SCAN_NAME = "tls_scan";
-    
-    private ScanJobExecutor executor;
 
-    private final ParallelExecutor parallelExecutor;
+    private ParallelExecutor parallelExecutor;
     
     public TlsScan() {
-        this.parallelExecutor = new ParallelExecutor(200, 3);
-        this.executor = new MultiThreadedScanJobExecutor(100, SCAN_NAME);
+        parallelExecutor = new ParallelExecutor(400, 3);
     }
-    
-    
 
     @Override
     public String getName() {
@@ -68,22 +64,24 @@ public class TlsScan implements IScan {
     public IScanResult scan(String slaveInstanceId, IScanTarget target) {
         LOG.trace("scan()");
 
+        SingleThreadedScanJobExecutor executor = new SingleThreadedScanJobExecutor();
+
         GeneralDelegate generalDelegate = new GeneralDelegate();
         generalDelegate.setQuiet(true);
-        
+
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setNoProgressbar(true);
 
         // TODO: Make port not hardcoded.
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
-        List<TlsProbe> phaseOneList =new LinkedList<>();
+        List<TlsProbe> phaseOneList = new LinkedList<>();
         phaseOneList.add(new CiphersuiteProbe(config, parallelExecutor));
-        List<TlsProbe> phaseTwoList =new LinkedList<>();
-        
+        List<TlsProbe> phaseTwoList = new LinkedList<>();
+
         phaseTwoList.add(new PaddingOracleProbe(config, parallelExecutor));
-        List<AfterProbe> afterList =new LinkedList<>();
-        TlsScanner scanner = new TlsScanner(config,executor, parallelExecutor, phaseOneList, phaseTwoList, afterList);
+        List<AfterProbe> afterList = new LinkedList<>();
+        TlsScanner scanner = new TlsScanner(config, executor, parallelExecutor, phaseOneList, phaseTwoList, afterList);
         SiteReport report = scanner.scan();
 
         IScanResult result = new ScanResult(SCAN_NAME);
