@@ -16,6 +16,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
+/**
+ * Options for the dedicated Slave class.
+ *
+ * @author janis.fliegenschmidt@rub.de
+ */
 public class SlaveOptions extends MasterSlaveOptions {
     private static Logger LOG = LoggerFactory.getLogger(SlaveOptions.class);
 
