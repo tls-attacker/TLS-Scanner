@@ -423,7 +423,7 @@ public class TlsScan implements IScan {
         intolerances.addBoolean("versionIntolerance", report.getVersionIntolerance());
         intolerances.addBoolean("extensionIntolerance", report.getExtensionIntolerance());
         intolerances.addBoolean("cipherSuiteIntolerance", report.getCipherSuiteIntolerance());
-        intolerances.addBoolean("clientHelloSizeIntolerance", report.getClientHelloLengthIntolerance());
+        intolerances.addBoolean("clientHelloLengthIntolerance", report.getClientHelloLengthIntolerance());
 
         return intolerances;
     }
