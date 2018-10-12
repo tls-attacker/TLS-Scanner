@@ -53,7 +53,12 @@ public class Slave {
         Collection<IScan> scans = ScanFactory.getInstance().getBuiltInScans();
         Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
 
-        ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(), scans);
+        ITlsCrawlerSlave slave = new TlsCrawlerSlave(
+                options.instanceId,
+                providers.getFirst(),
+                providers.getSecond(),
+                scans,
+                options.numberOfThreads);
 
         slave.start();
 
