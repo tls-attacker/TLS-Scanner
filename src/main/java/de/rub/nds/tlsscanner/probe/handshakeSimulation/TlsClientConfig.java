@@ -8,6 +8,7 @@ package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import java.io.Serializable;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,20 +21,16 @@ public class TlsClientConfig implements Serializable {
     private String version;
     private Config config;
     private WorkflowTrace trace;
-    private Integer rsaMin;
-    private Integer rsaMax;
-    private Integer dhMin;
-    private Integer dhMax;
+    private List<Integer> supportedRsaKeyLengthList;
+    private List<Integer> supportedDheKeyLengthList;
     
     public void createClientHelloConfig(String type, String version) {
         this.type = type;
         this.version = version;
         this.config = null;
         this.trace = null;
-        this.rsaMin = null;
-        this.rsaMax = null;
-        this.dhMin = null;
-        this.dhMax = null;
+        this.supportedRsaKeyLengthList = null;
+        this.supportedDheKeyLengthList = null;
     }
     
     public String getType() {
@@ -60,35 +57,19 @@ public class TlsClientConfig implements Serializable {
         return trace;
     }
 
-    public void setRsaMin(Integer rsaMin) {
-        this.rsaMin = rsaMin;
+    public void setSupportedRsaKeyLengthList(List<Integer> supportedRsaKeyLengthList) {
+        this.supportedRsaKeyLengthList = supportedRsaKeyLengthList;
     }
 
-    public Integer getRsaMin() {
-        return rsaMin;
+    public List<Integer> getSupportedRsaKeyLengthList() {
+        return supportedRsaKeyLengthList;
     }
 
-    public void setRsaMax(Integer rsaMax) {
-        this.rsaMax = rsaMax;
+    public void setSupportedDheKeyLengthList(List<Integer> supportedDheKeyLengthList) {
+        this.supportedDheKeyLengthList = supportedDheKeyLengthList;
     }
 
-    public Integer getRsaMax() {
-        return rsaMax;
-    }
-
-    public void setDhMin(Integer dhMin) {
-        this.dhMin = dhMin;
-    }
-
-    public Integer getDhMin() {
-        return dhMin;
-    }
-
-    public void setDhMax(Integer dhMax) {
-        this.dhMax = dhMax;
-    }
-
-    public Integer getDhMax() {
-        return dhMax;
+    public List<Integer> getSupportedDheKeyLengthList() {
+        return supportedDheKeyLengthList;
     }
 }
