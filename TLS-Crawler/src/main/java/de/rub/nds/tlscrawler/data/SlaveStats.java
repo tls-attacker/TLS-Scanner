@@ -13,6 +13,8 @@ package de.rub.nds.tlscrawler.data;
  * @author janis.fliegenschmidt@rub.de
  */
 public class SlaveStats implements ISlaveStats {
+    private final Object _syncroot = new Object();
+
     private long acceptedTaskCount;
     private long completedTaskCount;
 
@@ -23,27 +25,51 @@ public class SlaveStats implements ISlaveStats {
 
     @Override
     public long getAcceptedTasksCount() {
-        return this.acceptedTaskCount;
+        long result;
+
+        synchronized (_syncroot) {
+            result = this.acceptedTaskCount;
+        }
+
+        return result;
     }
 
     @Override
     public long getCompletedTasksCount() {
-        return this.completedTaskCount;
+        long result;
+
+        synchronized (_syncroot) {
+            result = this.completedTaskCount;
+        }
+
+        return result;
     }
 
     public void incrementAcceptedTaskCount(long increment) {
-        this.acceptedTaskCount += increment;
+        synchronized (_syncroot) {
+            this.acceptedTaskCount += increment;
+        }
     }
 
     public void incrementCompletedTaskCount(long increment) {
-        this.completedTaskCount += increment;
+        synchronized (_syncroot) {
+            this.completedTaskCount += increment;
+        }
     }
 
     @Override
     public String toString() {
+        long atc;
+        long ctc;
+
+        synchronized (_syncroot) {
+            atc = this.acceptedTaskCount;
+            ctc = this.completedTaskCount;
+        }
+
         return "### Slave Stats: "
-                + this.acceptedTaskCount + "accepted, "
-                + this.completedTaskCount + "completed.";
+                + atc + "accepted, "
+                + ctc + "completed.";
     }
 
     /**
