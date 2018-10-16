@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.core;
 
+import de.rub.nds.tlscrawler.Slave;
 import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ISlaveStats;
 import de.rub.nds.tlscrawler.data.ScanTask;
@@ -93,6 +94,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         }
 
         this.orgThread = new TlsCrawlerSlaveOrgThread(
+                this.slaveStats,
                 this,
                 this,
                 this.synchronizedTaskRouter,
@@ -120,14 +122,17 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         private SynchronizedTaskRouter synchronizedTaskRouter;
         private IOrganizer organizer;
         private IScanProvider scanProvider;
+        private SlaveStats stats;
 
-        public TlsCrawlerSlaveOrgThread(IOrganizer organizer,
+        public TlsCrawlerSlaveOrgThread(SlaveStats stats,
+                                        IOrganizer organizer,
                                         IScanProvider scanProvider,
                                         SynchronizedTaskRouter synchronizedTaskRouter,
                                         int newFetchLimit,
                                         int fetchAmount) {
             super(TlsCrawlerSlaveOrgThread.class.getSimpleName());
 
+            this.stats = stats;
             this.organizer = organizer;
             this.scanProvider = scanProvider;
             this.synchronizedTaskRouter = synchronizedTaskRouter;
@@ -159,6 +164,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     }
 
                     this.synchronizedTaskRouter.addTodo(tasks.values());
+
+                    this.stats.incrementAcceptedTaskCount(tasks.size());
                 }
 
                 // Persist task results:
@@ -170,6 +177,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     // TODO: Implement bulk operation @IPersistenceProvider
                     for (IScanTask t : finishedTasks) {
                         this.organizer.getPersistenceProvider().updateScanTask(t);
+                        this.stats.incrementCompletedTaskCount(1);
                     }
 
                     this.iterations = 0;
