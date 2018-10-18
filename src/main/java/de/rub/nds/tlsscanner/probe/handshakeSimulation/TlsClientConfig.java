@@ -24,7 +24,7 @@ public class TlsClientConfig implements Serializable {
     private List<Integer> supportedRsaKeyLengthList;
     private List<Integer> supportedDheKeyLengthList;
     
-    public void createClientHelloConfig(String type, String version) {
+    public void createTlsClientConfig(String type, String version) {
         this.type = type;
         this.version = version;
         this.config = null;
