@@ -17,14 +17,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TlsClientConfig implements Serializable {
     
-    private final String type;   
-    private final String version;
+    private String type;   
+    private String version;
     private Config config;
     private WorkflowTrace trace;
     private List<Integer> supportedRsaKeyLengthList;
     private List<Integer> supportedDheKeyLengthList;
     
-    public TlsClientConfig(String type, String version) {
+    public void createClientHelloConfig(String type, String version) {
         this.type = type;
         this.version = version;
         this.config = null;
