@@ -107,7 +107,6 @@ public class PaddingOracleProbe extends TlsProbe {
                         }
                         suiteList = tempList;
                     } else {
-                        System.out.println("Last result is null!");
                         lastResult = null;
                     }
 
