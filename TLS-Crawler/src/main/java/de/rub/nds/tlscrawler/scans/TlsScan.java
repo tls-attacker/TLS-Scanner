@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
@@ -14,8 +15,6 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ScanResult;
-import de.rub.nds.tlsscanner.MultiThreadedScanJobExecutor;
-import de.rub.nds.tlsscanner.ScanJobExecutor;
 import de.rub.nds.tlsscanner.SingleThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -35,7 +34,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 /**
@@ -178,9 +176,9 @@ public class TlsScan implements IScan {
                                 .collect(Collectors.toList()));
             }
              */
-            List<ResponseFingerprint> fp = potr.getResponseMap().size() > 0 ? potr.getResponseMap().get(0) : new LinkedList<>();
+            List<VectorResponse> fp = potr.getResponseMap().size() > 0 ? potr.getResponseMap().get(0) : new LinkedList<>();
             List<String> fp_toString = fp.stream()
-                    .map(ResponseFingerprint::toString)
+                    .map(VectorResponse::toString)
                     .collect(Collectors.toList());
 
             tmp.addStringArray("responseMap", fp_toString);
