@@ -91,9 +91,10 @@ public class PaddingOracleProbe extends TlsProbe {
                         lastResult = attacker.isVulnerable();
                     } catch (PaddingOracleUnstableException E) {
                         LOGGER.warn("PaddingOracle Unstable - you should probably test this manually");
+                        E.printStackTrace();
                         lastResult = null;
                     }
-                    if ((lastResult == Boolean.TRUE || lastResult == Boolean.FALSE) && attacker.getTestedSuite() != null && attacker.getTestedVersion() != null) {
+                    if ((lastResult != null) && attacker.getTestedSuite() != null && attacker.getTestedVersion() != null) {
                         if (!containsTupleAlready(testResultList, attacker.getTestedVersion(), attacker.getTestedSuite(), vectorType)) {
                             testResultList.add(new PaddingOracleTestResult(lastResult, attacker.getTestedVersion(), attacker.getTestedSuite(), paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMap(), attacker.getEqualityError(attacker.getResponseMap())));
                         }
@@ -106,6 +107,7 @@ public class PaddingOracleProbe extends TlsProbe {
                         }
                         suiteList = tempList;
                     } else {
+                        System.out.println("Last result is null!");
                         lastResult = null;
                     }
 

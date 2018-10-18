@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.LogManager;
 
 /**
  *
@@ -307,6 +308,7 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     private Boolean hasVersionIntolerance() {
+        
         Config config = getWorkingConfig();
         WorkflowTrace trace = new WorkflowTrace();
         ClientHelloMessage message = new ClientHelloMessage(config);

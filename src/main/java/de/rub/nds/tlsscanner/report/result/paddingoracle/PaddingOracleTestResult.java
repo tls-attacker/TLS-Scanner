@@ -2,6 +2,7 @@ package de.rub.nds.tlsscanner.report.result.paddingoracle;
 
 import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -16,10 +17,10 @@ public class PaddingOracleTestResult {
     private final CipherSuite suite;
     private final PaddingVectorGeneratorType vectorGeneratorType;
     private final PaddingRecordGeneratorType recordGeneratorType;
-    private final HashMap<Integer, List<ResponseFingerprint>> responseMap;
+    private final HashMap<Integer, List<VectorResponse>> responseMap;
     private final EqualityError equalityError;
 
-    public PaddingOracleTestResult(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType, HashMap<Integer, List<ResponseFingerprint>> responseMap, EqualityError equalityError) {
+    public PaddingOracleTestResult(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType, HashMap<Integer, List<VectorResponse>> responseMap, EqualityError equalityError) {
         this.vulnerable = vulnerable;
         this.version = version;
         this.suite = suite;
@@ -33,7 +34,7 @@ public class PaddingOracleTestResult {
         return vulnerable;
     }
 
-    public HashMap<Integer, List<ResponseFingerprint>> getResponseMap() {
+    public HashMap<Integer, List<VectorResponse>> getResponseMap() {
         return responseMap;
     }
 

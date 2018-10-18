@@ -10,6 +10,7 @@ import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
@@ -287,8 +288,8 @@ public class SiteReportPrinter {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppendYellow(builder, "Response Map");
                         if (testResult.getResponseMap() != null && testResult.getResponseMap().get(0) != null) {
-                            for (ResponseFingerprint fingerprint : testResult.getResponseMap().get(0)) {
-                                prettyAppend(builder, "\t" + fingerprint.toString());
+                            for (VectorResponse vectorResponse : testResult.getResponseMap().get(0)) {
+                                prettyAppend(builder, "\t" + vectorResponse.getFingerprint().toString());
                             }
                         } else {
                             prettyAppend(builder, "\tNULL");
