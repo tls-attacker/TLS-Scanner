@@ -361,7 +361,13 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             String key = e.getKey();
             Object value = e.getValue();
 
-            if (value instanceof String) {
+            if (value instanceof Date) {
+                value = ((Date)value).toInstant();
+            }
+
+            if (value == null) {
+                result.addString(key, null);
+            } else if (value instanceof String) {
                 result.addString(key, (String)value);
             } else if (value instanceof Long) {
                 result.addLong(key, (Long)value);
@@ -377,7 +383,9 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
                 List list = (List)value;
                 Object typecheck = list.isEmpty() ? null : list.get(0);
 
-                if (typecheck instanceof String) {
+                if (typecheck == null) {
+                    result.addSubResultArray(key, new LinkedList<>());
+                } else if (typecheck instanceof String) {
                     result.addStringArray(key, list);
                 } else if (typecheck instanceof Long) {
                     result.addLongArray(key, list);
