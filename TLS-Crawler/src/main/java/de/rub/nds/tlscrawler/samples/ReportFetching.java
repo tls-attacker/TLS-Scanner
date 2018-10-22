@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.samples;
 
+import com.google.gson.Gson;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import de.rub.nds.tlscrawler.data.IScanTask;
@@ -45,7 +46,7 @@ public class ReportFetching {
 
         // OUTPUT
         if (task != null) {
-            System.out.println(task.toString());
+            System.out.println(new Gson().toJson(task));
         } else {
             System.out.println("Couldn't find task with id " + idToFind);
         }
