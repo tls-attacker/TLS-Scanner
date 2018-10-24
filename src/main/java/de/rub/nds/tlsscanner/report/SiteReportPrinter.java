@@ -288,7 +288,7 @@ public class SiteReportPrinter {
                         prettyAppendYellow(builder, "Response Map");
                         if (testResult.getResponseMap() != null && testResult.getResponseMap() != null) {
                             for (VectorResponse vectorResponse : testResult.getResponseMap()) {
-                                prettyAppend(builder, "\t" + vectorResponse.getPaddingVector().getName() + "\t" + vectorResponse.getLength() + "\t" + vectorResponse.getFingerprint().toString());
+                                prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
                             }
                         } else {
                             prettyAppend(builder, "\tNULL");
@@ -320,7 +320,7 @@ public class SiteReportPrinter {
                         prettyAppendYellow(builder, "Response Map");
                         if (testResult.getVectorFingerPrintPairList() != null && !testResult.getVectorFingerPrintPairList().isEmpty()) {
                             for (VectorFingerprintPair vectorFingerPrintPair : testResult.getVectorFingerPrintPairList()) {
-                                prettyAppend(builder, "\t" + vectorFingerPrintPair.getVector().getDescription() + " - " + vectorFingerPrintPair.getFingerprint().toString());
+                                prettyAppend(builder, padToLength("\t" + vectorFingerPrintPair.getVector().getDescription(), 60) + vectorFingerPrintPair.getFingerprint().toHumanReadable());
                             }
                         } else {
                             prettyAppend(builder, "\tNULL");
