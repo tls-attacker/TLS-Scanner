@@ -18,6 +18,7 @@ import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlsscanner.SingleThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
@@ -69,7 +70,7 @@ public class TlsScan implements IScan {
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setNoProgressbar(true);
-
+        config.setScanDetail(ScannerDetail.DETAILED);
         // TODO: Make port not hardcoded.
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
