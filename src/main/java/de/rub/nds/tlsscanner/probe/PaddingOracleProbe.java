@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -68,14 +69,12 @@ public class PaddingOracleProbe extends TlsProbe {
 
         List<PaddingVectorGeneratorType> vectorTypeList = new LinkedList<>();
         vectorTypeList.add(PaddingVectorGeneratorType.CLASSIC_DYNAMIC);
-        if (scannerConfig.getScanDetail() == ScannerDetail.DETAILED || scannerConfig.getScanDetail() == ScannerDetail.ALL) {
+        if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
             vectorTypeList.add(PaddingVectorGeneratorType.FINISHED);
-            if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
-                vectorTypeList.add(PaddingVectorGeneratorType.CLOSE_NOTIFY);
-                vectorTypeList.add(PaddingVectorGeneratorType.FINISHED_RESUMPTION);
-            }
-
+            vectorTypeList.add(PaddingVectorGeneratorType.CLOSE_NOTIFY);
+            vectorTypeList.add(PaddingVectorGeneratorType.FINISHED_RESUMPTION);
         }
+
         List<ProtocolVersion> versionList = new LinkedList<>();
         if (supportsTls10 != null && supportsTls11 != null && supportsTls12 != null) {
             if (supportsTls10) {
@@ -106,8 +105,9 @@ public class PaddingOracleProbe extends TlsProbe {
                 continue;
             }
             for (PaddingVectorGeneratorType vectorType : vectorTypeList) {
-
-                for (CipherSuite suite : suitePairList.getCiphersuiteList()) {
+                Set<CipherSuite> set = new HashSet<>(suitePairList.getCiphersuiteList());
+                filterSuite(set);
+                for (CipherSuite suite : set) {
                     if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
                         cipherSuiteDelegate.setCipherSuites(suite);
                         versionDelegate.setProtocolVersion(version);
@@ -156,5 +156,9 @@ public class PaddingOracleProbe extends TlsProbe {
     @Override
     public ProbeResult getNotExecutedResult() {
         return new PaddingOracleResult(new LinkedList<PaddingOracleTestResult>());
+    }
+
+    private void filterSuite(Set<CipherSuite> set) {
+        //This should remove ciphersuites accoding to the scanDetail
     }
 }
