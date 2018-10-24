@@ -48,7 +48,7 @@ public class TlsScan implements IScan {
     private static String SCAN_NAME = "tls_scan";
 
     private ParallelExecutor parallelExecutor;
-    
+
     public TlsScan() {
         parallelExecutor = new ParallelExecutor(400, 3);
     }
@@ -176,13 +176,14 @@ public class TlsScan implements IScan {
                                 .collect(Collectors.toList()));
             }
              */
-            List<VectorResponse> fp = potr.getResponseMap().size() > 0 ? potr.getResponseMap().get(0) : new LinkedList<>();
+            List<VectorResponse> fp = potr.getResponseMap().size() > 0 ? potr.getResponseMap() : new LinkedList<>();
             List<String> fp_toString = fp.stream()
                     .map(VectorResponse::toString)
                     .collect(Collectors.toList());
 
             tmp.addStringArray("responseMap", fp_toString);
-
+            tmp.addBoolean("shaky", potr.isShakyScans());
+            tmp.addBoolean("scanError", potr.isHasScanningError());
             paddingOracleResults.add(tmp);
         }
 
