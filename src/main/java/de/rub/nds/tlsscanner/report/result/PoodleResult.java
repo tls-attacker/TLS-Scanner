@@ -23,7 +23,7 @@ public class PoodleResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setPoodleVulnerable(vulnerable);
     }
 

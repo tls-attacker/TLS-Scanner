@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -38,8 +39,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
     
     private final List<SimulatedClient> simulatedClientList;
 
-    public HandshakeSimulationProbe(ScannerConfig config) {
-        super(ProbeType.HANDSHAKE_SIMULATION, config, 10);
+    public HandshakeSimulationProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config, 10);
         this.simulatedClientList = new LinkedList<>();
     }
 
@@ -110,8 +111,6 @@ public class HandshakeSimulationProbe extends TlsProbe {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerEcPublicKey().getByteX().length*8));
             } else if (simulatedClient.getSelectedCiphersuite().usesGOSTR3411() && state.getTlsContext().getServerGostEc01PublicKey()!=null) {
                 simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerGostEc01PublicKey().getByteX().length*8));
-            } else if (simulatedClient.getSelectedCiphersuite().usesGOSTR34112012() && state.getTlsContext().getServerGostEc12PublicKey()!=null) {
-                simulatedClient.setServerPublicKeyLength(Integer.toString(state.getTlsContext().getServerGostEc12PublicKey().getByteX().length*8));
             }
             simulatedClient.setSelectedNamedGroup(state.getTlsContext().getSelectedGroup().name());
         }

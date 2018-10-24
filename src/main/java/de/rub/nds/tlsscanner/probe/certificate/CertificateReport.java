@@ -57,4 +57,5 @@ public interface CertificateReport {
 
     public Boolean getTrusted();
 
+    public Boolean getRocaVulnerable();
 }

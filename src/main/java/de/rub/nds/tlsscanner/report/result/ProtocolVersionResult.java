@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -10,24 +5,20 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget <robert.merget@rub.de>
- */
 public class ProtocolVersionResult extends ProbeResult {
-    
+
     private final List<ProtocolVersion> supportedProtocolVersions;
-    
+
     private final List<ProtocolVersion> unsupportedProtocolVersions;
-    
+
     public ProtocolVersionResult(List<ProtocolVersion> supportedProtocolVersions, List<ProtocolVersion> unsupportedProtocolVersions) {
-        super(ProbeType.CIPHERSUITE);
+        super(ProbeType.PROTOCOL_VERSION);
         this.supportedProtocolVersions = supportedProtocolVersions;
         this.unsupportedProtocolVersions = unsupportedProtocolVersions;
     }
-    
+
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         if (supportedProtocolVersions.size() > 0) {
             report.setSupportsSslTls(true);
         }
@@ -54,38 +45,8 @@ public class ProtocolVersionResult extends ProbeResult {
             if (version == ProtocolVersion.TLS12) {
                 report.setSupportsTls12(true);
             }
-            if (version == ProtocolVersion.TLS13) {
-                report.setSupportsTls13(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT14) {
-                report.setSupportsTls13Draft14(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT15) {
-                report.setSupportsTls13Draft15(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT16) {
-                report.setSupportsTls13Draft16(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT17) {
-                report.setSupportsTls13Draft17(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT18) {
-                report.setSupportsTls13Draft18(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT19) {
-                report.setSupportsTls13Draft19(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT20) {
-                report.setSupportsTls13Draft20(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT21) {
-                report.setSupportsTls13Draft21(true);
-            }
-            if (version == ProtocolVersion.TLS13_DRAFT22) {
-                report.setSupportsTls13Draft22(true);
-            }
         }
-        
+
         for (ProtocolVersion version : unsupportedProtocolVersions) {
             if (version == ProtocolVersion.DTLS10) {
                 report.setSupportsDtls10(false);
@@ -141,5 +102,5 @@ public class ProtocolVersionResult extends ProbeResult {
         }
         report.setVersions(supportedProtocolVersions);
     }
-    
+
 }

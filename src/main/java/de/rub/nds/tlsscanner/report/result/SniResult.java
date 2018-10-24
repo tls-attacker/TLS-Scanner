@@ -6,14 +6,14 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 public class SniResult extends ProbeResult {
 
     private Boolean requiresSni;
-    
+
     public SniResult(Boolean requiresSni) {
         super(ProbeType.SNI);
-        this.requiresSni = requiresSni; 
+        this.requiresSni = requiresSni;
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         report.setRequiresSni(requiresSni);
     }
 

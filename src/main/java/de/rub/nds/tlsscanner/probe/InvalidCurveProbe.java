@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.InvalidCurveResult;
@@ -28,8 +28,8 @@ public class InvalidCurveProbe extends TlsProbe {
 
     private Boolean supportsStatic;
 
-    public InvalidCurveProbe(ScannerConfig config) {
-        super(ProbeType.INVALID_CURVE, config, 10);
+    public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.INVALID_CURVE, config, 10);
     }
 
     @Override
@@ -40,9 +40,7 @@ public class InvalidCurveProbe extends TlsProbe {
             InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig);
+            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
             vulnerableClassic = attacker.isVulnerable();
         }
         if (supportsEphemeral == null || supportsEphemeral == null) {
@@ -50,9 +48,7 @@ public class InvalidCurveProbe extends TlsProbe {
             invalidCurveAttackConfig.setEphemeral(true);
             ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig);
+            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
             vulnerableEphemeral = attacker.isVulnerable();
         }
         if (!getScannerConfig().isImplementation()) {

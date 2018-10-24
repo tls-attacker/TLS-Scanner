@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss}{GMT+0} [%t] %-5level: %c{1} - %msg%n%throwable}"/>
+        </Console>
+        <Console name="Info" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss}{GMT+0} [%t] %-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
+        </Console>
+        <Console name="Direct" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%msg}%n"/>
+        </Console>
+        <File name="File" fileName="log/info.log" immediateFlush="false" append="true">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss}{GMT+0} [%t] %-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
+        </File>    
+    </Appenders>
+    <Loggers>
+        
+        <Logger name="ConsoleLogger" level="INFO" additivity="false">
+             <AppenderRef ref="Direct"/>
+        </Logger> 
+        
+        <Logger name="de.rub.nds.tlsattacker.core.protocol.handler" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.protocol.message" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.protocol.parser" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.protocol.preparator" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.protocol.serializer" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.record.cipher" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.record.compressor" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.record.crypto" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.record.layer" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.record.parser" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.record.preparator" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.record.serializer" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.workflow" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.workflow.action" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.config" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.state" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker.core.constants" level="ERROR"/>
+        <Logger name="de.rub.nds.tlsattacker" level="ERROR"/>
+        <Logger name="de.rub.nds.modifiablevariable" level="ERROR"/>
+        
+        <Root level="INFO">
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>

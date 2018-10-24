@@ -21,7 +21,7 @@ public class HandshakeSimulationResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
+    public void mergeData(SiteReport report) {
         int handshakeSuccessfulCounter = 0;
         int handshakeFailedCounter = 0;
         for (SimulatedClient simulatedClient : this.simulatedClientList) {
@@ -52,5 +52,4 @@ public class HandshakeSimulationResult extends ProbeResult {
         report.setHandshakeFailedCounter(handshakeFailedCounter);
         report.setSimulatedClientList(this.simulatedClientList);
     }
-
 }

@@ -18,7 +18,7 @@ public class Sweet32AfterProbe extends AfterProbe {
     public void analyze(SiteReport report) {
         if (report.getCipherSuites() != null) {
             for (CipherSuite suite : report.getCipherSuites()) {
-                if (suite.name().contains("3DES") || suite.name().contains("IDEA") || suite.name().contains("GOST")) {
+                if (suite.name().contains("3DES") || suite.name().contains("IDEA")) {
                     report.setSweet32Vulnerable(Boolean.TRUE);
                     return;
                 }

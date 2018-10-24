@@ -11,11 +11,13 @@ package de.rub.nds.tlsscanner.probe.certificate;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.probe.certificate.roca.BrokenKey;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
@@ -67,6 +69,8 @@ public class CertificateReportGenerator {
         setTrusted(report, cert);
         setSha256Hash(report, cert);
         report.setCertificate(cert);
+        setVulnerableRoca(report, cert);
+
         return report;
     }
 
@@ -143,7 +147,7 @@ public class CertificateReportGenerator {
             if (sigAndHashString != null) {
                 String[] algos = sigAndHashString.toUpperCase().split("WITH");
                 if (algos.length != 2) {
-                    LOGGER.warn("Could not parse " + sigAndHashString + " into a reasonable SignatureAndHash algorithm");
+                    LOGGER.warn("Could not parse " + sigAndHashString + " into a reasonable SignatureAndHashAlgorithm");
                     return;
                 }
                 SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.valueOf(algos[1]);
@@ -200,6 +204,19 @@ public class CertificateReportGenerator {
                     MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
         } catch (IOException | NoSuchAlgorithmException e) {
             LOGGER.warn("Could not create SHA-256 Hash", e);
+        }
+    }
+
+    private static boolean rocaIsAvailable() {
+        return false;
+    }
+
+    private static void setVulnerableRoca(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+        if (report.getPublicKey() != null && report.getPublicKey() instanceof RSAPublicKey) {
+            RSAPublicKey pubkey = (RSAPublicKey) report.getPublicKey();
+            report.setRocaVulnerable(BrokenKey.isAffected(pubkey));
+        } else {
+            report.setRocaVulnerable(false);
         }
     }
 }

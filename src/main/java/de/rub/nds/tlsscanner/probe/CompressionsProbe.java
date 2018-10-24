@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -37,8 +38,8 @@ import java.util.List;
  */
 public class CompressionsProbe extends TlsProbe {
 
-    public CompressionsProbe(ScannerConfig config) {
-        super(ProbeType.COMPRESSIONS, config, 0);
+    public CompressionsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.COMPRESSIONS, config, 0);
     }
 
     @Override
@@ -53,6 +54,7 @@ public class CompressionsProbe extends TlsProbe {
         List<CipherSuite> ciphersuites = new LinkedList<>();
         ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
         ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
@@ -67,13 +69,13 @@ public class CompressionsProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
         List<CompressionMethod> toTestList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-        
+
         CompressionMethod selectedCompressionMethod;
         List<CompressionMethod> supportedCompressionMethods = new LinkedList<>();
         do {
             selectedCompressionMethod = testCompressionMethods(toTestList, tlsConfig);
             if (!toTestList.contains(selectedCompressionMethod)) {
-                LOGGER.warn("Server chose a CompressionMethod we did not offer!");
+                LOGGER.debug("Server chose a CompressionMethod we did not offer!");
                 break;
             }
             if (selectedCompressionMethod != null) {
@@ -120,7 +122,7 @@ public class CompressionsProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
     }
-    
+
     @Override
     public ProbeResult getNotExecutedResult() {
         return null;

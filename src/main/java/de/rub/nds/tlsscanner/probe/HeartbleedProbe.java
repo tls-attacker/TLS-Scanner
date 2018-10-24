@@ -13,10 +13,10 @@ import de.rub.nds.tlsattacker.attacks.config.HeartbleedCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.HeartbleedAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -31,8 +31,8 @@ public class HeartbleedProbe extends TlsProbe {
 
     private List<CipherSuite> supportedCiphers;
 
-    public HeartbleedProbe(ScannerConfig config) {
-        super(ProbeType.HEARTBLEED, config, 9);
+    public HeartbleedProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.HEARTBLEED, config, 9);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class HeartbleedProbe extends TlsProbe {
             CiphersuiteDelegate ciphersuiteDelegate = (CiphersuiteDelegate) heartbleedConfig.getDelegate(CiphersuiteDelegate.class);
             //ciphersuiteDelegate.setCipherSuites(supportedCiphers.get(0));
         }
-        HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig);
+        HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
         return new HeartbleedResult(vulnerable);
     }
@@ -63,7 +63,7 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        supportedCiphers = report.getCipherSuites();
+        //supportedCiphers = report.getCipherSuites();
     }
 
     @Override

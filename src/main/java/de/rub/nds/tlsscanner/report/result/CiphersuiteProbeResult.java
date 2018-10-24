@@ -11,8 +11,9 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CipherType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -63,8 +64,8 @@ public class CiphersuiteProbeResult extends ProbeResult {
     }
 
     @Override
-    public void merge(SiteReport report) {
-        List<CipherSuite> allSupported = new LinkedList<>();
+    public void mergeData(SiteReport report) {
+        Set<CipherSuite> allSupported = new HashSet<>();
         supportsOnlyPfsCiphers = true;
         prefersPfsCiphers = true;
         for (VersionSuiteListPair pair : pairLists) {

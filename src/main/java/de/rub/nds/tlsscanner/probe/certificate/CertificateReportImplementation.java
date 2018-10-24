@@ -14,7 +14,6 @@ import java.security.PublicKey;
 import java.util.Date;
 import org.bouncycastle.asn1.x509.Certificate;
 
-
 /**
  *
  * @author Robert Merget - robert.merget@rub.de
@@ -40,6 +39,7 @@ class CertificateReportImplementation implements CertificateReport {
     private Boolean trusted;
     private Certificate certificate;
     private String sha256FingerprintHex;
+    private Boolean rocaVulnerable;
 
     public CertificateReportImplementation() {
     }
@@ -274,7 +274,20 @@ class CertificateReportImplementation implements CertificateReport {
         if (trusted != null) {
             builder.append("Trusted: ").append(trusted).append("\n");
         }
+        if (rocaVulnerable != null) {
+            builder.append("ROCA (simple): ").append(rocaVulnerable).append("\n");
+        } else {
+            builder.append("ROCA (simple): not tested");
+        }
         return builder.toString();
     }
 
+    @Override
+    public Boolean getRocaVulnerable() {
+        return rocaVulnerable;
+    }
+
+    public void setRocaVulnerable(Boolean rocaVulnerable) {
+        this.rocaVulnerable = rocaVulnerable;
+    }
 }

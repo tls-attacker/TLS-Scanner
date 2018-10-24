@@ -14,8 +14,9 @@ import java.util.List;
  * @author Robert Merget <robert.merget@rub.de>
  */
 public class VersionSuiteListPair {
+
     private final ProtocolVersion version;
-    
+
     private final List<CipherSuite> ciphersuiteList;
 
     public VersionSuiteListPair(ProtocolVersion version, List<CipherSuite> ciphersuiteList) {
@@ -31,5 +32,4 @@ public class VersionSuiteListPair {
         return ciphersuiteList;
     }
 
-    
 }
