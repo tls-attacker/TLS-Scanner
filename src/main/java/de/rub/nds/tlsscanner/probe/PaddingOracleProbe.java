@@ -25,10 +25,13 @@ import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -39,6 +42,8 @@ public class PaddingOracleProbe extends TlsProbe {
     private Boolean supportsTls12;
     private Boolean supportsTls11;
     private Boolean supportsTls10;
+
+    private List<VersionSuiteListPair> serverSupportedSuites;
 
     public PaddingOracleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.PADDING_ORACLE, config, 9);
@@ -51,7 +56,7 @@ public class PaddingOracleProbe extends TlsProbe {
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
 
         CiphersuiteDelegate cipherSuiteDelegate = (CiphersuiteDelegate) paddingOracleConfig.getDelegate(CiphersuiteDelegate.class);
-        
+
         List<PaddingOracleTestResult> testResultList = new LinkedList<>();
         Boolean lastResult = null;
         PaddingRecordGeneratorType recordGeneratorType;
@@ -90,72 +95,51 @@ public class PaddingOracleProbe extends TlsProbe {
         }
         ProtocolVersionDelegate versionDelegate = (ProtocolVersionDelegate) paddingOracleConfig.getDelegate(ProtocolVersionDelegate.class);
         for (ProtocolVersion version : versionList) {
-            List<CipherSuite> suiteList = new LinkedList<>();
-            for (CipherSuite suite : CipherSuite.getImplemented()) {
-                if (suite.isCBC()) {
-                    suiteList.add(suite);
+            VersionSuiteListPair suitePairList = null;
+            for (VersionSuiteListPair versionSuiteList : serverSupportedSuites) {
+                if (versionSuiteList.getVersion() == version) {
+                    suitePairList = versionSuiteList;
+                    break;
                 }
             }
+            if (suitePairList == null) {
+                continue;
+            }
             for (PaddingVectorGeneratorType vectorType : vectorTypeList) {
-                CipherSuite testedSuite = null;
-                ProtocolVersion testedVersion = null;
-                do {
-                    cipherSuiteDelegate.setCipherSuites(suiteList);
-                    versionDelegate.setProtocolVersion(version);
-                    paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
-                    paddingOracleConfig.setVectorGeneratorType(vectorType);
-                    PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig(), getParallelExecutor());
-                    boolean hasError = false;
-                    try {
-                        lastResult = attacker.isVulnerable();
-                    } catch (PaddingOracleUnstableException E) {
-                        LOGGER.warn("PaddingOracle Unstable - you should probably test this manually", E);
-                        lastResult = null;
-                        hasError = true;
-                    }
-                    testedSuite = attacker.getTestedSuite();
-                    testedVersion = attacker.getTestedVersion();
-                    if (!suiteList.contains(testedSuite)) {
-                        LOGGER.warn("Server does not respect client ciphersuite offer");
-                        break;
-                    }
-                    if (testedSuite != null && testedVersion != null) {
-                        if (!containsTupleAlready(testResultList, attacker.getTestedVersion(), attacker.getTestedSuite(), vectorType)) {
-                            testResultList.add(new PaddingOracleTestResult(lastResult, testedVersion, testedSuite, paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMap(), attacker.getEqualityError(attacker.getResponseMap()), attacker.isShakyScans(), hasError));
+
+                for (CipherSuite suite : suitePairList.getCiphersuiteList()) {
+                    if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
+                        cipherSuiteDelegate.setCipherSuites(suite);
+                        versionDelegate.setProtocolVersion(version);
+                        paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
+                        paddingOracleConfig.setVectorGeneratorType(vectorType);
+                        PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig(), getParallelExecutor());
+                        boolean hasError = false;
+                        try {
+                            lastResult = attacker.isVulnerable();
+                        } catch (PaddingOracleUnstableException E) {
+                            LOGGER.warn("PaddingOracle Unstable - you should probably test this manually", E);
+                            lastResult = null;
+                            hasError = true;
                         }
-                        if (scannerConfig.getScanDetail() == ScannerDetail.NORMAL) {
-                            String suffix = attacker.getTestedSuite().name().split("WITH_")[1];
-                            List<CipherSuite> tempList = new LinkedList<>();
-                            for (CipherSuite suite : suiteList) {
-                                if (!suite.name().endsWith(suffix)) {
-                                    tempList.add(suite);
-                                }
-                            }
-                            suiteList = tempList;
-                        } else {
-                            suiteList.remove(testedSuite);
-                        }
+
+                        testResultList.add(new PaddingOracleTestResult(lastResult, version, suite, paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMap(), attacker.getEqualityError(attacker.getResponseMap()), attacker.isShakyScans(), hasError));
                     }
-                } while (testedVersion != null && testedSuite != null);
+                }
+
             }
 
         }
-        System.out.println("testresults:" + testResultList.size());
+
         return new PaddingOracleResult(testResultList);
-    }
-
-    private boolean containsTupleAlready(List<PaddingOracleTestResult> testResultList, ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType) {
-        for (PaddingOracleTestResult result : testResultList) {
-            if (result.getSuite() == suite && result.getVersion() == version && result.getVectorGeneratorType() == vectorGeneratorType) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        if (!report.getSupportsTls10() && !report.getSupportsTls11() && !report.getSupportsTls12()) {
+        if (!(report.getSupportsTls10() == Boolean.TRUE) && !(report.getSupportsTls11() == Boolean.TRUE) && !(report.getSupportsTls12() == Boolean.TRUE)) {
+            return false;
+        }
+        if (report.getCipherSuites() == null) {
             return false;
         }
         return Objects.equals(report.getSupportsBlockCiphers(), Boolean.TRUE) || report.getSupportsBlockCiphers() == null;
@@ -166,6 +150,7 @@ public class PaddingOracleProbe extends TlsProbe {
         supportsTls10 = report.getSupportsTls10();
         supportsTls11 = report.getSupportsTls11();
         supportsTls12 = report.getSupportsTls12();
+        serverSupportedSuites = report.getVersionSuitePairs();
     }
 
     @Override

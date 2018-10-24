@@ -283,12 +283,12 @@ public class SiteReportPrinter {
                     prettyAppendYellow(builder, resultString + "\t # Error during Scan");
                 }
 
-                if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
+                if ((detail == ScannerDetail.DETAILED && testResult.getVulnerable() == Boolean.TRUE) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppendYellow(builder, "Response Map");
                         if (testResult.getResponseMap() != null && testResult.getResponseMap() != null) {
                             for (VectorResponse vectorResponse : testResult.getResponseMap()) {
-                                prettyAppend(builder, "\t" + vectorResponse.toString());
+                                prettyAppend(builder, "\t" + vectorResponse.getPaddingVector().getName() + "\t" + vectorResponse.getLength() + "\t" + vectorResponse.getFingerprint().toString());
                             }
                         } else {
                             prettyAppend(builder, "\tNULL");
