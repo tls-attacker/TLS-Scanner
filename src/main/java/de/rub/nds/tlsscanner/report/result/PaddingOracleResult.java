@@ -30,9 +30,9 @@ public class PaddingOracleResult extends ProbeResult {
             vulnerable = false;
         }
         for (PaddingOracleTestResult result : resultList) {
-            if (result.getVulnerable() == true) {
+            if (result.getVulnerable() == Boolean.TRUE) {
                 vulnerable = true;
-            } else if (result.getVulnerable() == false && vulnerable == null) {
+            } else if (result.getVulnerable() == Boolean.FALSE && vulnerable == null) {
                 vulnerable = false;
             }
         }
