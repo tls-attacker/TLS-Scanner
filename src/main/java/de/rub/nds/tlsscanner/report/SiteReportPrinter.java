@@ -13,7 +13,6 @@ import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -287,9 +286,9 @@ public class SiteReportPrinter {
                 if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppendYellow(builder, "Response Map");
-                        if (testResult.getResponseMap() != null && testResult.getResponseMap().get(0) != null) {
-                            for (VectorResponse vectorResponse : testResult.getResponseMap().get(0)) {
-                                prettyAppend(builder, "\t" + vectorResponse.getFingerprint().toString());
+                        if (testResult.getResponseMap() != null && testResult.getResponseMap() != null) {
+                            for (VectorResponse vectorResponse : testResult.getResponseMap()) {
+                                prettyAppend(builder, "\t" + vectorResponse.toString());
                             }
                         } else {
                             prettyAppend(builder, "\tNULL");

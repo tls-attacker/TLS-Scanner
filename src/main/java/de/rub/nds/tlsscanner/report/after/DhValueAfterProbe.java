@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 public class DhValueAfterProbe extends AfterProbe {
-    
+
     @Override
     public void analyze(SiteReport report) {
         List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
@@ -36,14 +36,14 @@ public class DhValueAfterProbe extends AfterProbe {
                     if (onlySafePrime && !isSafePrime((BigInteger) o)) {
                         onlySafePrime = false;
                     }
-                    
+
                     for (CommonDhValues value : loadedCommonDhValues) {
                         if (value.getModulus().equals(o)) {
                             usedCommonValues.add(value);
                             break;
                         }
                     }
-                    
+
                     if (shortestBitLength > ((BigInteger) o).bitLength()) {
                         shortestBitLength = ((BigInteger) o).bitLength();
                     }
@@ -63,9 +63,9 @@ public class DhValueAfterProbe extends AfterProbe {
             report.setWeakestDhStrength(shortestBitLength);
         }
     }
-    
+
     private boolean isSafePrime(BigInteger bigInteger) {
         return bigInteger.shiftRight(1).isProbablePrime(30);
     }
-    
+
 }
