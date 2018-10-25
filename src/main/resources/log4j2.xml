@@ -13,6 +13,24 @@
         <File name="File" fileName="log/info.log" immediateFlush="false" append="true">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss}{GMT+0} [%t] %-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
         </File>    
+        <Routing name="Routing">
+            <Routes pattern="$${ctx:ROUTINGKEY}">
+     
+                <!-- This route is chosen if ThreadContext has value 'special' for key ROUTINGKEY. -->
+                <Route key="special">
+                    <Console name="DebugOnConsole" target="SYSTEM_OUT">
+                        <PatternLayout pattern="%highlight{%msg}%n"/>
+                    </Console>
+                </Route>
+     
+                <!-- This route is chosen if ThreadContext has no value for key ROUTINGKEY. -->
+                <Route key="$${ctx:ROUTINGKEY}">
+                    <File name="FileOnDebug" fileName="log/info.log" immediateFlush="false" append="true">
+                        <PatternLayout pattern="%highlight{%d{HH:mm:ss}{GMT+0} [%t] %-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
     </Appenders>
     <Loggers>
         
@@ -41,7 +59,7 @@
         <Logger name="de.rub.nds.modifiablevariable" level="ERROR"/>
         
         <Root level="INFO">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Routing"/>
         </Root>
     </Loggers>
 </Configuration>
