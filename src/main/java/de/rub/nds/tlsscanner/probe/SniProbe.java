@@ -5,9 +5,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -43,8 +41,7 @@ public class SniProbe extends TlsProbe {
         config.setDefaultClientSupportedCiphersuites(toTestList);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
         State state = new State(config, trace);
-        WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
-        executor.executeWorkflow();
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
             return new SniResult(Boolean.FALSE);
         }
@@ -52,8 +49,7 @@ public class SniProbe extends TlsProbe {
         config.setAddServerNameIndicationExtension(true);
         trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
         state = new State(config, trace);
-        executor = new DefaultWorkflowExecutor(state);
-        executor.executeWorkflow();
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
             return new SniResult(Boolean.TRUE);
         }

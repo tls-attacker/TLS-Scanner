@@ -21,6 +21,7 @@ import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.HeartbleedResult;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class HeartbleedProbe extends TlsProbe {
         starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
         if (supportedCiphers != null) {
             CiphersuiteDelegate ciphersuiteDelegate = (CiphersuiteDelegate) heartbleedConfig.getDelegate(CiphersuiteDelegate.class);
-            //ciphersuiteDelegate.setCipherSuites(supportedCiphers.get(0));
+            ciphersuiteDelegate.setCipherSuites(supportedCiphers);
         }
         HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
         Boolean vulnerable = attacker.isVulnerable();
@@ -63,7 +64,11 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        //supportedCiphers = report.getCipherSuites();
+        if (report.getCipherSuites() != null && !report.getCipherSuites().isEmpty()) {
+            supportedCiphers = new ArrayList<>(report.getCipherSuites());
+        } else {
+            supportedCiphers = CipherSuite.getImplemented();
+        }
     }
 
     @Override

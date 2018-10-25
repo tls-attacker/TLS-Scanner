@@ -10,9 +10,6 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
-import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -42,7 +39,7 @@ public class TokenbindingProbe extends TlsProbe {
         List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
         supportedTokenBindingVersion.addAll(getSupportedVersions());
         List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
-        if (supportedTokenBindingVersion.size() != 0) {
+        if (!supportedTokenBindingVersion.isEmpty()) {
             supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
         }
         return new TokenbindingResult(supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
@@ -79,20 +76,12 @@ public class TokenbindingProbe extends TlsProbe {
         while (!toTestList.isEmpty()) {
             tlsConfig.setDefaultTokenBindingKeyParameters(toTestList);
             State state = new State(tlsConfig);
-            WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
-                    state);
-
-            try {
-                workflowExecutor.executeWorkflow();
-                if (state.getTlsContext().isExtensionNegotiated(ExtensionType.TOKEN_BINDING)) {
-                    supportedParameters.addAll(state.getTlsContext().getTokenBindingKeyParameters());
-                    for (TokenBindingKeyParameters param : state.getTlsContext().getTokenBindingKeyParameters()) {
-                        toTestList.remove(param);
-                    }
+            executeState(state);
+            if (state.getTlsContext().isExtensionNegotiated(ExtensionType.TOKEN_BINDING)) {
+                supportedParameters.addAll(state.getTlsContext().getTokenBindingKeyParameters());
+                for (TokenBindingKeyParameters param : state.getTlsContext().getTokenBindingKeyParameters()) {
+                    toTestList.remove(param);
                 }
-            } catch (WorkflowExecutionException ex) {
-                LOGGER.warn("Could not execute Workflow to determine supported Tokenbinding Key Parameters");
-                LOGGER.debug(ex);
             }
         }
         return supportedParameters;
@@ -127,9 +116,7 @@ public class TokenbindingProbe extends TlsProbe {
             try {
                 tlsConfig.setDefaultTokenBindingVersion(version);
                 State state = new State(tlsConfig);
-                WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
-                        state);
-                workflowExecutor.executeWorkflow();
+                executeState(state);
                 if (state.getTlsContext().isExtensionNegotiated(ExtensionType.TOKEN_BINDING)) {
                     supportedVersions.add(state.getTlsContext().getTokenBindingVersion());
                 }

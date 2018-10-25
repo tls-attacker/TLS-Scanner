@@ -8,11 +8,16 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.probe.stats.StatsWriter;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,13 +35,16 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     private final int danger;
 
-    protected final ParallelExecutor parallelExecutor;
+    private final ParallelExecutor parallelExecutor;
+
+    private final StatsWriter writer;
 
     public TlsProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig, int danger) {
         this.scannerConfig = scannerConfig;
         this.type = type;
         this.danger = danger;
         this.parallelExecutor = parallelExecutor;
+        this.writer = new StatsWriter();
     }
 
     public int getDanger() {
@@ -67,6 +75,18 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         return result;
     }
 
+    public final void executeState(State... states) {
+        this.executeState(new ArrayList<State>(Arrays.asList(states)));
+    }
+
+    public final void executeState(List<State> states) {
+        parallelExecutor.bulkExecute(states);
+        for (State state : states) {
+            writer.extract(state);
+        }
+
+    }
+
     public abstract ProbeResult executeTest();
 
     public abstract boolean shouldBeExecuted(SiteReport report);
@@ -74,4 +94,12 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     public abstract void adjustConfig(SiteReport report);
 
     public abstract ProbeResult getNotExecutedResult();
+
+    public ParallelExecutor getParallelExecutor() {
+        return parallelExecutor;
+    }
+
+    public StatsWriter getWriter() {
+        return writer;
+    }
 }

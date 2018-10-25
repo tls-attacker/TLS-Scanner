@@ -15,6 +15,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
@@ -139,11 +140,32 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
         for (ProbeResult result : resultList) {
             result.merge(report);
         }
-        //phase 3 - afterprobes
+        //phase 3 - collect statistics
+        List<TlsProbe> allProbes = scanJob.getJoinedProbes();
+        List<ExtractedValueContainer> globalContainerList = new LinkedList<>();
+        for (TlsProbe probe : allProbes) {
+            List<ExtractedValueContainer> tempContainerList = probe.getWriter().getCumulatedExtractedValues();
+            for (ExtractedValueContainer tempContainer : tempContainerList) {
+                //Try to find the original container , if it not found add it
+                ExtractedValueContainer targetContainer = null;
+                for (ExtractedValueContainer globalContainer : globalContainerList) {
+                    if (tempContainer.getType() == globalContainer.getType()) {
+                        targetContainer = globalContainer;
+                        break;
+                    }
+                }
+                if (targetContainer == null) {
+                    targetContainer = new ExtractedValueContainer(tempContainer.getType());
+                    globalContainerList.add(targetContainer);
+                }
+                targetContainer.getExtractedValueList().addAll(tempContainer.getExtractedValueList());
+            }
+        }
+        report.setExtractedValueContainerList(globalContainerList);
+        //phase 4 - afterprobes
         for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
             afterProbe.analyze(report);
         }
-        executor.shutdown();
         LOGGER.info("Finished scan for: " + hostname);
         return report;
     }
