@@ -13,8 +13,8 @@ package de.rub.nds.tlscrawler.data;
  * @author janis.fliegenschmidt@rub.de
  */
 public class SlaveStats implements ISlaveStats {
-    private long acceptedTaskCount;
-    private long completedTaskCount;
+    private volatile long acceptedTaskCount;
+    private volatile long completedTaskCount;
 
     public SlaveStats(long acceptedTaskCount, long completedTaskCount) {
         this.acceptedTaskCount = acceptedTaskCount;
@@ -42,8 +42,8 @@ public class SlaveStats implements ISlaveStats {
     @Override
     public String toString() {
         return "### Slave Stats: "
-                + this.acceptedTaskCount + "accepted, "
-                + this.completedTaskCount + "completed.";
+                + this.acceptedTaskCount + " accepted, "
+                + this.completedTaskCount + " completed.";
     }
 
     /**

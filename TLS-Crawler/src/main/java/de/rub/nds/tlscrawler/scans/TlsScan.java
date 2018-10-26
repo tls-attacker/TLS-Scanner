@@ -21,6 +21,7 @@ import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.report.PerformanceData;
@@ -76,6 +77,7 @@ public class TlsScan implements IScan {
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
         List<TlsProbe> phaseOneList = new LinkedList<>();
         phaseOneList.add(new CiphersuiteProbe(config, parallelExecutor));
+        phaseOneList.add(new ProtocolVersionProbe(config, parallelExecutor));
         List<TlsProbe> phaseTwoList = new LinkedList<>();
 
         phaseTwoList.add(new PaddingOracleProbe(config, parallelExecutor));
