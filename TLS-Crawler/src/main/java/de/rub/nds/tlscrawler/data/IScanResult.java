@@ -144,5 +144,5 @@ public interface IScanResult {
      *
      * @return A list of result data tuples.
      */
-    List<ITuple<String, Object>> getContents();
+    public List<ITuple<String, Object>> getContents();
 }

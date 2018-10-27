@@ -12,7 +12,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
-import de.rub.nds.tlscrawler.options.MasterSlaveOptions;
+import de.rub.nds.tlscrawler.options.SlaveOptions;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
@@ -35,10 +35,10 @@ public class Slave {
     private static Logger LOG = LoggerFactory.getLogger(Slave.class);
 
     public static void main(String[] args) {
-        MasterSlaveOptions options;
+        SlaveOptions options;
 
         try {
-            options = MasterSlaveOptions.parseOptions(args);
+            options = SlaveOptions.parseOptions(args);
         } catch (OptionsParsingException ex) {
             LOG.error("Command Line Options could not be parsed.");
             options = null;
@@ -46,14 +46,19 @@ public class Slave {
 
         if (options == null || options.help) {
             System.out.println("Could not parse Command Line Options. Try again:");
-            System.out.println(MasterSlaveOptions.getHelpString());
+            System.out.println(SlaveOptions.getHelpString());
             System.exit(0);
         }
 
         Collection<IScan> scans = ScanFactory.getInstance().getBuiltInScans();
         Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
 
-        ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(), scans);
+        ITlsCrawlerSlave slave = new TlsCrawlerSlave(
+                options.instanceId,
+                providers.getFirst(),
+                providers.getSecond(),
+                scans,
+                options.numberOfThreads);
 
         slave.start();
 
@@ -71,7 +76,7 @@ public class Slave {
         }).start();
     }
 
-    static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(MasterSlaveOptions options) {
+    static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(SlaveOptions options) {
 
         LOG.trace("setUpProviders()");
 

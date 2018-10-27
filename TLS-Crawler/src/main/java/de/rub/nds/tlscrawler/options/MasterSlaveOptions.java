@@ -130,6 +130,12 @@ public class MasterSlaveOptions extends OptionsBase {
 
         result = Options.parse(MasterSlaveOptions.class, args).getOptions();
 
+        MasterSlaveOptions.checkResult(result);
+
+        return result;
+    }
+
+    protected static void checkResult(MasterSlaveOptions result) {
         if (result != null && result.workspace.equals("")) {
             LOG.warn("No workspace name set. This might cause trouble when using " +
                     "more than a single instance of TLS-Crawler.");
@@ -144,8 +150,6 @@ public class MasterSlaveOptions extends OptionsBase {
         if (result != null && !saneMongoLogin) {
             LOG.warn("Did not specify a full set of mongo credentials (none is fine for unsecured instances).");
         }
-
-        return result;
     }
 
     private static boolean saneMongoLogin(String user, String pass, String authSource) {

@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.core;
 
+import de.rub.nds.tlscrawler.Slave;
 import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ISlaveStats;
 import de.rub.nds.tlscrawler.data.ScanTask;
@@ -32,13 +33,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
 
-    private static int NO_THREADS = 128;
-    private static int NEW_FETCH_LIMIT = NO_THREADS * 3;
-    private static int FETCH_AMOUNT = NO_THREADS * 2;
+    private static int STANDARD_NO_THREADS = 64;
     private static int MIN_NO_TO_PERSIST = 64;
     private static int ITERATIONS_TO_IGNORE_BULK_LIMITS = 10;
     private static int ORG_THREAD_SLEEP_MILLIS = 6000;
 
+    private int noThreads;
+    private int newFetchLimit;
+    private int fetchAmount;
     private List<Thread> threads;
     private TlsCrawlerSlaveOrgThread orgThread;
     private SlaveStats slaveStats;
@@ -56,7 +58,28 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                            IOrchestrationProvider orchestrationProvider,
                            IPersistenceProvider persistenceProvider,
                            Collection<IScan> scans) {
+        this(instanceId, orchestrationProvider, persistenceProvider, scans, STANDARD_NO_THREADS);
+    }
+
+    /**
+     * TLS-Crawler constructor.
+     *
+     * @param instanceId The identifier of this instance.
+     * @param orchestrationProvider A non-null orchestration provider.
+     * @param persistenceProvider A non-null persistence provider.
+     * @param scans A neither null nor empty list of available scans.
+     * @param noThreads Number of worker threads the crawler slave should use.
+     */
+    public TlsCrawlerSlave(String instanceId,
+                           IOrchestrationProvider orchestrationProvider,
+                           IPersistenceProvider persistenceProvider,
+                           Collection<IScan> scans,
+                           int noThreads) {
         super(instanceId, orchestrationProvider, persistenceProvider, scans);
+
+        this.noThreads = noThreads;
+        this.newFetchLimit = 3 * noThreads;
+        this.fetchAmount = 2 * noThreads;
 
         LOG.trace("Constructor()");
 
@@ -64,13 +87,19 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         this.slaveStats = new SlaveStats(0, 0);
         this.threads = new LinkedList<>();
 
-        for (int i = 0; i < NO_THREADS; i++) {
+        for (int i = 0; i < this.noThreads; i++) {
             Thread t = new SlaveWorkerThread(this.getInstanceId(), this.synchronizedTaskRouter, this);
             t.start();
             this.threads.add(t);
         }
 
-        this.orgThread = new TlsCrawlerSlaveOrgThread(this, this, this.synchronizedTaskRouter);
+        this.orgThread = new TlsCrawlerSlaveOrgThread(
+                this.slaveStats,
+                this,
+                this,
+                this.synchronizedTaskRouter,
+                this.newFetchLimit,
+                this.fetchAmount);
     }
 
     @Override
@@ -88,18 +117,27 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         private AtomicBoolean isRunning = new AtomicBoolean(false);
         private int iterations = 0;
 
+        private int newFetchLimit;
+        private int fetchAmount;
         private SynchronizedTaskRouter synchronizedTaskRouter;
         private IOrganizer organizer;
         private IScanProvider scanProvider;
+        private SlaveStats stats;
 
-        public TlsCrawlerSlaveOrgThread(IOrganizer organizer,
+        public TlsCrawlerSlaveOrgThread(SlaveStats stats,
+                                        IOrganizer organizer,
                                         IScanProvider scanProvider,
-                                        SynchronizedTaskRouter synchronizedTaskRouter) {
+                                        SynchronizedTaskRouter synchronizedTaskRouter,
+                                        int newFetchLimit,
+                                        int fetchAmount) {
             super(TlsCrawlerSlaveOrgThread.class.getSimpleName());
 
+            this.stats = stats;
             this.organizer = organizer;
             this.scanProvider = scanProvider;
             this.synchronizedTaskRouter = synchronizedTaskRouter;
+            this.newFetchLimit = newFetchLimit;
+            this.fetchAmount = fetchAmount;
         }
 
         public void stopExecution() {
@@ -113,10 +151,10 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
             while (this.isRunning.get()) {
                 // Fetch new tasks:
-                if (this.synchronizedTaskRouter.getTodoCount() < NEW_FETCH_LIMIT) {
+                if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
                     LOG.trace("Fetching tasks.", this.getName());
 
-                    Collection<String> taskIds = this.organizer.getOrchestrationProvider().getScanTasks(FETCH_AMOUNT);
+                    Collection<String> taskIds = this.organizer.getOrchestrationProvider().getScanTasks(this.fetchAmount);
                     Map<String, IScanTask> tasks =  this.organizer.getPersistenceProvider().getScanTasks(taskIds);
 
                     for (Map.Entry<String, IScanTask> e : tasks.entrySet()) {
@@ -126,7 +164,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     }
 
                     this.synchronizedTaskRouter.addTodo(tasks.values());
-                    slaveStats.incrementAcceptedTaskCount(tasks.size());
+
+                    this.stats.incrementAcceptedTaskCount(tasks.size());
                 }
 
                 // Persist task results:
@@ -138,7 +177,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     // TODO: Implement bulk operation @IPersistenceProvider
                     for (IScanTask t : finishedTasks) {
                         this.organizer.getPersistenceProvider().updateScanTask(t);
-                        slaveStats.incrementCompletedTaskCount(1);
+                        this.stats.incrementCompletedTaskCount(1);
                     }
 
                     this.iterations = 0;
