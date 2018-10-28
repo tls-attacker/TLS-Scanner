@@ -8,7 +8,6 @@
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -72,6 +71,7 @@ public class TlsScan implements IScan {
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setNoProgressbar(true);
         config.setScanDetail(ScannerDetail.DETAILED);
+        config.setTimeout(5000);
         // TODO: Make port not hardcoded.
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
