@@ -11,7 +11,6 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -65,9 +64,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         ClientHelloMessage msg = new ClientHelloMessage(config);
         List<ExtensionMessage> extensions = WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.CLIENT_HELLO, clientConfig.getTrace()).getExtensions();
         for (ExtensionMessage extension : extensions) {
-            if (extension instanceof KeyShareExtensionMessage) {
-                extension.setExtensionBytes(Modifiable.explicit(extension.getExtensionBytes().getOriginalValue()));
-            }
+            extension.setExtensionBytes(Modifiable.explicit(extension.getExtensionBytes().getOriginalValue()));
         }
         msg.setExtensions(extensions);
         WorkflowTrace trace = new WorkflowTrace();
