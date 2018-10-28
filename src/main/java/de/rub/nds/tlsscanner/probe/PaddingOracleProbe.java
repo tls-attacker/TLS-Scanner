@@ -27,7 +27,6 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -113,7 +112,7 @@ public class PaddingOracleProbe extends TlsProbe {
                         versionDelegate.setProtocolVersion(version);
                         paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
                         paddingOracleConfig.setVectorGeneratorType(vectorType);
-                        PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, paddingOracleConfig.createConfig(), getParallelExecutor());
+                        PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, scannerConfig.createConfig(), getParallelExecutor());
                         boolean hasError = false;
                         try {
                             lastResult = attacker.isVulnerable();
@@ -122,15 +121,11 @@ public class PaddingOracleProbe extends TlsProbe {
                             lastResult = null;
                             hasError = true;
                         }
-
                         testResultList.add(new PaddingOracleTestResult(lastResult, version, suite, paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMap(), attacker.getEqualityError(attacker.getResponseMap()), attacker.isShakyScans(), hasError));
                     }
                 }
-
             }
-
         }
-
         return new PaddingOracleResult(testResultList);
     }
 

@@ -52,8 +52,8 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-aggressiv", required = false, description = "The level of concurrent handshakes (only applies to some resource intensive tests)")
     private int aggroLevel = 1;
 
-    @Parameter(names = "-soft", required = false, description = "If active we are very polite and scan very very slowly. This can help if some handshakes crash the server")
-    private boolean soft = false;
+    @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
+    private int timeout = 1000;
 
     private boolean noProgressbar = false;
 
@@ -142,13 +142,17 @@ public class ScannerConfig extends TLSDelegateConfig {
     public Config createConfig() {
         Config config = super.createConfig();
         config.setSniHostname(clientDelegate.getHost());
-        config.getDefaultClientConnection().setTimeout(1000);
         config.setStarttlsType(starttlsDelegate.getStarttlsType());
-        if (soft) {
-            config.getDefaultClientConnection().setTimeout(5000);
-        } else {
-            config.getDefaultClientConnection().setTimeout(1000);
-        }
+        config.getDefaultClientConnection().setTimeout(timeout);
+
         return config;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 }
