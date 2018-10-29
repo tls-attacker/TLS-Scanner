@@ -18,6 +18,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  *
@@ -38,6 +39,9 @@ public class Main {
             }
             // Cmd was parsable
             try {
+                if(config.getGeneralDelegate().isDebug()){
+                    ThreadContext.put("ROUTINGKEY", "special"); 
+                }
                 TlsScanner scanner = new TlsScanner(config);
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
