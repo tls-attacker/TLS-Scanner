@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsattacker.attacks.exception.PaddingOracleUnstableException;
 import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
@@ -116,12 +117,17 @@ public class PaddingOracleProbe extends TlsProbe {
                         boolean hasError = false;
                         try {
                             lastResult = attacker.isVulnerable();
-                        } catch (PaddingOracleUnstableException E) {
+                        } catch (Exception E) {
                             LOGGER.warn("PaddingOracle Unstable - you should probably test this manually", E);
                             lastResult = null;
                             hasError = true;
                         }
-                        testResultList.add(new PaddingOracleTestResult(lastResult, version, suite, paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMap(), attacker.getEqualityError(attacker.getResponseMap()), attacker.isShakyScans(), hasError));
+                        for (VectorResponse vectorResponse : attacker.getVectorResponseList()) {
+                            if (vectorResponse.isErrorDuringHandshake()) {
+                                hasError = true;
+                            }
+                        }
+                        testResultList.add(new PaddingOracleTestResult(lastResult, version, suite, paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getVectorResponseList(), attacker.getVectorResponseListTwo(), attacker.getVectorResponseListThree(), attacker.getEqualityError(attacker.getVectorResponseList()), attacker.isShakyScans(), hasError));
                     }
                 }
             }

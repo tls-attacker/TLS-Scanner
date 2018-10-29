@@ -70,8 +70,8 @@ public class SiteReportPrinter {
         appendCompressions(builder);
         appendIntolerances(builder);
         appendAttackVulnerabilities(builder);
-        appendPaddingOracleResults(builder);
         appendBleichenbacherResults(builder);
+        appendPaddingOracleResults(builder);
         appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
@@ -275,21 +275,44 @@ public class SiteReportPrinter {
         } else {
             for (PaddingOracleTestResult testResult : report.getPaddingOracleTestResultList()) {
                 String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
-                if (testResult.getVulnerable() == Boolean.TRUE) {
+                if (testResult.getVulnerable() == null || testResult.isHasScanningError()) {
+                    prettyAppendYellow(builder, resultString + "\t # Error during Scan");
+                } else if (testResult.getVulnerable() == Boolean.TRUE) {
                     prettyAppendRed(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE");
                 } else if (testResult.getVulnerable() == Boolean.FALSE) {
                     prettyAppendGreen(builder, resultString + "\t - No Behavior Difference");
-                } else {
-                    prettyAppendYellow(builder, resultString + "\t # Error during Scan");
                 }
 
                 if ((detail == ScannerDetail.DETAILED && testResult.getVulnerable() == Boolean.TRUE) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppendYellow(builder, "Response Map");
                         if (testResult.getResponseMap() != null && testResult.getResponseMap() != null) {
-                            for (VectorResponse vectorResponse : testResult.getResponseMap()) {
-                                prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+                            for (int i = 0; i < testResult.getResponseMap().size(); i++) {
+                                VectorResponse vectorResponse = testResult.getResponseMap().get(i);
+                                if (vectorResponse.isErrorDuringHandshake()) {
+                                    prettyAppendRed(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + "ERROR");
+                                } else if (vectorResponse.isMissingEquivalent()) {
+                                    prettyAppendRed(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+                                } else if (vectorResponse.isShaky()) {
+
+                                    prettyAppendYellow(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+                                    if (testResult.getResponseMapTwo() != null) {
+                                        VectorResponse secondRescanResponse = testResult.getResponseMapTwo().get(i);
+                                        if (secondRescanResponse != null && secondRescanResponse.getFingerprint() != null) {
+                                            prettyAppendYellow(builder, padToLength("\t\t" + secondRescanResponse.getFingerprint().toHumanReadable(), 40));
+                                        }
+                                        if (testResult.getResponseMapThree() != null) {
+                                            VectorResponse thirdRescanResponse = testResult.getResponseMapThree().get(i);
+                                            if (thirdRescanResponse != null && thirdRescanResponse.getFingerprint() != null) {
+                                                prettyAppendYellow(builder, padToLength("\t\t\t" + thirdRescanResponse.getFingerprint().toHumanReadable(), 40));
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+                                }
                             }
+
                         } else {
                             prettyAppend(builder, "\tNULL");
                         }

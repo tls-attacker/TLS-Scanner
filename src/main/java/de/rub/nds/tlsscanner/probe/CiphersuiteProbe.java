@@ -11,8 +11,10 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.CiphersuiteProbeResult;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -80,7 +82,16 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
             config.setAddServerNameIndicationExtension(true);
-            config.setAddEllipticCurveExtension(true);
+            boolean containsEc = false;
+            for (CipherSuite suite : config.getDefaultClientSupportedCiphersuites()) {
+                KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
+                if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
+                    containsEc = true;
+                    break;
+                }
+            }
+            config.setAddEllipticCurveExtension(containsEc);
+            config.setAddECPointFormatExtension(containsEc);
             config.setAddSignatureAndHashAlgorithmsExtension(true);
             config.setAddRenegotiationInfoExtension(true);
             config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
