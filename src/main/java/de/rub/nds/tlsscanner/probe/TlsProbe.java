@@ -69,14 +69,23 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         long startTime = System.currentTimeMillis();
         ProbeResult result = executeTest();
         long stopTime = System.currentTimeMillis();
-        result.setStarttime(startTime);
-        result.setStoptime(stopTime);
-        LOGGER.info("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
+        if (result != null) {
+            result.setStarttime(startTime);
+            result.setStoptime(stopTime);
+        } else {
+            LOGGER.warn("" + getProbeName() + " - is null result");
+        }
+
+        LOGGER.info(
+                "Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
         return result;
     }
 
     public final void executeState(State... states) {
-        this.executeState(new ArrayList<State>(Arrays.asList(states)));
+        this.executeState(new ArrayList<State>(Arrays
+                .asList(states
+                )));
+
     }
 
     public final void executeState(List<State> states) {
@@ -87,19 +96,24 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     }
 
-    public abstract ProbeResult executeTest();
+    public abstract ProbeResult
+            executeTest();
 
-    public abstract boolean shouldBeExecuted(SiteReport report);
+    public abstract boolean shouldBeExecuted(SiteReport report
+    );
 
-    public abstract void adjustConfig(SiteReport report);
+    public abstract void adjustConfig(SiteReport report
+    );
 
     public abstract ProbeResult getNotExecutedResult();
 
     public ParallelExecutor getParallelExecutor() {
         return parallelExecutor;
+
     }
 
     public StatsWriter getWriter() {
         return writer;
+
     }
 }

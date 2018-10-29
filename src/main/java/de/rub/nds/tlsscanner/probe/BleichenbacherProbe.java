@@ -44,7 +44,7 @@ public class BleichenbacherProbe extends TlsProbe {
         RSAPublicKey publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(bleichenbacherConfig.createConfig());
         if (publicKey == null) {
             LOGGER.info("Could not retrieve PublicKey from Server - is the Server running?");
-            return null;
+            return getNotExecutedResult();
         }
         LOGGER.info("Fetched the following server public key: " + publicKey);
         List<Pkcs1Vector> pkcs1Vectors;

@@ -122,6 +122,9 @@ public class PaddingOracleProbe extends TlsProbe {
                             lastResult = null;
                             hasError = true;
                         }
+                        if (attacker.isErrornousScans()) {
+                            hasError = true;
+                        }
                         for (VectorResponse vectorResponse : attacker.getVectorResponseList()) {
                             if (vectorResponse.isErrorDuringHandshake()) {
                                 hasError = true;
