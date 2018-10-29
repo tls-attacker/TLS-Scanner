@@ -165,6 +165,7 @@ public class TlsScan implements IScan {
             tmp.addString("suite", potr.getSuite().name());
             tmp.addString("version", potr.getVersion().name());
             tmp.addBoolean("vulnerable", potr.getVulnerable());
+            tmp.addBoolean("scanningError", potr.isHasScanningError());
 
             /*
             List<IScanResult> map = new LinkedList<>();
