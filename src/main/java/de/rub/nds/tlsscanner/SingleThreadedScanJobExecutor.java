@@ -80,7 +80,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                         pb.step();
                     }
                 } catch (Exception E) {
-                    LOGGER.warn("Could not execute Probe", E);
+                    LOGGER.error("Could not execute Probe", E);
                 }
                 probeTypes.add(probe.getType());
             }
@@ -94,7 +94,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
             try {
                 result.merge(report);
             } catch (Exception E) {
-                LOGGER.warn("Could not merge SiteReport", E);
+                LOGGER.error("Could not merge SiteReport", E);
             }
         }
         //Finished phase one starting phase 2
@@ -117,7 +117,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                             pb.step();
                         }
                     } catch (Exception E) {
-                        LOGGER.warn("Could not execute Probe", E);
+                        LOGGER.error("Could not execute Probe", E);
                     }
                 } else if (!config.isImplementation()) {
                     ProbeResult result = probe.getNotExecutedResult();
@@ -135,7 +135,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
             try {
                 result.merge(report);
             } catch (Exception E) {
-                LOGGER.warn("Could not merge SiteReport", E);
+                LOGGER.error("Could not merge SiteReport", E);
             }
         }
         //phase 3 - collect statistics

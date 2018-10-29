@@ -118,7 +118,7 @@ public class PaddingOracleProbe extends TlsProbe {
                         try {
                             lastResult = attacker.isVulnerable();
                         } catch (Exception E) {
-                            LOGGER.warn("PaddingOracle Unstable - you should probably test this manually", E);
+                            LOGGER.error("Encountered an exception while testing for PaddingOracles", E);
                             lastResult = null;
                             hasError = true;
                         }

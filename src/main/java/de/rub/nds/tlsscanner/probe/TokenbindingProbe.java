@@ -122,8 +122,7 @@ public class TokenbindingProbe extends TlsProbe {
                 }
 
             } catch (WorkflowExecutionException ex) {
-                LOGGER.warn("Could not execute Workflow to determine supported Tokenbinding Versions");
-                LOGGER.debug(ex);
+                LOGGER.error("Could not execute Workflow to determine supported Tokenbinding Versions", ex);
             }
         }
         return supportedVersions;

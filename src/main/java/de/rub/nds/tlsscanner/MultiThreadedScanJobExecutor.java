@@ -87,9 +87,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
             try {
                 resultList.add(probeResult.get());
             } catch (InterruptedException | ExecutionException ex) {
-                LOGGER.warn("Encoutered Exception while retrieving probeResult");
-                ex.printStackTrace();
-                LOGGER.warn(ex);
+                LOGGER.error("Encoutered Exception while retrieving probeResult", ex);
             }
         }
 
@@ -131,9 +129,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
             try {
                 resultList.add(probeResult.get());
             } catch (InterruptedException | ExecutionException ex) {
-                LOGGER.warn("Encoutered Exception while retrieving probeResult");
-                ex.printStackTrace();
-                LOGGER.warn(ex);
+                LOGGER.error("Encoutered Exception while retrieving probeResult", ex);
             }
         }
         // mergeData phase 2
