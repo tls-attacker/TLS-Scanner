@@ -32,7 +32,7 @@ public class TlsScanTest {
                 new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), SocketState.SOCKET_EXCEPTION), ProtocolVersion.SSL2, CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA, 0));
 
         PaddingOracleTestResult potr = new PaddingOracleTestResult(true, ProtocolVersion.SSL2, CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                PaddingVectorGeneratorType.CLASSIC, PaddingRecordGeneratorType.LONG, porm, EqualityError.ALERT_COUNT, false, false);
+                PaddingVectorGeneratorType.CLASSIC, PaddingRecordGeneratorType.LONG, porm, porm, porm, EqualityError.ALERT_COUNT, false, false);
 
         List<PaddingOracleTestResult> trl = new LinkedList<>();
 
