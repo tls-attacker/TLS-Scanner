@@ -64,7 +64,9 @@ public class HandshakeSimulationProbe extends TlsProbe {
         ClientHelloMessage msg = new ClientHelloMessage(config);
         List<ExtensionMessage> extensions = WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.CLIENT_HELLO, clientConfig.getTrace()).getExtensions();
         for (ExtensionMessage extension : extensions) {
-            extension.setExtensionBytes(Modifiable.explicit(extension.getExtensionBytes().getOriginalValue()));
+            if (extension.getExtensionBytes().getValue()!=null) {
+                extension.setExtensionBytes(Modifiable.explicit(extension.getExtensionBytes().getValue()));
+            }
         }
         msg.setExtensions(extensions);
         WorkflowTrace trace = new WorkflowTrace();
