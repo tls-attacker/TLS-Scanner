@@ -308,7 +308,7 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     private Boolean hasVersionIntolerance() {
-        
+
         Config config = getWorkingConfig();
         WorkflowTrace trace = new WorkflowTrace();
         ClientHelloMessage message = new ClientHelloMessage(config);

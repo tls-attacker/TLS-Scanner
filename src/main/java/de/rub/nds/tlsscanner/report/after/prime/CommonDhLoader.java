@@ -25,10 +25,10 @@ public class CommonDhLoader {
             JSONParser parser = new JSONParser();
             InputStream resourceAsStream = CommonDhLoader.class.getClassLoader().getResourceAsStream("common/common.json");
             Object obj = parser.parse(new InputStreamReader(resourceAsStream));
-            
+
             JSONObject jsonObject = (JSONObject) obj;
             JSONArray companyList = (JSONArray) jsonObject.get("data");
-            
+
             Iterator<JSONObject> iterator = companyList.iterator();
             while (iterator.hasNext()) {
                 JSONObject commonDh = iterator.next();

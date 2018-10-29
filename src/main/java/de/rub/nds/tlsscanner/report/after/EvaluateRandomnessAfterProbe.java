@@ -8,7 +8,7 @@ import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.List;
 
 public class EvaluateRandomnessAfterProbe extends AfterProbe {
-    
+
     @Override
     public void analyze(SiteReport report) {
         List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
@@ -21,13 +21,13 @@ public class EvaluateRandomnessAfterProbe extends AfterProbe {
                 boolean allUnixTime = true;
                 for (Object o : container.getExtractedValueList()) {
                     ComparableByteArray byteArray = (ComparableByteArray) o;
-                    
+
                 }
                 result = RandomEvaluationResult.NO_DUPLICATES;
             }
-            
+
         }
         report.setRandomEvaluationResult(result);
     }
-    
+
 }

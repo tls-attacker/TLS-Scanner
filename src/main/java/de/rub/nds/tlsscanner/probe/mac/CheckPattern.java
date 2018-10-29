@@ -12,7 +12,7 @@ public class CheckPattern {
     private boolean foundFinishedAndAlert;
 
     private ByteCheckStatus[] bytePattern;
-    
+
     private List<ResponseFingerprint> responseFingerprintList = null;
 
     public CheckPattern(CheckPatternType type, boolean foundFinishedAndAlert, ByteCheckStatus[] bytePattern) {

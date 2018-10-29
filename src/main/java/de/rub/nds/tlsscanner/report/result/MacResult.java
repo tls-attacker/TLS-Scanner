@@ -9,7 +9,6 @@ public class MacResult extends ProbeResult {
     private final CheckPattern appDataPattern;
     private final CheckPattern finishedPattern;
     private final CheckPattern verifyPattern;
-    
 
     public MacResult(CheckPattern appDataPattern, CheckPattern finishedPattern, CheckPattern verifyPattern) {
         super(ProbeType.MAC);

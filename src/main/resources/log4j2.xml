@@ -35,7 +35,7 @@
     <Loggers>
         
         <Logger name="ConsoleLogger" level="INFO" additivity="false">
-             <AppenderRef ref="Direct"/>
+            <AppenderRef ref="Direct"/>
         </Logger> 
         
         <Logger name="de.rub.nds.tlsattacker.core.protocol.handler" level="ERROR"/>
