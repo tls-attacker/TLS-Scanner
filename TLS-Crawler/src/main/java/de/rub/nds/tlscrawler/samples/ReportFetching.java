@@ -18,14 +18,17 @@ import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.utility.ITuple;
+import de.rub.nds.tlscrawler.utility.Tuple;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import org.bson.Document;
 
 /**
  * Sample script fetching a database record and parsing it into a TLS Scanner
@@ -38,6 +41,7 @@ public class ReportFetching {
     private static HashMap<EqualityError, MutableInt> errorMap = new HashMap<>();
     private static HashMap<CipherSuite, MutableInt> suiteMap = new HashMap<>();
     private static HashMap<ProtocolVersion, MutableInt> versionMap = new HashMap<>();
+    private static List<Report> reportList = new LinkedList<>();
 
     public static void main(String... args) {
 
@@ -106,12 +110,37 @@ public class ReportFetching {
                 System.out.println("" + version.name() + ": " + versionMap.get(version).getValue());
             }
         }
+        int numberAllVuln = 0;
+        List<Report> uniqueReports = new LinkedList<>();
+        for (Report r : reportList) {
+            if (r.allAreVulnerable()) {
+                numberAllVuln++;
+                if (!uniqueContained(uniqueReports, r)) {
+                    uniqueReports.add(r);
+                }
+            }
+        }
+        System.out.println("#all vuln: " + numberAllVuln);
+        System.out.println("Unique Reports:");
+        for (Report r : uniqueReports) {
+            System.out.println(r.getHost());
+            System.out.println(r.getVulnerabilityList().get(0).toCsvString());
+        }
+    }
+
+    private static boolean uniqueContained(List<Report> uniqueReportList, Report r) {
+        for (Report report : uniqueReportList) {
+            if (report.allVulnEqual(r)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void processScanResultsList(String host, List<ScanResult> scanResultList) {
         Set<String> vulnerableSuffix = new HashSet<>();
         Set<String> notVulnSuffix = new HashSet<>();
-
+        Report report = new Report(host);
         for (ScanResult result : scanResultList) {
             List<ITuple<String, Object>> resultContents = result.getContents();
             EqualityError equailityError = null;
@@ -119,6 +148,8 @@ public class ReportFetching {
             ProtocolVersion version = null;
             Boolean vulnerable = null;
             Boolean shaky = null;
+            Boolean hasError = null;
+            List<String> responseMap = null;
 
             for (ITuple<String, Object> tempTuple : resultContents) {
                 if (tempTuple.getFirst().equals("getEqualityError")) {
@@ -135,6 +166,12 @@ public class ReportFetching {
                 }
                 if (tempTuple.getFirst().equals("shaky")) {
                     shaky = (Boolean) tempTuple.getSecond();
+                }
+                if (tempTuple.getFirst().equals("scanError")) {
+                    hasError = (Boolean) tempTuple.getSecond();
+                }
+                if (tempTuple.getFirst().equals("responseMap")) {
+                    responseMap = (List<String>) tempTuple.getSecond();
                 }
             }
             if (!shaky && vulnerable) {
@@ -165,8 +202,10 @@ public class ReportFetching {
                 String splitSuite[] = suite.name().split("_WITH");
                 notVulnSuffix.add(splitSuite[1]);
             }
+            report.addCsvReport(new CsvReport(suite, version, vulnerable, shaky, hasError, responseMap));
 
         }
+        reportList.add(report);
         for (String suffix : vulnerableSuffix) {
             if (notVulnSuffix.contains(suffix)) {
                 System.out.println(host + " - " + suffix);
