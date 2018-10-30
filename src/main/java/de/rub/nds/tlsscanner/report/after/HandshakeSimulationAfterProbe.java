@@ -16,49 +16,51 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     @Override
     public void analyze(SiteReport report) {
         int secureConnectionCounter = 0;
-        for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
-            if (simulatedClient.getReceivedServerHelloDone()) {
-                simulatedClient.setConnectionSecure(true);
-                if (report.getPaddingOracleVulnerable() && simulatedClient.getSelectedCiphersuite().isCBC()) {
-                    simulatedClient.setPaddingOracleVulnerable(true);
-                    simulatedClient.setConnectionSecure(false);
-                } else {
-                    simulatedClient.setPaddingOracleVulnerable(false);
-                }
-                if (report.getBleichenbacherVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
-                    simulatedClient.setBleichenbacherVulnerable(true);
-                    simulatedClient.setConnectionSecure(false);
-                } else {
-                    simulatedClient.setBleichenbacherVulnerable(false);
-                }
-                if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
-                    simulatedClient.setCrimeVulnerable(true);
-                    simulatedClient.setConnectionSecure(false);
-                } else {
-                    simulatedClient.setCrimeVulnerable(false);
-                }
-                if (report.getSweet32Vulnerable()) {
-                    if (simulatedClient.getSelectedCiphersuite().name().contains("3DES") || 
-                            simulatedClient.getSelectedCiphersuite().name().contains("IDEA") || 
-                            simulatedClient.getSelectedCiphersuite().name().contains("GOST")) {
-                        simulatedClient.setSweet32Vulnerable(true);
+        if (report.getSimulatedClientList() != null) {
+            for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
+                if (simulatedClient.getReceivedServerHelloDone()) {
+                    simulatedClient.setConnectionSecure(true);
+                    if (report.getPaddingOracleVulnerable() && simulatedClient.getSelectedCiphersuite().isCBC()) {
+                        simulatedClient.setPaddingOracleVulnerable(true);
                         simulatedClient.setConnectionSecure(false);
                     } else {
-                        simulatedClient.setSweet32Vulnerable(false);
+                        simulatedClient.setPaddingOracleVulnerable(false);
+                    }
+                    if (report.getBleichenbacherVulnerable() && simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
+                        simulatedClient.setBleichenbacherVulnerable(true);
+                        simulatedClient.setConnectionSecure(false);
+                    } else {
+                        simulatedClient.setBleichenbacherVulnerable(false);
+                    }
+                    if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
+                        simulatedClient.setCrimeVulnerable(true);
+                        simulatedClient.setConnectionSecure(false);
+                    } else {
+                        simulatedClient.setCrimeVulnerable(false);
+                    }
+                    if (report.getSweet32Vulnerable()) {
+                        if (simulatedClient.getSelectedCiphersuite().name().contains("3DES")
+                                || simulatedClient.getSelectedCiphersuite().name().contains("IDEA")
+                                || simulatedClient.getSelectedCiphersuite().name().contains("GOST")) {
+                            simulatedClient.setSweet32Vulnerable(true);
+                            simulatedClient.setConnectionSecure(false);
+                        } else {
+                            simulatedClient.setSweet32Vulnerable(false);
+                        }
+                    }
+                    if (report.getDrownVulnerable().equals(DrownVulnerabilityType.SSL2) && simulatedClient.getSelectedProtocolVersion().equals(ProtocolVersion.SSL2)) {
+                        simulatedClient.setDrownVulnerable(true);
+                    } else {
+                        simulatedClient.setDrownVulnerable(false);
+                    }
+                    if (simulatedClient.getConnectionSecure()) {
+                        secureConnectionCounter++;
                     }
                 }
-                if (report.getDrownVulnerable().equals(DrownVulnerabilityType.SSL2) && simulatedClient.getSelectedProtocolVersion().equals(ProtocolVersion.SSL2)) {
-                    simulatedClient.setDrownVulnerable(true);
-                } else {
-                    simulatedClient.setDrownVulnerable(false);
-                }
-                if (simulatedClient.getConnectionSecure()) {
-                    secureConnectionCounter++;
-                }
             }
+            report.setConnectionSecureCounter(secureConnectionCounter);
+            report.setConnectionInsecureCounter(report.getHandshakeSuccessfulCounter() - secureConnectionCounter);
         }
-        report.setConnectionSecureCounter(secureConnectionCounter);
-        report.setConnectionInsecureCounter(report.getHandshakeSuccessfulCounter()-secureConnectionCounter);
     }
-    
+
 }

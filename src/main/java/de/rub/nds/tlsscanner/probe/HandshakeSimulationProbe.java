@@ -34,7 +34,7 @@ import java.util.List;
 
 public class HandshakeSimulationProbe extends TlsProbe {
     
-    private static final String RESOURCE_FOLDER = "client_configs";
+    private static final String RESOURCE_FOLDER = "extracted_client_configs";
     
     private final List<SimulatedClient> simulatedClientList;
 
