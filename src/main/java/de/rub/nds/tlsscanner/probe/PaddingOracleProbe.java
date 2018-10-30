@@ -33,6 +33,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -113,6 +115,11 @@ public class PaddingOracleProbe extends TlsProbe {
                         versionDelegate.setProtocolVersion(version);
                         paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
                         paddingOracleConfig.setVectorGeneratorType(vectorType);
+                        try {
+                            Thread.currentThread().sleep(10000);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(PaddingOracleProbe.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, scannerConfig.createConfig(), getParallelExecutor());
                         boolean hasError = false;
                         try {
