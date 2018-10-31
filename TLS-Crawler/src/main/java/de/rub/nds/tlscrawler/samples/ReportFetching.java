@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.samples;
 
+import com.beust.jcommander.internal.Lists;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
@@ -18,17 +19,26 @@ import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.utility.ITuple;
-import de.rub.nds.tlscrawler.utility.Tuple;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.bson.Document;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.io.DOTExporter;
+import org.jgrapht.io.StringComponentNameProvider;
 
 /**
  * Sample script fetching a database record and parsing it into a TLS Scanner
@@ -41,7 +51,7 @@ public class ReportFetching {
     private static HashMap<EqualityError, MutableInt> errorMap = new HashMap<>();
     private static HashMap<CipherSuite, MutableInt> suiteMap = new HashMap<>();
     private static HashMap<ProtocolVersion, MutableInt> versionMap = new HashMap<>();
-    private static List<Report> reportList = new LinkedList<>();
+    private static ArrayList<Report> reportList = new ArrayList<>();
 
     public static void main(String... args) {
 
@@ -124,7 +134,85 @@ public class ReportFetching {
         System.out.println("Unique Reports:");
         for (Report r : uniqueReports) {
             System.out.println(r.getHost());
-            System.out.println(r.getVulnerabilityList().get(0).toCsvString());
+            //System.out.println(r.getVulnerabilityList().get(0).toCsvString());
+        }
+        //System.out.println("Graph");
+        //createGraph(reportList);
+
+        //System.out.println("Searching for minimum vectors");
+        //System.out.println(createMustHaveListBottomUp());
+        int onlyOneVulnerability = 0;
+        int multipleVulnerabilitys = 0;
+
+        Set<List<String>> vulnSet = new HashSet<>();
+
+        for (Report report : reportList) {
+            if (report.vulnCsvAreEqual()) {
+                onlyOneVulnerability++;
+
+                for (CsvReport csv : report.getVulnerabilityList()) {
+                    if (csv.isVulnerable() && !csv.isScanError() && !csv.isShaky()) {
+                        List<String> newVulnMap = new LinkedList<>();
+                        for (int i = 0; i < 14; i++) {
+                            newVulnMap.add(csv.getResponseMap().get(i).split("paddingVector")[0]);
+                        }
+                        vulnSet.add(newVulnMap);
+                    }
+                }
+            } else {
+                multipleVulnerabilitys++;
+            }
+
+        }
+
+        System.out.println("One:" + onlyOneVulnerability);
+        System.out.println("Multiple:" + multipleVulnerabilitys);
+        System.out.println("#UniqueVulnMaps:" + vulnSet.size());
+        ArrayList<List<String>> vulnList = new ArrayList<>();
+        ArrayList<List<String>> vulnHostList = new ArrayList<>();
+        vulnList.addAll(vulnSet);
+        ArrayList<MutableInt> vulnTypeCounter = new ArrayList<>();
+        for (List l : vulnList) {
+            vulnTypeCounter.add(new MutableInt(0));
+            vulnHostList.add(new LinkedList<>());
+        }
+
+        for (Report report : reportList) {
+            if (report.vulnCsvAreEqual()) {
+                int indexOf = -1;
+                for (CsvReport csv : report.getVulnerabilityList()) {
+                    if (csv.isVulnerable() && !csv.isScanError() && !csv.isShaky()) {
+                        List<String> newVulnMap = new LinkedList<>();
+                        for (int i = 0; i < 14; i++) {
+                            newVulnMap.add(csv.getResponseMap().get(i).split("paddingVector")[0]);
+                        }
+                        indexOf = vulnList.indexOf(newVulnMap);
+                        break;
+                    }
+                }
+                if (indexOf == -1) {
+                    System.out.println("opps");
+                    continue;
+                }
+                vulnTypeCounter.get(indexOf).addValue(1);
+                vulnHostList.get(indexOf).add(report.getHost());
+            }
+        }
+
+        for (int i = 0; i < vulnList.size(); i++) {
+            List<String> list = vulnList.get(i);
+            System.out.println("------------------" + i + "------------------");
+            System.out.println("#" + vulnTypeCounter.get(i).getValue());
+            System.out.println();
+            for (String s : list) {
+                System.out.println(s.split("paddingVector")[0]);
+            }
+            System.out.println();
+            System.out.println("Ips:");
+            for (String host : vulnHostList.get(i)) {
+                System.out.println(host);
+            }
+
         }
     }
 
@@ -211,5 +299,192 @@ public class ReportFetching {
                 System.out.println(host + " - " + suffix);
             }
         }
+    }
+
+    public static void createGraph(List<Report> reportList) {
+        Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+        Graph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
+
+        for (Report report : reportList) {
+            //Create node
+            graph.addVertex("Host_" + report.getHost().replace(":443", "").replace(".", "_"));
+            invertedGraph.addVertex("Host_" + report.getHost().replace(":443", "").replace(".", "_"));
+
+        }
+        System.out.println("Creating Graph");
+
+        for (Report report : reportList) {
+            for (Report otherReport : reportList) {
+                if (report.contradicts(otherReport)) {
+                    graph.addEdge("Host_" + report.getHost().replace(":443", "").replace(".", "_"), "Host_" + otherReport.getHost().replace(":443", "").replace(".", "_"));
+                } else {
+                    if (otherReport != report) {
+                        invertedGraph.addEdge("Host_" + report.getHost().replace(":443", "").replace(".", "_"), "Host_" + otherReport.getHost().replace(":443", "").replace(".", "_"));
+                    }
+                }
+            }
+        }
+
+        System.out.println("Writing Graph");
+
+        DOTExporter exporter = new DOTExporter();
+        exporter.setVertexIDProvider(new StringComponentNameProvider());
+        try {
+            exporter.exportGraph(graph, new FileWriter(new File("graph.dot")));
+            exporter.exportGraph(invertedGraph, new FileWriter(new File("inverted_graph.dot")));
+        } catch (IOException ex) {
+            Logger.getLogger(ReportFetching.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        System.out.println("Searching Clique:");
+
+        CliqueFinder finder = new CliqueFinder(graph);
+        List<Set<String>> allMaximalCliques = finder.getAllMaximalCliques();
+        for (Set<String> clique : allMaximalCliques) {
+            System.out.println(clique);
+        }
+
+    }
+
+    public static void testDel() {
+        List<Integer> intList = new LinkedList<>();
+        for (int i = 0; i < 26; i++) {
+            intList.add(i);
+        }
+
+        List<Integer> createMustHaveList = createMustHaveListTopDown(intList, reportList);
+        for (Integer i : createMustHaveList) {
+            System.out.println("Musthave: " + i);
+        }
+    }
+
+    public static List<Integer> createMustHaveListBottomUp() {
+
+        List<List<Integer>> toTestLists = new LinkedList<>();
+        extendLists(toTestLists);
+        List<Integer> solution = null;
+        int solutionLenght = 1;
+        while (solution == null) {
+            solutionLenght++;
+            System.out.println("Testing:" + solutionLenght);
+            extendLists(toTestLists);
+            solution = testForSolution(toTestLists);
+        }
+        return solution;
+    }
+
+    public static void extendLists(List<List<Integer>> lists) {
+        if (lists.isEmpty()) {
+            for (int i = 0; i < 26; i++) {
+                List<Integer> tempList = new LinkedList<>();
+                tempList.add(i);
+                lists.add(tempList);
+            }
+        } else {
+            List<List<Integer>> tempListStorage = new LinkedList<>();
+            for (List<Integer> list : lists) {
+                for (int i = 1; i < 26; i++) {
+                    List<Integer> tempList = Lists.newArrayList(list);
+                    if (!tempList.contains(i)) {
+                        tempList.add(i);
+                        tempListStorage.add(tempList);
+                    }
+
+                }
+                list.add(0);
+            }
+            lists.addAll(tempListStorage);
+        }
+    }
+
+    public static List<Integer> createMustHaveListTopDown(List<Integer> mustHaveList, ArrayList<Report> reportList) {
+
+        List<Integer> shortestMustHaveList = null;
+        System.out.println("Testing:" + mustHaveList.toString());
+
+        for (Integer i : mustHaveList) {
+
+            ArrayList<Report> reducedReportList = createDeletedReportlistCopy(i, reportList);
+            if (isDistinguishable(reducedReportList)) {
+                System.out.println("Is Distinguishable:" + mustHaveList.toString() + " without " + i);
+
+                List<Integer> newTestList = new LinkedList<>();
+                for (int j = 0; j < mustHaveList.size(); j++) {
+                    if (mustHaveList.get(j) != i) {
+                        newTestList.add(mustHaveList.get(j));
+                    }
+                }
+                if (Arrays.equals(mustHaveList.toArray(), newTestList.toArray())) {
+                    continue;
+                }
+                List<Integer> shortest = createMustHaveListTopDown(newTestList, reducedReportList);
+                if (shortestMustHaveList == null) {
+                    shortestMustHaveList = shortest;
+                } else if (shortestMustHaveList.size() > shortest.size()) {
+                    shortestMustHaveList = shortest;
+                }
+            }
+        }
+        return shortestMustHaveList;
+    }
+
+    private static ArrayList<Report> createDeletedReportlistCopy(Integer i, ArrayList<Report> toCopyList) {
+        ArrayList<Report> newReportList = new ArrayList<>();
+        for (Report r : toCopyList) {
+            Report copy = new Report(r);
+            for (CsvReport csv : copy.getVulnerabilityList()) {
+                if (csv.getResponseMap().size() > i) {
+                    csv.getResponseMap().set(i, null);
+                }
+            }
+            newReportList.add(copy);
+        }
+        return newReportList;
+    }
+
+    public static boolean isDistinguishable(ArrayList<Report> tempReportList) {
+        //System.out.println("Starting response distinguisable test: " + tempReportList.size());
+        for (Report report : tempReportList) {
+
+            for (CsvReport csv : report.getVulnerabilityList()) {
+                if (!csv.isShaky() && !csv.isScanError() && csv.isVulnerable()) {
+                    // System.out.println(csv.getResponseMap());
+                    Set<String> hashSet = new HashSet<>();
+                    for (String s : csv.getResponseMap()) {
+                        if (s == null) {
+                            continue;
+                        }
+                        hashSet.add(s.split("paddingVector")[0]);
+                    }
+                    if (hashSet.size() == 1 || hashSet.isEmpty()) {
+                        return false;
+                    } else {
+                        //System.out.println("Is distinguishable");
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private static List<Integer> testForSolution(List<List<Integer>> toTestLists) {
+        for (List<Integer> list : toTestLists) {
+            ArrayList<Report> toTestReportList = new ArrayList<>();
+            for (Report report : reportList) {
+                Report tempReport = new Report(report);
+                for (CsvReport csv : tempReport.getVulnerabilityList()) {
+                    for (int i = 0; i < csv.getResponseMap().size(); i++) {
+                        if (!list.contains(i)) {
+                            csv.getResponseMap().set(i, null);
+                        }
+                    }
+                }
+                toTestReportList.add(tempReport);
+            }
+            if (isDistinguishable(toTestReportList)) {
+                return list;
+            }
+        }
+        return null;
     }
 }

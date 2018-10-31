@@ -71,13 +71,46 @@ public class Report {
     }
 
     public boolean allVulnEqual(Report r) {
-        CsvReport reportOne = vulnerabilityList.get(0);
-        CsvReport reportTwo = r.getVulnerabilityList().get(0);
-        if (reportOne.softEquals(reportTwo)) {
-            return true;
-        } else {
-            return false;
+        for (CsvReport reportOne : vulnerabilityList) {
+            for (CsvReport reportTwo : vulnerabilityList) {
+                if (reportOne.getSuite() == reportTwo.getSuite() && reportOne.getVersion() == reportTwo.getVersion()) {
+                    if (reportOne.softEquals(reportTwo)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
         }
+        return false;
     }
 
+    public boolean contradicts(Report otherReport) {
+        for (CsvReport csv : vulnerabilityList) {
+            for (CsvReport otherCsv : otherReport.getVulnerabilityList()) {
+                if (otherCsv.getSuite() == csv.getSuite() && otherCsv.getVersion() == csv.getVersion()) {
+                    if (!otherCsv.softEquals(csv)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean vulnCsvAreEqual() {
+        List<String> vulnerability = null;
+        for (CsvReport report : vulnerabilityList) {
+            if (report.isVulnerable() && !report.isShaky() && !report.isScanError()) {
+                if (vulnerability == null) {
+                    vulnerability = report.getResponseMap();
+                } else {
+                    if (!report.vulnMapLooksSimilar(vulnerability)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }

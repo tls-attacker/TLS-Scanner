@@ -25,12 +25,12 @@ import java.util.*;
 import static com.mongodb.client.model.Filters.eq;
 
 /**
- * A persistence provider implementation using MongoDB as
- * the persistence layer.
+ * A persistence provider implementation using MongoDB as the persistence layer.
  *
  * @author janis.fliegenschmidt@rub.de
  */
 public class MongoPersistenceProvider implements IPersistenceProvider {
+
     private static Logger LOG = LoggerFactory.getLogger(MongoPersistenceProvider.class);
 
     private static String COLL_NAME = "scans";
@@ -70,7 +70,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     /**
-     * Convenience method to block method entry in situations where the persistence provider is not initialized.
+     * Convenience method to block method entry in situations where the
+     * persistence provider is not initialized.
      */
     private void checkInit() {
         if (!this.initialized) {
@@ -188,13 +189,12 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
                 .append("minCompleted", new Document(DBOperations.MIN, String.format("$%s", DBKeys.COMPLETED_TIMESTAMP)))
                 .append("minCreated", new Document(DBOperations.MIN, String.format("$%s", DBKeys.CREATED_TIMESTAMP)));
         Document group = new Document(DBOperations.GROUP, minCompCreated);
-        Document result = (Document)this.resultCollection.aggregate(Arrays.asList(group)).first();
+        Document result = (Document) this.resultCollection.aggregate(Arrays.asList(group)).first();
 
-        Date minCompDate = (Date)result.get("minCompleted");
+        Date minCompDate = (Date) result.get("minCompleted");
         Instant earliestCompletionTimestamp = minCompDate == null ? null : minCompDate.toInstant();
-        Date minCreaDate = (Date)result.get("minCreated");
+        Date minCreaDate = (Date) result.get("minCreated");
         Instant earliestCreatedTimestamp = minCreaDate == null ? null : minCreaDate.toInstant();
-
 
         return new PersistenceProviderStats(
                 totalTasks,
@@ -246,9 +246,9 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             if (val instanceof IScanResult) {
                 bson.append(key, iScanResultToBson((IScanResult) val));
             } else if (val instanceof Instant) {
-                bson.append(key, Date.from((Instant)val));
+                bson.append(key, Date.from((Instant) val));
             } else if (val instanceof List) {
-                List list = (List)val;
+                List list = (List) val;
                 Object typecheck = list.isEmpty() ? null : list.get(0);
 
                 if (typecheck instanceof IScanResult) {
@@ -309,8 +309,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             return null;
         }
 
-        Collection<Integer> ports = (List<Integer>)scanTask.get(DBKeys.PORTS);
-        Collection<String> scans = (List<String>)scanTask.get(DBKeys.SCANS);
+        Collection<Integer> ports = (List<Integer>) scanTask.get(DBKeys.PORTS);
+        Collection<String> scans = (List<String>) scanTask.get(DBKeys.SCANS);
 
         Date created = scanTask.getDate(DBKeys.CREATED_TIMESTAMP);
         Date accepted = scanTask.getDate(DBKeys.ACCEPTED_TIMESTAMP);
@@ -333,10 +333,10 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
                 ports,
                 scans);
 
-        Document results = (Document)scanTask.get(DBKeys.RESULTS);
+        Document results = (Document) scanTask.get(DBKeys.RESULTS);
         if (results != null) {
             results.entrySet().stream()
-                    .map(x -> (Document)x.getValue())
+                    .map(x -> (Document) x.getValue())
                     .map(x -> scanResultFromBsonDoc(x))
                     .forEach(result::addResult);
         }
@@ -362,25 +362,25 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             Object value = e.getValue();
 
             if (value instanceof Date) {
-                value = ((Date)value).toInstant();
+                value = ((Date) value).toInstant();
             }
 
             if (value == null) {
                 result.addString(key, null);
             } else if (value instanceof String) {
-                result.addString(key, (String)value);
+                result.addString(key, (String) value);
             } else if (value instanceof Long) {
-                result.addLong(key, (Long)value);
+                result.addLong(key, (Long) value);
             } else if (value instanceof Integer) {
-                result.addInteger(key, (Integer)value);
+                result.addInteger(key, (Integer) value);
             } else if (value instanceof Double) {
-                result.addDouble(key, (Double)value);
+                result.addDouble(key, (Double) value);
             } else if (value instanceof Instant) {
-                result.addTimestamp(key, (Instant)value);
+                result.addTimestamp(key, (Instant) value);
             } else if (value instanceof Boolean) {
-                result.addBoolean(key, (Boolean)value);
+                result.addBoolean(key, (Boolean) value);
             } else if (value instanceof List) {
-                List list = (List)value;
+                List list = (List) value;
                 Object typecheck = list.isEmpty() ? null : list.get(0);
 
                 if (typecheck == null) {
@@ -399,7 +399,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
                     List<IScanResult> subresults = new LinkedList<>();
 
                     for (Object obj : list) {
-                        subresults.add(scanResultFromBsonDoc((Document)obj));
+                        subresults.add(scanResultFromBsonDoc((Document) obj));
                     }
 
                     result.addSubResultArray(key, subresults);
@@ -407,7 +407,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
                     throw new RuntimeException("Unexpected Type.");
                 }
             } else if (value instanceof Document) {
-                result.addSubResult(key, scanResultFromBsonDoc((Document)value));
+                result.addSubResult(key, scanResultFromBsonDoc((Document) value));
             } else {
                 throw new RuntimeException("Unexpected Type.");
             }
@@ -420,6 +420,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      * Constants of the keys in the result documents used in MongoDB.
      */
     static class DBKeys {
+
         static String ID = "_id";
         static String SCAN_ID = "scanId";
         static String MASTER_INSTANCE_ID = "masterInstanceId";
@@ -437,6 +438,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      * Constants to use in update-queries.
      */
     static class DBOperations {
+
         static String EQUALS = "$eq";
         static String EXISTS = "$exists";
         static String GROUP = "$group";

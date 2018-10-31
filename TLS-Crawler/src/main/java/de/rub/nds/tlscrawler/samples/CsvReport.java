@@ -95,12 +95,27 @@ public class CsvReport {
         this.scanError = scanError;
     }
 
-    boolean softEquals(CsvReport reportTwo) {
+    public boolean softEquals(CsvReport reportTwo) {
         if (reportTwo.getResponseMap().size() != this.responseMap.size()) {
             return false;
         }
         for (int i = 0; i < reportTwo.getResponseMap().size(); i++) {
-            if (!responseMap.get(i).equals(responseMap.get(i))) {
+            if (!responseMap.get(i).split("paddingVector")[0].equals(responseMap.get(i).split("paddingVector")[0])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean vulnMapLooksSimilar(List<String> vulnMap) {
+        int size;
+        if (vulnMap.size() < this.responseMap.size()) {
+            size = vulnMap.size();
+        } else {
+            size = responseMap.size();
+        }
+        for (int i = 0; i < size; i++) {
+            if (!responseMap.get(i).split("paddingVector")[0].equals(vulnMap.get(i).split("paddingVector")[0])) {
                 return false;
             }
         }
@@ -115,5 +130,5 @@ public class CsvReport {
             builder.append(",");
         }
         return builder.toString();
-   }
+    }
 }
