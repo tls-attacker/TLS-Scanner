@@ -8,8 +8,12 @@
 package de.rub.nds.tlscrawler.samples;
 
 import com.beust.jcommander.internal.Lists;
+import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -34,6 +38,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bson.BsonBoolean;
+import org.bson.BsonDocument;
+import org.bson.BsonInt32;
+import org.bson.Document;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -61,7 +69,7 @@ public class ReportFetching {
         String mongoUser = "janis";
         String mongoAuthSource = "admin";
         String mongoPass = "myStrongPass123!";
-        String mongoWorkspace = "TLSC-100M-1";
+        String mongoWorkspace = "TLSC-bugbounty-3";
 
         // EXEC
         ServerAddress addr = new ServerAddress(mongoHost, mongoPort);
@@ -71,35 +79,38 @@ public class ReportFetching {
                 mongoPass.toCharArray());
         MongoPersistenceProvider pp = new MongoPersistenceProvider(addr, cred);
         pp.init(mongoWorkspace);
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(new File("vulnIds")));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                IScanTask task = pp.getScanTask(line);
-                Collection<IScanResult> results = task.getResults();
-                for (IScanResult result : results) {
-                    List<ITuple<String, Object>> contents = result.getContents();
-                    String host = null;
-                    for (ITuple<String, Object> tuple : contents) {
-                        if (tuple.getFirst().equals("host")) {
-                            host = tuple.getSecond().toString();
-                        }
-                        if (tuple.getFirst().equals("paddingOracle")) {
-                            ScanResult paddingOracleResults = (ScanResult) tuple.getSecond();
-                            List<ITuple<String, Object>> scanResultList = paddingOracleResults.getContents();
-                            for (ITuple<String, Object> sth : scanResultList) {
-                                if (sth.getFirst().equals("paddingOracleResults")) {
-                                    //now we have all padding oracle scan results
-                                    processScanResultsList(host, ((List) sth.getSecond()));
-                                }
+        MongoClient mongoClient = new MongoClient(new ServerAddress(mongoHost, mongoPort), Arrays.asList(cred));
+        MongoDatabase database = mongoClient.getDatabase(mongoWorkspace);
+        MongoCollection<Document> collection = database.getCollection("scans");
+        FindIterable<Document> find = collection.find(new BsonDocument("results.tls_scan.paddingOracle.paddingOracleResults.vulnerable", new BsonBoolean(true)));
+        FindIterable<Document> projection = find.projection(new BsonDocument("targetIp", new BsonInt32(1)));
+        for (Document d : projection) {
+
+            String id = d.getString("_id");
+            String host = d.getString("targetIp");
+            System.out.println(host);
+            IScanTask task = pp.getScanTask(id);
+            Collection<IScanResult> results = task.getResults();
+            for (IScanResult result : results) {
+                List<ITuple<String, Object>> contents = result.getContents();
+                for (ITuple<String, Object> tuple : contents) {
+                    if (tuple.getFirst().equals("host")) {
+                        host = tuple.getSecond().toString();
+                    }
+                    if (tuple.getFirst().equals("paddingOracle")) {
+                        ScanResult paddingOracleResults = (ScanResult) tuple.getSecond();
+                        List<ITuple<String, Object>> scanResultList = paddingOracleResults.getContents();
+                        for (ITuple<String, Object> sth : scanResultList) {
+                            if (sth.getFirst().equals("paddingOracleResults")) {
+                                //now we have all padding oracle scan results
+                                processScanResultsList(host, ((List) sth.getSecond()));
                             }
                         }
                     }
                 }
             }
-        } catch (Exception E) {
-            E.printStackTrace();
         }
+
         System.out.println("----ErrorTypes----");
         for (EqualityError error : EqualityError.values()) {
             if (errorMap.containsKey(error)) {
@@ -194,7 +205,6 @@ public class ReportFetching {
                 vulnHostList.get(indexOf).add(report.getHost());
             }
         }
-
         for (int i = 0; i < vulnList.size(); i++) {
             List<String> list = vulnList.get(i);
             System.out.println("------------------" + i + "------------------");
@@ -205,15 +215,18 @@ public class ReportFetching {
             }
             System.out.println();
             System.out.println("Ips:");
-            for (String host : vulnHostList.get(i)) {
-                System.out.println(host);
+            for (String ip : vulnHostList.get(i)) {
+                System.out.println(ip);
             }
 
         }
-        System.out.println("Searching for minimum vectors");
+
+        System.out.println(
+                "Searching for minimum vectors");
         System.out.println(createMustHaveListBottomUp());
-        
-        System.out.println("Graph");
+
+        System.out.println(
+                "Graph");
         createGraph(reportList);
 
     }
@@ -298,14 +311,16 @@ public class ReportFetching {
         reportList.add(report);
         for (String suffix : vulnerableSuffix) {
             if (notVulnSuffix.contains(suffix)) {
-                System.out.println(host + " - " + suffix);
+    //            System.out.println(host + " - " + suffix);
             }
         }
     }
 
     public static void createGraph(List<Report> reportList) {
-        Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-        Graph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
+        Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class
+        );
+        Graph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class
+        );
 
         for (Report report : reportList) {
             //Create node
@@ -334,8 +349,10 @@ public class ReportFetching {
         try {
             exporter.exportGraph(graph, new FileWriter(new File("graph.dot")));
             exporter.exportGraph(invertedGraph, new FileWriter(new File("inverted_graph.dot")));
+
         } catch (IOException ex) {
-            Logger.getLogger(ReportFetching.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReportFetching.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         System.out.println("Searching Clique:");
