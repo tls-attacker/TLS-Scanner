@@ -51,7 +51,7 @@ public class TlsScan implements IScan {
     private final ParallelExecutor parallelExecutor;
 
     public TlsScan() {
-        parallelExecutor = new ParallelExecutor(800, 3);
+        parallelExecutor = new ParallelExecutor(1600, 3);
     }
 
     @Override

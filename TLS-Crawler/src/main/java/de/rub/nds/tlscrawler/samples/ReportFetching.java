@@ -61,7 +61,7 @@ public class ReportFetching {
         String mongoUser = "janis";
         String mongoAuthSource = "admin";
         String mongoPass = "myStrongPass123!";
-        String mongoWorkspace = "TLSC-paddingOracle-15";
+        String mongoWorkspace = "TLSC-100M-1";
 
         // EXEC
         ServerAddress addr = new ServerAddress(mongoHost, mongoPort);
@@ -136,11 +136,7 @@ public class ReportFetching {
             System.out.println(r.getHost());
             //System.out.println(r.getVulnerabilityList().get(0).toCsvString());
         }
-        //System.out.println("Graph");
-        //createGraph(reportList);
 
-        //System.out.println("Searching for minimum vectors");
-        //System.out.println(createMustHaveListBottomUp());
         int onlyOneVulnerability = 0;
         int multipleVulnerabilitys = 0;
 
@@ -214,6 +210,12 @@ public class ReportFetching {
             }
 
         }
+        System.out.println("Searching for minimum vectors");
+        System.out.println(createMustHaveListBottomUp());
+        
+        System.out.println("Graph");
+        createGraph(reportList);
+
     }
 
     private static boolean uniqueContained(List<Report> uniqueReportList, Report r) {

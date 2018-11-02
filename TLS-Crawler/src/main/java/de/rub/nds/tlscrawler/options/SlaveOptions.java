@@ -29,7 +29,7 @@ public class SlaveOptions extends MasterSlaveOptions {
     @Option(
             name = "numberOfThreads",
             help = "Number of worker threads the crawler slave should use.",
-            defaultValue = "64"
+            defaultValue = "500"
     )
     public int numberOfThreads;
 
