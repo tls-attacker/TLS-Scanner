@@ -215,9 +215,6 @@ public class SiteReport {
     //NoColor Flag
     private boolean noColor = false;
     
-    //Detailed Flag
-    private int detailLevel = 3;
-    
     //Handshake Simulation
     private int handshakeSuccessfulCounter = 0;
     private int handshakeFailedCounter = 0;
@@ -242,10 +239,6 @@ public class SiteReport {
 
     public boolean isNoColor() {
         return noColor;
-    }
-
-    public int getDetailLevel() {
-        return detailLevel;
     }
 
     public Boolean getRequiresSni() {
