@@ -42,16 +42,12 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-implementation", required = false, description = "If you are interessted in the vulnerability of an implementation rather than a specific site")
     private boolean implementation = false;
-    
-    @Parameter(names = "-detail", required = false, description = "Integer value (1 - 3) which specifies how detailed the reporting of the Handshake Simulation is. Default 1")
-    private int detailLevel = 1;
-    
 
     @Parameter(names = "-scanDetail", required = false, description = "How detailed do you want to scan?")
     private ScannerDetail scanDetail = ScannerDetail.NORMAL;
 
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
-    private ScannerDetail reportDetail = ScannerDetail.NORMAL;
+    private ScannerDetail reportDetail = ScannerDetail.ALL;
 
     @Parameter(names = "-aggressiv", required = false, description = "The level of concurrent handshakes (only applies to some resource intensive tests)")
     private int aggroLevel = 1;
@@ -141,11 +137,6 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setReportDetail(ScannerDetail reportDetail) {
         this.reportDetail = reportDetail;
-    }
-
-
-    public int getDetailLevel() {
-        return detailLevel;
     }
     
     @Override
