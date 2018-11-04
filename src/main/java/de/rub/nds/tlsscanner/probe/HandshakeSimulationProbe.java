@@ -8,9 +8,12 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
@@ -31,9 +34,14 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.io.File;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import org.bouncycastle.crypto.tls.Certificate;
+import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class HandshakeSimulationProbe extends TlsProbe {
 
@@ -116,7 +124,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
             if (simulatedClient.getReceivedCertificate()) {
                 if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")
                         && context.getServerRSAPublicKey() != null) {
-                    simulatedClient.setServerPublicKeyLength(Integer.toString(context.getServerRSAPublicKey().bitLength()));
+                    simulatedClient.setServerPublicKeyLength(getPublicKeyFromCert(context.getServerCertificate(), "TLS_RSA"));
                 }
             }
             simulatedClient.setReceivedServerKeyExchange(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
@@ -146,13 +154,15 @@ public class HandshakeSimulationProbe extends TlsProbe {
                 simulatedClient.setServerPublicKeyLengthAccept(true);
                 if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")
                         && simulatedClient.getSupportedRsaKeyLengthList() != null
-                        && !simulatedClient.getSupportedRsaKeyLengthList().contains(simulatedClient.getServerPublicKeyLength())) {
+                        && !simulatedClient.getSupportedRsaKeyLengthList().contains(
+                                Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
                     simulatedClient.setHandshakeSuccessful(false);
                     simulatedClient.setServerPublicKeyLengthAccept(false);
                 }
                 if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DHE_RSA")
                         && simulatedClient.getSupportedDheKeyLengthList() != null
-                        && !simulatedClient.getSupportedDheKeyLengthList().contains(simulatedClient.getServerPublicKeyLength())) {
+                        && !simulatedClient.getSupportedDheKeyLengthList().contains(
+                                Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
                     simulatedClient.setHandshakeSuccessful(false);
                     simulatedClient.setServerPublicKeyLengthAccept(false);
                 }
@@ -166,11 +176,31 @@ public class HandshakeSimulationProbe extends TlsProbe {
                 if (!simulatedClient.getReceivedServerHello()) {
                     simulatedClient.setHandshakeFailedBecause("Server did not send messages: ServerHello, ServerHelloDone");
                 }
-            }
+            }            
             simulatedClientList.add(simulatedClient);
         } catch (Exception ex) {
             throw new RuntimeException(clientConfig.getType() + ":" + clientConfig.getVersion(), ex);
         }
+    }
+    
+    private String getPublicKeyFromCert(Certificate certs, String algo) {
+        try {
+            if (certs != null) {
+                for (org.bouncycastle.asn1.x509.Certificate cert : certs.getCertificateList()) {
+                    X509Certificate x509Cert = new X509CertificateObject(cert);
+                    if (x509Cert.getPublicKey() != null) {
+                        if (algo.contains("RSA")) {
+                            RSAPublicKey rsaPk = (RSAPublicKey) x509Cert.getPublicKey();
+                            System.out.println(rsaPk.getModulus().bitLength());
+                            return Integer.toString(rsaPk.getModulus().bitLength());
+                        }
+                    }
+                }
+            }
+        } catch (CertificateParsingException ex) {
+            LOGGER.warn("Could not parse PublicKey from certificate", ex);
+        }
+        return null;
     }
 
     @Override
@@ -186,5 +216,4 @@ public class HandshakeSimulationProbe extends TlsProbe {
     public ProbeResult getNotExecutedResult() {
         return null;
     }
-
 }
