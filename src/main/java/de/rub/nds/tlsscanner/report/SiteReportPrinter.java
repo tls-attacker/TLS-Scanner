@@ -134,7 +134,7 @@ public class SiteReportPrinter {
             } else {
                 prettyAppendHSDetailedRow(builder, "-> Handshake failed: " + simulatedClient.getHandshakeFailedBecause());
             }
-            
+            builder.append("\n");
         }
         return builder;
     }
