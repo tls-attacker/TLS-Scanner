@@ -7,34 +7,39 @@ package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import java.util.EnumSet;
+import java.util.List;
 
 public class SimulatedClient {
 
     private final String type;
     private final String version;
     private Boolean receivedServerHello = null;
+    private Boolean handshakeSuccessful = null;
+    private String handshakeFailedBecause = null;
     private ProtocolVersion highestClientProtocolVersion = null;
     private ProtocolVersion selectedProtocolVersion = null;
     private Boolean highestPossibleProtocolVersionSeleceted = null;
     private CipherSuite selectedCiphersuite = null;
     private Boolean forwardSecrecy = null;
+    private List<Integer> supportedRsaKeyLengthList = null;
+    private List<Integer> supportedDheKeyLengthList = null;
     private CompressionMethod selectedCompressionMethod = null;
-    private EnumSet<ExtensionType> negotiatedExtensionSet = null;
+    private String negotiatedExtensions = null;
+    private String alpnAnnouncedProtocols = null;
     private Boolean receivedCertificate = null;
     private Boolean receivedServerKeyExchange = null;
     private String selectedNamedGroup = null;
     private String serverPublicKeyLength = null;
+    private Boolean serverPublicKeyLengthAccept = null;
     private Boolean receivedCertificateRequest = null;
     private Boolean receivedServerHelloDone = null;
     private Boolean connectionSecure = null;
+    private String connectionInsecureBecause = null;
     private Boolean paddingOracleVulnerable = null;
     private Boolean bleichenbacherVulnerable = null;
     private Boolean crimeVulnerable = null;
     private Boolean sweet32Vulnerable = null;
-    private Boolean drownVulnerable = null;
     
     public SimulatedClient(String type, String version) {
         this.type = type;
@@ -55,6 +60,22 @@ public class SimulatedClient {
     
     public void setReceivedServerHello(Boolean receivedServerHello) {
         this.receivedServerHello = receivedServerHello;
+    }
+
+    public Boolean getHandshakeSuccessful() {
+        return handshakeSuccessful;
+    }
+
+    public void setHandshakeSuccessful(Boolean handshakeSuccessful) {
+        this.handshakeSuccessful = handshakeSuccessful;
+    }
+
+    public String getHandshakeFailedBecause() {
+        return handshakeFailedBecause;
+    }
+
+    public void setHandshakeFailedBecause(String handshakeFailedBecause) {
+        this.handshakeFailedBecause = handshakeFailedBecause;
     }
     
     public ProtocolVersion getHighestClientProtocolVersion() {
@@ -96,6 +117,22 @@ public class SimulatedClient {
     public void setForwardSecrecy(Boolean forwardSecrecy) {
         this.forwardSecrecy = forwardSecrecy;
     }
+
+    public List<Integer> getSupportedRsaKeyLengthList() {
+        return supportedRsaKeyLengthList;
+    }
+
+    public void setSupportedRsaKeyLengthList(List<Integer> supportedRsaKeyLengthList) {
+        this.supportedRsaKeyLengthList = supportedRsaKeyLengthList;
+    }
+
+    public List<Integer> getSupportedDheKeyLengthList() {
+        return supportedDheKeyLengthList;
+    }
+
+    public void setSupportedDheKeyLengthList(List<Integer> supportedDheKeyLengthList) {
+        this.supportedDheKeyLengthList = supportedDheKeyLengthList;
+    }
     
     public CompressionMethod getSelectedCompressionMethod() {
         return selectedCompressionMethod;
@@ -105,12 +142,20 @@ public class SimulatedClient {
         this.selectedCompressionMethod = selectedCompressionMethod;
     }
     
-    public EnumSet<ExtensionType> getNegotiatedExtensionSet() {
-        return negotiatedExtensionSet;
+    public String getNegotiatedExtensions() {
+        return negotiatedExtensions;
     }
 
-    public void setNegotiatedExtensionSet(EnumSet<ExtensionType> negotiatedExtensionSet) {
-        this.negotiatedExtensionSet = negotiatedExtensionSet;
+    public void setNegotiatedExtensions(String negotiatedExtensions) {
+        this.negotiatedExtensions = negotiatedExtensions;
+    }
+
+    public String getAlpnAnnouncedProtocols() {
+        return alpnAnnouncedProtocols;
+    }
+
+    public void setAlpnAnnouncedProtocols(String alpnAnnouncedProtocols) {
+        this.alpnAnnouncedProtocols = alpnAnnouncedProtocols;
     }
     
     public Boolean getReceivedCertificate() {
@@ -144,6 +189,14 @@ public class SimulatedClient {
     public void setServerPublicKeyLength(String serverPublicKeyLength) {
         this.serverPublicKeyLength = serverPublicKeyLength;
     }
+
+    public Boolean getServerPublicKeyLengthAccept() {
+        return serverPublicKeyLengthAccept;
+    }
+
+    public void setServerPublicKeyLengthAccept(Boolean serverPublicKeyLengthCheck) {
+        this.serverPublicKeyLengthAccept = serverPublicKeyLengthCheck;
+    }
     
     public Boolean getReceivedCertificateRequest() {
         return receivedCertificateRequest;
@@ -167,6 +220,14 @@ public class SimulatedClient {
 
     public void setConnectionSecure(Boolean connectionSecure) {
         this.connectionSecure = connectionSecure;
+    }
+
+    public String getConnectionInsecureBecause() {
+        return connectionInsecureBecause;
+    }
+
+    public void setConnectionInsecureBecause(String connectionInsecureBecause) {
+        this.connectionInsecureBecause = connectionInsecureBecause;
     }
     
     public Boolean getPaddingOracleVulnerable() {
@@ -199,13 +260,5 @@ public class SimulatedClient {
 
     public void setSweet32Vulnerable(Boolean sweet32Vulnerable) {
         this.sweet32Vulnerable = sweet32Vulnerable;
-    }
-
-    public Boolean getDrownVulnerable() {
-        return drownVulnerable;
-    }
-
-    public void setDrownVulnerable(Boolean drownVulnerable) {
-        this.drownVulnerable = drownVulnerable;
     }
 }
