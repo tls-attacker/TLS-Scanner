@@ -7,7 +7,9 @@ package de.rub.nds.tlsscanner.report.after;
 
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
+import de.rub.nds.tlsscanner.report.CiphersuiteRater;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +42,10 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                 }
                 if (simulatedClient.getHandshakeSuccessful()) {
                     simulatedClient.setConnectionSecure(true);
+                    if (CiphersuiteRater.getGrade(simulatedClient.getSelectedCiphersuite()).equals(CipherSuiteGrade.LOW)) {
+                        simulatedClient.setConnectionSecure(false);
+                        simulatedClient.setConnectionInsecureBecause("Ciphersuite is insecure");
+                    }
                     List<String> vulnerabilities = new LinkedList<>();
                     if (report.getPaddingOracleVulnerable() != null) {
                         if (report.getPaddingOracleVulnerable() 
@@ -81,7 +87,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                             }
                         }
                     }
-                    if (!vulnerabilities.isEmpty()) {
+                    if (simulatedClient.getConnectionInsecureBecause() != null && !vulnerabilities.isEmpty()) {
                         simulatedClient.setConnectionInsecureBecause("Vulnerabilities: " + vulnerabilities);
                     }
                     if (simulatedClient.getConnectionSecure()) {
