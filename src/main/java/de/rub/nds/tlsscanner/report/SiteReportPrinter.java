@@ -124,17 +124,17 @@ public class SiteReportPrinter {
         String clientName;
         for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
             clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
-            prettyAppendHSDetailedRow(builder, clientName, simulatedClient.getConnectionSecure(),
+            if (simulatedClient.getHandshakeSuccessful()) {
+                prettyAppendHSDetailedRow(builder, clientName, simulatedClient.getConnectionSecure(),
                     simulatedClient.getSelectedProtocolVersion(), simulatedClient.getSelectedCiphersuite(),
                     simulatedClient.getForwardSecrecy(), simulatedClient.getServerPublicKeyLength());
-            if (simulatedClient.getHandshakeSuccessful()) {
                 if (!simulatedClient.getConnectionSecure()) {
                     prettyAppendHSDetailedRow(builder, "-> Connection insecure: " + simulatedClient.getConnectionInsecureBecause());
                 }
             } else {
-                prettyAppendHSDetailedRow(builder, "-> Handshake failed: " + simulatedClient.getHandshakeFailedBecause());
+                prettyAppendHSDetailedRow(builder, getRedString(clientName, "%s") + 
+                        "\n-> Handshake failed: " + simulatedClient.getHandshakeFailedBecause());
             }
-            builder.append("\n");
         }
         return builder;
     }
@@ -175,8 +175,8 @@ public class SiteReportPrinter {
         }
     }
 
-    private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String value1) {
-        builder.append(value1);
+    private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String value) {
+        builder.append(value);
         builder.append("\n");
         return builder;
     }
@@ -240,7 +240,11 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Server Public Key Length (Bits)", simulatedClient.getServerPublicKeyLength());
             prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup());
             builder.append("\n");
-            prettyAppend(builder, "Selected Compression Method", simulatedClient.getSelectedCompressionMethod()+"");
+            if (simulatedClient.getSelectedCompressionMethod() != null) {
+                prettyAppend(builder, "Selected Compression Method", simulatedClient.getSelectedCompressionMethod().toString());
+            } else {
+                prettyAppend(builder, "Selected Compression Method", "-");
+            }
             prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
             prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
             builder.append("\n");
