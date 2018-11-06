@@ -9,17 +9,15 @@ import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
-import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -53,22 +51,29 @@ public class HandshakeSimulationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
+        TlsClientConfig tlsClientConfig;
         TlsClientConfigIO clientConfigIO = new TlsClientConfigIO();
+        List<TlsClientConfig> tlsClientConfigList = new LinkedList<>();
+        List<State> clientStateList = new LinkedList<>();
         for (File configFile : clientConfigIO.getClientConfigFileList(RESOURCE_FOLDER)) {
-            TlsClientConfig clientConfig = clientConfigIO.readConfigFromFile(configFile);
-            SimulatedClient simulatedClient = new SimulatedClient(clientConfig.getType(), clientConfig.getVersion());
-            Config config = clientConfig.getConfig();
-            getScannerConfig().getClientDelegate().applyDelegate(config);
-            config.setQuickReceive(true);
-            config.setEarlyStop(true);
-            config.setStopActionsAfterFatal(true);
-            config.setStopRecievingAfterFatal(true);
-            simulateClient(clientConfig, config, simulatedClient);
+            tlsClientConfig = clientConfigIO.readConfigFromFile(configFile);
+            tlsClientConfigList.add(tlsClientConfig);
+            clientStateList.add(getPreparedClientState(tlsClientConfig));
+        }
+        parallelExecutor.bulkExecute(clientStateList);
+        for (int i=0; i<tlsClientConfigList.size(); i++) {
+            simulatedClientList.add(getSimulatedClient(tlsClientConfigList.get(i), clientStateList.get(i)));
         }
         return new HandshakeSimulationResult(simulatedClientList);
     }
 
-    private void simulateClient(TlsClientConfig clientConfig, Config config, SimulatedClient simulatedClient) {
+    private State getPreparedClientState(TlsClientConfig clientConfig) {
+        Config config = clientConfig.getConfig();
+        getScannerConfig().getClientDelegate().applyDelegate(config);
+        config.setQuickReceive(true);
+        config.setEarlyStop(true);
+        config.setStopActionsAfterFatal(true);
+        config.setStopRecievingAfterFatal(true);
         ClientHelloMessage msg = new ClientHelloMessage(config);
         List<ExtensionMessage> extensions = WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.CLIENT_HELLO, clientConfig.getTrace()).getExtensions();
         for (ExtensionMessage extension : extensions) {
@@ -79,20 +84,15 @@ public class HandshakeSimulationProbe extends TlsProbe {
         msg.setExtensions(extensions);
         WorkflowTrace trace = new WorkflowTrace();
         trace.addTlsAction(new SendAction(msg));
-        trace.addTlsAction(new ReceiveAction());
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
-        WorkflowExecutor workflowExecutor = new DefaultWorkflowExecutor(state);
-        try {
-            workflowExecutor.executeWorkflow();
-        } catch (WorkflowExecutionException ex) {
-            LOGGER.warn(ex);
-        }
-        evaluateClient(clientConfig, state, simulatedClient);
+        return state;
     }
 
-    private void evaluateClient(TlsClientConfig clientConfig, State state, SimulatedClient simulatedClient) {
+    private SimulatedClient getSimulatedClient(TlsClientConfig tlsClientConfig, State state) {
+        SimulatedClient simulatedClient = new SimulatedClient(tlsClientConfig.getType(), tlsClientConfig.getVersion());
         TlsContext context = state.getTlsContext();
-        evaluateClientConfig(clientConfig, simulatedClient);
+        evaluateClientConfig(tlsClientConfig, simulatedClient);
         evaluateReceivedMessages(state, simulatedClient);
         if (simulatedClient.getReceivedServerHello()) {
             evaluateServerHello(context, simulatedClient);
@@ -112,7 +112,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
                 simulatedClient.setHandshakeFailedBecause("Server did not send required messages: ServerHello, ServerHelloDone");
             }
         }
-        simulatedClientList.add(simulatedClient);
+        return simulatedClient;
     }
 
     private void evaluateClientConfig(TlsClientConfig clientConfig, SimulatedClient simulatedClient) {
