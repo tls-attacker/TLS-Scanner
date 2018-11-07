@@ -1,7 +1,7 @@
 <tlsClientConfig>
     <type>LIBRESSL</type>
     <version>2.1.0</version>
-    <isDefaultVersion>false</isDefaultVersion>
+    <defaultVersion>false</defaultVersion>
     <config>
         <defaultHandshakeSecret>
             00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00

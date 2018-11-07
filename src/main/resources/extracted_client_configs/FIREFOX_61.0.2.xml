@@ -1,7 +1,7 @@
 <tlsClientConfig>
     <type>FIREFOX</type>
     <version>61.0.2</version>
-    <isDefaultVersion>true</isDefaultVersion>
+    <defaultVersion>true</defaultVersion>
     <config>
         <defaultHandshakeSecret>
             00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00

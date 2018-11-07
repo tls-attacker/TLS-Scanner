@@ -1,7 +1,7 @@
 <tlsClientConfig>
     <type>S2N</type>
     <version>latest</version>
-    <isDefaultVersion>true</isDefaultVersion>
+    <defaultVersion>true</defaultVersion>
     <config>
         <defaultHandshakeSecret>
             00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00

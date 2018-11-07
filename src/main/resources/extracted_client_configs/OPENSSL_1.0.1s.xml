@@ -1,7 +1,7 @@
 <tlsClientConfig>
     <type>OPENSSL</type>
     <version>1.0.1s</version>
-    <isDefaultVersion>false</isDefaultVersion>
+    <defaultVersion>false</defaultVersion>
     <config>
         <defaultHandshakeSecret>
             00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00

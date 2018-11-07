@@ -14,7 +14,7 @@ public class SimulatedClient {
 
     private final String type;
     private final String version;
-    private final Boolean isDefaultVersion;
+    private final Boolean defaultVersion;
     private Boolean receivedServerHello = null;
     private Boolean handshakeSuccessful = null;
     private String handshakeFailedBecause = null;
@@ -42,10 +42,10 @@ public class SimulatedClient {
     private Boolean crimeVulnerable = null;
     private Boolean sweet32Vulnerable = null;
     
-    public SimulatedClient(String type, String version, Boolean isDefaultVersion) {
+    public SimulatedClient(String type, String version, Boolean defaultVersion) {
         this.type = type;
         this.version = version;
-        this.isDefaultVersion = isDefaultVersion;
+        this.defaultVersion = defaultVersion;
     }
 
     public String getType() {
@@ -56,8 +56,8 @@ public class SimulatedClient {
         return version;
     }
 
-    public Boolean getIsDefaultVersion() {
-        return isDefaultVersion;
+    public Boolean isDefaultVersion() {
+        return defaultVersion;
     }
     
     public Boolean getReceivedServerHello() {

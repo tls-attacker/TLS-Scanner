@@ -1,7 +1,7 @@
 <tlsClientConfig>
     <type>MATRIXSSL</type>
     <version>3-9-3</version>
-    <isDefaultVersion>true</isDefaultVersion>
+    <defaultVersion>true</defaultVersion>
     <config>
         <defaultHandshakeSecret>
             00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00

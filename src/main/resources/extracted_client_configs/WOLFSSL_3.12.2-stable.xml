@@ -1,7 +1,7 @@
 <tlsClientConfig>
     <type>WOLFSSL</type>
     <version>3.12.2-stable</version>
-    <isDefaultVersion>true</isDefaultVersion>
+    <defaultVersion>true</defaultVersion>
     <config>
         <defaultHandshakeSecret>
             00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00

@@ -1,7 +1,7 @@
 <tlsClientConfig>
     <type>BOTAN</type>
     <version>2.0.1</version>
-    <isDefaultVersion>false</isDefaultVersion>
+    <defaultVersion>false</defaultVersion>
     <config>
         <defaultHandshakeSecret>
             00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
