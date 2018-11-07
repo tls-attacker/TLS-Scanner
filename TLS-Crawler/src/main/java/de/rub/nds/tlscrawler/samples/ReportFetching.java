@@ -23,9 +23,7 @@ import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.utility.ITuple;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,7 +67,7 @@ public class ReportFetching {
         String mongoUser = "janis";
         String mongoAuthSource = "admin";
         String mongoPass = "myStrongPass123!";
-        String mongoWorkspace = "TLSC-bugbounty-3";
+        String mongoWorkspace = "TLSC-vulnerable-12";
 
         // EXEC
         ServerAddress addr = new ServerAddress(mongoHost, mongoPort);
@@ -82,10 +80,12 @@ public class ReportFetching {
         MongoClient mongoClient = new MongoClient(new ServerAddress(mongoHost, mongoPort), Arrays.asList(cred));
         MongoDatabase database = mongoClient.getDatabase(mongoWorkspace);
         MongoCollection<Document> collection = database.getCollection("scans");
-        FindIterable<Document> find = collection.find(new BsonDocument("results.tls_scan.paddingOracle.paddingOracleResults.vulnerable", new BsonBoolean(true)));
+        FindIterable<Document> find = collection.find(new BsonDocument("results.tls_scan.attacks.paddingOracleVulnerable", new BsonBoolean(true)));
+        double notVulnCounter = collection.count(new BsonDocument("results.tls_scan.attacks.paddingOracleVulnerable", new BsonBoolean(false)));
+        double vulnCounter = collection.count(new BsonDocument("results.tls_scan.attacks.paddingOracleVulnerable", new BsonBoolean(true)));
+        System.out.println("Percent Vuln:" + ((double) (Math.round((vulnCounter / (vulnCounter + notVulnCounter)) * 10000))) / 100 + "%");
         FindIterable<Document> projection = find.projection(new BsonDocument("targetIp", new BsonInt32(1)));
         for (Document d : projection) {
-
             String id = d.getString("_id");
             String host = d.getString("targetIp");
             System.out.println(host);
@@ -142,6 +142,7 @@ public class ReportFetching {
             }
         }
         System.out.println("#all vuln: " + numberAllVuln);
+
         System.out.println("Unique Reports:");
         for (Report r : uniqueReports) {
             System.out.println(r.getHost());
@@ -221,10 +222,9 @@ public class ReportFetching {
 
         }
 
-        System.out.println(
-                "Searching for minimum vectors");
-        System.out.println(createMustHaveListBottomUp());
-
+        //System.out.println(
+        //        "Searching for minimum vectors");
+        //System.out.println(createMustHaveListBottomUp());
         System.out.println(
                 "Graph");
         createGraph(reportList);
@@ -311,35 +311,37 @@ public class ReportFetching {
         reportList.add(report);
         for (String suffix : vulnerableSuffix) {
             if (notVulnSuffix.contains(suffix)) {
-    //            System.out.println(host + " - " + suffix);
+                //            System.out.println(host + " - " + suffix);
             }
         }
     }
 
     public static void createGraph(List<Report> reportList) {
-        Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class
-        );
-        Graph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class
-        );
+        Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+        Graph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
 
         for (Report report : reportList) {
             //Create node
-            graph.addVertex("Host_" + report.getHost().replace(":443", "").replace(".", "_"));
-            invertedGraph.addVertex("Host_" + report.getHost().replace(":443", "").replace(".", "_"));
+            graph.addVertex("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+            invertedGraph.addVertex("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
 
         }
         System.out.println("Creating Graph");
 
+        int i = 0;
+
         for (Report report : reportList) {
+            i++;
             for (Report otherReport : reportList) {
                 if (report.contradicts(otherReport)) {
-                    graph.addEdge("Host_" + report.getHost().replace(":443", "").replace(".", "_"), "Host_" + otherReport.getHost().replace(":443", "").replace(".", "_"));
+                    graph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "\\-").replace(":443", "").replace(".", "_dot_"));
                 } else {
                     if (otherReport != report) {
-                        invertedGraph.addEdge("Host_" + report.getHost().replace(":443", "").replace(".", "_"), "Host_" + otherReport.getHost().replace(":443", "").replace(".", "_"));
+                        invertedGraph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "\\-").replace(":443", "").replace(".", "_dot_"));
                     }
                 }
             }
+            System.out.println(i + "/" + reportList.size());
         }
 
         System.out.println("Writing Graph");

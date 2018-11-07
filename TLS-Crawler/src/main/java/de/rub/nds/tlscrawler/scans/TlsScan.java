@@ -51,7 +51,7 @@ public class TlsScan implements IScan {
     private final ParallelExecutor parallelExecutor;
 
     public TlsScan() {
-        parallelExecutor = new ParallelExecutor(1600, 3);
+        parallelExecutor = new ParallelExecutor(600, 5);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class TlsScan implements IScan {
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setNoProgressbar(true);
-        config.setScanDetail(ScannerDetail.DETAILED);
+        config.setScanDetail(ScannerDetail.NORMAL);
         config.setTimeout(1000);
         // TODO: Make port not hardcoded.
         int port = 443;
