@@ -19,6 +19,7 @@ public class TlsClientConfig implements Serializable {
     
     private String type;   
     private String version;
+    private Boolean isDefaultVersion;
     private Config config;
     private WorkflowTrace trace;
     private List<Integer> supportedRsaKeyLengthList;
@@ -27,6 +28,7 @@ public class TlsClientConfig implements Serializable {
     public void createTlsClientConfig(String type, String version) {
         this.type = type;
         this.version = version;
+        this.isDefaultVersion = null;
         this.config = null;
         this.trace = null;
         this.supportedRsaKeyLengthList = null;
@@ -39,6 +41,14 @@ public class TlsClientConfig implements Serializable {
 
     public String getVersion() {
         return version;
+    }
+
+    public void setIsDefaultVersion(Boolean isDefaultVersion) {
+        this.isDefaultVersion = isDefaultVersion;
+    }
+
+    public Boolean getIsDefaultVersion() {
+        return isDefaultVersion;
     }
 
     public void setConfig(Config config) {
