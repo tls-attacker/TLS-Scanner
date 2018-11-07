@@ -45,7 +45,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     private final List<SimulatedClient> simulatedClientList;
 
     public HandshakeSimulationProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config, 10);
+        super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config, 1);
         simulatedClientList = new LinkedList<>();
     }
 
@@ -90,7 +90,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     private SimulatedClient getSimulatedClient(TlsClientConfig tlsClientConfig, State state) {
-        SimulatedClient simulatedClient = new SimulatedClient(tlsClientConfig.getType(), tlsClientConfig.getVersion());
+        SimulatedClient simulatedClient = new SimulatedClient(tlsClientConfig.getType(), 
+                tlsClientConfig.getVersion(), tlsClientConfig.isDefaultVersion());
         TlsContext context = state.getTlsContext();
         evaluateClientConfig(tlsClientConfig, simulatedClient);
         evaluateReceivedMessages(state, simulatedClient);
