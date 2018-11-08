@@ -6,6 +6,7 @@
 package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import java.io.Serializable;
 import java.util.List;
@@ -22,6 +23,8 @@ public class TlsClientConfig implements Serializable {
     private Boolean defaultVersion;
     private Config config;
     private WorkflowTrace trace;
+    private List<ProtocolVersion> supportedVersionList;
+    private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList;
     private List<Integer> supportedRsaKeyLengthList;
     private List<Integer> supportedDheKeyLengthList;
     
@@ -31,6 +34,9 @@ public class TlsClientConfig implements Serializable {
         this.defaultVersion = null;
         this.config = null;
         this.trace = null;
+        this.supportedVersionList = null;
+        this.versionAcceptForbiddenCiphersuiteList = null;
+        this.supportedVersionList = null;
         this.supportedRsaKeyLengthList = null;
         this.supportedDheKeyLengthList = null;
     }
@@ -65,6 +71,22 @@ public class TlsClientConfig implements Serializable {
     
     public WorkflowTrace getTrace() {
         return trace;
+    }
+
+    public void setSupportedVersionList(List<ProtocolVersion> supportedVersionList) {
+        this.supportedVersionList = supportedVersionList;
+    }
+
+    public List<ProtocolVersion> getSupportedVersionList() {
+        return supportedVersionList;
+    }
+
+    public void setVersionAcceptForbiddenCiphersuiteList(List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList) {
+        this.versionAcceptForbiddenCiphersuiteList = versionAcceptForbiddenCiphersuiteList;
+    }
+
+    public List<ProtocolVersion> getVersionAcceptForbiddenCiphersuiteList() {
+        return versionAcceptForbiddenCiphersuiteList;
     }
 
     public void setSupportedRsaKeyLengthList(List<Integer> supportedRsaKeyLengthList) {
