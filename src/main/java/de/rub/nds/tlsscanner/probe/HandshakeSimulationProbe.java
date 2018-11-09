@@ -145,7 +145,11 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
         simulatedClient.setSelectedCompressionMethod(context.getSelectedCompressionMethod());
         if (context.getNegotiatedExtensionSet() != null) {
-            simulatedClient.setNegotiatedExtensions(context.getNegotiatedExtensionSet().toString());
+            if (!context.getNegotiatedExtensionSet().isEmpty()) {
+                simulatedClient.setNegotiatedExtensions(context.getNegotiatedExtensionSet().toString());
+            } else {
+                simulatedClient.setNegotiatedExtensions("-");
+            }
         }
     }
 
