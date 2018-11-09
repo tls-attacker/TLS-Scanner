@@ -218,9 +218,9 @@ public class SiteReport {
     //Handshake Simulation
     private int handshakeSuccessfulCounter = 0;
     private int handshakeFailedCounter = 0;
-    private int connectionSecureCounter = 0;
     private int connectionInsecureCounter = 0;
-    private List<SimulatedClient> simulatedClientList = null;
+    private int connectionRfc7918SecureCounter = 0;
+    private List<SimulatedClient> simulatedClientList;
     
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
         this.host = host;
@@ -1309,12 +1309,12 @@ public class SiteReport {
         this.simulatedClientList = simulatedClientList;
     }
 
-    public int getConnectionSecureCounter() {
-        return connectionSecureCounter;
+    public int getConnectionRfc7918SecureCounter() {
+        return connectionRfc7918SecureCounter;
     }
 
-    public void setConnectionSecureCounter(int connectionSecureCounter) {
-        this.connectionSecureCounter = connectionSecureCounter;
+    public void setConnectionRfc7918SecureCounter(int connectionRfc7918SecureCounter) {
+        this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
     }
 
     public int getConnectionInsecureCounter() {
