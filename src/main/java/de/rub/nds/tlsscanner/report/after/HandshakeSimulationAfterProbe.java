@@ -19,37 +19,37 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        int handshakeSuccessfulCounter = 0;
-        int insecureCounter = 0;
-        int secureRfc7918Counter = 0;
+        int isSuccessfulCounter = 0;
+        int isInsecureCounter = 0;
+        int isRfc7918SecureCounter = 0;
         if (report.getSimulatedClientList() != null) {
             for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
                 if (simulatedClient.getReceivedServerHello()) {
                     checkHighestPossibleProtocolVersionSeleceted(report, simulatedClient);
                 }
                 if (simulatedClient.getReceivedServerHelloDone()) {
-                    checkIfHandshakeIsReallySuccessful(simulatedClient);
+                    checkIfHandshakeWouldBeSuccessful(simulatedClient);
                 } else {
                     simulatedClient.setHandshakeSuccessful(false);
                     checkWhyServerHelloDoneIsMissing(report, simulatedClient);
                 }
                 if (simulatedClient.getHandshakeSuccessful()) {
-                    handshakeSuccessfulCounter++;
+                    isSuccessfulCounter++;
                     checkIfConnectionIsInsecure(report, simulatedClient);
                     if (simulatedClient.getConnectionInsecure()) {
-                        insecureCounter++;
+                        isInsecureCounter++;
                     } else {
                         checkIfConnectionIsRfc7918Secure(simulatedClient);
                         if (simulatedClient.getConnectionRfc7918Secure()) {
-                            secureRfc7918Counter++;
+                            isRfc7918SecureCounter++;
                         }
                     }
                 }
             }
-            report.setHandshakeSuccessfulCounter(handshakeSuccessfulCounter);
-            report.setHandshakeFailedCounter(report.getSimulatedClientList().size() - handshakeSuccessfulCounter);
-            report.setConnectionInsecureCounter(insecureCounter);
-            report.setConnectionRfc7918SecureCounter(secureRfc7918Counter);
+            report.setHandshakeSuccessfulCounter(isSuccessfulCounter);
+            report.setHandshakeFailedCounter(report.getSimulatedClientList().size() - isSuccessfulCounter);
+            report.setConnectionInsecureCounter(isInsecureCounter);
+            report.setConnectionRfc7918SecureCounter(isRfc7918SecureCounter);
         }
     }
 
@@ -73,7 +73,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         }
     }
 
-    private void checkIfHandshakeIsReallySuccessful(SimulatedClient simulatedClient) {
+    private void checkIfHandshakeWouldBeSuccessful(SimulatedClient simulatedClient) {
         boolean reallySuccessful = true;
         if (isCiphersuiteForbidden(simulatedClient)) {
             simulatedClient.addToFailReasons(HandshakeFailed.CIPHERSUITE_FORBIDDEN);
