@@ -105,26 +105,24 @@ public class HandshakeSimulationProbe extends TlsProbe {
             evaluateServerKeyExchange(context, simulatedClient);
         }
         if (simulatedClient.getReceivedServerHelloDone()) {
-            evaluateServerHelloDone(context, simulatedClient);
-        } else {
-            simulatedClient.setHandshakeSuccessful(false);
-            simulatedClient.setHandshakeFailedBecause("Server did not send required message: ServerHelloDone");
-            if (!simulatedClient.getReceivedServerHello()) {
-                simulatedClient.setHandshakeFailedBecause("Server did not send required messages: ServerHello, ServerHelloDone");
-            }
+            evaluateServerHelloDone(simulatedClient);
         }
         return simulatedClient;
     }
 
-    private void evaluateClientConfig(TlsClientConfig clientConfig, SimulatedClient simulatedClient) {
-        simulatedClient.setSupportedRsaKeyLengthList(clientConfig.getSupportedRsaKeyLengthList());
-        simulatedClient.setSupportedDheKeyLengthList(clientConfig.getSupportedDheKeyLengthList());
-        simulatedClient.setHighestClientProtocolVersion(clientConfig.getConfig().getHighestProtocolVersion());
-        if (clientConfig.getConfig().isAddAlpnExtension()) {
-            simulatedClient.setAlpnAnnouncedProtocols(Arrays.toString(clientConfig.getConfig().getAlpnAnnouncedProtocols()));
+    private void evaluateClientConfig(TlsClientConfig tlsClientConfig, SimulatedClient simulatedClient) {
+        Config config = tlsClientConfig.getConfig();
+        simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
+        simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
+        if (config.isAddAlpnExtension()) {
+            simulatedClient.setAlpnAnnouncedProtocols(Arrays.toString(config.getAlpnAnnouncedProtocols()));
         } else {
             simulatedClient.setAlpnAnnouncedProtocols("-");
         }
+        simulatedClient.setSupportedVersionList(tlsClientConfig.getSupportedVersionList());
+        simulatedClient.setVersionAcceptForbiddenCiphersuiteList(tlsClientConfig.getVersionAcceptForbiddenCiphersuiteList());
+        simulatedClient.setSupportedRsaKeyLengthList(tlsClientConfig.getSupportedRsaKeyLengthList());
+        simulatedClient.setSupportedDheKeyLengthList(tlsClientConfig.getSupportedDheKeyLengthList());
     }
 
     private void evaluateReceivedMessages(State state, SimulatedClient simulatedClient) {
@@ -153,7 +151,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
 
     private void evaluateCertificate(TlsContext context, SimulatedClient simulatedClient) {
         if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
-            simulatedClient.setServerPublicKeyLength(getPublicKeyFromCert(context.getServerCertificate(), "TLS_RSA"));
+            simulatedClient.setServerPublicKeyLength(getRsaPublicKeyFromCert(context.getServerCertificate()));
         }
     }
 
@@ -187,41 +185,23 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
     }
 
-    private void evaluateServerHelloDone(TlsContext context, SimulatedClient simulatedClient) {
+    private void evaluateServerHelloDone(SimulatedClient simulatedClient) {
         simulatedClient.setHandshakeSuccessful(true);
-        simulatedClient.setServerPublicKeyLengthAccept(true);
-        if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")
-                && simulatedClient.getSupportedRsaKeyLengthList() != null
-                && !simulatedClient.getSupportedRsaKeyLengthList().contains(Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
-            simulatedClient.setServerPublicKeyLengthAccept(false);
-        }
-        if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DHE_RSA")
-                && simulatedClient.getSupportedDheKeyLengthList() != null
-                && !simulatedClient.getSupportedDheKeyLengthList().contains(Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
-            simulatedClient.setServerPublicKeyLengthAccept(false);
-        }
-        if (simulatedClient.getServerPublicKeyLengthAccept() == false) {
-            simulatedClient.setHandshakeSuccessful(false);
-            simulatedClient.setHandshakeFailedBecause("Server public key length ("
-                    + simulatedClient.getServerPublicKeyLength() + ") probably not supported by client");
-        }
     }
 
-    private String getPublicKeyFromCert(Certificate certs, String algo) {
+    private String getRsaPublicKeyFromCert(Certificate certs) {
         try {
             if (certs != null) {
                 for (org.bouncycastle.asn1.x509.Certificate cert : certs.getCertificateList()) {
                     X509Certificate x509Cert = new X509CertificateObject(cert);
                     if (x509Cert.getPublicKey() != null) {
-                        if (algo.contains("RSA")) {
-                            RSAPublicKey rsaPk = (RSAPublicKey) x509Cert.getPublicKey();
-                            return Integer.toString(rsaPk.getModulus().bitLength());
-                        }
+                        RSAPublicKey rsaPk = (RSAPublicKey) x509Cert.getPublicKey();
+                        return Integer.toString(rsaPk.getModulus().bitLength());
                     }
                 }
             }
         } catch (CertificateParsingException ex) {
-            LOGGER.warn("Could not parse PublicKey from certificate", ex);
+            LOGGER.warn("Could not parse public key from certificate", ex);
         }
         return null;
     }
