@@ -220,7 +220,7 @@ public class SiteReport {
     private int handshakeFailedCounter = 0;
     private int connectionInsecureCounter = 0;
     private int connectionRfc7918SecureCounter = 0;
-    private List<SimulatedClient> simulatedClientList;
+    private List<SimulatedClient> simulatedClientList = null;
     
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
         this.host = host;
