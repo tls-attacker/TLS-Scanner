@@ -138,7 +138,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         simulatedClient.setSelectedProtocolVersion(context.getSelectedProtocolVersion());
         CipherSuite cipherSuite = context.getSelectedCipherSuite();
         simulatedClient.setSelectedCiphersuite(cipherSuite);
-        if (cipherSuite.toString().contains("_DHE_") || cipherSuite.toString().contains("_ECDHE_")) {
+        if (cipherSuite.isEphemeral()) {
             simulatedClient.setForwardSecrecy(true);
         } else {
             simulatedClient.setForwardSecrecy(false);
