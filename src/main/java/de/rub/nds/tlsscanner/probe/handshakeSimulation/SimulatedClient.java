@@ -39,14 +39,10 @@ public class SimulatedClient {
     //To set in HandshakeSimulationAfterProbe
     private Boolean highestPossibleProtocolVersionSeleceted = null;
     private Boolean handshakeSuccessful = null;
-    private Boolean paddingOracleVulnerable = null;
-    private Boolean bleichenbacherVulnerable = null;
-    private Boolean crimeVulnerable = null;
-    private Boolean sweet32Vulnerable = null;
     private Boolean connectionInsecure = null;
     private Boolean connectionRfc7918Secure = null;
     private List<HandshakeFailed> failReasons = null;
-    private List<HandshakeInsecure> insecureReasons = null;
+    private List<ConnectionInsecure> insecureReasons = null;
 
     public SimulatedClient(String type, String version, boolean defaultVersion) {
         this.type = type;
@@ -236,38 +232,6 @@ public class SimulatedClient {
         this.handshakeSuccessful = handshakeSuccessful;
     }
 
-    public Boolean getPaddingOracleVulnerable() {
-        return paddingOracleVulnerable;
-    }
-
-    public void setPaddingOracleVulnerable(Boolean paddingOracleVulnerable) {
-        this.paddingOracleVulnerable = paddingOracleVulnerable;
-    }
-
-    public Boolean getBleichenbacherVulnerable() {
-        return bleichenbacherVulnerable;
-    }
-
-    public void setBleichenbacherVulnerable(Boolean bleichenbacherVulnerable) {
-        this.bleichenbacherVulnerable = bleichenbacherVulnerable;
-    }
-
-    public Boolean getCrimeVulnerable() {
-        return crimeVulnerable;
-    }
-
-    public void setCrimeVulnerable(Boolean crimeVulnerable) {
-        this.crimeVulnerable = crimeVulnerable;
-    }
-
-    public Boolean getSweet32Vulnerable() {
-        return sweet32Vulnerable;
-    }
-
-    public void setSweet32Vulnerable(Boolean sweet32Vulnerable) {
-        this.sweet32Vulnerable = sweet32Vulnerable;
-    }
-
     public Boolean getConnectionInsecure() {
         return connectionInsecure;
     }
@@ -292,11 +256,11 @@ public class SimulatedClient {
         failReasons.add(handshakeIssue);
     }
 
-    public List<HandshakeInsecure> getInsecureReasons() {
+    public List<ConnectionInsecure> getInsecureReasons() {
         return insecureReasons;
     }
 
-    public void addToInsecureReasons(HandshakeInsecure handshakeIssue) {
+    public void addToInsecureReasons(ConnectionInsecure handshakeIssue) {
         insecureReasons.add(handshakeIssue);
     }
 }
