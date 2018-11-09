@@ -101,8 +101,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                 && simulatedClient.getSupportedRsaKeyLengthList() != null
                 && simulatedClient.getSupportedRsaKeyLengthList().contains(Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
             return false;
-        }
-        if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DHE_RSA")
+        } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DHE_RSA")
                 && simulatedClient.getSupportedDheKeyLengthList() != null
                 && simulatedClient.getSupportedDheKeyLengthList().contains(Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
             return false;
@@ -126,10 +125,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isProtocolMismatch(SiteReport report, SimulatedClient simulatedClient) {
-        for (ProtocolVersion serverVersion : report.getVersions()) {
-            for (ProtocolVersion clientVersion : simulatedClient.getSupportedVersionList()) {
-                if (serverVersion.equals(clientVersion)) {
-                    return false;
+        if (report.getVersions() != null) {
+            for (ProtocolVersion serverVersion : report.getVersions()) {
+                for (ProtocolVersion clientVersion : simulatedClient.getSupportedVersionList()) {
+                    if (serverVersion.equals(clientVersion)) {
+                        return false;
+                    }
                 }
             }
         }
@@ -137,10 +138,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isCiphersuiteMismatch(SiteReport report, SimulatedClient simulatedClient) {
-        for (CipherSuite serverCipherSuite : report.getCipherSuites()) {
-            for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCiphersuites()) {
-                if (serverCipherSuite.equals(clientCipherSuite)) {
-                    return false;
+        if (report.getCipherSuites() != null) {
+            for (CipherSuite serverCipherSuite : report.getCipherSuites()) {
+                for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCiphersuites()) {
+                    if (serverCipherSuite.equals(clientCipherSuite)) {
+                        return false;
+                    }
                 }
             }
         }
