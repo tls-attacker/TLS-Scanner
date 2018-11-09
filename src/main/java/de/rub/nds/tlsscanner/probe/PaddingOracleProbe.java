@@ -63,7 +63,7 @@ public class PaddingOracleProbe extends TlsProbe {
         List<PaddingOracleTestResult> testResultList = new LinkedList<>();
         PaddingRecordGeneratorType recordGeneratorType;
         if (scannerConfig.getScanDetail() == ScannerDetail.NORMAL) {
-            recordGeneratorType = PaddingRecordGeneratorType.VERY_SHORT;
+            recordGeneratorType = PaddingRecordGeneratorType.SHORT;
         } else {
             recordGeneratorType = PaddingRecordGeneratorType.SHORT;
         }
@@ -164,7 +164,7 @@ public class PaddingOracleProbe extends TlsProbe {
                 }
             }
         }
-        return new PaddingOracleResult(testResultList);
+        return new PaddingOracleResult(testResultList, vulnerable);
     }
 
     private PaddingOracleTestResult createTestResult(ProtocolVersion version, CipherSuite suite, PaddingOracleCommandConfig paddingOracleConfig) {
@@ -221,7 +221,7 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new PaddingOracleResult(new LinkedList<PaddingOracleTestResult>());
+        return new PaddingOracleResult(new LinkedList<PaddingOracleTestResult>(), null);
     }
 
     private void filterSuite(Set<CipherSuite> set) {
