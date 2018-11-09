@@ -89,7 +89,13 @@ public class Report {
         for (CsvReport csv : vulnerabilityList) {
             for (CsvReport otherCsv : otherReport.getVulnerabilityList()) {
                 if (otherCsv.getSuite() == csv.getSuite() && otherCsv.getVersion() == csv.getVersion()) {
-                    if (!otherCsv.softEquals(csv)) {
+                    if (csv.isScanError() || csv.isScanError() || otherCsv.isShaky() || otherCsv.isScanError()) {
+                        continue;
+                    }
+                    if (csv.isVulnerable() != otherCsv.isVulnerable()) {
+                        return true;
+                    }
+                    if (!otherCsv.vulnMapLooksSimilar(csv.getResponseMap())) {
                         return true;
                     }
                 }
@@ -97,6 +103,23 @@ public class Report {
         }
         return false;
     }
+    
+    public boolean softContradicts(Report otherReport) {
+        for (CsvReport csv : vulnerabilityList) {
+            for (CsvReport otherCsv : otherReport.getVulnerabilityList()) {
+                if (otherCsv.getSuite() == csv.getSuite() && otherCsv.getVersion() == csv.getVersion()) {
+                    if (csv.isScanError() || csv.isScanError() || otherCsv.isShaky() || otherCsv.isScanError()) {
+                        continue;
+                    }
+                    if (csv.isVulnerable() != otherCsv.isVulnerable()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
     public boolean vulnCsvAreEqual() {
         List<String> vulnerability = null;

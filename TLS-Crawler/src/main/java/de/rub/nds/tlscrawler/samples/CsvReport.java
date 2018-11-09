@@ -100,7 +100,7 @@ public class CsvReport {
             return false;
         }
         for (int i = 0; i < reportTwo.getResponseMap().size(); i++) {
-            if (!responseMap.get(i).split("paddingVector")[0].equals(responseMap.get(i).split("paddingVector")[0])) {
+            if (!responseMap.get(i).split("paddingVector")[0].equals(reportTwo.getResponseMap().get(i).split("paddingVector")[0])) {
                 return false;
             }
         }

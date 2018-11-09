@@ -58,6 +58,11 @@ public class ReportFetching {
     private static HashMap<CipherSuite, MutableInt> suiteMap = new HashMap<>();
     private static HashMap<ProtocolVersion, MutableInt> versionMap = new HashMap<>();
     private static ArrayList<Report> reportList = new ArrayList<>();
+    private static HashMap<CipherSuite, MutableInt> allSuiteMap = new HashMap<>();
+    private static int onlyCbcTotal = 0;
+    private static int onlyCbcVuln = 0;
+    private static int onlyCbcAllVuln = 0;
+    private static int vulnTotal = 0;
 
     public static void main(String... args) {
 
@@ -67,23 +72,54 @@ public class ReportFetching {
         String mongoUser = "janis";
         String mongoAuthSource = "admin";
         String mongoPass = "myStrongPass123!";
-        String mongoWorkspace = "TLSC-vulnerable-12";
-
+        String mongoWorkspace = "TLSC-alexa-8";
+        System.out.println("Workspace: " + mongoWorkspace);
         // EXEC
         ServerAddress addr = new ServerAddress(mongoHost, mongoPort);
         MongoCredential cred = MongoCredential.createCredential(
                 mongoUser,
                 mongoAuthSource,
                 mongoPass.toCharArray());
-        MongoPersistenceProvider pp = new MongoPersistenceProvider(addr, cred);
+        pp = new MongoPersistenceProvider(addr, cred);
         pp.init(mongoWorkspace);
         MongoClient mongoClient = new MongoClient(new ServerAddress(mongoHost, mongoPort), Arrays.asList(cred));
         MongoDatabase database = mongoClient.getDatabase(mongoWorkspace);
         MongoCollection<Document> collection = database.getCollection("scans");
+//        FindIterable<Document> allDocs = collection.find();
+//        for (Document d : allDocs) {
+//            boolean supportsGcm = d.getBoolean("results.tls_scan.ciphers.supportsAeadCiphers", true);
+//            boolean supportsCbc = d.getBoolean("results.tls_scan.ciphers.supportsBlockCiphers", true);
+//            boolean vulnerable = d.getBoolean("results.tls_scan.attacks.paddingOracleVulnerable", true);
+//            
+//            if (supportsCbc && !supportsGcm) {
+//                onlyCbcTotal++;
+//            }
+//            if (supportsCbc && !supportsGcm && vulnerable) {
+//                onlyCbcVuln++;
+//            }
+//            if(vulnerable)
+//            {
+//                vulnTotal++;
+//            }
+//            updateCipherSuiteStats(d);
+//        }
+        System.out.println("Only Cbc Total:" + onlyCbcTotal);
+        System.out.println("Only Cbc and Vuln:" + onlyCbcVuln);
         FindIterable<Document> find = collection.find(new BsonDocument("results.tls_scan.attacks.paddingOracleVulnerable", new BsonBoolean(true)));
         double notVulnCounter = collection.count(new BsonDocument("results.tls_scan.attacks.paddingOracleVulnerable", new BsonBoolean(false)));
         double vulnCounter = collection.count(new BsonDocument("results.tls_scan.attacks.paddingOracleVulnerable", new BsonBoolean(true)));
+        double serverIsAlive = collection.count(new BsonDocument("results.tls_scan.serverIsAlive", new BsonBoolean(true)));
+        double speaksTlsCounter = collection.count(new BsonDocument("results.tls_scan.supportsSslTls", new BsonBoolean(true)));
+        System.out.println("Sever is alive:" + serverIsAlive);
+        System.out.println("Sever speaks SSL/TLS:" + speaksTlsCounter);
+        System.out.println("Vuln Hosts:" + vulnCounter);
+        System.out.println("Not Vuln Hosts:" + notVulnCounter);
+
         System.out.println("Percent Vuln:" + ((double) (Math.round((vulnCounter / (vulnCounter + notVulnCounter)) * 10000))) / 100 + "%");
+        System.out.println("Suites:");
+        for (CipherSuite suite : allSuiteMap.keySet()) {
+            System.out.println("Suite:" + suite.name() + ": " + allSuiteMap.get(suite).getValue());
+        }
         FindIterable<Document> projection = find.projection(new BsonDocument("targetIp", new BsonInt32(1)));
         for (Document d : projection) {
             String id = d.getString("_id");
@@ -149,6 +185,58 @@ public class ReportFetching {
             //System.out.println(r.getVulnerabilityList().get(0).toCsvString());
         }
 
+        int notAllVersionVuln = 0;
+        int notAllKeyExchangeVuln = 0;
+        System.out.println("Not all KE Vuln:");
+        for (Report r : reportList) {
+            boolean found = false;
+
+            for (CsvReport csv : r.getVulnerabilityList()) {
+                if (found) {
+                    break;
+                }
+                if (csv.isVulnerable() && !csv.isScanError() && !csv.isShaky()) {
+                    for (CsvReport csv2 : r.getVulnerabilityList()) {
+                        if (!csv2.isVulnerable() && !csv2.isScanError() && !csv2.isShaky()) {
+                            if (csv.getSuite().name().split("WITH")[1] == csv2.getSuite().name().split("WITH")[1]) {
+                                if (csv.getVersion() == csv2.getVersion()) {
+                                    System.out.println(r.getHost());
+                                    notAllKeyExchangeVuln++;
+                                    found = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("Total:" + notAllKeyExchangeVuln);
+
+        System.out.println("Not all Versions Vuln:");
+        for (Report r : reportList) {
+            Set<String> vulnCiphers = new HashSet<>();
+
+            for (CsvReport csv : r.getVulnerabilityList()) {
+                if (csv.isVulnerable() && !csv.isShaky() && !csv.isScanError()) {
+                    vulnCiphers.add(csv.getSuite().name());
+                }
+            }
+
+            for (CsvReport csv : r.getVulnerabilityList()) {
+                if (!csv.isVulnerable() && !csv.isShaky() && !csv.isScanError()) {
+                    if (vulnCiphers.contains(csv.getSuite().name())) {
+                        System.out.println(r.getHost());
+                        notAllVersionVuln++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        System.out.println(
+                "Total:" + notAllVersionVuln);
+
         int onlyOneVulnerability = 0;
         int multipleVulnerabilitys = 0;
 
@@ -173,11 +261,15 @@ public class ReportFetching {
 
         }
 
-        System.out.println("One:" + onlyOneVulnerability);
-        System.out.println("Multiple:" + multipleVulnerabilitys);
-        System.out.println("#UniqueVulnMaps:" + vulnSet.size());
+        System.out.println(
+                "One:" + onlyOneVulnerability);
+        System.out.println(
+                "Multiple:" + multipleVulnerabilitys);
+        System.out.println(
+                "#UniqueVulnMaps:" + vulnSet.size());
         ArrayList<List<String>> vulnList = new ArrayList<>();
         ArrayList<List<String>> vulnHostList = new ArrayList<>();
+
         vulnList.addAll(vulnSet);
         ArrayList<MutableInt> vulnTypeCounter = new ArrayList<>();
         for (List l : vulnList) {
@@ -219,6 +311,25 @@ public class ReportFetching {
             for (String ip : vulnHostList.get(i)) {
                 System.out.println(ip);
             }
+            List<Report> subReportList = new LinkedList<>();
+            for (Report r : reportList) {
+                List<String> vulnIpList = vulnHostList.get(i);
+                for (String ip : vulnIpList) {
+                    if (ip.replace(":443", "").equals(r.getHost().replace(":443", ""))) {
+                        boolean clean = true;
+                        for (CsvReport csv : r.getVulnerabilityList()) {
+                            if (csv.isScanError() || csv.isShaky()) {
+                                clean = false;
+                            }
+                        }
+                        if (true || clean) {
+                            subReportList.add(r);
+                        }
+                        break;
+                    }
+                }
+            }
+            createSoftGraph(subReportList, "graphGroup" + i);
 
         }
 
@@ -227,9 +338,10 @@ public class ReportFetching {
         //System.out.println(createMustHaveListBottomUp());
         System.out.println(
                 "Graph");
-        createGraph(reportList);
+        //     createGraph(reportList, "full");
 
     }
+    private static MongoPersistenceProvider pp;
 
     private static boolean uniqueContained(List<Report> uniqueReportList, Report r) {
         for (Report report : uniqueReportList) {
@@ -278,6 +390,7 @@ public class ReportFetching {
                 }
             }
             if (!shaky && vulnerable) {
+
                 if (errorMap.containsKey(equailityError)) {
                     MutableInt get = errorMap.get(equailityError);
                     get.addValue(1);
@@ -309,18 +422,14 @@ public class ReportFetching {
 
         }
         reportList.add(report);
-        for (String suffix : vulnerableSuffix) {
-            if (notVulnSuffix.contains(suffix)) {
-                //            System.out.println(host + " - " + suffix);
-            }
-        }
+
     }
 
-    public static void createGraph(List<Report> reportList) {
+    public static void createSoftGraph(List<Report> tempReportList, String name) {
         Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
         Graph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
 
-        for (Report report : reportList) {
+        for (Report report : tempReportList) {
             //Create node
             graph.addVertex("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
             invertedGraph.addVertex("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
@@ -330,18 +439,20 @@ public class ReportFetching {
 
         int i = 0;
 
-        for (Report report : reportList) {
+        for (Report report : tempReportList) {
             i++;
-            for (Report otherReport : reportList) {
-                if (report.contradicts(otherReport)) {
-                    graph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "\\-").replace(":443", "").replace(".", "_dot_"));
-                } else {
-                    if (otherReport != report) {
-                        invertedGraph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "\\-").replace(":443", "").replace(".", "_dot_"));
+            for (Report otherReport : tempReportList) {
+                if (report != otherReport) {
+                    if (report.softContradicts(otherReport)) {
+                        graph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+                    } else {
+                        if (otherReport != report) {
+                            invertedGraph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+                        }
                     }
                 }
             }
-            System.out.println(i + "/" + reportList.size());
+            System.out.println(i + "/" + tempReportList.size());
         }
 
         System.out.println("Writing Graph");
@@ -349,22 +460,73 @@ public class ReportFetching {
         DOTExporter exporter = new DOTExporter();
         exporter.setVertexIDProvider(new StringComponentNameProvider());
         try {
-            exporter.exportGraph(graph, new FileWriter(new File("graph.dot")));
-            exporter.exportGraph(invertedGraph, new FileWriter(new File("inverted_graph.dot")));
+            exporter.exportGraph(graph, new FileWriter(new File(name + ".dot")));
+            exporter.exportGraph(invertedGraph, new FileWriter(new File(name + "_inv.dot")));
 
         } catch (IOException ex) {
             Logger.getLogger(ReportFetching.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
 
-        System.out.println("Searching Clique:");
+//        System.out.println("Searching Clique:");
+//
+//        CliqueFinder finder = new CliqueFinder(graph);
+//        List<Set<String>> allMaximalCliques = finder.getAllMaximalCliques();
+//        for (Set<String> clique : allMaximalCliques) {
+//            System.out.println(clique);
+//        }
+    }
 
-        CliqueFinder finder = new CliqueFinder(graph);
-        List<Set<String>> allMaximalCliques = finder.getAllMaximalCliques();
-        for (Set<String> clique : allMaximalCliques) {
-            System.out.println(clique);
+    public static void createGraph(List<Report> tempReportList, String name) {
+        Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+        Graph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
+
+        for (Report report : tempReportList) {
+            //Create node
+            graph.addVertex("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+            invertedGraph.addVertex("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+
+        }
+        System.out.println("Creating Graph");
+
+        int i = 0;
+
+        for (Report report : tempReportList) {
+            i++;
+            for (Report otherReport : tempReportList) {
+                if (report != otherReport) {
+                    if (report.contradicts(otherReport)) {
+                        graph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+                    } else {
+                        if (otherReport != report) {
+                            invertedGraph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+                        }
+                    }
+                }
+            }
+            System.out.println(i + "/" + tempReportList.size());
         }
 
+        System.out.println("Writing Graph");
+
+        DOTExporter exporter = new DOTExporter();
+        exporter.setVertexIDProvider(new StringComponentNameProvider());
+        try {
+            exporter.exportGraph(graph, new FileWriter(new File(name + ".dot")));
+            exporter.exportGraph(invertedGraph, new FileWriter(new File(name + "_inv.dot")));
+
+        } catch (IOException ex) {
+            Logger.getLogger(ReportFetching.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+//        System.out.println("Searching Clique:");
+//
+//        CliqueFinder finder = new CliqueFinder(graph);
+//        List<Set<String>> allMaximalCliques = finder.getAllMaximalCliques();
+//        for (Set<String> clique : allMaximalCliques) {
+//            System.out.println(clique);
+//        }
     }
 
     public static void testDel() {
@@ -507,5 +669,48 @@ public class ReportFetching {
             }
         }
         return null;
+    }
+
+    private static void updateCipherSuiteStats(Document d) {
+        String id = d.getString("_id");
+        String host = d.getString("targetIp");
+        IScanTask task = pp.getScanTask(id);
+        Collection<IScanResult> results = task.getResults();
+        for (IScanResult result : results) {
+            List<ITuple<String, Object>> contents = result.getContents();
+            for (ITuple<String, Object> tuple : contents) {
+                if (tuple.getFirst().equals("host")) {
+                    host = tuple.getSecond().toString();
+                }
+                if (tuple.getFirst().equals("ciphers")) {
+                    ScanResult ciphers = (ScanResult) tuple.getSecond();
+                    List<ITuple<String, Object>> scanResultList = ciphers.getContents();
+                    for (ITuple<String, Object> sth : scanResultList) {
+                        if (sth.getFirst().equals("cipherSuites")) {
+                            //Now we have all the cipherSuites lists
+                            processCipherSuiteList((List<String>) sth.getSecond());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void processCipherSuiteList(List<String> cipherSuiteList) {
+        Set<String> suiteSet = new HashSet<>();
+        for (String s : cipherSuiteList) {
+            suiteSet.add(s);
+        }
+        for (String s : suiteSet) {
+            CipherSuite suite = CipherSuite.valueOf(s);
+            if (suite != null) {
+                if (allSuiteMap.containsKey(suite)) {
+                    MutableInt get = allSuiteMap.get(suite);
+                    get.addValue(1);
+                } else {
+                    allSuiteMap.put(suite, new MutableInt(1));
+                }
+            }
+        }
     }
 }
