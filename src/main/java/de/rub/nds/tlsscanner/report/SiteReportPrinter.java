@@ -28,6 +28,8 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailed;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
@@ -94,46 +96,73 @@ public class SiteReportPrinter {
     private StringBuilder appendHSNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "TLS Handshake Simulation - simple overview");
         prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
+        String identifier;
+        identifier = "Successful Handshakes";
         if (report.getHandshakeSuccessfulCounter() == 0) {
-            prettyAppendRed(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
+            prettyAppendRed(builder, identifier, Integer.toString(report.getHandshakeSuccessfulCounter()));
         } else {
-            prettyAppendGreen(builder, "Successful Handshakes", Integer.toString(report.getHandshakeSuccessfulCounter()));
+            prettyAppendGreen(builder, identifier, Integer.toString(report.getHandshakeSuccessfulCounter()));
         }
+        identifier = "Failed Handshakes";
         if (report.getHandshakeFailedCounter() == 0) {
-            prettyAppendGreen(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
+            prettyAppendGreen(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()));
         } else {
-            prettyAppendRed(builder, "Failed Handshakes", Integer.toString(report.getHandshakeFailedCounter()));
+            prettyAppendRed(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()));
         }
-        if (report.getConnectionSecureCounter() == 0) {
-            prettyAppendRed(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
+        identifier = "Secure Connections (RFC 7918)";
+        if (report.getConnectionRfc7918SecureCounter() == 0) {
+            prettyAppendRed(builder, identifier, Integer.toString(report.getConnectionRfc7918SecureCounter()));
         } else {
-            prettyAppendGreen(builder, "Secure Connections", Integer.toString(report.getConnectionSecureCounter()));
+            prettyAppendGreen(builder, identifier, Integer.toString(report.getConnectionRfc7918SecureCounter()));
         }
+        identifier = "Insecure Connections";
         if (report.getConnectionInsecureCounter() == 0) {
-            prettyAppendGreen(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
+            prettyAppendGreen(builder, identifier, Integer.toString(report.getConnectionInsecureCounter()));
         } else {
-            prettyAppendRed(builder, "Insecure Connections", Integer.toString(report.getConnectionInsecureCounter()));
+            prettyAppendRed(builder, identifier, Integer.toString(report.getConnectionInsecureCounter()));
         }
+        prettyAppendHeading(builder, "TLS Handshake Simulation - default versions overview");
+        getClientTable(builder, true);
         return builder;
     }
 
     private StringBuilder appendHSDetailed(StringBuilder builder) {
         prettyAppendHeading(builder, "TLS Handshake Simulation - all versions overview");
-        prettyAppendHSDetailedRow(builder, "TLS Client", "TLS Version", "Ciphersuite", "Forward Secrecy", "Server Public Key");
+        getClientTable(builder, false);
+        return builder;
+    }
+
+    private StringBuilder getClientTable(StringBuilder builder, boolean defaultClient) {
+        prettyAppendHSDetailedRow(builder, "TLS Client", "TLS Version", "Ciphersuite", "Forward Secrecy", "Server Public Key Length (Bits)");
         builder.append("\n");
-        String clientName;
         for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
-            clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
-            if (simulatedClient.getHandshakeSuccessful()) {
-                prettyAppendHSDetailedRow(builder, clientName, simulatedClient.getConnectionSecure(),
-                    simulatedClient.getSelectedProtocolVersion(), simulatedClient.getSelectedCiphersuite(),
-                    simulatedClient.getForwardSecrecy(), simulatedClient.getServerPublicKeyLength());
-                if (!simulatedClient.getConnectionSecure()) {
-                    prettyAppendHSDetailedRow(builder, "-> Connection insecure: " + simulatedClient.getConnectionInsecureBecause());
+            if (defaultClient) {
+                if (simulatedClient.isDefaultVersion()) {
+                    getClientTableRow(builder, simulatedClient);
                 }
             } else {
-                prettyAppendHSDetailedRow(builder, getRedString(clientName, "%s") + 
-                        "\n-> Handshake failed: " + simulatedClient.getHandshakeFailedBecause());
+                getClientTableRow(builder, simulatedClient);
+            }
+        }
+        return builder;
+    }
+
+    private StringBuilder getClientTableRow(StringBuilder builder, SimulatedClient simulatedClient) {
+        String clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
+        if (simulatedClient.getHandshakeSuccessful()) {
+            prettyAppendHSDetailedRow(builder, clientName, simulatedClient.getConnectionInsecure(),
+                    simulatedClient.getConnectionRfc7918Secure(), simulatedClient.getSelectedProtocolVersion(),
+                    simulatedClient.getSelectedCiphersuite(), simulatedClient.getForwardSecrecy(),
+                    simulatedClient.getServerPublicKeyLength());
+            if (simulatedClient.getConnectionInsecure()) {
+                for (ConnectionInsecure connectionInsecure : simulatedClient.getInsecureReasons()) {
+                    prettyAppendHSDetailedRow(builder, "-> Connection insecure: " + connectionInsecure.getReason());
+                }
+            }
+        } else {
+            prettyAppendHSDetailedRow(builder, getRedString(clientName, "%s"));
+            for (HandshakeFailed handshakeFailed : simulatedClient.getFailReasons()) {
+                prettyAppendHSDetailedRow(builder, "-> Handshake failed: " + handshakeFailed.getReason());
             }
         }
         return builder;
@@ -192,13 +221,15 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String tlsClient, Boolean secure,
-            ProtocolVersion tlsVersion, CipherSuite ciphersuite, Boolean forwardSecrecy, String keyLength) {
+    private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String tlsClient, Boolean insecure,
+            Boolean rfc7918Secure, ProtocolVersion tlsVersion, CipherSuite ciphersuite, Boolean forwardSecrecy, String keyLength) {
         String newTlsClient;
-        if (secure != null && secure) {
+        if (insecure != null && insecure) {
+            newTlsClient = getRedString(tlsClient, "%-28s");
+        } else if (rfc7918Secure) {
             newTlsClient = getGreenString(tlsClient, "%-28s");
         } else {
-            newTlsClient = getRedString(tlsClient, "%-28s");
+            newTlsClient = getBlackString(tlsClient, "%-28s");
         }
         String newTlsVersion = getProtocolVersionColor(tlsVersion, "%-14s");
         String newCipherSuite = getCipherSuiteColor(ciphersuite, "%-52s");
@@ -223,12 +254,18 @@ public class SiteReportPrinter {
             prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
             prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.getHandshakeSuccessful());
             if (!simulatedClient.getHandshakeSuccessful()) {
-                prettyAppend(builder, "", simulatedClient.getHandshakeFailedBecause());
+                for (HandshakeFailed handshakeFailed : simulatedClient.getFailReasons()) {
+                    prettyAppend(builder, "", handshakeFailed.getReason());
+                }
             }
-            prettyAppendGreenRed(builder, "Connection Secure", simulatedClient.getConnectionSecure());
-            if (simulatedClient.getConnectionSecure() != null && !simulatedClient.getConnectionSecure()) {
-                prettyAppend(builder, "", simulatedClient.getConnectionInsecureBecause());
+            builder.append("\n");
+            if (simulatedClient.getConnectionInsecure() != null && simulatedClient.getConnectionInsecure()) {
+                prettyAppendRedGreen(builder, "Connection Insecure", simulatedClient.getConnectionInsecure());
+                for (ConnectionInsecure connectionInsecure : simulatedClient.getInsecureReasons()) {
+                    prettyAppend(builder, "", connectionInsecure.getReason());
+                }
             }
+            prettyAppendGreenRed(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure());
             builder.append("\n");
             prettyAppend(builder, "Protocol Version Client", getProtocolVersionColor(simulatedClient.getHighestClientProtocolVersion(), "%s"));
             prettyAppend(builder, "Protocol Version Selected", getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), "%s"));
@@ -238,20 +275,18 @@ public class SiteReportPrinter {
             prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy());
             builder.append("\n");
             prettyAppend(builder, "Server Public Key Length (Bits)", simulatedClient.getServerPublicKeyLength());
-            prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup());
+            if (simulatedClient.getSelectedCiphersuite() != null && simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH")) {
+                prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup());
+            }
             builder.append("\n");
             if (simulatedClient.getSelectedCompressionMethod() != null) {
                 prettyAppend(builder, "Selected Compression Method", simulatedClient.getSelectedCompressionMethod().toString());
             } else {
-                prettyAppend(builder, "Selected Compression Method", "-");
+                String tmp = null;
+                prettyAppend(builder, "Selected Compression Method", tmp);
             }
             prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
             prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
-            builder.append("\n");
-            prettyAppendRedGreen(builder, "Padding Oracle", simulatedClient.getPaddingOracleVulnerable());
-            prettyAppendRedGreen(builder, "Bleichenbacher", simulatedClient.getBleichenbacherVulnerable());
-            prettyAppendRedGreen(builder, "Crime", simulatedClient.getCrimeVulnerable());
-            prettyAppendRedGreen(builder, "Sweet 32", simulatedClient.getSweet32Vulnerable());
         }
         return builder;
     }
