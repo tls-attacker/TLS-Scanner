@@ -184,9 +184,6 @@ public class HandshakeSimulationProbe extends TlsProbe {
         } else if (cipherSuite.usesGOSTR3411() && context.getServerGostEc01PublicKey() != null) {
             simulatedClient.setServerPublicKeyLength(Integer.toString(context.getServerGostEc01PublicKey().getByteX().length * 8));
         }
-        if (!cipherSuite.name().contains("TLS_ECDH")) {
-            simulatedClient.setSelectedNamedGroup("-");
-        }
     }
 
     private void evaluateServerHelloDone(SimulatedClient simulatedClient) {
