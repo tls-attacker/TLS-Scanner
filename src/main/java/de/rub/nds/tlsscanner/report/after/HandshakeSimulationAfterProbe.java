@@ -193,6 +193,54 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private void checkIfConnectionIsRfc7918Secure(SimulatedClient simulatedClient) {
-        simulatedClient.setConnectionRfc7918Secure(false);
+        boolean isRfc7918Secure = false;
+        CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
+        String keyLengthString = simulatedClient.getServerPublicKeyLength();
+        if (cipherSuite != null && keyLengthString != null) {
+            Integer keyLength = Integer.parseInt(keyLengthString);
+            if (isProtocolVersionWhitelisted(simulatedClient)
+                    && isSymmetricCipherRfc7918Whitelisted(cipherSuite)
+                    && isKeyExchangeMethodWhitelisted(cipherSuite)
+                    && isKeyLengthWhitelisted(cipherSuite, keyLength)) {
+                isRfc7918Secure = true;
+            }
+        }
+        simulatedClient.setConnectionRfc7918Secure(isRfc7918Secure);
+    }
+
+    private boolean isProtocolVersionWhitelisted(SimulatedClient simulatedClient) {
+        return simulatedClient.getHighestPossibleProtocolVersionSeleceted()
+                && simulatedClient.getSelectedProtocolVersion() != ProtocolVersion.TLS10
+                && simulatedClient.getSelectedProtocolVersion() != ProtocolVersion.TLS11;
+    }
+
+    private boolean isSymmetricCipherRfc7918Whitelisted(CipherSuite cipherSuite) {
+        return cipherSuite.name().contains("AES_128_GCM_SHA256") || cipherSuite.name().contains("AES_256_GCM_SHA384");
+    }
+
+    private boolean isKeyExchangeMethodWhitelisted(CipherSuite cipherSuite) {
+        if (cipherSuite.name().contains("DHE_RSA")
+                || cipherSuite.name().contains("DHE_DSS")) {
+            return true;
+        }
+        if (cipherSuite.name().contains("ECDHE_RSA")
+                || cipherSuite.name().contains("ECDHE_ECDSA")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isKeyLengthWhitelisted(CipherSuite cipherSuite, Integer keyLength) {
+        if (cipherSuite.name().contains("TLS_DHE")) {
+            if (keyLength >= 3072) {
+                return true;
+            }
+        }
+        if (cipherSuite.name().contains("TLS_ECDHE")) {
+            if (keyLength >= 256) {
+                return true;
+            }
+        }
+        return false;
     }
 }
