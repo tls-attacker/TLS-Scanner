@@ -44,6 +44,12 @@ public class SiteReportPrinter {
     private final SiteReport report;
     private final ScannerDetail detail;
 
+    private final String hsClientFormat = "%-28s";
+    private final String hsVersionFormat = "%-14s";
+    private final String hsCiphersuiteFormat = "%-52s";
+    private final String hsForwardSecrecyFormat = "%-19s";
+    private final String hsKeyLengthFormat = "%-17s";
+
     public SiteReportPrinter(SiteReport report, ScannerDetail detail) {
         this.report = report;
         this.detail = detail;
@@ -94,7 +100,7 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendHSNormal(StringBuilder builder) {
-        prettyAppendHeading(builder, "TLS Handshake Simulation - simple overview");
+        prettyAppendHeading(builder, "TLS Handshake Simulation");
         prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
         String identifier;
         identifier = "Successful Handshakes";
@@ -133,37 +139,66 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder getClientTable(StringBuilder builder, boolean defaultClient) {
+        int counter = 0;
+        prettyAppendHeading(builder, "Successful Handshakes");
         prettyAppendHSDetailedRow(builder, "TLS Client", "TLS Version", "Ciphersuite", "Forward Secrecy", "Server Public Key Length (Bits)");
         builder.append("\n");
         for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
-            if (defaultClient) {
-                if (simulatedClient.isDefaultVersion()) {
-                    getClientTableRow(builder, simulatedClient);
+            if (simulatedClient.getHandshakeSuccessful()) {
+                if (defaultClient) {
+                    if (simulatedClient.isDefaultVersion()) {
+                        getClientTableRowSuccessful(builder, simulatedClient);
+                        counter++;
+                    }
+                } else {
+                    getClientTableRowSuccessful(builder, simulatedClient);
+                    counter++;
                 }
-            } else {
-                getClientTableRow(builder, simulatedClient);
+            }
+        }
+        if (counter == 0) {
+            prettyAppend(builder, "-");
+        }
+        counter = 0;
+        prettyAppendHeading(builder, "Failed Handshakes");
+        for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
+            if (!simulatedClient.getHandshakeSuccessful()) {
+                if (defaultClient) {
+                    if (simulatedClient.isDefaultVersion()) {
+                        getClientListFailed(builder, simulatedClient);
+                        counter++;
+                    }
+                } else {
+                    getClientListFailed(builder, simulatedClient);
+                    counter++;
+                }
+            }
+        }
+        if (counter == 0) {
+            prettyAppend(builder, "-");
+        }
+        return builder;
+    }
+
+    private StringBuilder getClientTableRowSuccessful(StringBuilder builder, SimulatedClient simulatedClient) {
+        String clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
+        prettyAppendHSDetailedRow(builder, clientName, simulatedClient.getConnectionInsecure(),
+                simulatedClient.getConnectionRfc7918Secure(), simulatedClient.getSelectedProtocolVersion(),
+                simulatedClient.getSelectedCiphersuite(), simulatedClient.getForwardSecrecy(),
+                simulatedClient.getServerPublicKeyLength());
+        if (simulatedClient.getConnectionInsecure()) {
+            for (ConnectionInsecure connectionInsecure : simulatedClient.getInsecureReasons()) {
+                prettyAppendHSDetailedRow(builder, "-> Connection insecure: " + connectionInsecure.getReason());
             }
         }
         return builder;
     }
 
-    private StringBuilder getClientTableRow(StringBuilder builder, SimulatedClient simulatedClient) {
+    private StringBuilder getClientListFailed(StringBuilder builder, SimulatedClient simulatedClient) {
         String clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
-        if (simulatedClient.getHandshakeSuccessful()) {
-            prettyAppendHSDetailedRow(builder, clientName, simulatedClient.getConnectionInsecure(),
-                    simulatedClient.getConnectionRfc7918Secure(), simulatedClient.getSelectedProtocolVersion(),
-                    simulatedClient.getSelectedCiphersuite(), simulatedClient.getForwardSecrecy(),
-                    simulatedClient.getServerPublicKeyLength());
-            if (simulatedClient.getConnectionInsecure()) {
-                for (ConnectionInsecure connectionInsecure : simulatedClient.getInsecureReasons()) {
-                    prettyAppendHSDetailedRow(builder, "-> Connection insecure: " + connectionInsecure.getReason());
-                }
-            }
-        } else {
-            prettyAppendHSDetailedRow(builder, getRedString(clientName, "%s"));
-            for (HandshakeFailed handshakeFailed : simulatedClient.getFailReasons()) {
-                prettyAppendHSDetailedRow(builder, "-> Handshake failed: " + handshakeFailed.getReason());
-            }
+        prettyAppendHSDetailedRow(builder, getRedString(clientName, "%s"));
+        for (HandshakeFailed handshakeFailed : simulatedClient.getFailReasons()) {
+            prettyAppendHSDetailedRow(builder, "-> Handshake failed: " + handshakeFailed.getReason());
         }
         return builder;
     }
@@ -212,11 +247,11 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String tlsClient, String tlsVersion,
             String ciphersuite, String forwardSecrecy, String keyLength) {
-        builder.append(String.format("%-28s", tlsClient));
-        builder.append(String.format("| %-14s", tlsVersion));
-        builder.append(String.format("| %-52s", ciphersuite));
-        builder.append(String.format("| %-19s", forwardSecrecy));
-        builder.append(String.format("| %-17s", keyLength));
+        builder.append(String.format(hsClientFormat, tlsClient));
+        builder.append(String.format("| " + hsVersionFormat, tlsVersion));
+        builder.append(String.format("| " + hsCiphersuiteFormat, ciphersuite));
+        builder.append(String.format("| " + hsForwardSecrecyFormat, forwardSecrecy));
+        builder.append(String.format("| " + hsKeyLengthFormat, keyLength));
         builder.append("\n");
         return builder;
     }
@@ -225,25 +260,25 @@ public class SiteReportPrinter {
             Boolean rfc7918Secure, ProtocolVersion tlsVersion, CipherSuite ciphersuite, Boolean forwardSecrecy, String keyLength) {
         String newTlsClient;
         if (insecure != null && insecure) {
-            newTlsClient = getRedString(tlsClient, "%-28s");
+            newTlsClient = getRedString(tlsClient, hsClientFormat);
         } else if (rfc7918Secure) {
-            newTlsClient = getGreenString(tlsClient, "%-28s");
+            newTlsClient = getGreenString(tlsClient, hsClientFormat);
         } else {
-            newTlsClient = getBlackString(tlsClient, "%-28s");
+            newTlsClient = getBlackString(tlsClient, hsClientFormat);
         }
-        String newTlsVersion = getProtocolVersionColor(tlsVersion, "%-14s");
-        String newCipherSuite = getCipherSuiteColor(ciphersuite, "%-52s");
+        String newTlsVersion = getProtocolVersionColor(tlsVersion, hsVersionFormat);
+        String newCipherSuite = getCipherSuiteColor(ciphersuite, hsCiphersuiteFormat);
         String newForwardSecrecy;
         if (forwardSecrecy != null && forwardSecrecy) {
-            newForwardSecrecy = getGreenString("Forward Secrecy", "%-19s");
+            newForwardSecrecy = getGreenString("Forward Secrecy", hsForwardSecrecyFormat);
         } else {
-            newForwardSecrecy = getRedString("No Forward Secrecy", "%-19s");
+            newForwardSecrecy = getRedString("No Forward Secrecy", hsForwardSecrecyFormat);
         }
         builder.append(newTlsClient);
         builder.append("| ").append(newTlsVersion);
         builder.append("| ").append(newCipherSuite);
         builder.append("| ").append(newForwardSecrecy);
-        builder.append("| ").append(getBlackString(keyLength, "%-17s"));
+        builder.append("| ").append(getBlackString(keyLength, hsKeyLengthFormat));
         builder.append("\n");
         return builder;
     }
