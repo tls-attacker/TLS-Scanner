@@ -128,8 +128,6 @@ public class SiteReportPrinter {
         } else {
             prettyAppendRed(builder, identifier, Integer.toString(report.getConnectionInsecureCounter()));
         }
-        builder.append("\n");
-        builder.append("*'Insecure' means that we found no weak spots");
         prettyAppendHeading(builder, "TLS Handshake Simulation - default versions overview");
         getClientTable(builder, true);
         return builder;
