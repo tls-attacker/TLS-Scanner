@@ -114,8 +114,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         if (isProtocolMismatch(report, simulatedClient)) {
             simulatedClient.addToFailReasons(HandshakeFailed.PROTOCOL_MISMATCH);
             reasonFound = true;
-        }
-        if (isCiphersuiteMismatch(report, simulatedClient)) {
+        } else if (isCiphersuiteMismatch(report, simulatedClient)) {
             simulatedClient.addToFailReasons(HandshakeFailed.CIPHERSUITE_MISMATCH);
             reasonFound = true;
         }
