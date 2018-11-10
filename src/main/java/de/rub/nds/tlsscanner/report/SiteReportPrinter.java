@@ -115,18 +115,21 @@ public class SiteReportPrinter {
         } else {
             prettyAppendRed(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()));
         }
+        builder.append("\n");
         identifier = "Secure Connections (RFC 7918)";
         if (report.getConnectionRfc7918SecureCounter() == 0) {
             prettyAppendRed(builder, identifier, Integer.toString(report.getConnectionRfc7918SecureCounter()));
         } else {
             prettyAppendGreen(builder, identifier, Integer.toString(report.getConnectionRfc7918SecureCounter()));
         }
-        identifier = "Insecure Connections";
+        identifier = "Insecure* Connections";
         if (report.getConnectionInsecureCounter() == 0) {
             prettyAppendGreen(builder, identifier, Integer.toString(report.getConnectionInsecureCounter()));
         } else {
             prettyAppendRed(builder, identifier, Integer.toString(report.getConnectionInsecureCounter()));
         }
+        builder.append("\n");
+        builder.append("*'Insecure' means that we found no weak spots");
         prettyAppendHeading(builder, "TLS Handshake Simulation - default versions overview");
         getClientTable(builder, true);
         return builder;
