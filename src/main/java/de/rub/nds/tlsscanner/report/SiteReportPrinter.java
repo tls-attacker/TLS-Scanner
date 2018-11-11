@@ -122,7 +122,7 @@ public class SiteReportPrinter {
         } else {
             prettyAppendGreen(builder, identifier, Integer.toString(report.getConnectionRfc7918SecureCounter()));
         }
-        identifier = "Insecure* Connections";
+        identifier = "Insecure Connections";
         if (report.getConnectionInsecureCounter() == 0) {
             prettyAppendGreen(builder, identifier, Integer.toString(report.getConnectionInsecureCounter()));
         } else {
