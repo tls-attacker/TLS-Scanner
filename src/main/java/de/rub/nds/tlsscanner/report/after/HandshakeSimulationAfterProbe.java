@@ -101,7 +101,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                 && simulatedClient.getSupportedRsaKeyLengthList() != null
                 && !simulatedClient.getSupportedRsaKeyLengthList().contains(Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
             return true;
-        } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DHE_RSA")
+        } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH")
                 && simulatedClient.getSupportedDheKeyLengthList() != null
                 && !simulatedClient.getSupportedDheKeyLengthList().contains(Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
             return true;
