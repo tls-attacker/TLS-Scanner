@@ -89,12 +89,14 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
-        appendHSNormal(builder);
-        if (detail == ScannerDetail.DETAILED) {
-            appendHSDetailed(builder);
-        } else if (detail == ScannerDetail.ALL) {
-            appendHSDetailed(builder);
-            appendHSAll(builder);
+        if (report.getSimulatedClientList() != null) {
+            appendHSNormal(builder);
+            if (detail == ScannerDetail.DETAILED) {
+                appendHSDetailed(builder);
+            } else if (detail == ScannerDetail.ALL) {
+                appendHSDetailed(builder);
+                appendHSAll(builder);
+            }
         }
         return builder;
     }
