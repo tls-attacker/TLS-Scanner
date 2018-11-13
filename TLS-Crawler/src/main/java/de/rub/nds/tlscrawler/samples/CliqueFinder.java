@@ -8,37 +8,42 @@ package de.rub.nds.tlscrawler.samples;
 import java.util.List;
 import java.util.Set;
 import org.jgrapht.Graph;
-import org.jgrapht.alg.clique.BronKerboschCliqueFinder;
-import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.alg.BronKerboschCliqueFinder;
 
 /**
  *
  */
-public class CliqueFinder extends BronKerboschCliqueFinder<String, DefaultEdge> {
+public class CliqueFinder {
 
-    public CliqueFinder(Graph graph) {
-        super(graph);
+    private UndirectedGraph graph;
+
+    public CliqueFinder(UndirectedGraph graph) {
+        super();
+        this.graph = graph;
     }
 
-    public List<Set<String>> getAllMaximalCliques() {
-
-        lazyRun();
-        int size = 0;
-        for (Set<String> clique : allMaximalCliques) {
-            if (clique.size() > size) {
-                size = clique.size();
-            }
-        }
-        System.out.println("Before:" + size);
-        lazyRun();
-        for (Set<String> clique : allMaximalCliques) {
-            if (clique.size() > size) {
-                size = clique.size();
-            }
-        }
-        System.out.println("After:" + size);
-
-        return allMaximalCliques;
+    public int getMaxCliqueSize() {
+        BronKerboschCliqueFinder finder = new BronKerboschCliqueFinder(graph);
+        return finder.getBiggestMaximalCliques().size();
+//        
+//        lazyRun();
+//        int size = 0;
+//        for (Set<String> clique : allMaximalCliques) {
+//            if (clique.size() > size) {
+//                size = clique.size();
+//            }
+//        }
+//        System.out.println("Before:" + size);
+//        lazyRun();
+//        for (Set<String> clique : allMaximalCliques) {
+//            if (clique.size() > size) {
+//                size = clique.size();
+//            }
+//        }
+//        System.out.println("After:" + size);
+//
+//        return allMaximalCliques;
 
     }
 

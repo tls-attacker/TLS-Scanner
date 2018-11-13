@@ -26,6 +26,7 @@ import de.rub.nds.tlscrawler.utility.ITuple;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import static java.lang.System.exit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,12 +40,15 @@ import java.util.logging.Logger;
 import org.bson.BsonBoolean;
 import org.bson.BsonDocument;
 import org.bson.BsonInt32;
+import org.bson.BsonRegularExpression;
+import org.bson.BsonString;
 import org.bson.Document;
-import org.jgrapht.Graph;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.ext.DOTExporter;
+import org.jgrapht.ext.StringEdgeNameProvider;
+import org.jgrapht.ext.StringNameProvider;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import org.jgrapht.io.DOTExporter;
-import org.jgrapht.io.StringComponentNameProvider;
 
 /**
  * Sample script fetching a database record and parsing it into a TLS Scanner
@@ -67,7 +71,7 @@ public class ReportFetching {
     public static void main(String... args) {
 
         // SETUP
-        String mongoHost = "cloud.nds.rub.de";
+        String mongoHost = "cloud.nds.rub.de";//"192.168.129.133";
         int mongoPort = 42133;
         String mongoUser = "janis";
         String mongoAuthSource = "admin";
@@ -105,6 +109,13 @@ public class ReportFetching {
 //        }
         System.out.println("Only Cbc Total:" + onlyCbcTotal);
         System.out.println("Only Cbc and Vuln:" + onlyCbcVuln);
+        HashMap<CipherSuite, Integer> csMap = new HashMap<>();
+        for (CipherSuite suite : CipherSuite.values()) {
+            if (suite.isCBC() && !suite.isExport()) {
+                double counter = collection.count(new BsonDocument("results.tls_scan.ciphers.cipherSuites", new BsonString(suite.name())));
+                csMap.put(suite, (int) counter);
+            }
+        }
         FindIterable<Document> find = collection.find(new BsonDocument("results.tls_scan.attacks.paddingOracleVulnerable", new BsonBoolean(true)));
         double notVulnCounter = collection.count(new BsonDocument("results.tls_scan.attacks.paddingOracleVulnerable", new BsonBoolean(false)));
         double vulnCounter = collection.count(new BsonDocument("results.tls_scan.attacks.paddingOracleVulnerable", new BsonBoolean(true)));
@@ -115,7 +126,7 @@ public class ReportFetching {
         System.out.println("Vuln Hosts:" + vulnCounter);
         System.out.println("Not Vuln Hosts:" + notVulnCounter);
 
-        System.out.println("Percent Vuln:" + ((double) (Math.round((vulnCounter / (vulnCounter + notVulnCounter)) * 10000))) / 100 + "%");
+        System.out.println("Percent Vuln:" + ((double) (Math.round((vulnCounter / speaksTlsCounter) * 10000))) / 100 + "%");
         System.out.println("Suites:");
         for (CipherSuite suite : allSuiteMap.keySet()) {
             System.out.println("Suite:" + suite.name() + ": " + allSuiteMap.get(suite).getValue());
@@ -156,11 +167,14 @@ public class ReportFetching {
 
         System.out.println("----Vuln Suites----");
         for (CipherSuite suite : CipherSuite.values()) {
+            if (suite.isExport()) {
+                continue;
+            }
             if (suiteMap.containsKey(suite)) {
-                System.out.println("" + suite.name() + ": " + suiteMap.get(suite).getValue());
+                System.out.println("" + suite.name() + ": " + suiteMap.get(suite).getValue() + "/" + csMap.get(suite) + " - " + ((double)suiteMap.get(suite).getValue()) / ((double)csMap.get(suite)));
             }
         }
-
+        exit(1);
         System.out.println("----Vuln Version----");
         for (ProtocolVersion version : ProtocolVersion.values()) {
             if (versionMap.containsKey(version)) {
@@ -172,18 +186,10 @@ public class ReportFetching {
         for (Report r : reportList) {
             if (r.allAreVulnerable()) {
                 numberAllVuln++;
-                if (!uniqueContained(uniqueReports, r)) {
-                    uniqueReports.add(r);
-                }
             }
         }
         System.out.println("#all vuln: " + numberAllVuln);
 
-        System.out.println("Unique Reports:");
-        for (Report r : uniqueReports) {
-            System.out.println(r.getHost());
-            //System.out.println(r.getVulnerabilityList().get(0).toCsvString());
-        }
 
         int notAllVersionVuln = 0;
         int notAllKeyExchangeVuln = 0;
@@ -249,7 +255,7 @@ public class ReportFetching {
                 for (CsvReport csv : report.getVulnerabilityList()) {
                     if (csv.isVulnerable() && !csv.isScanError() && !csv.isShaky()) {
                         List<String> newVulnMap = new LinkedList<>();
-                        for (int i = 0; i < 14; i++) {
+                        for (int i = 0; i < 25; i++) {
                             newVulnMap.add(csv.getResponseMap().get(i).split("paddingVector")[0]);
                         }
                         vulnSet.add(newVulnMap);
@@ -283,7 +289,7 @@ public class ReportFetching {
                 for (CsvReport csv : report.getVulnerabilityList()) {
                     if (csv.isVulnerable() && !csv.isScanError() && !csv.isShaky()) {
                         List<String> newVulnMap = new LinkedList<>();
-                        for (int i = 0; i < 14; i++) {
+                        for (int i = 0; i < 25; i++) {
                             newVulnMap.add(csv.getResponseMap().get(i).split("paddingVector")[0]);
                         }
                         indexOf = vulnList.indexOf(newVulnMap);
@@ -329,7 +335,7 @@ public class ReportFetching {
                     }
                 }
             }
-            createSoftGraph(subReportList, "graphGroup" + i);
+            // createSoftGraph(subReportList, "graphGroup" + i);
 
         }
 
@@ -337,8 +343,10 @@ public class ReportFetching {
         //        "Searching for minimum vectors");
         //System.out.println(createMustHaveListBottomUp());
         System.out.println(
-                "Graph");
-        //     createGraph(reportList, "full");
+                "Combined Graph");
+        //createCombinedGraph(reportList, "combined_full");
+        System.out.println("Full");
+        createGraph(reportList, "full");
 
     }
     private static MongoPersistenceProvider pp;
@@ -426,8 +434,8 @@ public class ReportFetching {
     }
 
     public static void createSoftGraph(List<Report> tempReportList, String name) {
-        Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-        Graph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
 
         for (Report report : tempReportList) {
             //Create node
@@ -457,29 +465,34 @@ public class ReportFetching {
 
         System.out.println("Writing Graph");
 
-        DOTExporter exporter = new DOTExporter();
-        exporter.setVertexIDProvider(new StringComponentNameProvider());
+        DOTExporter exporter = new DOTExporter(new StringNameProvider<String>(), new StringNameProvider<String>(), new StringEdgeNameProvider<String>());
         try {
-            exporter.exportGraph(graph, new FileWriter(new File(name + ".dot")));
-            exporter.exportGraph(invertedGraph, new FileWriter(new File(name + "_inv.dot")));
+            exporter.export(new FileWriter(new File(name + ".dot")), graph);
+            exporter.export(new FileWriter(new File(name + "_inv.dot")), invertedGraph);
 
         } catch (IOException ex) {
             Logger.getLogger(ReportFetching.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("Searching Coloring");
+        int colouringNumber = GraphColouring.getColouringNumber(graph);
+        System.out.println("Couloring:" + colouringNumber);
+        System.out.println("Searching Clique:");
 
+//        CliqueFinder finder = new CliqueFinder(graph);
+//        System.out.println("clique:" + finder.getMaxCliqueSize());
 //        System.out.println("Searching Clique:");
 //
 //        CliqueFinder finder = new CliqueFinder(graph);
-//        List<Set<String>> allMaximalCliques = finder.getAllMaximalCliques();
+//        List<Set<String>> allMaximalCliques = finder.getMaxCliqueSize();
 //        for (Set<String> clique : allMaximalCliques) {
 //            System.out.println(clique);
 //        }
     }
 
     public static void createGraph(List<Report> tempReportList, String name) {
-        Graph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-        Graph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
 
         for (Report report : tempReportList) {
             //Create node
@@ -509,24 +522,78 @@ public class ReportFetching {
 
         System.out.println("Writing Graph");
 
-        DOTExporter exporter = new DOTExporter();
-        exporter.setVertexIDProvider(new StringComponentNameProvider());
+        DOTExporter exporter = new DOTExporter(new StringNameProvider<String>(), new StringNameProvider<String>(), new StringEdgeNameProvider<String>());
         try {
-            exporter.exportGraph(graph, new FileWriter(new File(name + ".dot")));
-            exporter.exportGraph(invertedGraph, new FileWriter(new File(name + "_inv.dot")));
+            exporter.export(new FileWriter(new File(name + ".dot")), graph);
+            exporter.export(new FileWriter(new File(name + "_inv.dot")), invertedGraph);
 
         } catch (IOException ex) {
             Logger.getLogger(ReportFetching.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
 
-//        System.out.println("Searching Clique:");
-//
+        System.out.println("Searching Clique:");
+
 //        CliqueFinder finder = new CliqueFinder(graph);
-//        List<Set<String>> allMaximalCliques = finder.getAllMaximalCliques();
+//        System.out.println("clique:" + finder.getMaxCliqueSize());
+//        List<Set<String>> allMaximalCliques = finder.getMaxCliqueSize();
 //        for (Set<String> clique : allMaximalCliques) {
 //            System.out.println(clique);
 //        }
+    }
+
+    public static void createCombinedGraph(List<Report> tempReportList, String name) {
+        UndirectedGraph<String, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+        UndirectedGraph<String, DefaultEdge> invertedGraph = new SimpleGraph<>(DefaultEdge.class);
+        Set<Report> reportSet = new HashSet<>();
+
+        for (Report report : tempReportList) {
+            reportSet.add(report);
+        }
+        for (Report report : reportSet) {
+            //Create node
+            graph.addVertex("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+            invertedGraph.addVertex("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+
+        }
+        System.out.println("Creating Graph");
+
+        int i = 0;
+
+        for (Report report : reportSet) {
+            i++;
+            for (Report otherReport : reportSet) {
+                if (report != otherReport) {
+                    if (report.contradicts(otherReport)) {
+                        graph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+                    } else {
+                        if (otherReport != report) {
+                            invertedGraph.addEdge("Host_" + report.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"), "Host_" + otherReport.getHost().replace("-", "_dash_").replace(":443", "").replace(".", "_dot_"));
+                        }
+                    }
+                }
+            }
+            System.out.println(i + "/" + reportSet.size());
+        }
+
+        System.out.println("Writing Graph");
+
+        DOTExporter exporter = new DOTExporter(new StringNameProvider<String>(), new StringNameProvider<String>(), new StringEdgeNameProvider<String>());
+        try {
+            exporter.export(new FileWriter(new File(name + ".dot")), graph);
+            exporter.export(new FileWriter(new File(name + "_inv.dot")), invertedGraph);
+
+        } catch (IOException ex) {
+            Logger.getLogger(ReportFetching.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("Searching Coloring");
+        int colouringNumber = GraphColouring.getColouringNumber(graph);
+        System.out.println("Couloring:" + colouringNumber);
+        System.out.println("Searching Clique:");
+
+//        CliqueFinder finder = new CliqueFinder(graph);
+//        System.out.println("clique:" + finder.getMaxCliqueSize());
     }
 
     public static void testDel() {

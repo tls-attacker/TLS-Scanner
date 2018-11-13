@@ -7,10 +7,10 @@ package de.rub.nds.tlscrawler.samples;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlscrawler.utility.ITuple;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -131,4 +131,51 @@ public class CsvReport {
         }
         return builder.toString();
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 61 * hash + Objects.hashCode(this.suite);
+        hash = 61 * hash + Objects.hashCode(this.version);
+        hash = 61 * hash + (this.vulnerable ? 1 : 0);
+        hash = 61 * hash + (this.shaky ? 1 : 0);
+        hash = 61 * hash + (this.scanError ? 1 : 0);
+        hash = 61 * hash + Objects.hashCode(this.responseMap);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CsvReport other = (CsvReport) obj;
+        if (this.vulnerable != other.vulnerable) {
+            return false;
+        }
+        if (this.shaky != other.shaky) {
+            return false;
+        }
+        if (this.scanError != other.scanError) {
+            return false;
+        }
+        if (this.suite != other.suite) {
+            return false;
+        }
+        if (this.version != other.version) {
+            return false;
+        }
+        if (!Objects.equals(this.responseMap, other.responseMap)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }
