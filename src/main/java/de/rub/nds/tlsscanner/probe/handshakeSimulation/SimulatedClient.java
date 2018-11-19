@@ -41,8 +41,8 @@ public class SimulatedClient {
     private Boolean handshakeSuccessful = null;
     private Boolean connectionInsecure = null;
     private Boolean connectionRfc7918Secure = null;
-    private List<HandshakeFailed> failReasons = null;
-    private List<ConnectionInsecure> insecureReasons = null;
+    private List<String> failReasons = null;
+    private List<String> insecureReasons = null;
 
     public SimulatedClient(String type, String version, boolean defaultVersion) {
         this.type = type;
@@ -248,19 +248,19 @@ public class SimulatedClient {
         this.connectionRfc7918Secure = connectionRfc7918Secure;
     }
 
-    public List<HandshakeFailed> getFailReasons() {
+    public List<String> getFailReasons() {
         return failReasons;
     }
 
-    public void addToFailReasons(HandshakeFailed handshakeIssue) {
+    public void addToFailReasons(String handshakeIssue) {
         failReasons.add(handshakeIssue);
     }
 
-    public List<ConnectionInsecure> getInsecureReasons() {
+    public List<String> getInsecureReasons() {
         return insecureReasons;
     }
 
-    public void addToInsecureReasons(ConnectionInsecure handshakeIssue) {
+    public void addToInsecureReasons(String handshakeIssue) {
         insecureReasons.add(handshakeIssue);
     }
 }

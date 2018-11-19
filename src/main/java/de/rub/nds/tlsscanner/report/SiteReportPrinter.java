@@ -190,8 +190,8 @@ public class SiteReportPrinter {
                 simulatedClient.getSelectedCiphersuite(), simulatedClient.getForwardSecrecy(),
                 simulatedClient.getServerPublicKeyLength());
         if (simulatedClient.getConnectionInsecure()) {
-            for (ConnectionInsecure connectionInsecure : simulatedClient.getInsecureReasons()) {
-                prettyAppendHSDetailedRow(builder, "-> Connection insecure: " + connectionInsecure.getReason());
+            for (String reason : simulatedClient.getInsecureReasons()) {
+                prettyAppendHSDetailedRow(builder, "-> Connection insecure: " + reason);
             }
         }
         return builder;
@@ -199,10 +199,13 @@ public class SiteReportPrinter {
 
     private StringBuilder getClientListFailed(StringBuilder builder, SimulatedClient simulatedClient) {
         String clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
-        prettyAppendHSDetailedRow(builder, getRedString(clientName, "%s"));
-        for (HandshakeFailed handshakeFailed : simulatedClient.getFailReasons()) {
-            prettyAppendHSDetailedRow(builder, "-> Handshake failed: " + handshakeFailed.getReason());
+        String row = " - " + simulatedClient.getSelectedProtocolVersion() + ", " + simulatedClient.getSelectedCiphersuite() 
+                + ", " + simulatedClient.getServerPublicKeyLength();
+        prettyAppendHSDetailedRow(builder, getRedString(clientName, "%s") + row);
+        for (String reason : simulatedClient.getFailReasons()) {
+            prettyAppendHSDetailedRow(builder, "-> Handshake failed: " + reason);
         }
+        builder.append("\n");
         return builder;
     }
 
@@ -218,8 +221,21 @@ public class SiteReportPrinter {
                 return getBlackString(version.name(), format);
             }
         } else {
-            return null;
+            return "Unknown";
         }
+    }
+
+    private String getClientColor(String tlsClient, Boolean insecure, Boolean rfc7918Secure) {
+        if (tlsClient != null) {
+            if (insecure != null && insecure) {
+                return getRedString(tlsClient, hsClientFormat);
+            } else if (rfc7918Secure != null && rfc7918Secure) {
+                return getGreenString(tlsClient, hsClientFormat);
+            }
+        } else {
+            return "Unknown";
+        }
+        return getBlackString(tlsClient, hsClientFormat);
     }
 
     private String getCipherSuiteColor(CipherSuite suite, String format) {
@@ -238,8 +254,22 @@ public class SiteReportPrinter {
                     return getBlackString(suite.name(), format);
             }
         } else {
-            return null;
+            return "Unknown";
         }
+    }
+
+    private String getForwardSecrecyColor(Boolean forwardSecrecy) {
+        String fs;
+        if (forwardSecrecy != null) {
+            if (forwardSecrecy) {
+                fs = getGreenString("Forward Secrecy", hsForwardSecrecyFormat);
+            } else {
+                fs = getRedString("No Forward Secrecy", hsForwardSecrecyFormat);
+            }
+        } else {
+            fs = "Unknown";
+        }
+        return fs;
     }
 
     private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String value) {
@@ -261,26 +291,10 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String tlsClient, Boolean insecure,
             Boolean rfc7918Secure, ProtocolVersion tlsVersion, CipherSuite ciphersuite, Boolean forwardSecrecy, String keyLength) {
-        String newTlsClient;
-        if (insecure != null && insecure) {
-            newTlsClient = getRedString(tlsClient, hsClientFormat);
-        } else if (rfc7918Secure) {
-            newTlsClient = getGreenString(tlsClient, hsClientFormat);
-        } else {
-            newTlsClient = getBlackString(tlsClient, hsClientFormat);
-        }
-        String newTlsVersion = getProtocolVersionColor(tlsVersion, hsVersionFormat);
-        String newCipherSuite = getCipherSuiteColor(ciphersuite, hsCiphersuiteFormat);
-        String newForwardSecrecy;
-        if (forwardSecrecy != null && forwardSecrecy) {
-            newForwardSecrecy = getGreenString("Forward Secrecy", hsForwardSecrecyFormat);
-        } else {
-            newForwardSecrecy = getRedString("No Forward Secrecy", hsForwardSecrecyFormat);
-        }
-        builder.append(newTlsClient);
-        builder.append("| ").append(newTlsVersion);
-        builder.append("| ").append(newCipherSuite);
-        builder.append("| ").append(newForwardSecrecy);
+        builder.append(getClientColor(tlsClient, insecure, rfc7918Secure));
+        builder.append("| ").append(getProtocolVersionColor(tlsVersion, hsVersionFormat));
+        builder.append("| ").append(getCipherSuiteColor(ciphersuite, hsCiphersuiteFormat));
+        builder.append("| ").append(getForwardSecrecyColor(forwardSecrecy));
         builder.append("| ").append(getBlackString(keyLength, hsKeyLengthFormat));
         builder.append("\n");
         return builder;
@@ -292,15 +306,15 @@ public class SiteReportPrinter {
             prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
             prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.getHandshakeSuccessful());
             if (!simulatedClient.getHandshakeSuccessful()) {
-                for (HandshakeFailed handshakeFailed : simulatedClient.getFailReasons()) {
-                    prettyAppend(builder, "", handshakeFailed.getReason());
+                for (String reason : simulatedClient.getFailReasons()) {
+                    prettyAppend(builder, "", reason);
                 }
             }
             builder.append("\n");
             if (simulatedClient.getConnectionInsecure() != null && simulatedClient.getConnectionInsecure()) {
                 prettyAppendRedGreen(builder, "Connection Insecure", simulatedClient.getConnectionInsecure());
-                for (ConnectionInsecure connectionInsecure : simulatedClient.getInsecureReasons()) {
-                    prettyAppend(builder, "", connectionInsecure.getReason());
+                for (String reason : simulatedClient.getInsecureReasons()) {
+                    prettyAppend(builder, "", reason);
                 }
             }
             prettyAppendGreenRed(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure());

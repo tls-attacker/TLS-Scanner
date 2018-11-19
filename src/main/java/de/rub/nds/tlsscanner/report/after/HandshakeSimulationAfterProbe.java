@@ -14,8 +14,11 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.report.CiphersuiteRater;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import java.util.List;
 
 public class HandshakeSimulationAfterProbe extends AfterProbe {
+
+    private final Integer publicKeyLengthTolerance = 10;
 
     @Override
     public void analyze(SiteReport report) {
@@ -76,11 +79,11 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private void checkIfHandshakeWouldBeSuccessful(SimulatedClient simulatedClient) {
         boolean reallySuccessful = true;
         if (isCiphersuiteForbidden(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.CIPHERSUITE_FORBIDDEN);
+            simulatedClient.addToFailReasons(HandshakeFailed.CIPHERSUITE_FORBIDDEN.getReason());
             reallySuccessful = false;
         }
         if (isPublicKeyLengthNotAccepted(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_NOT_ACCEPTED);
+            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_NOT_ACCEPTED.getReason());
             reallySuccessful = false;
         }
         simulatedClient.setHandshakeSuccessful(reallySuccessful);
@@ -97,14 +100,22 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isPublicKeyLengthNotAccepted(SimulatedClient simulatedClient) {
+        List<Integer> supportedKeyLengths;
+        Integer publicKeyLength = Integer.parseInt(simulatedClient.getServerPublicKeyLength());
         if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")
-                && simulatedClient.getSupportedRsaKeyLengthList() != null
-                && !simulatedClient.getSupportedRsaKeyLengthList().contains(Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
-            return true;
+                && simulatedClient.getSupportedRsaKeyLengthList() != null) {
+            supportedKeyLengths = simulatedClient.getSupportedRsaKeyLengthList();
+            if (publicKeyLength + publicKeyLengthTolerance < supportedKeyLengths.get(0) || 
+                    supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
+                return true;
+            }
         } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH")
-                && simulatedClient.getSupportedDheKeyLengthList() != null
-                && !simulatedClient.getSupportedDheKeyLengthList().contains(Integer.parseInt(simulatedClient.getServerPublicKeyLength()))) {
-            return true;
+                && simulatedClient.getSupportedDheKeyLengthList() != null) {
+            supportedKeyLengths = simulatedClient.getSupportedDheKeyLengthList();
+            if (publicKeyLength + publicKeyLengthTolerance < supportedKeyLengths.get(0) || 
+                    supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
+                return true;
+            }
         }
         return false;
     }
@@ -112,14 +123,14 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private void checkWhyServerHelloDoneIsMissing(SiteReport report, SimulatedClient simulatedClient) {
         boolean reasonFound = false;
         if (isProtocolMismatch(report, simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.PROTOCOL_MISMATCH);
+            simulatedClient.addToFailReasons(HandshakeFailed.PROTOCOL_MISMATCH.getReason());
             reasonFound = true;
         } else if (isCiphersuiteMismatch(report, simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.CIPHERSUITE_MISMATCH);
+            simulatedClient.addToFailReasons(HandshakeFailed.CIPHERSUITE_MISMATCH.getReason());
             reasonFound = true;
         }
         if (!reasonFound) {
-            simulatedClient.addToFailReasons(HandshakeFailed.UNKNOWN);
+            simulatedClient.addToFailReasons(HandshakeFailed.UNKNOWN.getReason());
         }
     }
 
@@ -152,7 +163,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private void checkIfConnectionIsInsecure(SiteReport report, SimulatedClient simulatedClient) {
         boolean connectionInsecure = false;
         if (isCipherSuiteGradeLow(simulatedClient)) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.CIPHERSUITE_GRADE_LOW);
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.CIPHERSUITE_GRADE_LOW.getReason());
             connectionInsecure = true;
         }
         if (isVulnerable(report, simulatedClient)) {
@@ -169,23 +180,23 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         boolean isVulnerable = false;
         if (report.getPaddingOracleVulnerable() != null && report.getPaddingOracleVulnerable()
                 && simulatedClient.getSelectedCiphersuite().isCBC()) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PADDING_ORACLE);
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.PADDING_ORACLE.getReason());
             isVulnerable = true;
         }
         if (report.getBleichenbacherVulnerable() != null && report.getBleichenbacherVulnerable()
                 && simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.BLEICHENBACHER);
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.BLEICHENBACHER.getReason());
             isVulnerable = true;
         }
         if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.CRIME);
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.CRIME.getReason());
             isVulnerable = true;
         }
         if (report.getSweet32Vulnerable() != null && report.getSweet32Vulnerable()) {
             if (simulatedClient.getSelectedCiphersuite().name().contains("3DES")
                     || simulatedClient.getSelectedCiphersuite().name().contains("IDEA")
                     || simulatedClient.getSelectedCiphersuite().name().contains("GOST")) {
-                simulatedClient.addToInsecureReasons(ConnectionInsecure.SWEET32);
+                simulatedClient.addToInsecureReasons(ConnectionInsecure.SWEET32.getReason());
                 isVulnerable = true;
             }
         }
