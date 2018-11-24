@@ -18,8 +18,6 @@ import java.util.List;
 
 public class HandshakeSimulationAfterProbe extends AfterProbe {
 
-    private final Integer publicKeyLengthTolerance = 10;
-
     @Override
     public void analyze(SiteReport report) {
         int isSuccessfulCounter = 0;
@@ -82,8 +80,14 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             simulatedClient.addToFailReasons(HandshakeFailed.CIPHERSUITE_FORBIDDEN.getReason());
             reallySuccessful = false;
         }
-        if (isPublicKeyLengthNotAccepted(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_NOT_ACCEPTED.getReason());
+        if (isPublicKeyLengthRsaNotAccepted(simulatedClient)) {
+            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_RSA_NOT_ACCEPTED.getReason() + " - supported lengths: "
+                    + simulatedClient.getSupportedRsaKeyLengthList());
+            reallySuccessful = false;
+        }
+        if (isPublicKeyLengthDhNotAccepted(simulatedClient)) {
+            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_DH_NOT_ACCEPTED.getReason() + " - supported lengths: "
+                    + simulatedClient.getSupportedDheKeyLengthList());
             reallySuccessful = false;
         }
         simulatedClient.setHandshakeSuccessful(reallySuccessful);
@@ -99,20 +103,27 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         return true;
     }
 
-    private boolean isPublicKeyLengthNotAccepted(SimulatedClient simulatedClient) {
+    private boolean isPublicKeyLengthRsaNotAccepted(SimulatedClient simulatedClient) {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = Integer.parseInt(simulatedClient.getServerPublicKeyLength());
         if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")
                 && simulatedClient.getSupportedRsaKeyLengthList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedRsaKeyLengthList();
-            if (publicKeyLength + publicKeyLengthTolerance < supportedKeyLengths.get(0) || 
+            if (publicKeyLength < supportedKeyLengths.get(0) || 
                     supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
                 return true;
             }
-        } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH")
+        }
+        return false;
+    }
+    
+    private boolean isPublicKeyLengthDhNotAccepted(SimulatedClient simulatedClient) {
+        List<Integer> supportedKeyLengths;
+        Integer publicKeyLength = Integer.parseInt(simulatedClient.getServerPublicKeyLength());
+        if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH")
                 && simulatedClient.getSupportedDheKeyLengthList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedDheKeyLengthList();
-            if (publicKeyLength + publicKeyLengthTolerance < supportedKeyLengths.get(0) || 
+            if (publicKeyLength < supportedKeyLengths.get(0) || 
                     supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
                 return true;
             }
