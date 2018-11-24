@@ -162,7 +162,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     private void evaluateServerKeyExchange(TlsContext context, SimulatedClient simulatedClient) {
         CipherSuite cipherSuite = context.getSelectedCipherSuite();
         if (cipherSuite.name().contains("TLS_DH") && context.getServerDhPublicKey() != null) {
-            simulatedClient.setServerPublicKeyLength(Integer.toString(context.getServerDhPublicKey().bitLength()));
+            simulatedClient.setServerPublicKeyLength(Integer.toString(context.getServerDhModulus().bitLength()));
         } else if (cipherSuite.name().contains("TLS_ECDH")) {
             if (context.getSelectedGroup() != null) {
                 simulatedClient.setSelectedNamedGroup(context.getSelectedGroup().name());
