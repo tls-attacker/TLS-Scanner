@@ -811,11 +811,10 @@
         <defaultHeartbeatMode>PEER_ALLOWED_TO_SEND</defaultHeartbeatMode>
         <defaultClientSupportedCompressionMethods>NULL</defaultClientSupportedCompressionMethods>
         <defaultServerSupportedCompressionMethods>NULL</defaultServerSupportedCompressionMethods>
-        <defaultMasterSecret/>
         <defaultPreMasterSecret/>
         <defaultClientRandom>
-            5B E4 F5 3E D5 3B 6A 98  5C 37 E7 7D 57 12 B1 47
-            D0 92 02 4F AE B1 A6 53  2B 6F 2C 7F 52 51 E8 58
+            5B FA FC E1 29 86 F1 CB  00 F7 64 AA 81 62 41 AE
+            C3 F5 1C 5D B1 FE 24 D0  A0 B0 4C B7 03 21 D1 D6
         </defaultClientRandom>
         <defaultServerRandom>
             00 11 22 33 44 55 66 77  88 99 AA BB CC DD EE FF
@@ -930,9 +929,9 @@
                 <ClientHello>
                     <completeResultingMessage>
                         <originalValue>
-                            01 00 01 94 03 03 5B E4  F5 3E D5 3B 6A 98 5C 37
-                            E7 7D 57 12 B1 47 D0 92  02 4F AE B1 A6 53 2B 6F
-                            2C 7F 52 51 E8 58 00 01  06 C0 2C C0 30 00 9F C0
+                            01 00 01 94 03 03 5B FA  FC E1 29 86 F1 CB 00 F7
+                            64 AA 81 62 41 AE C3 F5  1C 5D B1 FE 24 D0 A0 B0
+                            4C B7 03 21 D1 D6 00 01  06 C0 2C C0 30 00 9F C0
                             AD C0 9F C0 24 C0 28 00  6B C0 0A C0 14 00 39 C0
                             AF C0 A3 C0 87 C0 8B C0  7D C0 73 C0 77 00 C4 00
                             88 C0 2B C0 2F 00 9E C0  AC C0 9E C0 23 C0 27 00
@@ -1122,12 +1121,12 @@
                         <originalValue>03 03</originalValue>
                     </protocolVersion>
                     <unixTime>
-                        <originalValue>5B E4 F5 3E</originalValue>
+                        <originalValue>5B FA FC E1</originalValue>
                     </unixTime>
                     <random>
                         <originalValue>
-                            5B E4 F5 3E D5 3B 6A 98  5C 37 E7 7D 57 12 B1 47
-                            D0 92 02 4F AE B1 A6 53  2B 6F 2C 7F 52 51 E8 58
+                            5B FA FC E1 29 86 F1 CB  00 F7 64 AA 81 62 41 AE
+                            C3 F5 1C 5D B1 FE 24 D0  A0 B0 4C B7 03 21 D1 D6
                         </originalValue>
                     </random>
                     <sessionIdLength>
@@ -1172,9 +1171,9 @@
                 <Record>
                     <cleanProtocolMessageBytes>
                         <originalValue>
-                            01 00 01 94 03 03 5B E4  F5 3E D5 3B 6A 98 5C 37
-                            E7 7D 57 12 B1 47 D0 92  02 4F AE B1 A6 53 2B 6F
-                            2C 7F 52 51 E8 58 00 01  06 C0 2C C0 30 00 9F C0
+                            01 00 01 94 03 03 5B FA  FC E1 29 86 F1 CB 00 F7
+                            64 AA 81 62 41 AE C3 F5  1C 5D B1 FE 24 D0 A0 B0
+                            4C B7 03 21 D1 D6 00 01  06 C0 2C C0 30 00 9F C0
                             AD C0 9F C0 24 C0 28 00  6B C0 0A C0 14 00 39 C0
                             AF C0 A3 C0 87 C0 8B C0  7D C0 73 C0 77 00 C4 00
                             88 C0 2B C0 2F 00 9E C0  AC C0 9E C0 23 C0 27 00
@@ -1202,9 +1201,9 @@
                     </cleanProtocolMessageBytes>
                     <completeRecordBytes>
                         <originalValue>
-                            16 03 01 01 98 01 00 01  94 03 03 5B E4 F5 3E D5
-                            3B 6A 98 5C 37 E7 7D 57  12 B1 47 D0 92 02 4F AE
-                            B1 A6 53 2B 6F 2C 7F 52  51 E8 58 00 01 06 C0 2C
+                            16 03 01 01 98 01 00 01  94 03 03 5B FA FC E1 29
+                            86 F1 CB 00 F7 64 AA 81  62 41 AE C3 F5 1C 5D B1
+                            FE 24 D0 A0 B0 4C B7 03  21 D1 D6 00 01 06 C0 2C
                             C0 30 00 9F C0 AD C0 9F  C0 24 C0 28 00 6B C0 0A
                             C0 14 00 39 C0 AF C0 A3  C0 87 C0 8B C0 7D C0 73
                             C0 77 00 C4 00 88 C0 2B  C0 2F 00 9E C0 AC C0 9E
@@ -1233,9 +1232,9 @@
                     <contentMessageType>HANDSHAKE</contentMessageType>
                     <protocolMessageBytes>
                         <originalValue>
-                            01 00 01 94 03 03 5B E4  F5 3E D5 3B 6A 98 5C 37
-                            E7 7D 57 12 B1 47 D0 92  02 4F AE B1 A6 53 2B 6F
-                            2C 7F 52 51 E8 58 00 01  06 C0 2C C0 30 00 9F C0
+                            01 00 01 94 03 03 5B FA  FC E1 29 86 F1 CB 00 F7
+                            64 AA 81 62 41 AE C3 F5  1C 5D B1 FE 24 D0 A0 B0
+                            4C B7 03 21 D1 D6 00 01  06 C0 2C C0 30 00 9F C0
                             AD C0 9F C0 24 C0 28 00  6B C0 0A C0 14 00 39 C0
                             AF C0 A3 C0 87 C0 8B C0  7D C0 73 C0 77 00 C4 00
                             88 C0 2B C0 2F 00 9E C0  AC C0 9E C0 23 C0 27 00
@@ -1271,9 +1270,9 @@
                         </mac>
                         <nonMetaDataMaced>
                             <originalValue>
-                                01 00 01 94 03 03 5B E4  F5 3E D5 3B 6A 98 5C 37
-                                E7 7D 57 12 B1 47 D0 92  02 4F AE B1 A6 53 2B 6F
-                                2C 7F 52 51 E8 58 00 01  06 C0 2C C0 30 00 9F C0
+                                01 00 01 94 03 03 5B FA  FC E1 29 86 F1 CB 00 F7
+                                64 AA 81 62 41 AE C3 F5  1C 5D B1 FE 24 D0 A0 B0
+                                4C B7 03 21 D1 D6 00 01  06 C0 2C C0 30 00 9F C0
                                 AD C0 9F C0 24 C0 28 00  6B C0 0A C0 14 00 39 C0
                                 AF C0 A3 C0 87 C0 8B C0  7D C0 73 C0 77 00 C4 00
                                 88 C0 2B C0 2F 00 9E C0  AC C0 9E C0 23 C0 27 00
@@ -1307,9 +1306,9 @@
                         </paddingLength>
                         <plainRecordBytes>
                             <originalValue>
-                                01 00 01 94 03 03 5B E4  F5 3E D5 3B 6A 98 5C 37
-                                E7 7D 57 12 B1 47 D0 92  02 4F AE B1 A6 53 2B 6F
-                                2C 7F 52 51 E8 58 00 01  06 C0 2C C0 30 00 9F C0
+                                01 00 01 94 03 03 5B FA  FC E1 29 86 F1 CB 00 F7
+                                64 AA 81 62 41 AE C3 F5  1C 5D B1 FE 24 D0 A0 B0
+                                4C B7 03 21 D1 D6 00 01  06 C0 2C C0 30 00 9F C0
                                 AD C0 9F C0 24 C0 28 00  6B C0 0A C0 14 00 39 C0
                                 AF C0 A3 C0 87 C0 8B C0  7D C0 73 C0 77 00 C4 00
                                 88 C0 2B C0 2F 00 9E C0  AC C0 9E C0 23 C0 27 00
@@ -1340,9 +1339,9 @@
                         </sequenceNumber>
                         <unpaddedRecordBytes>
                             <originalValue>
-                                01 00 01 94 03 03 5B E4  F5 3E D5 3B 6A 98 5C 37
-                                E7 7D 57 12 B1 47 D0 92  02 4F AE B1 A6 53 2B 6F
-                                2C 7F 52 51 E8 58 00 01  06 C0 2C C0 30 00 9F C0
+                                01 00 01 94 03 03 5B FA  FC E1 29 86 F1 CB 00 F7
+                                64 AA 81 62 41 AE C3 F5  1C 5D B1 FE 24 D0 A0 B0
+                                4C B7 03 21 D1 D6 00 01  06 C0 2C C0 30 00 9F C0
                                 AD C0 9F C0 24 C0 28 00  6B C0 0A C0 14 00 39 C0
                                 AF C0 A3 C0 87 C0 8B C0  7D C0 73 C0 77 00 C4 00
                                 88 C0 2B C0 2F 00 9E C0  AC C0 9E C0 23 C0 27 00
@@ -1395,7 +1394,6 @@
     <supportedRsaKeyLengthList>6144</supportedRsaKeyLengthList>
     <supportedRsaKeyLengthList>7168</supportedRsaKeyLengthList>
     <supportedRsaKeyLengthList>8192</supportedRsaKeyLengthList>
-    <supportedDheKeyLengthList>512</supportedDheKeyLengthList>
     <supportedDheKeyLengthList>1024</supportedDheKeyLengthList>
     <supportedDheKeyLengthList>2048</supportedDheKeyLengthList>
     <supportedDheKeyLengthList>3072</supportedDheKeyLengthList>

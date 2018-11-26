@@ -443,8 +443,8 @@
         <defaultClientKeyShareEntries>
             <group>ECDH_X25519</group>
             <publicKey>
-                99 CA 24 3D 2C F4 DE 7B  00 C8 4B 8E 33 21 67 DF
-                7B C3 6C 3A E6 E0 86 3E  77 10 6E 4A A5 48 55 3C
+                74 73 4F 40 BD 30 AF AD  64 98 7A A5 D3 D1 15 FE
+                5E A8 F5 6F E9 D2 65 59  F1 67 E5 97 A7 FA C3 18
             </publicKey>
         </defaultClientKeyShareEntries>
         <defaultServerKeyShareEntry>
@@ -691,19 +691,18 @@
         <defaultHeartbeatMode>PEER_ALLOWED_TO_SEND</defaultHeartbeatMode>
         <defaultClientSupportedCompressionMethods>NULL</defaultClientSupportedCompressionMethods>
         <defaultServerSupportedCompressionMethods>NULL</defaultServerSupportedCompressionMethods>
-        <defaultMasterSecret/>
         <defaultPreMasterSecret/>
         <defaultClientRandom>
-            7A DF AE 9E BB B7 AA 10  27 00 1C 51 C2 03 23 13
-            26 AC 0B FE D5 9A E6 CE  52 6E 03 9B 8A BC 4A 8E
+            7B E6 CF 22 F1 25 72 98  3A 1B 41 0E 12 DE 51 D6
+            5B F0 CB 4D BB 42 0F DA  A7 94 A3 43 DF 22 E7 CC
         </defaultClientRandom>
         <defaultServerRandom>
             00 11 22 33 44 55 66 77  88 99 AA BB CC DD EE FF
             FF EE DD CC BB AA 99 88  77 66 55 44 33 22 11 00
         </defaultServerRandom>
         <defaultClientSessionId>
-            16 6E CC CF 4E AF E0 3E  76 19 9C 31 25 35 16 14
-            57 EF EA 08 35 34 DF D6  28 41 38 C8 A2 41 29 F3
+            CA 32 25 BD 05 06 79 A7  72 71 A3 41 11 84 0A 02
+            C8 92 2B 79 69 5C E3 B6  C1 40 CB 39 DC 3D EA EB
         </defaultClientSessionId>
         <defaultServerSessionId/>
         <defaultSelectedCompressionMethod>NULL</defaultSelectedCompressionMethod>
@@ -813,19 +812,19 @@
                 <ClientHello>
                     <completeResultingMessage>
                         <originalValue>
-                            01 00 00 E3 03 03 7A DF  AE 9E BB B7 AA 10 27 00
-                            1C 51 C2 03 23 13 26 AC  0B FE D5 9A E6 CE 52 6E
-                            03 9B 8A BC 4A 8E 20 16  6E CC CF 4E AF E0 3E 76
-                            19 9C 31 25 35 16 14 57  EF EA 08 35 34 DF D6 28
-                            41 38 C8 A2 41 29 F3 00  24 13 01 13 02 13 03 C0
+                            01 00 00 E3 03 03 7B E6  CF 22 F1 25 72 98 3A 1B
+                            41 0E 12 DE 51 D6 5B F0  CB 4D BB 42 0F DA A7 94
+                            A3 43 DF 22 E7 CC 20 CA  32 25 BD 05 06 79 A7 72
+                            71 A3 41 11 84 0A 02 C8  92 2B 79 69 5C E3 B6 C1
+                            40 CB 39 DC 3D EA EB 00  24 13 01 13 02 13 03 C0
                             2B C0 2F C0 2C C0 30 CC  A9 CC A8 C0 09 C0 13 C0
                             0A C0 14 00 9C 00 9D 00  2F 00 35 00 0A 01 00 00
                             76 FF 01 00 01 00 00 17  00 00 00 23 00 00 00 0D
                             00 14 00 12 04 03 08 04  04 01 05 03 08 05 05 01
                             08 06 06 01 02 01 00 0B  00 02 01 00 00 33 00 26
-                            00 24 00 1D 00 20 99 CA  24 3D 2C F4 DE 7B 00 C8
-                            4B 8E 33 21 67 DF 7B C3  6C 3A E6 E0 86 3E 77 10
-                            6E 4A A5 48 55 3C 00 2D  00 02 01 01 00 2B 00 0B
+                            00 24 00 1D 00 20 74 73  4F 40 BD 30 AF AD 64 98
+                            7A A5 D3 D1 15 FE 5E A8  F5 6F E9 D2 65 59 F1 67
+                            E5 97 A7 FA C3 18 00 2D  00 02 01 01 00 2B 00 0B
                             0A 7F 1C 7F 17 03 03 03  02 03 01 00 0A 00 08 00
                             06 00 1D 00 17 00 18
                         </originalValue>
@@ -922,9 +921,9 @@
                         <KeyShareExtension>
                             <extensionBytes>
 <originalValue>
-                                    00 33 00 26 00 24 00 1D  00 20 99 CA 24 3D 2C F4
-                                    DE 7B 00 C8 4B 8E 33 21  67 DF 7B C3 6C 3A E6 E0
-                                    86 3E 77 10 6E 4A A5 48  55 3C
+                                    00 33 00 26 00 24 00 1D  00 20 74 73 4F 40 BD 30
+                                    AF AD 64 98 7A A5 D3 D1  15 FE 5E A8 F5 6F E9 D2
+                                    65 59 F1 67 E5 97 A7 FA  C3 18
                                 </originalValue>
                             </extensionBytes>
                             <extensionLength>
@@ -940,8 +939,8 @@
 <groupConfig>ECDH_X25519</groupConfig>
 <publicKey>
     <originalValue>
-                                        99 CA 24 3D 2C F4 DE 7B  00 C8 4B 8E 33 21 67 DF
-                                        7B C3 6C 3A E6 E0 86 3E  77 10 6E 4A A5 48 55 3C
+                                        74 73 4F 40 BD 30 AF AD  64 98 7A A5 D3 D1 15 FE
+                                        5E A8 F5 6F E9 D2 65 59  F1 67 E5 97 A7 FA C3 18
                                     </originalValue>
 </publicKey>
 <publicKeyLength>
@@ -950,9 +949,9 @@
                             </keyShareList>
                             <keyShareListBytes>
 <originalValue>
-                                    00 1D 00 20 99 CA 24 3D  2C F4 DE 7B 00 C8 4B 8E
-                                    33 21 67 DF 7B C3 6C 3A  E6 E0 86 3E 77 10 6E 4A
-                                    A5 48 55 3C
+                                    00 1D 00 20 74 73 4F 40  BD 30 AF AD 64 98 7A A5
+                                    D3 D1 15 FE 5E A8 F5 6F  E9 D2 65 59 F1 67 E5 97
+                                    A7 FA C3 18
                                 </originalValue>
                             </keyShareListBytes>
                             <keyShareListLength>
@@ -1017,9 +1016,9 @@
                             FF 01 00 01 00 00 17 00  00 00 23 00 00 00 0D 00
                             14 00 12 04 03 08 04 04  01 05 03 08 05 05 01 08
                             06 06 01 02 01 00 0B 00  02 01 00 00 33 00 26 00
-                            24 00 1D 00 20 99 CA 24  3D 2C F4 DE 7B 00 C8 4B
-                            8E 33 21 67 DF 7B C3 6C  3A E6 E0 86 3E 77 10 6E
-                            4A A5 48 55 3C 00 2D 00  02 01 01 00 2B 00 0B 0A
+                            24 00 1D 00 20 74 73 4F  40 BD 30 AF AD 64 98 7A
+                            A5 D3 D1 15 FE 5E A8 F5  6F E9 D2 65 59 F1 67 E5
+                            97 A7 FA C3 18 00 2D 00  02 01 01 00 2B 00 0B 0A
                             7F 1C 7F 17 03 03 03 02  03 01 00 0A 00 08 00 06
                             00 1D 00 17 00 18
                         </originalValue>
@@ -1031,12 +1030,12 @@
                         <originalValue>03 03</originalValue>
                     </protocolVersion>
                     <unixTime>
-                        <originalValue>7A DF AE 9E</originalValue>
+                        <originalValue>7B E6 CF 22</originalValue>
                     </unixTime>
                     <random>
                         <originalValue>
-                            7A DF AE 9E BB B7 AA 10  27 00 1C 51 C2 03 23 13
-                            26 AC 0B FE D5 9A E6 CE  52 6E 03 9B 8A BC 4A 8E
+                            7B E6 CF 22 F1 25 72 98  3A 1B 41 0E 12 DE 51 D6
+                            5B F0 CB 4D BB 42 0F DA  A7 94 A3 43 DF 22 E7 CC
                         </originalValue>
                     </random>
                     <sessionIdLength>
@@ -1044,8 +1043,8 @@
                     </sessionIdLength>
                     <sessionId>
                         <originalValue>
-                            16 6E CC CF 4E AF E0 3E  76 19 9C 31 25 35 16 14
-                            57 EF EA 08 35 34 DF D6  28 41 38 C8 A2 41 29 F3
+                            CA 32 25 BD 05 06 79 A7  72 71 A3 41 11 84 0A 02
+                            C8 92 2B 79 69 5C E3 B6  C1 40 CB 39 DC 3D EA EB
                         </originalValue>
                     </sessionId>
                     <compressionLength>
@@ -1070,38 +1069,38 @@
                 <Record>
                     <cleanProtocolMessageBytes>
                         <originalValue>
-                            01 00 00 E3 03 03 7A DF  AE 9E BB B7 AA 10 27 00
-                            1C 51 C2 03 23 13 26 AC  0B FE D5 9A E6 CE 52 6E
-                            03 9B 8A BC 4A 8E 20 16  6E CC CF 4E AF E0 3E 76
-                            19 9C 31 25 35 16 14 57  EF EA 08 35 34 DF D6 28
-                            41 38 C8 A2 41 29 F3 00  24 13 01 13 02 13 03 C0
+                            01 00 00 E3 03 03 7B E6  CF 22 F1 25 72 98 3A 1B
+                            41 0E 12 DE 51 D6 5B F0  CB 4D BB 42 0F DA A7 94
+                            A3 43 DF 22 E7 CC 20 CA  32 25 BD 05 06 79 A7 72
+                            71 A3 41 11 84 0A 02 C8  92 2B 79 69 5C E3 B6 C1
+                            40 CB 39 DC 3D EA EB 00  24 13 01 13 02 13 03 C0
                             2B C0 2F C0 2C C0 30 CC  A9 CC A8 C0 09 C0 13 C0
                             0A C0 14 00 9C 00 9D 00  2F 00 35 00 0A 01 00 00
                             76 FF 01 00 01 00 00 17  00 00 00 23 00 00 00 0D
                             00 14 00 12 04 03 08 04  04 01 05 03 08 05 05 01
                             08 06 06 01 02 01 00 0B  00 02 01 00 00 33 00 26
-                            00 24 00 1D 00 20 99 CA  24 3D 2C F4 DE 7B 00 C8
-                            4B 8E 33 21 67 DF 7B C3  6C 3A E6 E0 86 3E 77 10
-                            6E 4A A5 48 55 3C 00 2D  00 02 01 01 00 2B 00 0B
+                            00 24 00 1D 00 20 74 73  4F 40 BD 30 AF AD 64 98
+                            7A A5 D3 D1 15 FE 5E A8  F5 6F E9 D2 65 59 F1 67
+                            E5 97 A7 FA C3 18 00 2D  00 02 01 01 00 2B 00 0B
                             0A 7F 1C 7F 17 03 03 03  02 03 01 00 0A 00 08 00
                             06 00 1D 00 17 00 18
                         </originalValue>
                     </cleanProtocolMessageBytes>
                     <completeRecordBytes>
                         <originalValue>
-                            16 03 01 00 E7 01 00 00  E3 03 03 7A DF AE 9E BB
-                            B7 AA 10 27 00 1C 51 C2  03 23 13 26 AC 0B FE D5
-                            9A E6 CE 52 6E 03 9B 8A  BC 4A 8E 20 16 6E CC CF
-                            4E AF E0 3E 76 19 9C 31  25 35 16 14 57 EF EA 08
-                            35 34 DF D6 28 41 38 C8  A2 41 29 F3 00 24 13 01
+                            16 03 01 00 E7 01 00 00  E3 03 03 7B E6 CF 22 F1
+                            25 72 98 3A 1B 41 0E 12  DE 51 D6 5B F0 CB 4D BB
+                            42 0F DA A7 94 A3 43 DF  22 E7 CC 20 CA 32 25 BD
+                            05 06 79 A7 72 71 A3 41  11 84 0A 02 C8 92 2B 79
+                            69 5C E3 B6 C1 40 CB 39  DC 3D EA EB 00 24 13 01
                             13 02 13 03 C0 2B C0 2F  C0 2C C0 30 CC A9 CC A8
                             C0 09 C0 13 C0 0A C0 14  00 9C 00 9D 00 2F 00 35
                             00 0A 01 00 00 76 FF 01  00 01 00 00 17 00 00 00
                             23 00 00 00 0D 00 14 00  12 04 03 08 04 04 01 05
                             03 08 05 05 01 08 06 06  01 02 01 00 0B 00 02 01
-                            00 00 33 00 26 00 24 00  1D 00 20 99 CA 24 3D 2C
-                            F4 DE 7B 00 C8 4B 8E 33  21 67 DF 7B C3 6C 3A E6
-                            E0 86 3E 77 10 6E 4A A5  48 55 3C 00 2D 00 02 01
+                            00 00 33 00 26 00 24 00  1D 00 20 74 73 4F 40 BD
+                            30 AF AD 64 98 7A A5 D3  D1 15 FE 5E A8 F5 6F E9
+                            D2 65 59 F1 67 E5 97 A7  FA C3 18 00 2D 00 02 01
                             01 00 2B 00 0B 0A 7F 1C  7F 17 03 03 03 02 03 01
                             00 0A 00 08 00 06 00 1D  00 17 00 18
                         </originalValue>
@@ -1109,19 +1108,19 @@
                     <contentMessageType>HANDSHAKE</contentMessageType>
                     <protocolMessageBytes>
                         <originalValue>
-                            01 00 00 E3 03 03 7A DF  AE 9E BB B7 AA 10 27 00
-                            1C 51 C2 03 23 13 26 AC  0B FE D5 9A E6 CE 52 6E
-                            03 9B 8A BC 4A 8E 20 16  6E CC CF 4E AF E0 3E 76
-                            19 9C 31 25 35 16 14 57  EF EA 08 35 34 DF D6 28
-                            41 38 C8 A2 41 29 F3 00  24 13 01 13 02 13 03 C0
+                            01 00 00 E3 03 03 7B E6  CF 22 F1 25 72 98 3A 1B
+                            41 0E 12 DE 51 D6 5B F0  CB 4D BB 42 0F DA A7 94
+                            A3 43 DF 22 E7 CC 20 CA  32 25 BD 05 06 79 A7 72
+                            71 A3 41 11 84 0A 02 C8  92 2B 79 69 5C E3 B6 C1
+                            40 CB 39 DC 3D EA EB 00  24 13 01 13 02 13 03 C0
                             2B C0 2F C0 2C C0 30 CC  A9 CC A8 C0 09 C0 13 C0
                             0A C0 14 00 9C 00 9D 00  2F 00 35 00 0A 01 00 00
                             76 FF 01 00 01 00 00 17  00 00 00 23 00 00 00 0D
                             00 14 00 12 04 03 08 04  04 01 05 03 08 05 05 01
                             08 06 06 01 02 01 00 0B  00 02 01 00 00 33 00 26
-                            00 24 00 1D 00 20 99 CA  24 3D 2C F4 DE 7B 00 C8
-                            4B 8E 33 21 67 DF 7B C3  6C 3A E6 E0 86 3E 77 10
-                            6E 4A A5 48 55 3C 00 2D  00 02 01 01 00 2B 00 0B
+                            00 24 00 1D 00 20 74 73  4F 40 BD 30 AF AD 64 98
+                            7A A5 D3 D1 15 FE 5E A8  F5 6F E9 D2 65 59 F1 67
+                            E5 97 A7 FA C3 18 00 2D  00 02 01 01 00 2B 00 0B
                             0A 7F 1C 7F 17 03 03 03  02 03 01 00 0A 00 08 00
                             06 00 1D 00 17 00 18
                         </originalValue>
@@ -1136,19 +1135,19 @@
                         </mac>
                         <nonMetaDataMaced>
                             <originalValue>
-                                01 00 00 E3 03 03 7A DF  AE 9E BB B7 AA 10 27 00
-                                1C 51 C2 03 23 13 26 AC  0B FE D5 9A E6 CE 52 6E
-                                03 9B 8A BC 4A 8E 20 16  6E CC CF 4E AF E0 3E 76
-                                19 9C 31 25 35 16 14 57  EF EA 08 35 34 DF D6 28
-                                41 38 C8 A2 41 29 F3 00  24 13 01 13 02 13 03 C0
+                                01 00 00 E3 03 03 7B E6  CF 22 F1 25 72 98 3A 1B
+                                41 0E 12 DE 51 D6 5B F0  CB 4D BB 42 0F DA A7 94
+                                A3 43 DF 22 E7 CC 20 CA  32 25 BD 05 06 79 A7 72
+                                71 A3 41 11 84 0A 02 C8  92 2B 79 69 5C E3 B6 C1
+                                40 CB 39 DC 3D EA EB 00  24 13 01 13 02 13 03 C0
                                 2B C0 2F C0 2C C0 30 CC  A9 CC A8 C0 09 C0 13 C0
                                 0A C0 14 00 9C 00 9D 00  2F 00 35 00 0A 01 00 00
                                 76 FF 01 00 01 00 00 17  00 00 00 23 00 00 00 0D
                                 00 14 00 12 04 03 08 04  04 01 05 03 08 05 05 01
                                 08 06 06 01 02 01 00 0B  00 02 01 00 00 33 00 26
-                                00 24 00 1D 00 20 99 CA  24 3D 2C F4 DE 7B 00 C8
-                                4B 8E 33 21 67 DF 7B C3  6C 3A E6 E0 86 3E 77 10
-                                6E 4A A5 48 55 3C 00 2D  00 02 01 01 00 2B 00 0B
+                                00 24 00 1D 00 20 74 73  4F 40 BD 30 AF AD 64 98
+                                7A A5 D3 D1 15 FE 5E A8  F5 6F E9 D2 65 59 F1 67
+                                E5 97 A7 FA C3 18 00 2D  00 02 01 01 00 2B 00 0B
                                 0A 7F 1C 7F 17 03 03 03  02 03 01 00 0A 00 08 00
                                 06 00 1D 00 17 00 18
                             </originalValue>
@@ -1161,19 +1160,19 @@
                         </paddingLength>
                         <plainRecordBytes>
                             <originalValue>
-                                01 00 00 E3 03 03 7A DF  AE 9E BB B7 AA 10 27 00
-                                1C 51 C2 03 23 13 26 AC  0B FE D5 9A E6 CE 52 6E
-                                03 9B 8A BC 4A 8E 20 16  6E CC CF 4E AF E0 3E 76
-                                19 9C 31 25 35 16 14 57  EF EA 08 35 34 DF D6 28
-                                41 38 C8 A2 41 29 F3 00  24 13 01 13 02 13 03 C0
+                                01 00 00 E3 03 03 7B E6  CF 22 F1 25 72 98 3A 1B
+                                41 0E 12 DE 51 D6 5B F0  CB 4D BB 42 0F DA A7 94
+                                A3 43 DF 22 E7 CC 20 CA  32 25 BD 05 06 79 A7 72
+                                71 A3 41 11 84 0A 02 C8  92 2B 79 69 5C E3 B6 C1
+                                40 CB 39 DC 3D EA EB 00  24 13 01 13 02 13 03 C0
                                 2B C0 2F C0 2C C0 30 CC  A9 CC A8 C0 09 C0 13 C0
                                 0A C0 14 00 9C 00 9D 00  2F 00 35 00 0A 01 00 00
                                 76 FF 01 00 01 00 00 17  00 00 00 23 00 00 00 0D
                                 00 14 00 12 04 03 08 04  04 01 05 03 08 05 05 01
                                 08 06 06 01 02 01 00 0B  00 02 01 00 00 33 00 26
-                                00 24 00 1D 00 20 99 CA  24 3D 2C F4 DE 7B 00 C8
-                                4B 8E 33 21 67 DF 7B C3  6C 3A E6 E0 86 3E 77 10
-                                6E 4A A5 48 55 3C 00 2D  00 02 01 01 00 2B 00 0B
+                                00 24 00 1D 00 20 74 73  4F 40 BD 30 AF AD 64 98
+                                7A A5 D3 D1 15 FE 5E A8  F5 6F E9 D2 65 59 F1 67
+                                E5 97 A7 FA C3 18 00 2D  00 02 01 01 00 2B 00 0B
                                 0A 7F 1C 7F 17 03 03 03  02 03 01 00 0A 00 08 00
                                 06 00 1D 00 17 00 18
                             </originalValue>
@@ -1183,19 +1182,19 @@
                         </sequenceNumber>
                         <unpaddedRecordBytes>
                             <originalValue>
-                                01 00 00 E3 03 03 7A DF  AE 9E BB B7 AA 10 27 00
-                                1C 51 C2 03 23 13 26 AC  0B FE D5 9A E6 CE 52 6E
-                                03 9B 8A BC 4A 8E 20 16  6E CC CF 4E AF E0 3E 76
-                                19 9C 31 25 35 16 14 57  EF EA 08 35 34 DF D6 28
-                                41 38 C8 A2 41 29 F3 00  24 13 01 13 02 13 03 C0
+                                01 00 00 E3 03 03 7B E6  CF 22 F1 25 72 98 3A 1B
+                                41 0E 12 DE 51 D6 5B F0  CB 4D BB 42 0F DA A7 94
+                                A3 43 DF 22 E7 CC 20 CA  32 25 BD 05 06 79 A7 72
+                                71 A3 41 11 84 0A 02 C8  92 2B 79 69 5C E3 B6 C1
+                                40 CB 39 DC 3D EA EB 00  24 13 01 13 02 13 03 C0
                                 2B C0 2F C0 2C C0 30 CC  A9 CC A8 C0 09 C0 13 C0
                                 0A C0 14 00 9C 00 9D 00  2F 00 35 00 0A 01 00 00
                                 76 FF 01 00 01 00 00 17  00 00 00 23 00 00 00 0D
                                 00 14 00 12 04 03 08 04  04 01 05 03 08 05 05 01
                                 08 06 06 01 02 01 00 0B  00 02 01 00 00 33 00 26
-                                00 24 00 1D 00 20 99 CA  24 3D 2C F4 DE 7B 00 C8
-                                4B 8E 33 21 67 DF 7B C3  6C 3A E6 E0 86 3E 77 10
-                                6E 4A A5 48 55 3C 00 2D  00 02 01 01 00 2B 00 0B
+                                00 24 00 1D 00 20 74 73  4F 40 BD 30 AF AD 64 98
+                                7A A5 D3 D1 15 FE 5E A8  F5 6F E9 D2 65 59 F1 67
+                                E5 97 A7 FA C3 18 00 2D  00 02 01 01 00 2B 00 0B
                                 0A 7F 1C 7F 17 03 03 03  02 03 01 00 0A 00 08 00
                                 06 00 1D 00 17 00 18
                             </originalValue>
