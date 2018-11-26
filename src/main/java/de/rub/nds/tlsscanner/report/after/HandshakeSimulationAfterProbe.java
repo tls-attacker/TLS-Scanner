@@ -81,12 +81,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             reallySuccessful = false;
         }
         if (isPublicKeyLengthRsaNotAccepted(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_RSA_NOT_ACCEPTED.getReason() + " - supported lengths: "
+            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_RSA_NOT_ACCEPTED.getReason() + " - supported rsa lengths: "
                     + simulatedClient.getSupportedRsaKeyLengthList());
             reallySuccessful = false;
         }
         if (isPublicKeyLengthDhNotAccepted(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_DH_NOT_ACCEPTED.getReason() + " - supported lengths: "
+            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_DH_NOT_ACCEPTED.getReason() + " - supported dh lengths: "
                     + simulatedClient.getSupportedDheKeyLengthList());
             reallySuccessful = false;
         }
