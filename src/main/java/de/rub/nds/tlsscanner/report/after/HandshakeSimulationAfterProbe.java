@@ -180,6 +180,9 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         if (isVulnerable(report, simulatedClient)) {
             connectionInsecure = true;
         }
+        if (isPublicKeyLengthToSmall(simulatedClient)) {
+            connectionInsecure = true;
+        }
         simulatedClient.setConnectionInsecure(connectionInsecure);
     }
 
@@ -212,6 +215,24 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             }
         }
         return isVulnerable;
+    }
+    
+    private boolean isPublicKeyLengthToSmall(SimulatedClient simulatedClient) {
+        Integer pubKey = Integer.parseInt(simulatedClient.getServerPublicKeyLength());
+        Integer minRsa = 1024;
+        Integer minDh = 1024;
+        Integer minEcdh = 160;
+        if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA") && pubKey <= minRsa) {
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - rsa > " + minRsa);
+            return true;
+        } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH") && pubKey <= minDh) {
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - dh > " + minDh);
+            return true;
+        } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH") && pubKey <= minEcdh) {
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - ecdh > " + minEcdh);
+            return true;
+        }
+        return false;
     }
 
     private void checkIfConnectionIsRfc7918Secure(SimulatedClient simulatedClient) {
