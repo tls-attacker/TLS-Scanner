@@ -264,14 +264,17 @@ public class SiteReportPrinter {
     }
 
     private String getServerPublicKeyLengthColor(SimulatedClient simulatedClient) {
-        if (simulatedClient.getInsecureReasons() != null) {
-            for (String reason : simulatedClient.getInsecureReasons()) {
-                if (reason.contains(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason())) {
-                    return getRedString(simulatedClient.getServerPublicKeyLength(), "%s");
+        if (simulatedClient.getServerPublicKeyLength() != null) {
+            if (simulatedClient.getInsecureReasons() != null) {
+                for (String reason : simulatedClient.getInsecureReasons()) {
+                    if (reason.contains(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason())) {
+                        return getRedString(simulatedClient.getServerPublicKeyLength(), "%s");
+                    }
                 }
             }
+            return getGreenString(simulatedClient.getServerPublicKeyLength(), "%s");
         }
-        return getGreenString(simulatedClient.getServerPublicKeyLength(), "%s");
+        return getBlackString(simulatedClient.getServerPublicKeyLength(), "%s");
     }
 
     private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String value) {
