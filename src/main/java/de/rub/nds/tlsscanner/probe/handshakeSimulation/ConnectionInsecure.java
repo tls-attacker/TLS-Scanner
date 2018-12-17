@@ -11,8 +11,7 @@ public enum ConnectionInsecure {
     PADDING_ORACLE ("connection is vulnerable to padding oracle"),
     BLEICHENBACHER ("connection is vulnerable to bleichenbacher"),
     CRIME ("connection is vulnerable to crime"),
-    SWEET32 ("connection is vulnerable to sweet32"),
-    UNKNOWN ("reason can not be specified");
+    SWEET32 ("connection is vulnerable to sweet32");
     
     private final String reason;
     
