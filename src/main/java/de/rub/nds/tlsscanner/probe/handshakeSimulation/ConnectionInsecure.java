@@ -6,12 +6,12 @@
 package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 
 public enum ConnectionInsecure {
-    CIPHERSUITE_GRADE_LOW ("grade of the selected ciphersuite is low"),
-    PUBLIC_KEY_LENGTH_TOO_SMALL ("server public key length is too small (ECRYPT-CSA recommendations 2018)"),
-    PADDING_ORACLE ("connection is vulnerable to padding oracle"),
-    BLEICHENBACHER ("connection is vulnerable to bleichenbacher"),
-    CRIME ("connection is vulnerable to crime"),
-    SWEET32 ("connection is vulnerable to sweet32");
+    CIPHERSUITE_GRADE_LOW ("Grade of the selected ciphersuite is low"),
+    PUBLIC_KEY_LENGTH_TOO_SMALL ("Server public key parameter is too small (ECRYPT-CSA recommendations 2018)"),
+    PADDING_ORACLE ("Connection is vulnerable to padding oracle"),
+    BLEICHENBACHER ("Connection is vulnerable to bleichenbacher"),
+    CRIME ("Connection is vulnerable to crime"),
+    SWEET32 ("Connection is vulnerable to sweet32");
     
     private final String reason;
     

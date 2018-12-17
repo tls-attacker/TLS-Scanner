@@ -6,12 +6,12 @@
 package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 
 public enum HandshakeFailed {
-    PROTOCOL_MISMATCH ("client and server do not support a common tls protocol version"),
-    CIPHERSUITE_MISMATCH ("client and server do not have a single ciphersuite in common"),
-    CIPHERSUITE_FORBIDDEN ("client does not support forbidden ciphersuites for the selected protocol version"),
-    PUBLIC_KEY_LENGTH_RSA_NOT_ACCEPTED ("client does not support the length of the rsa public key of the server"),
-    PUBLIC_KEY_LENGTH_DH_NOT_ACCEPTED ("client does not support the length of the dh public key of the server"),
-    UNKNOWN ("reason can not be specified");
+    PROTOCOL_MISMATCH ("Client and server do not support a common tls protocol version"),
+    CIPHERSUITE_MISMATCH ("Client and server do not have a single ciphersuite in common"),
+    CIPHERSUITE_FORBIDDEN ("Client does not support forbidden ciphersuites for the selected protocol version"),
+    PUBLIC_KEY_LENGTH_RSA_NOT_ACCEPTED ("Client does not support the rsa parameter size"),
+    PUBLIC_KEY_LENGTH_DH_NOT_ACCEPTED ("Client does not support the dh parameter size"),
+    UNKNOWN ("Reason can not be specified");
     
     private final String reason;
     
