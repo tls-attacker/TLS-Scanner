@@ -89,19 +89,19 @@ public class SiteReportPrinter {
 
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
         if (report.getSimulatedClientList() != null) {
-            appendHSNormal(builder);
+            appendHsNormal(builder);
             if (detail == ScannerDetail.DETAILED) {
-                appendHSDetailed(builder);
+                appendHsDetailed(builder);
             } else if (detail == ScannerDetail.ALL) {
-                appendHSDetailed(builder);
-                appendHSAll(builder);
+                appendHsDetailed(builder);
+                appendHsAll(builder);
             }
         }
         return builder;
     }
 
-    private StringBuilder appendHSNormal(StringBuilder builder) {
-        prettyAppendHeading(builder, "TLS Handshake Simulation");
+    private StringBuilder appendHsNormal(StringBuilder builder) {
+        prettyAppendHeading(builder, "Handshake Simulation - Overview");
         prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
         String identifier;
         identifier = "Successful Handshakes";
@@ -129,31 +129,31 @@ public class SiteReportPrinter {
         } else {
             prettyAppendRed(builder, identifier, Integer.toString(report.getConnectionInsecureCounter()));
         }
-        prettyAppendHeading(builder, "TLS Handshake Simulation - default versions overview");
-        getClientTable(builder, true);
+        prettyAppendHeading(builder, "Handshake Simulation - Default Versions Table");
+        prettyAppendHsTable(builder, true);
         return builder;
     }
 
-    private StringBuilder appendHSDetailed(StringBuilder builder) {
-        prettyAppendHeading(builder, "TLS Handshake Simulation - all versions overview");
-        getClientTable(builder, false);
+    private StringBuilder appendHsDetailed(StringBuilder builder) {
+        prettyAppendHeading(builder, "Handshake Simulation - All Versions Table");
+        prettyAppendHsTable(builder, false);
         return builder;
     }
-
-    private StringBuilder getClientTable(StringBuilder builder, boolean defaultClient) {
+    
+    private StringBuilder prettyAppendHsTable1(StringBuilder builder, boolean defaultClient) {
         int counter = 0;
         prettyAppendHeading(builder, "Successful Handshakes");
-        prettyAppendHSDetailedRow(builder, "TLS Client", "TLS Version", "Ciphersuite", "Forward Secrecy", "Server Public Key Length (Bits)");
+        appendHsTableRowHeading(builder, "Client", "Version", "Ciphersuite", "Forward Secrecy", "Server Public Key");
         builder.append("\n");
         for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
             if (simulatedClient.getHandshakeSuccessful()) {
                 if (defaultClient) {
                     if (simulatedClient.isDefaultVersion()) {
-                        getClientTableRowSuccessful(builder, simulatedClient);
+                        appendHsTableRowSuccessful(builder, simulatedClient);
                         counter++;
                     }
                 } else {
-                    getClientTableRowSuccessful(builder, simulatedClient);
+                    appendHsTableRowSuccessful(builder, simulatedClient);
                     counter++;
                 }
             }
@@ -167,11 +167,11 @@ public class SiteReportPrinter {
             if (!simulatedClient.getHandshakeSuccessful()) {
                 if (defaultClient) {
                     if (simulatedClient.isDefaultVersion()) {
-                        getClientListFailed(builder, simulatedClient);
+                        appendHsTableRowFailed(builder, simulatedClient);
                         counter++;
                     }
                 } else {
-                    getClientListFailed(builder, simulatedClient);
+                    appendHsTableRowFailed(builder, simulatedClient);
                     counter++;
                 }
             }
@@ -182,20 +182,72 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder getClientTableRowSuccessful(StringBuilder builder, SimulatedClient simulatedClient) {
-        String clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
-        prettyAppendHSDetailedRow(builder, clientName, simulatedClient);
+    private StringBuilder prettyAppendHsTable(StringBuilder builder, boolean defaultClient) {
+        int counter = 0;
+        appendHsTableRowHeading(builder, "Client", "Version", "Ciphersuite", "Forward Secrecy", "Server Public Key");
+        builder.append("\n");
+        for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
+            if (simulatedClient.getHandshakeSuccessful()) {
+                if (defaultClient) {
+                    if (simulatedClient.isDefaultVersion()) {
+                        appendHsTableRowSuccessful(builder, simulatedClient);
+                        counter++;
+                    }
+                } else {
+                    appendHsTableRowSuccessful(builder, simulatedClient);
+                    counter++;
+                }
+            } else {
+                if (defaultClient) {
+                    if (simulatedClient.isDefaultVersion()) {
+                        appendHsTableRowFailed(builder, simulatedClient);
+                        counter++;
+                    }
+                } else {
+                    appendHsTableRowFailed(builder, simulatedClient);
+                    counter++;
+                }
+            }
+        }
+        if (counter == 0) {
+            prettyAppend(builder, "-");
+        }
         return builder;
     }
 
-    private StringBuilder getClientListFailed(StringBuilder builder, SimulatedClient simulatedClient) {
+    private StringBuilder appendHsTableRowHeading(StringBuilder builder, String tlsClient, String tlsVersion,
+            String ciphersuite, String forwardSecrecy, String keyLength) {
+        builder.append(String.format(hsClientFormat, tlsClient));
+        builder.append(String.format("| " + hsVersionFormat, tlsVersion));
+        builder.append(String.format("| " + hsCiphersuiteFormat, ciphersuite));
+        builder.append(String.format("| " + hsForwardSecrecyFormat, forwardSecrecy));
+        builder.append(String.format("| " + hsKeyLengthFormat, keyLength));
+        builder.append("\n");
+        return builder;
+    }
+
+    private StringBuilder appendHsTableRowSuccessful(StringBuilder builder, SimulatedClient simulatedClient) {
         String clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
-        String row = " - " + simulatedClient.getSelectedProtocolVersion() + ", " + simulatedClient.getSelectedCiphersuite()
-                + ", " + simulatedClient.getServerPublicKeyLength();
-        prettyAppendHSDetailedRow(builder, getRedString(clientName, "%s") + row);
+        builder.append(getClientColor(clientName, simulatedClient.getConnectionInsecure(), simulatedClient.getConnectionRfc7918Secure()));
+        builder.append("| ").append(getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), hsVersionFormat));
+        builder.append("| ").append(getCipherSuiteColor(simulatedClient.getSelectedCiphersuite(), hsCiphersuiteFormat));
+        builder.append("| ").append(getForwardSecrecyColor(simulatedClient.getForwardSecrecy()));
+        builder.append("| ").append(getServerPublicKeyParameterColor(simulatedClient));
+        builder.append("\n");
+        return builder;
+    }
+
+    private StringBuilder appendHsTableRowFailed(StringBuilder builder, SimulatedClient simulatedClient) {
+        String clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
+        String row = simulatedClient.getSelectedProtocolVersion() + ", " + simulatedClient.getSelectedCiphersuite()
+                + ", " + getServerPublicKeyParameterToPrint(simulatedClient);
+        builder.append(String.format("%s", getRedString(clientName, hsClientFormat)));
         for (String reason : simulatedClient.getFailReasons()) {
-            prettyAppendHSDetailedRow(builder, "-> Handshake failed: " + reason);
+            builder.append(String.format("| %s", getRedString(reason, hsVersionFormat)));
         }
+        builder.append("\n");
+        builder.append(String.format(hsClientFormat, ""));
+        builder.append(String.format("| " + hsVersionFormat, row));
         builder.append("\n");
         return builder;
     }
@@ -263,55 +315,44 @@ public class SiteReportPrinter {
         return fs;
     }
 
-    private String getServerPublicKeyLengthColor(SimulatedClient simulatedClient) {
-        if (simulatedClient.getServerPublicKeyLength() != null) {
+    private String getServerPublicKeyParameterColor(SimulatedClient simulatedClient) {
+        String pubKeyParam = getServerPublicKeyParameterToPrint(simulatedClient);
+        if (simulatedClient.getServerPublicKeyParameter() != null) {
             if (simulatedClient.getInsecureReasons() != null) {
                 for (String reason : simulatedClient.getInsecureReasons()) {
                     if (reason.contains(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason())) {
-                        return getRedString(simulatedClient.getServerPublicKeyLength(), "%s");
+                        return getRedString(pubKeyParam, "%s");
                     }
                 }
             }
-            return getGreenString(simulatedClient.getServerPublicKeyLength(), "%s");
+            return getGreenString(pubKeyParam, "%s");
         }
-        return getBlackString(simulatedClient.getServerPublicKeyLength(), "%s");
+        return getBlackString(pubKeyParam, "%s");
+    }
+    
+    private String getServerPublicKeyParameterToPrint(SimulatedClient simulatedClient) {
+        CipherSuite suite = simulatedClient.getSelectedCiphersuite();
+        Integer param = simulatedClient.getServerPublicKeyParameter();
+        if (suite != null && param != null) {
+            if (suite.isKeyExchangeRsa()) {
+                return param + " bit - rsa";
+            } else if (suite.isKeyExchangeDh()) {
+                return param + " bit - dh";
+            } else if (suite.isKeyExchangeEcdh()) {
+                return param + " bit - ecdh - " + simulatedClient.getSelectedNamedGroup();
+            }
+        }
+        return null;
     }
 
-    private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String value) {
-        builder.append(value);
-        builder.append("\n");
-        return builder;
-    }
-
-    private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String tlsClient, String tlsVersion,
-            String ciphersuite, String forwardSecrecy, String keyLength) {
-        builder.append(String.format(hsClientFormat, tlsClient));
-        builder.append(String.format("| " + hsVersionFormat, tlsVersion));
-        builder.append(String.format("| " + hsCiphersuiteFormat, ciphersuite));
-        builder.append(String.format("| " + hsForwardSecrecyFormat, forwardSecrecy));
-        builder.append(String.format("| " + hsKeyLengthFormat, keyLength));
-        builder.append("\n");
-        return builder;
-    }
-
-    private StringBuilder prettyAppendHSDetailedRow(StringBuilder builder, String tlsClient, SimulatedClient simulatedClient) {
-        builder.append(getClientColor(tlsClient, simulatedClient.getConnectionInsecure(), simulatedClient.getConnectionRfc7918Secure()));
-        builder.append("| ").append(getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), hsVersionFormat));
-        builder.append("| ").append(getCipherSuiteColor(simulatedClient.getSelectedCiphersuite(), hsCiphersuiteFormat));
-        builder.append("| ").append(getForwardSecrecyColor(simulatedClient.getForwardSecrecy()));
-        builder.append("| ").append(getServerPublicKeyLengthColor(simulatedClient));
-        builder.append("\n");
-        return builder;
-    }
-
-    private StringBuilder appendHSAll(StringBuilder builder) {
-        prettyAppendHeading(builder, "TLS Handshake Simulation - all versions detailed");
+    private StringBuilder appendHsAll(StringBuilder builder) {
+        prettyAppendHeading(builder, "Handshake Simulation - All Versions Detailed List");
         for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
             prettyAppendHeading(builder, simulatedClient.getType() + ":" + simulatedClient.getVersion());
-            prettyAppendGreenRed(builder, "TLS Handshake Successful", simulatedClient.getHandshakeSuccessful());
+            prettyAppendGreenRed(builder, "Handshake Successful", simulatedClient.getHandshakeSuccessful());
             if (!simulatedClient.getHandshakeSuccessful()) {
                 for (String reason : simulatedClient.getFailReasons()) {
-                    prettyAppend(builder, "", reason);
+                    prettyAppend(builder, "", getRedString(reason, "%s"));
                 }
             }
             builder.append("\n");
@@ -330,10 +371,7 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Selected Ciphersuite", getCipherSuiteColor(simulatedClient.getSelectedCiphersuite(), "%s"));
             prettyAppendGreenRed(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy());
             builder.append("\n");
-            prettyAppend(builder, "Server Public Key Length (Bits)", getServerPublicKeyLengthColor(simulatedClient));
-            if (simulatedClient.getSelectedCiphersuite() != null && simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH")) {
-                prettyAppend(builder, "Named Group", simulatedClient.getSelectedNamedGroup());
-            }
+            prettyAppend(builder, "Server Public Key", getServerPublicKeyParameterColor(simulatedClient));
             builder.append("\n");
             if (simulatedClient.getSelectedCompressionMethod() != null) {
                 prettyAppend(builder, "Selected Compression Method", simulatedClient.getSelectedCompressionMethod().toString());

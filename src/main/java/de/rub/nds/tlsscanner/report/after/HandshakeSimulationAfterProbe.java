@@ -81,12 +81,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             reallySuccessful = false;
         }
         if (isPublicKeyLengthRsaNotAccepted(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_RSA_NOT_ACCEPTED.getReason() + " - supported rsa lengths: "
+            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_RSA_NOT_ACCEPTED.getReason() + " - supported sizes: "
                     + simulatedClient.getSupportedRsaKeyLengthList());
             reallySuccessful = false;
         }
         if (isPublicKeyLengthDhNotAccepted(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_DH_NOT_ACCEPTED.getReason() + " - supported dh lengths: "
+            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_DH_NOT_ACCEPTED.getReason() + " - supported sizes: "
                     + simulatedClient.getSupportedDheKeyLengthList());
             reallySuccessful = false;
         }
@@ -105,8 +105,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
 
     private boolean isPublicKeyLengthRsaNotAccepted(SimulatedClient simulatedClient) {
         List<Integer> supportedKeyLengths;
-        Integer publicKeyLength = Integer.parseInt(simulatedClient.getServerPublicKeyLength());
-        if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")
+        Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
+        if (simulatedClient.getSelectedCiphersuite().isKeyExchangeRsa()
                 && simulatedClient.getSupportedRsaKeyLengthList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedRsaKeyLengthList();
             if (publicKeyLength < supportedKeyLengths.get(0) || 
@@ -119,8 +119,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     
     private boolean isPublicKeyLengthDhNotAccepted(SimulatedClient simulatedClient) {
         List<Integer> supportedKeyLengths;
-        Integer publicKeyLength = Integer.parseInt(simulatedClient.getServerPublicKeyLength());
-        if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH")
+        Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
+        if (simulatedClient.getSelectedCiphersuite().isKeyExchangeDh()
                 && simulatedClient.getSupportedDheKeyLengthList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedDheKeyLengthList();
             if (publicKeyLength < supportedKeyLengths.get(0) || 
@@ -198,7 +198,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             isVulnerable = true;
         }
         if (report.getBleichenbacherVulnerable() != null && report.getBleichenbacherVulnerable()
-                && simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
+                && simulatedClient.getSelectedCiphersuite().isKeyExchangeRsa()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.BLEICHENBACHER.getReason());
             isVulnerable = true;
         }
@@ -218,17 +218,17 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
     
     private boolean isPublicKeyLengthToSmall(SimulatedClient simulatedClient) {
-        Integer pubKey = Integer.parseInt(simulatedClient.getServerPublicKeyLength());
+        Integer pubKey = simulatedClient.getServerPublicKeyParameter();
         Integer minRsa = 1024;
         Integer minDh = 1024;
         Integer minEcdh = 160;
-        if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA") && pubKey <= minRsa) {
+        if (simulatedClient.getSelectedCiphersuite().isKeyExchangeRsa() && pubKey <= minRsa) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - rsa > " + minRsa);
             return true;
-        } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_DH") && pubKey <= minDh) {
+        } else if (simulatedClient.getSelectedCiphersuite().isKeyExchangeDh() && pubKey <= minDh) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - dh > " + minDh);
             return true;
-        } else if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_ECDH") && pubKey <= minEcdh) {
+        } else if (simulatedClient.getSelectedCiphersuite().isKeyExchangeEcdh() && pubKey <= minEcdh) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - ecdh > " + minEcdh);
             return true;
         }
@@ -238,13 +238,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private void checkIfConnectionIsRfc7918Secure(SimulatedClient simulatedClient) {
         boolean isRfc7918Secure = false;
         CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
-        String keyLengthString = simulatedClient.getServerPublicKeyLength();
-        if (cipherSuite != null && keyLengthString != null) {
-            Integer keyLength = Integer.parseInt(keyLengthString);
+        Integer pubKey = simulatedClient.getServerPublicKeyParameter();
+        if (cipherSuite != null && pubKey != null) {
             if (isProtocolVersionWhitelisted(simulatedClient)
                     && isSymmetricCipherRfc7918Whitelisted(cipherSuite)
                     && isKeyExchangeMethodWhitelisted(cipherSuite)
-                    && isKeyLengthWhitelisted(cipherSuite, keyLength)) {
+                    && isKeyLengthWhitelisted(cipherSuite, pubKey)) {
                 isRfc7918Secure = true;
             }
         }
@@ -274,12 +273,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isKeyLengthWhitelisted(CipherSuite cipherSuite, Integer keyLength) {
-        if (cipherSuite.name().contains("TLS_DHE")) {
+        if (cipherSuite.isKeyExchangeDh() && cipherSuite.isKeyExchangeEphemeral()) {
             if (keyLength >= 3072) {
                 return true;
             }
         }
-        if (cipherSuite.name().contains("TLS_ECDHE")) {
+        if (cipherSuite.isKeyExchangeEcdh() && cipherSuite.isKeyExchangeEphemeral()) {
             if (keyLength >= 256) {
                 return true;
             }

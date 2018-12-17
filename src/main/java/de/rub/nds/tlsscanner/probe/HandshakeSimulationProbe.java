@@ -154,35 +154,33 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     private void evaluateCertificate(TlsContext context, SimulatedClient simulatedClient) {
-        if (simulatedClient.getSelectedCiphersuite().name().contains("TLS_RSA")) {
-            simulatedClient.setServerPublicKeyLength(getRsaPublicKeyFromCert(context.getServerCertificate()));
+        if (simulatedClient.getSelectedCiphersuite().isKeyExchangeRsa()) {
+            simulatedClient.setServerPublicKeyParameter(getRsaPublicKeyFromCert(context.getServerCertificate()));
         }
     }
 
     private void evaluateServerKeyExchange(TlsContext context, SimulatedClient simulatedClient) {
         CipherSuite cipherSuite = context.getSelectedCipherSuite();
-        if (cipherSuite.name().contains("TLS_DH") && context.getServerDhPublicKey() != null) {
-            simulatedClient.setServerPublicKeyLength(Integer.toString(context.getServerDhModulus().bitLength()));
-        } else if (cipherSuite.name().contains("TLS_ECDH")) {
+        if (cipherSuite.isKeyExchangeDh() && context.getServerDhPublicKey() != null) {
+            simulatedClient.setServerPublicKeyParameter(context.getServerDhModulus().bitLength());
+        } else if (cipherSuite.isKeyExchangeEcdh()) {
             if (context.getSelectedGroup() != null) {
                 simulatedClient.setSelectedNamedGroup(context.getSelectedGroup().name());
                 if (context.getSelectedGroup().getCoordinateSizeInBit() != null) {
-                    simulatedClient.setServerPublicKeyLength(context.getSelectedGroup().getCoordinateSizeInBit().toString());
+                    simulatedClient.setServerPublicKeyParameter(context.getSelectedGroup().getCoordinateSizeInBit());
                 }
             }
-            if (simulatedClient.getServerPublicKeyLength() == null) {
+            if (simulatedClient.getServerPublicKeyParameter() == null) {
                 if (context.getServerEcPublicKey() != null) {
-                    simulatedClient.setServerPublicKeyLength(Integer.toString(context.getServerEcPublicKey().getByteX().length * 8));
-                } else {
-                    simulatedClient.setServerPublicKeyLength("according to named group: " + simulatedClient.getSelectedNamedGroup());
+                    simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getByteX().length * 8);
                 }
             }
-        } else if (cipherSuite.name().contains("TLS_PSK") && context.getServerPSKPublicKey() != null) {
-            simulatedClient.setServerPublicKeyLength(Integer.toString(context.getServerPSKPublicKey().bitLength()));
-        } else if (cipherSuite.name().contains("TLS_SRP") && context.getServerSRPPublicKey() != null) {
-            simulatedClient.setServerPublicKeyLength(Integer.toString(context.getServerSRPPublicKey().bitLength()));
+        } else if (cipherSuite.isKeyExchangePsk() && context.getServerPSKPublicKey() != null) {
+            simulatedClient.setServerPublicKeyParameter(context.getServerPSKPublicKey().bitLength());
+        } else if (cipherSuite.isKeyExchangeSrp() && context.getServerSRPPublicKey() != null) {
+            simulatedClient.setServerPublicKeyParameter(context.getServerSRPPublicKey().bitLength());
         } else if (cipherSuite.usesGOSTR3411() && context.getServerGostEc01PublicKey() != null) {
-            simulatedClient.setServerPublicKeyLength(Integer.toString(context.getServerGostEc01PublicKey().getByteX().length * 8));
+            simulatedClient.setServerPublicKeyParameter(context.getServerGostEc01PublicKey().getByteX().length * 8);
         }
     }
 
@@ -190,14 +188,14 @@ public class HandshakeSimulationProbe extends TlsProbe {
         simulatedClient.setHandshakeSuccessful(true);
     }
 
-    private String getRsaPublicKeyFromCert(Certificate certs) {
+    private Integer getRsaPublicKeyFromCert(Certificate certs) {
         try {
             if (certs != null) {
                 for (org.bouncycastle.asn1.x509.Certificate cert : certs.getCertificateList()) {
                     X509Certificate x509Cert = new X509CertificateObject(cert);
                     if (x509Cert.getPublicKey() != null) {
                         RSAPublicKey rsaPk = (RSAPublicKey) x509Cert.getPublicKey();
-                        return Integer.toString(rsaPk.getModulus().bitLength());
+                        return rsaPk.getModulus().bitLength();
                     }
                 }
             }

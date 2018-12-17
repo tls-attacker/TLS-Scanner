@@ -31,7 +31,7 @@ public class SimulatedClient {
     private String negotiatedExtensions = null;
     private String alpnAnnouncedProtocols = null;
     private String selectedNamedGroup = null;
-    private String serverPublicKeyLength = null;
+    private Integer serverPublicKeyParameter = null;
     private List<ProtocolVersion> supportedVersionList = null;
     private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList = null;
     private List<Integer> supportedRsaKeyLengthList = null;
@@ -184,12 +184,12 @@ public class SimulatedClient {
         this.selectedNamedGroup = selectedNamedGroup;
     }
 
-    public String getServerPublicKeyLength() {
-        return serverPublicKeyLength;
+    public Integer getServerPublicKeyParameter() {
+        return serverPublicKeyParameter;
     }
 
-    public void setServerPublicKeyLength(String serverPublicKeyLength) {
-        this.serverPublicKeyLength = serverPublicKeyLength;
+    public void setServerPublicKeyParameter(Integer serverPublicKeyParameter) {
+        this.serverPublicKeyParameter = serverPublicKeyParameter;
     }
 
     public List<ProtocolVersion> getSupportedVersionList() {
