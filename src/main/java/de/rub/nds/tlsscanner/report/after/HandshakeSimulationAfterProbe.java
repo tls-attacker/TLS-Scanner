@@ -5,6 +5,7 @@
  */
 package de.rub.nds.tlsscanner.report.after;
 
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -106,7 +107,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private boolean isPublicKeyLengthRsaNotAccepted(SimulatedClient simulatedClient) {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
-        if (simulatedClient.getSelectedCiphersuite().isKeyExchangeRsa()
+        if (AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite()).isKeyExchangeRsa()
                 && simulatedClient.getSupportedRsaKeyLengthList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedRsaKeyLengthList();
             if (publicKeyLength < supportedKeyLengths.get(0) || 
@@ -120,7 +121,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private boolean isPublicKeyLengthDhNotAccepted(SimulatedClient simulatedClient) {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
-        if (simulatedClient.getSelectedCiphersuite().isKeyExchangeDh()
+        if (AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite()).isKeyExchangeDh()
                 && simulatedClient.getSupportedDheKeyLengthList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedDheKeyLengthList();
             if (publicKeyLength < supportedKeyLengths.get(0) || 
@@ -191,14 +192,15 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isVulnerable(SiteReport report, SimulatedClient simulatedClient) {
+        CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
         boolean isVulnerable = false;
         if (report.getPaddingOracleVulnerable() != null && report.getPaddingOracleVulnerable()
-                && simulatedClient.getSelectedCiphersuite().isCBC()) {
+                && cipherSuite.isCBC()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PADDING_ORACLE.getReason());
             isVulnerable = true;
         }
         if (report.getBleichenbacherVulnerable() != null && report.getBleichenbacherVulnerable()
-                && simulatedClient.getSelectedCiphersuite().isKeyExchangeRsa()) {
+                && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeRsa()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.BLEICHENBACHER.getReason());
             isVulnerable = true;
         }
@@ -207,9 +209,9 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             isVulnerable = true;
         }
         if (report.getSweet32Vulnerable() != null && report.getSweet32Vulnerable()) {
-            if (simulatedClient.getSelectedCiphersuite().name().contains("3DES")
-                    || simulatedClient.getSelectedCiphersuite().name().contains("IDEA")
-                    || simulatedClient.getSelectedCiphersuite().name().contains("GOST")) {
+            if (cipherSuite.name().contains("3DES")
+                    || cipherSuite.name().contains("IDEA")
+                    || cipherSuite.name().contains("GOST")) {
                 simulatedClient.addToInsecureReasons(ConnectionInsecure.SWEET32.getReason());
                 isVulnerable = true;
             }
@@ -218,17 +220,18 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
     
     private boolean isPublicKeyLengthToSmall(SimulatedClient simulatedClient) {
+        CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
         Integer pubKey = simulatedClient.getServerPublicKeyParameter();
         Integer minRsa = 1024;
         Integer minDh = 1024;
         Integer minEcdh = 160;
-        if (simulatedClient.getSelectedCiphersuite().isKeyExchangeRsa() && pubKey <= minRsa) {
+        if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeRsa() && pubKey <= minRsa) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - rsa > " + minRsa);
             return true;
-        } else if (simulatedClient.getSelectedCiphersuite().isKeyExchangeDh() && pubKey <= minDh) {
+        } else if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh() && pubKey <= minDh) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - dh > " + minDh);
             return true;
-        } else if (simulatedClient.getSelectedCiphersuite().isKeyExchangeEcdh() && pubKey <= minEcdh) {
+        } else if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeEcdh() && pubKey <= minEcdh) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - ecdh > " + minEcdh);
             return true;
         }
@@ -273,12 +276,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isKeyLengthWhitelisted(CipherSuite cipherSuite, Integer keyLength) {
-        if (cipherSuite.isKeyExchangeDh() && cipherSuite.isKeyExchangeEphemeral()) {
+        if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeEcdh() && cipherSuite.isEphemeral()) {
             if (keyLength >= 3072) {
                 return true;
             }
         }
-        if (cipherSuite.isKeyExchangeEcdh() && cipherSuite.isKeyExchangeEphemeral()) {
+        if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeEcdh() && cipherSuite.isEphemeral()) {
             if (keyLength >= 256) {
                 return true;
             }

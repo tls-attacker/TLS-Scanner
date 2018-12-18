@@ -12,6 +12,7 @@ import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -334,11 +335,11 @@ public class SiteReportPrinter {
         CipherSuite suite = simulatedClient.getSelectedCiphersuite();
         Integer param = simulatedClient.getServerPublicKeyParameter();
         if (suite != null && param != null) {
-            if (suite.isKeyExchangeRsa()) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeRsa()) {
                 return param + " bit - rsa";
-            } else if (suite.isKeyExchangeDh()) {
+            } else if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeDh()) {
                 return param + " bit - dh";
-            } else if (suite.isKeyExchangeEcdh()) {
+            } else if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh()) {
                 return param + " bit - ecdh - " + simulatedClient.getSelectedNamedGroup();
             }
         }

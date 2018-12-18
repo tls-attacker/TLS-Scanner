@@ -7,8 +7,10 @@ package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
@@ -154,16 +156,17 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     private void evaluateCertificate(TlsContext context, SimulatedClient simulatedClient) {
-        if (simulatedClient.getSelectedCiphersuite().isKeyExchangeRsa()) {
+        if (AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite()).isKeyExchangeRsa()) {
             simulatedClient.setServerPublicKeyParameter(getRsaPublicKeyFromCert(context.getServerCertificate()));
         }
     }
 
     private void evaluateServerKeyExchange(TlsContext context, SimulatedClient simulatedClient) {
         CipherSuite cipherSuite = context.getSelectedCipherSuite();
-        if (cipherSuite.isKeyExchangeDh() && context.getServerDhPublicKey() != null) {
+        if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh() && 
+                context.getServerDhPublicKey() != null) {
             simulatedClient.setServerPublicKeyParameter(context.getServerDhModulus().bitLength());
-        } else if (cipherSuite.isKeyExchangeEcdh()) {
+        } else if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeEcdh()) {
             if (context.getSelectedGroup() != null) {
                 simulatedClient.setSelectedNamedGroup(context.getSelectedGroup().name());
                 if (context.getSelectedGroup().getCoordinateSizeInBit() != null) {
@@ -175,12 +178,6 @@ public class HandshakeSimulationProbe extends TlsProbe {
                     simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getByteX().length * 8);
                 }
             }
-        } else if (cipherSuite.isKeyExchangePsk() && context.getServerPSKPublicKey() != null) {
-            simulatedClient.setServerPublicKeyParameter(context.getServerPSKPublicKey().bitLength());
-        } else if (cipherSuite.isKeyExchangeSrp() && context.getServerSRPPublicKey() != null) {
-            simulatedClient.setServerPublicKeyParameter(context.getServerSRPPublicKey().bitLength());
-        } else if (cipherSuite.usesGOSTR3411() && context.getServerGostEc01PublicKey() != null) {
-            simulatedClient.setServerPublicKeyParameter(context.getServerGostEc01PublicKey().getByteX().length * 8);
         }
     }
 
