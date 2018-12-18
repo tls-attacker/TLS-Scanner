@@ -110,22 +110,22 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         if (AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite()).isKeyExchangeRsa()
                 && simulatedClient.getSupportedRsaKeyLengthList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedRsaKeyLengthList();
-            if (publicKeyLength < supportedKeyLengths.get(0) || 
-                    supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
+            if (publicKeyLength < supportedKeyLengths.get(0)
+                    || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
                 return true;
             }
         }
         return false;
     }
-    
+
     private boolean isPublicKeyLengthDhNotAccepted(SimulatedClient simulatedClient) {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
         if (AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite()).isKeyExchangeDh()
                 && simulatedClient.getSupportedDheKeyLengthList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedDheKeyLengthList();
-            if (publicKeyLength < supportedKeyLengths.get(0) || 
-                    supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
+            if (publicKeyLength < supportedKeyLengths.get(0)
+                    || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
                 return true;
             }
         }
@@ -218,7 +218,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         }
         return isVulnerable;
     }
-    
+
     private boolean isPublicKeyLengthToSmall(SimulatedClient simulatedClient) {
         CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
         Integer pubKey = simulatedClient.getServerPublicKeyParameter();
@@ -260,19 +260,19 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isSymmetricCipherRfc7918Whitelisted(CipherSuite cipherSuite) {
-        return cipherSuite.name().contains("AES_128_GCM_SHA256") || cipherSuite.name().contains("AES_256_GCM_SHA384");
+        return cipherSuite.isGCM();
     }
 
     private boolean isKeyExchangeMethodWhitelisted(CipherSuite cipherSuite) {
-        if (cipherSuite.name().contains("DHE_RSA")
-                || cipherSuite.name().contains("DHE_DSS")) {
-            return true;
+        switch (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)) {
+            case DHE_DSS:
+            case DHE_RSA:
+            case ECDHE_ECDSA:
+            case ECDHE_RSA:
+                return true;
+            default:
+                return false;
         }
-        if (cipherSuite.name().contains("ECDHE_RSA")
-                || cipherSuite.name().contains("ECDHE_ECDSA")) {
-            return true;
-        }
-        return false;
     }
 
     private boolean isKeyLengthWhitelisted(CipherSuite cipherSuite, Integer keyLength) {
