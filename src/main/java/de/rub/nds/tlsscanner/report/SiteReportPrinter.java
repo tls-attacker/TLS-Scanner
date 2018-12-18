@@ -140,7 +140,7 @@ public class SiteReportPrinter {
         prettyAppendHsTable(builder, false);
         return builder;
     }
-    
+
     private StringBuilder prettyAppendHsTable1(StringBuilder builder, boolean defaultClient) {
         int counter = 0;
         prettyAppendHeading(builder, "Successful Handshakes");
@@ -198,16 +198,14 @@ public class SiteReportPrinter {
                     appendHsTableRowSuccessful(builder, simulatedClient);
                     counter++;
                 }
-            } else {
-                if (defaultClient) {
-                    if (simulatedClient.isDefaultVersion()) {
-                        appendHsTableRowFailed(builder, simulatedClient);
-                        counter++;
-                    }
-                } else {
+            } else if (defaultClient) {
+                if (simulatedClient.isDefaultVersion()) {
                     appendHsTableRowFailed(builder, simulatedClient);
                     counter++;
                 }
+            } else {
+                appendHsTableRowFailed(builder, simulatedClient);
+                counter++;
             }
         }
         if (counter == 0) {
@@ -330,7 +328,7 @@ public class SiteReportPrinter {
         }
         return getBlackString(pubKeyParam, "%s");
     }
-    
+
     private String getServerPublicKeyParameterToPrint(SimulatedClient simulatedClient) {
         CipherSuite suite = simulatedClient.getSelectedCiphersuite();
         Integer param = simulatedClient.getServerPublicKeyParameter();
