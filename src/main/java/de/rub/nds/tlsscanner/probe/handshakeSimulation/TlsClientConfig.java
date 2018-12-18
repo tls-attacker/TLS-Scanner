@@ -25,8 +25,8 @@ public class TlsClientConfig implements Serializable {
     private WorkflowTrace trace;
     private List<ProtocolVersion> supportedVersionList;
     private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList;
-    private List<Integer> supportedRsaKeyLengthList;
-    private List<Integer> supportedDheKeyLengthList;
+    private List<Integer> supportedRsaKeySizeList;
+    private List<Integer> supportedDheKeySizeList;
     
     public void createTlsClientConfig(String type, String version) {
         this.type = type;
@@ -37,8 +37,8 @@ public class TlsClientConfig implements Serializable {
         this.supportedVersionList = null;
         this.versionAcceptForbiddenCiphersuiteList = null;
         this.supportedVersionList = null;
-        this.supportedRsaKeyLengthList = null;
-        this.supportedDheKeyLengthList = null;
+        this.supportedRsaKeySizeList = null;
+        this.supportedDheKeySizeList = null;
     }
     
     public String getType() {
@@ -89,19 +89,19 @@ public class TlsClientConfig implements Serializable {
         return versionAcceptForbiddenCiphersuiteList;
     }
 
-    public void setSupportedRsaKeyLengthList(List<Integer> supportedRsaKeyLengthList) {
-        this.supportedRsaKeyLengthList = supportedRsaKeyLengthList;
+    public void setSupportedRsaKeySizeList(List<Integer> supportedRsaKeySizeList) {
+        this.supportedRsaKeySizeList = supportedRsaKeySizeList;
     }
 
-    public List<Integer> getSupportedRsaKeyLengthList() {
-        return supportedRsaKeyLengthList;
+    public List<Integer> getSupportedRsaKeySizeList() {
+        return supportedRsaKeySizeList;
     }
 
-    public void setSupportedDheKeyLengthList(List<Integer> supportedDheKeyLengthList) {
-        this.supportedDheKeyLengthList = supportedDheKeyLengthList;
+    public void setSupportedDheKeySizeList(List<Integer> supportedDheKeySizeList) {
+        this.supportedDheKeySizeList = supportedDheKeySizeList;
     }
 
-    public List<Integer> getSupportedDheKeyLengthList() {
-        return supportedDheKeyLengthList;
+    public List<Integer> getSupportedDheKeySizeList() {
+        return supportedDheKeySizeList;
     }
 }

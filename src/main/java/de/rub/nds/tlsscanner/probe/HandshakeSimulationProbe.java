@@ -122,8 +122,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
         simulatedClient.setSupportedVersionList(tlsClientConfig.getSupportedVersionList());
         simulatedClient.setVersionAcceptForbiddenCiphersuiteList(tlsClientConfig.getVersionAcceptForbiddenCiphersuiteList());
-        simulatedClient.setSupportedRsaKeyLengthList(tlsClientConfig.getSupportedRsaKeyLengthList());
-        simulatedClient.setSupportedDheKeyLengthList(tlsClientConfig.getSupportedDheKeyLengthList());
+        simulatedClient.setSupportedRsaKeyLengthList(tlsClientConfig.getSupportedRsaKeySizeList());
+        simulatedClient.setSupportedDheKeyLengthList(tlsClientConfig.getSupportedDheKeySizeList());
     }
 
     private void evaluateReceivedMessages(State state, SimulatedClient simulatedClient) {
