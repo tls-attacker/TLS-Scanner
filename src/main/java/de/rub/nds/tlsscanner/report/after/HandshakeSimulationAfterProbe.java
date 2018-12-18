@@ -82,12 +82,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             reallySuccessful = false;
         }
         if (isPublicKeyLengthRsaNotAccepted(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_RSA_NOT_ACCEPTED.getReason() + " - supported sizes: "
+            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_SIZE_RSA_NOT_ACCEPTED.getReason() + " - supported sizes: "
                     + simulatedClient.getSupportedRsaKeyLengthList());
             reallySuccessful = false;
         }
         if (isPublicKeyLengthDhNotAccepted(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_LENGTH_DH_NOT_ACCEPTED.getReason() + " - supported sizes: "
+            simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_SIZE_DH_NOT_ACCEPTED.getReason() + " - supported sizes: "
                     + simulatedClient.getSupportedDheKeyLengthList());
             reallySuccessful = false;
         }
@@ -226,13 +226,13 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         Integer minDh = 1024;
         Integer minEcdh = 160;
         if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeRsa() && pubKey <= minRsa) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - rsa > " + minRsa);
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - rsa > " + minRsa);
             return true;
         } else if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh() && pubKey <= minDh) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - dh > " + minDh);
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - dh > " + minDh);
             return true;
         } else if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeEcdh() && pubKey <= minEcdh) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason() + " - ecdh > " + minEcdh);
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - ecdh > " + minEcdh);
             return true;
         }
         return false;

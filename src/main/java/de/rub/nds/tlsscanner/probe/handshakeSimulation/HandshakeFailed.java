@@ -9,8 +9,8 @@ public enum HandshakeFailed {
     PROTOCOL_MISMATCH ("Client and server do not support a common tls protocol version"),
     CIPHERSUITE_MISMATCH ("Client and server do not have a single ciphersuite in common"),
     CIPHERSUITE_FORBIDDEN ("Client does not support forbidden ciphersuites for the selected protocol version"),
-    PUBLIC_KEY_LENGTH_RSA_NOT_ACCEPTED ("Client does not support the rsa parameter size"),
-    PUBLIC_KEY_LENGTH_DH_NOT_ACCEPTED ("Client does not support the dh parameter size"),
+    PUBLIC_KEY_SIZE_RSA_NOT_ACCEPTED ("Client does not support the rsa parameter size"),
+    PUBLIC_KEY_SIZE_DH_NOT_ACCEPTED ("Client does not support the dh parameter size"),
     UNKNOWN ("Reason can not be specified");
     
     private final String reason;

@@ -321,7 +321,7 @@ public class SiteReportPrinter {
         if (simulatedClient.getServerPublicKeyParameter() != null) {
             if (simulatedClient.getInsecureReasons() != null) {
                 for (String reason : simulatedClient.getInsecureReasons()) {
-                    if (reason.contains(ConnectionInsecure.PUBLIC_KEY_LENGTH_TOO_SMALL.getReason())) {
+                    if (reason.contains(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason())) {
                         return getRedString(pubKeyParam, "%s");
                     }
                 }
