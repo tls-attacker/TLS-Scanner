@@ -260,7 +260,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isSymmetricCipherRfc7918Whitelisted(CipherSuite cipherSuite) {
-        return cipherSuite.isGCM();
+        return cipherSuite.isGCM() || cipherSuite.isChachaPoly();
     }
 
     private boolean isKeyExchangeMethodWhitelisted(CipherSuite cipherSuite) {
