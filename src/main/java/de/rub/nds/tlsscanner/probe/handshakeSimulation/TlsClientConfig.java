@@ -17,8 +17,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TlsClientConfig implements Serializable {
-    
-    private String type;   
+
+    private String type;
     private String version;
     private Boolean defaultVersion;
     private Config config;
@@ -27,7 +27,7 @@ public class TlsClientConfig implements Serializable {
     private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList;
     private List<Integer> supportedRsaKeySizeList;
     private List<Integer> supportedDheKeySizeList;
-    
+
     public void createTlsClientConfig(String type, String version) {
         this.type = type;
         this.version = version;
@@ -40,7 +40,7 @@ public class TlsClientConfig implements Serializable {
         this.supportedRsaKeySizeList = null;
         this.supportedDheKeySizeList = null;
     }
-    
+
     public String getType() {
         return type;
     }
@@ -60,15 +60,15 @@ public class TlsClientConfig implements Serializable {
     public void setConfig(Config config) {
         this.config = config;
     }
-    
+
     public Config getConfig() {
         return config;
     }
-    
+
     public void setTrace(WorkflowTrace trace) {
         this.trace = trace;
     }
-    
+
     public WorkflowTrace getTrace() {
         return trace;
     }
