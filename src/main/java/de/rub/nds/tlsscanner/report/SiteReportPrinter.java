@@ -145,25 +145,27 @@ public class SiteReportPrinter {
         int counter = 0;
         appendHsTableRowHeading(builder, "Client", "Version", "Ciphersuite", "Forward Secrecy", "Server Public Key");
         builder.append("\n");
-        for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
-            if (simulatedClient.getHandshakeSuccessful()) {
-                if (defaultClient) {
-                    if (simulatedClient.isDefaultVersion()) {
+        if (defaultClient) {
+            for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
+                if (simulatedClient.isDefaultVersion()) {
+                    if (simulatedClient.getHandshakeSuccessful()) {
                         appendHsTableRowSuccessful(builder, simulatedClient);
                         counter++;
+                    } else {
+                        appendHsTableRowFailed(builder, simulatedClient);
+                        counter++;
                     }
-                } else {
+                }
+            }
+        } else {
+            for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
+                if (simulatedClient.getHandshakeSuccessful()) {
                     appendHsTableRowSuccessful(builder, simulatedClient);
                     counter++;
-                }
-            } else if (defaultClient) {
-                if (simulatedClient.isDefaultVersion()) {
+                } else {
                     appendHsTableRowFailed(builder, simulatedClient);
                     counter++;
                 }
-            } else {
-                appendHsTableRowFailed(builder, simulatedClient);
-                counter++;
             }
         }
         if (counter == 0) {
@@ -196,8 +198,9 @@ public class SiteReportPrinter {
 
     private StringBuilder appendHsTableRowFailed(StringBuilder builder, SimulatedClient simulatedClient) {
         String clientName = simulatedClient.getType() + ":" + simulatedClient.getVersion();
-        String row = simulatedClient.getSelectedProtocolVersion() + ", " + simulatedClient.getSelectedCiphersuite()
-                + ", " + getServerPublicKeyParameterToPrint(simulatedClient);
+        String row = getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), "%s") + ", "
+                + getCipherSuiteColor(simulatedClient.getSelectedCiphersuite(), "%s") + ", "
+                + getServerPublicKeyParameterColor(simulatedClient);
         builder.append(String.format("%s", getRedString(clientName, hsClientFormat)));
         for (String reason : simulatedClient.getFailReasons()) {
             builder.append(String.format("| %s", getRedString(reason, hsVersionFormat)));
