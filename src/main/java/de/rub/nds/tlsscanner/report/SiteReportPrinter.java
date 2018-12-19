@@ -141,48 +141,6 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder prettyAppendHsTable1(StringBuilder builder, boolean defaultClient) {
-        int counter = 0;
-        prettyAppendHeading(builder, "Successful Handshakes");
-        appendHsTableRowHeading(builder, "Client", "Version", "Ciphersuite", "Forward Secrecy", "Server Public Key");
-        builder.append("\n");
-        for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
-            if (simulatedClient.getHandshakeSuccessful()) {
-                if (defaultClient) {
-                    if (simulatedClient.isDefaultVersion()) {
-                        appendHsTableRowSuccessful(builder, simulatedClient);
-                        counter++;
-                    }
-                } else {
-                    appendHsTableRowSuccessful(builder, simulatedClient);
-                    counter++;
-                }
-            }
-        }
-        if (counter == 0) {
-            prettyAppend(builder, "-");
-        }
-        counter = 0;
-        prettyAppendHeading(builder, "Failed Handshakes");
-        for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
-            if (!simulatedClient.getHandshakeSuccessful()) {
-                if (defaultClient) {
-                    if (simulatedClient.isDefaultVersion()) {
-                        appendHsTableRowFailed(builder, simulatedClient);
-                        counter++;
-                    }
-                } else {
-                    appendHsTableRowFailed(builder, simulatedClient);
-                    counter++;
-                }
-            }
-        }
-        if (counter == 0) {
-            prettyAppend(builder, "-");
-        }
-        return builder;
-    }
-
     private StringBuilder prettyAppendHsTable(StringBuilder builder, boolean defaultClient) {
         int counter = 0;
         appendHsTableRowHeading(builder, "Client", "Version", "Ciphersuite", "Forward Secrecy", "Server Public Key");
