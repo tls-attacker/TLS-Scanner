@@ -26,6 +26,7 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.TlsClientConfigIO;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConfigFileList;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -41,7 +42,7 @@ import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class HandshakeSimulationProbe extends TlsProbe {
 
-    private static final String RESOURCE_FOLDER = "extracted_client_configs";
+    private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
     private final List<SimulatedClient> simulatedClientList;
 
@@ -53,11 +54,11 @@ public class HandshakeSimulationProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         TlsClientConfig tlsClientConfig;
-        TlsClientConfigIO clientConfigIO = new TlsClientConfigIO();
         List<TlsClientConfig> tlsClientConfigList = new LinkedList<>();
         List<State> clientStateList = new LinkedList<>();
-        for (File configFile : clientConfigIO.getClientConfigFileList(RESOURCE_FOLDER)) {
-            tlsClientConfig = clientConfigIO.readConfigFromFile(configFile);
+        ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
+        for (String configFileName : configFileList.getFiles()) {
+            tlsClientConfig = TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/" + configFileName);
             tlsClientConfigList.add(tlsClientConfig);
             clientStateList.add(getPreparedClientState(tlsClientConfig));
         }

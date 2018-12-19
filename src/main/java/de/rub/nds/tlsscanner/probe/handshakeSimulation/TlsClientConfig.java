@@ -8,6 +8,7 @@ package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -27,6 +28,11 @@ public class TlsClientConfig implements Serializable {
     private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList;
     private List<Integer> supportedRsaKeySizeList;
     private List<Integer> supportedDheKeySizeList;
+    
+    public static TlsClientConfig createTlsClientConfig(String resourcePath) {
+        InputStream stream = ConfigFileList.class.getResourceAsStream(resourcePath);
+        return TlsClientConfigIO.read(stream);
+    }
 
     public void createTlsClientConfig(String type, String version) {
         this.type = type;

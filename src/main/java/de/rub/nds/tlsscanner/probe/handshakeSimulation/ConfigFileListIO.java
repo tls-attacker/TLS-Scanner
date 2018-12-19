@@ -23,22 +23,22 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
-public class TlsClientConfigIO {
+public class ConfigFileListIO {
 
-    static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(TlsClientConfigIO.class.getName());
+    static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(ConfigFileListIO.class.getName());
 
-    private TlsClientConfigIO() {
+    private ConfigFileListIO() {
     }
 
-    public static void write(TlsClientConfig clientConfig, File configFile) {
+    public static void write(ConfigFileList configFileList, File file) {
         OutputStream os = null;
         try {
-            os = new FileOutputStream(configFile);
+            os = new FileOutputStream(file);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TlsClientConfigIO.class.getName()).log(Level.SEVERE, null, ex);
         }
         ByteArrayOutputStream tempStream = new ByteArrayOutputStream();
-        JAXB.marshal(clientConfig, tempStream);
+        JAXB.marshal(configFileList, tempStream);
         try {
             os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
         } catch (IOException | TransformerException | XPathExpressionException | XPathFactoryConfigurationException | ParserConfigurationException | SAXException ex) {
@@ -46,13 +46,8 @@ public class TlsClientConfigIO {
         }
     }
 
-    public static TlsClientConfig read(File configFile) {
-        TlsClientConfig clientConfig = JAXB.unmarshal(configFile, TlsClientConfig.class);
-        return clientConfig;
-    }
-
-    public static TlsClientConfig read(InputStream stream) {
-        TlsClientConfig clientConfig = JAXB.unmarshal(stream, TlsClientConfig.class);
-        return clientConfig;
+    public static ConfigFileList read(InputStream stream) {
+        ConfigFileList configFileList = JAXB.unmarshal(stream, ConfigFileList.class);
+        return configFileList;
     }
 }
