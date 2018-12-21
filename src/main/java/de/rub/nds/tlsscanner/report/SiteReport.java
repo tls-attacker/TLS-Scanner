@@ -216,10 +216,10 @@ public class SiteReport {
     private boolean noColor = false;
     
     //Handshake Simulation
-    private int handshakeSuccessfulCounter = 0;
-    private int handshakeFailedCounter = 0;
-    private int connectionInsecureCounter = 0;
-    private int connectionRfc7918SecureCounter = 0;
+    private Integer handshakeSuccessfulCounter = null;
+    private Integer handshakeFailedCounter = null;
+    private Integer connectionRfc7918SecureCounter = null;
+    private Integer connectionInsecureCounter = null;
     private List<SimulatedClient> simulatedClientList = null;
     
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
@@ -1285,20 +1285,36 @@ public class SiteReport {
         this.supportsStaticEcdh = supportsStaticEcdh;
     }
     
-    public int getHandshakeSuccessfulCounter() {
+    public Integer getHandshakeSuccessfulCounter() {
         return handshakeSuccessfulCounter;
     }
 
-    public void setHandshakeSuccessfulCounter(int handshakeSuccessfulCounter) {
+    public void setHandshakeSuccessfulCounter(Integer handshakeSuccessfulCounter) {
         this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
     }
     
-    public int getHandshakeFailedCounter() {
+    public Integer getHandshakeFailedCounter() {
         return handshakeFailedCounter;
     }
 
-    public void setHandshakeFailedCounter(int handshakeFailedCounter) {
+    public void setHandshakeFailedCounter(Integer handshakeFailedCounter) {
         this.handshakeFailedCounter = handshakeFailedCounter;
+    }
+    
+    public Integer getConnectionRfc7918SecureCounter() {
+        return connectionRfc7918SecureCounter;
+    }
+
+    public void setConnectionRfc7918SecureCounter(Integer connectionRfc7918SecureCounter) {
+        this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
+    }
+
+    public Integer getConnectionInsecureCounter() {
+        return connectionInsecureCounter;
+    }
+
+    public void setConnectionInsecureCounter(Integer connectionInsecureCounter) {
+        this.connectionInsecureCounter = connectionInsecureCounter;
     }
 
     public List<SimulatedClient> getSimulatedClientList() {
@@ -1309,22 +1325,6 @@ public class SiteReport {
         this.simulatedClientList = simulatedClientList;
     }
 
-    public int getConnectionRfc7918SecureCounter() {
-        return connectionRfc7918SecureCounter;
-    }
-
-    public void setConnectionRfc7918SecureCounter(int connectionRfc7918SecureCounter) {
-        this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
-    }
-
-    public int getConnectionInsecureCounter() {
-        return connectionInsecureCounter;
-    }
-
-    public void setConnectionInsecureCounter(int connectionInsecureCounter) {
-        this.connectionInsecureCounter = connectionInsecureCounter;
-    }
-    
     public String getFullReport(ScannerDetail detail) {
         return new SiteReportPrinter(this, detail).getFullReport();
     }
