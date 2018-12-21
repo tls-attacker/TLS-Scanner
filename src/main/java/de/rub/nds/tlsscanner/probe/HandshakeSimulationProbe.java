@@ -23,14 +23,12 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.TlsClientConfig;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.TlsClientConfigIO;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConfigFileList;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
-import java.io.File;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
@@ -123,8 +121,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
         simulatedClient.setSupportedVersionList(tlsClientConfig.getSupportedVersionList());
         simulatedClient.setVersionAcceptForbiddenCiphersuiteList(tlsClientConfig.getVersionAcceptForbiddenCiphersuiteList());
-        simulatedClient.setSupportedRsaKeyLengthList(tlsClientConfig.getSupportedRsaKeySizeList());
-        simulatedClient.setSupportedDheKeyLengthList(tlsClientConfig.getSupportedDheKeySizeList());
+        simulatedClient.setSupportedRsaKeySizeList(tlsClientConfig.getSupportedRsaKeySizeList());
+        simulatedClient.setSupportedDheKeySizeList(tlsClientConfig.getSupportedDheKeySizeList());
     }
 
     private void evaluateReceivedMessages(State state, SimulatedClient simulatedClient) {

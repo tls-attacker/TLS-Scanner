@@ -34,8 +34,8 @@ public class SimulatedClient {
     private Integer serverPublicKeyParameter = null;
     private List<ProtocolVersion> supportedVersionList = null;
     private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList = null;
-    private List<Integer> supportedRsaKeyLengthList = null;
-    private List<Integer> supportedDheKeyLengthList = null;
+    private List<Integer> supportedRsaKeySizeList = null;
+    private List<Integer> supportedDheKeySizeList = null;
     //To set in HandshakeSimulationAfterProbe
     private Boolean highestPossibleProtocolVersionSeleceted = null;
     private Boolean handshakeSuccessful = null;
@@ -208,20 +208,20 @@ public class SimulatedClient {
         this.versionAcceptForbiddenCiphersuiteList = versionAcceptForbiddenCiphersuiteList;
     }
 
-    public List<Integer> getSupportedRsaKeyLengthList() {
-        return supportedRsaKeyLengthList;
+    public List<Integer> getSupportedRsaKeySizeList() {
+        return supportedRsaKeySizeList;
     }
 
-    public void setSupportedRsaKeyLengthList(List<Integer> supportedRsaKeyLengthList) {
-        this.supportedRsaKeyLengthList = supportedRsaKeyLengthList;
+    public void setSupportedRsaKeySizeList(List<Integer> supportedRsaKeySizeList) {
+        this.supportedRsaKeySizeList = supportedRsaKeySizeList;
     }
 
-    public List<Integer> getSupportedDheKeyLengthList() {
-        return supportedDheKeyLengthList;
+    public List<Integer> getSupportedDheKeySizeList() {
+        return supportedDheKeySizeList;
     }
 
-    public void setSupportedDheKeyLengthList(List<Integer> supportedDheKeyLengthList) {
-        this.supportedDheKeyLengthList = supportedDheKeyLengthList;
+    public void setSupportedDheKeySizeList(List<Integer> supportedDheKeySizeList) {
+        this.supportedDheKeySizeList = supportedDheKeySizeList;
     }
 
     public Boolean getHandshakeSuccessful() {

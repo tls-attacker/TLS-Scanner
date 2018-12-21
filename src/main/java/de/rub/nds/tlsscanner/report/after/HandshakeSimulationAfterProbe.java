@@ -83,12 +83,12 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         }
         if (isPublicKeyLengthRsaNotAccepted(simulatedClient)) {
             simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_SIZE_RSA_NOT_ACCEPTED.getReason() + " - supported sizes: "
-                    + simulatedClient.getSupportedRsaKeyLengthList());
+                    + simulatedClient.getSupportedRsaKeySizeList());
             reallySuccessful = false;
         }
         if (isPublicKeyLengthDhNotAccepted(simulatedClient)) {
             simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_SIZE_DH_NOT_ACCEPTED.getReason() + " - supported sizes: "
-                    + simulatedClient.getSupportedDheKeyLengthList());
+                    + simulatedClient.getSupportedDheKeySizeList());
             reallySuccessful = false;
         }
         simulatedClient.setHandshakeSuccessful(reallySuccessful);
@@ -108,8 +108,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
         if (AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite()).isKeyExchangeRsa()
-                && simulatedClient.getSupportedRsaKeyLengthList() != null) {
-            supportedKeyLengths = simulatedClient.getSupportedRsaKeyLengthList();
+                && simulatedClient.getSupportedRsaKeySizeList() != null) {
+            supportedKeyLengths = simulatedClient.getSupportedRsaKeySizeList();
             if (publicKeyLength < supportedKeyLengths.get(0)
                     || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
                 return true;
@@ -122,8 +122,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
         if (AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite()).isKeyExchangeDh()
-                && simulatedClient.getSupportedDheKeyLengthList() != null) {
-            supportedKeyLengths = simulatedClient.getSupportedDheKeyLengthList();
+                && simulatedClient.getSupportedDheKeySizeList() != null) {
+            supportedKeyLengths = simulatedClient.getSupportedDheKeySizeList();
             if (publicKeyLength < supportedKeyLengths.get(0)
                     || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
                 return true;
