@@ -8,6 +8,7 @@ package de.rub.nds.tlsscanner.report.after;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailed;
@@ -110,8 +111,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private boolean isPublicKeyLengthRsaNotAccepted(SimulatedClient simulatedClient) {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
-        if (AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite()).isKeyExchangeRsa()
-                && simulatedClient.getSupportedRsaKeySizeList() != null) {
+        KeyExchangeAlgorithm kea = AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite());
+        if (kea != null && kea.isKeyExchangeRsa() && simulatedClient.getSupportedRsaKeySizeList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedRsaKeySizeList();
             if (publicKeyLength < supportedKeyLengths.get(0)
                     || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
@@ -124,8 +125,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private boolean isPublicKeyLengthDhNotAccepted(SimulatedClient simulatedClient) {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
-        if (AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite()).isKeyExchangeDh()
-                && simulatedClient.getSupportedDheKeySizeList() != null) {
+        KeyExchangeAlgorithm kea = AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite());
+        if (kea != null && kea.isKeyExchangeDh() && simulatedClient.getSupportedDheKeySizeList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedDheKeySizeList();
             if (publicKeyLength < supportedKeyLengths.get(0)
                     || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
@@ -257,18 +258,18 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isPublicKeyLengthToSmall(SimulatedClient simulatedClient) {
-        CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
+        KeyExchangeAlgorithm kea = AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite());
         Integer pubKey = simulatedClient.getServerPublicKeyParameter();
         Integer minRsa = 1024;
         Integer minDh = 1024;
         Integer minEcdh = 160;
-        if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeRsa() && pubKey <= minRsa) {
+        if (kea != null && kea.isKeyExchangeRsa() && pubKey <= minRsa) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - rsa > " + minRsa);
             return true;
-        } else if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh() && pubKey <= minDh) {
+        } else if (kea != null && kea.isKeyExchangeDh() && pubKey <= minDh) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - dh > " + minDh);
             return true;
-        } else if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeEcdh() && pubKey <= minEcdh) {
+        } else if (kea != null && kea.isKeyExchangeEcdh() && pubKey <= minEcdh) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - ecdh > " + minEcdh);
             return true;
         }
@@ -313,12 +314,13 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isKeyLengthWhitelisted(CipherSuite cipherSuite, Integer keyLength) {
-        if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeEcdh() && cipherSuite.isEphemeral()) {
+        KeyExchangeAlgorithm kea = AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite);
+        if (kea != null && kea.isKeyExchangeEcdh() && cipherSuite.isEphemeral()) {
             if (keyLength >= 3072) {
                 return true;
             }
         }
-        if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeEcdh() && cipherSuite.isEphemeral()) {
+        if (kea != null && kea.isKeyExchangeEcdh() && cipherSuite.isEphemeral()) {
             if (keyLength >= 256) {
                 return true;
             }
