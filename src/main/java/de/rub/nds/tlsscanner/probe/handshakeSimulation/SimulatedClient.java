@@ -22,6 +22,7 @@ public class SimulatedClient {
     private Boolean receivedServerKeyExchange = null;
     private Boolean receivedCertificateRequest = null;
     private Boolean receivedServerHelloDone = null;
+    private Boolean receivedUnknown = null;
     private ProtocolVersion highestClientProtocolVersion = null;
     private ProtocolVersion selectedProtocolVersion = null;
     private List<CipherSuite> clientSupportedCiphersuites = null;
@@ -102,6 +103,14 @@ public class SimulatedClient {
 
     public void setReceivedServerHelloDone(Boolean receivedServerHelloDone) {
         this.receivedServerHelloDone = receivedServerHelloDone;
+    }
+
+    public Boolean getReceivedUnknown() {
+        return receivedUnknown;
+    }
+
+    public void setReceivedUnknown(Boolean receivedUnknown) {
+        this.receivedUnknown = receivedUnknown;
     }
 
     public ProtocolVersion getHighestClientProtocolVersion() {

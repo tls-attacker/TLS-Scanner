@@ -28,12 +28,15 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
                 if (simulatedClient.getReceivedServerHello()) {
                     checkHighestPossibleProtocolVersionSeleceted(report, simulatedClient);
-                }
-                if (simulatedClient.getReceivedServerHelloDone()) {
-                    checkIfHandshakeWouldBeSuccessful(simulatedClient);
+                    if (simulatedClient.getReceivedServerHelloDone()) {
+                        checkIfHandshakeWouldBeSuccessful(simulatedClient);
+                    } else {
+                        simulatedClient.setHandshakeSuccessful(false);
+                        checkWhyServerHelloDoneIsMissing(report, simulatedClient);
+                    }
                 } else {
                     simulatedClient.setHandshakeSuccessful(false);
-                    checkWhyServerHelloDoneIsMissing(report, simulatedClient);
+                    checkWhyServerHelloIsMissing(report, simulatedClient);
                 }
                 if (simulatedClient.getHandshakeSuccessful()) {
                     isSuccessfulCounter++;
@@ -132,6 +135,23 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         return false;
     }
 
+    private void checkWhyServerHelloIsMissing(SiteReport report, SimulatedClient simulatedClient) {
+        boolean reasonFound = false;
+        if (isProtocolMismatch(report, simulatedClient)) {
+            simulatedClient.addToFailReasons(HandshakeFailed.PROTOCOL_MISMATCH.getReason());
+            reasonFound = true;
+        } else if (isCiphersuiteMismatch(report, simulatedClient)) {
+            simulatedClient.addToFailReasons(HandshakeFailed.CIPHERSUITE_MISMATCH.getReason());
+            reasonFound = true;
+        } else if (isParsingError(simulatedClient)) {
+            simulatedClient.addToFailReasons(HandshakeFailed.PARSING_ERROR.getReason());
+            reasonFound = true;
+        }
+        if (!reasonFound) {
+            simulatedClient.addToFailReasons(HandshakeFailed.UNKNOWN.getReason());
+        }
+    }
+
     private void checkWhyServerHelloDoneIsMissing(SiteReport report, SimulatedClient simulatedClient) {
         boolean reasonFound = false;
         if (isProtocolMismatch(report, simulatedClient)) {
@@ -168,6 +188,23 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                     }
                 }
             }
+        }
+        return true;
+    }
+
+    private boolean isParsingError(SimulatedClient simulatedClient) {
+        int counter = 0;
+        if (simulatedClient.getReceivedCertificate()) {
+            counter++;
+        }
+        if (simulatedClient.getReceivedServerKeyExchange()) {
+            counter++;
+        }
+        if (simulatedClient.getReceivedServerHelloDone()) {
+            counter++;
+        }
+        if (counter == 0 && !simulatedClient.getReceivedUnknown()) {
+            return false;
         }
         return true;
     }
