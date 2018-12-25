@@ -10,6 +10,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
@@ -26,7 +27,6 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConfigFileList;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailed;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -156,17 +156,18 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     private void evaluateCertificate(TlsContext context, SimulatedClient simulatedClient) {
-        if (AlgorithmResolver.getKeyExchangeAlgorithm(context.getSelectedCipherSuite()).isKeyExchangeRsa()) {
+        KeyExchangeAlgorithm kea = AlgorithmResolver.getKeyExchangeAlgorithm(simulatedClient.getSelectedCiphersuite());
+        if (kea != null && kea.isKeyExchangeRsa()) {
             simulatedClient.setServerPublicKeyParameter(getRsaPublicKeyFromCert(context.getServerCertificate()));
         }
     }
 
     private void evaluateServerKeyExchange(TlsContext context, SimulatedClient simulatedClient) {
         CipherSuite cipherSuite = context.getSelectedCipherSuite();
-        if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh()
-                && context.getServerDhPublicKey() != null) {
+        KeyExchangeAlgorithm kea = AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite);
+        if (kea != null && kea.isKeyExchangeDh() && context.getServerDhPublicKey() != null) {
             simulatedClient.setServerPublicKeyParameter(context.getServerDhModulus().bitLength());
-        } else if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeEcdh()) {
+        } else if (kea != null && kea.isKeyExchangeEcdh()) {
             if (context.getSelectedGroup() != null) {
                 simulatedClient.setSelectedNamedGroup(context.getSelectedGroup().name());
                 if (context.getSelectedGroup().getCoordinateSizeInBit() != null) {
