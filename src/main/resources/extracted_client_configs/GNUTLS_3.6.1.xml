@@ -1,7 +1,7 @@
 <tlsClientConfig>
     <type>GNUTLS</type>
     <version>3.6.1</version>
-    <defaultVersion>false</defaultVersion>
+    <defaultVersion>true</defaultVersion>
     <config>
         <defaultHandshakeSecret>
             00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
@@ -734,6 +734,7 @@
         <defaultHeartbeatMode>PEER_ALLOWED_TO_SEND</defaultHeartbeatMode>
         <defaultClientSupportedCompressionMethods>NULL</defaultClientSupportedCompressionMethods>
         <defaultServerSupportedCompressionMethods>NULL</defaultServerSupportedCompressionMethods>
+        <defaultMasterSecret/>
         <defaultPreMasterSecret/>
         <defaultClientRandom>
             5C 1A 7E 9F F3 3C 47 60  3A 94 DA EC E7 A2 FC D7
@@ -1009,10 +1010,7 @@
                             <extensionType>
 <originalValue>00 0A</originalValue>
                             </extensionType>
-                            <supportedGroups>
-<originalValue>
-                                    00 17 00 18 00 19 00 1D  01 00 01 01 01 02 0</originalValue>
-                            </supportedGroups>
+                            <supportedGroups/>
                             <supportedGroupsLength>
 <originalValue>16</originalValue>
                             </supportedGroupsLength>
