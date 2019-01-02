@@ -14,7 +14,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
@@ -48,6 +47,7 @@ public class ProtocolVersionProbe extends TlsProbe {
     public ProtocolVersionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.PROTOCOL_VERSION, config, 0);
         toTestList = new LinkedList<>();
+        //List must be sorted in ascending order
         toTestList.add(ProtocolVersion.SSL2);
         toTestList.add(ProtocolVersion.SSL3);
         toTestList.add(ProtocolVersion.TLS10);

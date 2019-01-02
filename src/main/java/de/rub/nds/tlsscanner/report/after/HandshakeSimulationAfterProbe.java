@@ -86,9 +86,9 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private void checkSelectedProtocolVersion(SiteReport report, SimulatedClient simulatedClient) {
         if (report.getVersions() != null) {
             List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
-            for (ProtocolVersion clientVersion : simulatedClient.getSupportedVersionList()) {
-                if (report.getVersions().contains(clientVersion)) {
-                    commonProtocolVersions.add(clientVersion);
+            for (ProtocolVersion serverVersion : report.getVersions()) {
+                if (simulatedClient.getSupportedVersionList().contains(serverVersion)) {
+                    commonProtocolVersions.add(serverVersion);
                 }
             }
             simulatedClient.setCommonProtocolVersions(commonProtocolVersions);
