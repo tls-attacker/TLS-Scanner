@@ -5,23 +5,16 @@
  */
 package de.rub.nds.tlsscanner.probe.handshakeSimulation;
 
-import de.rub.nds.modifiablevariable.util.XMLPrettyPrinter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.JAXB;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactoryConfigurationException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import org.apache.logging.log4j.LogManager;
-import org.xml.sax.SAXException;
 
 public class ConfigFileListIO {
 
@@ -29,20 +22,24 @@ public class ConfigFileListIO {
 
     private ConfigFileListIO() {
     }
+    
+    private static JAXBContext contextSingleton;
 
-    public static void write(ConfigFileList configFileList, File file) {
-        OutputStream os = null;
-        try {
-            os = new FileOutputStream(file);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(TlsClientConfigIO.class.getName()).log(Level.SEVERE, null, ex);
+    private static synchronized JAXBContext getJAXBContext() throws JAXBException, IOException {
+        if (contextSingleton == null) {
+            contextSingleton = JAXBContext.newInstance(ConfigFileList.class);
         }
-        ByteArrayOutputStream tempStream = new ByteArrayOutputStream();
-        JAXB.marshal(configFileList, tempStream);
-        try {
-            os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
-        } catch (IOException | TransformerException | XPathExpressionException | XPathFactoryConfigurationException | ParserConfigurationException | SAXException ex) {
-            throw new RuntimeException("Could not format XML");
+        return contextSingleton;
+    }
+    
+    public static void write(ConfigFileList configFileList, File configFile) {
+        try (OutputStream os = new FileOutputStream(configFile)) {
+            JAXBContext context = getJAXBContext();
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            m.marshal(configFileList, os);
+        } catch (JAXBException | IOException  ex) {
+            throw new RuntimeException("Could not format XML " + ex);
         }
     }
 
