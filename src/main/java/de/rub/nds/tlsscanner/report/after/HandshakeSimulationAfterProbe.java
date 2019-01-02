@@ -28,26 +28,28 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             for (SimulatedClient simulatedClient : report.getSimulatedClientList()) {
                 if (simulatedClient.getReceivedAlert()) {
                     checkWhyAlert(report, simulatedClient);
-                } else if (simulatedClient.getFailReasons().isEmpty()) {
+                } else if (simulatedClient.getReceivedAllMandatoryMessages()) {
                     checkSelectedProtocolVersion(report, simulatedClient);
                     checkIfHandshakeWouldBeSuccessful(simulatedClient);
+                } else {
+                    checkWhyMandatoryMessagesMissing(simulatedClient);
                 }
                 if (simulatedClient.getFailReasons().isEmpty()) {
                     simulatedClient.setHandshakeSuccessful(true);
-                } else {
-                    simulatedClient.setHandshakeSuccessful(false);
-                }
-                if (simulatedClient.getHandshakeSuccessful()) {
                     isSuccessfulCounter++;
                     checkIfConnectionIsInsecure(report, simulatedClient);
-                    if (simulatedClient.getConnectionInsecure()) {
-                        isInsecureCounter++;
-                    } else {
+                    if (simulatedClient.getInsecureReasons().isEmpty()) {
+                        simulatedClient.setConnectionInsecure(false);
                         checkIfConnectionIsRfc7918Secure(simulatedClient);
                         if (simulatedClient.getConnectionRfc7918Secure()) {
                             isRfc7918SecureCounter++;
                         }
+                    } else {
+                        simulatedClient.setConnectionInsecure(true);
+                        isInsecureCounter++;
                     }
+                } else {
+                    simulatedClient.setHandshakeSuccessful(false);
                 }
             }
             report.setHandshakeSuccessfulCounter(isSuccessfulCounter);
@@ -83,15 +85,15 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
 
     private void checkSelectedProtocolVersion(SiteReport report, SimulatedClient simulatedClient) {
         if (report.getVersions() != null) {
-            List<ProtocolVersion> testList = new LinkedList<>();
+            List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
             for (ProtocolVersion clientVersion : simulatedClient.getSupportedVersionList()) {
                 if (report.getVersions().contains(clientVersion)) {
-                    testList.add(clientVersion);
+                    commonProtocolVersions.add(clientVersion);
                 }
             }
-            if (testList.isEmpty()) {
-                simulatedClient.addToFailReasons(HandshakeFailed.PROTOCOL_MISMATCH.getReason());
-            } else if (testList.get(testList.size() - 1).equals(simulatedClient.getSelectedProtocolVersion())) {
+            simulatedClient.setCommonProtocolVersions(commonProtocolVersions);
+            if (!commonProtocolVersions.isEmpty()
+                    && commonProtocolVersions.get(commonProtocolVersions.size() - 1).equals(simulatedClient.getSelectedProtocolVersion())) {
                 simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
             } else {
                 simulatedClient.setHighestPossibleProtocolVersionSeleceted(false);
@@ -100,6 +102,9 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private void checkIfHandshakeWouldBeSuccessful(SimulatedClient simulatedClient) {
+        if (isProtocolMismatch(simulatedClient)) {
+            simulatedClient.addToFailReasons(HandshakeFailed.PROTOCOL_MISMATCH.getReason());
+        }
         if (isCiphersuiteForbidden(simulatedClient)) {
             simulatedClient.addToFailReasons(HandshakeFailed.CIPHERSUITE_FORBIDDEN.getReason());
         }
@@ -111,6 +116,10 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             simulatedClient.addToFailReasons(HandshakeFailed.PUBLIC_KEY_SIZE_DH_NOT_ACCEPTED.getReason() + " - supported sizes: "
                     + simulatedClient.getSupportedDheKeySizeList());
         }
+    }
+
+    private boolean isProtocolMismatch(SimulatedClient simulatedClient) {
+        return simulatedClient.getCommonProtocolVersions() != null && simulatedClient.getCommonProtocolVersions().isEmpty();
     }
 
     private boolean isCiphersuiteForbidden(SimulatedClient simulatedClient) {
@@ -149,69 +158,67 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         return false;
     }
 
+    private void checkWhyMandatoryMessagesMissing(SimulatedClient simulatedClient) {
+        boolean reasonFound = false;
+        if (isParsingError(simulatedClient)) {
+            simulatedClient.addToFailReasons(HandshakeFailed.PARSING_ERROR.getReason());
+            reasonFound = true;
+        }
+        if (!reasonFound) {
+            simulatedClient.addToFailReasons(HandshakeFailed.UNKNOWN.getReason());
+        }
+    }
+
+    private boolean isParsingError(SimulatedClient simulatedClient) {
+        return simulatedClient.getReceivedUnknown();
+    }
+
     private void checkIfConnectionIsInsecure(SiteReport report, SimulatedClient simulatedClient) {
-        boolean connectionInsecure = false;
         if (isCipherSuiteGradeLow(simulatedClient)) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.CIPHERSUITE_GRADE_LOW.getReason());
-            connectionInsecure = true;
         }
-        if (isVulnerable(report, simulatedClient)) {
-            connectionInsecure = true;
-        }
-        if (isPublicKeyLengthToSmall(simulatedClient)) {
-            connectionInsecure = true;
-        }
-        simulatedClient.setConnectionInsecure(connectionInsecure);
+        checkVulnerabilities(report, simulatedClient);
+        checkPublicKeySize(simulatedClient);
     }
 
     private boolean isCipherSuiteGradeLow(SimulatedClient simulatedClient) {
         return CiphersuiteRater.getGrade(simulatedClient.getSelectedCiphersuite()).equals(CipherSuiteGrade.LOW);
     }
 
-    private boolean isVulnerable(SiteReport report, SimulatedClient simulatedClient) {
+    private void checkVulnerabilities(SiteReport report, SimulatedClient simulatedClient) {
         CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
-        boolean isVulnerable = false;
         if (report.getPaddingOracleVulnerable() != null && report.getPaddingOracleVulnerable()
                 && cipherSuite.isCBC()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PADDING_ORACLE.getReason());
-            isVulnerable = true;
         }
         if (report.getBleichenbacherVulnerable() != null && report.getBleichenbacherVulnerable()
                 && simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.BLEICHENBACHER.getReason());
-            isVulnerable = true;
         }
         if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.CRIME.getReason());
-            isVulnerable = true;
         }
         if (report.getSweet32Vulnerable() != null && report.getSweet32Vulnerable()) {
             if (cipherSuite.name().contains("3DES")
                     || cipherSuite.name().contains("IDEA")
                     || cipherSuite.name().contains("GOST")) {
                 simulatedClient.addToInsecureReasons(ConnectionInsecure.SWEET32.getReason());
-                isVulnerable = true;
             }
         }
-        return isVulnerable;
     }
 
-    private boolean isPublicKeyLengthToSmall(SimulatedClient simulatedClient) {
+    private void checkPublicKeySize(SimulatedClient simulatedClient) {
         Integer pubKey = simulatedClient.getServerPublicKeyParameter();
         Integer minRsa = 1024;
         Integer minDh = 1024;
         Integer minEcdh = 160;
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa() && pubKey <= minRsa) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - rsa > " + minRsa);
-            return true;
         } else if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeDh() && pubKey <= minDh) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - dh > " + minDh);
-            return true;
         } else if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeEcdh() && pubKey <= minEcdh) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - ecdh > " + minEcdh);
-            return true;
         }
-        return false;
     }
 
     private void checkIfConnectionIsRfc7918Secure(SimulatedClient simulatedClient) {
