@@ -27,7 +27,6 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConfigFileList;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailed;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -123,9 +122,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         simulatedClient.setReceivedServerHelloDone(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
         simulatedClient.setReceivedAlert(WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, trace));
         simulatedClient.setReceivedUnknown(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.UNKNOWN, trace));
-        if (simulatedClient.getReceivedAlert()) {
-            simulatedClient.setHandshakeSuccessful(false);
-        } else {
+        if (!simulatedClient.getReceivedAlert()) {
             boolean receivedAllMandatoryMessages = true;
             if (!simulatedClient.getReceivedServerHello()) {
                 receivedAllMandatoryMessages = false;
@@ -152,15 +149,14 @@ public class HandshakeSimulationProbe extends TlsProbe {
             if (!simulatedClient.getReceivedServerHelloDone()) {
                 receivedAllMandatoryMessages = false;
             }
-            TlsContext context = state.getTlsContext();
+            simulatedClient.setReceivedAllMandatoryMessages(receivedAllMandatoryMessages);
             if (receivedAllMandatoryMessages) {
+                TlsContext context = state.getTlsContext();
                 evaluateServerHello(context, simulatedClient);
                 evaluateCertificate(context, simulatedClient);
                 if (simulatedClient.getReceivedServerKeyExchange()) {
                     evaluateServerKeyExchange(context, simulatedClient);
                 }
-            } else {
-                simulatedClient.addToFailReasons(HandshakeFailed.PARSING_ERROR.getReason());
             }
         }
     }
