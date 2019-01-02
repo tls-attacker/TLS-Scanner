@@ -28,7 +28,7 @@ public class TlsClientConfig implements Serializable {
     private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList;
     private List<Integer> supportedRsaKeySizeList;
     private List<Integer> supportedDheKeySizeList;
-    
+
     public static TlsClientConfig createTlsClientConfig(String resourcePath) {
         InputStream stream = ConfigFileList.class.getResourceAsStream(resourcePath);
         return TlsClientConfigIO.read(stream);

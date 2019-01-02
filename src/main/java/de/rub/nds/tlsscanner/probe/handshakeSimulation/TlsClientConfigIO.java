@@ -14,15 +14,12 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import org.apache.logging.log4j.LogManager;
 
 public class TlsClientConfigIO {
 
-    static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(TlsClientConfigIO.class.getName());
-
     private TlsClientConfigIO() {
     }
-    
+
     private static JAXBContext contextSingleton;
 
     private static synchronized JAXBContext getJAXBContext() throws JAXBException, IOException {
@@ -38,7 +35,7 @@ public class TlsClientConfigIO {
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m.marshal(clientConfig, os);
-        } catch (JAXBException | IOException  ex) {
+        } catch (JAXBException | IOException ex) {
             throw new RuntimeException("Could not format XML " + ex);
         }
     }

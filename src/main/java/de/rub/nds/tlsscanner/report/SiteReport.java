@@ -214,14 +214,14 @@ public class SiteReport {
     private List<HpkpPin> reportOnlyHpkpPins;
     //NoColor Flag
     private boolean noColor = false;
-    
+
     //Handshake Simulation
     private Integer handshakeSuccessfulCounter = null;
     private Integer handshakeFailedCounter = null;
     private Integer connectionRfc7918SecureCounter = null;
     private Integer connectionInsecureCounter = null;
     private List<SimulatedClient> simulatedClientList = null;
-    
+
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
         this.host = host;
         this.probeTypeList = probeTypeList;
@@ -232,7 +232,7 @@ public class SiteReport {
     public String getHost() {
         return host;
     }
-    
+
     public List<ProbeType> getProbeTypeList() {
         return probeTypeList;
     }
@@ -1284,7 +1284,7 @@ public class SiteReport {
     public void setSupportsStaticEcdh(Boolean supportsStaticEcdh) {
         this.supportsStaticEcdh = supportsStaticEcdh;
     }
-    
+
     public Integer getHandshakeSuccessfulCounter() {
         return handshakeSuccessfulCounter;
     }
@@ -1292,7 +1292,7 @@ public class SiteReport {
     public void setHandshakeSuccessfulCounter(Integer handshakeSuccessfulCounter) {
         this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
     }
-    
+
     public Integer getHandshakeFailedCounter() {
         return handshakeFailedCounter;
     }
@@ -1300,7 +1300,7 @@ public class SiteReport {
     public void setHandshakeFailedCounter(Integer handshakeFailedCounter) {
         this.handshakeFailedCounter = handshakeFailedCounter;
     }
-    
+
     public Integer getConnectionRfc7918SecureCounter() {
         return connectionRfc7918SecureCounter;
     }

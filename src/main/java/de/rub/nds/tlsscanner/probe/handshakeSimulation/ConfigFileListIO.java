@@ -14,15 +14,12 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import org.apache.logging.log4j.LogManager;
 
 public class ConfigFileListIO {
 
-    static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(ConfigFileListIO.class.getName());
-
     private ConfigFileListIO() {
     }
-    
+
     private static JAXBContext contextSingleton;
 
     private static synchronized JAXBContext getJAXBContext() throws JAXBException, IOException {
@@ -31,14 +28,14 @@ public class ConfigFileListIO {
         }
         return contextSingleton;
     }
-    
+
     public static void write(ConfigFileList configFileList, File configFile) {
         try (OutputStream os = new FileOutputStream(configFile)) {
             JAXBContext context = getJAXBContext();
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m.marshal(configFileList, os);
-        } catch (JAXBException | IOException  ex) {
+        } catch (JAXBException | IOException ex) {
             throw new RuntimeException("Could not format XML " + ex);
         }
     }
