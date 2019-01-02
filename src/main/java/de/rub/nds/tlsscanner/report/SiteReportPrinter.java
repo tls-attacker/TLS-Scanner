@@ -324,8 +324,9 @@ public class SiteReportPrinter {
             }
             prettyAppendGreenRed(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure());
             builder.append("\n");
-            prettyAppend(builder, "Protocol Version Client", getProtocolVersionColor(simulatedClient.getHighestClientProtocolVersion(), "%s"));
             prettyAppend(builder, "Protocol Version Selected", getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), "%s"));
+            prettyAppend(builder, "Protocol Versions Client", simulatedClient.getSupportedVersionList().toString());
+            prettyAppend(builder, "Protocol Versions Server", report.getVersions().toString());
             prettyAppendGreenRed(builder, "Protocol Version is highest", simulatedClient.getHighestPossibleProtocolVersionSeleceted());
             builder.append("\n");
             prettyAppend(builder, "Selected Ciphersuite", getCipherSuiteColor(simulatedClient.getSelectedCiphersuite(), "%s"));
