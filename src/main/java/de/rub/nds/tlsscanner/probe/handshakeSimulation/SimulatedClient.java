@@ -25,8 +25,10 @@ public class SimulatedClient {
     private Boolean receivedServerHelloDone = null;
     private Boolean receivedAlert = null;
     private Boolean receivedUnknown = null;
+    private Boolean receivedAllMandatoryMessages = null;
     private ProtocolVersion highestClientProtocolVersion = null;
     private ProtocolVersion selectedProtocolVersion = null;
+    private List<ProtocolVersion> commonProtocolVersions = null;
     private List<CipherSuite> clientSupportedCiphersuites = null;
     private CipherSuite selectedCiphersuite = null;
     private KeyExchangeAlgorithm keyExchangeAlgorithm = null;
@@ -124,6 +126,14 @@ public class SimulatedClient {
         this.receivedUnknown = receivedUnknown;
     }
 
+    public Boolean getReceivedAllMandatoryMessages() {
+        return receivedAllMandatoryMessages;
+    }
+
+    public void setReceivedAllMandatoryMessages(Boolean receivedAllMandatoryMessages) {
+        this.receivedAllMandatoryMessages = receivedAllMandatoryMessages;
+    }
+
     public ProtocolVersion getHighestClientProtocolVersion() {
         return highestClientProtocolVersion;
     }
@@ -138,6 +148,14 @@ public class SimulatedClient {
 
     public void setSelectedProtocolVersion(ProtocolVersion selectedProtocolVersion) {
         this.selectedProtocolVersion = selectedProtocolVersion;
+    }
+
+    public List<ProtocolVersion> getCommonProtocolVersions() {
+        return commonProtocolVersions;
+    }
+
+    public void setCommonProtocolVersions(List<ProtocolVersion> commonProtocolVersions) {
+        this.commonProtocolVersions = commonProtocolVersions;
     }
 
     public List<CipherSuite> getClientSupportedCiphersuites() {
