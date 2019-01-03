@@ -14,6 +14,8 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClient;
 import de.rub.nds.tlsscanner.report.CiphersuiteRater;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -86,6 +88,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private void checkSelectedProtocolVersion(SiteReport report, SimulatedClient simulatedClient) {
         if (report.getVersions() != null) {
             List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
+            Collections.sort(report.getVersions());
+            Collections.sort(simulatedClient.getSupportedVersionList());
             for (ProtocolVersion serverVersion : report.getVersions()) {
                 if (simulatedClient.getSupportedVersionList().contains(serverVersion)) {
                     commonProtocolVersions.add(serverVersion);

@@ -47,7 +47,6 @@ public class ProtocolVersionProbe extends TlsProbe {
     public ProtocolVersionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.PROTOCOL_VERSION, config, 0);
         toTestList = new LinkedList<>();
-        //List must be sorted in ascending order
         toTestList.add(ProtocolVersion.SSL2);
         toTestList.add(ProtocolVersion.SSL3);
         toTestList.add(ProtocolVersion.TLS10);
