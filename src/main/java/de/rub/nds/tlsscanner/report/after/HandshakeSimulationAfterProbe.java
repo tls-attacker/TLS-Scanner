@@ -95,6 +95,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
                     commonProtocolVersions.add(serverVersion);
                 }
             }
+            Collections.sort(commonProtocolVersions);
             simulatedClient.setCommonProtocolVersions(commonProtocolVersions);
             if (!commonProtocolVersions.isEmpty()
                     && commonProtocolVersions.get(commonProtocolVersions.size() - 1).equals(simulatedClient.getSelectedProtocolVersion())) {
