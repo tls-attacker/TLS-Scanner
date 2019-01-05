@@ -104,32 +104,36 @@ public class SiteReportPrinter {
     private StringBuilder appendHsNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Overview");
         prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
+        builder.append("\n");
         String identifier;
-        identifier = "Successful Handshakes";
+        identifier = "Handshakes - Successful";
         if (report.getHandshakeSuccessfulCounter() == 0) {
             prettyAppendRed(builder, identifier, Integer.toString(report.getHandshakeSuccessfulCounter()));
         } else {
             prettyAppendGreen(builder, identifier, Integer.toString(report.getHandshakeSuccessfulCounter()));
         }
-        identifier = "Failed Handshakes";
+        identifier = "Handshakes - Failed";
         if (report.getHandshakeFailedCounter() == 0) {
             prettyAppendGreen(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()));
         } else {
             prettyAppendRed(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()));
         }
         builder.append("\n");
-        identifier = "Secure Connections (RFC 7918)";
+        identifier = "Connections - Secure (RFC 7918)";
         if (report.getConnectionRfc7918SecureCounter() == 0) {
             prettyAppendRed(builder, identifier, Integer.toString(report.getConnectionRfc7918SecureCounter()));
         } else {
             prettyAppendGreen(builder, identifier, Integer.toString(report.getConnectionRfc7918SecureCounter()));
         }
-        identifier = "Insecure Connections";
+        identifier = "Connections - Insecure";
         if (report.getConnectionInsecureCounter() == 0) {
             prettyAppendGreen(builder, identifier, Integer.toString(report.getConnectionInsecureCounter()));
         } else {
             prettyAppendRed(builder, identifier, Integer.toString(report.getConnectionInsecureCounter()));
         }
+        identifier = "Connections - Undefined";
+        int undefined = report.getHandshakeSuccessfulCounter() - report.getConnectionRfc7918SecureCounter() - report.getConnectionInsecureCounter();
+        prettyAppend(builder, identifier, Integer.toString(undefined));
         prettyAppendHeading(builder, "Handshake Simulation - Default Versions Table");
         prettyAppendHsTable(builder, true);
         return builder;
@@ -322,7 +326,11 @@ public class SiteReportPrinter {
                     prettyAppend(builder, "", reason);
                 }
             }
-            prettyAppendGreenRed(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure());
+            if (simulatedClient.getConnectionRfc7918Secure() != null && simulatedClient.getConnectionRfc7918Secure()) {
+                prettyAppendGreen(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure().toString());
+            } else {
+                prettyAppend(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure());
+            }
             builder.append("\n");
             prettyAppend(builder, "Protocol Version Selected", getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), "%s"));
             prettyAppend(builder, "Protocol Versions Client", simulatedClient.getSupportedVersionList().toString());
