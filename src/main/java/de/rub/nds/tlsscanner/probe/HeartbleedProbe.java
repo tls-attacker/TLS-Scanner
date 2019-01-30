@@ -54,10 +54,14 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        for (ExtensionType type : report.getSupportedExtensions()) {
-            if (type == ExtensionType.HEARTBEAT) {
-                return true;
+        if (report.getSupportedExtensions() != null) {
+            for (ExtensionType type : report.getSupportedExtensions()) {
+                if (type == ExtensionType.HEARTBEAT) {
+                    return true;
+                }
             }
+        } else {
+            return true;
         }
         return false;
     }
