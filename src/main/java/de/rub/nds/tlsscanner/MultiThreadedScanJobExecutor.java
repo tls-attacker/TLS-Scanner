@@ -170,7 +170,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
         boolean isNotReady = true;
         int done = 0;
         int tempDone = 0;
-        while (isNotReady) {
+        while (isNotReady && futureResults.size() > 0) {
             tempDone = 0;
             for (Future<ProbeResult> probeResult : futureResults) {
                 if (probeResult.isDone()) {
