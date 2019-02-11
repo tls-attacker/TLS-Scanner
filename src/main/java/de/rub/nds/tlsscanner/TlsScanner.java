@@ -133,7 +133,7 @@ public class TlsScanner {
         phaseTwoTestList.add(new RenegotiationProbe(config, parallelExecutor));
         phaseTwoTestList.add(new HeartbleedProbe(config, parallelExecutor));
         phaseTwoTestList.add(new PaddingOracleProbe(config, parallelExecutor));
-        //phaseTwoTestList.add(new BleichenbacherProbe(config, parallelExecutor));
+        phaseTwoTestList.add(new BleichenbacherProbe(config, parallelExecutor));
         phaseTwoTestList.add(new PoodleProbe(config, parallelExecutor));
         phaseTwoTestList.add(new TlsPoodleProbe(config, parallelExecutor));
         phaseTwoTestList.add(new Cve20162107Probe(config, parallelExecutor));
