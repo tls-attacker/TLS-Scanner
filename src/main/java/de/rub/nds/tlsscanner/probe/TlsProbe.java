@@ -82,9 +82,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     public final void executeState(State... states) {
-        this.executeState(new ArrayList<State>(Arrays
-                .asList(states
-                )));
+        this.executeState(new ArrayList<State>(Arrays.asList(states)));
 
     }
 
@@ -96,24 +94,19 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     }
 
-    public abstract ProbeResult
-            executeTest();
+    public abstract ProbeResult executeTest();
 
-    public abstract boolean shouldBeExecuted(SiteReport report
-    );
+    public abstract boolean shouldBeExecuted(SiteReport report);
 
-    public abstract void adjustConfig(SiteReport report
-    );
+    public abstract void adjustConfig(SiteReport report);
 
     public abstract ProbeResult getNotExecutedResult();
 
     public ParallelExecutor getParallelExecutor() {
         return parallelExecutor;
-
     }
 
     public StatsWriter getWriter() {
         return writer;
-
     }
 }
