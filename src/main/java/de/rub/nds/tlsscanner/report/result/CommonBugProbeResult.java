@@ -8,7 +8,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
  * @author robert
  */
 public class CommonBugProbeResult extends ProbeResult {
-    
+
     private final Boolean extensionIntolerance; //does it handle unknown extenstions correctly?
     private final Boolean cipherSuiteIntolerance; //does it handle unknown ciphersuites correctly?
     private final Boolean cipherSuiteLengthIntolerance512; //does it handle long ciphersuite length values correctly?
@@ -46,7 +46,7 @@ public class CommonBugProbeResult extends ProbeResult {
         this.ignoresOfferedSignatureAndHashAlgorithms = ignoresOfferedSignatureAndHashAlgorithms;
         this.maxLengthClientHelloIntolerant = maxLengthClientHelloIntolerant;
     }
-    
+
     @Override
     protected void mergeData(SiteReport report) {
         report.setExtensionIntolerance(extensionIntolerance);
@@ -66,5 +66,5 @@ public class CommonBugProbeResult extends ProbeResult {
         report.setIgnoresOfferedSignatureAndHashAlgorithms(ignoresOfferedSignatureAndHashAlgorithms);
         report.setMaxLengthClientHelloIntolerant(maxLengthClientHelloIntolerant);
     }
-    
+
 }

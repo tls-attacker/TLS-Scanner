@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -38,5 +39,12 @@ public class ScanJob {
 
     public List<AfterProbe> getAfterProbes() {
         return afterList;
+    }
+
+    public List<TlsProbe> getJoinedProbes() {
+        List<TlsProbe> probeList = new LinkedList<>();
+        probeList.addAll(phaseOneTestList);
+        probeList.addAll(phaseTwoTestList);
+        return probeList;
     }
 }

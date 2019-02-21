@@ -123,7 +123,7 @@ public class CertificateReportGenerator {
                 report.setPublicKey(x509Cert.getPublicKey());
             }
         } catch (CertificateParsingException ex) {
-            LOGGER.warn("Could not parse PublicKey from certificate", ex);
+            LOGGER.error("Could not parse PublicKey from certificate", ex);
         }
     }
 

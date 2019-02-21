@@ -18,6 +18,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  *
@@ -38,23 +39,24 @@ public class Main {
             }
             // Cmd was parsable
             try {
+                if (config.getGeneralDelegate().isDebug()) {
+                    ThreadContext.put("ROUTINGKEY", "special");
+                }
                 TlsScanner scanner = new TlsScanner(config);
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
-                LOGGER.info("Scanned in:" + ((System.currentTimeMillis()-time)/1000) + "s\n");
-                if(!config.getGeneralDelegate().isDebug()){
+                LOGGER.info("Scanned in:" + ((System.currentTimeMillis() - time) / 1000) + "s\n");
+                if (!config.getGeneralDelegate().isDebug()) {
                     // ANSI escape sequences to erase the progressbar
                     ConsoleLogger.CONSOLE.info(AnsiEscapeSequence.ANSI_ONE_LINE_UP + AnsiEscapeSequence.ANSI_ERASE_LINE);
                 }
-                ConsoleLogger.CONSOLE.info("Scanned in: " + ((System.currentTimeMillis()-time)/1000) + "s\n" + report.getFullReport(config.getReportDetail()));
+                ConsoleLogger.CONSOLE.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail()));
             } catch (ConfigurationException E) {
-                LOGGER.info("Encountered a ConfigurationException aborting.");
-                LOGGER.warn(E);
+                LOGGER.error("Encountered a ConfigurationException aborting.", E);
             }
         } catch (ParameterException E) {
-            LOGGER.info("Could not parse provided parameters");
-            LOGGER.debug(E);
+            LOGGER.error("Could not parse provided parameters", E);
             commander.usage();
         }
     }

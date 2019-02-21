@@ -24,18 +24,18 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.bouncycastle.crypto.tls.Certificate;
 
-/**
- *
- * @author Robert Merget - robert.merget@rub.de
- */
 public class SiteReport {
 
     //general
@@ -69,6 +69,7 @@ public class SiteReport {
 
     //Attacks
     private Boolean bleichenbacherVulnerable = null;
+    private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private Boolean paddingOracleVulnerable = null;
     private List<PaddingOracleTestResult> paddingOracleTestResultList;
     private Boolean invalidCurveVulnerable = null;
@@ -211,6 +212,20 @@ public class SiteReport {
     private Integer hpkpMaxAge = null;
     private List<HpkpPin> normalHpkpPins;
     private List<HpkpPin> reportOnlyHpkpPins;
+
+    //Randomness
+    private List<ExtractedValueContainer> extractedValueContainerList;
+    private RandomEvaluationResult randomEvaluationResult;
+
+    //PublicKey Params
+    private Boolean ecPubkeyReuse = null;
+    private Boolean dhPubkeyReuse = null;
+    private Boolean usesCommonDhPrimes = null;
+    private Boolean usesNonPrimeModuli = null;
+    private Boolean usesNonSafePrimeModuli = null;
+    private Set<CommonDhValues> usedCommonDhValueList = null;
+    private Integer weakestDhStrength = null;
+
     //NoColor Flag
     private boolean noColor = false;
 
@@ -219,6 +234,7 @@ public class SiteReport {
         this.probeTypeList = probeTypeList;
         this.noColor = noColor;
         performanceList = new LinkedList<>();
+        extractedValueContainerList = new LinkedList<>();
     }
 
     public String getHost() {
@@ -1388,5 +1404,85 @@ public class SiteReport {
 
     public void setSupportsHpkpReportOnly(Boolean supportsHpkpReportOnly) {
         this.supportsHpkpReportOnly = supportsHpkpReportOnly;
+    }
+
+    public List<ExtractedValueContainer> getExtractedValueContainerList() {
+        return extractedValueContainerList;
+    }
+
+    public void setExtractedValueContainerList(List<ExtractedValueContainer> extractedValueContainerList) {
+        this.extractedValueContainerList = extractedValueContainerList;
+    }
+
+    public RandomEvaluationResult getRandomEvaluationResult() {
+        return randomEvaluationResult;
+    }
+
+    public void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
+        this.randomEvaluationResult = randomEvaluationResult;
+    }
+
+    public Boolean getEcPubkeyReuse() {
+        return ecPubkeyReuse;
+    }
+
+    public void setEcPubkeyReuse(Boolean ecPubkeyReuse) {
+        this.ecPubkeyReuse = ecPubkeyReuse;
+    }
+
+    public Boolean getDhPubkeyReuse() {
+        return dhPubkeyReuse;
+    }
+
+    public void setDhPubkeyReuse(Boolean dhPubkeyReuse) {
+        this.dhPubkeyReuse = dhPubkeyReuse;
+    }
+
+    public Boolean getUsesCommonDhPrimes() {
+        return usesCommonDhPrimes;
+    }
+
+    public void setUsesCommonDhPrimes(Boolean usesCommonDhPrimes) {
+        this.usesCommonDhPrimes = usesCommonDhPrimes;
+    }
+
+    public Boolean getUsesNonSafePrimeModuli() {
+        return usesNonSafePrimeModuli;
+    }
+
+    public void setUsesNonSafePrimeModuli(Boolean usesNonSafePrimeModuli) {
+        this.usesNonSafePrimeModuli = usesNonSafePrimeModuli;
+    }
+
+    public Set<CommonDhValues> getUsedCommonDhValueList() {
+        return usedCommonDhValueList;
+    }
+
+    public void setUsedCommonDhValueList(Set<CommonDhValues> usedCommonDhValueList) {
+        this.usedCommonDhValueList = usedCommonDhValueList;
+    }
+
+    public Boolean getUsesNonPrimeModuli() {
+        return usesNonPrimeModuli;
+    }
+
+    public void setUsesNonPrimeModuli(Boolean usesNonPrimeModuli) {
+        this.usesNonPrimeModuli = usesNonPrimeModuli;
+    }
+
+    public Integer getWeakestDhStrength() {
+        return weakestDhStrength;
+    }
+
+    public void setWeakestDhStrength(Integer weakestDhStrength) {
+        this.weakestDhStrength = weakestDhStrength;
+    }
+
+    public List<BleichenbacherTestResult> getBleichenbacherTestResultList() {
+        return bleichenbacherTestResultList;
+    }
+
+    public void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
+        this.bleichenbacherTestResultList = bleichenbacherTestResultList;
     }
 }

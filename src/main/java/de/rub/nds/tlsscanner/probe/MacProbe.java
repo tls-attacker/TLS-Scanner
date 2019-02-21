@@ -26,13 +26,10 @@ import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
@@ -49,6 +46,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.MacResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -117,8 +115,7 @@ public class MacProbe extends TlsProbe {
         trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
 
         State state = new State(config, trace);
-        WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
-        executor.executeWorkflow();
+        executeState(state);
 
         ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
         try {
@@ -237,7 +234,7 @@ public class MacProbe extends TlsProbe {
             stateList.add(state);
             stateIndexList.add(new StateIndexPair(i, state));
         }
-        parallelExecutor.bulkExecute(stateList);
+        executeState(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
             if (receviedOnlyFinAndCcs(trace)) {
@@ -283,7 +280,7 @@ public class MacProbe extends TlsProbe {
             stateIndexList.add(new StateIndexPair(i, state));
 
         }
-        parallelExecutor.bulkExecute(stateList);
+        executeState(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
             if (check == Check.APPDATA) {
@@ -336,12 +333,17 @@ public class MacProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
-        allSuiteList.addAll(report.getCipherSuites());
-        suiteList = new LinkedList<>();
-        for (CipherSuite suite : allSuiteList) {
-            if (suite.isUsingMac()) {
-                suiteList.add(suite);
+        if (report.getCipherSuites() != null) {
+
+            allSuiteList.addAll(report.getCipherSuites());
+            suiteList = new LinkedList<>();
+            for (CipherSuite suite : allSuiteList) {
+                if (suite.isUsingMac()) {
+                    suiteList.add(suite);
+                }
             }
+        } else {
+            allSuiteList = CipherSuite.getImplemented();
         }
     }
 

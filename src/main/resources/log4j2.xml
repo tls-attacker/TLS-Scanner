@@ -10,16 +10,36 @@
         <Console name="Direct" target="SYSTEM_OUT">
             <PatternLayout pattern="%highlight{%msg}%n"/>
         </Console>
-        <File name="File" fileName="log/info.log" immediateFlush="false" append="true">
+        <File name="File" fileName="log/info.log" immediateFlush="true" append="true">
             <PatternLayout pattern="%highlight{%d{HH:mm:ss}{GMT+0} [%t] %-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
         </File>    
+        <Routing name="Routing">
+            <Routes pattern="$${ctx:ROUTINGKEY}">
+     
+                <!-- This route is chosen if ThreadContext has value 'special' for key ROUTINGKEY. -->
+                <Route key="special">
+                    <Console name="DebugOnConsole" target="SYSTEM_OUT">
+                        <PatternLayout pattern="%highlight{%msg}%n"/>
+                    </Console>
+                </Route>
+     
+                <!-- This route is chosen if ThreadContext has no value for key ROUTINGKEY. -->
+                <Route key="$${ctx:ROUTINGKEY}">
+                    <File name="FileOnDebug" fileName="log/info.log" immediateFlush="true" append="true">
+                        <PatternLayout pattern="%highlight{%d{HH:mm:ss}{GMT+0} [%t] %-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
     </Appenders>
     <Loggers>
         
         <Logger name="ConsoleLogger" level="INFO" additivity="false">
-             <AppenderRef ref="Direct"/>
+            <AppenderRef ref="Direct"/>
         </Logger> 
-        
+        <Logger name="DirectLogger" level="warn"/>
+        <Logger name="de.rub.nds.tlsscanner.probe.TlsProbe" level="WARN"/>
+        <Logger name="de.rub.nds.tlsscanner.SingleThreadedScanJobExecutor" level="WARN"/>
         <Logger name="de.rub.nds.tlsattacker.core.protocol.handler" level="ERROR"/>
         <Logger name="de.rub.nds.tlsattacker.core.protocol.message" level="ERROR"/>
         <Logger name="de.rub.nds.tlsattacker.core.protocol.parser" level="ERROR"/>
@@ -40,8 +60,8 @@
         <Logger name="de.rub.nds.tlsattacker" level="ERROR"/>
         <Logger name="de.rub.nds.modifiablevariable" level="ERROR"/>
         
-        <Root level="INFO">
-            <AppenderRef ref="File"/>
+        <Root level="ERROR">
+            <AppenderRef ref="Routing"/>
         </Root>
     </Loggers>
 </Configuration>

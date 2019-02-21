@@ -18,24 +18,20 @@ public class PaddingOracleResult extends ProbeResult {
 
     private List<PaddingOracleTestResult> resultList;
 
-    public PaddingOracleResult(List<PaddingOracleTestResult> resultList) {
+    private Boolean vulnerable;
+
+    public PaddingOracleResult(List<PaddingOracleTestResult> resultList, Boolean vulnerable) {
         super(ProbeType.PADDING_ORACLE);
         this.resultList = resultList;
+        this.vulnerable = vulnerable;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        Boolean vulnerable = null;
-        if (resultList.isEmpty()) {
+        if (resultList.isEmpty() && vulnerable == null) {
             vulnerable = false;
         }
-        for (PaddingOracleTestResult result : resultList) {
-            if (result.getVulnerable() == true) {
-                vulnerable = true;
-            } else if (result.getVulnerable() == false && vulnerable == null) {
-                vulnerable = false;
-            }
-        }
+
         report.setPaddingOracleTestResultList(resultList);
         report.setPaddingOracleVulnerable(vulnerable);
     }

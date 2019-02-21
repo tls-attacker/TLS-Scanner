@@ -9,16 +9,11 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
-import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.RenegotiationResult;
@@ -75,13 +70,7 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
         State state = new State(tlsConfig);
-        WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
-                state);
-        try {
-            workflowExecutor.executeWorkflow();
-        } catch (WorkflowExecutionException ex) {
-            LOGGER.debug(ex);
-        }
+        executeState(state);
         return state.getWorkflowTrace().executedAsPlanned();
     }
 
@@ -107,19 +96,13 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
         State state = new State(tlsConfig);
-        WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(WorkflowExecutorType.DEFAULT,
-                state);
-        try {
-            workflowExecutor.executeWorkflow();
-        } catch (WorkflowExecutionException ex) {
-            LOGGER.debug(ex);
-        }
+        executeState(state);
         return state.getWorkflowTrace().executedAsPlanned();
     }
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        return (report.getCipherSuites().size() > 0);
+        return (report.getCipherSuites() != null && report.getCipherSuites().size() > 0);
     }
 
     @Override

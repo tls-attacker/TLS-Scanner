@@ -25,11 +25,13 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.CommonBugProbeResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.selector.ConfigSelector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.LogManager;
 
 /**
  *
@@ -80,7 +82,7 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     private Config getWorkingConfig() {
-        Config config = scannerConfig.createConfig();
+        Config config = ConfigSelector.getNiceConfig(scannerConfig);
 
         return config;
     }
@@ -118,7 +120,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
@@ -131,7 +133,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
@@ -155,7 +157,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
@@ -179,7 +181,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
         if (receivedShd) {
             LOGGER.debug("Received a SH for invalid NamedGroup, server selected: " + state.getTlsContext().getSelectedGroup().name());
@@ -195,7 +197,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
         ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
         if (receivedShd) {
@@ -232,7 +234,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
@@ -255,13 +257,13 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
         if (receivedShd) {
             trace.reset();
             extension.setSupportedGroups(Modifiable.insert(new byte[]{(byte) 0xED, (byte) 0xED}, 0));
             state = new State(config, trace);
-            parallelExecutor.bulkExecute(state);
+            executeState(state);
             receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
             return !receivedShd;
         } else {
@@ -287,7 +289,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
         return receivedShd;
     }
@@ -301,11 +303,12 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
     private Boolean hasVersionIntolerance() {
+
         Config config = getWorkingConfig();
         WorkflowTrace trace = new WorkflowTrace();
         ClientHelloMessage message = new ClientHelloMessage(config);
@@ -313,7 +316,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
@@ -325,7 +328,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
@@ -341,7 +344,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
@@ -353,7 +356,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
@@ -366,7 +369,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 
@@ -374,7 +377,7 @@ public class CommonBugProbe extends TlsProbe {
         Config config = getWorkingConfig();
         config.setAddAlpnExtension(true);
         config.setAddPaddingExtension(true);
-        
+
         WorkflowTrace trace = new WorkflowTrace();
         ClientHelloMessage message = new ClientHelloMessage(config);
         int newLength = 384 - getClientHelloLength(message, config) - config.getPaddingLength();
@@ -383,7 +386,7 @@ public class CommonBugProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
-        parallelExecutor.bulkExecute(state);
+        executeState(state);
         return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
     }
 }

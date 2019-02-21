@@ -52,6 +52,9 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-aggressiv", required = false, description = "The level of concurrent handshakes (only applies to some resource intensive tests)")
     private int aggroLevel = 1;
 
+    @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
+    private int timeout = 1000;
+
     private boolean noProgressbar = false;
 
     @ParametersDelegate
@@ -118,7 +121,7 @@ public class ScannerConfig extends TLSDelegateConfig {
     public Boolean isNoColor() {
         return noColor;
     }
-    
+
     public void setNoColor(boolean noColor) {
         this.noColor = noColor;
     }
@@ -143,8 +146,17 @@ public class ScannerConfig extends TLSDelegateConfig {
     public Config createConfig() {
         Config config = super.createConfig();
         config.setSniHostname(clientDelegate.getHost());
-        config.getDefaultClientConnection().setTimeout(1000);
         config.setStarttlsType(starttlsDelegate.getStarttlsType());
+        config.getDefaultClientConnection().setTimeout(timeout);
+
         return config;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 }
