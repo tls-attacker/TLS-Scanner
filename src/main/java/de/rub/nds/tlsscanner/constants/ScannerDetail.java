@@ -9,6 +9,20 @@ package de.rub.nds.tlsscanner.constants;
  *
  * @author robert
  */
-public enum ScannerDetail {
-    ALL, DETAILED, NORMAL,
+public enum ScannerDetail implements Comparable<ScannerDetail> {
+    ALL(100), DETAILED(75), NORMAL(50), QUICK(25);
+
+    private int levelValue;
+
+    private ScannerDetail(int levelValue) {
+        this.levelValue = levelValue;
+    }
+
+    public int getLevelValue() {
+        return levelValue;
+    }
+
+    public boolean isGreaterEqualTo(ScannerDetail detail) {
+        return levelValue >= detail.getLevelValue();
+    }
 }

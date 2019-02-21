@@ -97,8 +97,8 @@ public class PaddingOracleProbe extends TlsProbe {
         boolean vulnerable = false;
 
         for (ProtocolVersion version : versionList) {
-            if (vulnerable) {
-                break;
+            if (vulnerable && scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.QUICK)) {
+
             }
             VersionSuiteListPair suitePairList = null;
             for (VersionSuiteListPair versionSuiteList : serverSupportedSuites) {
@@ -111,9 +111,6 @@ public class PaddingOracleProbe extends TlsProbe {
                 continue;
             }
             for (PaddingVectorGeneratorType vectorType : vectorTypeList) {
-                if (vulnerable) {
-                    break;
-                }
                 Set<CipherSuite> set = new HashSet<>(suitePairList.getCiphersuiteList());
                 filterSuite(set);
                 for (CipherSuite suite : set) {
@@ -125,7 +122,6 @@ public class PaddingOracleProbe extends TlsProbe {
                         PaddingOracleTestResult result = createTestResult(version, suite, paddingOracleConfig);
                         if (result.getVulnerable() == Boolean.TRUE) {
                             vulnerable = true;
-                            break;
                         }
                         testResultList.add(result);
                     }
@@ -170,12 +166,13 @@ public class PaddingOracleProbe extends TlsProbe {
     private PaddingOracleTestResult createTestResult(ProtocolVersion version, CipherSuite suite, PaddingOracleCommandConfig paddingOracleConfig) {
 
         Boolean result;
-        try {
-            Thread.currentThread().sleep(10000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(PaddingOracleProbe.class.getName()).log(Level.SEVERE, null, ex);
-        }
         PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, scannerConfig.createConfig(), getParallelExecutor());
+        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            attacker.setAdditionalTimeout(1000);
+            attacker.setIncreasingTimeout(true);
+        } else {
+            attacker.setAdditionalTimeout(50);
+        }
         boolean hasError = false;
         try {
             result = attacker.isVulnerable();
