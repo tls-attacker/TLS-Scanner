@@ -13,7 +13,11 @@ import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1Vector;
 import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1VectorGenerator;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -31,8 +35,11 @@ import java.util.List;
  */
 public class BleichenbacherProbe extends TlsProbe {
 
+    private List<CipherSuite> suiteList;
+
     public BleichenbacherProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.BLEICHENBACHER, config, 10);
+        suiteList = new LinkedList<>();
     }
 
     @Override
@@ -40,7 +47,7 @@ public class BleichenbacherProbe extends TlsProbe {
         BleichenbacherCommandConfig bleichenbacherConfig = new BleichenbacherCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) bleichenbacherConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-
+        ((CiphersuiteDelegate) (bleichenbacherConfig.getDelegate(CiphersuiteDelegate.class))).setCipherSuites(suiteList);
         RSAPublicKey publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(bleichenbacherConfig.createConfig());
         if (publicKey == null) {
             LOGGER.info("Could not retrieve PublicKey from Server - is the Server running?");
@@ -74,6 +81,19 @@ public class BleichenbacherProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
+        if (report.getCipherSuites() != null) {
+            for (CipherSuite suite : report.getCipherSuites()) {
+                if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA) {
+                    suiteList.add(suite);
+                }
+            }
+        } else {
+            for (CipherSuite suite : CipherSuite.values()) {
+                if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA) {
+                    suiteList.add(suite);
+                }
+            }
+        }
     }
 
     @Override
