@@ -128,10 +128,12 @@ public class PaddingOracleProbe extends TlsProbe {
                 }
             }
         }
-        if (vulnerable && recordGeneratorType != PaddingRecordGeneratorType.SHORT) {
+        if (vulnerable && (ScannerDetail.QUICK != scannerConfig.getScanDetail())) {
             testResultList.clear();
             //Perform full scan
-            recordGeneratorType = PaddingRecordGeneratorType.SHORT;
+            if (recordGeneratorType == PaddingRecordGeneratorType.VERY_SHORT) {
+                recordGeneratorType = PaddingRecordGeneratorType.SHORT;
+            }
             for (ProtocolVersion version : versionList) {
 
                 VersionSuiteListPair suitePairList = null;
