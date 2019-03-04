@@ -427,7 +427,7 @@ public class SiteReportPrinter {
                 builder.append(version.name()).append("\n");
             }
             prettyAppendHeading(builder, "Versions");
-            prettyAppendRedGreen(builder, "SSL 2.0", report.getSupportsSsl2());
+            prettyAppendUnderlined(builder, "SSL 2.0", report.getSupportsSsl2());
             prettyAppendRedGreen(builder, "SSL 3.0", report.getSupportsSsl3());
             prettyAppendYellowOnFailure(builder, "TLS 1.0", report.getSupportsTls10());
             prettyAppendYellowOnFailure(builder, "TLS 1.1", report.getSupportsTls11());
@@ -689,6 +689,18 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE : AnsiColors.ANSI_RESET) + "\n--------------------------------------------------------\n" + value + "\n\n" + AnsiColors.ANSI_RESET);
+    }
+    
+    private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, String value){
+        return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
+    }
+    
+    private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, boolean value){
+        return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
+    }
+    
+    private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, long value){
+        return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
     }
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
