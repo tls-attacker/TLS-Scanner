@@ -427,7 +427,7 @@ public class SiteReportPrinter {
                 builder.append(version.name()).append("\n");
             }
             prettyAppendHeading(builder, "Versions");
-            prettyAppendUnderlined(builder, "SSL 2.0", report.getSupportsSsl2());
+            prettyAppendRedGreen(builder, "SSL 2.0", report.getSupportsSsl2());
             prettyAppendRedGreen(builder, "SSL 3.0", report.getSupportsSsl3());
             prettyAppendYellowOnFailure(builder, "TLS 1.0", report.getSupportsTls10());
             prettyAppendYellowOnFailure(builder, "TLS 1.1", report.getSupportsTls11());
