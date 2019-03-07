@@ -253,11 +253,8 @@ public class SiteReportPrinter {
 
     private StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
         prettyAppendHeading(builder, "Attack Vulnerabilities");
-        prettyAppendSubheadingFirst(builder, "Subheading");
         prettyAppendRedGreen(builder, "Padding Oracle", report.getPaddingOracleVulnerable());
-        prettyAppendSubheadingSecond(builder, "SubSubheading");
         prettyAppendRedGreen(builder, "Bleichenbacher", report.getBleichenbacherVulnerable());
-        prettyAppendSubheadingThird(builder, "SubSubHeading");
         prettyAppendRedGreen(builder, "CRIME", report.getCrimeVulnerable());
         prettyAppendRedGreen(builder, "Breach", report.getBreachVulnerable());
         prettyAppendRedGreen(builder, "Invalid Curve", report.getInvalidCurveVulnerable());
