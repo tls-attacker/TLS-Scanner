@@ -706,17 +706,17 @@ public class SiteReportPrinter {
         return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
     }
     
-    private StringBuilder prettyAppendSubheadingFirst(StringBuilder builder, String name){
+    private StringBuilder prettyAppendSubheading(StringBuilder builder, String name){
         depth = 1;
         return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE : AnsiColors.ANSI_RESET) + "|_\n |" + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET);
     }
     
-    private StringBuilder prettyAppendSubheadingSecond(StringBuilder builder, String name){
+    private StringBuilder prettyAppendSubSubheading(StringBuilder builder, String name){
         depth = 2;
         return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE : AnsiColors.ANSI_RESET) + "|_\n |_\n  |" + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET);
     }
     
-    private StringBuilder prettyAppendSubheadingThird(StringBuilder builder, String name){
+    private StringBuilder prettyAppendSubSubSubheading(StringBuilder builder, String name){
         depth = 3;
         return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE : AnsiColors.ANSI_RESET) + "|_\n |_\n  |_\n   |" + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET);
     }
@@ -848,5 +848,9 @@ public class SiteReportPrinter {
                 prettyAppendGreen(builder, "Good");
                 break;
         }
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
     }
 }
