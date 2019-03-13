@@ -13,7 +13,7 @@ public class HttpHeaderResult extends ProbeResult {
     private List<HttpsHeader> headerList = null;
     private Boolean speaksHttps = null;
     private Boolean supportsHsts = false;
-    private Integer hstsMaxAge = null;
+    private Long hstsMaxAge = null;
     private Integer hpkpMaxAge = null;
     private Boolean hstsCeasing = null;
     private Boolean hstsIncludesSubdomains = false;
@@ -53,7 +53,7 @@ public class HttpHeaderResult extends ProbeResult {
                         String[] maxAge = value.split("=");
                         if (maxAge.length == 2) {
                             try {
-                                hstsMaxAge = Integer.parseInt(maxAge[1].trim());
+                                hstsMaxAge = Long.parseLong(maxAge[1].trim());
                             } catch (Exception E) {
                                 E.printStackTrace();
                                 hstsNotParseable = true;

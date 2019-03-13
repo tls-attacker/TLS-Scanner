@@ -205,7 +205,7 @@ public class SiteReport {
     private Boolean speaksHttps;
     private List<HttpsHeader> headerList = null;
     private Boolean supportsHsts = null;
-    private Integer hstsMaxAge = null;
+    private Long hstsMaxAge = null;
     private Boolean supportsHstsPreloading = null;
     private Boolean supportsHpkp = null;
     private Boolean supportsHpkpReportOnly = null;
@@ -1366,11 +1366,11 @@ public class SiteReport {
         this.speaksHttps = speaksHttps;
     }
 
-    public Integer getHstsMaxAge() {
+    public Long getHstsMaxAge() {
         return hstsMaxAge;
     }
 
-    public void setHstsMaxAge(Integer hstsMaxAge) {
+    public void setHstsMaxAge(Long hstsMaxAge) {
         this.hstsMaxAge = hstsMaxAge;
     }
 
