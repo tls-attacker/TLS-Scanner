@@ -33,8 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -62,7 +60,9 @@ public class PaddingOracleProbe extends TlsProbe {
 
         List<PaddingOracleTestResult> testResultList = new LinkedList<>();
         PaddingRecordGeneratorType recordGeneratorType;
-        if (scannerConfig.getScanDetail() == ScannerDetail.NORMAL) {
+        if (scannerConfig.getScanDetail() == ScannerDetail.QUICK) {
+            recordGeneratorType = PaddingRecordGeneratorType.VERY_SHORT;
+        } else if (scannerConfig.getScanDetail() == ScannerDetail.NORMAL) {
             recordGeneratorType = PaddingRecordGeneratorType.SHORT;
         } else {
             recordGeneratorType = PaddingRecordGeneratorType.SHORT;
