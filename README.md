@@ -36,7 +36,7 @@ You can specify a host you want to scan with the -connect parameter. If you want
 
 
 # Docker
-We provide you with a Dockerfile which lets you run the scanner directly:
+We provide you with a Dockerfile, which lets you run the scanner directly:
 
 ```bash
 $ docker build . -t tlsscanner
