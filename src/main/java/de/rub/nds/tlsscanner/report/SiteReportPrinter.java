@@ -76,7 +76,7 @@ public class SiteReportPrinter {
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
-        appendGcm(builder);
+        //appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
         appendSession(builder);
@@ -102,7 +102,7 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "Renegotioation & SCSV");
         prettyAppendYellowOnSuccess(builder, "Clientside Secure", report.getSupportsClientSideSecureRenegotiation());
         prettyAppendRedOnSuccess(builder, "Clientside Insecure", report.getSupportsClientSideInsecureRenegotiation());
-        prettyAppendRedOnFailure(builder, "SCSV Fallback", report.getTlsFallbackSCSVsupported());
+        //prettyAppendRedOnFailure(builder, "SCSV Fallback", report.getTlsFallbackSCSVsupported());
         return builder;
     }
 
@@ -188,10 +188,10 @@ public class SiteReportPrinter {
             prettyAppendRedOnSuccess(builder, "Expired Certificates", report.getCertificateExpired());
             prettyAppendRedOnSuccess(builder, "Not yet Valid Certificates", report.getCertificateNotYetValid());
             prettyAppendRedOnSuccess(builder, "Weak Hash Algorithms", report.getCertificateHasWeakHashAlgorithm());
-            prettyAppendRedOnSuccess(builder, "Weak Signature Algorithms ", report.getCertificateHasWeakSignAlgorithm());
-            prettyAppendRedOnFailure(builder, "Matches Domain", report.getCertificateMachtesDomainName());
-            prettyAppendGreenOnSuccess(builder, "Only Trusted", report.getCertificateIsTrusted());
-            prettyAppendRedOnFailure(builder, "Contains Blacklisted", report.getCertificateKeyIsBlacklisted());
+            //prettyAppendRedOnSuccess(builder, "Weak Signature Algorithms ", report.getCertificateHasWeakSignAlgorithm());
+            //prettyAppendRedOnFailure(builder, "Matches Domain", report.getCertificateMachtesDomainName());
+            //prettyAppendGreenOnSuccess(builder, "Only Trusted", report.getCertificateIsTrusted());
+            //prettyAppendRedOnFailure(builder, "Contains Blacklisted", report.getCertificateKeyIsBlacklisted());
         }
         return builder;
     }
@@ -200,9 +200,9 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "Session");
         prettyAppendGreenYellow(builder, "Supports Session resumption", report.getSupportsSessionIds());
         prettyAppendGreenYellow(builder, "Supports Session Tickets", report.getSupportsSessionTicket());
-        prettyAppend(builder, "Session Ticket Hint", report.getSessionTicketLengthHint());
-        prettyAppendYellowOnFailure(builder, "Session Ticket Rotation", report.getSessionTicketGetsRotated());
-        prettyAppendRedOnFailure(builder, "Ticketbleed", report.getVulnerableTicketBleed());
+        //prettyAppend(builder, "Session Ticket Hint", report.getSessionTicketLengthHint());
+        //prettyAppendYellowOnFailure(builder, "Session Ticket Rotation", report.getSessionTicketGetsRotated());
+        //prettyAppendRedOnFailure(builder, "Ticketbleed", report.getVulnerableTicketBleed());
         return builder;
     }
 
@@ -451,7 +451,7 @@ public class SiteReportPrinter {
             prettyAppend(builder, "DH", report.getSupportsDh());
             prettyAppend(builder, "ECDH", report.getSupportsEcdh());
             prettyAppendYellowOnSuccess(builder, "GOST", report.getSupportsGost());
-            prettyAppend(builder, "SRP", report.getSupportsSrp());
+            //prettyAppend(builder, "SRP", report.getSupportsSrp());
             prettyAppend(builder, "Kerberos", report.getSupportsKerberos());
             prettyAppend(builder, "Plain PSK", report.getSupportsPskPlain());
             prettyAppend(builder, "PSK RSA", report.getSupportsPskRsa());
@@ -587,9 +587,9 @@ public class SiteReportPrinter {
 
     private void appendPublicKeyIssues(StringBuilder builder) {
         prettyAppendHeading(builder, "PublicKey Parameter");
-        prettyAppendRedGreen(builder, "EC PublicKey reuse", report.getEcPubkeyReuse());
-        prettyAppendRedGreen(builder, "DH PublicKey reuse", report.getDhPubkeyReuse());
-        prettyAppendRedGreen(builder, "Uses Common DH Primes", report.getUsesCommonDhPrimes());
+        prettyAppendYellowGreen(builder, "EC PublicKey reuse", report.getEcPubkeyReuse());
+        prettyAppendYellowGreen(builder, "DH PublicKey reuse", report.getDhPubkeyReuse());
+        prettyAppendYellowGreen(builder, "Uses Common DH Primes", report.getUsesCommonDhPrimes());
         if (report.getUsedCommonDhValueList().size() != 0) {
             for (CommonDhValues value : report.getUsedCommonDhValueList()) {
                 prettyAppendRed(builder, "\t" + value.getName());
@@ -718,6 +718,10 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendGreenYellow(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
+    }
+
+    private StringBuilder prettyAppendYellowGreen(StringBuilder builder, String name, Boolean value) {
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColour() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColour() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendYellow(StringBuilder builder, String value) {
@@ -881,7 +885,7 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "Contains UnixTime");
                 break;
             case NO_DUPLICATES:
-                prettyAppendGreen(builder, "Good");
+                prettyAppendGreen(builder, "No Duplicates (wip)");
                 break;
         }
     }
