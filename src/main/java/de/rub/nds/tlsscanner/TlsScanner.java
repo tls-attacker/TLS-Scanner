@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsattacker.attacks.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -46,6 +47,7 @@ import de.rub.nds.tlsscanner.report.after.EcPublicKeyAfterProbe;
 import de.rub.nds.tlsscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
+import de.rub.nds.tlsscanner.report.after.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import java.util.LinkedList;
 import java.util.List;
@@ -147,6 +149,7 @@ public class TlsScanner {
         afterList.add(new EvaluateRandomnessAfterProbe());
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
+        afterList.add(new PaddingOracleIdentificationAfterProbe());
     }
 
     public SiteReport scan() {
@@ -154,7 +157,7 @@ public class TlsScanner {
         try {
             if (isConnectable()) {
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-                if (speaksTls()) {
+                if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls()) || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
                     SiteReport report = executor.execute(config, job);
@@ -191,5 +194,11 @@ public class TlsScanner {
         Config tlsConfig = config.createConfig();
         ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
         return checker.speaksTls(tlsConfig);
+    }
+
+    private boolean speaksStartTls() {
+        Config tlsConfig = config.createConfig();
+        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+        return checker.speaksStartTls(tlsConfig);
     }
 }
