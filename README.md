@@ -33,3 +33,14 @@ $ java -jar apps/TLS-Scanner.jar -connect localhost:4433
 ```
 
 You can specify a host you want to scan with the -connect parameter. If you want to improve the performance of the scan you can use the -threads parameter (default=1).
+
+
+# Docker
+We provide you with a Dockerfile, which lets you run the scanner directly:
+
+```bash
+$ docker build . -t tlsscanner
+$ docker run -t tlsscanner
+```
+
+**Please note:**  *I am by no means familiar with Docker best practices. If you know how to improve the Dockerfile feel free to issue a pullrequest*
