@@ -28,15 +28,19 @@ import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
+import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 public class SiteReportPrinter {
 
@@ -251,7 +255,11 @@ public class SiteReportPrinter {
 
     private StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
         prettyAppendHeading(builder, "Attack Vulnerabilities");
-        prettyAppendRedGreen(builder, "Padding Oracle", report.getPaddingOracleVulnerable());
+        if (report.getKnownVulnerability() == null) {
+            prettyAppendRedGreen(builder, "Padding Oracle", report.getPaddingOracleVulnerable());
+        } else {
+            prettyAppendRed(builder, "Padding Oracle", "true - " + report.getKnownVulnerability().getShortName());
+        }
         prettyAppendRedGreen(builder, "Bleichenbacher", report.getBleichenbacherVulnerable());
         prettyAppendRedGreen(builder, "CRIME", report.getCrimeVulnerable());
         prettyAppendRedGreen(builder, "Breach", report.getBreachVulnerable());
@@ -269,56 +277,105 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendPaddingOracleResults(StringBuilder builder) {
-        prettyAppendHeading(builder, "PaddingOracle Details");
+        if (report.getPaddingOracleVulnerable() == Boolean.TRUE) {
+            prettyAppendHeading(builder, "PaddingOracle Details");
+
+            if (report.getKnownVulnerability() != null) {
+                KnownPaddingOracleVulnerability knownVulnerability = report.getKnownVulnerability();
+                prettyAppendRed(builder, "Identification", knownVulnerability.getLongName());
+                prettyAppendRed(builder, "CVE", knownVulnerability.getCve());
+                if (knownVulnerability.getStrength() != PaddingOracleStrength.WEAK) {
+                    prettyAppendRed(builder, "Strength", "" + knownVulnerability.getStrength());
+                } else {
+                    prettyAppendYellow(builder, "Strength", "" + knownVulnerability.getStrength());
+                }
+                if (knownVulnerability.isObservable()) {
+                    prettyAppendRed(builder, "Observable", "" + knownVulnerability.isObservable());
+                } else {
+                    prettyAppendYellow(builder, "Observable", "" + knownVulnerability.isObservable());
+                }
+                prettyAppend(builder, "\n");
+                prettyAppend(builder, knownVulnerability.getDescription());
+                prettyAppendHeading(builder, "Affected Products");
+
+                for (String s : knownVulnerability.getAffectedProducts()) {
+                    prettyAppendYellow(builder, s);
+                }
+                prettyAppend(builder, "");
+                prettyAppend(builder, "If your tested software/hardware is not in this list, please let us know so we can add it here.");
+            } else {
+                prettyAppendYellow(builder, "Identification", "Could not identify vulnerability. Please contact us if you know which software/hardware is generating this behavior.");
+            }
+        }
+        prettyAppendHeading(builder, "PaddingOracle Responsemap");
         if (report.getPaddingOracleTestResultList() == null || report.getPaddingOracleTestResultList().isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
-            for (PaddingOracleTestResult testResult : report.getPaddingOracleTestResultList()) {
+            for (PaddingOracleCipherSuiteFingerprint testResult : report.getPaddingOracleTestResultList()) {
                 String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
-                if (testResult.getVulnerable() == null || testResult.isHasScanningError()) {
+                if (testResult.isHasScanningError()) {
                     prettyAppendYellow(builder, resultString + "\t # Error during Scan");
-                } else if (testResult.getVulnerable() == Boolean.TRUE) {
+                } else if (Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) {
                     prettyAppendRed(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE");
-                } else if (testResult.getVulnerable() == Boolean.FALSE) {
+                } else if (testResult.isShakyScans()) {
+                    prettyAppendYellow(builder, resultString + "\t - Non Deterministic");
+                } else if (Objects.equals(testResult.getVulnerable(), Boolean.FALSE)) {
                     prettyAppendGreen(builder, resultString + "\t - No Behavior Difference");
+                } else {
+                    prettyAppendYellow(builder, resultString + "\t # Unknown");
                 }
 
                 if ((detail == ScannerDetail.DETAILED && testResult.getVulnerable() == Boolean.TRUE) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppendYellow(builder, "Response Map");
-                        if (testResult.getResponseMap() != null && testResult.getResponseMap() != null) {
-                            for (int i = 0; i < testResult.getResponseMap().size(); i++) {
-                                VectorResponse vectorResponse = testResult.getResponseMap().get(i);
-                                if (vectorResponse.isErrorDuringHandshake()) {
-                                    prettyAppendRed(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + "ERROR");
-                                } else if (vectorResponse.isMissingEquivalent()) {
-                                    prettyAppendRed(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
-                                } else if (vectorResponse.isShaky()) {
+                        appendPaddingOracleResponseMapList(builder, testResult.getResponseMapList());
+                    }
+                }
+            }
 
-                                    prettyAppendYellow(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
-                                    if (testResult.getResponseMapTwo() != null) {
-                                        VectorResponse secondRescanResponse = testResult.getResponseMapTwo().get(i);
-                                        if (secondRescanResponse != null && secondRescanResponse.getFingerprint() != null) {
-                                            prettyAppendYellow(builder, padToLength("\t\t" + secondRescanResponse.getFingerprint().toHumanReadable(), 40));
-                                        }
-                                        if (testResult.getResponseMapThree() != null) {
-                                            VectorResponse thirdRescanResponse = testResult.getResponseMapThree().get(i);
-                                            if (thirdRescanResponse != null && thirdRescanResponse.getFingerprint() != null) {
-                                                prettyAppendYellow(builder, padToLength("\t\t\t" + thirdRescanResponse.getFingerprint().toHumanReadable(), 40));
-                                            }
-                                        }
-                                    }
+        }
+        return builder;
+    }
+
+    private StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder, List<List<VectorResponse>> responseMapList) {
+        if (responseMapList != null || !responseMapList.isEmpty()) {
+            for (int vectorIndex = 0; vectorIndex < responseMapList.get(0).size(); vectorIndex++) {
+                VectorResponse vectorResponse = responseMapList.get(0).get(vectorIndex);
+                if (vectorResponse.isErrorDuringHandshake()) {
+                    prettyAppendRed(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + "ERROR");
+                } else if (vectorResponse.isMissingEquivalent()) {
+                    prettyAppendRed(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+                } else if (vectorResponse.isShaky()) {
+                    prettyAppendYellow(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+
+                    for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
+                        VectorResponse shakyVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
+                        if (shakyVectorResponse.getFingerprint() == null) {
+                            prettyAppendYellow(builder, "\t" + padToLength("", 39) + "null");
+                        } else {
+                            prettyAppendYellow(builder, "\t" + padToLength("", 39) + shakyVectorResponse.getFingerprint().toHumanReadable());
+                        }
+                    }
+                } else {
+                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+                    if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                        for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
+                            VectorResponse tempVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
+                            if (tempVectorResponse == null || tempVectorResponse.getFingerprint() == null) {
+                                prettyAppendRed(builder, "\t" + padToLength("", 39) + "Missing");
+                            } else {
+                                if (tempVectorResponse.isShaky()) {
+                                    prettyAppendYellow(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable());
                                 } else {
-                                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+                                    prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable());
                                 }
                             }
-
-                        } else {
-                            prettyAppend(builder, "\tNULL");
                         }
                     }
                 }
             }
+        } else {
+            prettyAppend(builder, "\tNULL");
         }
         return builder;
     }
@@ -689,6 +746,18 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_BLUE : AnsiColors.ANSI_RESET) + "\n--------------------------------------------------------\n" + value + "\n\n" + AnsiColors.ANSI_RESET);
+    }
+
+    private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, String value) {
+        return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
+    }
+
+    private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, boolean value) {
+        return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
+    }
+
+    private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, long value) {
+        return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
     }
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {

@@ -7,22 +7,24 @@ package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import java.util.List;
 
 /**
  *
  * @author Robert Merget <robert.merget@rub.de>
  */
-public class PaddingOracleResult extends ProbeResult {
+public class PaddingOracleResponseMap extends ProbeResult {
 
-    private List<PaddingOracleTestResult> resultList;
+    private final List<PaddingOracleCipherSuiteFingerprint> resultList;
+    private final List<PaddingOracleCipherSuiteFingerprint> shakyEvalList;
 
     private Boolean vulnerable;
 
-    public PaddingOracleResult(List<PaddingOracleTestResult> resultList, Boolean vulnerable) {
+    public PaddingOracleResponseMap(List<PaddingOracleCipherSuiteFingerprint> resultList, List<PaddingOracleCipherSuiteFingerprint> shakyEvalList, Boolean vulnerable) {
         super(ProbeType.PADDING_ORACLE);
         this.resultList = resultList;
+        this.shakyEvalList = shakyEvalList;
         this.vulnerable = vulnerable;
     }
 
@@ -33,6 +35,12 @@ public class PaddingOracleResult extends ProbeResult {
         }
 
         report.setPaddingOracleTestResultList(resultList);
+        report.setPaddingOracleShakyEvalResultList(shakyEvalList);
         report.setPaddingOracleVulnerable(vulnerable);
     }
+
+    public List<PaddingOracleCipherSuiteFingerprint> getResultList() {
+        return resultList;
+    }
+
 }

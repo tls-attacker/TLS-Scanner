@@ -4,6 +4,7 @@ import de.rub.nds.tlsattacker.attacks.config.DrownCommandConfig;
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.impl.DrownAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -22,6 +23,8 @@ public class DrownProbe extends TlsProbe {
         DrownCommandConfig drownCommandConfig = new DrownCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
+        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         DrownAttacker attacker = new DrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
         DrownVulnerabilityType drownVulnerabilityType = attacker.getDrownVulnerabilityType();
         return new DrownResult(drownVulnerabilityType);
