@@ -23,7 +23,7 @@ $ mvn clean install
 
 For hints on installing the required libraries checkout the corresponding GitHub repositories.
 
-**Please note:**  *In order to run this tool you need TLS-Attacker version 2.8*
+**Please note:**  *In order to run this tool you need TLS-Attacker version 2.9*
 
 # Running
 In order to run TLS-Scanner you need to run the jar file in the apps/ folder.
