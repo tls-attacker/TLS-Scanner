@@ -59,19 +59,17 @@ public class BleichenbacherProbe extends TlsProbe {
         LOGGER.info("Fetched the following server public key: " + publicKey);
         List<Pkcs1Vector> pkcs1Vectors;
         if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            pkcs1Vectors = Pkcs1VectorGenerator.generatePkcs1Vectors(publicKey, BleichenbacherCommandConfig.Type.FULL,
-                    bleichenbacherConfig.createConfig().getDefaultHighestClientProtocolVersion());
-
+            bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FULL);
         } else {
-            pkcs1Vectors = Pkcs1VectorGenerator.generatePkcs1Vectors(publicKey, BleichenbacherCommandConfig.Type.FAST,
-                    bleichenbacherConfig.createConfig().getDefaultHighestClientProtocolVersion());
+            bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FAST);
         }
         List<BleichenbacherTestResult> resultList = new LinkedList<>();
         boolean vulnerable = false;
         for (BleichenbacherWorkflowType bbWorkflowType : BleichenbacherWorkflowType.values()) {
+            bleichenbacherConfig.setWorkflowType(bbWorkflowType);
             LOGGER.debug("Testing: " + bbWorkflowType);
             BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig, scannerConfig.createConfig(), getParallelExecutor());
-            EqualityError errorType = attacker.isVulnerable(bbWorkflowType, pkcs1Vectors);
+            EqualityError errorType = attacker.getEqualityError();
             vulnerable |= (errorType != EqualityError.NONE);
             resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE, bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
         }
