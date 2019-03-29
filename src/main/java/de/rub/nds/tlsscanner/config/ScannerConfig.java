@@ -143,7 +143,12 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Override
     public Config createConfig() {
         Config config = super.createConfig(Config.createConfig());
-        config.setSniHostname(clientDelegate.getHost());
+        config.setAddServerNameIndicationExtension(true);
+        String sniHostname = clientDelegate.getHost();
+        if (sniHostname.contains(":")) {
+            sniHostname = sniHostname.split(":")[0];
+        }
+        config.setSniHostname(sniHostname);
         config.getDefaultClientConnection().setTimeout(timeout);
         return config;
     }
