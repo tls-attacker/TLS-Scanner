@@ -1288,7 +1288,7 @@ public class SiteReport {
         this.supportsStaticEcdh = supportsStaticEcdh;
     }
 
-    public boolean isNoColour() {
+    public boolean isNoColor() {
         return noColor;
     }
 
