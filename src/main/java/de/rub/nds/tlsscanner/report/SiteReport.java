@@ -24,12 +24,13 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,7 +72,9 @@ public class SiteReport {
     private Boolean bleichenbacherVulnerable = null;
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private Boolean paddingOracleVulnerable = null;
-    private List<PaddingOracleTestResult> paddingOracleTestResultList;
+    private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
+    private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
+    private KnownPaddingOracleVulnerability knownVulnerability = null;
     private Boolean invalidCurveVulnerable = null;
     private Boolean invalidCurveEphermaralVulnerable = null;
     private Boolean poodleVulnerable = null;
@@ -1318,11 +1321,11 @@ public class SiteReport {
         this.performanceList = performanceList;
     }
 
-    public List<PaddingOracleTestResult> getPaddingOracleTestResultList() {
+    public List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleTestResultList() {
         return paddingOracleTestResultList;
     }
 
-    public void setPaddingOracleTestResultList(List<PaddingOracleTestResult> paddingOracleTestResultList) {
+    public void setPaddingOracleTestResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 
@@ -1484,5 +1487,21 @@ public class SiteReport {
 
     public void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
         this.bleichenbacherTestResultList = bleichenbacherTestResultList;
+    }
+
+    public KnownPaddingOracleVulnerability getKnownVulnerability() {
+        return knownVulnerability;
+    }
+
+    public void setKnownVulnerability(KnownPaddingOracleVulnerability knownVulnerability) {
+        this.knownVulnerability = knownVulnerability;
+    }
+
+    public List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleShakyEvalResultList() {
+        return paddingOracleShakyEvalResultList;
+    }
+
+    public void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
+        this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
     }
 }

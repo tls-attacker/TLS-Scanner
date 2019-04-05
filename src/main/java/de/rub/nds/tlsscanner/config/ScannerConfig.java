@@ -23,8 +23,6 @@ import de.rub.nds.tlsscanner.constants.ScannerDetail;
  */
 public class ScannerConfig extends TLSDelegateConfig {
 
-    public static final String COMMAND = "scan";
-
     @ParametersDelegate
     private ClientDelegate clientDelegate;
 
@@ -144,11 +142,14 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Override
     public Config createConfig() {
-        Config config = super.createConfig();
-        config.setSniHostname(clientDelegate.getHost());
-        config.setStarttlsType(starttlsDelegate.getStarttlsType());
+        Config config = super.createConfig(Config.createConfig());
+        config.setAddServerNameIndicationExtension(true);
+        String sniHostname = clientDelegate.getHost();
+        if (sniHostname.contains(":")) {
+            sniHostname = sniHostname.split(":")[0];
+        }
+        config.setSniHostname(sniHostname);
         config.getDefaultClientConnection().setTimeout(timeout);
-
         return config;
     }
 

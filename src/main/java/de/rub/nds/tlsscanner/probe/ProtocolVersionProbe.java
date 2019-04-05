@@ -23,6 +23,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -135,7 +136,9 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setRecordLayerType(RecordLayerType.BLOB);
-        WorkflowTrace trace = new WorkflowTrace();
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
+        WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
+
         trace.addTlsAction(new SendAction(new SSL2ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveAction(new SSL2ServerHelloMessage(tlsConfig)));
         State state = new State(tlsConfig, trace);
