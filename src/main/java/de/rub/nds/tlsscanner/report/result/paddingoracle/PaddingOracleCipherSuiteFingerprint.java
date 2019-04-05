@@ -8,32 +8,26 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import java.util.List;
 
-public class PaddingOracleTestResult {
+public class PaddingOracleCipherSuiteFingerprint {
 
     private final Boolean vulnerable;
     private final ProtocolVersion version;
     private final CipherSuite suite;
     private final PaddingVectorGeneratorType vectorGeneratorType;
     private final PaddingRecordGeneratorType recordGeneratorType;
-    private final List<VectorResponse> responseMap;
-
-    //The response maps of the rescans
-    private final List<VectorResponse> responseMapTwo;
-    private final List<VectorResponse> responseMapThree;
+    private final List<List<VectorResponse>> responseMapList;
 
     private final EqualityError equalityError;
     private final boolean shakyScans;
     private final boolean hasScanningError;
 
-    public PaddingOracleTestResult(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType, List<VectorResponse> responseMap, List<VectorResponse> responseMapTwo, List<VectorResponse> responseMapThree, EqualityError equalityError, boolean shakyScans, boolean hasScanningError) {
+    public PaddingOracleCipherSuiteFingerprint(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType, List<List<VectorResponse>> responseMapList, EqualityError equalityError, boolean shakyScans, boolean hasScanningError) {
         this.vulnerable = vulnerable;
         this.version = version;
         this.suite = suite;
         this.vectorGeneratorType = vectorGeneratorType;
         this.recordGeneratorType = recordGeneratorType;
-        this.responseMap = responseMap;
-        this.responseMapTwo = responseMapTwo;
-        this.responseMapThree = responseMapThree;
+        this.responseMapList = responseMapList;
         this.equalityError = equalityError;
         this.shakyScans = shakyScans;
         this.hasScanningError = hasScanningError;
@@ -51,16 +45,8 @@ public class PaddingOracleTestResult {
         return vulnerable;
     }
 
-    public List<VectorResponse> getResponseMap() {
-        return responseMap;
-    }
-
-    public List<VectorResponse> getResponseMapTwo() {
-        return responseMapTwo;
-    }
-
-    public List<VectorResponse> getResponseMapThree() {
-        return responseMapThree;
+    public List<List<VectorResponse>> getResponseMapList() {
+        return responseMapList;
     }
 
     public ProtocolVersion getVersion() {

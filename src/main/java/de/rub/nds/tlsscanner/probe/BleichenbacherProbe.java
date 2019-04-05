@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1VectorGenerator;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
@@ -46,6 +47,8 @@ public class BleichenbacherProbe extends TlsProbe {
     public ProbeResult executeTest() {
         BleichenbacherCommandConfig bleichenbacherConfig = new BleichenbacherCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) bleichenbacherConfig.getDelegate(ClientDelegate.class);
+        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) bleichenbacherConfig.getDelegate(StarttlsDelegate.class);
+        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         ((CiphersuiteDelegate) (bleichenbacherConfig.getDelegate(CiphersuiteDelegate.class))).setCipherSuites(suiteList);
         RSAPublicKey publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(bleichenbacherConfig.createConfig());
@@ -56,19 +59,17 @@ public class BleichenbacherProbe extends TlsProbe {
         LOGGER.info("Fetched the following server public key: " + publicKey);
         List<Pkcs1Vector> pkcs1Vectors;
         if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            pkcs1Vectors = Pkcs1VectorGenerator.generatePkcs1Vectors(publicKey, BleichenbacherCommandConfig.Type.FULL,
-                    bleichenbacherConfig.createConfig().getDefaultHighestClientProtocolVersion());
-
+            bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FULL);
         } else {
-            pkcs1Vectors = Pkcs1VectorGenerator.generatePkcs1Vectors(publicKey, BleichenbacherCommandConfig.Type.FAST,
-                    bleichenbacherConfig.createConfig().getDefaultHighestClientProtocolVersion());
+            bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FAST);
         }
         List<BleichenbacherTestResult> resultList = new LinkedList<>();
         boolean vulnerable = false;
         for (BleichenbacherWorkflowType bbWorkflowType : BleichenbacherWorkflowType.values()) {
+            bleichenbacherConfig.setWorkflowType(bbWorkflowType);
             LOGGER.debug("Testing: " + bbWorkflowType);
             BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig, scannerConfig.createConfig(), getParallelExecutor());
-            EqualityError errorType = attacker.isVulnerable(bbWorkflowType, pkcs1Vectors);
+            EqualityError errorType = attacker.getEqualityError();
             vulnerable |= (errorType != EqualityError.NONE);
             resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE, bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
         }
