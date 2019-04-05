@@ -769,17 +769,17 @@ public class SiteReportPrinter {
     
     private StringBuilder prettyAppendSubheading(StringBuilder builder, String name){
         depth = 1;
-        return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE : AnsiColors.ANSI_RESET) + "|_\n |" + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET);
+        return builder.append("|_\n |" + (report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE +  AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET : name + "\n\n") );
     }
     
     private StringBuilder prettyAppendSubSubheading(StringBuilder builder, String name){
         depth = 2;
-        return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE : AnsiColors.ANSI_RESET) + "|_\n |_\n  |" + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET);
+        return builder.append("|_\n |_\n  |" + (report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET: name + "\n\n"));
     }
     
     private StringBuilder prettyAppendSubSubSubheading(StringBuilder builder, String name){
         depth = 3;
-        return builder.append((report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE : AnsiColors.ANSI_RESET) + "|_\n |_\n  |_\n   |" + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET);
+        return builder.append("|_\n |_\n  |_\n   |" + (report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET: name + "\n\n"));
     }
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
