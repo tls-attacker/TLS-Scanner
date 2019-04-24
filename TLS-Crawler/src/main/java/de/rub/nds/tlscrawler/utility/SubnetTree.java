@@ -101,6 +101,8 @@ public class SubnetTree {
             ipBytes[i] = (byte)Integer.parseInt(address[i]);
         }
 
+
+
         return ipBytes[0] << 24 | ipBytes[1] << 16 | ipBytes[2] << 8 | ipBytes[3];
     }
 }

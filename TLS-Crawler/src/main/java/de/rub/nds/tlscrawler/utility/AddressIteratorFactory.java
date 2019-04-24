@@ -133,7 +133,7 @@ public class AddressIteratorFactory {
     }
 
     private void addStandardBlacklistEntries() {
-        this.addToBlacklist("0.0.0.0/8");           // RFC1122: "This host on this network"
+        this.addToBlacklist("0.0.0.0/8");           // RFC1122: ""
         this.addToBlacklist("10.0.0.0/8");          // RFC1918: Private-Use
         this.addToBlacklist("100.64.0.0/10");       // RFC6598: Shared Address Space
         this.addToBlacklist("127.0.0.0/8");         // RFC1122: Loopback

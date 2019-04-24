@@ -90,7 +90,9 @@ public class CommandLineInterface {
             List<String> ip_blacklist = options.blacklist;
 
             addrFac.reset();
-            addrFac.applyDefaultConfig(AddressIteratorFactory.Configurations.NDS_BLACKLIST);
+            if (options.ndsBlacklist) {
+                addrFac.applyDefaultConfig(AddressIteratorFactory.Configurations.NDS_BLACKLIST);
+            }
             addrFac.addToWhitelist(ip_whitelist);
             addrFac.addToBlacklist(ip_blacklist);
             targets = addrFac.build();
