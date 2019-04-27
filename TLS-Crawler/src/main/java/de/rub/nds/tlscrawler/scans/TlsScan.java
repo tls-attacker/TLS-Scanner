@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Scan using TLS Scanner, i. e. TLS Attacker.
@@ -43,7 +44,7 @@ public class TlsScan implements IScan {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
-        generalDelegate.setLogLevel(null);
+   //     generalDelegate.setLogLevel(null);
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setThreads(1);
@@ -103,11 +104,11 @@ public class TlsScan implements IScan {
         attacks.addBoolean("crimeVulnerable", report.getCrimeVulnerable());
         attacks.addBoolean("breachVulnerable", report.getBreachVulnerable());
         attacks.addBoolean("sweet32Vulnerable", report.getSweet32Vulnerable());
-        attacks.addBoolean("drownVulnerable", report.getDrownVulnerable());
+        attacks.addDrownVulnerabilityType("drownVulnerable", report.getDrownVulnerable());
         attacks.addBoolean("logjamVulnerable", report.getLogjamVulnerable());
-        attacks.addBoolean("lucky13Vulnerable", report.getLucky13Vulnerable());
+      //  attacks.addBoolean("lucky13Vulnerable", report.getLucky13Vulnerable());
         attacks.addBoolean("heartbleedVulnerable", report.getHeartbleedVulnerable());
-        attacks.addBoolean("earlyCcsVulnerable", report.getEarlyCcsVulnerable());
+        attacks.addEarlyCcsVulnerabilityType("earlyCcsVulnerable", report.getEarlyCcsVulnerable());
 
         return attacks;
     }
@@ -160,9 +161,9 @@ public class TlsScan implements IScan {
         extensions.addStringArray("supportedExtensions", _supportedExtensions);
 
         List<String> _supportedNamedCurves = new LinkedList<>();
-        List<NamedCurve> _rawSupportedNamedCurves = report.getSupportedNamedCurves();
+        List<NamedGroup> _rawSupportedNamedCurves = report.getSupportedNamedGroups();
         if (_rawSupportedNamedCurves != null) {
-            for (NamedCurve x : _rawSupportedNamedCurves) {
+            for (NamedGroup x : _rawSupportedNamedCurves) {
                 _supportedNamedCurves.add(x == null ? null : x.toString());
             }
         }
@@ -209,8 +210,8 @@ public class TlsScan implements IScan {
     IScanResult getRfcPage(SiteReport report) {
         IScanResult rfc = new ScanResult("rfc");
 
-        rfc.addBoolean("checksMac", report.getChecksMac());
-        rfc.addBoolean("checksFinished", report.getChecksFinished());
+        rfc.addString("checksMac", report.getMacCheckPatternAppData().toString());
+        rfc.addString("checksFinished", report.getVerifyCheckPattern().toString());
 
         return rfc;
     }
@@ -256,7 +257,7 @@ public class TlsScan implements IScan {
         ciphers.addStringArray("versionSuitePairs", _versionSuitePairs);
 
         List<String> _cipherSuites = new LinkedList<>();
-        List<CipherSuite> _rawCipherSuites = report.getCipherSuites();
+        Set<CipherSuite> _rawCipherSuites = report.getCipherSuites();
         if (_rawCipherSuites != null) {
             for (CipherSuite x : _rawCipherSuites) {
                 _cipherSuites.add(x == null ? null : x.toString());
@@ -341,7 +342,7 @@ public class TlsScan implements IScan {
         intolerances.addBoolean("versionIntolerance", report.getVersionIntolerance());
         intolerances.addBoolean("extensionIntolerance", report.getExtensionIntolerance());
         intolerances.addBoolean("cipherSuiteIntolerance", report.getCipherSuiteIntolerance());
-        intolerances.addBoolean("clientHelloSizeIntolerance", report.getClientHelloSizeIntolerance());
+        intolerances.addBoolean("clientHelloSizeIntolerance", report.getClientHelloLengthIntolerance());
 
         return intolerances;
     }
