@@ -129,16 +129,16 @@ class AddressGenerator implements IAddressIterator {
 
             String result = String.format("%d.%d.%d.%d", a, b, c, d);
 
-            if (d++ > 255) {
+            if (++d > 255) {
                 d = 0;
 
-                if (c++ > 255) {
+                if (++c > 255) {
                     c = 0;
 
-                    if (b++ > 255) {
+                    if (++b > 255) {
                         b = 0;
 
-                        if (a++ > 255) {
+                        if (++a > 255) {
                             hasNext = false;
                         }
                     }
