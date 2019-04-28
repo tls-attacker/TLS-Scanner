@@ -80,7 +80,7 @@ public class TlsScan implements IScan {
 
         result.addStringArray("supportedCompressionMethods", _supportedCompressionMethods);
 
-        result.addSubResult("rfc", getRfcPage(report));
+        //kresult.addSubResult("rfc", getRfcPage(report));
         result.addSubResult("certificate", getCertificatePage(report));
         result.addSubResult("ciphers", getCiphersPage(report));
         result.addSubResult("session", getSessionPage(report));
