@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Implements the IAddressGenerator interface.
@@ -98,6 +99,10 @@ class AddressGenerator implements IAddressIterator {
                 break;
             }
         }
+
+        if (!this.it.hasNext()) {
+            next = null;
+        }
     }
 
     private void checkInit() {
@@ -115,10 +120,12 @@ class AddressGenerator implements IAddressIterator {
      * A class to continously generate all addresses in the ipv4 space.
      */
     private class FullRangeIterator {
-        int a = 0;
-        int b = 0;
-        int c = 0;
+        Random rand = new Random();
+        int a = rand.nextInt(256);
+        int b = rand.nextInt(256);
+        int c = rand.nextInt(256);
         int d = 0;
+        int limit = d + 255;
 
         boolean hasNext = true;
 
@@ -129,8 +136,8 @@ class AddressGenerator implements IAddressIterator {
 
             String result = String.format("%d.%d.%d.%d", a, b, c, d);
 
-            if (++d > 255) {
-                d = 0;
+            if (++d > limit) {
+                hasNext = false;
 
                 if (++c > 255) {
                     c = 0;
