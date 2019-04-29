@@ -99,6 +99,14 @@ public class StartupOptions extends OptionsBase {
     )
     public String workspace;
 
+    @Option(
+            name = "multipleTestsMode",
+            abbrev = 'q',
+            help = "Instances in the same workspace share the same databases.",
+            defaultValue = "false"
+    )
+    public boolean multipleTestsMode;
+
     private static String DEFAULT_WORKSPACE = "default";
 
     /**
@@ -141,6 +149,12 @@ public class StartupOptions extends OptionsBase {
             result.inMemoryOrchestration = true;
         }
 
+   /*     if (result != null && result.multipleTestsMode) {
+            LOG.warn("Runs in Multiple Tests - Mode");
+        } else {
+            LOG.warn("Runs in Classic Mode");
+        }
+*/
         return result;
     }
 

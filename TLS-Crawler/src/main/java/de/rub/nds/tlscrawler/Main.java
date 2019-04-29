@@ -61,9 +61,18 @@ public class Main {
         TlsCrawlerMaster master = new TlsCrawlerMaster(providers.getFirst(), providers.getSecond(), scans);
 
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
-                + options.instanceId + ".");
-
-        CommandLineInterface.handleInput(master, slave);
+                + options.instanceId + " in " +
+                (options.multipleTestsMode ? "multiple tests - " : "classic ") + "mode.");
+        if (options.multipleTestsMode) {
+            try {
+                MultipleScansCommandLineInterface.handleInput(master, slave);
+            } catch(InterruptedException e) {
+                e.printStackTrace();
+                LOG.info("Program interrupted");
+            }
+        } else {
+            CommandLineInterface.handleInput(master, slave);
+        }
     }
 
     static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(StartupOptions options) {
