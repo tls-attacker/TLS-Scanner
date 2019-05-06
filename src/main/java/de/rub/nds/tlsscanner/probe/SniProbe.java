@@ -32,7 +32,7 @@ public class SniProbe extends TlsProbe {
         config.setAddServerNameIndicationExtension(false);
         config.setQuickReceive(true);
         config.setEarlyStop(true);
-        config.setStopRecievingAfterFatal(true);
+        config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
         List<CipherSuite> toTestList = new LinkedList<>();
         toTestList.addAll(Arrays.asList(CipherSuite.values()));

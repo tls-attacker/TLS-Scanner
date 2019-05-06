@@ -70,7 +70,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setSupportedVersions(tls13VersionList);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopRecievingAfterFatal(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         List<NamedGroup> tls13Groups = new LinkedList<>();
@@ -152,7 +152,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setSupportedVersions(tls13VersionList);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopRecievingAfterFatal(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setDefaultClientNamedGroups(group);
@@ -196,7 +196,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setSupportedVersions(toTest);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopRecievingAfterFatal(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1, NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
