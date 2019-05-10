@@ -26,8 +26,8 @@ public class ScannerConfig extends TLSDelegateConfig {
     @ParametersDelegate
     private ClientDelegate clientDelegate;
 
-    @Parameter(names = "-threads", required = false, description = "How many threads should execute Probes")
-    private int threads = 1;
+    @Parameter(names = "-parallelProbes", required = false, description = "Defines the number of threads responsible for different TLS probes. If set to 1, only one specific TLS probe (e.g., TLS version scan) can be run in time.")
+    private int parallelProbes = 1;
 
     @Parameter(names = "-danger", required = false, description = "Integer value (1 - 10) which specifies how aggressive the Scanner should test. Default 10")
     private int dangerLevel = 10;
@@ -47,8 +47,8 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
     private ScannerDetail reportDetail = ScannerDetail.NORMAL;
 
-    @Parameter(names = "-aggressiv", required = false, description = "The level of concurrent handshakes (only applies to some resource intensive tests)")
-    private int aggroLevel = 1;
+    @Parameter(names = "-overallThreads", required = false, description = "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed server.")
+    private int overallThreads = 1;
 
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
@@ -76,20 +76,20 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.noProgressbar = noProgressbar;
     }
 
-    public int getAggroLevel() {
-        return aggroLevel;
+    public int getOverallThreads() {
+        return overallThreads;
     }
 
-    public void setAggroLevel(int aggroLevel) {
-        this.aggroLevel = aggroLevel;
+    public void setOverallThreads(int overallThreads) {
+        this.overallThreads = overallThreads;
     }
 
-    public int getThreads() {
-        return threads;
+    public int getParallelProbes() {
+        return parallelProbes;
     }
 
-    public void setThreads(int threads) {
-        this.threads = threads;
+    public void setParallelProbes(int parallelProbes) {
+        this.parallelProbes = parallelProbes;
     }
 
     public ClientDelegate getClientDelegate() {
