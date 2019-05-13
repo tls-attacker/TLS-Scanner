@@ -76,7 +76,7 @@ public class TlsScanner {
         this.config = config;
         closeAfterFinish = true;
         closeAfterFinishParallel = true;
-        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
+        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
         this.phaseOneTestList = new LinkedList<>();
         this.phaseTwoTestList = new LinkedList<>();
         this.afterList = new LinkedList<>();
@@ -88,7 +88,7 @@ public class TlsScanner {
         this.executor = executor;
         closeAfterFinish = false;
         closeAfterFinishParallel = true;
-        parallelExecutor = new ParallelExecutor(config.getAggroLevel(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
+        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
         this.phaseOneTestList = new LinkedList<>();
         this.phaseTwoTestList = new LinkedList<>();
         this.afterList = new LinkedList<>();
