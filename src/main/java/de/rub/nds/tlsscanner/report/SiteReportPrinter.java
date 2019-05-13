@@ -766,20 +766,20 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, long value) {
         return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
     }
-    
-    private StringBuilder prettyAppendSubheading(StringBuilder builder, String name){
+
+    private StringBuilder prettyAppendSubheading(StringBuilder builder, String name) {
         depth = 1;
-        return builder.append("|_\n |" + (report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE +  AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET : name + "\n\n") );
+        return builder.append("|_\n |" + (report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET : name + "\n\n"));
     }
-    
-    private StringBuilder prettyAppendSubSubheading(StringBuilder builder, String name){
+
+    private StringBuilder prettyAppendSubSubheading(StringBuilder builder, String name) {
         depth = 2;
-        return builder.append("|_\n |_\n  |" + (report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET: name + "\n\n"));
+        return builder.append("|_\n |_\n  |" + (report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET : name + "\n\n"));
     }
-    
-    private StringBuilder prettyAppendSubSubSubheading(StringBuilder builder, String name){
+
+    private StringBuilder prettyAppendSubSubSubheading(StringBuilder builder, String name) {
         depth = 3;
-        return builder.append("|_\n |_\n  |_\n   |" + (report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET: name + "\n\n"));
+        return builder.append("|_\n |_\n  |_\n   |" + (report.isNoColour() == false ? AnsiColors.ANSI_BOLD + AnsiColors.ANSI_PURPLE + AnsiColors.ANSI_UNDERLINE + name + "\n\n" + AnsiColors.ANSI_RESET : name + "\n\n"));
     }
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
@@ -854,17 +854,17 @@ public class SiteReportPrinter {
 
     private String addIndentations(String value) {
         StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < depth; i++){
+        for (int i = 0; i < depth; i++) {
             builder.append(" ");
         }
         builder.append(value);
-        if (value.length()+depth < 8) {
+        if (value.length() + depth < 8) {
             builder.append("\t\t\t\t ");
-        } else if (value.length()+depth < 16) {
+        } else if (value.length() + depth < 16) {
             builder.append("\t\t\t ");
-        } else if (value.length()+depth < 24) {
+        } else if (value.length() + depth < 24) {
             builder.append("\t\t ");
-        } else if (value.length()+depth < 32) {
+        } else if (value.length() + depth < 32) {
             builder.append("\t ");
         } else {
             builder.append(" ");
