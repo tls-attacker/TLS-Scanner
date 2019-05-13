@@ -94,7 +94,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setHighestProtocolVersion(toTest);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopRecievingAfterFatal(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         if (toTest == ProtocolVersion.SSL2) {
