@@ -27,7 +27,7 @@ import de.rub.nds.tlsscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,22 +141,21 @@ public class TlsScan implements IScan {
         attacks.addBoolean("logjamVulnerable", report.getLogjamVulnerable());
         attacks.addBoolean("heartbleedVulnerable", report.getHeartbleedVulnerable());
         attacks.addString("earlyCcsVulnerable", report.getEarlyCcsVulnerable() != null ? report.getEarlyCcsVulnerable().name() : "");
-
         return attacks;
     }
 
     static IScanResult getPaddingOraclePage(SiteReport report) {
         IScanResult paddingOracle = new ScanResult("paddingOracle");
 
-        List<PaddingOracleTestResult> _rawPaddingOracleresult = report.getPaddingOracleTestResultList();
+        List<PaddingOracleCipherSuiteFingerprint> _rawPaddingOracleresult = report.getPaddingOracleTestResultList();
 
         if (_rawPaddingOracleresult == null) {
             return null;
         }
 
         List<IScanResult> paddingOracleResults = new LinkedList<>();
-
-        for (PaddingOracleTestResult potr : _rawPaddingOracleresult) {
+        paddingOracle.addString("CVE", report.getKnownVulnerability() == null ? "none" : report.getKnownVulnerability().getCve());
+        for (PaddingOracleCipherSuiteFingerprint potr : _rawPaddingOracleresult) {
             IScanResult tmp = new ScanResult("_paddingOracleResult");
 
             tmp.addString("getEqualityError", potr.getEqualityError().name());
@@ -180,7 +179,7 @@ public class TlsScan implements IScan {
                                 .collect(Collectors.toList()));
             }
              */
-            List<VectorResponse> fp = potr.getResponseMap().size() > 0 ? potr.getResponseMap() : new LinkedList<>();
+            List<VectorResponse> fp = potr.getResponseMapList().size() > 0 ? potr.getResponseMapList().get(0) : new LinkedList<>();
             List<String> fp_toString = fp.stream()
                     .map(VectorResponse::toString)
                     .collect(Collectors.toList());

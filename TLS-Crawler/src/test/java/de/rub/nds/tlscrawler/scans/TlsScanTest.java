@@ -12,7 +12,7 @@ import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleTestResult;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -23,18 +23,18 @@ public class TlsScanTest {
     @Test
     public void ParserTest() {
         SiteReport sr = new SiteReport("local", new LinkedList<>(), false);
-
+        List<List<VectorResponse>> fullList = new LinkedList<>();
         List<VectorResponse> porm = new LinkedList<>();
         LinkedList<ResponseFingerprint> rfl = new LinkedList<>();
         rfl.add(new ResponseFingerprint(false, false, 0, 0,
                 new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), SocketState.SOCKET_EXCEPTION));
-        porm.add(new VectorResponse(new TrippleVector("test", null, null, null), new ResponseFingerprint(false, false, 0, 0,
+        porm.add(new VectorResponse(new TrippleVector(",", "test", null, null, null), new ResponseFingerprint(false, false, 0, 0,
                 new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), SocketState.SOCKET_EXCEPTION), ProtocolVersion.SSL2, CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA, 0));
 
-        PaddingOracleTestResult potr = new PaddingOracleTestResult(true, ProtocolVersion.SSL2, CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                PaddingVectorGeneratorType.CLASSIC, PaddingRecordGeneratorType.LONG, porm, porm, porm, EqualityError.ALERT_COUNT, false, false);
+        PaddingOracleCipherSuiteFingerprint potr = new PaddingOracleCipherSuiteFingerprint(true, ProtocolVersion.SSL2, CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
+                PaddingVectorGeneratorType.CLASSIC, PaddingRecordGeneratorType.LONG, fullList, EqualityError.ALERT_COUNT, false, false);
 
-        List<PaddingOracleTestResult> trl = new LinkedList<>();
+        List<PaddingOracleCipherSuiteFingerprint> trl = new LinkedList<>();
 
         trl.add(potr);
 
