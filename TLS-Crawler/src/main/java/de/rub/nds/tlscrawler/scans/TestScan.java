@@ -45,7 +45,7 @@ public class TestScan implements IScan {
         SiteReport report = scanner.scan();
 
         IScanResult result = new ScanResult(this.getName());
-        result.addString("ergebnis", report.getStringReport());
+ //       result.addString("ergebnis", report.getStringReport());
 
         return result;
     }

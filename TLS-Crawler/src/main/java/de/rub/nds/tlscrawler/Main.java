@@ -86,7 +86,7 @@ public class Main {
         IPersistenceProvider persistenceProvider;
 
         String workspace = options.workspace;
-        String workspaceWithPrefix = String.format("TLSC-%s", workspace);
+        String workspaceWithPrefix = String.format("TLSC-dev-%s", workspace);
 
         if (!options.testMode) {
             MongoPersistenceProvider mpp = new MongoPersistenceProvider(new MongoClientURI(options.mongoDbConnectionString));

@@ -7,6 +7,8 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
+import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlscrawler.utility.ITuple;
 import de.rub.nds.tlscrawler.utility.Tuple;
 
@@ -97,6 +99,12 @@ public class ScanResult implements IScanResult {
     public void addSubResult(String key, IScanResult substructure) {
         this.checkedAdd(Tuple.create(key, substructure));
     }
+
+    @Override
+    public void addDrownVulnerabilityType(String key, DrownVulnerabilityType value) { this.checkedAdd(Tuple.create(key, value)); }
+
+    @Override
+    public void addEarlyCcsVulnerabilityType(String key, EarlyCcsVulnerabilityType value) { this.checkedAdd(Tuple.create(key, value)); }
 
     @Override
     public List<ITuple<String, Object>> getContents() {
