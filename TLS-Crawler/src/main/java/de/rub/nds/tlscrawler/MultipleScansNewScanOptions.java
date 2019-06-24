@@ -5,7 +5,6 @@ import com.google.devtools.common.options.Options;
 import com.google.devtools.common.options.OptionsParsingException;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 public class MultipleScansNewScanOptions extends NewScanOptions {

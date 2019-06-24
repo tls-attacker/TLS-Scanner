@@ -149,12 +149,6 @@ public class StartupOptions extends OptionsBase {
             result.inMemoryOrchestration = true;
         }
 
-   /*     if (result != null && result.multipleTestsMode) {
-            LOG.warn("Runs in Multiple Tests - Mode");
-        } else {
-            LOG.warn("Runs in Classic Mode");
-        }
-*/
         return result;
     }
 

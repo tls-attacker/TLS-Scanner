@@ -36,7 +36,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     private static int NEW_FETCH_LIMIT = NO_THREADS * 3;
     private static int FETCH_AMOUNT = NO_THREADS * 2;
     private static int MIN_NO_TO_PERSIST = 64;
-    private static int ITERATIONS_TO_IGNORE_BULK_LIMITS = 10;
+    private static int ITERATIONS_TO_IGNORE_BULK_LIMITS = 1;
     private static int ORG_THREAD_SLEEP_MILLIS = 6000;
 
     private List<Thread> threads;

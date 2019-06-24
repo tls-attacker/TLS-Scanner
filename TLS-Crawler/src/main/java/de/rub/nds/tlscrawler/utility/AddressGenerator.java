@@ -125,7 +125,7 @@ class AddressGenerator implements IAddressIterator {
         int b = rand.nextInt(256);
         int c = rand.nextInt(256);
         int d = 0;
-        int limit = d + 255;
+        int limit = d + 15;
 
         boolean hasNext = true;
 
