@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
- * Copyright 2014-2017 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -9,53 +9,318 @@
 package de.rub.nds.tlsscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+
 import java.security.PublicKey;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.x509.Certificate;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.jce.provider.X509CertificateObject;
 
-/**
- *
- * @author Robert Merget - robert.merget@rub.de
- */
-public interface CertificateReport {
+public class CertificateReport {
 
-    public Certificate getCertificate();
+    private final static Logger LOGGER = LogManager.getLogger();
 
-    public String getSHA256Fingerprint();
+    private String subject;
+    private String commonNames;
+    private String alternativenames;
+    private Date validFrom;
+    private Date validTo;
+    private PublicKey publicKey;
+    private Boolean weakDebianKey;
+    private String issuer;
+    private SignatureAndHashAlgorithm signatureAndHashAlgorithm;
+    private Boolean extendedValidation;
+    private Boolean certificateTransparency;
+    private Boolean ocspMustStaple;
+    private Boolean crlSupported;
+    private Boolean ocspSupported;
+    private Boolean revoked;
+    private Boolean dnsCAA;
+    private Boolean trusted;
+    private Certificate certificate;
+    private String sha256FingerprintHex;
+    private Boolean rocaVulnerable;
+    private Boolean trustAnchor;
+    private Boolean selfSigned;
+    private Boolean leafCertificate;
+    private String sha256Pin;
 
-    public String getSubject();
+    public CertificateReport() {
+    }
 
-    public String getCommonNames();
+    public Certificate getCertificate() {
+        return certificate;
+    }
 
-    public String getAlternativenames();
+    public X509CertificateHolder getCertificateHolder() {
+        return new X509CertificateHolder(certificate);
+    }
 
-    public Date getValidFrom();
+    public X509Certificate getX509Certificate() {
+        try {
+            return new X509CertificateObject(certificate);
+        } catch (CertificateParsingException ex) {
+            LOGGER.error("Certificate Parsing Error", ex);
+            return null;
+        }
+    }
 
-    public Date getValidTo();
+    public String getSHA256Fingerprint() {
+        return sha256FingerprintHex;
+    }
 
-    public PublicKey getPublicKey();
+    public void setSha256FingerprintHex(String sha256FingerprintHex) {
+        this.sha256FingerprintHex = sha256FingerprintHex;
+    }
 
-    public Boolean getWeakDebianKey();
+    public void setCertificate(Certificate certificate) {
+        this.certificate = certificate;
+    }
 
-    public String getIssuer();
+    public String getSubject() {
+        return subject;
+    }
 
-    public SignatureAndHashAlgorithm getSignatureAndHashAlgorithm();
+    public String getCommonNames() {
+        return commonNames;
+    }
 
-    public Boolean getExtendedValidation();
+    public String getAlternativenames() {
+        return alternativenames;
+    }
 
-    public Boolean getCertificateTransparency();
+    public Date getValidFrom() {
+        return validFrom;
+    }
 
-    public Boolean getOcspMustStaple();
+    public Date getValidTo() {
+        return validTo;
+    }
 
-    public Boolean getCrlSupported();
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
 
-    public Boolean getOcspSupported();
+    public Boolean getWeakDebianKey() {
+        return weakDebianKey;
+    }
 
-    public Boolean getRevoked();
+    public String getIssuer() {
+        return issuer;
+    }
 
-    public Boolean getDnsCAA();
+    public SignatureAndHashAlgorithm getSignatureAndHashAlgorithm() {
+        return signatureAndHashAlgorithm;
+    }
 
-    public Boolean getTrusted();
+    public Boolean getExtendedValidation() {
+        return extendedValidation;
+    }
 
-    public Boolean getRocaVulnerable();
+    public Boolean getCertificateTransparency() {
+        return certificateTransparency;
+    }
+
+    public Boolean getOcspMustStaple() {
+        return ocspMustStaple;
+    }
+
+    public Boolean getCrlSupported() {
+        return crlSupported;
+    }
+
+    public Boolean getOcspSupported() {
+        return ocspSupported;
+    }
+
+    public Boolean getRevoked() {
+        return revoked;
+    }
+
+    public Boolean getDnsCAA() {
+        return dnsCAA;
+    }
+
+    public Boolean getTrusted() {
+        return trusted;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public void setCommonNames(String commonNames) {
+        this.commonNames = commonNames;
+    }
+
+    public void setAlternativenames(String alternativenames) {
+        this.alternativenames = alternativenames;
+    }
+
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    public void setValidTo(Date validTo) {
+        this.validTo = validTo;
+    }
+
+    public void setPublicKey(PublicKey publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    public void setWeakDebianKey(Boolean weakDebianKey) {
+        this.weakDebianKey = weakDebianKey;
+    }
+
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+
+    public void setSignatureAndHashAlgorithm(SignatureAndHashAlgorithm signatureAndHashAlgorithm) {
+        this.signatureAndHashAlgorithm = signatureAndHashAlgorithm;
+    }
+
+    public void setExtendedValidation(Boolean extendedValidation) {
+        this.extendedValidation = extendedValidation;
+    }
+
+    public void setCertificateTransparency(Boolean certificateTransparency) {
+        this.certificateTransparency = certificateTransparency;
+    }
+
+    public void setOcspMustStaple(Boolean ocspMustStaple) {
+        this.ocspMustStaple = ocspMustStaple;
+    }
+
+    public void setCrlSupported(Boolean crlSupported) {
+        this.crlSupported = crlSupported;
+    }
+
+    public void setOcspSupported(Boolean ocspSupported) {
+        this.ocspSupported = ocspSupported;
+    }
+
+    public void setRevoked(Boolean revoked) {
+        this.revoked = revoked;
+    }
+
+    public void setDnsCAA(Boolean dnsCAA) {
+        this.dnsCAA = dnsCAA;
+    }
+
+    public void setTrusted(Boolean trusted) {
+        this.trusted = trusted;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Fingerprint: ").append(sha256FingerprintHex).append("\n");
+        if (subject != null) {
+            builder.append("Subject: ").append(subject).append("\n");
+        }
+        if (commonNames != null) {
+            builder.append("CommonNames: ").append(commonNames).append("\n");
+        }
+        if (alternativenames != null) {
+            builder.append("AltNames   : ").append(alternativenames).append("\n");
+        }
+        if (validFrom != null) {
+            builder.append("Valid From : ").append(validFrom.toString()).append("\n");
+        }
+        if (validTo != null) {
+            builder.append("Valid Till : ").append(validTo.toString()).append("\n");
+        }
+        if (publicKey != null) {
+            builder.append("PublicKey  : ").append(publicKey.toString()).append("\n");
+        }
+        if (weakDebianKey != null) {
+            builder.append("Weak Debian Key: ").append(weakDebianKey).append("\n");
+        }
+        if (issuer != null) {
+            builder.append("Issuer\t\t   : ").append(issuer).append("\n");
+        }
+        if (signatureAndHashAlgorithm != null) {
+            builder.append("Signature Algorithm: ").append(signatureAndHashAlgorithm.getSignatureAlgorithm().name())
+                    .append("\n");
+        }
+        if (signatureAndHashAlgorithm != null) {
+            builder.append("Hash Algorithm     : ").append(signatureAndHashAlgorithm.getHashAlgorithm().name()).append("\n");
+        }
+        if (extendedValidation != null) {
+            builder.append("Extended Validation: ").append(extendedValidation).append("\n");
+        }
+        if (certificateTransparency != null) {
+            builder.append("Certificate Transparency: ").append(certificateTransparency).append("\n");
+        }
+        if (ocspMustStaple != null) {
+            builder.append("OCSP must Staple   : ").append(ocspMustStaple).append("\n");
+        }
+        if (crlSupported != null) {
+            builder.append("CRL Supported: ").append(crlSupported).append("\n");
+        }
+        if (ocspSupported != null) {
+            builder.append("OCSP Supported: ").append(ocspSupported).append("\n");
+        }
+        if (revoked != null) {
+            builder.append("Is Revoked: ").append(revoked).append("\n");
+        }
+        if (dnsCAA != null) {
+            builder.append("DNS CCA: ").append(dnsCAA).append("\n");
+        }
+        if (trusted != null) {
+            builder.append("Trusted: ").append(trusted).append("\n");
+        }
+        if (rocaVulnerable != null) {
+            builder.append("ROCA (simple): ").append(rocaVulnerable).append("\n");
+        } else {
+            builder.append("ROCA (simple): not tested");
+        }
+        return builder.toString();
+    }
+
+    public Boolean getRocaVulnerable() {
+        return rocaVulnerable;
+    }
+
+    public void setRocaVulnerable(Boolean rocaVulnerable) {
+        this.rocaVulnerable = rocaVulnerable;
+    }
+
+    public Boolean isTrustAnchor() {
+        return trustAnchor;
+    }
+
+    public void setTrustAnchor(Boolean trustAnchor) {
+        this.trustAnchor = trustAnchor;
+    }
+
+    public Boolean getLeafCertificate() {
+        return leafCertificate;
+    }
+
+    public void setLeafCertificate(Boolean leafCertificate) {
+        this.leafCertificate = leafCertificate;
+    }
+
+    public Boolean getSelfSigned() {
+        return selfSigned;
+    }
+
+    public void setSelfSigned(Boolean selfSigned) {
+        this.selfSigned = selfSigned;
+    }
+
+    public String getSha256Pin() {
+        return sha256Pin;
+    }
+
+    public void setSha256Pin(String sha256Pin) {
+        this.sha256Pin = sha256Pin;
+    }
 }

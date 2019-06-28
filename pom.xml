@@ -25,7 +25,7 @@
         <dependency>
             <groupId>me.tongfei</groupId>
             <artifactId>progressbar</artifactId>
-            <version>0.7.1</version>
+            <version>0.7.4</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
@@ -36,6 +36,28 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>3.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.8.4</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.60</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <profiles>
@@ -117,10 +139,9 @@
             </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>
-                <version>3.0</version>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <header>${main.basedir}/license_header_plain.txt</header>
+                    <header>${basedir}/license_header_plain.txt</header>
                     <strictCheck>true</strictCheck>
                     <includes>
                         <include>src/**/*.java</include>
@@ -130,6 +151,14 @@
                         <owner>Ruhr University Bochum, Hackmanit GmbH</owner>
                     </properties>
                 </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -159,6 +188,30 @@
                 <configuration>
                     <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/src/main/resources/trust/</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>${basedir}/trust_stores_observatory/trust_stores/</directory>
+                                </resource>
+                                <resource>
+                                    <directory>${basedir}/trust_stores_observatory/certificates/</directory>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

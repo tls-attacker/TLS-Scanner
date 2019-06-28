@@ -1,0 +1,3 @@
+[submodule "trust_stores_observatory"]
+	path = trust_stores_observatory
+	url = https://github.com/nabla-c0d3/trust_stores_observatory

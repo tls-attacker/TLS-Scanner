@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
@@ -32,7 +40,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.LogManager;
 
 /**
  *

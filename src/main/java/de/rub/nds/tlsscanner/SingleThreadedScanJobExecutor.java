@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
- * Copyright 2014-2017 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -161,7 +161,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
         }
         report.setExtractedValueContainerList(globalContainerList);
         //phase 4 - afterprobes
-        for (AfterProbe afterProbe : scanJob.getAfterProbes()) {
+        for (AfterProbe afterProbe : scanJob.getAfterList()) {
             afterProbe.analyze(report);
         }
 

@@ -1,7 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package de.rub.nds.tlsscanner.probe;
 
@@ -46,7 +49,6 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.MacResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

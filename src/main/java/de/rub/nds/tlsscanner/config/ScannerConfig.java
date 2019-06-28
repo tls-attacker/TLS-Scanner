@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
- * Copyright 2014-2017 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import org.bouncycastle.util.IPAddress;
 
 /**
  *
@@ -33,7 +34,7 @@ public class ScannerConfig extends TLSDelegateConfig {
     private int dangerLevel = 10;
 
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
-    private Boolean noColor = false;
+    private boolean noColor = false;
 
     @ParametersDelegate
     private GeneralDelegate generalDelegate;
@@ -62,6 +63,16 @@ public class ScannerConfig extends TLSDelegateConfig {
         super(delegate);
         this.generalDelegate = delegate;
         clientDelegate = new ClientDelegate();
+        starttlsDelegate = new StarttlsDelegate();
+        addDelegate(clientDelegate);
+        addDelegate(generalDelegate);
+        addDelegate(starttlsDelegate);
+    }
+
+    public ScannerConfig(GeneralDelegate delegate, ClientDelegate clientDelegate) {
+        super(delegate);
+        this.generalDelegate = delegate;
+        this.clientDelegate = clientDelegate;
         starttlsDelegate = new StarttlsDelegate();
         addDelegate(clientDelegate);
         addDelegate(generalDelegate);
@@ -116,7 +127,7 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.implementation = implementation;
     }
 
-    public Boolean isNoColor() {
+    public boolean isNoColor() {
         return noColor;
     }
 
@@ -143,12 +154,12 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Override
     public Config createConfig() {
         Config config = super.createConfig(Config.createConfig());
-        config.setAddServerNameIndicationExtension(true);
-        String sniHostname = clientDelegate.getHost();
-        if (sniHostname.contains(":")) {
-            sniHostname = sniHostname.split(":")[0];
+        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname()) || clientDelegate.getSniHostname() != null) {
+            config.setAddServerNameIndicationExtension(true);
+        } else {
+            config.setAddServerNameIndicationExtension(false);
         }
-        config.setSniHostname(sniHostname);
+
         config.getDefaultClientConnection().setTimeout(timeout);
         return config;
     }

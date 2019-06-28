@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
- * Copyright 2014-2017 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -12,6 +12,7 @@ import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.probe.certificate.roca.BrokenKey;
+import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -49,7 +50,7 @@ public class CertificateReportGenerator {
     }
 
     public static CertificateReport generateReport(org.bouncycastle.asn1.x509.Certificate cert) {
-        CertificateReportImplementation report = new CertificateReportImplementation();
+        CertificateReport report = new CertificateReport();
         setSubject(report, cert);
         setCommonNames(report, cert);
         setAlternativeNames(report, cert);
@@ -66,15 +67,20 @@ public class CertificateReportGenerator {
         setOcspSupported(report, cert);
         setRevoked(report, cert);
         setDnsCCA(report, cert);
-        setTrusted(report, cert);
         setSha256Hash(report, cert);
         report.setCertificate(cert);
         setVulnerableRoca(report, cert);
-
+        TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
+        report.setTrustAnchor(anchorManger.isTrustAnchor(report));
+        if (report.getIssuer().equals(report.getSubject())) {
+            report.setSelfSigned(true);
+        } else {
+            report.setSelfSigned(false);
+        }
         return report;
     }
 
-    private static void setSubject(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setSubject(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         X500Name x500name = cert.getSubject();
         if (x500name != null) {
             report.setSubject(x500name.toString());
@@ -83,7 +89,7 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setCommonNames(CertificateReportImplementation report,
+    private static void setCommonNames(CertificateReport report,
             org.bouncycastle.asn1.x509.Certificate cert) {
         StringBuilder commonNames = new StringBuilder();
         X500Name x500name = cert.getSubject();
@@ -99,24 +105,24 @@ public class CertificateReportGenerator {
         report.setCommonNames(commonNames.toString());
     }
 
-    private static void setAlternativeNames(CertificateReportImplementation report,
+    private static void setAlternativeNames(CertificateReport report,
             org.bouncycastle.asn1.x509.Certificate cert) {
 
     }
 
-    private static void setValidFrom(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setValidFrom(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         if (cert.getStartDate() != null) {
             report.setValidFrom(cert.getStartDate().getDate());
         }
     }
 
-    private static void setValidTo(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setValidTo(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         if (cert.getEndDate() != null) {
             report.setValidTo(cert.getEndDate().getDate());
         }
     }
 
-    private static void setPubkey(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setPubkey(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         try {
             X509Certificate x509Cert = new X509CertificateObject(cert);
             if (x509Cert.getPublicKey() != null) {
@@ -127,17 +133,17 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setWeakDebianKey(CertificateReportImplementation report,
+    private static void setWeakDebianKey(CertificateReport report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setIssuer(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setIssuer(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         if (cert.getIssuer() != null) {
             report.setIssuer(cert.getIssuer().toString());
         }
     }
 
-    private static void setSignatureAndHashAlgorithm(CertificateReportImplementation report,
+    private static void setSignatureAndHashAlgorithm(CertificateReport report,
             org.bouncycastle.asn1.x509.Certificate cert) {
         String sigAndHashString = null;
         try {
@@ -168,37 +174,34 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setExtendedValidation(CertificateReportImplementation report,
+    private static void setExtendedValidation(CertificateReport report,
             org.bouncycastle.asn1.x509.Certificate cert) {
 
     }
 
-    private static void setCeritifcateTransparency(CertificateReportImplementation report,
+    private static void setCeritifcateTransparency(CertificateReport report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setOcspMustStaple(CertificateReportImplementation report,
+    private static void setOcspMustStaple(CertificateReport report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setCRLSupported(CertificateReportImplementation report,
+    private static void setCRLSupported(CertificateReport report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setOcspSupported(CertificateReportImplementation report,
+    private static void setOcspSupported(CertificateReport report,
             org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setRevoked(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setRevoked(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setDnsCCA(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setDnsCCA(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setTrusted(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
-    }
-
-    private static void setSha256Hash(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setSha256Hash(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         try {
             report.setSha256FingerprintHex(DatatypeConverter.printHexBinary(
                     MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
@@ -211,7 +214,7 @@ public class CertificateReportGenerator {
         return false;
     }
 
-    private static void setVulnerableRoca(CertificateReportImplementation report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setVulnerableRoca(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         if (report.getPublicKey() != null && report.getPublicKey() instanceof RSAPublicKey) {
             RSAPublicKey pubkey = (RSAPublicKey) report.getPublicKey();
             report.setRocaVulnerable(BrokenKey.isAffected(pubkey));

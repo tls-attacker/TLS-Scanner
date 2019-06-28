@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -8,8 +16,8 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.KS.KeyShareEntry;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareEntry;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;

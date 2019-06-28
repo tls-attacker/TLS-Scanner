@@ -1,7 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package de.rub.nds.tlsscanner.probe;
 
@@ -11,7 +14,6 @@ import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.BleichenbacherAttacker;
 import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1Vector;
-import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1VectorGenerator;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;

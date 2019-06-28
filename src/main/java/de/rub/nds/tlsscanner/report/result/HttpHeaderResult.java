@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
@@ -13,7 +21,7 @@ public class HttpHeaderResult extends ProbeResult {
     private List<HttpsHeader> headerList = null;
     private Boolean speaksHttps = null;
     private Boolean supportsHsts = false;
-    private Integer hstsMaxAge = null;
+    private Long hstsMaxAge = null;
     private Integer hpkpMaxAge = null;
     private Boolean hstsCeasing = null;
     private Boolean hstsIncludesSubdomains = false;
@@ -53,7 +61,7 @@ public class HttpHeaderResult extends ProbeResult {
                         String[] maxAge = value.split("=");
                         if (maxAge.length == 2) {
                             try {
-                                hstsMaxAge = Integer.parseInt(maxAge[1].trim());
+                                hstsMaxAge = Long.parseLong(maxAge[1].trim());
                             } catch (Exception E) {
                                 E.printStackTrace();
                                 hstsNotParseable = true;

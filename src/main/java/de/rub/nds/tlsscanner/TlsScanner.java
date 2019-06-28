@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
- * Copyright 2014-2017 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -49,6 +49,7 @@ import de.rub.nds.tlsscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
 import de.rub.nds.tlsscanner.report.after.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -143,6 +144,7 @@ public class TlsScanner {
         phaseTwoTestList.add(new DrownProbe(config, parallelExecutor));
         phaseTwoTestList.add(new EarlyCcsProbe(config, parallelExecutor));
         phaseTwoTestList.add(new MacProbe(config, parallelExecutor));
+        //phaseTwoTestList.add(new HandshakeSimulationProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterprobe());
@@ -150,9 +152,14 @@ public class TlsScanner {
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
+        //afterList.add(new HandshakeSimulationAfterProbe());
     }
 
     public SiteReport scan() {
+        LOGGER.debug("Initializing TrustAnchorManager");
+        TrustAnchorManager.getInstance();
+        LOGGER.debug("Finished TrustAnchorManager initialization");
+
         boolean isConnectable = false;
         try {
             if (isConnectable()) {

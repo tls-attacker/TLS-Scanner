@@ -1,15 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.probe.certificate.CertificateJudger;
-import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 
 /**
@@ -18,47 +19,23 @@ import org.bouncycastle.crypto.tls.Certificate;
  */
 public class CertificateResult extends ProbeResult {
 
-    private List<CertificateReport> reportList;
-
     private boolean expiredCertificates = false;
     private boolean notYetValidCertificates = false;
     private boolean weakHashAlgorithms = false;
     private boolean weakSignatureAlgorithms = false;
-    private boolean matchesDomain = false;
-    private boolean isTrusted = true;
-    private boolean containsBlacklisted = false;
     private Certificate certs;
+    private CertificateChain chain;
 
-    public CertificateResult(ProbeType type, List<CertificateReport> reportList, Certificate certs) {
+    public CertificateResult(ProbeType type, CertificateChain chain, Certificate certs) {
         super(type);
-        this.reportList = reportList;
+        this.chain = chain;
         this.certs = certs;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setCertificateReports(reportList);
+        report.setCertificateChain(chain);
         report.setCertificate(certs);
-        for (CertificateReport certReport : reportList) {
-            CertificateJudger judger = new CertificateJudger(certReport.getCertificate(), certReport, report.getHost());
-            expiredCertificates |= judger.checkExpired();
-            notYetValidCertificates |= judger.checkNotYetValid();
-            if (judger.isSelfSigned() != Boolean.TRUE) {
-                Boolean isWeakHashAlgo = judger.isWeakHashAlgo(certReport);
-                if (isWeakHashAlgo != null) {
-                    weakHashAlgorithms |= judger.isWeakHashAlgo(certReport);
-                }
-                Boolean isWeakSignAlgo = judger.isWeakSigAlgo(certReport);
-                if (isWeakSignAlgo != null) {
-                    weakSignatureAlgorithms = judger.isWeakSigAlgo(certReport);
-                }
-            }
-        }
-        report.setCertificateExpired(expiredCertificates);
-        report.setCertificateNotYetValid(notYetValidCertificates);
-        report.setCertificateHasWeakHashAlgorithm(weakHashAlgorithms);
-        report.setCertificateHasWeakSignAlgorithm(weakSignatureAlgorithms);
-
     }
 
 }

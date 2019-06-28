@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
- * Copyright 2014-2017 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -21,9 +21,10 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
-import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
@@ -39,7 +40,7 @@ import org.bouncycastle.crypto.tls.Certificate;
 
 public class SiteReport {
 
-    //general
+    //General
     private final List<ProbeType> probeTypeList;
     private List<PerformanceData> performanceList;
 
@@ -137,7 +138,7 @@ public class SiteReport {
 
     //Certificate
     private Certificate certificate = null;
-    private List<CertificateReport> certificateReports = null;
+    private CertificateChain certificateChain;
     private Boolean certificateExpired = null;
     private Boolean certificateNotYetValid = null;
     private Boolean certificateHasWeakHashAlgorithm = null;
@@ -208,7 +209,7 @@ public class SiteReport {
     private Boolean speaksHttps;
     private List<HttpsHeader> headerList = null;
     private Boolean supportsHsts = null;
-    private Integer hstsMaxAge = null;
+    private Long hstsMaxAge = null;
     private Boolean supportsHstsPreloading = null;
     private Boolean supportsHpkp = null;
     private Boolean supportsHpkpReportOnly = null;
@@ -232,6 +233,13 @@ public class SiteReport {
     //NoColor Flag
     private boolean noColor = false;
 
+    //Handshake Simulation
+    private Integer handshakeSuccessfulCounter = null;
+    private Integer handshakeFailedCounter = null;
+    private Integer connectionRfc7918SecureCounter = null;
+    private Integer connectionInsecureCounter = null;
+    private List<SimulatedClientResult> simulatedClientList = null;
+
     public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
         this.host = host;
         this.probeTypeList = probeTypeList;
@@ -242,6 +250,14 @@ public class SiteReport {
 
     public String getHost() {
         return host;
+    }
+
+    public List<ProbeType> getProbeTypeList() {
+        return probeTypeList;
+    }
+
+    public boolean isNoColor() {
+        return noColor;
     }
 
     public Boolean getRequiresSni() {
@@ -600,12 +616,12 @@ public class SiteReport {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
-    public List<CertificateReport> getCertificateReports() {
-        return certificateReports;
+    public CertificateChain getCertificateChain() {
+        return certificateChain;
     }
 
-    public void setCertificateReports(List<CertificateReport> certificateReports) {
-        this.certificateReports = certificateReports;
+    public void setCertificateChain(CertificateChain certificateChain) {
+        this.certificateChain = certificateChain;
     }
 
     public Boolean getSupportsAes() {
@@ -1288,8 +1304,44 @@ public class SiteReport {
         this.supportsStaticEcdh = supportsStaticEcdh;
     }
 
-    public boolean isNoColour() {
-        return noColor;
+    public Integer getHandshakeSuccessfulCounter() {
+        return handshakeSuccessfulCounter;
+    }
+
+    public void setHandshakeSuccessfulCounter(Integer handshakeSuccessfulCounter) {
+        this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
+    }
+
+    public Integer getHandshakeFailedCounter() {
+        return handshakeFailedCounter;
+    }
+
+    public void setHandshakeFailedCounter(Integer handshakeFailedCounter) {
+        this.handshakeFailedCounter = handshakeFailedCounter;
+    }
+
+    public Integer getConnectionRfc7918SecureCounter() {
+        return connectionRfc7918SecureCounter;
+    }
+
+    public void setConnectionRfc7918SecureCounter(Integer connectionRfc7918SecureCounter) {
+        this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
+    }
+
+    public Integer getConnectionInsecureCounter() {
+        return connectionInsecureCounter;
+    }
+
+    public void setConnectionInsecureCounter(Integer connectionInsecureCounter) {
+        this.connectionInsecureCounter = connectionInsecureCounter;
+    }
+
+    public List<SimulatedClientResult> getSimulatedClientList() {
+        return simulatedClientList;
+    }
+
+    public void setSimulatedClientList(List<SimulatedClientResult> simulatedClientList) {
+        this.simulatedClientList = simulatedClientList;
     }
 
     public String getFullReport(ScannerDetail detail) {
@@ -1299,10 +1351,6 @@ public class SiteReport {
     @Override
     public String toString() {
         return getFullReport(ScannerDetail.NORMAL);
-    }
-
-    public List<ProbeType> getProbeTypeList() {
-        return probeTypeList;
     }
 
     public CheckPattern getMacCheckPatternFinished() {
@@ -1369,11 +1417,11 @@ public class SiteReport {
         this.speaksHttps = speaksHttps;
     }
 
-    public Integer getHstsMaxAge() {
+    public Long getHstsMaxAge() {
         return hstsMaxAge;
     }
 
-    public void setHstsMaxAge(Integer hstsMaxAge) {
+    public void setHstsMaxAge(Long hstsMaxAge) {
         this.hstsMaxAge = hstsMaxAge;
     }
 

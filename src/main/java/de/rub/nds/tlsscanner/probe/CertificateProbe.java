@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
  *
- * Copyright 2014-2017 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -18,9 +18,8 @@ import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.probe.certificate.CertificateReportGenerator;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -58,8 +57,8 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
-        List<CertificateReport> reportList = CertificateReportGenerator.generateReports(serverCert);
-        return new CertificateResult(getType(), reportList, serverCert);
+        CertificateChain chain = new CertificateChain(serverCert, getScannerConfig().getClientDelegate().getHost());
+        return new CertificateResult(getType(), chain, serverCert);
     }
 
     @Override
