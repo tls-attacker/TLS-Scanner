@@ -14,8 +14,14 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.AnsiEscapeSequence;
+import de.rub.nds.tlsscanner.evaluation.Influencer;
+import de.rub.nds.tlsscanner.evaluation.PositiveInfluenceTranslator;
+import de.rub.nds.tlsscanner.evaluation.RecommendationTranslator;
+import de.rub.nds.tlsscanner.evaluation.ScoreReport;
+import de.rub.nds.tlsscanner.evaluation.SitereportRater;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.IOException;
+import java.util.Collections;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -52,6 +58,18 @@ public class Main {
                     ConsoleLogger.CONSOLE.info(AnsiEscapeSequence.ANSI_ONE_LINE_UP + AnsiEscapeSequence.ANSI_ERASE_LINE);
                 }
                 ConsoleLogger.CONSOLE.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail()));
+                SitereportRater rater = new SitereportRater();
+                ScoreReport scoreReport = rater.getScoreReport(report);
+                ConsoleLogger.CONSOLE.info("Score: " + scoreReport.getScore());
+                ConsoleLogger.CONSOLE.info("--------------------------------");
+                for (Influencer influencer : scoreReport.getPositiveInfluencerList()) {
+                    ConsoleLogger.CONSOLE.info(PositiveInfluenceTranslator.getInfluence(influencer.getInfluencerConstant()) + "  +" + influencer.getPositiveInfluence());
+                }
+                ConsoleLogger.CONSOLE.info("--------------------------------");
+                Collections.sort(scoreReport.getNegativeInfluencerList());
+                for (Influencer influencer : scoreReport.getNegativeInfluencerList()) {
+                    ConsoleLogger.CONSOLE.error(RecommendationTranslator.getRecommendation(influencer.getInfluencerConstant()) + " -" + Math.abs(influencer.getNegativeInfluence()) + " " + (influencer.getScoreCap() == null ? "" : " Capped: " + influencer.getScoreCap()));
+                }
             } catch (ConfigurationException E) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", E);
             }

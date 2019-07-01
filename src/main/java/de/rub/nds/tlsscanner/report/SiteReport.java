@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResu
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,8 @@ import org.bouncycastle.crypto.tls.Certificate;
 
 public class SiteReport {
 
+    private final HashMap<String, TestResult> resultMap; //TODO
+    
     //General
     private final List<ProbeType> probeTypeList;
     private List<PerformanceData> performanceList;
