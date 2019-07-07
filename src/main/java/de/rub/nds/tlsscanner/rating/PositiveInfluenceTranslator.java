@@ -1,17 +1,12 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package de.rub.nds.tlsscanner.evaluation;
+package de.rub.nds.tlsscanner.rating;
 
 /**
  *
@@ -22,7 +17,7 @@ public class PositiveInfluenceTranslator {
     private PositiveInfluenceTranslator() {
     }
 
-    public static String getInfluence(InfluencerConstant constant) {
+    public static String getInfluence(AnalyzedProperty constant) {
         switch (constant) {
             case SSL_2:
                 return "You have SSlv2 disabled";
@@ -42,23 +37,23 @@ public class PositiveInfluenceTranslator {
                 return "You are enforcing PFS ciphersuites";
             case ENFOCRE_CS_ORDERING:
                 return "You are enforcing the ciphersuite selection order server side";
-            case NO_NULL_CIPHERS:
+            case NULL_CIPHERS:
                 return "You have disabled NULL ciphersuites";
-            case NO_FORTEZZA:
+            case FORTEZZA:
                 return "You have disabled FORTEZZA ciphersuites";
-            case NO_EXPORT:
+            case EXPORT:
                 return "You have disabled EXPORT ciphersuites";
-            case NO_ANON:
+            case ANON:
                 return "You have disabled anon ciphersuites";
-            case NO_DES:
+            case DES:
                 return "You have disabled DES ciphersuites";
-            case NO_IDEA:
+            case IDEA:
                 return "You have disabled IDEA ciphersuites";
-            case NO_RC2:
+            case RC2:
                 return "You have disabled RC2 ciphersuites";
-            case NO_RC4:
+            case RC4:
                 return "You have disabled RC4 ciphersuites";
-            case NO_CBC:
+            case CBC:
                 return "You have disabled CBC ciphersuites";
             case SUPPORT_AEAD:
                 return "You have enabled AEAD ciphersuites";
@@ -74,71 +69,71 @@ public class PositiveInfluenceTranslator {
                 return "You support the Secure Renegotiation Extension";
             case SUPPORT_TOKENBINDING:
                 return "You support Tokenbinding";
-            case NO_TLS_COMPRESSION:
+            case TLS_COMPRESSION:
                 return "You disabled TLS-Compression";
-            case NO_VERSION_INTOLERANCES:
-            case NO_CIPHERSUITE_INTOLERANCES:
-            case NO_EXTENSION_INTOLERANCES:
-            case NO_CIPHERSUITE_LENGTH_INTOLERANCES:
-            case NO_COMPRESSION_INTOLERANCES:
-            case NO_ALPN_INTOLERANCES:
-            case NO_CLIENTHELLO_LENGTH_INTOLERANCES:
-            case NO_EMPTY_LAST_EXTENSION_INTOLERANCES:
-            case NO_SIG_HASH_ALGORITHM_INTOLERANCES:
-            case NO_BIG_CLIENT_HELLO_INTOLERANCES:
-            case NO_SECOND_CIPHERSUITE_BYTE_BUG:
-            case NO_IGNORES_OFFERED_CIPHERSUITES:
-            case NO_REFLECTS_OFFERED_CIPHERSUITES:
-            case NO_IGNORES_OFFERED_NAMEDGROUPS:
-            case NO_IGNORES_OFFERED_SIG_HASH_ALGOS:
+            case VERSION_INTOLERANCES:
+            case CIPHERSUITE_INTOLERANCES:
+            case EXTENSION_INTOLERANCES:
+            case CIPHERSUITE_LENGTH_INTOLERANCES:
+            case COMPRESSION_INTOLERANCES:
+            case ALPN_INTOLERANCES:
+            case CLIENTHELLO_LENGTH_INTOLERANCES:
+            case EMPTY_LAST_EXTENSION_INTOLERANCES:
+            case SIG_HASH_ALGORITHM_INTOLERANCES:
+            case BIG_CLIENT_HELLO_INTOLERANCES:
+            case SECOND_CIPHERSUITE_BYTE_BUG:
+            case IGNORES_OFFERED_CIPHERSUITES:
+            case REFLECTS_OFFERED_CIPHERSUITES:
+            case IGNORES_OFFERED_NAMEDGROUPS:
+            case IGNORES_OFFERED_SIG_HASH_ALGOS:
                 return constant.name();
-            case NO_BLEICHENBACHER:
+            case BLEICHENBACHER:
                 return "You are not vulnerable to the Bleichenbacher Attack";
-            case NO_PADDINGORACLE:
+            case CBC_PADDING_ORACLE:
                 return "You are not vulnerable to the PaddingOracle Attack";
-            case NO_HTTP_COMPRESSION:
+            case HTTP_COMPRESSION:
                 return "You have disabled HTTP-Compression. You are not vulnerable to the BREACH attack";
-            case NO_INVALID_CURVE:
+            case INVALID_CURVE:
                 return "You are not vulnerable to the InvalidCurve attack";
-            case NO_INVALID_CURVE_EPHEMERAL:
+            case INVALID_CURVE_EPHEMERAL:
                 return "You are not vulnerable to the InvalidCurve (ephemeral) attack";
-            case NO_INVALID_CURVE_EPHEMERAL_WITH_REUSE:
+            case INVALID_CURVE_EPHEMERAL_WITH_REUSE:
                 return "You are not vulnerable to the InvalidCurve (ephemeral with pk reuse) attack";
-            case NO_POODLE:
+            case POODLE:
                 return "You are not vulnerable to the POODLE attack";
-            case NO_TLS_POODLE:
+            case TLS_POODLE:
                 return "You are not vulnerable to the TLS-POODLE attack";
-            case NO_64_BIT_CIPHERSUIET:
+            case SHORT_64_BIT_CIPHERSUITE:
                 return "You do not support 64-bit Ciphersuites";
-            case NO_DROWN:
+            case DROWN:
                 return "You are not vulnerable to the DROWN attack";
-            case NO_HEARTBLEED:
+            case HEARTBLEED:
                 return "You are not vulnerable to the Heartbleed attack";
-            case NO_EARLY_CCS:
+            case EARLY_CCS:
                 return "You are not vulnerable to the EarlyCcs attack";
-            case NO_MISSING_CHECKS_MAC_APPDATA:
+            case MISSING_CHECKS_MAC_APPDATA:
                 return "You are checking the MAC of ApplicationData correctly";
-            case NO_MISSING_CHECKS_MAC_FINISHED:
+            case MISSING_CHECKS_MAC_FINISHED:
                 return "You are checking the MAC of the Finished message correctly";
-            case NO_MISSING_CHECKS_VERIFY_DATA:
+            case MISSING_CHECKS_VERIFY_DATA:
                 return "You are checking the verify_data of the finished message correctly";
-            case NO_CERTIFICATE_ISSUES:
+            case CERTIFICATE_ISSUES:
                 return "Your certificate chain does not have any issues";
-            case NO_INSECURE_RENEGOTIATION:
+            case INSECURE_RENEGOTIATION:
                 return "You are not allowing insecure renegotiation";
-            case NO_RENEGOTIATION:
+            case RENEGOTIATION:
                 return "You are not allowing renegotiation at all";
             case SUPPORT_HSTS:
                 return "You are supporting HSTS";
             case SUPPORT_HPKP_REPORTING:
                 return "You are supporting HPKP";
-            case NO_WEAK_RANDOMNESS:
+            case WEAK_RANDOMNESS:
                 return "Your implementation does not use Duplicate Nonces";
-            case NO_EC_PUBLICKEY_REUSE:
+            case EC_PUBLICKEY_REUSE:
                 return "You are not reusing EC public keys";
-            case NO_DH_PUBLICKEY_REUSE:
+            case DH_PUBLICKEY_REUSE:
                 return "You are not reusing DH public keys";
-            case NO_COMMON_DH_PRIMES:
+            case COMMON_DH_PRIMES:
                 return "You are not using common DH primes";
             case SUPPORT_PRIME_MODULI:
                 return "You are using a prime moduli";

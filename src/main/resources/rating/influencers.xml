@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ratingInfluencers>
+    <ratingInfluencer>
+        <analyzedProperty>SSL_2</analyzedProperty>
+        <result>TRUE</result>
+        <influence>-200.0</influence>
+        <scoreCap>500.0</scoreCap>
+    </ratingInfluencer>
+</ratingInfluencers>
