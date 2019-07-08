@@ -121,11 +121,11 @@ class AddressGenerator implements IAddressIterator {
      */
     private class FullRangeIterator {
         Random rand = new Random();
-        int a = rand.nextInt(256);
-        int b = rand.nextInt(256);
-        int c = rand.nextInt(256);
+        int a = 0;
+        int b = 0;
+        int c = 0;
         int d = 0;
-        int limit = d + 15;
+        //int limit = d + 15;
 
         boolean hasNext = true;
 
@@ -136,8 +136,9 @@ class AddressGenerator implements IAddressIterator {
 
             String result = String.format("%d.%d.%d.%d", a, b, c, d);
 
-            if (++d > limit) {
-                hasNext = false;
+            if (++d > 255) {
+                //hasNext = false;
+                d = 0;
 
                 if (++c > 255) {
                     c = 0;
