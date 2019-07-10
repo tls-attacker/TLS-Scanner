@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,8 @@ public class TlsCrawlerMaster extends TlsCrawler {
             LOG.error("Crawling task has not been established due to invalid arguments.");
         }
 
+        int taskCounter = 0;
+
         // TODO: This should be parallelized.
 
         for (String target : targets) {
@@ -72,6 +75,8 @@ public class TlsCrawlerMaster extends TlsCrawler {
             this.getPersistenceProvider().setUpScanTask(newTask);
             this.getOrchestrationProvider().addScanTask(newTask.getId());
         }
+
+        targets.remove();
     }
 
     public IMasterStats getStats() {

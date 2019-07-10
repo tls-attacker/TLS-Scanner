@@ -46,7 +46,7 @@ public class AddressIteratorFactory {
      */
     public static IAddressIterator getRedisAddressSource(String redisConnString) {
         RedisAddressSource result;
-        String[] split = redisConnString.split(Pattern.quote("/"));
+        String[] split = redisConnString.split(Pattern.quote("|"));
         String redisEndpoint = split[0];
         String redisListKey = split[1];
 
@@ -55,6 +55,7 @@ public class AddressIteratorFactory {
         result = new RedisAddressSource(redisEndpoint, redisListKey);
         try {
             result.init();
+            result.addDomainsToTheList();
         } catch (ConnectException e) {
             LOG.error("Failed to connect to redis (Address source)");
             return null;
@@ -168,6 +169,7 @@ public class AddressIteratorFactory {
         NULL,
         ALL_IPS,
         NDS_BLACKLIST,
-        STANDARD_BLACKLIST
+        STANDARD_BLACKLIST,
+        ALEXA
     }
 }

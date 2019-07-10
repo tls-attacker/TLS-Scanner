@@ -14,6 +14,7 @@ import redis.clients.jedis.JedisPool;
 
 import java.net.ConnectException;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Address Iterator reading scan targets from redis.
@@ -22,6 +23,7 @@ import java.util.Iterator;
  */
 public class RedisAddressSource implements IAddressIterator {
     private static Logger LOG = LoggerFactory.getLogger(RedisAddressSource.class);
+    private static String DOMAINS_FILE = "./top-1m.csv";
 
     private boolean initialized;
     private String redisConnString;
@@ -55,6 +57,19 @@ public class RedisAddressSource implements IAddressIterator {
         this.nextIndex = 0;
 
         this.initialized = true;
+    }
+
+    public void addDomainsToTheList() {
+        this.checkInit();
+
+        CSVReader reader = new CSVReader(DOMAINS_FILE);
+        List<String> domains = reader.readCSV();
+
+        try(Jedis redis = this.jedisPool.getResource()) {
+            for (String domain : domains) {
+                redis.lpush(this.listKey, domain);
+            }
+        }
     }
 
     /**
@@ -98,7 +113,9 @@ public class RedisAddressSource implements IAddressIterator {
 
     @Override
     public void remove() {
-        throw new RuntimeException("Illegal Action.");
+        try (Jedis redis = this.jedisPool.getResource()) {
+            redis.del(this.listKey);
+        }
     }
 
     @Override
