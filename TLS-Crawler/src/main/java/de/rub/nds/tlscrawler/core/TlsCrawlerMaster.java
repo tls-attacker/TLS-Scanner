@@ -33,6 +33,7 @@ import static java.util.stream.Collectors.joining;
  */
 public class TlsCrawlerMaster extends TlsCrawler {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerMaster.class);
+    private static long TIME_TO_WAIT = 1;
 
     private Map<String, Thread> taskGeneratorThreadList;
 
@@ -54,8 +55,6 @@ public class TlsCrawlerMaster extends TlsCrawler {
             LOG.error("Crawling task has not been established due to invalid arguments.");
         }
 
-        int taskCounter = 0;
-
         // TODO: This should be parallelized.
 
         for (String target : targets) {
@@ -76,7 +75,16 @@ public class TlsCrawlerMaster extends TlsCrawler {
             this.getOrchestrationProvider().addScanTask(newTask.getId());
         }
 
-        targets.remove();
+        try {
+            while (this.getOrchestrationProvider().getNumberOfTasks() != 0) {
+                TimeUnit.SECONDS.sleep(TIME_TO_WAIT);
+            }
+        } catch (Exception e) {
+            LOG.debug("Oops! Exception");
+            e.printStackTrace();
+        } finally {
+            targets.remove();
+        }
     }
 
     public IMasterStats getStats() {

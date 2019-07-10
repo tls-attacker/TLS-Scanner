@@ -83,6 +83,15 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
+    public long getNumberOfTasks() {
+        long listLength;
+        try (Jedis redis = this.jedisPool.getResource()) {
+            listLength = redis.llen(this.taskListName);
+        }
+        return listLength;
+    }
+
+    @Override
     public Collection<String> getScanTasks(int quantity) {
         this.checkInit();
 

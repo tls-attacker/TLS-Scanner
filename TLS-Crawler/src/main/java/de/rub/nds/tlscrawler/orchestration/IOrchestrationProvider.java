@@ -38,5 +38,7 @@ public interface IOrchestrationProvider {
      *
      * @param task The scan task to cancel.
      */
+
+    long getNumberOfTasks() throws Exception;
     void addScanTask(String taskId);
 }

@@ -37,6 +37,11 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
+    public long getNumberOfTasks() throws Exception {
+        throw new Exception("Option is not available");
+    }
+
+    @Override
     public Collection<String> getScanTasks(int quantity) {
         LOG.trace("getScanTasks()");
 

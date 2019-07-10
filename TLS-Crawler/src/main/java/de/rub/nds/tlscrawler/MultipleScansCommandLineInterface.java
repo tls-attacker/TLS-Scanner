@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class MultipleScansCommandLineInterface {
     private static Logger LOG = LoggerFactory.getLogger(CommandLineInterface.class);
-
+    private static long DAYS_TO_SLEEP = 1;
     public static void handleInput(TlsCrawlerMaster master, ITlsCrawlerSlave slave) throws InterruptedException {
         LOG.trace("handleInput()");
 
@@ -86,8 +86,8 @@ public class MultipleScansCommandLineInterface {
             crawl(options, master, chosenScans, ports);
             iteration++;
             options.id = UUID.randomUUID().toString();
-            LOG.info("Test No " + iteration + " ended. Waiting 10 seconds...");
-            TimeUnit.MINUTES.sleep(1);
+            LOG.info("Test No " + iteration + " ended. Waiting" + Long.toString(DAYS_TO_SLEEP) + "days...");
+            TimeUnit.DAYS.sleep(DAYS_TO_SLEEP);
 
         }
 
