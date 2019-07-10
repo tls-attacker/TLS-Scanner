@@ -96,7 +96,7 @@ public class CertificateReportGenerator {
         if (x500name != null) {
             RDN[] rdNs = x500name.getRDNs(BCStyle.CN);
             for (int i = 0; i < rdNs.length; i++) {
-                commonNames.append(IETFUtils.valueToString(rdNs[i]));
+                commonNames.append(IETFUtils.valueToString(rdNs[i].getFirst().getValue()));
                 if (i < rdNs.length - 1) {
                     commonNames.append(" ,");
                 }
