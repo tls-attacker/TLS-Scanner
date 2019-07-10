@@ -8,31 +8,25 @@
  */
 package de.rub.nds.tlsscanner.rating;
 
-import java.util.List;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
+import java.util.LinkedHashMap;
 
 public class ScoreReport {
 
     private final double score;
 
-    private final List<Influencer> positiveInfluencerList;
+    private final LinkedHashMap<AnalyzedProperty, PropertyRatingInfluencer> influencers;
 
-    private final List<Influencer> negativeInfluencerList;
-
-    public ScoreReport(double score, List<Influencer> positiveInfluencerList, List<Influencer> negativeInfluencerList) {
+    public ScoreReport(double score, LinkedHashMap<AnalyzedProperty, PropertyRatingInfluencer> influencers) {
         this.score = score;
-        this.positiveInfluencerList = positiveInfluencerList;
-        this.negativeInfluencerList = negativeInfluencerList;
+        this.influencers = influencers;
     }
 
     public double getScore() {
         return score;
     }
 
-    public List<Influencer> getPositiveInfluencerList() {
-        return positiveInfluencerList;
-    }
-
-    public List<Influencer> getNegativeInfluencerList() {
-        return negativeInfluencerList;
+    public LinkedHashMap<AnalyzedProperty, PropertyRatingInfluencer> getInfluencers() {
+        return influencers;
     }
 }

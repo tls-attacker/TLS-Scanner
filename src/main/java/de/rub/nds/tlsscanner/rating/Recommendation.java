@@ -8,56 +8,53 @@
  */
 package de.rub.nds.tlsscanner.rating;
 
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
+import java.util.LinkedList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+
 public class Recommendation {
+    
+    static final String NO_INFORMATION_FOUND = "No detailed information available";
+    
+    static final String NO_RECOMMENDATION_FOUND = "No recommendation available";
     
     private AnalyzedProperty analyzedProperty;
     
-    private TestResult result;
-    
-    private String resultStatus;
-    
-    private String handlingRecommendation;
+    private List<PropertyRecommendation> propertyRecommendations;
     
     public Recommendation() {
-        
+        propertyRecommendations = new LinkedList<>();
     }
     
-    public Recommendation(AnalyzedProperty analyzedProperty, TestResult result, String resultStatus, String handlingRecommendation) {
+    public Recommendation(AnalyzedProperty analyzedProperty, List<PropertyRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
-        this.result = result;
-        this.resultStatus = resultStatus;
-        this.handlingRecommendation = handlingRecommendation;
+        this.propertyRecommendations = propertyRecommendations;
     }
 
     public AnalyzedProperty getAnalyzedProperty() {
         return analyzedProperty;
     }
 
-    public TestResult getResult() {
-        return result;
-    }
-    
-    public String getResultStatus() {
-        return resultStatus;
-    }
-
-    public String getHandlingRecommendation() {
-        return handlingRecommendation;
-    }
-
     public void setAnalyzedProperty(AnalyzedProperty analyzedProperty) {
         this.analyzedProperty = analyzedProperty;
     }
 
-    public void setResult(TestResult result) {
-        this.result = result;
+    @XmlElement(name = "propertyRecommendation")
+    public List<PropertyRecommendation> getPropertyRecommendations() {
+        return propertyRecommendations;
     }
 
-    public void setResultStatus(String resultStatus) {
-        this.resultStatus = resultStatus;
+    public void setPropertyRecommendations(List<PropertyRecommendation> propertyRecommendations) {
+        this.propertyRecommendations = propertyRecommendations;
     }
-
-    public void setHandlingRecommendation(String handlingRecommendation) {
-        this.handlingRecommendation = handlingRecommendation;
+    
+    public PropertyRecommendation getPropertyRecommendation(TestResult result) {
+        for(PropertyRecommendation r : propertyRecommendations) {
+            if(r.getResult()== result) {
+                return r;
+            }
+        }
+        return new PropertyRecommendation(result, NO_INFORMATION_FOUND, NO_RECOMMENDATION_FOUND);
     }
 }

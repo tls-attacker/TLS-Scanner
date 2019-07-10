@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.rating;
 
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
@@ -25,6 +26,16 @@ public class Recommendations implements Serializable {
 
     public void setRecommendations(List<Recommendation> recommendations) {
         this.recommendations = recommendations;
+    }
+    
+    public PropertyRecommendation getPropertyRecommendation(AnalyzedProperty property, TestResult result) {
+        for(Recommendation pr : recommendations) {
+            if(pr.getAnalyzedProperty() == property) {
+                return pr.getPropertyRecommendation(result);
+            }
+        }
+        return new PropertyRecommendation(result, Recommendation.NO_RECOMMENDATION_FOUND, 
+                Recommendation.NO_RECOMMENDATION_FOUND);
     }
     
 }

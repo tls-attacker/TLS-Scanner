@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.rating;
 
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.LinkedList;
@@ -18,6 +19,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,9 +28,9 @@ public class InfluencersSerializationTest {
 
     private static final Logger LOGGER = LogManager.getLogger(InfluencersSerializationTest.class);
 
-    private Influencers original;
+    private RatingInfluencers original;
 
-    private Influencers result;
+    private RatingInfluencers result;
 
     private StringWriter writer;
 
@@ -40,14 +42,23 @@ public class InfluencersSerializationTest {
 
     @Before
     public void setUp() throws JAXBException {
-        original = new Influencers();
-        List<Influencer> influencers = new LinkedList<>();
-        Influencer i = new Influencer(AnalyzedProperty.SSL_2, TestResult.TRUE, -200.0, 500.0);
+        original = new RatingInfluencers();
+        List<RatingInfluencer> influencers = new LinkedList<>();
+        RatingInfluencer i = new RatingInfluencer();
+        i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_SSL_2);
+        i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.TRUE, -200, 500.0));
+        i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.FALSE, 50));
         influencers.add(i);
-        original.setInfluencers(influencers);
+        
+        i = new RatingInfluencer();
+        i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_TLS_1_2);
+        i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.TRUE, 100));
+        influencers.add(i);
+        
+        original.setRatingInfluencers(influencers);
 
         writer = new StringWriter();
-        context = JAXBContext.newInstance(Influencers.class);
+        context = JAXBContext.newInstance(RatingInfluencers.class);
         m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         um = context.createUnmarshaller();
@@ -59,18 +70,44 @@ public class InfluencersSerializationTest {
 
         String xmlString = writer.toString();
         LOGGER.info(xmlString);
+        System.out.println(xmlString);
 
         um = context.createUnmarshaller();
-        result = (Influencers) um.unmarshal(new StringReader(xmlString));
+        result = (RatingInfluencers) um.unmarshal(new StringReader(xmlString));
         
-        assertEquals("Influencer length check.", original.getInfluencers().size(), result.getInfluencers().size());
-        Influencer oInfluencer = original.getInfluencers().get(0);
-        Influencer rInfluencer = result.getInfluencers().get(0);
-        
+        assertEquals("Influencer length check.", original.getRatingInfluencers().size(), result.getRatingInfluencers().size());
+
+        RatingInfluencer oInfluencer = original.getRatingInfluencers().get(0);
+        RatingInfluencer rInfluencer = result.getRatingInfluencers().get(0);
         assertEquals(oInfluencer.getAnalyzedProperty(), rInfluencer.getAnalyzedProperty());
-        assertEquals(oInfluencer.getResult(), rInfluencer.getResult());
-        assertEquals(oInfluencer.getInfluence(), rInfluencer.getInfluence(), 0.1);
-        assertEquals(oInfluencer.getScoreCap(), rInfluencer.getScoreCap(), 0.1);
+
+        PropertyRatingInfluencer ori = oInfluencer.getPropertyRatingInfluencers().get(0);
+        PropertyRatingInfluencer rri = rInfluencer.getPropertyRatingInfluencers().get(0);
+        assertEquals(ori.getResult(), rri.getResult());
+        assertEquals(ori.getInfluence(), rri.getInfluence(), 0.1);
+        assertEquals(ori.getScoreCap(), rri.getScoreCap(), 0.1);
     }
     
+//    @Test
+//    public void testSerializeSimple() throws Exception {
+//        RatingInfluencers test = new RatingInfluencers();
+//        List<RatingInfluencer> influencers = new LinkedList<>();
+//        
+//        for (AnalyzedProperty a : AnalyzedProperty.values()) {
+//            RatingInfluencer i = new RatingInfluencer();
+//            i.setAnalyzedProperty(a);
+//            i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.TRUE, 0));
+//            i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.FALSE, 0));
+//            influencers.add(i);
+//        }
+//        test.setRatingInfluencers(influencers);
+//        
+//        m.marshal(test, writer);
+//
+//        String xmlString = writer.toString();
+//        LOGGER.info(xmlString);
+//        System.out.println(xmlString);
+//        
+//        Assert.assertNotNull(influencers);
+//    }
 }

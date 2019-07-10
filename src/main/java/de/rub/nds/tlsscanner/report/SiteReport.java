@@ -42,7 +42,7 @@ import org.bouncycastle.crypto.tls.Certificate;
 
 public class SiteReport {
 
-//    private final HashMap<String, TestResult> resultMap; //TODO
+    private final HashMap<String, TestResult> resultMap;
     
     //General
     private final List<ProbeType> probeTypeList;
@@ -250,6 +250,57 @@ public class SiteReport {
         this.noColor = noColor;
         performanceList = new LinkedList<>();
         extractedValueContainerList = new LinkedList<>();
+        resultMap = new HashMap<>();
+    }
+
+    public HashMap<String, TestResult> getResultMap() {
+        return resultMap;
+    }
+    
+    public TestResult getResult(AnalyzedProperty property) {
+        return getResult(property.toString());
+    }
+    
+    public TestResult getResult(String property) {
+        TestResult result = resultMap.get(property);
+        return (result == null) ? TestResult.UNTESTED : result;
+    }
+    
+    private void putResult(AnalyzedProperty property, Boolean result) {
+        if(result) {
+            resultMap.put(property.toString(), TestResult.TRUE);
+        } else {
+            resultMap.put(property.toString(), TestResult.FALSE);
+        }
+    }
+    
+    private void putResult(DrownVulnerabilityType result) {
+        // todo: divide DROWN to several vulnerabilities ???
+        switch(result) {
+            case NONE:
+                putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
+                break;
+            case UNKNOWN:
+                resultMap.put(AnalyzedProperty.VULNERABLE_TO_DROWN.toString(), TestResult.UNCERTAIN);
+                break;
+            default:
+                putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, true);
+        }
+    }
+    
+    private void putResult(EarlyCcsVulnerabilityType result) {
+        // todo: divide EARLY CCS to several vulnerabilities ???
+        // also: EarlyFinishedVulnerabilityType
+        switch(result) {
+            case NOT_VULNERABLE:
+                putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
+                break;
+            case UNKNOWN:
+                resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.UNCERTAIN);
+                break;
+            default:
+                putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, true);
+        }
     }
 
     public String getHost() {
@@ -277,6 +328,7 @@ public class SiteReport {
     }
 
     public void setCompressionIntolerance(Boolean compressionIntolerance) {
+        putResult(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, compressionIntolerance);
         this.compressionIntolerance = compressionIntolerance;
     }
 
@@ -285,6 +337,7 @@ public class SiteReport {
     }
 
     public void setCipherSuiteLengthIntolerance512(Boolean cipherSuiteLengthIntolerance512) {
+        putResult(AnalyzedProperty.HAS_CIPHERSUITE_LENGTH_INTOLERANCE, cipherSuiteLengthIntolerance512);
         this.cipherSuiteLengthIntolerance512 = cipherSuiteLengthIntolerance512;
     }
 
@@ -293,6 +346,7 @@ public class SiteReport {
     }
 
     public void setAlpnIntolerance(Boolean alpnIntolerance) {
+        putResult(AnalyzedProperty.HAS_ALPN_INTOLERANCE, alpnIntolerance);
         this.alpnIntolerance = alpnIntolerance;
     }
 
@@ -301,6 +355,7 @@ public class SiteReport {
     }
 
     public void setClientHelloLengthIntolerance(Boolean clientHelloLengthIntolerance) {
+        putResult(AnalyzedProperty.HAS_CIPHERSUITE_LENGTH_INTOLERANCE, clientHelloLengthIntolerance);
         this.clientHelloLengthIntolerance = clientHelloLengthIntolerance;
     }
 
@@ -309,6 +364,7 @@ public class SiteReport {
     }
 
     public void setEmptyLastExtensionIntolerance(Boolean emptyLastExtensionIntolerance) {
+        putResult(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE, emptyLastExtensionIntolerance);
         this.emptyLastExtensionIntolerance = emptyLastExtensionIntolerance;
     }
 
@@ -317,6 +373,7 @@ public class SiteReport {
     }
 
     public void setOnlySecondCiphersuiteByteEvaluated(Boolean onlySecondCiphersuiteByteEvaluated) {
+        putResult(AnalyzedProperty.HAS_SECOND_CIPHERSUITE_BYTE_BUG, onlySecondCiphersuiteByteEvaluated);
         this.onlySecondCiphersuiteByteEvaluated = onlySecondCiphersuiteByteEvaluated;
     }
 
@@ -325,6 +382,7 @@ public class SiteReport {
     }
 
     public void setNamedGroupIntolerant(Boolean namedGroupIntolerant) {
+        putResult(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, namedGroupIntolerant);
         this.namedGroupIntolerant = namedGroupIntolerant;
     }
 
@@ -333,6 +391,7 @@ public class SiteReport {
     }
 
     public void setNamedSignatureAndHashAlgorithmIntolerance(Boolean namedSignatureAndHashAlgorithmIntolerance) {
+        putResult(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE, namedSignatureAndHashAlgorithmIntolerance);
         this.namedSignatureAndHashAlgorithmIntolerance = namedSignatureAndHashAlgorithmIntolerance;
     }
 
@@ -341,6 +400,7 @@ public class SiteReport {
     }
 
     public void setIgnoresCipherSuiteOffering(Boolean ignoresCipherSuiteOffering) {
+        putResult(AnalyzedProperty.IGNORES_OFFERED_CIPHERSUITES, ignoresCipherSuiteOffering);
         this.ignoresCipherSuiteOffering = ignoresCipherSuiteOffering;
     }
 
@@ -349,6 +409,7 @@ public class SiteReport {
     }
 
     public void setReflectsCipherSuiteOffering(Boolean reflectsCipherSuiteOffering) {
+        putResult(AnalyzedProperty.REFLECTS_OFFERED_CIPHERSUITES, reflectsCipherSuiteOffering);
         this.reflectsCipherSuiteOffering = reflectsCipherSuiteOffering;
     }
 
@@ -357,6 +418,7 @@ public class SiteReport {
     }
 
     public void setIgnoresOfferedNamedGroups(Boolean ignoresOfferedNamedGroups) {
+        putResult(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, ignoresOfferedNamedGroups);
         this.ignoresOfferedNamedGroups = ignoresOfferedNamedGroups;
     }
 
@@ -365,6 +427,7 @@ public class SiteReport {
     }
 
     public void setIgnoresOfferedSignatureAndHashAlgorithms(Boolean ignoresOfferedSignatureAndHashAlgorithms) {
+        putResult(AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, ignoresOfferedSignatureAndHashAlgorithms);
         this.ignoresOfferedSignatureAndHashAlgorithms = ignoresOfferedSignatureAndHashAlgorithms;
     }
 
@@ -373,6 +436,7 @@ public class SiteReport {
     }
 
     public void setMaxLengthClientHelloIntolerant(Boolean maxLengthClientHelloIntolerant) {
+        putResult(AnalyzedProperty.HAS_CLIENTHELLO_LENGTH_INTOLERANCE, maxLengthClientHelloIntolerant);
         this.maxLengthClientHelloIntolerant = maxLengthClientHelloIntolerant;
     }
 
@@ -389,6 +453,7 @@ public class SiteReport {
     }
 
     public void setHeartbleedVulnerable(Boolean heartbleedVulnerable) {
+        putResult(AnalyzedProperty.VULNERABLE_TO_HEARTBLEED, heartbleedVulnerable);
         this.heartbleedVulnerable = heartbleedVulnerable;
     }
 
@@ -397,6 +462,7 @@ public class SiteReport {
     }
 
     public void setEarlyCcsVulnerable(EarlyCcsVulnerabilityType earlyCcsVulnerable) {
+        putResult(earlyCcsVulnerable);
         this.earlyCcsVulnerable = earlyCcsVulnerable;
     }
 
@@ -413,6 +479,7 @@ public class SiteReport {
     }
 
     public void setSupportsSsl2(Boolean supportsSsl2) {
+        putResult(AnalyzedProperty.SUPPORTS_SSL_2, supportsSsl2);
         this.supportsSsl2 = supportsSsl2;
     }
 
@@ -421,6 +488,7 @@ public class SiteReport {
     }
 
     public void setSupportsSsl3(Boolean supportsSsl3) {
+        putResult(AnalyzedProperty.SUPPORTS_SSL_3, supportsSsl3);
         this.supportsSsl3 = supportsSsl3;
     }
 
@@ -429,6 +497,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls10(Boolean supportsTls10) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_0, supportsTls10);
         this.supportsTls10 = supportsTls10;
     }
 
@@ -437,6 +506,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls11(Boolean supportsTls11) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_1, supportsTls11);
         this.supportsTls11 = supportsTls11;
     }
 
@@ -445,6 +515,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls12(Boolean supportsTls12) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, supportsTls12);
         this.supportsTls12 = supportsTls12;
     }
 
@@ -457,6 +528,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13(Boolean supportsTls13) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, supportsTls13);
         this.supportsTls13 = supportsTls13;
     }
 
@@ -465,6 +537,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft14(Boolean supportsTls13Draft14) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft14);
         this.supportsTls13Draft14 = supportsTls13Draft14;
     }
 
@@ -473,6 +546,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft15(Boolean supportsTls13Draft15) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft15);
         this.supportsTls13Draft15 = supportsTls13Draft15;
     }
 
@@ -481,6 +555,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft16(Boolean supportsTls13Draft16) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft16);
         this.supportsTls13Draft16 = supportsTls13Draft16;
     }
 
@@ -489,6 +564,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft17(Boolean supportsTls13Draft17) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft17);
         this.supportsTls13Draft17 = supportsTls13Draft17;
     }
 
@@ -497,6 +573,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft18(Boolean supportsTls13Draft18) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft18);
         this.supportsTls13Draft18 = supportsTls13Draft18;
     }
 
@@ -505,6 +582,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft19(Boolean supportsTls13Draft19) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft19);
         this.supportsTls13Draft19 = supportsTls13Draft19;
     }
 
@@ -513,6 +591,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft20(Boolean supportsTls13Draft20) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft20);
         this.supportsTls13Draft20 = supportsTls13Draft20;
     }
 
@@ -521,6 +600,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft21(Boolean supportsTls13Draft21) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft21);
         this.supportsTls13Draft21 = supportsTls13Draft21;
     }
 
@@ -529,6 +609,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft22(Boolean supportsTls13Draft22) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft22);
         this.supportsTls13Draft22 = supportsTls13Draft22;
     }
 
@@ -537,6 +618,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft23(Boolean supportsTls13Draft23) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft23);
         this.supportsTls13Draft23 = supportsTls13Draft23;
     }
 
@@ -545,6 +627,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft24(Boolean supportsTls13Draft24) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft24);
         this.supportsTls13Draft24 = supportsTls13Draft24;
     }
 
@@ -553,6 +636,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft25(Boolean supportsTls13Draft25) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft25);
         this.supportsTls13Draft25 = supportsTls13Draft25;
     }
 
@@ -561,6 +645,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft26(Boolean supportsTls13Draft26) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft26);
         this.supportsTls13Draft26 = supportsTls13Draft26;
     }
 
@@ -569,6 +654,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft27(Boolean supportsTls13Draft27) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft27);
         this.supportsTls13Draft27 = supportsTls13Draft27;
     }
 
@@ -577,6 +663,7 @@ public class SiteReport {
     }
 
     public void setSupportsTls13Draft28(Boolean supportsTls13Draft28) {
+        putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, supportsTls13Draft28);
         this.supportsTls13Draft28 = supportsTls13Draft28;
     }
 
@@ -585,6 +672,7 @@ public class SiteReport {
     }
 
     public void setSupportsDtls10(Boolean supportsDtls10) {
+        putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, supportsDtls10);
         this.supportsDtls10 = supportsDtls10;
     }
 
@@ -593,6 +681,7 @@ public class SiteReport {
     }
 
     public void setSupportsDtls12(Boolean supportsDtls12) {
+        putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, supportsDtls12);
         this.supportsDtls12 = supportsDtls12;
     }
 
@@ -601,6 +690,7 @@ public class SiteReport {
     }
 
     public void setSupportsDtls13(Boolean supportsDtls13) {
+        putResult(AnalyzedProperty.SUPPORTS_DTLS_1_3, supportsDtls13);
         this.supportsDtls13 = supportsDtls13;
     }
 
@@ -1057,6 +1147,7 @@ public class SiteReport {
     }
 
     public void setSupportsNullCiphers(Boolean supportsNullCiphers) {
+        putResult(AnalyzedProperty.SUPPORTS_NULL_CIPHERS, supportsNullCiphers);
         this.supportsNullCiphers = supportsNullCiphers;
     }
 
@@ -1065,6 +1156,7 @@ public class SiteReport {
     }
 
     public void setSupportsAnonCiphers(Boolean supportsAnonCiphers) {
+        putResult(AnalyzedProperty.SUPPORTS_ANON, supportsAnonCiphers);
         this.supportsAnonCiphers = supportsAnonCiphers;
     }
 
@@ -1073,6 +1165,7 @@ public class SiteReport {
     }
 
     public void setSupportsExportCiphers(Boolean supportsExportCiphers) {
+        putResult(AnalyzedProperty.SUPPORTS_EXPORT, supportsExportCiphers);
         this.supportsExportCiphers = supportsExportCiphers;
     }
 
@@ -1081,6 +1174,7 @@ public class SiteReport {
     }
 
     public void setSupportsDesCiphers(Boolean supportsDesCiphers) {
+        putResult(AnalyzedProperty.SUPPORTS_DES, supportsDesCiphers);
         this.supportsDesCiphers = supportsDesCiphers;
     }
 
@@ -1089,6 +1183,7 @@ public class SiteReport {
     }
 
     public void setSupportsSeedCiphers(Boolean supportsSeedCiphers) {
+        putResult(AnalyzedProperty.SUPPORTS_SEED, supportsSeedCiphers);
         this.supportsSeedCiphers = supportsSeedCiphers;
     }
 
@@ -1097,6 +1192,7 @@ public class SiteReport {
     }
 
     public void setSupportsIdeaCiphers(Boolean supportsIdeaCiphers) {
+        putResult(AnalyzedProperty.SUPPORTS_IDEA, supportsIdeaCiphers);
         this.supportsIdeaCiphers = supportsIdeaCiphers;
     }
 
@@ -1105,6 +1201,7 @@ public class SiteReport {
     }
 
     public void setSupportsRc2Ciphers(Boolean supportsRc2Ciphers) {
+        putResult(AnalyzedProperty.SUPPORTS_RC2, supportsRc2Ciphers);
         this.supportsRc2Ciphers = supportsRc2Ciphers;
     }
 
@@ -1113,6 +1210,7 @@ public class SiteReport {
     }
 
     public void setSupportsRc4Ciphers(Boolean supportsRc4Ciphers) {
+        putResult(AnalyzedProperty.SUPPORTS_RC4, supportsRc4Ciphers);
         this.supportsRc4Ciphers = supportsRc4Ciphers;
     }
 
@@ -1121,6 +1219,7 @@ public class SiteReport {
     }
 
     public void setSupportsTrippleDesCiphers(Boolean supportsTrippleDesCiphers) {
+        putResult(AnalyzedProperty.SUPPORTS_3DES, supportsTrippleDesCiphers);
         this.supportsTrippleDesCiphers = supportsTrippleDesCiphers;
     }
 
@@ -1137,6 +1236,7 @@ public class SiteReport {
     }
 
     public void setSupportsAeadCiphers(Boolean supportsAeadCiphers) {
+        putResult(AnalyzedProperty.SUPPORTS_AEAD, supportsAeadCiphers);
         this.supportsAeadCiphers = supportsAeadCiphers;
     }
 
@@ -1145,6 +1245,7 @@ public class SiteReport {
     }
 
     public void setSupportsPfsCiphers(Boolean supportsPfsCiphers) {
+        putResult(AnalyzedProperty.SUPPORTS_PFS, supportsPfsCiphers);
         this.supportsPfsCiphers = supportsPfsCiphers;
     }
 
@@ -1153,6 +1254,7 @@ public class SiteReport {
     }
 
     public void setSupportsOnlyPfsCiphers(Boolean supportsOnlyPfsCiphers) {
+        putResult(AnalyzedProperty.ENFORCES_PFS, supportsOnlyPfsCiphers);
         this.supportsOnlyPfsCiphers = supportsOnlyPfsCiphers;
     }
 
@@ -1161,6 +1263,7 @@ public class SiteReport {
     }
 
     public void setSupportsSessionTicket(Boolean supportsSessionTicket) {
+        putResult(AnalyzedProperty.SUPPORTS_SESSION_TICKETS, supportsSessionTicket);
         this.supportsSessionTicket = supportsSessionTicket;
     }
 
@@ -1169,6 +1272,7 @@ public class SiteReport {
     }
 
     public void setSupportsSessionIds(Boolean supportsSessionIds) {
+        putResult(AnalyzedProperty.SUPPORTS_SESSION_IDS, supportsSessionIds);
         this.supportsSessionIds = supportsSessionIds;
     }
 
@@ -1193,6 +1297,7 @@ public class SiteReport {
     }
 
     public void setVulnerableTicketBleed(Boolean vulnerableTicketBleed) {
+        putResult(AnalyzedProperty.VULNERABLE_TO_TICKETBLEED, vulnerableTicketBleed);
         this.vulnerableTicketBleed = vulnerableTicketBleed;
     }
 
@@ -1201,6 +1306,7 @@ public class SiteReport {
     }
 
     public void setSupportsSecureRenegotiation(Boolean supportsSecureRenegotiation) {
+        putResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, supportsSecureRenegotiation);
         this.supportsSecureRenegotiation = supportsSecureRenegotiation;
     }
 
@@ -1233,6 +1339,7 @@ public class SiteReport {
     }
 
     public void setSweet32Vulnerable(Boolean sweet32Vulnerable) {
+        putResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32, sweet32Vulnerable);
         this.sweet32Vulnerable = sweet32Vulnerable;
     }
 
@@ -1241,6 +1348,7 @@ public class SiteReport {
     }
 
     public void setDrownVulnerable(DrownVulnerabilityType drownVulnerable) {
+        putResult(drownVulnerable);
         this.drownVulnerable = drownVulnerable;
     }
 
@@ -1257,6 +1365,7 @@ public class SiteReport {
     }
 
     public void setVersionIntolerance(Boolean versionIntolerance) {
+        putResult(AnalyzedProperty.HAS_VERSION_INTOLERANCE, versionIntolerance);
         this.versionIntolerance = versionIntolerance;
     }
 
@@ -1265,6 +1374,7 @@ public class SiteReport {
     }
 
     public void setExtensionIntolerance(Boolean extensionIntolerance) {
+        putResult(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE, extensionIntolerance);
         this.extensionIntolerance = extensionIntolerance;
     }
 
@@ -1273,6 +1383,7 @@ public class SiteReport {
     }
 
     public void setCipherSuiteIntolerance(Boolean cipherSuiteIntolerance) {
+        putResult(AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE, cipherSuiteIntolerance);
         this.cipherSuiteIntolerance = cipherSuiteIntolerance;
     }
 
@@ -1281,6 +1392,7 @@ public class SiteReport {
     }
 
     public void setGcmReuse(Boolean gcmReuse) {
+        putResult(AnalyzedProperty.REUSES_GCM_NONCES, gcmReuse);
         this.gcmReuse = gcmReuse;
     }
 

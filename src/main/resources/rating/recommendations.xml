@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <recommendations>
     <recommendation>
-        <analyzedProperty>SSL_2</analyzedProperty>
-        <result>TRUE</result>
-        <handlingRecommendation>Disable SSLv2</handlingRecommendation>
-        <resultStatus>SSLv2 is enabled</resultStatus>
+        <analyzedProperty>SUPPORTS_SSL_2</analyzedProperty>
+        <propertyRecommendation>
+            <result>TRUE</result>
+            <information>SSLv2 is enabled</information>
+            <handlingRecommendation>Disable SSLv2</handlingRecommendation>
+        </propertyRecommendation>
     </recommendation>
 </recommendations>
