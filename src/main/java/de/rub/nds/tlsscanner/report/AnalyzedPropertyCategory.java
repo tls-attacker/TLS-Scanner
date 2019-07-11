@@ -8,9 +8,8 @@
  */
 package de.rub.nds.tlsscanner.report;
 
-public enum AnalyzedProperty {
-    
-    SUPPORTS_SSL_2 (AnalyzedPropertyCategory.SUPPORTED_VERSIONS),
+public enum AnalyzedPropertyCategory {
+    SUPPORTS_SSL_2,
     SUPPORTS_SSL_3,
     SUPPORTS_TLS_1_0,
     SUPPORTS_TLS_1_1,
@@ -96,11 +95,5 @@ public enum AnalyzedProperty {
     HAS_WEAK_RANDOMNESS,
     REUSES_EC_PUBLICKEY,
     REUSES_DH_PUBLICKEY,
-    REUSES_GCM_NONCES;
-    
-    AnalyzedPropertyCategory category;
-    
-    AnalyzedProperty(AnalyzedPropertyCategory category) {
-        this.category = category;
-    }
+    REUSES_GCM_NONCES
 }

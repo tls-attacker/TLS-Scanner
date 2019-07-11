@@ -56,9 +56,6 @@ public class SiteReport {
     private Boolean requiresSni = null;
 
     //common bugs
-    private Boolean extensionIntolerance; //does it handle unknown extenstions correctly?
-    private Boolean versionIntolerance; //does it handle unknown versions correctly?
-    private Boolean cipherSuiteIntolerance; //does it handle unknown ciphersuites correctly?
     private Boolean cipherSuiteLengthIntolerance512; //does it handle long ciphersuite length values correctly?
     private Boolean compressionIntolerance; //does it handle unknown compression algorithms correctly
     private Boolean alpnIntolerance; //does it handle unknown alpn strings correctly?
@@ -266,7 +263,11 @@ public class SiteReport {
         return (result == null) ? TestResult.UNTESTED : result;
     }
     
-    private void putResult(AnalyzedProperty property, Boolean result) {
+    public void putResult(AnalyzedProperty property, TestResult result) {
+        resultMap.put(property.toString(), result);
+    }
+    
+    public void putResult(AnalyzedProperty property, Boolean result) {
         if(result) {
             resultMap.put(property.toString(), TestResult.TRUE);
         } else {
@@ -1360,31 +1361,8 @@ public class SiteReport {
         this.logjamVulnerable = logjamVulnerable;
     }
 
-    public Boolean getVersionIntolerance() {
-        return versionIntolerance;
-    }
-
-    public void setVersionIntolerance(Boolean versionIntolerance) {
-        putResult(AnalyzedProperty.HAS_VERSION_INTOLERANCE, versionIntolerance);
-        this.versionIntolerance = versionIntolerance;
-    }
-
-    public Boolean getExtensionIntolerance() {
-        return extensionIntolerance;
-    }
-
     public void setExtensionIntolerance(Boolean extensionIntolerance) {
         putResult(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE, extensionIntolerance);
-        this.extensionIntolerance = extensionIntolerance;
-    }
-
-    public Boolean getCipherSuiteIntolerance() {
-        return cipherSuiteIntolerance;
-    }
-
-    public void setCipherSuiteIntolerance(Boolean cipherSuiteIntolerance) {
-        putResult(AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE, cipherSuiteIntolerance);
-        this.cipherSuiteIntolerance = cipherSuiteIntolerance;
     }
 
     public Boolean getGcmReuse() {

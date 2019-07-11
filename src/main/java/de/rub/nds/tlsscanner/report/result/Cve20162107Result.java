@@ -18,6 +18,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
  */
 public class Cve20162107Result extends ProbeResult {
 
+    // todo change here to TestResult
     private Boolean vulnerable;
 
     public Cve20162107Result(Boolean vulnerable) {

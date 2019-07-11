@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 /**
@@ -58,10 +59,10 @@ public class CommonBugProbeResult extends ProbeResult {
     @Override
     protected void mergeData(SiteReport report) {
         report.setExtensionIntolerance(extensionIntolerance);
-        report.setCipherSuiteIntolerance(cipherSuiteIntolerance);
+        report.putResult(AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE, cipherSuiteIntolerance);
         report.setCipherSuiteLengthIntolerance512(cipherSuiteLengthIntolerance512);
         report.setCompressionIntolerance(compressionIntolerance);
-        report.setVersionIntolerance(versionIntolerance);
+        report.putResult(AnalyzedProperty.HAS_VERSION_INTOLERANCE, versionIntolerance);
         report.setAlpnIntolerance(alpnIntolerance);
         report.setClientHelloLengthIntolerance(clientHelloLengthIntolerance);
         report.setEmptyLastExtensionIntolerance(emptyLastExtensionIntolerance);

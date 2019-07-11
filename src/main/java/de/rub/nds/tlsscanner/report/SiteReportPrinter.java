@@ -42,6 +42,7 @@ import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
@@ -519,9 +520,9 @@ public class SiteReportPrinter {
 
     private StringBuilder appendIntolerances(StringBuilder builder) {
         prettyAppendHeading(builder, "Common Bugs [EXPERIMENTAL]");
-        prettyAppendRedGreen(builder, "Version Intolerant", report.getVersionIntolerance());
-        prettyAppendRedGreen(builder, "Ciphersuite Intolerant", report.getCipherSuiteIntolerance());
-        prettyAppendRedGreen(builder, "Extension Intolerant", report.getExtensionIntolerance());
+        prettyAppendRedGreen(builder, "Version Intolerant", report.getResult(AnalyzedProperty.HAS_VERSION_INTOLERANCE));
+        prettyAppendRedGreen(builder, "Ciphersuite Intolerant", report.getResult(AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE));
+        prettyAppendRedGreen(builder, "Extension Intolerant", report.getResult(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE));
         prettyAppendRedGreen(builder, "CS Length Intolerant (>512 Byte)", report.getCipherSuiteLengthIntolerance512());
         prettyAppendRedGreen(builder, "Compression Intolerant", report.getCompressionIntolerance());
         prettyAppendRedGreen(builder, "ALPN Intolerant", report.getAlpnIntolerance());
@@ -1015,6 +1016,10 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
+    }
+    
+    private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, TestResult value) {
+        return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
 
     private StringBuilder prettyAppendGreenYellow(StringBuilder builder, String name, Boolean value) {

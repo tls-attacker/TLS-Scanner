@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.Cve20162107Result;
@@ -31,14 +32,20 @@ public class Cve20162107Probe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Cve20162107CommandConfig cve20162106config = new Cve20162107CommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) cve20162106config.getDelegate(ClientDelegate.class);
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) cve20162106config.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        Cve20162107Attacker attacker = new Cve20162107Attacker(cve20162106config, cve20162106config.createConfig());
-        Boolean vulnerable = attacker.isVulnerable();
-        return new Cve20162107Result(vulnerable);
+        try {
+            // introduce try catch block as this one into every executeTest
+            // change boolean result to TestResult
+            Cve20162107CommandConfig cve20162106config = new Cve20162107CommandConfig(getScannerConfig().getGeneralDelegate());
+            ClientDelegate delegate = (ClientDelegate) cve20162106config.getDelegate(ClientDelegate.class);
+            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) cve20162106config.getDelegate(StarttlsDelegate.class);
+            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+            Cve20162107Attacker attacker = new Cve20162107Attacker(cve20162106config, cve20162106config.createConfig());
+            Boolean vulnerable = attacker.isVulnerable();
+            return new Cve20162107Result(vulnerable);
+        } catch(Exception e) {
+            return new Cve20162107Result(TestResult.ERROR_DURING_TEST);
+        }
     }
 
     @Override
