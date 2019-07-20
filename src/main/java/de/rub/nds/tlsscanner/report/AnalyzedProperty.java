@@ -36,55 +36,55 @@ public enum AnalyzedProperty {
     SUPPORTS_DTLS_1_2 (AnalyzedPropertyCategory.SUPPORTED_VERSIONS),
     SUPPORTS_DTLS_1_3 (AnalyzedPropertyCategory.SUPPORTED_VERSIONS),
     
-    SUPPORTS_PFS,
-    SUPPORTS_NULL_CIPHERS,
-    SUPPORTS_FORTEZZA,
-    SUPPORTS_EXPORT,
-    SUPPORTS_ANON,
-    SUPPORTS_DES,
-    SUPPORTS_3DES,
-    SUPPORTS_SEED,
-    SUPPORTS_IDEA,
-    SUPPORTS_RC2,
-    SUPPORTS_RC4,
-    SUPPORTS_CBC,
-    SUPPORTS_AEAD,
-    SUPPORTS_POST_QUANTUM,
-    SUPPORTS_ONLY_PFS,
-    SUPPORTS_AES,
-    SUPPORTS_CAMELLIA,
-    SUPPORTS_ARIA,
-    SUPPORTS_CHACHA,
-    SUPPORTS_RSA,
-    SUPPORTS_DH,
-    SUPPORTS_ECDH,
-    SUPPORTS_STATIC_ECDH,
-    SUPPORTS_GOST,
-    SUPPORTS_SRP,
-    SUPPORTS_KERBEROS,
-    SUPPORTS_PSK_PLAIN,
-    SUPPORTS_PSK_RSA,
-    SUPPORTS_PSK_DHE,
-    SUPPORTS_PSK_ECDHE,
-    SUPPORTS_NEWHOPE,
-    SUPPORTS_ECMQV,
-    SUPPORTS_STREAM_CIPHERS,
-    SUPPORTS_BLOCK_CIPHERS,
+    SUPPORTS_PFS (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_NULL_CIPHERS (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_FORTEZZA (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_EXPORT (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_ANON (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_DES (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_3DES (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_SEED (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_IDEA (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_RC2 (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_RC4 (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_CBC (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_AEAD (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_POST_QUANTUM (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_ONLY_PFS (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_AES (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_CAMELLIA (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_ARIA (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_CHACHA (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_RSA (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_DH (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_ECDH (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_STATIC_ECDH (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_GOST (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_SRP (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_KERBEROS (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_PSK_PLAIN (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_PSK_RSA (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_PSK_DHE (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_PSK_ECDHE (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_NEWHOPE (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_ECMQV (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_STREAM_CIPHERS (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
+    SUPPORTS_BLOCK_CIPHERS (AnalyzedPropertyCategory.SUPPORTED_CIPHERSUITS),
        
-    SUPPORTS_EXTENDED_MASTER_SECRET,
-    SUPPORTS_ENCRYPT_THEN_MAC,
-    SUPPORTS_TOKENBINDING,
+    SUPPORTS_EXTENDED_MASTER_SECRET (AnalyzedPropertyCategory.EXTENSIONS),
+    SUPPORTS_ENCRYPT_THEN_MAC (AnalyzedPropertyCategory.EXTENSIONS),
+    SUPPORTS_TOKENBINDING (AnalyzedPropertyCategory.EXTENSIONS),
     
     SUPPORTS_MONTOGMERY_CURVES, // ?
     
-    SUPPORTS_SESSION_TICKETS,
-    SUPPORTS_SESSION_IDS,
-    SUPPORTS_SESSION_TICKETS_ROTATED,
+    SUPPORTS_SESSION_TICKETS (AnalyzedPropertyCategory.SESSION),
+    SUPPORTS_SESSION_IDS (AnalyzedPropertyCategory.SESSION),
+    SUPPORTS_SESSION_TICKETS_ROTATED (AnalyzedPropertyCategory.SESSION),
     
-    SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
-    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
-    SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION_EXTENSION,
-    SUPPORTS_TLS_FALLBACK_SCSV,
+    SUPPORTS_SECURE_RENEGOTIATION_EXTENSION (AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION (AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION_EXTENSION (AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_TLS_FALLBACK_SCSV (AnalyzedPropertyCategory.RENEGOTIATION),
     
     SUPPORTS_TLS_COMPRESSION, // ?
     
@@ -95,12 +95,12 @@ public enum AnalyzedProperty {
     SUPPORTS_INSECURE_RENEGOTIATION, // ?
     SUPPORTS_RENEGOTIATION, // ?
     
-    SUPPORTS_HTTPS,
-    SUPPORTS_HSTS,
-    SUPPORTS_HSTS_PRELOADING,
-    SUPPORTS_HPKP,
-    SUPPORTS_HPKP_REPORTING,
-    SUPPORTS_HTTP_COMPRESSION, // ?
+    SUPPORTS_HTTPS (AnalyzedPropertyCategory.HTTPS_HEADERS),
+    SUPPORTS_HSTS (AnalyzedPropertyCategory.HTTPS_HEADERS),
+    SUPPORTS_HSTS_PRELOADING (AnalyzedPropertyCategory.HTTPS_HEADERS),
+    SUPPORTS_HPKP (AnalyzedPropertyCategory.HTTPS_HEADERS),
+    SUPPORTS_HPKP_REPORTING (AnalyzedPropertyCategory.HTTPS_HEADERS),
+    SUPPORTS_HTTP_COMPRESSION (AnalyzedPropertyCategory.HTTPS_HEADERS), // ?
     
     PREFERS_PFS,
     ENFORCES_PFS, // ?
@@ -109,51 +109,51 @@ public enum AnalyzedProperty {
     /**
      * does it handle unknown versions correctly?
      */
-    HAS_VERSION_INTOLERANCE,
+    HAS_VERSION_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * does it handle unknown cipher suites correctly?
      */
-    HAS_CIPHERSUITE_INTOLERANCE,
+    HAS_CIPHERSUITE_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * does it handle unknown extensions correctly?
      */
-    HAS_EXTENSION_INTOLERANCE,
+    HAS_EXTENSION_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * does it handle long ciphersuite length values correctly?
      */    
-    HAS_CIPHERSUITE_LENGTH_INTOLERANCE,
+    HAS_CIPHERSUITE_LENGTH_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * does it handle unknown compression algorithms correctly
      */
-    HAS_COMPRESSION_INTOLERANCE,
+    HAS_COMPRESSION_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * does it handle unknown alpn strings correctly?
      */
-    HAS_ALPN_INTOLERANCE,
+    HAS_ALPN_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * 256 - 511 <-- ch should be bigger than this
      */
-    HAS_CLIENT_HELLO_LENGTH_INTOLERANCE,
+    HAS_CLIENT_HELLO_LENGTH_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * does it break on empty last extension
      */
-    HAS_EMPTY_LAST_EXTENSION_INTOLERANCE,
+    HAS_EMPTY_LAST_EXTENSION_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * does it handle signature and hash algorithms correctly
      */
-    HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+    HAS_SIG_HASH_ALGORITHM_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * server does not like really big client hello messages
      */
-    HAS_BIG_CLIENT_HELLO_INTOLERANCE,
+    HAS_BIG_CLIENT_HELLO_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * does it handle unknown groups correctly
      */   
-    HAS_NAMED_GROUP_INTOLERANCE,
+    HAS_NAMED_GROUP_INTOLERANCE (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * is only the second byte of the ciphersuite evaluated
      */
-    HAS_SECOND_CIPHERSUITE_BYTE_BUG,
+    HAS_SECOND_CIPHERSUITE_BYTE_BUG (AnalyzedPropertyCategory.INTOLERANCES),
     /**
      * does it ignore the offered ciphersuites
      */
@@ -171,24 +171,24 @@ public enum AnalyzedProperty {
      */
     IGNORES_OFFERED_SIG_HASH_ALGOS,
     
-    VULNERABLE_TO_BLEICHENBACHER,
-    VULNERABLE_TO_PADDING_ORACLE,
-    VULNERABLE_TO_CBC_PADDING_ORACLE, // ?
-    VULNERABLE_TO_INVALID_CURVE,
-    VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
-    VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_WITH_REUSE, // ?
-    VULNERABLE_TO_POODLE,
-    VULNERABLE_TO_TLS_POODLE,
-    VULNERABLE_TO_SWEET_32,
-    VULNERABLE_TO_DROWN,
-    VULNERABLE_TO_HEARTBLEED,
-    VULNERABLE_TO_TICKETBLEED,
-    VULNERABLE_TO_EARLY_CCS,
-    VULNERABLE_TO_CRIME,
-    VULNERABLE_TO_BREACH,
-    VULNERABLE_TO_LOGJAM,
-    VULNERABLE_TO_FREAK,
-    VULNERABLE_TO_CVE20162107,
+    VULNERABLE_TO_BLEICHENBACHER (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_PADDING_ORACLE (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_CBC_PADDING_ORACLE (AnalyzedPropertyCategory.ATTACKS), // ?
+    VULNERABLE_TO_INVALID_CURVE (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_INVALID_CURVE_EPHEMERAL (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_WITH_REUSE (AnalyzedPropertyCategory.ATTACKS), // ?
+    VULNERABLE_TO_POODLE (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_TLS_POODLE (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_SWEET_32 (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_DROWN (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_HEARTBLEED (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_TICKETBLEED (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_EARLY_CCS (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_CRIME (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_BREACH (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_LOGJAM (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_FREAK (AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_CVE20162107 (AnalyzedPropertyCategory.ATTACKS),
     
     MISSES_MAC_APPDATA_CHECKS, // ?
     MISSES_CHECKS_MAC_FINISHED_CHECKS, // ?
