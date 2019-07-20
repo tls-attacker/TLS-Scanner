@@ -10,6 +10,8 @@ package de.rub.nds.tlsscanner.report.after;
 
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.List;
 
@@ -17,18 +19,22 @@ public class EcPublicKeyAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
-        Boolean reuse = false;
-        for (ExtractedValueContainer container : extractedValueContainerList) {
-            if (container.getType() == TrackableValueType.ECDHE_PUBKEY) {
-                if (!container.areAllValuesDiffernt()) {
-                    reuse = true;
-                    break;
+        TestResult reuse = TestResult.UNTESTED;
+        try {
+            List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
+            reuse = TestResult.FALSE;
+            for (ExtractedValueContainer container : extractedValueContainerList) {
+                if (container.getType() == TrackableValueType.ECDHE_PUBKEY) {
+                    if (!container.areAllValuesDiffernt()) {
+                        reuse = TestResult.TRUE;
+                        break;
+                    }
                 }
             }
-
+        } catch(Exception e) {
+            reuse = TestResult.ERROR_DURING_TEST;
         }
-        report.setEcPubkeyReuse(reuse);
+        report.putResult(AnalyzedProperty.REUSES_EC_PUBLICKEY, reuse);
     }
 
 }

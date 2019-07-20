@@ -10,6 +10,8 @@ package de.rub.nds.tlsscanner.report.after;
 
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhLoader;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
@@ -59,14 +61,14 @@ public class DhValueAfterProbe extends AfterProbe {
             }
         }
         if (usedCommonValues.size() > 0) {
-            report.setUsesCommonDhPrimes(true);
+            report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.TRUE);
         } else {
-            report.setUsesCommonDhPrimes(false);
+            report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.FALSE);
         }
-        report.setUsesNonPrimeModuli(!onlyPrime);
-        report.setUsesNonSafePrimeModuli(!onlySafePrime);
+        report.putResult(AnalyzedProperty.SUPPORTS_PRIME_MODULI, !onlyPrime);
+        report.putResult(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI, !onlySafePrime);
         report.setUsedCommonDhValueList(usedCommonValues);
-        report.setDhPubkeyReuse(reuse);
+        report.putResult(AnalyzedProperty.REUSES_DH_PUBLICKEY, reuse);
         if (shortestBitLength != Integer.MAX_VALUE) {
             report.setWeakestDhStrength(shortestBitLength);
         }
