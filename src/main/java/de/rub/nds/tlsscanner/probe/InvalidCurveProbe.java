@@ -15,6 +15,8 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.InvalidCurveResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -25,9 +27,9 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
  */
 public class InvalidCurveProbe extends TlsProbe {
 
-    private Boolean supportsEphemeral;
+    private TestResult supportsEphemeral;
 
-    private Boolean supportsStatic;
+    private TestResult supportsStatic;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config, 10);
@@ -35,51 +37,55 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Boolean vulnerableClassic = null;
-        Boolean vulnerableEphemeral = null;
-        if (supportsStatic == null || supportsStatic == null) {
-            InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
-            ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
-            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
-            vulnerableClassic = attacker.isVulnerable();
-        }
-        if (supportsEphemeral == null || supportsEphemeral == null) {
-            InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
-            invalidCurveAttackConfig.setEphemeral(true);
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
-            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
-            vulnerableEphemeral = attacker.isVulnerable();
-        }
-        if (!getScannerConfig().isImplementation()) {
-            if (vulnerableClassic == null) {
-                vulnerableClassic = false;
+        try {        
+            Boolean vulnerableClassic = null;
+            Boolean vulnerableEphemeral = null;
+            if (supportsStatic == null || supportsStatic == null) {
+                InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
+                ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
+                delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+                StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
+                starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+                InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
+                vulnerableClassic = attacker.isVulnerable();
             }
-            if (vulnerableEphemeral == null) {
-                vulnerableEphemeral = false;
+            if (supportsEphemeral == null || supportsEphemeral == null) {
+                InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
+                invalidCurveAttackConfig.setEphemeral(true);
+                StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
+                starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+                ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
+                delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+                InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
+                vulnerableEphemeral = attacker.isVulnerable();
             }
-        }
-        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral);
+            if (!getScannerConfig().isImplementation()) {
+                if (vulnerableClassic == null) {
+                    vulnerableClassic = false;
+                }
+                if (vulnerableEphemeral == null) {
+                    vulnerableEphemeral = false;
+                }
+            }
+            return new InvalidCurveResult(vulnerableClassic == true ? TestResult.TRUE : TestResult.FALSE , vulnerableEphemeral == true ? TestResult.TRUE : TestResult.FALSE);
+        } catch(Exception e) {
+            return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+        } 
     }
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        return report.getSupportsEcdh() || report.getSupportsStaticEcdh();
+        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH)  == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE;
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
-        supportsEphemeral = report.getSupportsEcdh();
-        supportsStatic = report.getSupportsStaticEcdh();
+        supportsEphemeral = report.getResult(AnalyzedProperty.SUPPORTS_ECDH);
+        supportsStatic = report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH);
     }
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new InvalidCurveResult(false, false);
+        return new InvalidCurveResult(TestResult.UNTESTED, TestResult.UNTESTED);
     }
 }

@@ -9,6 +9,8 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 /**
@@ -17,10 +19,10 @@ import de.rub.nds.tlsscanner.report.SiteReport;
  */
 public class RenegotiationResult extends ProbeResult {
 
-    private Boolean secureRenegotiation;
-    private Boolean insecureRenegotiation;
+    private TestResult secureRenegotiation;
+    private TestResult insecureRenegotiation;
 
-    public RenegotiationResult(Boolean secureRenegotiation, Boolean insecureRenegotiation) {
+    public RenegotiationResult(TestResult secureRenegotiation, TestResult insecureRenegotiation) {
         super(ProbeType.RENEGOTIATION);
         this.secureRenegotiation = secureRenegotiation;
         this.insecureRenegotiation = insecureRenegotiation;
@@ -28,8 +30,8 @@ public class RenegotiationResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setSupportsClientSideSecureRenegotiation(secureRenegotiation);
-        report.setSupportsClientSideInsecureRenegotiation(insecureRenegotiation);
+        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
+        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION_EXTENSION, insecureRenegotiation);
     }
 
 }

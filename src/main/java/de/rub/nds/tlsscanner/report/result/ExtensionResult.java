@@ -10,6 +10,8 @@ package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.List;
 
@@ -20,10 +22,10 @@ import java.util.List;
 public class ExtensionResult extends ProbeResult {
 
     private List<ExtensionType> allSupportedExtensions;
-    private boolean extendedMasterSecret = false;
-    private boolean encryptThenMac = false;
-    private boolean secureRenegotiation = false;
-    private boolean sessionTickets = false;
+    private TestResult extendedMasterSecret = TestResult.FALSE;
+    private TestResult encryptThenMac = TestResult.FALSE;
+    private TestResult secureRenegotiation = TestResult.FALSE;
+    private TestResult sessionTickets = TestResult.FALSE;
 
     public ExtensionResult(List<ExtensionType> allSupportedExtensions) {
         super(ProbeType.EXTENSIONS);
@@ -39,22 +41,22 @@ public class ExtensionResult extends ProbeResult {
         }
         for (ExtensionType type : allSupportedExtensions) {
             if (type == ExtensionType.ENCRYPT_THEN_MAC) {
-                encryptThenMac = true;
+                encryptThenMac = TestResult.TRUE;
             }
             if (type == ExtensionType.EXTENDED_MASTER_SECRET) {
-                extendedMasterSecret = true;
+                extendedMasterSecret = TestResult.TRUE;
             }
             if (type == ExtensionType.RENEGOTIATION_INFO) {
-                secureRenegotiation = true;
+                secureRenegotiation = TestResult.TRUE;
             }
             if (type == ExtensionType.SESSION_TICKET) {
-                sessionTickets = true;
+                sessionTickets = TestResult.TRUE;
             }
         }
-        report.setSupportsExtendedMasterSecret(extendedMasterSecret);
-        report.setSupportsEncryptThenMacSecret(encryptThenMac);
-        report.setSupportsSecureRenegotiation(secureRenegotiation);
-        report.setSupportsSessionTicket(sessionTickets);
+        report.putResult(AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
+        report.putResult(AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
+        report.putResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
+        report.putResult(AnalyzedProperty.SUPPORTS_SESSION_TICKETS, sessionTickets);
     }
 
 }

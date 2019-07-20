@@ -9,6 +9,8 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
@@ -18,17 +20,16 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
  */
 public class Cve20162107Result extends ProbeResult {
 
-    // todo change here to TestResult
-    private Boolean vulnerable;
+    private TestResult vulnerable;
 
-    public Cve20162107Result(Boolean vulnerable) {
+    public Cve20162107Result(TestResult vulnerable) {
         super(ProbeType.CVE20162107);
         this.vulnerable = vulnerable;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setCve20162107Vulnerable(vulnerable);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_CVE20162107, vulnerable);
     }
 
 }

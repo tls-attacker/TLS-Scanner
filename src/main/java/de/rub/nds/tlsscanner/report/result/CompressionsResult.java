@@ -10,6 +10,8 @@ package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.List;
 
@@ -30,9 +32,9 @@ public class CompressionsResult extends ProbeResult {
     public void mergeData(SiteReport report) {
         report.setSupportedCompressionMethods(compressions);
         if (compressions.size() > 1) {
-            report.setCrimeVulnerable(Boolean.TRUE);
+            report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE);
         } else {
-            report.setCrimeVulnerable(Boolean.FALSE);
+            report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.FALSE);
         }
     }
 

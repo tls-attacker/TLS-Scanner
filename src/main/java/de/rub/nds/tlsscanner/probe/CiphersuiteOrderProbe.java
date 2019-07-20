@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.Arrays;
@@ -37,14 +38,18 @@ public class CiphersuiteOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<CipherSuite> toTestList = new LinkedList<>();
-        toTestList.addAll(Arrays.asList(CipherSuite.values()));
-        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-        Collections.reverseOrder();
-        CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-        return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite);
+        try {
+            List<CipherSuite> toTestList = new LinkedList<>();
+            toTestList.addAll(Arrays.asList(CipherSuite.values()));
+            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+            CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
+            Collections.reverseOrder();
+            CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
+            return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
+        } catch(Exception e) {
+            return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);
+        }
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -78,6 +83,6 @@ public class CiphersuiteOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return null;
+        return new CipherSuiteOrderResult(TestResult.UNTESTED);
     }
 }

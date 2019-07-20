@@ -23,7 +23,7 @@ public class DrownResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setDrownVulnerable(vulnType);
+        report.putResult(vulnType);
     }
 
 }

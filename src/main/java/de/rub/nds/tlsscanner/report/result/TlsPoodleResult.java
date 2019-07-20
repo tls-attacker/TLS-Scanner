@@ -9,6 +9,8 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 /**
@@ -17,16 +19,16 @@ import de.rub.nds.tlsscanner.report.SiteReport;
  */
 public class TlsPoodleResult extends ProbeResult {
 
-    private final Boolean vulnerable;
+    private final TestResult vulnerable;
 
-    public TlsPoodleResult(Boolean vulnerable) {
+    public TlsPoodleResult(TestResult vulnerable) {
         super(ProbeType.TLS_POODLE);
         this.vulnerable = vulnerable;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setTlsPoodleVulnerable(vulnerable);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_POODLE, vulnerable);
     }
 
 }

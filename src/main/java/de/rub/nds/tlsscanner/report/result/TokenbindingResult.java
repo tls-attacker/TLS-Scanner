@@ -12,6 +12,8 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,13 +38,13 @@ public class TokenbindingResult extends ProbeResult {
         report.setSupportedTokenBindingKeyParameters(supportedTokenBindingKeyParameters);
         report.setSupportedTokenBindingVersion(supportedTokenBindingVersion);
         if (supportedTokenBindingVersion != null && !supportedTokenBindingVersion.isEmpty()) {
-            report.setSupportsTokenbinding(Boolean.TRUE);
+            report.putResult(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResult.TRUE);
             if (report.getSupportedExtensions() == null) {
                 report.setSupportedExtensions(new LinkedList<ExtensionType>());
             }
             report.getSupportedExtensions().add(ExtensionType.TOKEN_BINDING);
         } else {
-            report.setSupportsTokenbinding(Boolean.FALSE);
+            report.putResult(AnalyzedProperty.SUPPORTS_TOKENBINDING, TestResult.FALSE);
         }
     }
 }

@@ -15,6 +15,8 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.PoodleResult;
@@ -31,19 +33,23 @@ public class PoodleProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        PoodleCommandConfig poodleCommandConfig = new PoodleCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) poodleCommandConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-        PoodleAttacker attacker = new PoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
-        Boolean vulnerable = attacker.isVulnerable();
-        return new PoodleResult(vulnerable);
+        try {
+            PoodleCommandConfig poodleCommandConfig = new PoodleCommandConfig(getScannerConfig().getGeneralDelegate());
+            ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
+            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) poodleCommandConfig.getDelegate(StarttlsDelegate.class);
+            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+            PoodleAttacker attacker = new PoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
+            Boolean vulnerable = attacker.isVulnerable();
+            return new PoodleResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
+        } catch(Exception e) {
+            return new PoodleResult(TestResult.ERROR_DURING_TEST);
+        }    
     }
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        return report.getSupportsBlockCiphers();
+        return report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS) == TestResult.TRUE;
     }
 
     @Override
@@ -52,6 +58,6 @@ public class PoodleProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new PoodleResult(Boolean.FALSE);
+        return new PoodleResult(TestResult.UNTESTED);
     }
 }

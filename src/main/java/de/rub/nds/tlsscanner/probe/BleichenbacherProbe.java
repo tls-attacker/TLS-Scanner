@@ -25,6 +25,8 @@ import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -47,40 +49,44 @@ public class BleichenbacherProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        BleichenbacherCommandConfig bleichenbacherConfig = new BleichenbacherCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) bleichenbacherConfig.getDelegate(ClientDelegate.class);
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) bleichenbacherConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        ((CiphersuiteDelegate) (bleichenbacherConfig.getDelegate(CiphersuiteDelegate.class))).setCipherSuites(suiteList);
-        RSAPublicKey publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(bleichenbacherConfig.createConfig());
-        if (publicKey == null) {
-            LOGGER.info("Could not retrieve PublicKey from Server - is the Server running?");
-            return getNotExecutedResult();
+        try {
+            BleichenbacherCommandConfig bleichenbacherConfig = new BleichenbacherCommandConfig(getScannerConfig().getGeneralDelegate());
+            ClientDelegate delegate = (ClientDelegate) bleichenbacherConfig.getDelegate(ClientDelegate.class);
+            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) bleichenbacherConfig.getDelegate(StarttlsDelegate.class);
+            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+            ((CiphersuiteDelegate) (bleichenbacherConfig.getDelegate(CiphersuiteDelegate.class))).setCipherSuites(suiteList);
+            RSAPublicKey publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(bleichenbacherConfig.createConfig());
+            if (publicKey == null) {
+                LOGGER.info("Could not retrieve PublicKey from Server - is the Server running?");
+                return getNotExecutedResult();
+            }
+            LOGGER.info("Fetched the following server public key: " + publicKey);
+            List<Pkcs1Vector> pkcs1Vectors;
+            if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FULL);
+            } else {
+                bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FAST);
+            }
+            List<BleichenbacherTestResult> resultList = new LinkedList<>();
+            boolean vulnerable = false;
+            for (BleichenbacherWorkflowType bbWorkflowType : BleichenbacherWorkflowType.values()) {
+                bleichenbacherConfig.setWorkflowType(bbWorkflowType);
+                LOGGER.debug("Testing: " + bbWorkflowType);
+                BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig, scannerConfig.createConfig(), getParallelExecutor());
+                EqualityError errorType = attacker.getEqualityError();
+                vulnerable |= (errorType != EqualityError.NONE);
+                resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE, bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
+            }
+            return new BleichenbacherResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE, resultList);
+        } catch(Exception e) {
+            return new BleichenbacherResult(TestResult.ERROR_DURING_TEST, new LinkedList<BleichenbacherTestResult>());
         }
-        LOGGER.info("Fetched the following server public key: " + publicKey);
-        List<Pkcs1Vector> pkcs1Vectors;
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FULL);
-        } else {
-            bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FAST);
-        }
-        List<BleichenbacherTestResult> resultList = new LinkedList<>();
-        boolean vulnerable = false;
-        for (BleichenbacherWorkflowType bbWorkflowType : BleichenbacherWorkflowType.values()) {
-            bleichenbacherConfig.setWorkflowType(bbWorkflowType);
-            LOGGER.debug("Testing: " + bbWorkflowType);
-            BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig, scannerConfig.createConfig(), getParallelExecutor());
-            EqualityError errorType = attacker.getEqualityError();
-            vulnerable |= (errorType != EqualityError.NONE);
-            resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE, bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
-        }
-        return new BleichenbacherResult(vulnerable, resultList);
     }
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        return report.getSupportsRsa() == Boolean.TRUE;
+        return report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) == TestResult.TRUE;
     }
 
     @Override
@@ -102,6 +108,6 @@ public class BleichenbacherProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new BleichenbacherResult(Boolean.FALSE, new LinkedList<BleichenbacherTestResult>());
+        return new BleichenbacherResult(TestResult.UNTESTED, new LinkedList<BleichenbacherTestResult>());
     }
 }

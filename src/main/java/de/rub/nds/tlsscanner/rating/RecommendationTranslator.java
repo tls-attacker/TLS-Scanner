@@ -79,7 +79,7 @@ public class RecommendationTranslator {
             case HAS_CIPHERSUITE_LENGTH_INTOLERANCE:
             case HAS_COMPRESSION_INTOLERANCE:
             case HAS_ALPN_INTOLERANCE:
-            case HAS_CLIENTHELLO_LENGTH_INTOLERANCE:
+            case HAS_CLIENT_HELLO_LENGTH_INTOLERANCE:
             case HAS_EMPTY_LAST_EXTENSION_INTOLERANCE:
             case HAS_SIG_HASH_ALGORITHM_INTOLERANCE:
             case HAS_BIG_CLIENT_HELLO_INTOLERANCE:

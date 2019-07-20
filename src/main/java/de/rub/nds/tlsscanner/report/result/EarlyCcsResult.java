@@ -23,7 +23,7 @@ public class EarlyCcsResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setEarlyCcsVulnerable(earlyCcsVulnerabilityType);
+        report.putResult(earlyCcsVulnerabilityType);
     }
 
 }

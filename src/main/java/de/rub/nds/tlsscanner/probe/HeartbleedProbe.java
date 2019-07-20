@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.HeartbleedResult;
@@ -38,18 +39,22 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-        if (supportedCiphers != null) {
-            CiphersuiteDelegate ciphersuiteDelegate = (CiphersuiteDelegate) heartbleedConfig.getDelegate(CiphersuiteDelegate.class);
-            ciphersuiteDelegate.setCipherSuites(supportedCiphers);
+        try {
+            HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
+            ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
+            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
+            starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
+            if (supportedCiphers != null) {
+                CiphersuiteDelegate ciphersuiteDelegate = (CiphersuiteDelegate) heartbleedConfig.getDelegate(CiphersuiteDelegate.class);
+                ciphersuiteDelegate.setCipherSuites(supportedCiphers);
+            }
+            HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
+            Boolean vulnerable = attacker.isVulnerable();
+            return new HeartbleedResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
+        } catch(Exception e) {
+            return new HeartbleedResult(TestResult.ERROR_DURING_TEST);
         }
-        HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
-        Boolean vulnerable = attacker.isVulnerable();
-        return new HeartbleedResult(vulnerable);
     }
 
     @Override
@@ -77,6 +82,6 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new HeartbleedResult(Boolean.FALSE);
+        return new HeartbleedResult(TestResult.UNTESTED);
     }
 }
