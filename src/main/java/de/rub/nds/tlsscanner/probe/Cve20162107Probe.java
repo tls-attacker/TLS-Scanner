@@ -49,7 +49,7 @@ public class Cve20162107Probe extends TlsProbe {
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.VULNERABLE_TO_CVE20162107) == TestResult.TRUE;
+        return report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS) == TestResult.TRUE;
     }
 
     @Override
