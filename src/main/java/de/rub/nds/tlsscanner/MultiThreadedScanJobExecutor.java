@@ -111,7 +111,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
                 probeTypes.add(probe.getType());
                 if (probe.shouldBeExecuted(report)) {
                     futureResults.add(executor.submit(probe));
-                } else if (!config.isImplementation()) {
+                } else {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {
                         resultList.add(result);

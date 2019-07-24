@@ -119,7 +119,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                     } catch (Exception E) {
                         LOGGER.error("Could not execute Probe", E);
                     }
-                } else if (!config.isImplementation()) {
+                } else {
                     ProbeResult result = probe.getNotExecutedResult();
                     if (result != null) {
                         resultList.add(result);

@@ -40,7 +40,7 @@ public class InvalidCurveProbe extends TlsProbe {
         try {        
             Boolean vulnerableClassic = null;
             Boolean vulnerableEphemeral = null;
-            if (supportsStatic == null || supportsStatic == null) {
+            if (supportsStatic == TestResult.TRUE) {
                 InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
                 ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
                 delegate.setHost(getScannerConfig().getClientDelegate().getHost());
@@ -49,7 +49,7 @@ public class InvalidCurveProbe extends TlsProbe {
                 InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
                 vulnerableClassic = attacker.isVulnerable();
             }
-            if (supportsEphemeral == null || supportsEphemeral == null) {
+            if (supportsEphemeral == TestResult.TRUE) {
                 InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
                 invalidCurveAttackConfig.setEphemeral(true);
                 StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
@@ -58,14 +58,6 @@ public class InvalidCurveProbe extends TlsProbe {
                 delegate.setHost(getScannerConfig().getClientDelegate().getHost());
                 InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
                 vulnerableEphemeral = attacker.isVulnerable();
-            }
-            if (!getScannerConfig().isImplementation()) {
-                if (vulnerableClassic == null) {
-                    vulnerableClassic = false;
-                }
-                if (vulnerableEphemeral == null) {
-                    vulnerableEphemeral = false;
-                }
             }
             return new InvalidCurveResult(vulnerableClassic == true ? TestResult.TRUE : TestResult.FALSE , vulnerableEphemeral == true ? TestResult.TRUE : TestResult.FALSE);
         } catch(Exception e) {
