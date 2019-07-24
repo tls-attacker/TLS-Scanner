@@ -37,19 +37,34 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            Boolean vulnerableClassic = null;
-            Boolean vulnerableEphemeral = null;
-            if (supportsStatic == TestResult.TRUE) {
+        TestResult vulnerableClassic = TestResult.UNTESTED;
+        TestResult vulnerableEphemeral = TestResult.UNTESTED;
+        if (supportsStatic == TestResult.TRUE) {
+            try {
+
                 InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
                 ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
                 delegate.setHost(getScannerConfig().getClientDelegate().getHost());
                 StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
                 starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
                 InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
-                vulnerableClassic = attacker.isVulnerable();
+                Boolean vuln = attacker.isVulnerable();
+                if (vuln == null) {
+                    vulnerableClassic = TestResult.COULD_NOT_TEST;
+                } else if (vuln == Boolean.TRUE) {
+                    vulnerableClassic = TestResult.TRUE;
+                } else if (vuln == Boolean.FALSE) {
+                    vulnerableClassic = TestResult.FALSE;
+                }
+            } catch (Exception E) {
+                LOGGER.error("Could not scan for EphemeralInvalidCurve. Error during probe execution", E);
+                vulnerableClassic = TestResult.ERROR_DURING_TEST;
             }
-            if (supportsEphemeral == TestResult.TRUE) {
+        } else {
+            vulnerableClassic = TestResult.COULD_NOT_TEST;
+        }
+        if (supportsEphemeral == TestResult.TRUE) {
+            try {
                 InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
                 invalidCurveAttackConfig.setEphemeral(true);
                 StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
@@ -57,22 +72,33 @@ public class InvalidCurveProbe extends TlsProbe {
                 ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
                 delegate.setHost(getScannerConfig().getClientDelegate().getHost());
                 InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
-                vulnerableEphemeral = attacker.isVulnerable();
+                Boolean vuln = attacker.isVulnerable();
+                if (vuln == null) {
+                    vulnerableEphemeral = TestResult.COULD_NOT_TEST;
+                } else if (vuln == Boolean.TRUE) {
+                    vulnerableEphemeral = TestResult.TRUE;
+                } else if (vuln == Boolean.FALSE) {
+                    vulnerableEphemeral = TestResult.FALSE;
+                }
+            } catch (Exception E) {
+                LOGGER.error("Could not scan for EphemeralInvalidCurve. Error during probe execution", E);
+                vulnerableEphemeral = TestResult.ERROR_DURING_TEST;
             }
-            return new InvalidCurveResult(vulnerableClassic == true ? TestResult.TRUE : TestResult.FALSE, vulnerableEphemeral == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception e) {
-            LOGGER.error("Error during Test", e);
-            return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+        } else {
+            vulnerableClassic = TestResult.COULD_NOT_TEST;
         }
+        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral);
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE;
+    public boolean shouldBeExecuted(SiteReport report
+    ) {
+        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResult.FALSE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResult.FALSE;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(SiteReport report
+    ) {
         supportsEphemeral = report.getResult(AnalyzedProperty.SUPPORTS_ECDH);
         supportsStatic = report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH);
     }
