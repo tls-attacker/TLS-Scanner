@@ -28,7 +28,7 @@ public class TlsPoodleResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_POODLE, vulnerable);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_TLS_POODLE, vulnerable);
     }
 
 }
