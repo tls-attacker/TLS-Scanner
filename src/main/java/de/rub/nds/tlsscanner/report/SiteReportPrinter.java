@@ -556,9 +556,9 @@ public class SiteReportPrinter {
         prettyAppendRedGreen(builder, "CVE-20162107", report.getResult(AnalyzedProperty.VULNERABLE_TO_CVE20162107));
         prettyAppendRedGreen(builder, "Logjam", report.getResult(AnalyzedProperty.VULNERABLE_TO_LOGJAM));
         prettyAppendRedGreen(builder, "Sweet 32", report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32));
-        prettyAppendDrown(builder, "DROWN", report.getResult(AnalyzedProperty.VULNERABLE_TO_DROWN));
+        prettyAppendRedGreen(builder, "DROWN", report.getResult(AnalyzedProperty.VULNERABLE_TO_DROWN));
         prettyAppendRedGreen(builder, "Heartbleed", report.getResult(AnalyzedProperty.VULNERABLE_TO_HEARTBLEED));
-        prettyAppendEarlyCcs(builder, "EarlyCcs", report.getResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS));
+        prettyAppendRedGreen(builder, "EarlyCcs", report.getResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS));
         return builder;
     }
 
