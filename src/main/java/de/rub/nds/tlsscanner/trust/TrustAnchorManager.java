@@ -67,7 +67,6 @@ public class TrustAnchorManager {
             trustPlatformList.add(readPlatform("apple_ios.yaml"));
             trustPlatformList.add(readPlatform("apple_macos.yaml"));
         } catch (IOException ex) {
-            ex.printStackTrace();
             LOGGER.error("Could not load trusted platforms", ex);
         }
         trustAnchors = new HashMap<>();
