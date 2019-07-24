@@ -86,7 +86,7 @@ public class BleichenbacherProbe extends TlsProbe {
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) == TestResult.TRUE;
+        return report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE;
     }
 
     @Override
