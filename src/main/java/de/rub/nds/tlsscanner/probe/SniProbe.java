@@ -82,7 +82,7 @@ public class SniProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new SniResult(TestResult.UNTESTED);
+        return new SniResult(TestResult.COULD_NOT_TEST);
     }
 
 }

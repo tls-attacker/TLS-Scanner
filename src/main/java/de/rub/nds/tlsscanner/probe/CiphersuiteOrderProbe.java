@@ -83,6 +83,6 @@ public class CiphersuiteOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new CipherSuiteOrderResult(TestResult.UNTESTED);
+        return new CipherSuiteOrderResult(TestResult.COULD_NOT_TEST);
     }
 }

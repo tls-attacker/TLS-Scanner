@@ -105,6 +105,6 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new InvalidCurveResult(TestResult.UNTESTED, TestResult.UNTESTED);
+        return new InvalidCurveResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 }

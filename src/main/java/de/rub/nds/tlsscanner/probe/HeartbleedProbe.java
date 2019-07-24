@@ -82,6 +82,6 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new HeartbleedResult(TestResult.UNTESTED);
+        return new HeartbleedResult(TestResult.COULD_NOT_TEST);
     }
 }

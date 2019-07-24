@@ -166,6 +166,6 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new PaddingOracleResponseMap(new LinkedList<PaddingOracleCipherSuiteFingerprint>(), new LinkedList<PaddingOracleCipherSuiteFingerprint>(), TestResult.UNTESTED);
+        return new PaddingOracleResponseMap(new LinkedList<PaddingOracleCipherSuiteFingerprint>(), new LinkedList<PaddingOracleCipherSuiteFingerprint>(), TestResult.COULD_NOT_TEST);
     }
 }

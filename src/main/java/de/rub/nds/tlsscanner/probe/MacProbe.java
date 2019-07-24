@@ -306,7 +306,7 @@ public class MacProbe extends TlsProbe {
             try {
                 stateIndexPair.getState().getTlsContext().getTransportHandler().closeConnection();
             } catch (IOException ex) {
-                LOGGER.warn("Could not close TransportHandler");
+                LOGGER.warn("Could not close TransportHandler", ex);
             }
         }
         return byteCheckArray;

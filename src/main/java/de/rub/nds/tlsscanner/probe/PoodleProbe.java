@@ -58,6 +58,6 @@ public class PoodleProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new PoodleResult(TestResult.UNTESTED);
+        return new PoodleResult(TestResult.COULD_NOT_TEST);
     }
 }

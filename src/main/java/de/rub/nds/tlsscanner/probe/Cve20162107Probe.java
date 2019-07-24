@@ -58,6 +58,6 @@ public class Cve20162107Probe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new Cve20162107Result(TestResult.UNTESTED);
+        return new Cve20162107Result(TestResult.COULD_NOT_TEST);
     }
 }

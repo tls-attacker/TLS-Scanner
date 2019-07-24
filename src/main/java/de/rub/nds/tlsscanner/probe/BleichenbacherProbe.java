@@ -109,6 +109,6 @@ public class BleichenbacherProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new BleichenbacherResult(TestResult.UNTESTED, new LinkedList<BleichenbacherTestResult>());
+        return new BleichenbacherResult(TestResult.COULD_NOT_TEST, new LinkedList<BleichenbacherTestResult>());
     }
 }

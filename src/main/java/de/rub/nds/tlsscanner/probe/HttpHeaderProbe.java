@@ -133,6 +133,6 @@ public class HttpHeaderProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new HttpHeaderResult(TestResult.UNTESTED, new LinkedList<HttpsHeader>());
+        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, new LinkedList<HttpsHeader>());
     }
 }

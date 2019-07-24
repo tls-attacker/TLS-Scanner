@@ -84,7 +84,7 @@ public class ResumptionProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new ResumptionResult(TestResult.UNTESTED);
+        return new ResumptionResult(TestResult.COULD_NOT_TEST);
     }
 
 }
