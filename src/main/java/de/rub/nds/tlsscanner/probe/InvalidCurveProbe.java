@@ -37,7 +37,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {        
+        try {
             Boolean vulnerableClassic = null;
             Boolean vulnerableEphemeral = null;
             if (supportsStatic == TestResult.TRUE) {
@@ -59,15 +59,16 @@ public class InvalidCurveProbe extends TlsProbe {
                 InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
                 vulnerableEphemeral = attacker.isVulnerable();
             }
-            return new InvalidCurveResult(vulnerableClassic == true ? TestResult.TRUE : TestResult.FALSE , vulnerableEphemeral == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch(Exception e) {
+            return new InvalidCurveResult(vulnerableClassic == true ? TestResult.TRUE : TestResult.FALSE, vulnerableEphemeral == true ? TestResult.TRUE : TestResult.FALSE);
+        } catch (Exception e) {
+            LOGGER.error("Error during Test", e);
             return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
-        } 
+        }
     }
 
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH)  == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE;
+        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE;
     }
 
     @Override
