@@ -59,7 +59,7 @@ public class BleichenbacherProbe extends TlsProbe {
             RSAPublicKey publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(bleichenbacherConfig.createConfig());
             if (publicKey == null) {
                 LOGGER.info("Could not retrieve PublicKey from Server - is the Server running?");
-                return getNotExecutedResult();
+                return new BleichenbacherResult(TestResult.ERROR_DURING_TEST, new LinkedList<BleichenbacherTestResult>());
             }
             LOGGER.info("Fetched the following server public key: " + publicKey);
             List<Pkcs1Vector> pkcs1Vectors;
@@ -79,7 +79,8 @@ public class BleichenbacherProbe extends TlsProbe {
                 resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE, bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
             }
             return new BleichenbacherResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE, resultList);
-        } catch(Exception e) {
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for Bleichenbacher");
             return new BleichenbacherResult(TestResult.ERROR_DURING_TEST, new LinkedList<BleichenbacherTestResult>());
         }
     }
