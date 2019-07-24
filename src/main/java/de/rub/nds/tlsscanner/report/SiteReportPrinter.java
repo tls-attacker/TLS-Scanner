@@ -796,9 +796,9 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendHttps(StringBuilder builder) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_HTTPS)== TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE) {
             prettyAppendHeading(builder, "HSTS");
-            if (report.getResult(AnalyzedProperty.SUPPORTS_HSTS)== TestResult.TRUE) {
+            if (report.getResult(AnalyzedProperty.SUPPORTS_HSTS) == TestResult.TRUE) {
                 prettyAppendGreenOnSuccess(builder, "HSTS", report.getResult(AnalyzedProperty.SUPPORTS_HSTS));
                 prettyAppendGreenOnSuccess(builder, "HSTS Preloading", report.getResult(AnalyzedProperty.SUPPORTS_HSTS_PRELOADING));
                 prettyAppend(builder, "max-age (seconds)", (long) report.getHstsMaxAge());
@@ -997,7 +997,7 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendGreenOnSuccess(StringBuilder builder, String name, TestResult value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendGreenOnFailure(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
@@ -1005,7 +1005,7 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendGreenOnFailure(StringBuilder builder, String name, TestResult value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? value : (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendRedOnSuccess(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
@@ -1021,7 +1021,7 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendRedOnFailure(StringBuilder builder, String name, TestResult value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? value : (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendYellowOnFailure(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? value : (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
@@ -1029,7 +1029,7 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendYellowOnFailure(StringBuilder builder, String name, TestResult value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? value : (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendYellowOnSuccess(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
@@ -1037,27 +1037,27 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendYellowOnSuccess(StringBuilder builder, String name, TestResult value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
-        
+
     private StringBuilder prettyAppendGreenRed(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendGreenRed(StringBuilder builder, String name, TestResult value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendRedGreen(StringBuilder builder, String name, TestResult value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_RED : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendGreenYellow(StringBuilder builder, String name, Boolean value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == Boolean.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendGreenYellow(StringBuilder builder, String name, TestResult value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
@@ -1069,7 +1069,7 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendYellowGreen(StringBuilder builder, String name, TestResult value) {
         return builder.append(addIndentations(name)).append(": ").append(value == null ? "Unknown" : (value == TestResult.TRUE ? (report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET : (report.isNoColor() == false ? AnsiColors.ANSI_GREEN : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET)).append("\n");
     }
-    
+
     private StringBuilder prettyAppendYellow(StringBuilder builder, String value) {
         return builder.append((report.isNoColor() == false ? AnsiColors.ANSI_YELLOW : AnsiColors.ANSI_RESET) + value + AnsiColors.ANSI_RESET).append("\n");
     }
@@ -1100,15 +1100,15 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, String value) {
-        return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, long value) {
-        return builder.append(addIndentations(name)).append(": ").append(AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColors.ANSI_UNDERLINE + value + AnsiColors.ANSI_RESET : value)).append("\n");
     }
 
     private StringBuilder prettyAppendSubheading(StringBuilder builder, String name) {
