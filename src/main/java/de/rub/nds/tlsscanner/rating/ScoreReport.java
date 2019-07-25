@@ -15,9 +15,9 @@ public class ScoreReport {
 
     private final double score;
 
-    private final LinkedHashMap<AnalyzedProperty, PropertyRatingInfluencer> influencers;
+    private final LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers;
 
-    public ScoreReport(double score, LinkedHashMap<AnalyzedProperty, PropertyRatingInfluencer> influencers) {
+    public ScoreReport(double score, LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
         this.score = score;
         this.influencers = influencers;
     }
@@ -26,7 +26,7 @@ public class ScoreReport {
         return score;
     }
 
-    public LinkedHashMap<AnalyzedProperty, PropertyRatingInfluencer> getInfluencers() {
+    public LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> getInfluencers() {
         return influencers;
     }
 }

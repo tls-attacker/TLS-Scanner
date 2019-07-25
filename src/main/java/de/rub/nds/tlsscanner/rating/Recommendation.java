@@ -21,13 +21,24 @@ public class Recommendation {
     
     private AnalyzedProperty analyzedProperty;
     
-    private List<PropertyRecommendation> propertyRecommendations;
+    private String shortName;
+    
+    private String shortDescription;
+    
+    private String detailedDescription;
+    
+    private String testDocumentation;
+    
+    private List<String> links;
+    
+    private List<PropertyResultRecommendation> propertyRecommendations;
     
     public Recommendation() {
         propertyRecommendations = new LinkedList<>();
+        links = new LinkedList<>();
     }
     
-    public Recommendation(AnalyzedProperty analyzedProperty, List<PropertyRecommendation> propertyRecommendations) {
+    public Recommendation(AnalyzedProperty analyzedProperty, List<PropertyResultRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
         this.propertyRecommendations = propertyRecommendations;
     }
@@ -40,21 +51,62 @@ public class Recommendation {
         this.analyzedProperty = analyzedProperty;
     }
 
-    @XmlElement(name = "propertyRecommendation")
-    public List<PropertyRecommendation> getPropertyRecommendations() {
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+    public String getDetailedDescription() {
+        return detailedDescription;
+    }
+
+    public void setDetailedDescription(String detailedDescription) {
+        this.detailedDescription = detailedDescription;
+    }
+
+    public String getTestDocumentation() {
+        return testDocumentation;
+    }
+
+    public void setTestDocumentation(String testDocumentation) {
+        this.testDocumentation = testDocumentation;
+    }
+
+    @XmlElement(name = "propertyResultRecommendation")
+    public List<PropertyResultRecommendation> getPropertyRecommendations() {
         return propertyRecommendations;
     }
 
-    public void setPropertyRecommendations(List<PropertyRecommendation> propertyRecommendations) {
+    public void setPropertyRecommendations(List<PropertyResultRecommendation> propertyRecommendations) {
         this.propertyRecommendations = propertyRecommendations;
     }
     
-    public PropertyRecommendation getPropertyRecommendation(TestResult result) {
-        for(PropertyRecommendation r : propertyRecommendations) {
+    public PropertyResultRecommendation getPropertyRecommendation(TestResult result) {
+        for(PropertyResultRecommendation r : propertyRecommendations) {
             if(r.getResult()== result) {
                 return r;
             }
         }
-        return new PropertyRecommendation(result, NO_INFORMATION_FOUND, NO_RECOMMENDATION_FOUND);
+        return new PropertyResultRecommendation(result, NO_INFORMATION_FOUND, NO_RECOMMENDATION_FOUND);
+    }
+
+    @XmlElement(name = "link")
+    public List<String> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<String> links) {
+        this.links = links;
     }
 }

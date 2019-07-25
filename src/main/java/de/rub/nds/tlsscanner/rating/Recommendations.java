@@ -28,13 +28,13 @@ public class Recommendations implements Serializable {
         this.recommendations = recommendations;
     }
     
-    public PropertyRecommendation getPropertyRecommendation(AnalyzedProperty property, TestResult result) {
+    public PropertyResultRecommendation getPropertyRecommendation(AnalyzedProperty property, TestResult result) {
         for(Recommendation pr : recommendations) {
             if(pr.getAnalyzedProperty() == property) {
                 return pr.getPropertyRecommendation(result);
             }
         }
-        return new PropertyRecommendation(result, Recommendation.NO_RECOMMENDATION_FOUND, 
+        return new PropertyResultRecommendation(result, Recommendation.NO_RECOMMENDATION_FOUND, 
                 Recommendation.NO_RECOMMENDATION_FOUND);
     }
     

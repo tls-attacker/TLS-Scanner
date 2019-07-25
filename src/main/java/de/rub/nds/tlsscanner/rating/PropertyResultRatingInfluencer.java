@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.rating;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"result", "influence", "scoreCap"})
-public class PropertyRatingInfluencer implements Comparable<PropertyRatingInfluencer> {
+public class PropertyResultRatingInfluencer implements Comparable<PropertyResultRatingInfluencer> {
 
     private TestResult result;
 
@@ -19,16 +19,16 @@ public class PropertyRatingInfluencer implements Comparable<PropertyRatingInflue
 
     private double scoreCap;
 
-    public PropertyRatingInfluencer() {
+    public PropertyResultRatingInfluencer() {
 
     }
     
-    public PropertyRatingInfluencer(TestResult result, double influence) {
+    public PropertyResultRatingInfluencer(TestResult result, double influence) {
         this.result = result;
         this.influence = influence;
     }
 
-    public PropertyRatingInfluencer(TestResult result, double influence, double scoreCap) {
+    public PropertyResultRatingInfluencer(TestResult result, double influence, double scoreCap) {
         this.result = result;
         this.influence = influence;
         this.scoreCap = scoreCap;
@@ -63,7 +63,7 @@ public class PropertyRatingInfluencer implements Comparable<PropertyRatingInflue
     }
 
     @Override
-    public int compareTo(PropertyRatingInfluencer t) {
+    public int compareTo(PropertyResultRatingInfluencer t) {
         if(this.getScoreCap() == t.getScoreCap()) {
             return Double.compare(this.getInfluence(), t.getInfluence());
         }

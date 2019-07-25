@@ -64,17 +64,17 @@ public class SiteReportRater {
     }
 
     public ScoreReport getScoreReport(SiteReport report) {
-        HashMap<AnalyzedProperty, PropertyRatingInfluencer> ratingInfluencers = new HashMap<>();
+        HashMap<AnalyzedProperty, PropertyResultRatingInfluencer> ratingInfluencers = new HashMap<>();
 
         HashMap<String, TestResult> resultMap = report.getResultMap();
 
         for (Map.Entry<String, TestResult> entry : resultMap.entrySet()) {
             AnalyzedProperty property = AnalyzedProperty.valueOf(entry.getKey());
-            PropertyRatingInfluencer ratingInfluencer = influencers.getPropertyRatingInfluencer(property, entry.getValue());
+            PropertyResultRatingInfluencer ratingInfluencer = influencers.getPropertyRatingInfluencer(property, entry.getValue());
             ratingInfluencers.put(property, ratingInfluencer);
         }
 
-        LinkedHashMap<AnalyzedProperty, PropertyRatingInfluencer> sortedRatingInfluencers = ratingInfluencers.entrySet().stream().
+        LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> sortedRatingInfluencers = ratingInfluencers.entrySet().stream().
                 sorted(Entry.comparingByValue()).collect(
                         Collectors.toMap(Entry::getKey, Entry::getValue,(e1, e2) -> e1, LinkedHashMap::new));
 
@@ -433,12 +433,12 @@ public class SiteReportRater {
         return new ScoreReport(score, sortedRatingInfluencers);
     }
 
-    private double computeScore(HashMap<AnalyzedProperty, PropertyRatingInfluencer> influencers) {
+    private double computeScore(HashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
         double score = 0;
-        for (PropertyRatingInfluencer influencer : influencers.values()) {
+        for (PropertyResultRatingInfluencer influencer : influencers.values()) {
             score += influencer.getInfluence();
         }
-        for (PropertyRatingInfluencer influencer : influencers.values()) {
+        for (PropertyResultRatingInfluencer influencer : influencers.values()) {
             if (influencer.getScoreCap() != 0.0 && score >= influencer.getScoreCap()) {
                 score = influencer.getScoreCap();
             }

@@ -19,7 +19,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,13 +45,13 @@ public class InfluencersSerializationTest {
         List<RatingInfluencer> influencers = new LinkedList<>();
         RatingInfluencer i = new RatingInfluencer();
         i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_SSL_2);
-        i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.TRUE, -200, 500.0));
-        i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.FALSE, 50));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500.0));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.FALSE, 50));
         influencers.add(i);
         
         i = new RatingInfluencer();
         i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_TLS_1_2);
-        i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.TRUE, 100));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, 100));
         influencers.add(i);
         
         original.setRatingInfluencers(influencers);
@@ -81,8 +80,8 @@ public class InfluencersSerializationTest {
         RatingInfluencer rInfluencer = result.getRatingInfluencers().get(0);
         assertEquals(oInfluencer.getAnalyzedProperty(), rInfluencer.getAnalyzedProperty());
 
-        PropertyRatingInfluencer ori = oInfluencer.getPropertyRatingInfluencers().get(0);
-        PropertyRatingInfluencer rri = rInfluencer.getPropertyRatingInfluencers().get(0);
+        PropertyResultRatingInfluencer ori = oInfluencer.getPropertyRatingInfluencers().get(0);
+        PropertyResultRatingInfluencer rri = rInfluencer.getPropertyRatingInfluencers().get(0);
         assertEquals(ori.getResult(), rri.getResult());
         assertEquals(ori.getInfluence(), rri.getInfluence(), 0.1);
         assertEquals(ori.getScoreCap(), rri.getScoreCap(), 0.1);
@@ -96,8 +95,8 @@ public class InfluencersSerializationTest {
 //        for (AnalyzedProperty a : AnalyzedProperty.values()) {
 //            RatingInfluencer i = new RatingInfluencer();
 //            i.setAnalyzedProperty(a);
-//            i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.TRUE, 0));
-//            i.addPropertyRatingInfluencer(new PropertyRatingInfluencer(TestResult.FALSE, 0));
+//            i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, 0));
+//            i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.FALSE, 0));
 //            influencers.add(i);
 //        }
 //        test.setRatingInfluencers(influencers);

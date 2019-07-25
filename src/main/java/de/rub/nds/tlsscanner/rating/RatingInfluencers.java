@@ -28,12 +28,12 @@ public class RatingInfluencers implements Serializable {
         this.ratingInfluencers = ratingInfluencers;
     }
     
-    public PropertyRatingInfluencer getPropertyRatingInfluencer(AnalyzedProperty property, TestResult result) {
+    public PropertyResultRatingInfluencer getPropertyRatingInfluencer(AnalyzedProperty property, TestResult result) {
         for (RatingInfluencer ri : ratingInfluencers) {
             if(ri.getAnalyzedProperty() == property) {
                 return ri.getPropertyRatingInfluencer(result);
             }
         }
-        return new PropertyRatingInfluencer(result, 0.0);
+        return new PropertyResultRatingInfluencer(result, 0.0);
     }
 }

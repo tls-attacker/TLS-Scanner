@@ -15,8 +15,8 @@ import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.AnsiColors;
 import de.rub.nds.tlsscanner.constants.AnsiEscapeSequence;
-import de.rub.nds.tlsscanner.rating.PropertyRatingInfluencer;
-import de.rub.nds.tlsscanner.rating.PropertyRecommendation;
+import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
+import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.RatingInfluencer;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
@@ -66,19 +66,19 @@ public class Main {
                 ScoreReport scoreReport = rater.getScoreReport(report);
                 ConsoleLogger.CONSOLE.info("Score: " + scoreReport.getScore());
                 ConsoleLogger.CONSOLE.info("--------------------------------");
-                for (Map.Entry<AnalyzedProperty, PropertyRatingInfluencer> entry : scoreReport.getInfluencers().entrySet()) {
-                    PropertyRatingInfluencer influencer = entry.getValue();
+                for (Map.Entry<AnalyzedProperty, PropertyResultRatingInfluencer> entry : scoreReport.getInfluencers().entrySet()) {
+                    PropertyResultRatingInfluencer influencer = entry.getValue();
                     ConsoleLogger.CONSOLE.info(entry.getKey() + ": " + influencer.getResult() + " (Score: " + influencer.getInfluence() + ")");
                 }
                 ConsoleLogger.CONSOLE.info("--------------------------------");
-                for (Map.Entry<AnalyzedProperty, PropertyRatingInfluencer> entry : scoreReport.getInfluencers().entrySet()) {
-                    PropertyRatingInfluencer influencer = entry.getValue();
+                for (Map.Entry<AnalyzedProperty, PropertyResultRatingInfluencer> entry : scoreReport.getInfluencers().entrySet()) {
+                    PropertyResultRatingInfluencer influencer = entry.getValue();
                     if(influencer.hasNegativeScore()) {
                         ConsoleLogger.CONSOLE.error(entry.getKey() + ": " + influencer.getResult());
                         ConsoleLogger.CONSOLE.error("  Score: " + influencer.getInfluence());
                         ConsoleLogger.CONSOLE.error("  Score cap: " + influencer.getScoreCap());
-                        PropertyRecommendation recommendation = rater.getRecommendations().getPropertyRecommendation(entry.getKey(), influencer.getResult());
-                        ConsoleLogger.CONSOLE.error("  Information: " + recommendation.getInformation());
+                        PropertyResultRecommendation recommendation = rater.getRecommendations().getPropertyRecommendation(entry.getKey(), influencer.getResult());
+                        ConsoleLogger.CONSOLE.error("  Information: " + recommendation.getShortDescription());
                     }
                 }
             } catch (ConfigurationException | JAXBException E) {

@@ -44,8 +44,8 @@ public class RecommendationsSerializationTest {
         original = new Recommendations();
         List<Recommendation> propertyRecommendations = new LinkedList<>();
         
-        List<PropertyRecommendation> recommendations = new LinkedList<>();
-        PropertyRecommendation r = new PropertyRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
+        List<PropertyResultRecommendation> recommendations = new LinkedList<>();
+        PropertyResultRecommendation r = new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
         recommendations.add(r);
         
         propertyRecommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_2, recommendations));
@@ -75,9 +75,9 @@ public class RecommendationsSerializationTest {
         Recommendation rRecommendation = result.getRecommendations().get(0);
         assertEquals(oRecommendation.getAnalyzedProperty(), rRecommendation.getAnalyzedProperty());
         
-        PropertyRecommendation or = oRecommendation.getPropertyRecommendations().get(0);
-        PropertyRecommendation rr = rRecommendation.getPropertyRecommendations().get(0);
-        assertEquals(or.getInformation(), rr.getInformation());
+        PropertyResultRecommendation or = oRecommendation.getPropertyRecommendations().get(0);
+        PropertyResultRecommendation rr = rRecommendation.getPropertyRecommendations().get(0);
+        assertEquals(or.getShortDescription(), rr.getShortDescription());
         assertEquals(or.getHandlingRecommendation(), rr.getHandlingRecommendation());
     }
     

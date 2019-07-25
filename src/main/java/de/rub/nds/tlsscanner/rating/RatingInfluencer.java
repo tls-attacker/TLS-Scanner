@@ -17,13 +17,13 @@ public class RatingInfluencer {
 
     private AnalyzedProperty analyzedProperty;
     
-    private List<PropertyRatingInfluencer> propertyRatingInfluencers;
+    private List<PropertyResultRatingInfluencer> propertyRatingInfluencers;
 
     public RatingInfluencer() {
         this.propertyRatingInfluencers = new LinkedList<>();
     }
 
-    public RatingInfluencer(AnalyzedProperty influencerConstant, List<PropertyRatingInfluencer> propertyRatingInfluencers) {
+    public RatingInfluencer(AnalyzedProperty influencerConstant, List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
@@ -36,25 +36,25 @@ public class RatingInfluencer {
         this.analyzedProperty = analyzedProperty;
     }
     
-    @XmlElement(name = "propertyRatingInfluencer")
-    public List<PropertyRatingInfluencer> getPropertyRatingInfluencers() {
+    @XmlElement(name = "propertyResultRatingInfluencer")
+    public List<PropertyResultRatingInfluencer> getPropertyRatingInfluencers() {
         return propertyRatingInfluencers;
     }
 
-    public void setPropertyRatingInfluencers(List<PropertyRatingInfluencer> propertyRatingInfluencers) {
+    public void setPropertyRatingInfluencers(List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
     
-    public void addPropertyRatingInfluencer(PropertyRatingInfluencer ratingInfluence) {
+    public void addPropertyRatingInfluencer(PropertyResultRatingInfluencer ratingInfluence) {
         this.propertyRatingInfluencers.add(ratingInfluence);
     }
     
-    public PropertyRatingInfluencer getPropertyRatingInfluencer(TestResult result) {
-        for(PropertyRatingInfluencer ri : propertyRatingInfluencers) {
+    public PropertyResultRatingInfluencer getPropertyRatingInfluencer(TestResult result) {
+        for(PropertyResultRatingInfluencer ri : propertyRatingInfluencers) {
             if(ri.getResult() == result) {
                 return ri;
             }
         }
-        return new PropertyRatingInfluencer(result, 0);
+        return new PropertyResultRatingInfluencer(result, 0);
     }
 }

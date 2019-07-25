@@ -4,7 +4,7 @@
         <analyzedProperty>SUPPORTS_SSL_2</analyzedProperty>
         <propertyRecommendation>
             <result>TRUE</result>
-            <information>SSLv2 is enabled</information>
+            <shortDescription>SSLv2 is enabled</shortDescription>
             <handlingRecommendation>Disable SSLv2</handlingRecommendation>
         </propertyRecommendation>
     </recommendation>
