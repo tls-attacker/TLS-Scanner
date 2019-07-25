@@ -36,7 +36,7 @@ import org.apache.logging.log4j.ThreadContext;
  */
 public class Main {
 
-    private static final Logger LOGGER = LogManager.getLogger(Main.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
@@ -49,9 +49,6 @@ public class Main {
             }
             // Cmd was parsable
             try {
-                if (config.getGeneralDelegate().isDebug()) {
-                    ThreadContext.put("ROUTINGKEY", "special");
-                }
                 TlsScanner scanner = new TlsScanner(config);
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
@@ -61,7 +58,7 @@ public class Main {
                     // ANSI escape sequences to erase the progressbar
                     ConsoleLogger.CONSOLE.info(AnsiEscapeSequence.ANSI_ONE_LINE_UP + AnsiEscapeSequence.ANSI_ERASE_LINE);
                 }
-                ConsoleLogger.CONSOLE.info(AnsiColors.ANSI_RESET+ "Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail()));
+                ConsoleLogger.CONSOLE.info(AnsiColors.ANSI_RESET + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail(), config.isNoColor()));
                 SiteReportRater rater = SiteReportRater.getSiteReportRater("en");
                 ScoreReport scoreReport = rater.getScoreReport(report);
                 ConsoleLogger.CONSOLE.info("Score: " + scoreReport.getScore());
@@ -73,7 +70,7 @@ public class Main {
                 ConsoleLogger.CONSOLE.info("--------------------------------");
                 for (Map.Entry<AnalyzedProperty, PropertyRatingInfluencer> entry : scoreReport.getInfluencers().entrySet()) {
                     PropertyRatingInfluencer influencer = entry.getValue();
-                    if(influencer.hasNegativeScore()) {
+                    if (influencer.hasNegativeScore()) {
                         ConsoleLogger.CONSOLE.error(entry.getKey() + ": " + influencer.getResult());
                         ConsoleLogger.CONSOLE.error("  Score: " + influencer.getInfluence());
                         ConsoleLogger.CONSOLE.error("  Score cap: " + influencer.getScoreCap());

@@ -94,8 +94,10 @@ public class MacProbe extends TlsProbe {
         Config config = scannerConfig.createConfig();
         config.setAddRenegotiationInfoExtension(true);
         config.setQuickReceive(true);
-        config.setDefaultClientSupportedCiphersuites(suiteList.get(0));
-        config.setDefaultSelectedCipherSuite(suiteList.get(0));
+        if (suiteList != null) {
+            config.setDefaultClientSupportedCiphersuites(suiteList.get(0));
+            config.setDefaultSelectedCipherSuite(suiteList.get(0));
+        }
         config.setAddServerNameIndicationExtension(true);
         config.setWorkflowExecutorShouldClose(false);
 
@@ -323,6 +325,9 @@ public class MacProbe extends TlsProbe {
     @Override
     public boolean shouldBeExecuted(SiteReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
+        if (report.getCipherSuites() == null) {
+            return false;
+        }
         allSuiteList.addAll(report.getCipherSuites());
         for (CipherSuite suite : allSuiteList) {
             if (suite.isUsingMac()) {

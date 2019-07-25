@@ -18,7 +18,10 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,6 +41,8 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     private final ParallelExecutor parallelExecutor;
 
     private final StatsWriter writer;
+
+    private AtomicBoolean readyForExecution = new AtomicBoolean(false);
 
     public TlsProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig, int danger) {
         this.scannerConfig = scannerConfig;
@@ -96,6 +101,11 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     public abstract ProbeResult executeTest();
 
+    public void executeAndMerge(SiteReport report) {
+        ProbeResult result = this.call();
+        result.merge(report);
+    }
+
     public abstract boolean shouldBeExecuted(SiteReport report);
 
     public abstract void adjustConfig(SiteReport report);
@@ -108,5 +118,9 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     public StatsWriter getWriter() {
         return writer;
+    }
+
+    public AtomicBoolean getReadyForExecution() {
+        return readyForExecution;
     }
 }

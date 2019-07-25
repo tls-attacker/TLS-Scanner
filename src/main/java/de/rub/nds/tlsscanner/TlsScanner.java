@@ -63,87 +63,78 @@ public class TlsScanner {
 
     private final Logger LOGGER = LogManager.getLogger();
 
-    private final ScanJobExecutor executor;
     private final ParallelExecutor parallelExecutor;
     private final ScannerConfig config;
     private final boolean closeAfterFinish;
     private final boolean closeAfterFinishParallel;
-    private final List<TlsProbe> phaseOneTestList;
-    private final List<TlsProbe> phaseTwoTestList;
+    private final List<TlsProbe> probeList;
     private final List<AfterProbe> afterList;
 
     public TlsScanner(ScannerConfig config) {
-        this.executor = ScanJobExecutorFactory.getScanJobExecutor(config);
+
         this.config = config;
         closeAfterFinish = true;
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
-        this.phaseOneTestList = new LinkedList<>();
-        this.phaseTwoTestList = new LinkedList<>();
+        this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         fillDefaultProbeLists();
     }
 
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
         this.config = config;
-        this.executor = executor;
         closeAfterFinish = false;
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
-        this.phaseOneTestList = new LinkedList<>();
-        this.phaseTwoTestList = new LinkedList<>();
+        this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         fillDefaultProbeLists();
     }
 
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor) {
         this.config = config;
-        this.executor = executor;
         this.parallelExecutor = parallelExecutor;
         closeAfterFinish = false;
         closeAfterFinishParallel = false;
-        this.phaseOneTestList = new LinkedList<>();
-        this.phaseTwoTestList = new LinkedList<>();
+        this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         fillDefaultProbeLists();
     }
 
-    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor, List<TlsProbe> phaseOneTestList, List<TlsProbe> phaseTwoTestList, List<AfterProbe> afterList) {
-        this.executor = executor;
+    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor, List<TlsProbe> probeList, List<AfterProbe> afterList) {
         this.parallelExecutor = parallelExecutor;
         this.config = config;
-        this.phaseOneTestList = phaseOneTestList;
-        this.phaseTwoTestList = phaseTwoTestList;
+        this.probeList = probeList;
         this.afterList = afterList;
         closeAfterFinish = false;
         closeAfterFinishParallel = false;
     }
 
     private void fillDefaultProbeLists() {
-        phaseOneTestList.add(new CommonBugProbe(config, parallelExecutor));
-        phaseOneTestList.add(new SniProbe(config, parallelExecutor));
-        phaseOneTestList.add(new CompressionsProbe(config, parallelExecutor));
-        phaseOneTestList.add(new NamedCurvesProbe(config, parallelExecutor));
-        phaseOneTestList.add(new CertificateProbe(config, parallelExecutor));
-        phaseOneTestList.add(new ProtocolVersionProbe(config, parallelExecutor));
-        phaseOneTestList.add(new CiphersuiteProbe(config, parallelExecutor));
-        phaseOneTestList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
-        phaseOneTestList.add(new ExtensionProbe(config, parallelExecutor));
-        phaseOneTestList.add(new Tls13Probe(config, parallelExecutor));
-        phaseOneTestList.add(new TokenbindingProbe(config, parallelExecutor));
-        phaseOneTestList.add(new HttpHeaderProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new ResumptionProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new RenegotiationProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new HeartbleedProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new PaddingOracleProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new BleichenbacherProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new PoodleProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new TlsPoodleProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new Cve20162107Probe(config, parallelExecutor));
-        phaseTwoTestList.add(new InvalidCurveProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new DrownProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new EarlyCcsProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new MacProbe(config, parallelExecutor));
+        probeList.add(new CommonBugProbe(config, parallelExecutor));
+        probeList.add(new SniProbe(config, parallelExecutor));
+        probeList.add(new CompressionsProbe(config, parallelExecutor));
+        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
+        probeList.add(new CertificateProbe(config, parallelExecutor));
+        probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
+        probeList.add(new CiphersuiteProbe(config, parallelExecutor));
+        probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
+        probeList.add(new ExtensionProbe(config, parallelExecutor));
+        probeList.add(new Tls13Probe(config, parallelExecutor));
+        probeList.add(new TokenbindingProbe(config, parallelExecutor));
+        probeList.add(new HttpHeaderProbe(config, parallelExecutor));
+        probeList.add(new ResumptionProbe(config, parallelExecutor));
+        probeList.add(new RenegotiationProbe(config, parallelExecutor));
+        probeList.add(new HeartbleedProbe(config, parallelExecutor));
+        probeList.add(new PaddingOracleProbe(config, parallelExecutor));
+        probeList.add(new BleichenbacherProbe(config, parallelExecutor));
+        probeList.add(new PoodleProbe(config, parallelExecutor));
+        probeList.add(new TlsPoodleProbe(config, parallelExecutor));
+        probeList.add(new Cve20162107Probe(config, parallelExecutor));
+        probeList.add(new InvalidCurveProbe(config, parallelExecutor));
+        probeList.add(new DrownProbe(config, parallelExecutor));
+        probeList.add(new EarlyCcsProbe(config, parallelExecutor));
+        probeList.add(new MacProbe(config, parallelExecutor));
         //phaseTwoTestList.add(new HandshakeSimulationProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
@@ -166,14 +157,16 @@ public class TlsScanner {
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                 if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls()) || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-                    ScanJob job = new ScanJob(phaseOneTestList, phaseTwoTestList, afterList);
-                    SiteReport report = executor.execute(config, job);
+                    ScanJob job = new ScanJob(probeList, afterList);
+                    MultiThreadedScanJobExecutor executor = new MultiThreadedScanJobExecutor(config, job, config.getOverallThreads(), "test");
+                    SiteReport report = executor.execute();
+                    executor.shutdown();
                     return report;
                 } else {
                     isConnectable = true;
                 }
             }
-            SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
+            SiteReport report = new SiteReport(config.getClientDelegate().getHost());
             report.setServerIsAlive(isConnectable);
             report.setSupportsSslTls(false);
             return report;
@@ -183,9 +176,6 @@ public class TlsScanner {
     }
 
     private void closeExecutorsIfNeeded() {
-        if (closeAfterFinish) {
-            executor.shutdown();
-        }
         if (closeAfterFinishParallel) {
             parallelExecutor.shutdown();
         }

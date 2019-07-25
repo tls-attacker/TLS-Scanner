@@ -20,7 +20,6 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.rating.TestResult;
@@ -37,15 +36,16 @@ import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Observable;
 import java.util.Set;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class SiteReport {
+public class SiteReport extends Observable {
 
     private final HashMap<String, TestResult> resultMap;
-    
+
     //General
-    private final List<ProbeType> probeTypeList;
     private List<PerformanceData> performanceList;
 
     private final String host;
@@ -54,13 +54,12 @@ public class SiteReport {
     private Boolean supportsSslTls = null;
 
     //Quirks
-
     //Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
-    
+
     //Version
     private List<ProtocolVersion> versions = null;
 
@@ -101,7 +100,6 @@ public class SiteReport {
     private Long sessionTicketLengthHint = null;
 
     //Renegotiation + SCSV
-
     //GCM Nonces
     private GcmPattern gcmPattern = null;
 
@@ -120,9 +118,6 @@ public class SiteReport {
     private Set<CommonDhValues> usedCommonDhValueList = null;
     private Integer weakestDhStrength = null;
 
-    //NoColor Flag
-    private boolean noColor = false;
-
     //Handshake Simulation
     private Integer handshakeSuccessfulCounter = null;
     private Integer handshakeFailedCounter = null;
@@ -130,10 +125,8 @@ public class SiteReport {
     private Integer connectionInsecureCounter = null;
     private List<SimulatedClientResult> simulatedClientList = null;
 
-    public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
+    public SiteReport(String host) {
         this.host = host;
-        this.probeTypeList = probeTypeList;
-        this.noColor = noColor;
         performanceList = new LinkedList<>();
         extractedValueContainerList = new LinkedList<>();
         resultMap = new HashMap<>();
@@ -142,51 +135,49 @@ public class SiteReport {
     public HashMap<String, TestResult> getResultMap() {
         return resultMap;
     }
-    
+
     public TestResult getResult(AnalyzedProperty property) {
         return getResult(property.toString());
     }
-    
+
     public TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null) ? TestResult.UNTESTED : result;
     }
-    
-    public void putResult(AnalyzedProperty property, TestResult result) {
+
+    public synchronized void putResult(AnalyzedProperty property, TestResult result) {
         resultMap.put(property.toString(), result);
+        this.hasChanged();
+        this.notifyObservers();
     }
-    
-    public void putResult(AnalyzedProperty property, Boolean result) {
-        if(result) {
-            resultMap.put(property.toString(), TestResult.TRUE);
-        } else {
-            resultMap.put(property.toString(), TestResult.FALSE);
-        }
+
+    public synchronized void putResult(AnalyzedProperty property, Boolean result) {
+        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
-    
-    public void putResult(DrownVulnerabilityType result) {
+
+    public synchronized void putResult(DrownVulnerabilityType result) {
         // todo: divide DROWN to several vulnerabilities ???
-        switch(result) {
+        switch (result) {
             case NONE:
-                putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
+                this.putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
                 break;
             case UNKNOWN:
-                resultMap.put(AnalyzedProperty.VULNERABLE_TO_DROWN.toString(), TestResult.UNCERTAIN);
+                this.putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.UNCERTAIN);
                 break;
             default:
-                putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE);
+                this.putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE);
         }
     }
-    
-    public void putResult(EarlyCcsVulnerabilityType result) {
+
+    public synchronized void putResult(EarlyCcsVulnerabilityType result) {
         // todo: divide EARLY CCS to several vulnerabilities ???
         // also: EarlyFinishedVulnerabilityType
-        switch(result) {
+        switch (result) {
             case NOT_VULNERABLE:
-                putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
+                this.putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
                 break;
             case UNKNOWN:
-                resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.UNCERTAIN);
+                this.putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResult.UNCERTAIN);
                 break;
             default:
                 putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, true);
@@ -197,20 +188,14 @@ public class SiteReport {
         return host;
     }
 
-    public List<ProbeType> getProbeTypeList() {
-        return probeTypeList;
-    }
-
-    public boolean isNoColor() {
-        return noColor;
-    }
-
     public Boolean getServerIsAlive() {
         return serverIsAlive;
     }
 
     public void setServerIsAlive(Boolean serverIsAlive) {
         this.serverIsAlive = serverIsAlive;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<TokenBindingVersion> getSupportedTokenBindingVersion() {
@@ -219,6 +204,8 @@ public class SiteReport {
 
     public void setSupportedTokenBindingVersion(List<TokenBindingVersion> supportedTokenBindingVersion) {
         this.supportedTokenBindingVersion = supportedTokenBindingVersion;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<TokenBindingKeyParameters> getSupportedTokenBindingKeyParameters() {
@@ -227,6 +214,8 @@ public class SiteReport {
 
     public void setSupportedTokenBindingKeyParameters(List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public CertificateChain getCertificateChain() {
@@ -235,6 +224,8 @@ public class SiteReport {
 
     public void setCertificateChain(CertificateChain certificateChain) {
         this.certificateChain = certificateChain;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<ProtocolVersion> getVersions() {
@@ -243,6 +234,8 @@ public class SiteReport {
 
     public void setVersions(List<ProtocolVersion> versions) {
         this.versions = versions;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Set<CipherSuite> getCipherSuites() {
@@ -251,6 +244,8 @@ public class SiteReport {
 
     public void setCipherSuites(Set<CipherSuite> cipherSuites) {
         this.cipherSuites = cipherSuites;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<CipherSuite> getSupportedTls13CipherSuites() {
@@ -259,6 +254,8 @@ public class SiteReport {
 
     public void setSupportedTls13CipherSuites(List<CipherSuite> supportedTls13CipherSuites) {
         this.supportedTls13CipherSuites = supportedTls13CipherSuites;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Certificate getCertificate() {
@@ -267,6 +264,8 @@ public class SiteReport {
 
     public void setCertificate(Certificate certificate) {
         this.certificate = certificate;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<NamedGroup> getSupportedNamedGroups() {
@@ -275,6 +274,8 @@ public class SiteReport {
 
     public void setSupportedNamedGroups(List<NamedGroup> supportedNamedGroups) {
         this.supportedNamedGroups = supportedNamedGroups;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<NamedGroup> getSupportedTls13Groups() {
@@ -283,6 +284,8 @@ public class SiteReport {
 
     public void setSupportedTls13Groups(List<NamedGroup> supportedTls13Groups) {
         this.supportedTls13Groups = supportedTls13Groups;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
@@ -291,6 +294,8 @@ public class SiteReport {
 
     public void setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<ExtensionType> getSupportedExtensions() {
@@ -299,6 +304,8 @@ public class SiteReport {
 
     public void setSupportedExtensions(List<ExtensionType> supportedExtensions) {
         this.supportedExtensions = supportedExtensions;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<CompressionMethod> getSupportedCompressionMethods() {
@@ -307,6 +314,8 @@ public class SiteReport {
 
     public void setSupportedCompressionMethods(List<CompressionMethod> supportedCompressionMethods) {
         this.supportedCompressionMethods = supportedCompressionMethods;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public CheckPattern getMacCheckPatternAppData() {
@@ -315,6 +324,8 @@ public class SiteReport {
 
     public void setMacCheckPatterAppData(CheckPattern macCheckPatterAppData) {
         this.macCheckPatterAppData = macCheckPatterAppData;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public CheckPattern getVerifyCheckPattern() {
@@ -323,6 +334,8 @@ public class SiteReport {
 
     public void setVerifyCheckPattern(CheckPattern verifyCheckPattern) {
         this.verifyCheckPattern = verifyCheckPattern;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Boolean getSupportsSslTls() {
@@ -331,6 +344,8 @@ public class SiteReport {
 
     public void setSupportsSslTls(Boolean supportsSslTls) {
         this.supportsSslTls = supportsSslTls;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Boolean getCertificateExpired() {
@@ -339,6 +354,8 @@ public class SiteReport {
 
     public void setCertificateExpired(Boolean certificateExpired) {
         this.certificateExpired = certificateExpired;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Boolean getCertificateNotYetValid() {
@@ -347,6 +364,8 @@ public class SiteReport {
 
     public void setCertificateNotYetValid(Boolean certificateNotYetValid) {
         this.certificateNotYetValid = certificateNotYetValid;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Boolean getCertificateHasWeakHashAlgorithm() {
@@ -355,6 +374,8 @@ public class SiteReport {
 
     public void setCertificateHasWeakHashAlgorithm(Boolean certificateHasWeakHashAlgorithm) {
         this.certificateHasWeakHashAlgorithm = certificateHasWeakHashAlgorithm;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Boolean getCertificateHasWeakSignAlgorithm() {
@@ -363,6 +384,8 @@ public class SiteReport {
 
     public void setCertificateHasWeakSignAlgorithm(Boolean certificateHasWeakSignAlgorithm) {
         this.certificateHasWeakSignAlgorithm = certificateHasWeakSignAlgorithm;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Boolean getCertificateMachtesDomainName() {
@@ -371,6 +394,8 @@ public class SiteReport {
 
     public void setCertificateMachtesDomainName(Boolean certificateMachtesDomainName) {
         this.certificateMachtesDomainName = certificateMachtesDomainName;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Boolean getCertificateIsTrusted() {
@@ -379,6 +404,8 @@ public class SiteReport {
 
     public void setCertificateIsTrusted(Boolean certificateIsTrusted) {
         this.certificateIsTrusted = certificateIsTrusted;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Boolean getCertificateKeyIsBlacklisted() {
@@ -387,6 +414,8 @@ public class SiteReport {
 
     public void setCertificateKeyIsBlacklisted(Boolean certificateKeyIsBlacklisted) {
         this.certificateKeyIsBlacklisted = certificateKeyIsBlacklisted;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public GcmPattern getGcmPattern() {
@@ -395,6 +424,8 @@ public class SiteReport {
 
     public void setGcmPattern(GcmPattern gcmPattern) {
         this.gcmPattern = gcmPattern;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<VersionSuiteListPair> getVersionSuitePairs() {
@@ -403,6 +434,8 @@ public class SiteReport {
 
     public void setVersionSuitePairs(List<VersionSuiteListPair> versionSuitePairs) {
         this.versionSuitePairs = versionSuitePairs;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Integer getHandshakeSuccessfulCounter() {
@@ -411,6 +444,8 @@ public class SiteReport {
 
     public void setHandshakeSuccessfulCounter(Integer handshakeSuccessfulCounter) {
         this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Integer getHandshakeFailedCounter() {
@@ -419,6 +454,8 @@ public class SiteReport {
 
     public void setHandshakeFailedCounter(Integer handshakeFailedCounter) {
         this.handshakeFailedCounter = handshakeFailedCounter;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Integer getConnectionRfc7918SecureCounter() {
@@ -427,6 +464,8 @@ public class SiteReport {
 
     public void setConnectionRfc7918SecureCounter(Integer connectionRfc7918SecureCounter) {
         this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Integer getConnectionInsecureCounter() {
@@ -435,6 +474,8 @@ public class SiteReport {
 
     public void setConnectionInsecureCounter(Integer connectionInsecureCounter) {
         this.connectionInsecureCounter = connectionInsecureCounter;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<SimulatedClientResult> getSimulatedClientList() {
@@ -443,15 +484,17 @@ public class SiteReport {
 
     public void setSimulatedClientList(List<SimulatedClientResult> simulatedClientList) {
         this.simulatedClientList = simulatedClientList;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
-    public String getFullReport(ScannerDetail detail) {
-        return new SiteReportPrinter(this, detail).getFullReport();
+    public String getFullReport(ScannerDetail detail, boolean colour) {
+        return new SiteReportPrinter(this, detail, colour).getFullReport();
     }
 
     @Override
     public String toString() {
-        return getFullReport(ScannerDetail.NORMAL);
+        return getFullReport(ScannerDetail.NORMAL, true);
     }
 
     public CheckPattern getMacCheckPatternFinished() {
@@ -460,6 +503,8 @@ public class SiteReport {
 
     public void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
         this.macCheckPatternFinished = macCheckPatternFinished;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<PerformanceData> getPerformanceList() {
@@ -468,6 +513,8 @@ public class SiteReport {
 
     public void setPerformanceList(List<PerformanceData> performanceList) {
         this.performanceList = performanceList;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleTestResultList() {
@@ -476,6 +523,8 @@ public class SiteReport {
 
     public void setPaddingOracleTestResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<HttpsHeader> getHeaderList() {
@@ -484,6 +533,8 @@ public class SiteReport {
 
     public void setHeaderList(List<HttpsHeader> headerList) {
         this.headerList = headerList;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Long getHstsMaxAge() {
@@ -492,6 +543,8 @@ public class SiteReport {
 
     public void setHstsMaxAge(Long hstsMaxAge) {
         this.hstsMaxAge = hstsMaxAge;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Integer getHpkpMaxAge() {
@@ -500,6 +553,8 @@ public class SiteReport {
 
     public void setHpkpMaxAge(Integer hpkpMaxAge) {
         this.hpkpMaxAge = hpkpMaxAge;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<HpkpPin> getNormalHpkpPins() {
@@ -508,6 +563,8 @@ public class SiteReport {
 
     public void setNormalHpkpPins(List<HpkpPin> normalHpkpPins) {
         this.normalHpkpPins = normalHpkpPins;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<HpkpPin> getReportOnlyHpkpPins() {
@@ -516,6 +573,8 @@ public class SiteReport {
 
     public void setReportOnlyHpkpPins(List<HpkpPin> reportOnlyHpkpPins) {
         this.reportOnlyHpkpPins = reportOnlyHpkpPins;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<ExtractedValueContainer> getExtractedValueContainerList() {
@@ -524,6 +583,8 @@ public class SiteReport {
 
     public void setExtractedValueContainerList(List<ExtractedValueContainer> extractedValueContainerList) {
         this.extractedValueContainerList = extractedValueContainerList;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public RandomEvaluationResult getRandomEvaluationResult() {
@@ -532,6 +593,8 @@ public class SiteReport {
 
     public void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
         this.randomEvaluationResult = randomEvaluationResult;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Set<CommonDhValues> getUsedCommonDhValueList() {
@@ -540,6 +603,8 @@ public class SiteReport {
 
     public void setUsedCommonDhValueList(Set<CommonDhValues> usedCommonDhValueList) {
         this.usedCommonDhValueList = usedCommonDhValueList;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public Integer getWeakestDhStrength() {
@@ -548,6 +613,8 @@ public class SiteReport {
 
     public void setWeakestDhStrength(Integer weakestDhStrength) {
         this.weakestDhStrength = weakestDhStrength;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<BleichenbacherTestResult> getBleichenbacherTestResultList() {
@@ -556,6 +623,8 @@ public class SiteReport {
 
     public void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
         this.bleichenbacherTestResultList = bleichenbacherTestResultList;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public KnownPaddingOracleVulnerability getKnownVulnerability() {
@@ -564,6 +633,8 @@ public class SiteReport {
 
     public void setKnownVulnerability(KnownPaddingOracleVulnerability knownVulnerability) {
         this.knownVulnerability = knownVulnerability;
+        this.hasChanged();
+        this.notifyObservers();
     }
 
     public List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleShakyEvalResultList() {
@@ -572,5 +643,7 @@ public class SiteReport {
 
     public void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
+        this.hasChanged();
+        this.notifyObservers();
     }
 }

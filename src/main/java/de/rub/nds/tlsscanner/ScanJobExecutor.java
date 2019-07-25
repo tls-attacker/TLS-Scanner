@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner;
 
-import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 /**
@@ -17,7 +16,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
  */
 public abstract class ScanJobExecutor {
 
-    public abstract SiteReport execute(ScannerConfig config, ScanJob scanJob);
+    public abstract SiteReport execute();
 
     public abstract void shutdown();
 }
