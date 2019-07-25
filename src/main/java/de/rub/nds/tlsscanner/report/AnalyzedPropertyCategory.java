@@ -9,20 +9,20 @@
 package de.rub.nds.tlsscanner.report;
 
 public enum AnalyzedPropertyCategory {
-    SUPPORTED_VERSIONS,
-    SUPPORTED_CIPHERSUITS,
+    VERSIONS,
+    CIPHER_SUITES,
     EXTENSIONS,
     SESSION_RESUMPTION,
     RENEGOTIATION,
     HTTPS_HEADERS,
     QUIRKS,
     ATTACKS,
-    COMPARISSON_FAILURE,
+    COMPARISON_FAILURE,
     CERTIFICATE,
-    FRESHNES,
+    FRESHNESS,
     SNI,
     COMPRESSION,
-    FFDHE,
-    BEST_PRACTICE,
     EC,
+    FFDHE,
+    BEST_PRACTICES,
 }
