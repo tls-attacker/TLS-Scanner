@@ -57,8 +57,8 @@ public class TrustAnchorManager {
     }
 
     private TrustAnchorManager() {
+        trustPlatformList = new LinkedList<>();
         try {
-            trustPlatformList = new LinkedList<>();
             trustPlatformList.add(readPlatform("google_aosp.yaml"));
             trustPlatformList.add(readPlatform("microsoft_windows.yaml"));
             trustPlatformList.add(readPlatform("mozilla_nss.yaml"));
@@ -67,7 +67,6 @@ public class TrustAnchorManager {
             trustPlatformList.add(readPlatform("apple_ios.yaml"));
             trustPlatformList.add(readPlatform("apple_macos.yaml"));
         } catch (IOException ex) {
-            ex.printStackTrace();
             LOGGER.error("Could not load trusted platforms", ex);
         }
         trustAnchors = new HashMap<>();
