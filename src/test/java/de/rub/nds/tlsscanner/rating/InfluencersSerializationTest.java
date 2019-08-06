@@ -45,7 +45,7 @@ public class InfluencersSerializationTest {
         List<RatingInfluencer> influencers = new LinkedList<>();
         RatingInfluencer i = new RatingInfluencer();
         i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_SSL_2);
-        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500.0));
+        i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500));
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.FALSE, 50));
         influencers.add(i);
         

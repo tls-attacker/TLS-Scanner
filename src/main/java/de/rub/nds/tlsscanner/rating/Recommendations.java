@@ -9,15 +9,41 @@
 package de.rub.nds.tlsscanner.rating;
 
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
+import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="recommendations")
 public class Recommendations implements Serializable {
+    /**
+     * The default Config file to load.
+     */
+    private static final String DEFAULT_RECOMMENDATIONS_FILE = "rating/recommendations.xml";
     
     private List<Recommendation> recommendations;
+    
+    Recommendations() {
+        
+    }
+    
+    public static Recommendations createRecommendations() {
+        InputStream stream = Recommendations.class.getResourceAsStream(DEFAULT_RECOMMENDATIONS_FILE);
+        return RatingIO.readRecommendations(stream);
+    }
+
+    public static Recommendations createRecommendations(File f) {
+        return RatingIO.readRecommendations(f);
+    }
+
+    public static Recommendations createRecommendations(InputStream stream) {
+        return RatingIO.readRecommendations(stream);
+        // todo: close stream? https://www.tutorialspoint.com/java/xml/javax_xml_bind_jaxb_unmarshal_inputstream
+    }
 
     @XmlElement(name = "recommendation")
     public List<Recommendation> getRecommendations() {

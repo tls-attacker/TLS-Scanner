@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.rating;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"result", "influence", "scoreCap"})
@@ -15,20 +16,20 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
 
     private TestResult result;
 
-    private double influence;
-
-    private double scoreCap;
+    private Integer influence;
+    
+    private Integer scoreCap;
 
     public PropertyResultRatingInfluencer() {
 
     }
     
-    public PropertyResultRatingInfluencer(TestResult result, double influence) {
+    public PropertyResultRatingInfluencer(TestResult result, Integer influence) {
         this.result = result;
         this.influence = influence;
     }
 
-    public PropertyResultRatingInfluencer(TestResult result, double influence, double scoreCap) {
+    public PropertyResultRatingInfluencer(TestResult result, Integer influence, Integer scoreCap) {
         this.result = result;
         this.influence = influence;
         this.scoreCap = scoreCap;
@@ -38,11 +39,12 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         return result;
     }
 
-    public double getInfluence() {
+    public Integer getInfluence() {
         return influence;
     }
 
-    public double getScoreCap() {
+    @XmlElement(required=false)
+    public Integer getScoreCap() {
         return scoreCap;
     }
 
@@ -50,24 +52,30 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         this.result = result;
     }
 
-    public void setInfluence(double influence) {
+    public void setInfluence(Integer influence) {
         this.influence = influence;
     }
 
-    public void setScoreCap(double scoreCap) {
+    public void setScoreCap(Integer scoreCap) {
         this.scoreCap = scoreCap;
     }
     
     public boolean hasNegativeScore() {
-        return (influence < 0 || scoreCap > 0);
+        return (influence < 0 || scoreCap != null);
     }
 
     @Override
     public int compareTo(PropertyResultRatingInfluencer t) {
         if(this.getScoreCap() == t.getScoreCap()) {
-            return Double.compare(this.getInfluence(), t.getInfluence());
+            return Integer.compare(this.getInfluence(), t.getInfluence());
+        } 
+        if(this.getScoreCap() != null && t.getScoreCap() == null) {
+            return -1;
         }
-        return Double.compare(this.getScoreCap(), t.getScoreCap());
+        if(t.getScoreCap() != null && this.getScoreCap() == null) {
+            return 1;
+        }
+        return this.getScoreCap().compareTo(t.getScoreCap());
     }
 
 }

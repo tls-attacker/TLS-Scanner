@@ -21,7 +21,7 @@ public class Sweet32AfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        TestResult vulnerable = TestResult.UNTESTED;
+        TestResult vulnerable = TestResult.NOT_TESTED_YET;
         try {
             if (report.getCipherSuites() != null) {
                 for (CipherSuite suite : report.getCipherSuites()) {

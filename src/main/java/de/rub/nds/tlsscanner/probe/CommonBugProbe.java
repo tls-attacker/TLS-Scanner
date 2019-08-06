@@ -107,7 +107,7 @@ public class CommonBugProbe extends TlsProbe {
 
     @Override
     public ProbeResult getNotExecutedResult() {
-        return new CommonBugProbeResult(TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED);
+        return new CommonBugProbeResult(TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET);
     }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {

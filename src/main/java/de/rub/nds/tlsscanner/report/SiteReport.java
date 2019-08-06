@@ -149,7 +149,7 @@ public class SiteReport {
     
     public TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
-        return (result == null) ? TestResult.UNTESTED : result;
+        return (result == null) ? TestResult.NOT_TESTED_YET : result;
     }
     
     public void putResult(AnalyzedProperty property, TestResult result) {

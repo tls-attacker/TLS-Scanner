@@ -9,6 +9,8 @@
 package de.rub.nds.tlsscanner.rating;
 
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
+import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,8 +18,34 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="ratingInfluencers")
 public class RatingInfluencers implements Serializable {
+    /**
+     * The default Config file to load.
+     */
+    static final String DEFAULT_RATING_FILE = "rating/influencers.xml";
     
     private List<RatingInfluencer> ratingInfluencers;
+    
+    RatingInfluencers() {
+        
+    }
+
+    public RatingInfluencers(List<RatingInfluencer> ratingInfluencers) {
+        this.ratingInfluencers = ratingInfluencers;
+    }
+    
+    public static RatingInfluencers createRatingInfluencers() {
+        InputStream stream = RatingInfluencers.class.getResourceAsStream(DEFAULT_RATING_FILE);
+        return RatingIO.readRatingInfluencers(stream);
+    }
+
+    public static RatingInfluencers createRatingInfluencers(File f) {
+        return RatingIO.readRatingInfluencers(f);
+    }
+
+    public static RatingInfluencers createRatingInfluencers(InputStream stream) {
+        return RatingIO.readRatingInfluencers(stream);
+        // todo: close stream? https://www.tutorialspoint.com/java/xml/javax_xml_bind_jaxb_unmarshal_inputstream
+    }
 
     @XmlElement(name = "ratingInfluencer")
     public List<RatingInfluencer> getRatingInfluencers() {
@@ -34,6 +62,6 @@ public class RatingInfluencers implements Serializable {
                 return ri.getPropertyRatingInfluencer(result);
             }
         }
-        return new PropertyResultRatingInfluencer(result, 0.0);
+        return new PropertyResultRatingInfluencer(result, 0);
     }
 }

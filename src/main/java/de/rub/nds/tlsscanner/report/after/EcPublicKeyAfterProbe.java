@@ -19,7 +19,7 @@ public class EcPublicKeyAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        TestResult reuse = TestResult.UNTESTED;
+        TestResult reuse = TestResult.NOT_TESTED_YET;
         try {
             List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
             reuse = TestResult.FALSE;

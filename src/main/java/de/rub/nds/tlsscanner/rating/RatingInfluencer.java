@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.rating;
 
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,6 +27,11 @@ public class RatingInfluencer {
     public RatingInfluencer(AnalyzedProperty influencerConstant, List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = propertyRatingInfluencers;
+    }
+    
+    public RatingInfluencer(AnalyzedProperty influencerConstant, PropertyResultRatingInfluencer ... propertyRatingInfluencers) {
+        this.analyzedProperty = influencerConstant;
+        this.propertyRatingInfluencers = Arrays.asList(propertyRatingInfluencers);
     }
 
     public AnalyzedProperty getAnalyzedProperty() {

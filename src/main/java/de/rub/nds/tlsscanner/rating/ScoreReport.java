@@ -13,16 +13,16 @@ import java.util.LinkedHashMap;
 
 public class ScoreReport {
 
-    private final double score;
+    private final int score;
 
     private final LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers;
 
-    public ScoreReport(double score, LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
+    public ScoreReport(int score, LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
         this.score = score;
         this.influencers = influencers;
     }
 
-    public double getScore() {
+    public int getScore() {
         return score;
     }
 

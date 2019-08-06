@@ -37,8 +37,8 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        TestResult vulnerableClassic = TestResult.UNTESTED;
-        TestResult vulnerableEphemeral = TestResult.UNTESTED;
+        TestResult vulnerableClassic = TestResult.NOT_TESTED_YET;
+        TestResult vulnerableEphemeral = TestResult.NOT_TESTED_YET;
         if (supportsStatic == TestResult.TRUE) {
             try {
 

@@ -429,17 +429,17 @@ public class SiteReportRater {
 //            negativeInfluencer.add(tempInfluencer);
 //        }
 //
-        double score = computeScore(ratingInfluencers);
+        int score = computeScore(ratingInfluencers);
         return new ScoreReport(score, sortedRatingInfluencers);
     }
 
-    private double computeScore(HashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
-        double score = 0;
+    private int computeScore(HashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
+        int score = 0;
         for (PropertyResultRatingInfluencer influencer : influencers.values()) {
             score += influencer.getInfluence();
         }
         for (PropertyResultRatingInfluencer influencer : influencers.values()) {
-            if (influencer.getScoreCap() != 0.0 && score >= influencer.getScoreCap()) {
+            if (influencer.getScoreCap() != null && score >= influencer.getScoreCap()) {
                 score = influencer.getScoreCap();
             }
         }
