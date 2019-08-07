@@ -182,8 +182,8 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_FREAK(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_CVE20162107(AnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE), // ?
-    MISSES_CHECKS_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE), // ?
-    MISSES_CHECKS_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),// ?
+    MISSES_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE), // ?
+    MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),// ?
     MISSES_GCM_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     HAS_CERTIFICATE_ISSUES(AnalyzedPropertyCategory.CERTIFICATE),
     HAS_WEAK_RANDOMNESS(AnalyzedPropertyCategory.FRESHNESS), // ?

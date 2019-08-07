@@ -341,10 +341,10 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_MAC_APPDATA_CHECKS,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_CHECKS_MAC_FINISHED_CHECKS,  
+        influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_MAC_FINISHED_CHECKS,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_CHECKS_VERIFY_DATA_CHECKS,  
+        influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_VERIFY_DATA_CHECKS,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_GCM_CHECKS,  

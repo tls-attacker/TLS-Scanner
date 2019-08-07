@@ -81,6 +81,7 @@ public class Main {
                         }
                         PropertyResultRecommendation recommendation = rater.getRecommendations().getPropertyRecommendation(entry.getKey(), influencer.getResult());
                         ConsoleLogger.CONSOLE.error("  Information: " + recommendation.getShortDescription());
+                        ConsoleLogger.CONSOLE.error("  Recommendation: " + recommendation.getHandlingRecommendation());
                     }
                 }
             } catch (ConfigurationException | JAXBException E) {

@@ -115,9 +115,9 @@ public class RecommendationTranslator {
                 return "Patch your implementation. It is vulnerable for the EarlyCCS attack!";
             case MISSES_MAC_APPDATA_CHECKS:
                 return "Patch your implementation. Your implementation is not checking MAC's in ApplicationData correctly";
-            case MISSES_CHECKS_MAC_FINISHED_CHECKS:
+            case MISSES_MAC_FINISHED_CHECKS:
                 return "Patch your implementation. Your implementation is not checking MAC's in the FinishedMessage correctly";
-            case MISSES_CHECKS_VERIFY_DATA_CHECKS:
+            case MISSES_VERIFY_DATA_CHECKS:
                 return "Patch your implementation. Your implementation is not the VerifyData in the FinishedMessage correctly";
             case HAS_CERTIFICATE_ISSUES:
                 return "There are certificate chain issues";

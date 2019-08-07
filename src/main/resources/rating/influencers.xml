@@ -582,7 +582,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>50</influence>
@@ -593,7 +593,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-100</influence>
@@ -1165,7 +1165,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>MISSES_CHECKS_MAC_FINISHED_CHECKS</analyzedProperty>
+        <analyzedProperty>MISSES_MAC_FINISHED_CHECKS</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
@@ -1176,7 +1176,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>MISSES_CHECKS_VERIFY_DATA_CHECKS</analyzedProperty>
+        <analyzedProperty>MISSES_VERIFY_DATA_CHECKS</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
