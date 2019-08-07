@@ -12,8 +12,6 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,12 +21,16 @@ public class Recommendations implements Serializable {
     /**
      * The default Config file to load.
      */
-    private static final String DEFAULT_RECOMMENDATIONS_FILE = "rating/recommendations.xml";
+    static final String DEFAULT_RECOMMENDATIONS_FILE = "rating/recommendations.xml";
     
     private List<Recommendation> recommendations;
     
     Recommendations() {
         
+    }
+    
+    public Recommendations(List<Recommendation> recommendations) {
+        this.recommendations = recommendations;
     }
     
     public static Recommendations createRecommendations() {

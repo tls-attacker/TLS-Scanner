@@ -362,8 +362,8 @@ public class SiteReportPrinter {
 
     private StringBuilder appendRenegotiation(StringBuilder builder) {
         prettyAppendHeading(builder, "Renegotioation & SCSV");
-        prettyAppendYellowOnSuccess(builder, "Clientside Secure", report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION));
-        prettyAppendRedOnSuccess(builder, "Clientside Insecure", report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION_EXTENSION));
+        prettyAppendYellowOnSuccess(builder, "Clientside Secure", report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION));
+        prettyAppendRedOnSuccess(builder, "Clientside Insecure", report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION));
         //prettyAppendRedOnFailure(builder, "SCSV Fallback", report.getTlsFallbackSCSVsupported());
         return builder;
     }

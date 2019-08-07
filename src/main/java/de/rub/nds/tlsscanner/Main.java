@@ -76,7 +76,9 @@ public class Main {
                     if(influencer.hasNegativeScore()) {
                         ConsoleLogger.CONSOLE.error(entry.getKey() + ": " + influencer.getResult());
                         ConsoleLogger.CONSOLE.error("  Score: " + influencer.getInfluence());
-                        ConsoleLogger.CONSOLE.error("  Score cap: " + influencer.getScoreCap());
+                        if(influencer.hasScoreCap()) {
+                            ConsoleLogger.CONSOLE.error("  Score cap: " + influencer.getScoreCap());
+                        }
                         PropertyResultRecommendation recommendation = rater.getRecommendations().getPropertyRecommendation(entry.getKey(), influencer.getResult());
                         ConsoleLogger.CONSOLE.error("  Information: " + recommendation.getShortDescription());
                     }

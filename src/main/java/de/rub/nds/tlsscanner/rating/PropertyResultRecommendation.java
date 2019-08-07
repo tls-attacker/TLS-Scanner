@@ -25,16 +25,16 @@ public class PropertyResultRecommendation {
         
     }
     
-    public PropertyResultRecommendation(TestResult result, String resultStatus, String handlingRecommendation, 
-            String additionInformation) {
-        this.result = result;
-        this.shortDescription = resultStatus;
-        this.detailedDescription = additionInformation;
-    }
-    
     public PropertyResultRecommendation(TestResult result, String resultStatus, String handlingRecommendation) {
         this.result = result;
         this.shortDescription = resultStatus;
+        this.handlingRecommendation = handlingRecommendation;
+    }
+    
+    public PropertyResultRecommendation(TestResult result, String resultStatus, String handlingRecommendation, 
+            String detailedDescription) {
+        this(result, resultStatus, handlingRecommendation);
+        this.detailedDescription = detailedDescription;
     }
 
     public TestResult getResult() {

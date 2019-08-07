@@ -2,10 +2,1622 @@
 <recommendations>
     <recommendation>
         <analyzedProperty>SUPPORTS_SSL_2</analyzedProperty>
-        <propertyRecommendation>
-            <result>TRUE</result>
-            <shortDescription>SSLv2 is enabled</shortDescription>
-            <handlingRecommendation>Disable SSLv2</handlingRecommendation>
-        </propertyRecommendation>
+        <shortName>SSL 2.0 support</shortName>
+        <shortDescription>Evaluates whether the SSL 2.0 protocol is supported</shortDescription>
+        <links>
+            <link>https://www-archive.mozilla.org/projects/security/pki/nss/ssl/draft02.html</link>
+            <link>https://drownattack.com</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>SSL 2.0 is enabled</shortDescription>
+                <handlingRecommendation>Disable SSL 2.0</handlingRecommendation>
+                <detailedDescription></detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SSL_3</analyzedProperty>
+        <shortName>SSL 3.0 support</shortName>
+        <shortDescription>Evaluates whether the SSL 3.0 protocol is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc6101</link>
+            <link>https://www.openssl.org/~bodo/ssl-poodle.pdf</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>SSL 3.0 is enabled</shortDescription>
+                <handlingRecommendation>Disable SSL 3.0</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+        <shortName>TLS 1.0 support</shortName>
+        <shortDescription>Evaluates whether the TLS 1.0 protocol is supported</shortDescription>
+        <links>
+            <link>https://www.ietf.org/rfc/rfc2246</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>TLS 1.0 is enabled</shortDescription>
+                <handlingRecommendation>Consider disabling TLS 1.0</handlingRecommendation>
+                <detailedDescription></detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+        <shortName>TLS 1.1 support</shortName>
+        <shortDescription>Evaluates whether the TLS 1.1 protocol is supported</shortDescription>
+        <links>
+            <link>https://www.ietf.org/rfc/rfc4346</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>TLS 1.1 is enabled</shortDescription>
+                <handlingRecommendation>Consider disabling TLS 1.1</handlingRecommendation>
+                <detailedDescription></detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+        <shortName>TLS 1.2 support</shortName>
+        <shortDescription>Evaluates whether the TLS 1.2 protocol is supported</shortDescription>
+        <links>
+            <link>https://www.ietf.org/rfc/rfc5246.txt</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>TLS 1.2 is disabled</shortDescription>
+                <handlingRecommendation>Enable TLS 1.2</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+        <shortName>TLS 1.3 support</shortName>
+        <shortDescription>Evaluates whether the TLS 1.3 protocol is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc8446</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>TLS 1.3 is disabled</shortDescription>
+                <handlingRecommendation>Enable TLS 1.3</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_3_DRAFT</analyzedProperty>
+        <shortName>TLS 1.3 draft version support</shortName>
+        <shortDescription>Evaluates whether a TLS 1.3 version draft is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc8446</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>TLS 1.3 draft version is enabled</shortDescription>
+                <handlingRecommendation>Update your server and enable the TLS 1.3 final version</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DTLS_1_0</analyzedProperty>
+        <shortName>DTLS 1.0 support</shortName>
+        <shortDescription>Evaluates whether the DTLS 1.0 protocol is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc4347</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>DTLS 1.0 is enabled</shortDescription>
+                <handlingRecommendation>Disable DTLS 1.0, it is a UDP protocol</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DTLS_1_2</analyzedProperty>
+        <shortName>DTLS 1.2 support</shortName>
+        <shortDescription>Evaluates whether the DTLS 1.2 protocol is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc6347</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>DTLS 1.2 is enabled</shortDescription>
+                <handlingRecommendation>Disable DTLS 1.2, it is a UDP protocol</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DTLS_1_3</analyzedProperty>
+        <shortName>DTLS 1.3 support</shortName>
+        <shortDescription>Evaluates whether the DTLS 1.3 protocol is supported</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>DTLS 1.3 is enabled</shortDescription>
+                <handlingRecommendation>Disable DTLS 1.3, it is a UDP protocol</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_NULL_CIPHERS</analyzedProperty>
+        <shortName>Null cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports null ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Null ciphers are supported</shortDescription>
+                <handlingRecommendation>Disable insecure null ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_FORTEZZA</analyzedProperty>
+        <shortName>Fortezza support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Fortezza ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Fortezza ciphers are supported</shortDescription>
+                <handlingRecommendation>Disable Fortezza cipher suites</handlingRecommendation>
+                <detailedDescription>Fortezza cipher suittes were developed by NSA in the 90s. You should better get rid of Fortezza algorithms.</detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_EXPORT</analyzedProperty>
+        <shortName>Export cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports export ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Export ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable export ciphers</handlingRecommendation>
+                <detailedDescription></detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ANON</analyzedProperty>
+        <shortName>Anonymous cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports anonymous ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Anonymous ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable anonymous ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DES</analyzedProperty>
+        <shortName>DES support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports DES ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>DES ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable DES ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_3DES</analyzedProperty>
+        <shortName>3DES (Triple DES) support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports 3DES (Triple DES) ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>3DES ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable 3DES ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SEED</analyzedProperty>
+        <shortName>SEED cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports SEED ciphers</shortDescription>
+        <detailedDescription>SEED is a 128 bit block cipher developed by the KISA (Korea Information Security Agency) in 1998</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc4162</link>
+        </links>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_IDEA</analyzedProperty>
+        <shortName>IDEA cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports IDEA ciphers</shortDescription>
+        <detailedDescription>IDEA (International Data Encryption Algorithm) is a block cipher. It uses a 128 bit key and operates on 64 bit blocks.</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc5469</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>IDEA ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable IDEA ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_RC2</analyzedProperty>
+        <shortName>RC2 cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports RC2 ciphers</shortDescription>
+        <detailedDescription>RC2 is a 64 bit block cipher designed by Ron Rivest in 1987</detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>RC2 ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable RC2 ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_RC4</analyzedProperty>
+        <shortName>RC4 cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports RC4 ciphers</shortDescription>
+        <detailedDescription>RC4 is a stream cipher designed by Ron Rivest in 1987</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc7465</link>
+            <link>https://www.rc4nomore.com/</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>RC4 ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable RC4 ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CBC</analyzedProperty>
+        <shortName>CBC cipher suite support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports CBC cipher suites</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>CBC cipher suites are enabled</shortDescription>
+                <handlingRecommendation>Disable CBC cipher suites</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_AEAD</analyzedProperty>
+        <shortName>AEAD cipher suites support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports AEAD (Authenticated Encryption with Associated Data) cipher suites, e.g., AES-GCM</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>AEAD cipher suites are disabled</shortDescription>
+                <handlingRecommendation>Enable AEAD cipher suites, e.g., AES-GCM</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PFS</analyzedProperty>
+        <shortName>Perfect Forward Secrecy (PFS) support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Perfect Forward Secrecy (PFS)</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>PFS is not supported</shortDescription>
+                <handlingRecommendation>Enable perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PFS</analyzedProperty>
+        <shortName>Support for only PFS cipher suites</shortName>
+        <shortDescription>Evaluates whether the TLS server exclusively supports Perfect Forward Secrecy (PFS)</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Not all cipher suites are perfect forward secure</shortDescription>
+                <handlingRecommendation>Consider disabling cipher suites which are not perfect forward secure. Enable only perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_AES</analyzedProperty>
+        <shortName>AES cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports AES cipher</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>AES cipher suites are disabled</shortDescription>
+                <handlingRecommendation>Enable AES cipher suites</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CAMELLIA</analyzedProperty>
+        <shortName>Camellia cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Camellia cipher</shortDescription>
+        <detailedDescription>Camellia is a 128 bit block cipher designed by Mitsubishi and NTT in 2000</detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ARIA</analyzedProperty>
+        <shortName>ARIA cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports ARIA cipher</shortDescription>
+        <detailedDescription>ARIA is a 128 bit block cipher designed in 2003</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc5794</link>
+        </links>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CHACHA</analyzedProperty>
+        <shortName>ChaCha cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports ChaCha cipher</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc7905</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>ChaCha cipher is disabled</shortDescription>
+                <handlingRecommendation>Enable ChaCha cipher</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_RSA</analyzedProperty>
+        <shortName>RSA key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports RSA key exchange</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>RSA key exchange is enabled</shortDescription>
+                <handlingRecommendation>Disable RSA key exchange</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DH</analyzedProperty>
+        <shortName>Diffie-Hellman (DH) key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Diffie-Hellman (DH) key exchange</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ECDH</analyzedProperty>
+        <shortName>Elliptic Curve Diffie-Hellman (ECDH) key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Elliptic Curve Diffie-Hellman (ECDH) key exchange</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Elliptic Curve Diffie-Hellman (ECDH) key exchange is disabled</shortDescription>
+                <handlingRecommendation>Enable Elliptic Curve Diffie-Hellman (ECDH)</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_STATIC_ECDH</analyzedProperty>
+        <shortName>Static Elliptic Curve Diffie-Hellman (ECDH) key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports static Elliptic Curve Diffie-Hellman (ECDH) key exchange</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Static Elliptic Curve Diffie-Hellman (ECDH) key exchange is enabled</shortDescription>
+                <handlingRecommendation>Disable static Elliptic Curve Diffie-Hellman (ECDH)</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_GOST</analyzedProperty>
+        <shortName>GOST cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports GOST cipher</shortDescription>
+        <detailedDescription>GOST is a block cipher designed in the USSR in the nineties. It has a block size of 64 bits. </detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>GOST ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable GOST ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SRP</analyzedProperty>
+        <shortName>Secure Remote Password (SRP) support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Secure Remote Password (SRP) cipher suites</shortDescription>
+        <detailedDescription>https://tools.ietf.org/html/rfc5054</detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_KERBEROS</analyzedProperty>
+        <shortName>Kerberos cipher suites support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Kerberos cipher suites</shortDescription>
+        <detailedDescription>https://tools.ietf.org/html/rfc2712</detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PSK_PLAIN</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PSK_RSA</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PSK_DHE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PSK_ECDHE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_POST_QUANTUM</analyzedProperty>
+        <shortName>Post quantum algorithms support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports post quantum algorithms</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_NEWHOPE</analyzedProperty>
+        <shortName>Post quantum new hope algorihtm support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports the new hope post quantum algorithm</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ECMQV</analyzedProperty>
+        <shortName>Post quantum ECMQV algorithm support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports the ECMQV post quantum algorithm</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_STREAM_CIPHERS</analyzedProperty>
+        <shortName>Stream cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports stream ciphers</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_BLOCK_CIPHERS</analyzedProperty>
+        <shortName>Block cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports block ciphers</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_EXTENDED_MASTER_SECRET</analyzedProperty>
+        <shortName>Extended master secret support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports extended master secret extension</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc7627</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Extended master secret extension is not supported</shortDescription>
+                <handlingRecommendation>Enable support for the extended master secret</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ENCRYPT_THEN_MAC</analyzedProperty>
+        <shortName>Encrypt-then-MAC extension support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Encrypt-then-MAC extension</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc7366</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Encrypt-then-MAC extension is not supported</shortDescription>
+                <handlingRecommendation>Enable support for the Encrypt-then-MAC</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TOKENBINDING</analyzedProperty>
+        <shortName>Token binding support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports token binding</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_MONTOGMERY_CURVES</analyzedProperty>
+        <shortName>Montgomery curve support</shortName>
+        <shortDescription></shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SESSION_TICKETS</analyzedProperty>
+        <shortName>Support for session resumption with session tickets</shortName>
+        <shortDescription>Evaluates whether the TLS server supports session resumption with session tickets</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Session tickets are disabled</shortDescription>
+                <handlingRecommendation>Enable session resumption with session tickets</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SESSION_IDS</analyzedProperty>
+        <shortName>Support for session resumption with session IDs</shortName>
+        <shortDescription>Evaluates whether the TLS server supports session resumption with session IDs</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SESSION_TICKETS_ROTATED</analyzedProperty>
+        <shortName>Support for rotated session tickets</shortName>
+        <shortDescription>Evaluates whether the TLS server supports session resumption with session tickets whose keys are being rotated</shortDescription>
+        <detailedDescription>Session tickets are created with symmetric keys. The lifetime of the symmetric keys used for session tickets should be restricted to reduce the attack surface. The ticket lifetime is typically indicated in the ticket lifetime hint.</detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Session resumption with rotating session tickets is disabled</shortDescription>
+                <handlingRecommendation>Frequently changing session ticket keys improves the security, enable rotated session tickets.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
+        <shortName>Support for secure renegotiation extension</shortName>
+        <shortDescription>Evaluates whether the TLS server supports secure renegotiation extension.</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION</analyzedProperty>
+        <shortName>Support for client-side secure renegotiation</shortName>
+        <shortDescription>Evaluates whether the TLS server supports client-side secure renegotiation.</shortDescription>
+        <detailedDescription>TLS secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.</detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
+        <shortName>Support for client-side insecure renegotiation</shortName>
+        <shortDescription>Evaluates whether the TLS server supports client-side insecure renegotiation.</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc5746</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Insecure renegotiation is enabled</shortDescription>
+                <handlingRecommendation>Disable renegotiation or enable only secure renegotiation.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_FALLBACK_SCSV</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_COMPRESSION</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_COMMON_DH_PRIMES</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PRIME_MODULI</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SAFEPRIME_MODULI</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_INSECURE_RENEGOTIATION</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_RENEGOTIATION</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HTTPS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HSTS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HSTS_PRELOADING</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HPKP</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HPKP_REPORTING</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HTTP_COMPRESSION</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>PREFERS_PFS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>ENFORCES_PFS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>ENFOCRES_CS_ORDERING</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_VERSION_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_CIPHERSUITE_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_EXTENSION_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_CIPHERSUITE_LENGTH_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_COMPRESSION_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_ALPN_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_CLIENT_HELLO_LENGTH_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_EMPTY_LAST_EXTENSION_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_SIG_HASH_ALGORITHM_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_BIG_CLIENT_HELLO_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_NAMED_GROUP_INTOLERANCE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_SECOND_CIPHERSUITE_BYTE_BUG</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REFLECTS_OFFERED_CIPHERSUITES</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>IGNORES_OFFERED_CIPHERSUITES</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>IGNORES_OFFERED_NAMED_GROUPS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>IGNORES_OFFERED_SIG_HASH_ALGOS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_BLEICHENBACHER</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_PADDING_ORACLE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_CBC_PADDING_ORACLE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_WITH_REUSE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_POODLE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_TLS_POODLE</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_SWEET_32</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_DROWN</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_HEARTBLEED</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_TICKETBLEED</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_EARLY_CCS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_CRIME</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_BREACH</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_LOGJAM</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_FREAK</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_CVE20162107</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>MISSES_MAC_APPDATA_CHECKS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>MISSES_CHECKS_MAC_FINISHED_CHECKS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>MISSES_CHECKS_VERIFY_DATA_CHECKS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>MISSES_GCM_CHECKS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_CERTIFICATE_ISSUES</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_WEAK_RANDOMNESS</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REUSES_EC_PUBLICKEY</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REUSES_DH_PUBLICKEY</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REUSES_GCM_NONCES</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REQUIRES_SNI</analyzedProperty>
+        <shortName></shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
     </recommendation>
 </recommendations>

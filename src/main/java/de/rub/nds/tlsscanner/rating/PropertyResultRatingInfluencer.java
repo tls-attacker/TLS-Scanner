@@ -47,6 +47,10 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
     public Integer getScoreCap() {
         return scoreCap;
     }
+    
+    public boolean hasScoreCap() {
+        return (scoreCap != null && scoreCap != 0);
+    }
 
     public void setResult(TestResult result) {
         this.result = result;
