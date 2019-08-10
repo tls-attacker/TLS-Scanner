@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.rating;
 
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
+import java.util.HashMap;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -26,4 +28,16 @@ public class SiteReportRaterTest {
         assertFalse(rater.getRecommendations().getRecommendations().isEmpty());
     }
     
+    @Test
+    public void testGetScoreReport() throws Exception {
+        HashMap<String, TestResult> resultMap = new HashMap<>();
+        resultMap.put(AnalyzedProperty.SUPPORTS_SSL_2.toString(), TestResult.FALSE);
+        resultMap.put(AnalyzedProperty.SUPPORTS_SSL_3.toString(), TestResult.TRUE);
+        resultMap.put(AnalyzedProperty.SUPPORTS_TLS_1_0.toString(), TestResult.TRUE);
+        
+        SiteReportRater rater = SiteReportRater.getSiteReportRater("en");
+        ScoreReport report = rater.getScoreReport(resultMap);
+        
+        assertEquals(3, report.getInfluencers().size());
+    }
 }

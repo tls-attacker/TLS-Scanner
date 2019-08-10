@@ -352,7 +352,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_PFS</analyzedProperty>
+        <analyzedProperty>SUPPORTS_ONLY_PFS</analyzedProperty>
         <shortName>Support for only PFS cipher suites</shortName>
         <shortDescription>Evaluates whether the TLS server exclusively supports Perfect Forward Secrecy (PFS)</shortDescription>
         <links>
@@ -534,63 +534,35 @@
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_PSK_PLAIN</analyzedProperty>
-        <shortName></shortName>
-        <shortDescription></shortDescription>
-        <links>
-            <link></link>
-        </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription></shortDescription>
-                <handlingRecommendation></handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
+        <shortName>Supports plain PSK</shortName>
+        <shortDescription>For now we do not consider in our scoring</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_PSK_RSA</analyzedProperty>
-        <shortName></shortName>
-        <shortDescription></shortDescription>
-        <links>
-            <link></link>
-        </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription></shortDescription>
-                <handlingRecommendation></handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
+        <shortName>Supports RSA PSK</shortName>
+        <shortDescription>For now we do not consider in our scoring</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_PSK_DHE</analyzedProperty>
-        <shortName></shortName>
-        <shortDescription></shortDescription>
-        <links>
-            <link></link>
-        </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription></shortDescription>
-                <handlingRecommendation></handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
+        <shortName>Supports DHE PSK</shortName>
+        <shortDescription>For now we do not consider in our scoring</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_PSK_ECDHE</analyzedProperty>
-        <shortName></shortName>
-        <shortDescription></shortDescription>
-        <links>
-            <link></link>
-        </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription></shortDescription>
-                <handlingRecommendation></handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
+        <shortName>Supports ECDHE PSK</shortName>
+        <shortDescription>For now we do not consider in our scoring</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_POST_QUANTUM</analyzedProperty>
@@ -744,9 +716,16 @@
         <analyzedProperty>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
         <shortName>Support for secure renegotiation extension</shortName>
         <shortDescription>Evaluates whether the TLS server supports secure renegotiation extension.</shortDescription>
-        <detailedDescription>https://tools.ietf.org/html/rfc5746</detailedDescription>
-        <links/>
-        <resultingRecommendations/>
+        <links>
+            <link>https://tools.ietf.org/html/rfc5746</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Secure renegotiation extension is disabled</shortDescription>
+                <handlingRecommendation>Consider to enable secure renegotiation extension.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION</analyzedProperty>
@@ -805,47 +784,42 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_COMMON_DH_PRIMES</analyzedProperty>
-        <shortName></shortName>
-        <shortDescription></shortDescription>
+        <analyzedProperty>SUPPORTS_PRIME_MODULI</analyzedProperty>
+        <shortName>Moduli provided in FFDHE ServerKeyExchange messages are prime</shortName>
+        <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are prime</shortDescription>
         <links>
-            <link></link>
+            <link>https://eprint.iacr.org/2016/995.pdf</link>
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription></shortDescription>
-                <handlingRecommendation></handlingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>DH group moduli are not prime</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_PRIME_MODULI</analyzedProperty>
-        <shortName></shortName>
-        <shortDescription></shortDescription>
+        <analyzedProperty>SUPPORTS_COMMON_DH_PRIMES</analyzedProperty>
+        <shortName>Moduli provided in FFDHE ServerKeyExchange messages are from common groups</shortName>
+        <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are from common groups defined by standardization bodies or RFCs</shortDescription>
+        <detailedDescription>https://github.com/cryptosense/diffie-hellman-groups</detailedDescription>
         <links>
-            <link></link>
+            <link>https://eprint.iacr.org/2016/995.pdf</link>
         </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription></shortDescription>
-                <handlingRecommendation></handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
+        <resultingRecommendations/>
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_SAFEPRIME_MODULI</analyzedProperty>
-        <shortName></shortName>
-        <shortDescription></shortDescription>
+        <shortName>Moduli provided in FFDHE ServerKeyExchange messages are safe primes</shortName>
+        <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are safe primes</shortDescription>
         <links>
-            <link></link>
+            <link>https://eprint.iacr.org/2016/995.pdf</link>
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription></shortDescription>
-                <handlingRecommendation></handlingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>DH group moduli are not safe primes</shortDescription>
+                <handlingRecommendation>There is a vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
@@ -1568,7 +1542,7 @@
     <recommendation>
         <analyzedProperty>REQUIRES_SNI</analyzedProperty>
         <shortName>SNI requirement</shortName>
-        <shortDescription></shortDescription>
+        <shortDescription>Evaluates whether the TLS server requires the client to send a Server Name Indication (SNI) extension</shortDescription>
         <detailedDescription></detailedDescription>
         <links/>
         <resultingRecommendations/>

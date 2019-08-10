@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.rating;
 
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

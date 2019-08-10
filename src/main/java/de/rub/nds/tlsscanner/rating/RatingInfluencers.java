@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.List;
+import java.util.LinkedList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -23,13 +23,13 @@ public class RatingInfluencers implements Serializable {
      */
     static final String DEFAULT_RATING_FILE = "rating/influencers.xml";
     
-    private List<RatingInfluencer> ratingInfluencers;
+    private LinkedList<RatingInfluencer> ratingInfluencers;
     
     RatingInfluencers() {
         
     }
 
-    public RatingInfluencers(List<RatingInfluencer> ratingInfluencers) {
+    public RatingInfluencers(LinkedList<RatingInfluencer> ratingInfluencers) {
         this.ratingInfluencers = ratingInfluencers;
     }
     
@@ -48,11 +48,11 @@ public class RatingInfluencers implements Serializable {
     }
 
     @XmlElement(name = "ratingInfluencer")
-    public List<RatingInfluencer> getRatingInfluencers() {
+    public LinkedList<RatingInfluencer> getRatingInfluencers() {
         return ratingInfluencers;
     }
 
-    public void setRatingInfluencers(List<RatingInfluencer> ratingInfluencers) {
+    public void setRatingInfluencers(LinkedList<RatingInfluencer> ratingInfluencers) {
         this.ratingInfluencers = ratingInfluencers;
     }
     

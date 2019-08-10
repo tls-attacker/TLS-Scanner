@@ -175,22 +175,18 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server supports Kerberos cipher suites",
                 "https://tools.ietf.org/html/rfc2712"));
         
-        // todo psk cipher suites
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_PLAIN, "",
-                "",
-                new PropertyResultRecommendation(TestResult.TRUE, "", ""),
+        // todo for now we do not consider in the 
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_PLAIN, "Supports plain PSK",
+                "For now we do not consider in our scoring",
                 ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_RSA, "",
-                "",
-                new PropertyResultRecommendation(TestResult.TRUE, "", ""),
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_RSA, "Supports RSA PSK",
+                "For now we do not consider in our scoring",
                 ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_DHE, "",
-                "",
-                new PropertyResultRecommendation(TestResult.TRUE, "", ""),
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_DHE, "Supports DHE PSK",
+                "For now we do not consider in our scoring",
                 ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_ECDHE, "",
-                "",
-                new PropertyResultRecommendation(TestResult.TRUE, "", ""),
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_ECDHE, "Supports ECDHE PSK",
+                "For now we do not consider in our scoring",
                 ""));
         
         // post quantum
@@ -242,7 +238,7 @@ public class DefaultRecommendationsTest {
                 new PropertyResultRecommendation(TestResult.FALSE, "Session resumption with rotating session tickets is disabled", "Frequently changing session ticket keys improves the security, enable rotated session tickets."),
                 ""));
         
-        // session renegotiation
+        // TLS renegotiation
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RENEGOTIATION, "TLS renegoatiation support",
                 "Evaluates whether the TLS server supports renegotiation.",
                 ""));
@@ -250,9 +246,9 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server supports renegotiation.",
                 new PropertyResultRecommendation(TestResult.TRUE, "Insecure renegotiation is enabled", "Disable renegotiation or enable only secure renegotiation."),
                 ""));
-        // todo
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, "Support for secure renegotiation extension",
                 "Evaluates whether the TLS server supports secure renegotiation extension.",
+                new PropertyResultRecommendation(TestResult.FALSE, "Secure renegotiation extension is disabled", "Consider to enable secure renegotiation extension."),
                 "https://tools.ietf.org/html/rfc5746"));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION, "Support for client-side secure renegotiation",
                 "Evaluates whether the TLS server supports client-side secure renegotiation.",
@@ -274,19 +270,18 @@ public class DefaultRecommendationsTest {
                 new PropertyResultRecommendation(TestResult.TRUE, "TLS compression is supported", "Disable TLS compression"),
                 ""));
         
-        //todo DH
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, "",
-                "",
-                new PropertyResultRecommendation(TestResult.TRUE, "", ""),
-                ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PRIME_MODULI, "",
-                "",
-                new PropertyResultRecommendation(TestResult.TRUE, "", ""),
-                ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI, "",
-                "",
-                new PropertyResultRecommendation(TestResult.TRUE, "", ""),
-                ""));
+        // safe prime -> custom prime (-50) -> common prime (-100) -> non prime (-500)
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PRIME_MODULI, "Moduli provided in FFDHE ServerKeyExchange messages are prime",
+                "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are prime",
+                new PropertyResultRecommendation(TestResult.FALSE, "DH group moduli are not prime", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
+                "https://eprint.iacr.org/2016/995.pdf"));
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, "Moduli provided in FFDHE ServerKeyExchange messages are from common groups",
+                "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are from common groups defined by standardization bodies or RFCs",
+                "https://github.com/cryptosense/diffie-hellman-groups", "https://eprint.iacr.org/2016/995.pdf"));
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI, "Moduli provided in FFDHE ServerKeyExchange messages are safe primes",
+                "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are safe primes",
+                new PropertyResultRecommendation(TestResult.FALSE, "DH group moduli are not safe primes", "There is a vulnerability in your TLS implementation. Update your software or contact the developers."),
+                "https://eprint.iacr.org/2016/995.pdf"));
         
         // HTTP
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HTTPS, "HTTPS support",
@@ -491,7 +486,7 @@ public class DefaultRecommendationsTest {
         
         // todo
         recommendations.add(new Recommendation(AnalyzedProperty.REQUIRES_SNI, "SNI requirement",
-                "",
+                "Evaluates whether the TLS server requires the client to send a Server Name Indication (SNI) extension",
                 ""));
         
         // certificate issues

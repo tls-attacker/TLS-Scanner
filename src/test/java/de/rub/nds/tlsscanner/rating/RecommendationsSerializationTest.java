@@ -64,7 +64,6 @@ public class RecommendationsSerializationTest {
 
         String xmlString = writer.toString();
         LOGGER.info(xmlString);
-        System.out.println(xmlString);
 
         um = context.createUnmarshaller();
         result = (Recommendations) um.unmarshal(new StringReader(xmlString));

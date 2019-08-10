@@ -18,6 +18,7 @@ import de.rub.nds.tlsscanner.constants.AnsiEscapeSequence;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.RatingInfluencer;
+import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
@@ -56,35 +57,14 @@ public class Main {
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
-                LOGGER.info("Scanned in:" + ((System.currentTimeMillis() - time) / 1000) + "s\n");
+                LOGGER.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n");
                 if (!config.getGeneralDelegate().isDebug() && !config.isNoProgressbar()) {
                     // ANSI escape sequences to erase the progressbar
                     ConsoleLogger.CONSOLE.info(AnsiEscapeSequence.ANSI_ONE_LINE_UP + AnsiEscapeSequence.ANSI_ERASE_LINE);
                 }
                 ConsoleLogger.CONSOLE.info(AnsiColors.ANSI_RESET+ "Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail()));
-                SiteReportRater rater = SiteReportRater.getSiteReportRater("en");
-                ScoreReport scoreReport = rater.getScoreReport(report);
-                ConsoleLogger.CONSOLE.info("Score: " + scoreReport.getScore());
-                ConsoleLogger.CONSOLE.info("--------------------------------");
-                for (Map.Entry<AnalyzedProperty, PropertyResultRatingInfluencer> entry : scoreReport.getInfluencers().entrySet()) {
-                    PropertyResultRatingInfluencer influencer = entry.getValue();
-                    ConsoleLogger.CONSOLE.info(entry.getKey() + ": " + influencer.getResult() + " (Score: " + influencer.getInfluence() + ")");
-                }
-                ConsoleLogger.CONSOLE.info("--------------------------------");
-                for (Map.Entry<AnalyzedProperty, PropertyResultRatingInfluencer> entry : scoreReport.getInfluencers().entrySet()) {
-                    PropertyResultRatingInfluencer influencer = entry.getValue();
-                    if(influencer.hasNegativeScore()) {
-                        ConsoleLogger.CONSOLE.error(entry.getKey() + ": " + influencer.getResult());
-                        ConsoleLogger.CONSOLE.error("  Score: " + influencer.getInfluence());
-                        if(influencer.hasScoreCap()) {
-                            ConsoleLogger.CONSOLE.error("  Score cap: " + influencer.getScoreCap());
-                        }
-                        PropertyResultRecommendation recommendation = rater.getRecommendations().getPropertyRecommendation(entry.getKey(), influencer.getResult());
-                        ConsoleLogger.CONSOLE.error("  Information: " + recommendation.getShortDescription());
-                        ConsoleLogger.CONSOLE.error("  Recommendation: " + recommendation.getHandlingRecommendation());
-                    }
-                }
-            } catch (ConfigurationException | JAXBException E) {
+                
+            } catch (ConfigurationException E) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", E);
             }
         } catch (ParameterException E) {

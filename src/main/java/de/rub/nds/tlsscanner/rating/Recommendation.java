@@ -47,6 +47,11 @@ public class Recommendation {
         this.propertyRecommendations = propertyRecommendations;
     }
     
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName) {
+        this();
+        this.shortName = shortName;
+    }
+    
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription, String detailedDescription,
             String... links) {
         this();
@@ -98,7 +103,11 @@ public class Recommendation {
     }
 
     public String getShortName() {
-        return shortName;
+        if (shortName == null || shortName.equals("") ) {
+            return analyzedProperty.toString();
+        } else {
+            return shortName;
+        }
     }
 
     public void setShortName(String shortName) {
@@ -139,7 +148,7 @@ public class Recommendation {
         this.propertyRecommendations = propertyRecommendations;
     }
 
-    public PropertyResultRecommendation getPropertyRecommendation(TestResult result) {
+    public PropertyResultRecommendation getPropertyResultRecommendation(TestResult result) {
         for (PropertyResultRecommendation r : propertyRecommendations) {
             if (r.getResult() == result) {
                 return r;

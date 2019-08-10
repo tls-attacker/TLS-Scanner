@@ -57,13 +57,21 @@ public class Recommendations implements Serializable {
     }
     
     public PropertyResultRecommendation getPropertyRecommendation(AnalyzedProperty property, TestResult result) {
-        for(Recommendation pr : recommendations) {
-            if(pr.getAnalyzedProperty() == property) {
-                return pr.getPropertyRecommendation(result);
+        for(Recommendation r : recommendations) {
+            if(r.getAnalyzedProperty() == property) {
+                return r.getPropertyResultRecommendation(result);
             }
         }
         return new PropertyResultRecommendation(result, Recommendation.NO_RECOMMENDATION_FOUND, 
                 Recommendation.NO_RECOMMENDATION_FOUND);
     }
     
+    public Recommendation getRecommendation(AnalyzedProperty property) {
+        for(Recommendation r : recommendations) {
+            if(r.getAnalyzedProperty() == property) {
+                return r;
+            }
+        }
+        return new Recommendation(property, property.toString());
+    }
 }

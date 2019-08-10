@@ -11,21 +11,20 @@ package de.rub.nds.tlsscanner.rating;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.io.File;
 import java.util.LinkedList;
-import java.util.List;
 import org.junit.Test;
 
 public class DefaultInfluencersTest {
     
     @Test
     public void createDefaultRatingInfluencers() {
-        List<RatingInfluencer> influencers = new LinkedList<>();
+        LinkedList<RatingInfluencer> influencers = new LinkedList<>();
         
         // versions
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SSL_2,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SSL_3,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -300, 600), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, AnalyzedProperty.VULNERABLE_TO_POODLE, TestResult.TRUE), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_0,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -50, 1500), 
@@ -175,36 +174,42 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SESSION_TICKETS_ROTATED,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+        
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 20), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -20)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -100), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -100), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 100)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -100), 
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,  
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_PRIME_MODULI,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -200), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_RENEGOTIATION,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+        
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,  
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
+        
+        // handled by CRIME
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION,  
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, 100)));
+        
+        
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_PRIME_MODULI,  
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -800)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES,  
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI,  
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
         
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_HTTPS,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 200), 

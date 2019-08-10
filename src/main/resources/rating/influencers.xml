@@ -4,8 +4,8 @@
         <analyzedProperty>SUPPORTS_SSL_2</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-500</influence>
-            <scoreCap>500</scoreCap>
+            <referencedProperty>VULNERABLE_TO_DROWN</referencedProperty>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -16,8 +16,8 @@
         <analyzedProperty>SUPPORTS_SSL_3</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-300</influence>
-            <scoreCap>600</scoreCap>
+            <referencedProperty>VULNERABLE_TO_POODLE</referencedProperty>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -574,29 +574,51 @@
         <analyzedProperty>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>50</influence>
+            <influence>20</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>-50</influence>
+            <influence>-20</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
         <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>50</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>-50</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
         <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-100</influence>
+            <influence>-500</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>SUPPORTS_INSECURE_RENEGOTIATION</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>SUPPORTS_RENEGOTIATION</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -618,22 +640,11 @@
         <analyzedProperty>SUPPORTS_TLS_COMPRESSION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-100</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
             <influence>100</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_COMMON_DH_PRIMES</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-100</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -644,7 +655,18 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>-50</influence>
+            <influence>-800</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>SUPPORTS_COMMON_DH_PRIMES</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>50</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -655,29 +677,7 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_INSECURE_RENEGOTIATION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_RENEGOTIATION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
+            <influence>-100</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>

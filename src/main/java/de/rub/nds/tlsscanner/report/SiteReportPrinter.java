@@ -42,6 +42,11 @@ import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
+import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
+import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
+import de.rub.nds.tlsscanner.rating.Recommendation;
+import de.rub.nds.tlsscanner.rating.ScoreReport;
+import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -54,6 +59,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import javax.xml.bind.JAXBException;
 
 public class SiteReportPrinter {
 
@@ -106,6 +112,8 @@ public class SiteReportPrinter {
         appendHttps(builder);
         appendRandom(builder);
         appendPublicKeyIssues(builder);
+        appendScoringResults(builder);
+        appendRecommendations(builder);
         for (PerformanceData data : report.getPerformanceList()) {
             LOGGER.debug("Type: " + data.getType() + "   Start: " + data.getStarttime() + "    Stop: " + data.getStoptime());
         }
@@ -893,6 +901,78 @@ public class SiteReportPrinter {
             } else {
                 prettyAppendYellow(builder, "DH Strength", "" + report.getWeakestDhStrength());
             }
+        }
+    }
+
+    private void appendScoringResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "Scoring results");
+
+        SiteReportRater rater;
+        try {
+            rater = SiteReportRater.getSiteReportRater("en");
+            ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
+            prettyAppend(builder, "Score: " + scoreReport.getScore());
+            prettyAppend(builder, "");
+            scoreReport.getInfluencers().entrySet().forEach((entry) -> {
+                PropertyResultRatingInfluencer influencer = entry.getValue();
+                Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
+                int scoreInluence = 0;
+                String additionalInfo = "";
+                if(influencer.getReferencedProperty() != null) {
+                    additionalInfo = ". -> See " + influencer.getReferencedProperty() + " for more information";
+                } else {
+                    scoreInluence = influencer.getInfluence();
+                }
+                String result = recommendation.getShortName() + ": " + influencer.getResult() + " (Score: " + scoreInluence + ")" + additionalInfo;
+                if(scoreInluence > 0) {
+                    prettyAppendGreen(builder, result);
+//                } else if(scoreInluence == 0) {
+//                    prettyAppend(builder, result);
+                } else if(scoreInluence < -50) {
+                    prettyAppendRed(builder, result);
+                } else if(scoreInluence < 0) {
+                    prettyAppendYellow(builder, result);
+                }
+            });
+        } catch (JAXBException ex) {
+            prettyAppendRed(builder, ex.getLocalizedMessage());
+        }
+    }
+    
+    private void appendRecommendations(StringBuilder builder) {
+        prettyAppendHeading(builder, "Recommedations");
+
+        SiteReportRater rater;
+        try {
+            rater = SiteReportRater.getSiteReportRater("en");
+            ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
+            scoreReport.getInfluencers().entrySet().forEach((entry) -> {
+                PropertyResultRatingInfluencer influencer = entry.getValue();
+                if (influencer.hasNegativeScore() || influencer.getReferencedProperty() != null) {
+                    Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
+                    PropertyResultRecommendation resultRecommendation = recommendation.getPropertyResultRecommendation(influencer.getResult());
+                    prettyAppend(builder, "");
+                    prettyAppend(builder, recommendation.getShortName() + ": " + influencer.getResult());
+                    int scoreInluence = 0;
+                    String additionalInfo = "";
+                    if(influencer.getReferencedProperty() != null) {
+                        scoreInluence = rater.getRatingInfluencers().getPropertyRatingInfluencer(influencer.getReferencedProperty(), 
+                                influencer.getReferencedPropertyResult()).getInfluence();
+                        Recommendation r = rater.getRecommendations().getRecommendation(influencer.getReferencedProperty());
+                        additionalInfo = " -> This score comes from \"" + r.getShortName() + "\"";
+                    } else {
+                        scoreInluence = influencer.getInfluence();
+                    }
+                    prettyAppend(builder,"  Score: " + scoreInluence + additionalInfo);
+                    if (influencer.hasScoreCap()) {
+                        prettyAppend(builder, "  Score cap: " + influencer.getScoreCap());
+                    }
+                    prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription());
+                    prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation());
+                }
+            });
+        } catch (JAXBException ex) {
+            prettyAppendRed(builder, ex.getLocalizedMessage());
         }
     }
 

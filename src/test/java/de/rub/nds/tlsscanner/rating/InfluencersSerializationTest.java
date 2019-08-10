@@ -42,7 +42,7 @@ public class InfluencersSerializationTest {
     @Before
     public void setUp() throws JAXBException {
         original = new RatingInfluencers();
-        List<RatingInfluencer> influencers = new LinkedList<>();
+        LinkedList<RatingInfluencer> influencers = new LinkedList<>();
         RatingInfluencer i = new RatingInfluencer();
         i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_SSL_2);
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500));
@@ -69,7 +69,6 @@ public class InfluencersSerializationTest {
 
         String xmlString = writer.toString();
         LOGGER.info(xmlString);
-        System.out.println(xmlString);
 
         um = context.createUnmarshaller();
         result = (RatingInfluencers) um.unmarshal(new StringReader(xmlString));
