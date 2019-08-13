@@ -21,16 +21,16 @@ public class DefaultInfluencersTest {
         
         // versions
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SSL_2,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -300, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SSL_3,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, AnalyzedProperty.VULNERABLE_TO_POODLE, TestResult.TRUE), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 1000),  
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_0,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -50, 1500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_1,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_2,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
@@ -41,7 +41,7 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DTLS_1_0,  
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DTLS_1_0,
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -300), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DTLS_1_2,  
@@ -61,7 +61,7 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -200), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_EXPORT,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ANON,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 1000), 
@@ -70,7 +70,7 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_3DES,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -200), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SEED,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -50), 
@@ -79,11 +79,11 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -50), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_RC2,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -100), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 100)));
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 1000), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_RC4,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -100), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 100)));
+                new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CBC,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -50), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
@@ -91,14 +91,14 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 200), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_POST_QUANTUM,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ONLY_PFS,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 500), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
+                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_AES,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
+                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CAMELLIA,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
@@ -109,13 +109,13 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_RSA,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -200), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 100)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DH,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -50), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ECDH,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 200), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_STATIC_ECDH,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -50), 
@@ -155,38 +155,38 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TOKENBINDING,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_MONTOGMERY_CURVES,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 200), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SESSION_TICKETS,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SESSION_IDS,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SESSION_TICKETS_ROTATED,  
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 20), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -20)));
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK, TestResult.TRUE), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -200), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+                new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_RENEGOTIATION,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
@@ -195,15 +195,13 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         
-        // handled by CRIME
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE),
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 100)));
-        
         
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_PRIME_MODULI,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -800)));
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -500, 1000)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
@@ -212,7 +210,7 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
         
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_HTTPS,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 200), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_HSTS,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
@@ -221,13 +219,13 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_HPKP,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_HPKP_REPORTING,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_HTTP_COMPRESSION,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -50), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, AnalyzedProperty.VULNERABLE_TO_BREACH, TestResult.TRUE), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         
         influencers.add(new RatingInfluencer(AnalyzedProperty.PREFERS_PFS,
@@ -290,88 +288,89 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -800), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_DROWN,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -800), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_CBC_PADDING_ORACLE,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_HEARTBLEED,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -1200), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -1200, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_TICKETBLEED,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -800), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -1000), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -1200, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_WITH_REUSE,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -800), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_POODLE,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -800), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_TLS_POODLE,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -800), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_CVE20162107,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_SWEET_32,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -300), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -300, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -300), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -300, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_CRIME,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_BREACH,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_LOGJAM,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_FREAK,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK,  
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+        
         influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_MAC_APPDATA_CHECKS,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_MAC_FINISHED_CHECKS,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_VERIFY_DATA_CHECKS,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_GCM_CHECKS,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.REUSES_GCM_NONCES,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_CERTIFICATE_ISSUES,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_WEAK_RANDOMNESS,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         
         influencers.add(new RatingInfluencer(AnalyzedProperty.REUSES_EC_PUBLICKEY,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -200), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 1500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.REUSES_DH_PUBLICKEY,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -20), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 1500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.REQUIRES_SNI,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 

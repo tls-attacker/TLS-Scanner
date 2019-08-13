@@ -232,7 +232,7 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_IDS, "Support for session resumption with session IDs",
                 "Evaluates whether the TLS server supports session resumption with session IDs",
                 ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_TICKETS_ROTATED, "Support for rotated session tickets",
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT, "Support for rotated session tickets",
                 "Evaluates whether the TLS server supports session resumption with session tickets whose keys are being rotated",
                 "Session tickets are created with symmetric keys. The lifetime of the symmetric keys used for session tickets should be restricted to reduce the attack surface. The ticket lifetime is typically indicated in the ticket lifetime hint.",
                 new PropertyResultRecommendation(TestResult.FALSE, "Session resumption with rotating session tickets is disabled", "Frequently changing session ticket keys improves the security, enable rotated session tickets."),
@@ -382,14 +382,10 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server is vulnerable to a Bleichenbacher attack",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to a Bleichenbacher attack", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
                 "https://robotattack.org/"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, "Vulnerable to a padding oracle attack vulnerability",
-                "Evaluates whether the TLS server is vulnerable to a padding oracle attack",
-                new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to a padding oracle attack", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
-                ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_CBC_PADDING_ORACLE, "Vulnerable to a CBC padding oracle attack",
+        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, "Vulnerable to a CBC padding oracle attack vulnerability",
                 "Evaluates whether the TLS server is vulnerable to a CBC padding oracle attack",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to a CBC padding oracle attack", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
-                "https://github.com/RUB-NDS/TLS-Padding-Oracles"));
+                ""));
         recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, "Vulnerable to an invalid curve attack",
                 "Evaluates whether the TLS server is vulnerable to an invalid curve attack",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to an invalid curve attack", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
@@ -446,6 +442,10 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server is vulnerable to FREAK",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to FREAK", "Disable export cipher suites."),
                 "https://www.smacktls.com/smack.pdf"));
+        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK, "Vulnerable to the renegotiation attack",
+                "Evaluates whether the TLS server is vulnerable to the renegotiation attack",
+                new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to the renegotiation attack", "Disable insecure renegotiation."),
+                ""));
         recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_CVE20162107, "Vulnerable to CVE-2016-2107",
                 "Evaluates whether the TLS server is vulnerable to CVE-2016-2107 (OpenSSL padding oracle)",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to CVE-2016-2107 (OpenSSL padding oracle)", "There is a vulnerability in your TLS implementation. Update your software or contact the developers. For now, you can also disable CBC cipher suites to secure your server."),

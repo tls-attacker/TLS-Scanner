@@ -4,8 +4,8 @@
         <analyzedProperty>SUPPORTS_SSL_2</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <referencedProperty>VULNERABLE_TO_DROWN</referencedProperty>
-            <referencedPropertyResult>TRUE</referencedPropertyResult>
+            <influence>-300</influence>
+            <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -16,8 +16,8 @@
         <analyzedProperty>SUPPORTS_SSL_3</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <referencedProperty>VULNERABLE_TO_POODLE</referencedProperty>
-            <referencedPropertyResult>TRUE</referencedPropertyResult>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -40,7 +40,7 @@
         <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>50</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -153,7 +153,7 @@
         <analyzedProperty>SUPPORTS_EXPORT</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-500</influence>
+            <influence>-800</influence>
             <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
@@ -189,7 +189,7 @@
         <analyzedProperty>SUPPORTS_3DES</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-200</influence>
+            <influence>-100</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -222,11 +222,12 @@
         <analyzedProperty>SUPPORTS_RC2</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-100</influence>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>100</influence>
+            <influence>50</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -237,7 +238,7 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>100</influence>
+            <influence>50</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -266,7 +267,7 @@
         <analyzedProperty>SUPPORTS_POST_QUANTUM</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>50</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -281,7 +282,7 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>-50</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -292,7 +293,7 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>-50</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -332,7 +333,7 @@
         <analyzedProperty>SUPPORTS_RSA</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-200</influence>
+            <influence>-100</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -343,7 +344,7 @@
         <analyzedProperty>SUPPORTS_DH</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-50</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -354,7 +355,7 @@
         <analyzedProperty>SUPPORTS_ECDH</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>200</influence>
+            <influence>100</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -501,7 +502,7 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>0</influence>
+            <influence>-50</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -512,7 +513,7 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>0</influence>
+            <influence>-50</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -530,11 +531,11 @@
         <analyzedProperty>SUPPORTS_MONTOGMERY_CURVES</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>0</influence>
+            <influence>200</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>0</influence>
+            <influence>-50</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -560,7 +561,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SESSION_TICKETS_ROTATED</analyzedProperty>
+        <analyzedProperty>SUPPORTS_SESSION_TICKET_ROTATION_HINT</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>50</influence>
@@ -574,11 +575,11 @@
         <analyzedProperty>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>20</influence>
+            <influence>50</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>-20</influence>
+            <influence>-50</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -596,7 +597,8 @@
         <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-500</influence>
+            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK</referencedProperty>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -611,7 +613,7 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>0</influence>
+            <influence>50</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -640,7 +642,8 @@
         <analyzedProperty>SUPPORTS_TLS_COMPRESSION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>0</influence>
+            <referencedProperty>VULNERABLE_TO_CRIME</referencedProperty>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -655,7 +658,8 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>-800</influence>
+            <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -684,7 +688,7 @@
         <analyzedProperty>SUPPORTS_HTTPS</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>200</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -717,7 +721,7 @@
         <analyzedProperty>SUPPORTS_HPKP</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>100</influence>
+            <influence>50</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -739,7 +743,8 @@
         <analyzedProperty>SUPPORTS_HTTP_COMPRESSION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-50</influence>
+            <referencedProperty>VULNERABLE_TO_BREACH</referencedProperty>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -960,6 +965,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-800</influence>
+            <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -971,6 +977,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-800</influence>
+            <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -981,18 +988,8 @@
         <analyzedProperty>VULNERABLE_TO_PADDING_ORACLE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_CBC_PADDING_ORACLE</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1004,6 +1001,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-1200</influence>
+            <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1015,6 +1013,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-800</influence>
+            <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1025,7 +1024,8 @@
         <analyzedProperty>VULNERABLE_TO_INVALID_CURVE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-1000</influence>
+            <influence>-1200</influence>
+            <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1037,6 +1037,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1048,6 +1049,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-800</influence>
+            <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1058,7 +1060,8 @@
         <analyzedProperty>VULNERABLE_TO_POODLE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-800</influence>
+            <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1070,6 +1073,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-800</influence>
+            <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1081,6 +1085,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1092,6 +1097,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-300</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1103,6 +1109,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-300</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1114,6 +1121,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1125,6 +1133,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1136,6 +1145,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1147,6 +1157,19 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1158,6 +1181,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1169,6 +1193,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1180,6 +1205,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1191,6 +1217,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1202,6 +1229,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1213,6 +1241,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1224,6 +1253,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1235,6 +1265,7 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-200</influence>
+            <scoreCap>1500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1245,7 +1276,8 @@
         <analyzedProperty>REUSES_DH_PUBLICKEY</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-20</influence>
+            <influence>-200</influence>
+            <scoreCap>1500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>

@@ -674,7 +674,7 @@
         <resultingRecommendations/>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_SESSION_TICKETS_ROTATED</analyzedProperty>
+        <analyzedProperty>SUPPORTS_SESSION_TICKET_ROTATION_HINT</analyzedProperty>
         <shortName>Support for rotated session tickets</shortName>
         <shortDescription>Evaluates whether the TLS server supports session resumption with session tickets whose keys are being rotated</shortDescription>
         <detailedDescription>Session tickets are created with symmetric keys. The lifetime of the symmetric keys used for session tickets should be restricted to reduce the attack surface. The ticket lifetime is typically indicated in the ticket lifetime hint.</detailedDescription>
@@ -1164,25 +1164,10 @@
     </recommendation>
     <recommendation>
         <analyzedProperty>VULNERABLE_TO_PADDING_ORACLE</analyzedProperty>
-        <shortName>Vulnerable to a padding oracle attack vulnerability</shortName>
-        <shortDescription>Evaluates whether the TLS server is vulnerable to a padding oracle attack</shortDescription>
-        <links>
-            <link></link>
-        </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription>The TLS server is vulnerable to a padding oracle attack</shortDescription>
-                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
-    </recommendation>
-    <recommendation>
-        <analyzedProperty>VULNERABLE_TO_CBC_PADDING_ORACLE</analyzedProperty>
-        <shortName>Vulnerable to a CBC padding oracle attack</shortName>
+        <shortName>Vulnerable to a CBC padding oracle attack vulnerability</shortName>
         <shortDescription>Evaluates whether the TLS server is vulnerable to a CBC padding oracle attack</shortDescription>
         <links>
-            <link>https://github.com/RUB-NDS/TLS-Padding-Oracles</link>
+            <link></link>
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
@@ -1400,6 +1385,21 @@
                 <result>TRUE</result>
                 <shortDescription>The TLS server is vulnerable to FREAK</shortDescription>
                 <handlingRecommendation>Disable export cipher suites.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK</analyzedProperty>
+        <shortName>Vulnerable to the renegotiation attack</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to the renegotiation attack</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to the renegotiation attack</shortDescription>
+                <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
