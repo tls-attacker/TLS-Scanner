@@ -39,8 +39,8 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 500), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -200), 
+                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DTLS_1_0,
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -300), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
