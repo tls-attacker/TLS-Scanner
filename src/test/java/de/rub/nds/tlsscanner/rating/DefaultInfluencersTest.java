@@ -27,7 +27,7 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 1000),  
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_0,  
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -50, 1500), 
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_1,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
@@ -199,13 +199,13 @@ public class DefaultInfluencersTest {
                 new PropertyResultRatingInfluencer(TestResult.TRUE, AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE),
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 100)));
         
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_PRIME_MODULI,  
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 50), 
-                new PropertyResultRatingInfluencer(TestResult.FALSE, -500, 1000)));
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -200, 1500)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 0), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI,  
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI,  
                 new PropertyResultRatingInfluencer(TestResult.TRUE, 100), 
                 new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
         

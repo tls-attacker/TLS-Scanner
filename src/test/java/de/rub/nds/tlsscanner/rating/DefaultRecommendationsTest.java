@@ -271,14 +271,14 @@ public class DefaultRecommendationsTest {
                 ""));
         
         // safe prime -> custom prime (-50) -> common prime (-100) -> non prime (-500)
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PRIME_MODULI, "Moduli provided in FFDHE ServerKeyExchange messages are prime",
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI, "Moduli provided in FFDHE ServerKeyExchange messages are prime",
                 "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are prime",
                 new PropertyResultRecommendation(TestResult.FALSE, "DH group moduli are not prime", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
                 "https://eprint.iacr.org/2016/995.pdf"));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, "Moduli provided in FFDHE ServerKeyExchange messages are from common groups",
                 "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are from common groups defined by standardization bodies or RFCs",
                 "https://github.com/cryptosense/diffie-hellman-groups", "https://eprint.iacr.org/2016/995.pdf"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI, "Moduli provided in FFDHE ServerKeyExchange messages are safe primes",
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI, "Moduli provided in FFDHE ServerKeyExchange messages are safe primes",
                 "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are safe primes",
                 new PropertyResultRecommendation(TestResult.FALSE, "DH group moduli are not safe primes", "There is a vulnerability in your TLS implementation. Update your software or contact the developers."),
                 "https://eprint.iacr.org/2016/995.pdf"));

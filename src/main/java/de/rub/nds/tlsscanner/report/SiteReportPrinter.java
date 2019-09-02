@@ -889,8 +889,8 @@ public class SiteReportPrinter {
                 prettyAppendRed(builder, "\t" + value.getName());
             }
         }
-        prettyAppendRedGreen(builder, "Uses Non-Prime Moduli", report.getResult(AnalyzedProperty.SUPPORTS_PRIME_MODULI));
-        prettyAppendRedGreen(builder, "Uses Nonsafe-Prime Moduli", report.getResult(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI));
+        prettyAppendGreenRed(builder, "Uses only prime moduli", report.getResult(AnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI));
+        prettyAppendGreenRed(builder, "Uses only safe-prime moduli", report.getResult(AnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI));
         if (report.getWeakestDhStrength() != null) {
             if (report.getWeakestDhStrength() < 1000) {
                 prettyAppendRed(builder, "DH Strength", "" + report.getWeakestDhStrength());

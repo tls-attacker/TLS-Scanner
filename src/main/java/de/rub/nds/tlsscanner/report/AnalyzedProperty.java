@@ -84,8 +84,8 @@ public enum AnalyzedProperty {
     SUPPORTS_TLS_COMPRESSION(AnalyzedPropertyCategory.COMPRESSION), // ?
 
     SUPPORTS_COMMON_DH_PRIMES(AnalyzedPropertyCategory.FFDHE),
-    SUPPORTS_PRIME_MODULI(AnalyzedPropertyCategory.FFDHE),
-    SUPPORTS_SAFEPRIME_MODULI(AnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_ONLY_PRIME_MODULI(AnalyzedPropertyCategory.FFDHE),
+    SUPPORTS_ONLY_SAFEPRIME_MODULI(AnalyzedPropertyCategory.FFDHE),
     SUPPORTS_INSECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION), // ?
     SUPPORTS_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION), // ?
 

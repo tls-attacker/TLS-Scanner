@@ -784,7 +784,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_PRIME_MODULI</analyzedProperty>
+        <analyzedProperty>SUPPORTS_ONLY_PRIME_MODULI</analyzedProperty>
         <shortName>Moduli provided in FFDHE ServerKeyExchange messages are prime</shortName>
         <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are prime</shortDescription>
         <links>
@@ -809,7 +809,7 @@
         <resultingRecommendations/>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_SAFEPRIME_MODULI</analyzedProperty>
+        <analyzedProperty>SUPPORTS_ONLY_SAFEPRIME_MODULI</analyzedProperty>
         <shortName>Moduli provided in FFDHE ServerKeyExchange messages are safe primes</shortName>
         <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are safe primes</shortDescription>
         <links>

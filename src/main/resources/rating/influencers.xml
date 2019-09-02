@@ -28,8 +28,7 @@
         <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-50</influence>
-            <scoreCap>1500</scoreCap>
+            <influence>-100</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -651,15 +650,15 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_PRIME_MODULI</analyzedProperty>
+        <analyzedProperty>SUPPORTS_ONLY_PRIME_MODULI</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>50</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>-500</influence>
-            <scoreCap>1000</scoreCap>
+            <influence>-200</influence>
+            <scoreCap>1500</scoreCap>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -674,7 +673,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SAFEPRIME_MODULI</analyzedProperty>
+        <analyzedProperty>SUPPORTS_ONLY_SAFEPRIME_MODULI</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>100</influence>

@@ -65,8 +65,8 @@ public class DhValueAfterProbe extends AfterProbe {
         } else {
             report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.FALSE);
         }
-        report.putResult(AnalyzedProperty.SUPPORTS_PRIME_MODULI, !onlyPrime);
-        report.putResult(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI, !onlySafePrime);
+        report.putResult(AnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI, onlyPrime);
+        report.putResult(AnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI, onlySafePrime);
         report.setUsedCommonDhValueList(usedCommonValues);
         report.putResult(AnalyzedProperty.REUSES_DH_PUBLICKEY, reuse);
         if (shortestBitLength != Integer.MAX_VALUE) {
