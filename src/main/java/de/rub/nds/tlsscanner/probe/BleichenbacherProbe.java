@@ -73,8 +73,16 @@ public class BleichenbacherProbe extends TlsProbe {
             LOGGER.debug("Testing: " + bbWorkflowType);
             BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig, scannerConfig.createConfig(), getParallelExecutor());
             EqualityError errorType = attacker.getEqualityError();
-            vulnerable |= (errorType != EqualityError.NONE);
-            resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE, bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
+            Boolean tempVulnerable;
+            if (errorType == null) {
+                tempVulnerable = null;
+            } else if (errorType != EqualityError.NONE) {
+                tempVulnerable = true;
+                vulnerable |= tempVulnerable;
+            } else {
+                tempVulnerable = false;
+            }
+            resultList.add(new BleichenbacherTestResult(tempVulnerable, bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
         }
         return new BleichenbacherResult(vulnerable, resultList);
     }
