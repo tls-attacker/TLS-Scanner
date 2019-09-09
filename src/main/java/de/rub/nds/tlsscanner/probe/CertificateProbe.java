@@ -57,7 +57,7 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
-        CertificateChain chain = new CertificateChain(serverCert, getScannerConfig().getClientDelegate().getSniHostname());
+        CertificateChain chain = new CertificateChain(serverCert, tlsConfig.getDefaultClientConnection().getHostname());
         return new CertificateResult(getType(), chain, serverCert);
     }
 
