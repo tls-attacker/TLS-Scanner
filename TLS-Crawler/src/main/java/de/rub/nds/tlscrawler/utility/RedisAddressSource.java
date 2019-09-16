@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class RedisAddressSource implements IAddressIterator {
     private static Logger LOG = LoggerFactory.getLogger(RedisAddressSource.class);
-    private static String DOMAINS_FILE = "./top-1m.csv";
+    private static String DOMAINS_FILE = "./output-top-1m.csv";
 
     private boolean initialized;
     private String redisConnString;

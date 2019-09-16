@@ -27,7 +27,7 @@ public class CSVReader {
             List<String> domains = new ArrayList<String>();
             while ((row = csvReader.readLine()) != null) {
                 String[] data = row.split(",");
-                domains.add(data[1].replaceAll("\"", ""));
+                domains.add(data[0].replaceAll("\"", ""));
             }
 
             csvReader.close();

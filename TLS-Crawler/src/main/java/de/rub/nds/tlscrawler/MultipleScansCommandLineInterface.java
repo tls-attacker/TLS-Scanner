@@ -87,7 +87,7 @@ public class MultipleScansCommandLineInterface {
             iteration++;
             options.id = UUID.randomUUID().toString();
             LOG.info("Test No " + iteration + " ended. Waiting" + Long.toString(DAYS_TO_SLEEP) + "days...");
-            TimeUnit.DAYS.sleep(DAYS_TO_SLEEP);
+            TimeUnit.MINUTES.sleep(DAYS_TO_SLEEP);
 
         }
 
