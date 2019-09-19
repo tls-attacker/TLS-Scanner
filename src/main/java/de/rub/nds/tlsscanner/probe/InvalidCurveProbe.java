@@ -91,20 +91,20 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report
+    public boolean canBeExecuted(SiteReport report
     ) {
         return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResult.FALSE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResult.FALSE;
     }
 
     @Override
-    public void adjustConfig(SiteReport report
-    ) {
+    public void adjustConfig(SiteReport report) {
         supportsEphemeral = report.getResult(AnalyzedProperty.SUPPORTS_ECDH);
         supportsStatic = report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH);
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new InvalidCurveResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
+
 }

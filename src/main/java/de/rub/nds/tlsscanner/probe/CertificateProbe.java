@@ -58,11 +58,11 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setStopActionsAfterFatal(true);
         Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
         CertificateChain chain = new CertificateChain(serverCert, getScannerConfig().getClientDelegate().getHost());
-        return new CertificateResult(getType(), chain, serverCert);
+        return new CertificateResult(chain, serverCert);
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -71,7 +71,7 @@ public class CertificateProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return null;
+    public ProbeResult getCouldNotExecuteResult() {
+        return new CertificateResult(null, null);
     }
 }

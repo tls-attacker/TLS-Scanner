@@ -109,10 +109,10 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
         for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
                 probeTypes.add(probe.getType());
-                if (probe.shouldBeExecuted(report)) {
+                if (probe.canBeExecuted(report)) {
                     futureResults.add(executor.submit(probe));
                 } else {
-                    ProbeResult result = probe.getNotExecutedResult();
+                    ProbeResult result = probe.getCouldNotExecuteResult();
                     if (result != null) {
                         resultList.add(result);
                         if (pb != null) {

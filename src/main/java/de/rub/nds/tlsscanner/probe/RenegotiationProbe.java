@@ -109,7 +109,7 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return (report.getCipherSuites() != null && report.getCipherSuites().size() > 0);
     }
 
@@ -120,8 +120,7 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new ResumptionResult(TestResult.COULD_NOT_TEST);
+    public ProbeResult getCouldNotExecuteResult() {
+        return new RenegotiationResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
-
 }

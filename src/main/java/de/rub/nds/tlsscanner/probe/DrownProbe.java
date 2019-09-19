@@ -39,7 +39,7 @@ public class DrownProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -48,8 +48,7 @@ public class DrownProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new DrownResult(DrownVulnerabilityType.UNKNOWN);
+    public ProbeResult getCouldNotExecuteResult() {
+        return new DrownResult(null);
     }
-
 }

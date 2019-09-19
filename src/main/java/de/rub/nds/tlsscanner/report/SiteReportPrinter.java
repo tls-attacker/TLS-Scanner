@@ -561,7 +561,6 @@ public class SiteReportPrinter {
         prettyAppendRedGreen(builder, "Invalid Curve (ephemeral)", report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL));
         prettyAppendRedGreen(builder, "SSL Poodle", report.getResult(AnalyzedProperty.VULNERABLE_TO_POODLE));
         prettyAppendRedGreen(builder, "TLS Poodle", report.getResult(AnalyzedProperty.VULNERABLE_TO_TLS_POODLE));
-        prettyAppendRedGreen(builder, "CVE-20162107", report.getResult(AnalyzedProperty.VULNERABLE_TO_CVE20162107));
         prettyAppendRedGreen(builder, "Logjam", report.getResult(AnalyzedProperty.VULNERABLE_TO_LOGJAM));
         prettyAppendRedGreen(builder, "Sweet 32", report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32));
         prettyAppendRedGreen(builder, "DROWN", report.getResult(AnalyzedProperty.VULNERABLE_TO_DROWN));

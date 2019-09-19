@@ -69,7 +69,7 @@ public class ResumptionProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return report.getCipherSuites() != null || (report.getCipherSuites().size() > 0);
     }
 
@@ -83,8 +83,7 @@ public class ResumptionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new ResumptionResult(TestResult.COULD_NOT_TEST);
     }
-
 }

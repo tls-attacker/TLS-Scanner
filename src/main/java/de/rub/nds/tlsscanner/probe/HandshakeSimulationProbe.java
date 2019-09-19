@@ -204,7 +204,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -213,7 +213,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return null;
+    public ProbeResult getCouldNotExecuteResult() {
+        return new HandshakeSimulationResult(null);
     }
 }

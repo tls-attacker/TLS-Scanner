@@ -48,7 +48,7 @@ public class TlsPoodleProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS) == TestResult.TRUE;
     }
 
@@ -57,7 +57,7 @@ public class TlsPoodleProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new TlsPoodleResult(TestResult.COULD_NOT_TEST);
     }
 }

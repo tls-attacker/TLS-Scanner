@@ -317,9 +317,6 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_TLS_POODLE,
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500),
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_CVE20162107,
-                new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000),
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_SWEET_32,
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -300, 1000),
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));

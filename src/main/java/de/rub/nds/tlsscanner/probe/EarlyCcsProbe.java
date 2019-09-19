@@ -39,7 +39,7 @@ public class EarlyCcsProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -48,8 +48,7 @@ public class EarlyCcsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new EarlyCcsResult(EarlyCcsVulnerabilityType.UNKNOWN);
+    public ProbeResult getCouldNotExecuteResult() {
+        return new EarlyCcsResult(null);
     }
-
 }

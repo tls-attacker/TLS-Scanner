@@ -72,7 +72,7 @@ public class SniProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -81,8 +81,7 @@ public class SniProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new SniResult(TestResult.COULD_NOT_TEST);
     }
-
 }

@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import org.bouncycastle.crypto.tls.Certificate;
 
@@ -20,15 +19,11 @@ import org.bouncycastle.crypto.tls.Certificate;
  */
 public class CertificateResult extends ProbeResult {
 
-    private TestResult expiredCertificates = TestResult.FALSE;
-    private TestResult notYetValidCertificates = TestResult.FALSE;
-    private TestResult weakHashAlgorithms = TestResult.FALSE;
-    private TestResult weakSignatureAlgorithms = TestResult.FALSE;
     private Certificate certs;
     private CertificateChain chain;
 
-    public CertificateResult(ProbeType type, CertificateChain chain, Certificate certs) {
-        super(type);
+    public CertificateResult(CertificateChain chain, Certificate certs) {
+        super(ProbeType.CERTIFICATE);
         this.chain = chain;
         this.certs = certs;
     }

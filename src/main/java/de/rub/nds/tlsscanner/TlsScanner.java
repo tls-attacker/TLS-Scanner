@@ -21,7 +21,6 @@ import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.CommonBugProbe;
 import de.rub.nds.tlsscanner.probe.CompressionsProbe;
-import de.rub.nds.tlsscanner.probe.Cve20162107Probe;
 import de.rub.nds.tlsscanner.probe.DrownProbe;
 import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
@@ -139,7 +138,6 @@ public class TlsScanner {
         phaseTwoTestList.add(new BleichenbacherProbe(config, parallelExecutor));
         phaseTwoTestList.add(new PoodleProbe(config, parallelExecutor));
         phaseTwoTestList.add(new TlsPoodleProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new Cve20162107Probe(config, parallelExecutor));
         phaseTwoTestList.add(new InvalidCurveProbe(config, parallelExecutor));
         phaseTwoTestList.add(new DrownProbe(config, parallelExecutor));
         phaseTwoTestList.add(new EarlyCcsProbe(config, parallelExecutor));

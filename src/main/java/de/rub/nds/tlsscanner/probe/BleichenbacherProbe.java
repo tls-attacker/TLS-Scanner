@@ -86,7 +86,7 @@ public class BleichenbacherProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE;
     }
 
@@ -108,7 +108,7 @@ public class BleichenbacherProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new BleichenbacherResult(TestResult.COULD_NOT_TEST, new LinkedList<BleichenbacherTestResult>());
+    public ProbeResult getCouldNotExecuteResult() {
+        return new BleichenbacherResult(TestResult.COULD_NOT_TEST, null);
     }
 }

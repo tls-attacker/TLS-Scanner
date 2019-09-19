@@ -107,7 +107,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
         for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
                 probeTypes.add(probe.getType());
-                if (probe.shouldBeExecuted(report)) {
+                if (probe.canBeExecuted(report)) {
                     try {
                         if (pb != null) {
                             pb.setExtraMessage("Executing " + getPaddedProbeName(probe.getProbeName()));
@@ -120,7 +120,7 @@ public class SingleThreadedScanJobExecutor extends ScanJobExecutor {
                         LOGGER.error("Could not execute Probe", E);
                     }
                 } else {
-                    ProbeResult result = probe.getNotExecutedResult();
+                    ProbeResult result = probe.getCouldNotExecuteResult();
                     if (result != null) {
                         resultList.add(result);
                         if (pb != null) {

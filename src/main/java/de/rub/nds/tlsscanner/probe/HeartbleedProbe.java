@@ -58,7 +58,7 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         if (report.getSupportedExtensions() != null) {
             for (ExtensionType type : report.getSupportedExtensions()) {
                 if (type == ExtensionType.HEARTBEAT) {
@@ -81,7 +81,7 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new HeartbleedResult(TestResult.COULD_NOT_TEST);
     }
 }

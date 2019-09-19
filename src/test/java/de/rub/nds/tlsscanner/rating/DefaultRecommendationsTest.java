@@ -444,10 +444,6 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server is vulnerable to the renegotiation attack",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to the renegotiation attack", "Disable insecure renegotiation."),
                 ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_CVE20162107, "Vulnerable to CVE-2016-2107",
-                "Evaluates whether the TLS server is vulnerable to CVE-2016-2107 (OpenSSL padding oracle)",
-                new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to CVE-2016-2107 (OpenSSL padding oracle)", "There is a vulnerability in your TLS implementation. Update your software or contact the developers. For now, you can also disable CBC cipher suites to secure your server."),
-                "https://web-in-security.blogspot.com/2016/05/curious-padding-oracle-in-openssl-cve.html", "https://new.blog.cloudflare.com/yet-another-padding-oracle-in-openssl-cbc-ciphersuites/"));
         recommendations.add(new Recommendation(AnalyzedProperty.MISSES_MAC_APPDATA_CHECKS, "Misses Application message MAC check",
                 "Evaluates whether the TLS server correctly validates the Application message MACs",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server does not verify MACs in Application messages", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),

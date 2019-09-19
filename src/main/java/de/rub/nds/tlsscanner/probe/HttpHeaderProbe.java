@@ -123,7 +123,7 @@ public class HttpHeaderProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -132,7 +132,7 @@ public class HttpHeaderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, new LinkedList<HttpsHeader>());
+    public ProbeResult getCouldNotExecuteResult() {
+        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, null);
     }
 }
