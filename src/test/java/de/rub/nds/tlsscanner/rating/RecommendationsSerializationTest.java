@@ -43,11 +43,11 @@ public class RecommendationsSerializationTest {
     public void setUp() throws JAXBException {
         original = new Recommendations();
         List<Recommendation> propertyRecommendations = new LinkedList<>();
-        
+
         List<PropertyResultRecommendation> recommendations = new LinkedList<>();
         PropertyResultRecommendation r = new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
         recommendations.add(r);
-        
+
         propertyRecommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_2, recommendations));
         original.setRecommendations(propertyRecommendations);
 
@@ -67,17 +67,17 @@ public class RecommendationsSerializationTest {
 
         um = context.createUnmarshaller();
         result = (Recommendations) um.unmarshal(new StringReader(xmlString));
-        
+
         assertEquals("Recommendation length check.", original.getRecommendations().size(), result.getRecommendations().size());
-        
+
         Recommendation oRecommendation = original.getRecommendations().get(0);
         Recommendation rRecommendation = result.getRecommendations().get(0);
         assertEquals(oRecommendation.getAnalyzedProperty(), rRecommendation.getAnalyzedProperty());
-        
+
         PropertyResultRecommendation or = oRecommendation.getPropertyRecommendations().get(0);
         PropertyResultRecommendation rr = rRecommendation.getPropertyRecommendations().get(0);
         assertEquals(or.getShortDescription(), rr.getShortDescription());
         assertEquals(or.getHandlingRecommendation(), rr.getHandlingRecommendation());
     }
-    
+
 }

@@ -16,23 +16,24 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="recommendations")
+@XmlRootElement(name = "recommendations")
 public class Recommendations implements Serializable {
+
     /**
      * The default Config file to load.
      */
     static final String DEFAULT_RECOMMENDATIONS_FILE = "rating/recommendations.xml";
-    
+
     private List<Recommendation> recommendations;
-    
+
     Recommendations() {
-        
+
     }
-    
+
     public Recommendations(List<Recommendation> recommendations) {
         this.recommendations = recommendations;
     }
-    
+
     public static Recommendations createRecommendations() {
         InputStream stream = Recommendations.class.getResourceAsStream(DEFAULT_RECOMMENDATIONS_FILE);
         return RatingIO.readRecommendations(stream);
@@ -55,20 +56,20 @@ public class Recommendations implements Serializable {
     public void setRecommendations(List<Recommendation> recommendations) {
         this.recommendations = recommendations;
     }
-    
+
     public PropertyResultRecommendation getPropertyRecommendation(AnalyzedProperty property, TestResult result) {
-        for(Recommendation r : recommendations) {
-            if(r.getAnalyzedProperty() == property) {
+        for (Recommendation r : recommendations) {
+            if (r.getAnalyzedProperty() == property) {
                 return r.getPropertyResultRecommendation(result);
             }
         }
-        return new PropertyResultRecommendation(result, Recommendation.NO_RECOMMENDATION_FOUND, 
+        return new PropertyResultRecommendation(result, Recommendation.NO_RECOMMENDATION_FOUND,
                 Recommendation.NO_RECOMMENDATION_FOUND);
     }
-    
+
     public Recommendation getRecommendation(AnalyzedProperty property) {
-        for(Recommendation r : recommendations) {
-            if(r.getAnalyzedProperty() == property) {
+        for (Recommendation r : recommendations) {
+            if (r.getAnalyzedProperty() == property) {
                 return r;
             }
         }

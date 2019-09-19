@@ -31,7 +31,7 @@ public class EcPublicKeyAfterProbe extends AfterProbe {
                     }
                 }
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             reuse = TestResult.ERROR_DURING_TEST;
         }
         report.putResult(AnalyzedProperty.REUSES_EC_PUBLICKEY, reuse);

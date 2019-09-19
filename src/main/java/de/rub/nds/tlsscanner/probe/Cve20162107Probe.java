@@ -42,7 +42,7 @@ public class Cve20162107Probe extends TlsProbe {
             Cve20162107Attacker attacker = new Cve20162107Attacker(cve20162106config, cve20162106config.createConfig());
             Boolean vulnerable = attacker.isVulnerable();
             return new Cve20162107Result(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new Cve20162107Result(TestResult.ERROR_DURING_TEST);
         }
     }

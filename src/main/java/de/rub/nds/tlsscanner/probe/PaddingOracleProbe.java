@@ -86,7 +86,7 @@ public class PaddingOracleProbe extends TlsProbe {
             //Classic tests cannnot confirm a vulnerability - check for shaky scans
 
             return new PaddingOracleResponseMap(testResultList, shakyScanEvaluation, isVulnerable(testResultList));
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new PaddingOracleResponseMap(new LinkedList<PaddingOracleCipherSuiteFingerprint>(), new LinkedList<PaddingOracleCipherSuiteFingerprint>(), TestResult.ERROR_DURING_TEST);
         }
     }

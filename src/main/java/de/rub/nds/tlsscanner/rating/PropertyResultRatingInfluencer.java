@@ -12,32 +12,32 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder={"result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult"})
+@XmlType(propOrder = {"result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult"})
 public class PropertyResultRatingInfluencer implements Comparable<PropertyResultRatingInfluencer> {
 
     private TestResult result;
 
     private Integer influence;
-    
+
     private Integer scoreCap;
-    
+
     private AnalyzedProperty referencedProperty;
-    
+
     private TestResult referencedPropertyResult;
 
     public PropertyResultRatingInfluencer() {
 
     }
-    
+
     public PropertyResultRatingInfluencer(TestResult result, Integer influence) {
         this.result = result;
         this.influence = influence;
     }
-    
+
     public PropertyResultRatingInfluencer(TestResult result, AnalyzedProperty referencedProperty, TestResult referencedPropertyResult) {
         this.result = result;
         this.referencedProperty = referencedProperty;
-        this.referencedPropertyResult = referencedPropertyResult;        
+        this.referencedPropertyResult = referencedPropertyResult;
     }
 
     public PropertyResultRatingInfluencer(TestResult result, Integer influence, Integer scoreCap) {
@@ -50,16 +50,16 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         return result;
     }
 
-    @XmlElement(required=false)
+    @XmlElement(required = false)
     public Integer getInfluence() {
         return influence;
     }
 
-    @XmlElement(required=false)
+    @XmlElement(required = false)
     public Integer getScoreCap() {
         return scoreCap;
     }
-    
+
     public boolean hasScoreCap() {
         return (scoreCap != null && scoreCap != 0);
     }
@@ -76,7 +76,7 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         this.scoreCap = scoreCap;
     }
 
-    @XmlElement(required=false)
+    @XmlElement(required = false)
     public AnalyzedProperty getReferencedProperty() {
         return referencedProperty;
     }
@@ -85,7 +85,7 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         this.referencedProperty = referencedProperty;
     }
 
-    @XmlElement(required=false)
+    @XmlElement(required = false)
     public TestResult getReferencedPropertyResult() {
         return referencedPropertyResult;
     }
@@ -93,20 +93,20 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
     public void setReferencedPropertyResult(TestResult referencedPropertyResult) {
         this.referencedPropertyResult = referencedPropertyResult;
     }
-    
+
     public boolean hasNegativeScore() {
-        return (influence !=null && influence < 0 || scoreCap != null);
+        return (influence != null && influence < 0 || scoreCap != null);
     }
 
     @Override
     public int compareTo(PropertyResultRatingInfluencer t) {
-        if(this.getScoreCap() == t.getScoreCap()) {
+        if (this.getScoreCap() == t.getScoreCap()) {
             return Integer.compare(this.getInfluence(), t.getInfluence());
-        } 
-        if(this.getScoreCap() != null && t.getScoreCap() == null) {
+        }
+        if (this.getScoreCap() != null && t.getScoreCap() == null) {
             return -1;
         }
-        if(t.getScoreCap() != null && this.getScoreCap() == null) {
+        if (t.getScoreCap() != null && this.getScoreCap() == null) {
             return 1;
         }
         return this.getScoreCap().compareTo(t.getScoreCap());

@@ -10,5 +10,5 @@ package de.rub.nds.tlsscanner.rating;
 
 public enum TestResult {
     TRUE, FALSE, COULD_NOT_TEST, ERROR_DURING_TEST, UNCERTAIN, UNSUPPORTED, NOT_TESTED_YET, TIMEOUT
-    
+
 }

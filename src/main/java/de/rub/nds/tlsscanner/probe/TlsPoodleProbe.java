@@ -42,7 +42,7 @@ public class TlsPoodleProbe extends TlsProbe {
             TLSPoodleAttacker attacker = new TLSPoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
             Boolean vulnerable = attacker.isVulnerable();
             return new TlsPoodleResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new TlsPoodleResult(TestResult.ERROR_DURING_TEST);
         }
     }

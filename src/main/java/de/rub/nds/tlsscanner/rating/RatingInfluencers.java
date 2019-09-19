@@ -16,23 +16,24 @@ import java.util.LinkedList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="ratingInfluencers")
+@XmlRootElement(name = "ratingInfluencers")
 public class RatingInfluencers implements Serializable {
+
     /**
      * The default Config file to load.
      */
     static final String DEFAULT_RATING_FILE = "rating/influencers.xml";
-    
+
     private LinkedList<RatingInfluencer> ratingInfluencers;
-    
+
     RatingInfluencers() {
-        
+
     }
 
     public RatingInfluencers(LinkedList<RatingInfluencer> ratingInfluencers) {
         this.ratingInfluencers = ratingInfluencers;
     }
-    
+
     public static RatingInfluencers createRatingInfluencers() {
         InputStream stream = RatingInfluencers.class.getResourceAsStream(DEFAULT_RATING_FILE);
         return RatingIO.readRatingInfluencers(stream);
@@ -55,10 +56,10 @@ public class RatingInfluencers implements Serializable {
     public void setRatingInfluencers(LinkedList<RatingInfluencer> ratingInfluencers) {
         this.ratingInfluencers = ratingInfluencers;
     }
-    
+
     public PropertyResultRatingInfluencer getPropertyRatingInfluencer(AnalyzedProperty property, TestResult result) {
         for (RatingInfluencer ri : ratingInfluencers) {
-            if(ri.getAnalyzedProperty() == property) {
+            if (ri.getAnalyzedProperty() == property) {
                 return ri.getPropertyRatingInfluencer(result);
             }
         }

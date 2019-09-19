@@ -48,12 +48,12 @@ public class InfluencersSerializationTest {
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500));
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.FALSE, 50));
         influencers.add(i);
-        
+
         i = new RatingInfluencer();
         i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_TLS_1_2);
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, 100));
         influencers.add(i);
-        
+
         original.setRatingInfluencers(influencers);
 
         writer = new StringWriter();
@@ -72,7 +72,7 @@ public class InfluencersSerializationTest {
 
         um = context.createUnmarshaller();
         result = (RatingInfluencers) um.unmarshal(new StringReader(xmlString));
-        
+
         assertEquals("Influencer length check.", original.getRatingInfluencers().size(), result.getRatingInfluencers().size());
 
         RatingInfluencer oInfluencer = original.getRatingInfluencers().get(0);
@@ -85,7 +85,7 @@ public class InfluencersSerializationTest {
         assertEquals(ori.getInfluence(), rri.getInfluence(), 0.1);
         assertEquals(ori.getScoreCap(), rri.getScoreCap(), 0.1);
     }
-    
+
 //    @Test
 //    public void testSerializeSimple() throws Exception {
 //        RatingInfluencers test = new RatingInfluencers();

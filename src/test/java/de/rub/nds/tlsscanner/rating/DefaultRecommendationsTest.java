@@ -60,7 +60,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the DTLS 1.3 protocol is supported",
                 new PropertyResultRecommendation(TestResult.TRUE, "DTLS 1.3 is enabled", "Disable DTLS 1.3, it is a UDP protocol"),
                 ""));
-        
+
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_NULL_CIPHERS, "Null cipher support",
                 "Evaluates whether the TLS server supports null ciphers",
                 new PropertyResultRecommendation(TestResult.TRUE, "Null ciphers are supported", "Disable insecure null ciphers"),
@@ -112,7 +112,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server supports AEAD (Authenticated Encryption with Associated Data) cipher suites, e.g., AES-GCM",
                 new PropertyResultRecommendation(TestResult.FALSE, "AEAD cipher suites are disabled", "Enable AEAD cipher suites, e.g., AES-GCM"),
                 ""));
-        
+
         // PFS
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PFS, "Perfect Forward Secrecy (PFS) support",
                 "Evaluates whether the TLS server supports Perfect Forward Secrecy (PFS)",
@@ -130,7 +130,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server enforces Perfect Forward Secrecy (PFS) cipher suites",
                 new PropertyResultRecommendation(TestResult.FALSE, "PFS cipher suites are not enforced", "Enable cipher suite ordering and enforce PFS cipher suites"),
                 ""));
-        
+
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_AES, "AES cipher support",
                 "Evaluates whether the TLS server supports AES cipher",
                 new PropertyResultRecommendation(TestResult.FALSE, "AES cipher suites are disabled", "Enable AES cipher suites"),
@@ -174,7 +174,7 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_KERBEROS, "Kerberos cipher suites support",
                 "Evaluates whether the TLS server supports Kerberos cipher suites",
                 "https://tools.ietf.org/html/rfc2712"));
-        
+
         // todo for now we do not consider in the 
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_PLAIN, "Supports plain PSK",
                 "For now we do not consider in our scoring",
@@ -188,7 +188,7 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_ECDHE, "Supports ECDHE PSK",
                 "For now we do not consider in our scoring",
                 ""));
-        
+
         // post quantum
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_POST_QUANTUM, "Post quantum algorithms support",
                 "Evaluates whether the TLS server supports post quantum algorithms",
@@ -199,12 +199,12 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ECMQV, "Post quantum ECMQV algorithm support",
                 "Evaluates whether the TLS server supports the ECMQV post quantum algorithm",
                 ""));
-        
+
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_STREAM_CIPHERS, "Stream cipher support",
-                 "Evaluates whether the TLS server supports stream ciphers",
+                "Evaluates whether the TLS server supports stream ciphers",
                 ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, "Block cipher support",
-                 "Evaluates whether the TLS server supports block ciphers",
+                "Evaluates whether the TLS server supports block ciphers",
                 ""));
 
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, "Extended master secret support",
@@ -218,12 +218,11 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TOKENBINDING, "Token binding support",
                 "Evaluates whether the TLS server supports token binding",
                 ""));
-        
-        
+
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_MONTOGMERY_CURVES, "Montgomery curve support",
                 "",
                 ""));
-        
+
         // session resumption
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_TICKETS, "Support for session resumption with session tickets",
                 "Evaluates whether the TLS server supports session resumption with session tickets",
@@ -237,7 +236,7 @@ public class DefaultRecommendationsTest {
                 "Session tickets are created with symmetric keys. The lifetime of the symmetric keys used for session tickets should be restricted to reduce the attack surface. The ticket lifetime is typically indicated in the ticket lifetime hint.",
                 new PropertyResultRecommendation(TestResult.FALSE, "Session resumption with rotating session tickets is disabled", "Frequently changing session ticket keys improves the security, enable rotated session tickets."),
                 ""));
-        
+
         // TLS renegotiation
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RENEGOTIATION, "TLS renegoatiation support",
                 "Evaluates whether the TLS server supports renegotiation.",
@@ -258,8 +257,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server supports client-side insecure renegotiation.",
                 new PropertyResultRecommendation(TestResult.TRUE, "Insecure renegotiation is enabled", "Disable renegotiation or enable only secure renegotiation."),
                 "https://tools.ietf.org/html/rfc5746"));
-        
-        
+
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, "TLS Fallback Signaling Cipher Suite Value (SCSV) support",
                 "Evaluates whether the TLS server supports TLS Fallback Signaling Cipher Suite Value (SCSV)",
                 "In order to establish the highest possible TLS version, TLS clients attempt to perform several TLS handshake starting with the one with the highetst version. If a TLS handshake with a particular version does not work, the TLS client attampts to execute the handshake with a lower version. This of course allows an attacker to downgrade the TLS connection. TLS Fallback Signaling Cipher Suite Value (SCSV) was introduced to prevent downgrade attacks. For example, if a TLS client attempts to establish a TLS 1.1 conenction after an unsuccessful TLS 1.2 handshake attempt, it includes a TLS SCSV cipher suite into the ClientHello message. The server accepts this handshake if and only if its highest version is TLS 1.1.",
@@ -269,7 +267,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server supports TLS compresssion",
                 new PropertyResultRecommendation(TestResult.TRUE, "TLS compression is supported", "Disable TLS compression"),
                 ""));
-        
+
         // safe prime -> custom prime (-50) -> common prime (-100) -> non prime (-500)
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI, "Moduli provided in FFDHE ServerKeyExchange messages are prime",
                 "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are prime",
@@ -282,7 +280,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are safe primes",
                 new PropertyResultRecommendation(TestResult.FALSE, "DH group moduli are not safe primes", "There is a vulnerability in your TLS implementation. Update your software or contact the developers."),
                 "https://eprint.iacr.org/2016/995.pdf"));
-        
+
         // HTTP
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HTTPS, "HTTPS support",
                 "",
@@ -305,12 +303,12 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server supports HTTP compression",
                 new PropertyResultRecommendation(TestResult.TRUE, "HTTP compression is enabled", "Disable HTTP compression"),
                 ""));
-        
+
         recommendations.add(new Recommendation(AnalyzedProperty.ENFOCRES_CS_ORDERING, "Cipher suite ordering support",
                 "Evaluates whether the TLS server supports cipher suite ordering",
                 new PropertyResultRecommendation(TestResult.FALSE, "Cipher suite ordering is disabled", "Enable cipher suite ordering"),
                 ""));
-        
+
         //intolerancies
         recommendations.add(new Recommendation(AnalyzedProperty.HAS_VERSION_INTOLERANCE, "TLS version intolerance",
                 "Evaluates whether the TLS server is TLS version intolerant",
@@ -376,7 +374,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server ignores offered signature and hash algorithms",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server ignores offered signature and hash algorithms", "There is a bug in your TLS implementation. Update your software or contact the developers."),
                 ""));
-        
+
         // Attacks
         recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, "Vulnerable to a Bleichenbacher attack",
                 "Evaluates whether the TLS server is vulnerable to a Bleichenbacher attack",
@@ -430,7 +428,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server is vulnerable to CRIME",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to CRIME", "Disable TLS compression"),
                 "https://www.ekoparty.org/archive/2012/CRIME_ekoparty2012.pdf", "https://www.iacr.org/cryptodb/data/paper.php?pubkey=3091"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_BREACH,  "Vulnerable to BREACH",
+        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_BREACH, "Vulnerable to BREACH",
                 "Evaluates whether the TLS server is vulnerable to BREACH",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to BREACH", "Disable TLS compression"),
                 "http://breachattack.com"));
@@ -466,7 +464,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server correctly validates the AES-GCM authentication tags",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server does not verify the AES-GCM authentication tags", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
                 ""));
-        
+
         recommendations.add(new Recommendation(AnalyzedProperty.HAS_WEAK_RANDOMNESS, "Uses weak randomness",
                 "Evaluates whether the TLS server uses weak random values",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server uses weak random values", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
@@ -483,12 +481,12 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server reuses GCM nonces and is vulnerable to nonce-reuse attacks",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server reuses GCM nonces and is vulnerable to nonce-reuse attacks", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
                 "https://eprint.iacr.org/2016/475"));
-        
+
         // todo
         recommendations.add(new Recommendation(AnalyzedProperty.REQUIRES_SNI, "SNI requirement",
                 "Evaluates whether the TLS server requires the client to send a Server Name Indication (SNI) extension",
                 ""));
-        
+
         // certificate issues
         recommendations.add(new Recommendation(AnalyzedProperty.HAS_CERTIFICATE_ISSUES, "Certificate issues",
                 "",

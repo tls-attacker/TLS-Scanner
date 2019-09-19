@@ -912,7 +912,7 @@ public class SiteReportPrinter {
             rater = SiteReportRater.getSiteReportRater("en");
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
             prettyAppend(builder, "Score: " + scoreReport.getScore());
-            if(!detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            if (!detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                 return;
             }
             prettyAppend(builder, "");
@@ -921,25 +921,25 @@ public class SiteReportPrinter {
                 Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
                 int scoreInluence = 0;
                 StringBuilder additionalInfo = new StringBuilder();
-                if(influencer.getReferencedProperty() != null) {
+                if (influencer.getReferencedProperty() != null) {
                     additionalInfo.append(" (Score: 0). -> See ").append(influencer.getReferencedProperty())
                             .append(" for more information");
                 } else {
                     scoreInluence = influencer.getInfluence();
-                    additionalInfo.append(" (Score: ").append((scoreInluence > 0 ? "+":"")).append(scoreInluence);
-                    if(influencer.hasScoreCap()) {
+                    additionalInfo.append(" (Score: ").append((scoreInluence > 0 ? "+" : "")).append(scoreInluence);
+                    if (influencer.hasScoreCap()) {
                         additionalInfo.append(", Score cap: ").append(influencer.getScoreCap());
                     }
                     additionalInfo.append(")");
                 }
                 String result = recommendation.getShortName() + ": " + influencer.getResult() + additionalInfo;
-                if(scoreInluence > 0) {
+                if (scoreInluence > 0) {
                     prettyAppendGreen(builder, result);
 //                } else if(scoreInluence == 0) {
 //                    prettyAppend(builder, result);
-                } else if(scoreInluence < -50) {
+                } else if (scoreInluence < -50) {
                     prettyAppendRed(builder, result);
-                } else if(scoreInluence < 0) {
+                } else if (scoreInluence < 0) {
                     prettyAppendYellow(builder, result);
                 }
             });
@@ -947,7 +947,7 @@ public class SiteReportPrinter {
             prettyAppendRed(builder, ex.getLocalizedMessage());
         }
     }
-    
+
     private void appendRecommendations(StringBuilder builder) {
         prettyAppendHeading(builder, "Recommedations");
 
@@ -960,7 +960,7 @@ public class SiteReportPrinter {
                 if (influencer.hasNegativeScore() || influencer.getReferencedProperty() != null) {
                     Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
                     PropertyResultRecommendation resultRecommendation = recommendation.getPropertyResultRecommendation(influencer.getResult());
-                    if(detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                         printFullRecommendation(builder, rater, recommendation, influencer, resultRecommendation);
                     } else {
                         printShortRecommendation(builder, resultRecommendation);
@@ -971,14 +971,14 @@ public class SiteReportPrinter {
             prettyAppendRed(builder, ex.getLocalizedMessage());
         }
     }
-    
-    private void printFullRecommendation(StringBuilder builder, SiteReportRater rater, Recommendation recommendation, 
+
+    private void printFullRecommendation(StringBuilder builder, SiteReportRater rater, Recommendation recommendation,
             PropertyResultRatingInfluencer influencer, PropertyResultRecommendation resultRecommendation) {
         prettyAppend(builder, "");
         prettyAppend(builder, recommendation.getShortName() + ": " + influencer.getResult());
         int scoreInluence = 0;
         String additionalInfo = "";
-        if(influencer.getReferencedProperty() != null) {
+        if (influencer.getReferencedProperty() != null) {
             scoreInluence = rater.getRatingInfluencers().getPropertyRatingInfluencer(influencer.getReferencedProperty(),
                     influencer.getReferencedPropertyResult()).getInfluence();
             Recommendation r = rater.getRecommendations().getRecommendation(influencer.getReferencedProperty());
@@ -986,7 +986,7 @@ public class SiteReportPrinter {
         } else {
             scoreInluence = influencer.getInfluence();
         }
-        prettyAppend(builder,"  Score: " + scoreInluence + additionalInfo);
+        prettyAppend(builder, "  Score: " + scoreInluence + additionalInfo);
         if (influencer.hasScoreCap()) {
             prettyAppend(builder, "  Score cap: " + influencer.getScoreCap());
         }

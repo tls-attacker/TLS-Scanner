@@ -43,7 +43,7 @@ import org.bouncycastle.crypto.tls.Certificate;
 public class SiteReport {
 
     private final HashMap<String, TestResult> resultMap;
-    
+
     //General
     private final List<ProbeType> probeTypeList;
     private List<PerformanceData> performanceList;
@@ -54,13 +54,12 @@ public class SiteReport {
     private Boolean supportsSslTls = null;
 
     //Quirks
-
     //Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
-    
+
     //Version
     private List<ProtocolVersion> versions = null;
 
@@ -101,7 +100,6 @@ public class SiteReport {
     private Long sessionTicketLengthHint = null;
 
     //Renegotiation + SCSV
-
     //GCM Nonces
     private GcmPattern gcmPattern = null;
 
@@ -142,31 +140,31 @@ public class SiteReport {
     public HashMap<String, TestResult> getResultMap() {
         return resultMap;
     }
-    
+
     public TestResult getResult(AnalyzedProperty property) {
         return getResult(property.toString());
     }
-    
+
     public TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null) ? TestResult.NOT_TESTED_YET : result;
     }
-    
+
     public void putResult(AnalyzedProperty property, TestResult result) {
         resultMap.put(property.toString(), result);
     }
-    
+
     public void putResult(AnalyzedProperty property, Boolean result) {
-        if(result) {
+        if (result) {
             resultMap.put(property.toString(), TestResult.TRUE);
         } else {
             resultMap.put(property.toString(), TestResult.FALSE);
         }
     }
-    
+
     public void putResult(DrownVulnerabilityType result) {
         // todo: divide DROWN to several vulnerabilities ???
-        switch(result) {
+        switch (result) {
             case NONE:
                 putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
                 break;
@@ -177,11 +175,11 @@ public class SiteReport {
                 putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE);
         }
     }
-    
+
     public void putResult(EarlyCcsVulnerabilityType result) {
         // todo: divide EARLY CCS to several vulnerabilities ???
         // also: EarlyFinishedVulnerabilityType
-        switch(result) {
+        switch (result) {
             case NOT_VULNERABLE:
                 putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
                 break;

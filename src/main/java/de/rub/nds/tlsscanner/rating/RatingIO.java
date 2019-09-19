@@ -24,7 +24,7 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 import org.xml.sax.SAXException;
 
 public class RatingIO {
-    
+
     public static void writeRecommendations(Recommendations r, File f) {
         try {
             JAXB.marshal(r, new FileOutputStream(f));
@@ -32,7 +32,7 @@ public class RatingIO {
             throw new RuntimeException(ex.getLocalizedMessage(), ex);
         }
     }
-    
+
     public static void writeRecommendations(Recommendations r, OutputStream os) {
         ByteArrayOutputStream tempStream = new ByteArrayOutputStream();
 
@@ -44,15 +44,15 @@ public class RatingIO {
             throw new RuntimeException("Could not format XML");
         }
     }
-    
+
     public static Recommendations readRecommendations(File f) {
         return JAXB.unmarshal(f, Recommendations.class);
     }
-    
+
     public static Recommendations readRecommendations(InputStream is) {
         return JAXB.unmarshal(is, Recommendations.class);
     }
-    
+
     public static void writeRatingInfluencers(RatingInfluencers ri, File f) {
         try {
             JAXB.marshal(ri, new FileOutputStream(f));
@@ -60,7 +60,7 @@ public class RatingIO {
             throw new RuntimeException(ex.getLocalizedMessage(), ex);
         }
     }
-    
+
     public static void writeRatingInfluencers(RatingInfluencers ri, OutputStream os) {
         ByteArrayOutputStream tempStream = new ByteArrayOutputStream();
 
@@ -72,11 +72,11 @@ public class RatingIO {
             throw new RuntimeException("Could not format XML");
         }
     }
-    
+
     public static RatingInfluencers readRatingInfluencers(File f) {
         return JAXB.unmarshal(f, RatingInfluencers.class);
     }
-    
+
     public static RatingInfluencers readRatingInfluencers(InputStream is) {
         return JAXB.unmarshal(is, RatingInfluencers.class);
     }

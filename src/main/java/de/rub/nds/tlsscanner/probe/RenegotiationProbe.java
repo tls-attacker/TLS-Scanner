@@ -42,7 +42,7 @@ public class RenegotiationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-       try {
+        try {
             TestResult supportsSecureRenegotiation;
             if (supportsRenegotiationExtension == TestResult.TRUE) {
                 supportsSecureRenegotiation = supportsSecureClientRenegotiation();
@@ -51,7 +51,7 @@ public class RenegotiationProbe extends TlsProbe {
             }
             TestResult supportsInsecureRenegotiation = supportsInsecureClientRenegotiation();
             return new RenegotiationResult(supportsSecureRenegotiation, supportsInsecureRenegotiation);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new RenegotiationResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }

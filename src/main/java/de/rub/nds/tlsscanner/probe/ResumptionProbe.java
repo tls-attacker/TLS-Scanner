@@ -63,7 +63,7 @@ public class ResumptionProbe extends TlsProbe {
             State state = new State(tlsConfig);
             executeState(state);
             return new ResumptionResult(state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new ResumptionResult(TestResult.ERROR_DURING_TEST);
         }
     }

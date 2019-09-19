@@ -31,7 +31,7 @@ public class FreakAfterProbe extends AfterProbe {
             } else {
                 vulnerable = TestResult.UNCERTAIN;
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             vulnerable = TestResult.ERROR_DURING_TEST;
         }
         report.putResult(AnalyzedProperty.VULNERABLE_TO_FREAK, vulnerable);

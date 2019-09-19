@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlElement;
 public class RatingInfluencer {
 
     private AnalyzedProperty analyzedProperty;
-    
+
     private List<PropertyResultRatingInfluencer> propertyRatingInfluencers;
 
     public RatingInfluencer() {
@@ -28,8 +28,8 @@ public class RatingInfluencer {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
-    
-    public RatingInfluencer(AnalyzedProperty influencerConstant, PropertyResultRatingInfluencer ... propertyRatingInfluencers) {
+
+    public RatingInfluencer(AnalyzedProperty influencerConstant, PropertyResultRatingInfluencer... propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = Arrays.asList(propertyRatingInfluencers);
     }
@@ -41,7 +41,7 @@ public class RatingInfluencer {
     public void setAnalyzedProperty(AnalyzedProperty analyzedProperty) {
         this.analyzedProperty = analyzedProperty;
     }
-    
+
     @XmlElement(name = "propertyResultRatingInfluencer")
     public List<PropertyResultRatingInfluencer> getPropertyRatingInfluencers() {
         return propertyRatingInfluencers;
@@ -50,14 +50,14 @@ public class RatingInfluencer {
     public void setPropertyRatingInfluencers(List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
-    
+
     public void addPropertyRatingInfluencer(PropertyResultRatingInfluencer ratingInfluence) {
         this.propertyRatingInfluencers.add(ratingInfluence);
     }
-    
+
     public PropertyResultRatingInfluencer getPropertyRatingInfluencer(TestResult result) {
-        for(PropertyResultRatingInfluencer ri : propertyRatingInfluencers) {
-            if(ri.getResult() == result) {
+        for (PropertyResultRatingInfluencer ri : propertyRatingInfluencers) {
+            if (ri.getResult() == result) {
                 return ri;
             }
         }

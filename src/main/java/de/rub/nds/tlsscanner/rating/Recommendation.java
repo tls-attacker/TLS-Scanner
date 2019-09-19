@@ -46,12 +46,12 @@ public class Recommendation {
         this.analyzedProperty = analyzedProperty;
         this.propertyRecommendations = propertyRecommendations;
     }
-    
+
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName) {
         this();
         this.shortName = shortName;
     }
-    
+
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription, String detailedDescription,
             String... links) {
         this();
@@ -61,8 +61,8 @@ public class Recommendation {
         this.detailedDescription = detailedDescription;
         this.links.addAll(Arrays.asList(links));
     }
-    
-    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription, 
+
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
             PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
@@ -103,7 +103,7 @@ public class Recommendation {
     }
 
     public String getShortName() {
-        if (shortName == null || shortName.equals("") ) {
+        if (shortName == null || shortName.equals("")) {
             return analyzedProperty.toString();
         } else {
             return shortName;
@@ -139,7 +139,7 @@ public class Recommendation {
     }
 
     @XmlElement(name = "resultingRecommendation")
-    @XmlElementWrapper(name="resultingRecommendations")
+    @XmlElementWrapper(name = "resultingRecommendations")
     public List<PropertyResultRecommendation> getPropertyRecommendations() {
         return propertyRecommendations;
     }
@@ -158,7 +158,7 @@ public class Recommendation {
     }
 
     @XmlElement(name = "link")
-    @XmlElementWrapper(name="links")
+    @XmlElementWrapper(name = "links")
     public List<String> getLinks() {
         return links;
     }

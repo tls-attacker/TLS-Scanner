@@ -12,7 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class PropertyResultRatingInfluencerTest {
-    
+
     public PropertyResultRatingInfluencerTest() {
     }
 
@@ -25,21 +25,21 @@ public class PropertyResultRatingInfluencerTest {
         PropertyResultRatingInfluencer ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, -200);
         assertEquals(1, ri1.compareTo(ri2));
         assertEquals(-1, ri2.compareTo(ri1));
-        
+
         ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 100);
         assertEquals(1, ri1.compareTo(ri2));
-        
+
         ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, 200, 100);
         assertEquals(1, ri1.compareTo(ri2));
-        
+
         ri2 = new PropertyResultRatingInfluencer(TestResult.TRUE, 300, 100);
         assertEquals(1, ri1.compareTo(ri2));
-        
+
         ri1 = new PropertyResultRatingInfluencer(TestResult.TRUE, 200, 200);
         assertEquals(1, ri1.compareTo(ri2));
-        
+
         ri1 = new PropertyResultRatingInfluencer(TestResult.TRUE, 300, 100);
         assertEquals(0, ri1.compareTo(ri2));
     }
-    
+
 }

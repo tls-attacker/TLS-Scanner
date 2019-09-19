@@ -10,28 +10,28 @@ package de.rub.nds.tlsscanner.rating;
 
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder={"result", "shortDescription", "handlingRecommendation", "detailedDescription"})
+@XmlType(propOrder = {"result", "shortDescription", "handlingRecommendation", "detailedDescription"})
 public class PropertyResultRecommendation {
-    
+
     private TestResult result;
-    
+
     private String shortDescription;
-    
+
     private String handlingRecommendation;
-    
+
     private String detailedDescription;
-    
+
     public PropertyResultRecommendation() {
-        
+
     }
-    
+
     public PropertyResultRecommendation(TestResult result, String resultStatus, String handlingRecommendation) {
         this.result = result;
         this.shortDescription = resultStatus;
         this.handlingRecommendation = handlingRecommendation;
     }
-    
-    public PropertyResultRecommendation(TestResult result, String resultStatus, String handlingRecommendation, 
+
+    public PropertyResultRecommendation(TestResult result, String resultStatus, String handlingRecommendation,
             String detailedDescription) {
         this(result, resultStatus, handlingRecommendation);
         this.detailedDescription = detailedDescription;
