@@ -44,7 +44,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
             toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-            Collections.reverseOrder();
+            Collections.reverse(toTestList);
             CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
             return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
         } catch (Exception e) {
