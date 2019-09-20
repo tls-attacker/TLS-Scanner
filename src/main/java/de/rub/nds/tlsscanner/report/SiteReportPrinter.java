@@ -86,7 +86,7 @@ public class SiteReportPrinter {
         builder.append("Report for ");
         builder.append(report.getHost());
         builder.append("\n");
-        if (report.getServerIsAlive() == false) {
+        if (report.getServerIsAlive() == Boolean.FALSE) {
             builder.append("Cannot reach the Server. Is it online?");
             return builder.toString();
         }
@@ -883,7 +883,7 @@ public class SiteReportPrinter {
         prettyAppendYellowGreen(builder, "EC PublicKey reuse", report.getResult(AnalyzedProperty.REUSES_EC_PUBLICKEY));
         prettyAppendYellowGreen(builder, "DH PublicKey reuse", report.getResult(AnalyzedProperty.REUSES_DH_PUBLICKEY));
         prettyAppendYellowGreen(builder, "Uses Common DH Primes", report.getResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES));
-        if (report.getUsedCommonDhValueList().size() != 0) {
+        if (report.getUsedCommonDhValueList() != null && report.getUsedCommonDhValueList().size() != 0) {
             for (CommonDhValues value : report.getUsedCommonDhValueList()) {
                 prettyAppendRed(builder, "\t" + value.getName());
             }
