@@ -1404,22 +1404,6 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>VULNERABLE_TO_CVE20162107</analyzedProperty>
-        <shortName>Vulnerable to CVE-2016-2107</shortName>
-        <shortDescription>Evaluates whether the TLS server is vulnerable to CVE-2016-2107 (OpenSSL padding oracle)</shortDescription>
-        <links>
-            <link>https://web-in-security.blogspot.com/2016/05/curious-padding-oracle-in-openssl-cve.html</link>
-            <link>https://new.blog.cloudflare.com/yet-another-padding-oracle-in-openssl-cbc-ciphersuites/</link>
-        </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription>The TLS server is vulnerable to CVE-2016-2107 (OpenSSL padding oracle)</shortDescription>
-                <handlingRecommendation>There is a vulnerability in your TLS implementation. Update your software or contact the developers. For now, you can also disable CBC cipher suites to secure your server.</handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
-    </recommendation>
-    <recommendation>
         <analyzedProperty>MISSES_MAC_APPDATA_CHECKS</analyzedProperty>
         <shortName>Misses Application message MAC check</shortName>
         <shortDescription>Evaluates whether the TLS server correctly validates the Application message MACs</shortDescription>

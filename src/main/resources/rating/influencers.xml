@@ -1080,18 +1080,6 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_CVE20162107</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-500</influence>
-            <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
         <analyzedProperty>VULNERABLE_TO_SWEET_32</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
