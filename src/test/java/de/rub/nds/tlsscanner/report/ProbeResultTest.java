@@ -53,11 +53,11 @@ public class ProbeResultTest {
             for (Constructor c : someResultClass.getConstructors()) {
                 if (c.getParameterCount() == 2) {
                     if (c.getParameterTypes()[0].equals(ScannerConfig.class)) {
-                        System.out.println("Testing:" + testName);
+                        LOGGER.info("Testing:" + testName);
                         TlsProbe probe = (TlsProbe) c.newInstance(null, null);
                         SiteReport report = new SiteReport("somehost", new LinkedList<>(), true);
                         probe.getCouldNotExecuteResult().merge(report);
-                        System.out.println("--Success");
+                        LOGGER.info("--Success");
                     }
                 }
             }
