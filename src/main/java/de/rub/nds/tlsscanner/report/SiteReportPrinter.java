@@ -772,10 +772,6 @@ public class SiteReportPrinter {
 
     private StringBuilder appendProtocolVersions(StringBuilder builder) {
         if (report.getVersions() != null) {
-            prettyAppendHeading(builder, "Supported Protocol Versions");
-            for (ProtocolVersion version : report.getVersions()) {
-                builder.append(version.name()).append("\n");
-            }
             prettyAppendHeading(builder, "Versions");
             prettyAppendRedGreen(builder, "SSL 2.0", report.getResult(AnalyzedProperty.SUPPORTS_SSL_2));
             prettyAppendRedGreen(builder, "SSL 3.0", report.getResult(AnalyzedProperty.SUPPORTS_SSL_3));
@@ -783,21 +779,51 @@ public class SiteReportPrinter {
             prettyAppendYellowOnFailure(builder, "TLS 1.1", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1));
             prettyAppendRedOnFailure(builder, "TLS 1.2", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2));
             prettyAppendGreenOnSuccess(builder, "TLS 1.3", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3));
-            prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 14", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14));
-            prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 15", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15));
-            prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 16", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16));
-            prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 17", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 18", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 19", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 20", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 21", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 22", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 23", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 24", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 25", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 26", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 27", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27));
-            prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 28", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28));
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14) == TestResult.TRUE) {
+                prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 14", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15) == TestResult.TRUE) {
+                prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 15", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16) == TestResult.TRUE) {
+                prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 16", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17) == TestResult.TRUE) {
+                prettyAppendYellowOnSuccess(builder, "TLS 1.3 Draft 17", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 18", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 19", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 20", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 21", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 22", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 23", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 24", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 25", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 26", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 27", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27));
+            }
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28) == TestResult.TRUE) {
+                prettyAppendGreenOnSuccess(builder, "TLS 1.3 Draft 28", report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28));
+            }
         }
         return builder;
     }
