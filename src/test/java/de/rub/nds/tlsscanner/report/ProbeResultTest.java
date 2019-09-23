@@ -11,7 +11,9 @@ package de.rub.nds.tlsscanner.report;
 import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
@@ -48,15 +50,21 @@ public class ProbeResultTest {
                 continue;
             }
             String testName = someResultClass.getSimpleName().replace("Result", "");
-
+            if (someResultClass.equals(HandshakeSimulationResult.class)) {
+                LOGGER.info("Skipping: HandshakeSimulation due to performance reasons");
+            }
             // Trying to find equivalent preparator, message and serializer
             for (Constructor c : someResultClass.getConstructors()) {
                 if (c.getParameterCount() == 2) {
                     if (c.getParameterTypes()[0].equals(ScannerConfig.class)) {
-                        LOGGER.info("Testing:" + testName);
+                        LOGGER.info("Testing mergability:" + testName);
                         TlsProbe probe = (TlsProbe) c.newInstance(null, null);
                         SiteReport report = new SiteReport("somehost", new LinkedList<>(), true);
                         probe.getCouldNotExecuteResult().merge(report);
+                        LOGGER.info("--Success");
+                        LOGGER.info("Testing printability:");
+                        SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.ALL);
+                        printer.getFullReport();
                         LOGGER.info("--Success");
                     }
                 }
