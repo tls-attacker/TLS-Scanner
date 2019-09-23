@@ -711,6 +711,11 @@ public class SiteReportPrinter {
             for (CipherSuite suite : report.getCipherSuites()) {
                 builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
             }
+            if (report.getSupportedTls13CipherSuites() != null) {
+                for (CipherSuite suite : report.getSupportedTls13CipherSuites()) {
+                    builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
+                }
+            }
 
             for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
                 prettyAppendHeading(builder, "Supported in " + versionSuitePair.getVersion());
