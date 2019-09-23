@@ -30,11 +30,15 @@ public class CompressionsResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setSupportedCompressionMethods(compressions);
-        if (compressions.size() > 1) {
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE);
+        if (compressions != null) {
+            report.setSupportedCompressionMethods(compressions);
+            if (compressions.size() > 1) {
+                report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE);
+            } else {
+                report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.FALSE);
+            }
         } else {
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.FALSE);
+            report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.COULD_NOT_TEST);
         }
     }
 

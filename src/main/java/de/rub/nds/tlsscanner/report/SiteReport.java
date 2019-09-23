@@ -164,30 +164,36 @@ public class SiteReport {
 
     public void putResult(DrownVulnerabilityType result) {
         // todo: divide DROWN to several vulnerabilities ???
-        switch (result) {
-            case NONE:
-                putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
-                break;
-            case UNKNOWN:
-                resultMap.put(AnalyzedProperty.VULNERABLE_TO_DROWN.toString(), TestResult.UNCERTAIN);
-                break;
-            default:
-                putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE);
+        if (result != null) {
+            switch (result) {
+                case NONE:
+                    putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
+                    break;
+                case UNKNOWN:
+                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_DROWN.toString(), TestResult.UNCERTAIN);
+                    break;
+                default:
+                    putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE);
+            }
         }
     }
 
     public void putResult(EarlyCcsVulnerabilityType result) {
         // todo: divide EARLY CCS to several vulnerabilities ???
         // also: EarlyFinishedVulnerabilityType
-        switch (result) {
-            case NOT_VULNERABLE:
-                putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
-                break;
-            case UNKNOWN:
-                resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.UNCERTAIN);
-                break;
-            default:
-                putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, true);
+        if (result != null) {
+            switch (result) {
+                case NOT_VULNERABLE:
+                    putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
+                    break;
+                case UNKNOWN:
+                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.UNCERTAIN);
+                    break;
+                default:
+                    putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, true);
+            }
+        } else {
+            resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.COULD_NOT_TEST);
         }
     }
 
