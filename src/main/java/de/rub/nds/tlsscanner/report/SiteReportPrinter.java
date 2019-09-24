@@ -1100,15 +1100,15 @@ public class SiteReportPrinter {
     }
 
     private String getGreenString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColor.ANSI_GREEN : AnsiColor.ANSI_RESET) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.ANSI_RESET;
+        return (report.isNoColor() == false ? AnsiColor.ANSI_GREEN.getCode() : AnsiColor.ANSI_RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.ANSI_RESET.getCode();
     }
 
     private String getYellowString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColor.ANSI_YELLOW : AnsiColor.ANSI_RESET) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.ANSI_RESET;
+        return (report.isNoColor() == false ? AnsiColor.ANSI_YELLOW.getCode() : AnsiColor.ANSI_RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.ANSI_RESET.getCode();
     }
 
     private String getRedString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColor.ANSI_RED : AnsiColor.ANSI_RESET) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.ANSI_RESET;
+        return (report.isNoColor() == false ? AnsiColor.ANSI_RED.getCode() : AnsiColor.ANSI_RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.ANSI_RESET.getCode();
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
@@ -1123,6 +1123,7 @@ public class SiteReportPrinter {
         if (!report.isNoColor()) {
             builder.append(AnsiColor.ANSI_RESET.getCode());
         }
+        builder.append("\n");
         return builder;
     }
 
@@ -1141,6 +1142,7 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppend(StringBuilder builder, String name, AnalyzedProperty property) {
         builder.append(addIndentations(name)).append(": ");
         builder.append(scheme.getEncodedString(report, property));
+        builder.append("\n");
         return builder;
     }
 
@@ -1157,12 +1159,14 @@ public class SiteReportPrinter {
         if (!report.isNoColor()) {
             builder.append(AnsiColor.ANSI_RESET.getCode());
         }
+        builder.append("\n");
         return builder;
     }
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         depth = 0;
-        return builder.append(report.isNoColor() == false ? AnsiColor.ANSI_BOLD.getCode() + AnsiColor.ANSI_BLUE.getCode() : AnsiColor.ANSI_RESET.getCode()).append("\n------------------------------------------------------------\n").append(value).append("\n\n").append(AnsiColor.ANSI_RESET);
+
+        return builder.append(report.isNoColor() == false ? AnsiColor.ANSI_BOLD.getCode() + AnsiColor.ANSI_BLUE.getCode() : AnsiColor.ANSI_RESET.getCode()).append("\n------------------------------------------------------------\n").append(value).append("\n\n").append(AnsiColor.ANSI_RESET.getCode());
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, String value) {
