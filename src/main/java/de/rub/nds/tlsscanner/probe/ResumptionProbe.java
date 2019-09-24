@@ -59,7 +59,6 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setAddRenegotiationInfoExtension(true);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-            tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
             State state = new State(tlsConfig);
             executeState(state);
             return new ResumptionResult(state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE);
