@@ -643,7 +643,7 @@
         <resultingRecommendations/>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_MONTOGMERY_CURVES</analyzedProperty>
+        <analyzedProperty>SUPPORTS_MONTGOMERY_CURVES</analyzedProperty>
         <shortName>Montgomery curve support</shortName>
         <shortDescription></shortDescription>
         <detailedDescription></detailedDescription>
