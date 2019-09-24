@@ -712,6 +712,59 @@ public class SiteReportPrinter {
         return builder;
     }
 
+    private String toHumanReadable(ProtocolVersion version) {
+        switch (version) {
+            case DTLS10:
+                return "DTLS 1.0";
+            case DTLS12:
+                return "DTLS 1.2";
+            case SSL2:
+                return "SSL 2.0";
+            case SSL3:
+                return "SSL 3.0";
+            case TLS10:
+                return "TLS 1.0";
+            case TLS11:
+                return "TLS 1.1";
+            case TLS12:
+                return "TLS 1.2";
+            case TLS13:
+                return "TLS 1.3";
+            case TLS13_DRAFT14:
+                return "TLS 1.3 Draft-14";
+            case TLS13_DRAFT15:
+                return "TLS 1.3 Draft-15";
+            case TLS13_DRAFT16:
+                return "TLS 1.3 Draft-16";
+            case TLS13_DRAFT17:
+                return "TLS 1.3 Draft-17";
+            case TLS13_DRAFT18:
+                return "TLS 1.3 Draft-18";
+            case TLS13_DRAFT19:
+                return "TLS 1.3 Draft-19";
+            case TLS13_DRAFT20:
+                return "TLS 1.3 Draft-20";
+            case TLS13_DRAFT21:
+                return "TLS 1.3 Draft-21";
+            case TLS13_DRAFT22:
+                return "TLS 1.3 Draft-22";
+            case TLS13_DRAFT23:
+                return "TLS 1.3 Draft-23";
+            case TLS13_DRAFT24:
+                return "TLS 1.3 Draft-24";
+            case TLS13_DRAFT25:
+                return "TLS 1.3 Draft-25";
+            case TLS13_DRAFT26:
+                return "TLS 1.3 Draft-26";
+            case TLS13_DRAFT27:
+                return "TLS 1.3 Draft-27";
+            case TLS13_DRAFT28:
+                return "TLS 1.3 Draft-28";
+            default:
+                return version.name();
+        }
+    }
+
     private StringBuilder appendCipherSuites(StringBuilder builder) {
         if (report.getCipherSuites() != null) {
             prettyAppendHeading(builder, "Supported Ciphersuites");
@@ -725,56 +778,57 @@ public class SiteReportPrinter {
             }
 
             for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
-                prettyAppendHeading(builder, "Supported in " + versionSuitePair.getVersion());
+                prettyAppendHeading(builder, "Supported in " + toHumanReadable(versionSuitePair.getVersion()) + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)" : ""));
                 for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
                     builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
                 }
             }
             if (report.getSupportedTls13CipherSuites() != null && report.getSupportedTls13CipherSuites().size() > 0) {
-                prettyAppendHeading(builder, "Supported in TLS 1.3");
+                prettyAppendHeading(builder, "Supported in TLS 1.3" + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)" : ""));
                 for (CipherSuite suite : report.getSupportedTls13CipherSuites()) {
                     builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
                 }
             }
-            prettyAppendHeading(builder, "Symmetric Supported");
-            prettyAppend(builder, "Null", AnalyzedProperty.SUPPORTS_NULL_CIPHERS);
-            prettyAppend(builder, "Export", AnalyzedProperty.SUPPORTS_EXPORT);
-            prettyAppend(builder, "Anon", AnalyzedProperty.SUPPORTS_ANON);
-            prettyAppend(builder, "DES", AnalyzedProperty.SUPPORTS_DES);
-            prettyAppend(builder, "SEED", AnalyzedProperty.SUPPORTS_SEED);
-            prettyAppend(builder, "IDEA", AnalyzedProperty.SUPPORTS_IDEA);
-            prettyAppend(builder, "RC2", AnalyzedProperty.SUPPORTS_RC2);
-            prettyAppend(builder, "RC4", AnalyzedProperty.SUPPORTS_RC4);
-            prettyAppend(builder, "3DES", AnalyzedProperty.SUPPORTS_3DES);
-            prettyAppend(builder, "AES", AnalyzedProperty.SUPPORTS_AES);
-            prettyAppend(builder, "CAMELLIA", AnalyzedProperty.SUPPORTS_CAMELLIA);
-            prettyAppend(builder, "ARIA", AnalyzedProperty.SUPPORTS_ARIA);
-            prettyAppend(builder, "CHACHA20 POLY1305", AnalyzedProperty.SUPPORTS_CHACHA);
+            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                prettyAppendHeading(builder, "Symmetric Supported");
+                prettyAppend(builder, "Null", AnalyzedProperty.SUPPORTS_NULL_CIPHERS);
+                prettyAppend(builder, "Export", AnalyzedProperty.SUPPORTS_EXPORT);
+                prettyAppend(builder, "Anon", AnalyzedProperty.SUPPORTS_ANON);
+                prettyAppend(builder, "DES", AnalyzedProperty.SUPPORTS_DES);
+                prettyAppend(builder, "SEED", AnalyzedProperty.SUPPORTS_SEED);
+                prettyAppend(builder, "IDEA", AnalyzedProperty.SUPPORTS_IDEA);
+                prettyAppend(builder, "RC2", AnalyzedProperty.SUPPORTS_RC2);
+                prettyAppend(builder, "RC4", AnalyzedProperty.SUPPORTS_RC4);
+                prettyAppend(builder, "3DES", AnalyzedProperty.SUPPORTS_3DES);
+                prettyAppend(builder, "AES", AnalyzedProperty.SUPPORTS_AES);
+                prettyAppend(builder, "CAMELLIA", AnalyzedProperty.SUPPORTS_CAMELLIA);
+                prettyAppend(builder, "ARIA", AnalyzedProperty.SUPPORTS_ARIA);
+                prettyAppend(builder, "CHACHA20 POLY1305", AnalyzedProperty.SUPPORTS_CHACHA);
 
-            prettyAppendHeading(builder, "KeyExchange Supported");
-            prettyAppend(builder, "RSA", AnalyzedProperty.SUPPORTS_RSA);
-            prettyAppend(builder, "DH", AnalyzedProperty.SUPPORTS_DH);
-            prettyAppend(builder, "ECDH", AnalyzedProperty.SUPPORTS_ECDH);
-            prettyAppend(builder, "GOST", AnalyzedProperty.SUPPORTS_GOST);
-            //prettyAppend(builder, "SRP", report.getSupportsSrp());
-            prettyAppend(builder, "Kerberos", AnalyzedProperty.SUPPORTS_KERBEROS);
-            prettyAppend(builder, "Plain PSK", AnalyzedProperty.SUPPORTS_PSK_PLAIN);
-            prettyAppend(builder, "PSK RSA", AnalyzedProperty.SUPPORTS_PSK_RSA);
-            prettyAppend(builder, "PSK DHE", AnalyzedProperty.SUPPORTS_PSK_DHE);
-            prettyAppend(builder, "PSK ECDHE", AnalyzedProperty.SUPPORTS_PSK_ECDHE);
-            prettyAppend(builder, "Fortezza", AnalyzedProperty.SUPPORTS_FORTEZZA);
-            prettyAppend(builder, "New Hope", AnalyzedProperty.SUPPORTS_NEWHOPE);
-            prettyAppend(builder, "ECMQV", AnalyzedProperty.SUPPORTS_ECMQV);
+                prettyAppendHeading(builder, "KeyExchange Supported");
+                prettyAppend(builder, "RSA", AnalyzedProperty.SUPPORTS_RSA);
+                prettyAppend(builder, "DH", AnalyzedProperty.SUPPORTS_DH);
+                prettyAppend(builder, "ECDH", AnalyzedProperty.SUPPORTS_ECDH);
+                prettyAppend(builder, "GOST", AnalyzedProperty.SUPPORTS_GOST);
+                //prettyAppend(builder, "SRP", report.getSupportsSrp());
+                prettyAppend(builder, "Kerberos", AnalyzedProperty.SUPPORTS_KERBEROS);
+                prettyAppend(builder, "Plain PSK", AnalyzedProperty.SUPPORTS_PSK_PLAIN);
+                prettyAppend(builder, "PSK RSA", AnalyzedProperty.SUPPORTS_PSK_RSA);
+                prettyAppend(builder, "PSK DHE", AnalyzedProperty.SUPPORTS_PSK_DHE);
+                prettyAppend(builder, "PSK ECDHE", AnalyzedProperty.SUPPORTS_PSK_ECDHE);
+                prettyAppend(builder, "Fortezza", AnalyzedProperty.SUPPORTS_FORTEZZA);
+                prettyAppend(builder, "New Hope", AnalyzedProperty.SUPPORTS_NEWHOPE);
+                prettyAppend(builder, "ECMQV", AnalyzedProperty.SUPPORTS_ECMQV);
 
+                prettyAppendHeading(builder, "Cipher Types Supports");
+                prettyAppend(builder, "Stream", AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
+                prettyAppend(builder, "Block", AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
+                prettyAppend(builder, "AEAD", AnalyzedProperty.SUPPORTS_AEAD);
+            }
             prettyAppendHeading(builder, "Perfect Forward Secrecy");
             prettyAppend(builder, "Supports PFS", AnalyzedProperty.SUPPORTS_PFS);
             prettyAppend(builder, "Prefers PFS", AnalyzedProperty.PREFERS_PFS);
             prettyAppend(builder, "Supports Only PFS", AnalyzedProperty.SUPPORTS_ONLY_PFS);
-
-            prettyAppendHeading(builder, "Cipher Types Supports");
-            prettyAppend(builder, "Stream", AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
-            prettyAppend(builder, "Block", AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
-            prettyAppend(builder, "AEAD", AnalyzedProperty.SUPPORTS_AEAD);
 
             prettyAppendHeading(builder, "Ciphersuite General");
             prettyAppend(builder, "Enforces Ciphersuite ordering", AnalyzedProperty.ENFOCRES_CS_ORDERING);
