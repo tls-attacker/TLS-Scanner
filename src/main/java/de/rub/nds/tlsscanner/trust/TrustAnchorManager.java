@@ -57,8 +57,8 @@ public class TrustAnchorManager {
     }
 
     private TrustAnchorManager() {
+        trustPlatformList = new LinkedList<>();
         try {
-            trustPlatformList = new LinkedList<>();
             trustPlatformList.add(readPlatform("google_aosp.yaml"));
             trustPlatformList.add(readPlatform("microsoft_windows.yaml"));
             trustPlatformList.add(readPlatform("mozilla_nss.yaml"));

@@ -11,4 +11,7 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+.classpath
+.project
+.settings/
 /nbproject/
