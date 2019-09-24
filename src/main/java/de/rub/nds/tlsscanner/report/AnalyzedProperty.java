@@ -192,9 +192,13 @@ public enum AnalyzedProperty {
     REUSES_GCM_NONCES(AnalyzedPropertyCategory.FRESHNESS),
     REQUIRES_SNI(AnalyzedPropertyCategory.SNI);
 
-    AnalyzedPropertyCategory category;
+    private AnalyzedPropertyCategory category;
 
     AnalyzedProperty(AnalyzedPropertyCategory category) {
         this.category = category;
+    }
+
+    public AnalyzedPropertyCategory getCategory() {
+        return category;
     }
 }

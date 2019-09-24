@@ -13,20 +13,10 @@ import com.beust.jcommander.ParameterException;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.constants.AnsiColors;
+import de.rub.nds.tlsscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.constants.AnsiEscapeSequence;
-import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
-import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
-import de.rub.nds.tlsscanner.rating.RatingInfluencer;
-import de.rub.nds.tlsscanner.rating.Recommendation;
-import de.rub.nds.tlsscanner.rating.ScoreReport;
-import de.rub.nds.tlsscanner.rating.SiteReportRater;
-import de.rub.nds.tlsscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.IOException;
-import java.util.Map;
-import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -62,7 +52,7 @@ public class Main {
                     // ANSI escape sequences to erase the progressbar
                     ConsoleLogger.CONSOLE.info(AnsiEscapeSequence.ANSI_ONE_LINE_UP + AnsiEscapeSequence.ANSI_ERASE_LINE);
                 }
-                ConsoleLogger.CONSOLE.info(AnsiColors.ANSI_RESET + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail()));
+                ConsoleLogger.CONSOLE.info(AnsiColor.ANSI_RESET + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail()));
 
             } catch (ConfigurationException E) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", E);
