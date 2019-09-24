@@ -527,7 +527,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_MONTOGMERY_CURVES</analyzedProperty>
+        <analyzedProperty>SUPPORTS_MONTGOMERY_CURVES</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>200</influence>
