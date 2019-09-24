@@ -86,21 +86,13 @@ public class PrintingScheme {
         attackEncodingMap.put(TestResult.UNCERTAIN, "uncertain - requires manual testing");
         attackEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by TLS-Scanner");
 
-        HashMap<TestResult, AnsiColor> redTrueGreenFalseColorMap = new HashMap<>();
-        redTrueGreenFalseColorMap.put(TestResult.COULD_NOT_TEST, AnsiColor.ANSI_BLUE);
-        redTrueGreenFalseColorMap.put(TestResult.ERROR_DURING_TEST, AnsiColor.ANSI_RED_BACKGROUND);
-        redTrueGreenFalseColorMap.put(TestResult.FALSE, AnsiColor.ANSI_GREEN);
-        redTrueGreenFalseColorMap.put(TestResult.NOT_TESTED_YET, AnsiColor.ANSI_WHITE);
-        redTrueGreenFalseColorMap.put(TestResult.TIMEOUT, AnsiColor.ANSI_PURPLE_BACKGROUND);
-        redTrueGreenFalseColorMap.put(TestResult.TRUE, AnsiColor.ANSI_RED);
-        redTrueGreenFalseColorMap.put(TestResult.UNCERTAIN, AnsiColor.ANSI_YELLOW_BACKGROUND);
-        redTrueGreenFalseColorMap.put(TestResult.UNSUPPORTED, AnsiColor.ANSI_CYAN);
 
-        ColorEncoding attackColorEncoding = new ColorEncoding(redTrueGreenFalseColorMap);
+        ColorEncoding attacks = getDefaultColorEncoding(AnsiColor.ANSI_RED, AnsiColor.ANSI_GREEN);
+
         HashMap<AnalyzedProperty, ColorEncoding> colorMap = new HashMap<>();
         for (AnalyzedProperty prop : AnalyzedProperty.values()) {
             if (prop.getCategory() == AnalyzedPropertyCategory.ATTACKS) {
-                colorMap.put(prop, attackColorEncoding);
+                colorMap.put(prop, attacks);
             }
         }
 
@@ -108,5 +100,18 @@ public class PrintingScheme {
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
         PrintingScheme scheme = new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding);
         return scheme;
+    }
+
+    private static ColorEncoding getDefaultColorEncoding(AnsiColor trueColor, AnsiColor falseColor) {
+        HashMap<TestResult, AnsiColor> colorMap = new HashMap<>();
+        colorMap.put(TestResult.COULD_NOT_TEST, AnsiColor.ANSI_BLUE);
+        colorMap.put(TestResult.ERROR_DURING_TEST, AnsiColor.ANSI_RED_BACKGROUND);
+        colorMap.put(TestResult.FALSE, falseColor);
+        colorMap.put(TestResult.NOT_TESTED_YET, AnsiColor.ANSI_WHITE);
+        colorMap.put(TestResult.TIMEOUT, AnsiColor.ANSI_PURPLE_BACKGROUND);
+        colorMap.put(TestResult.TRUE, trueColor);
+        colorMap.put(TestResult.UNCERTAIN, AnsiColor.ANSI_YELLOW_BACKGROUND);
+        colorMap.put(TestResult.UNSUPPORTED, AnsiColor.ANSI_CYAN);
+        return new ColorEncoding(colorMap);
     }
 }

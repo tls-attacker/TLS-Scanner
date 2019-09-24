@@ -219,7 +219,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server supports token binding",
                 ""));
 
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_MONTOGMERY_CURVES, "Montgomery curve support",
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES, "Montgomery curve support",
                 "",
                 ""));
 

@@ -72,7 +72,7 @@ public enum AnalyzedProperty {
     SUPPORTS_EXTENDED_MASTER_SECRET(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_ENCRYPT_THEN_MAC(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_TOKENBINDING(AnalyzedPropertyCategory.EXTENSIONS),
-    SUPPORTS_MONTOGMERY_CURVES(AnalyzedPropertyCategory.EC), // ?
+    SUPPORTS_MONTGOMERY_CURVES(AnalyzedPropertyCategory.EC), // ?
 
     SUPPORTS_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_IDS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
