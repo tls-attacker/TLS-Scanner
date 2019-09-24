@@ -1,4 +1,4 @@
-package de.rub.nds.tlsscanner.constants;
+package de.rub.nds.tlsscanner.report;
 
 import de.rub.nds.tlsscanner.rating.TestResult;
 import java.util.HashMap;
