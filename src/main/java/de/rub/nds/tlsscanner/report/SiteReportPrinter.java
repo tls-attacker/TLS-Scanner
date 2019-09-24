@@ -150,15 +150,15 @@ public class SiteReportPrinter {
         String identifier;
         identifier = "Handshakes - Successful";
         if (report.getHandshakeSuccessfulCounter() == 0) {
-            prettyAppend(builder, identifier, Integer.toString(report.getHandshakeSuccessfulCounter()), AnsiColor.ANSI_RED);
+            prettyAppend(builder, identifier, Integer.toString(report.getHandshakeSuccessfulCounter()), AnsiColor.RED);
         } else {
-            prettyAppend(builder, identifier, Integer.toString(report.getHandshakeSuccessfulCounter()), AnsiColor.ANSI_GREEN);
+            prettyAppend(builder, identifier, Integer.toString(report.getHandshakeSuccessfulCounter()), AnsiColor.GREEN);
         }
         identifier = "Handshakes - Failed";
         if (report.getHandshakeFailedCounter() == 0) {
-            prettyAppend(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()), AnsiColor.ANSI_GREEN);
+            prettyAppend(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()), AnsiColor.GREEN);
         } else {
-            prettyAppend(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()), AnsiColor.ANSI_RED);
+            prettyAppend(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()), AnsiColor.RED);
         }
         builder.append("\n");
         return builder;
@@ -329,7 +329,7 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "Handshake Simulation - Details");
         for (SimulatedClientResult simulatedClient : report.getSimulatedClientList()) {
             prettyAppendHeading(builder, simulatedClient.getTlsClientConfig().getType() + ":" + simulatedClient.getTlsClientConfig().getVersion());
-            prettyAppend(builder, "Handshake Successful", "" + simulatedClient.getHandshakeSuccessful(), simulatedClient.getHandshakeSuccessful() ? AnsiColor.ANSI_GREEN : AnsiColor.ANSI_RED);
+            prettyAppend(builder, "Handshake Successful", "" + simulatedClient.getHandshakeSuccessful(), simulatedClient.getHandshakeSuccessful() ? AnsiColor.GREEN : AnsiColor.RED);
             if (!simulatedClient.getHandshakeSuccessful()) {
                 for (HandshakeFailureReasons failureReason : simulatedClient.getFailReasons()) {
                     prettyAppend(builder, "", getRedString(failureReason.getReason(), "%s"));
@@ -337,21 +337,21 @@ public class SiteReportPrinter {
             }
             builder.append("\n");
             if (simulatedClient.getConnectionInsecure() != null && simulatedClient.getConnectionInsecure()) {
-                prettyAppend(builder, "Connection Insecure", simulatedClient.getConnectionInsecure(), simulatedClient.getConnectionInsecure() ? AnsiColor.ANSI_RED : AnsiColor.ANSI_GREEN);
+                prettyAppend(builder, "Connection Insecure", simulatedClient.getConnectionInsecure(), simulatedClient.getConnectionInsecure() ? AnsiColor.RED : AnsiColor.GREEN);
                 for (String reason : simulatedClient.getInsecureReasons()) {
                     prettyAppend(builder, "", reason);
                 }
             }
-            prettyAppend(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure(), simulatedClient.getConnectionRfc7918Secure() ? AnsiColor.ANSI_GREEN : AnsiColor.DEFAULT_COLOR);
+            prettyAppend(builder, "Connection Secure (RFC 7918)", simulatedClient.getConnectionRfc7918Secure(), simulatedClient.getConnectionRfc7918Secure() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
 
             builder.append("\n");
             prettyAppend(builder, "Protocol Version Selected", getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), "%s"));
             prettyAppend(builder, "Protocol Versions Client", simulatedClient.getSupportedVersionList().toString());
             prettyAppend(builder, "Protocol Versions Server", report.getVersions().toString());
-            prettyAppend(builder, "Protocol Version is highest", simulatedClient.getHighestPossibleProtocolVersionSeleceted(), simulatedClient.getHighestPossibleProtocolVersionSeleceted() ? AnsiColor.ANSI_GREEN : AnsiColor.ANSI_RED);
+            prettyAppend(builder, "Protocol Version is highest", simulatedClient.getHighestPossibleProtocolVersionSeleceted(), simulatedClient.getHighestPossibleProtocolVersionSeleceted() ? AnsiColor.GREEN : AnsiColor.RED);
             builder.append("\n");
             prettyAppend(builder, "Selected Ciphersuite", getCipherSuiteColor(simulatedClient.getSelectedCiphersuite(), "%s"));
-            prettyAppend(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy(), simulatedClient.getForwardSecrecy() ? AnsiColor.ANSI_GREEN : AnsiColor.ANSI_RED);
+            prettyAppend(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy(), simulatedClient.getForwardSecrecy() ? AnsiColor.GREEN : AnsiColor.RED);
             builder.append("\n");
             prettyAppend(builder, "Server Public Key", getServerPublicKeyParameterColor(simulatedClient));
             builder.append("\n");
@@ -387,13 +387,13 @@ public class SiteReportPrinter {
         if (report.getCertificateChain() != null) {
             CertificateChain chain = report.getCertificateChain();
             prettyAppendHeading(builder, "Certificate Chain");
-            prettyAppend(builder, "Chain ordered", chain.getChainIsOrdered(), chain.getChainIsOrdered() ? AnsiColor.ANSI_GREEN : AnsiColor.ANSI_YELLOW);
-            prettyAppend(builder, "Contains Trust Anchor", chain.getContainsTrustAnchor(), chain.getContainsTrustAnchor() ? AnsiColor.ANSI_RED : AnsiColor.ANSI_GREEN);
-            prettyAppend(builder, "Generally Trusted", chain.getGenerallyTrusted(), chain.getGenerallyTrusted() ? AnsiColor.ANSI_GREEN : AnsiColor.ANSI_RED);
+            prettyAppend(builder, "Chain ordered", chain.getChainIsOrdered(), chain.getChainIsOrdered() ? AnsiColor.GREEN : AnsiColor.YELLOW);
+            prettyAppend(builder, "Contains Trust Anchor", chain.getContainsTrustAnchor(), chain.getContainsTrustAnchor() ? AnsiColor.RED : AnsiColor.GREEN);
+            prettyAppend(builder, "Generally Trusted", chain.getGenerallyTrusted(), chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED);
             if (chain.getCertificateIssues().size() > 0) {
                 prettyAppendSubheading(builder, "Certificate Issues");
                 for (CertificateIssue issue : chain.getCertificateIssues()) {
-                    prettyAppend(builder, issue.getHumanReadable(), AnsiColor.ANSI_RED);
+                    prettyAppend(builder, issue.getHumanReadable(), AnsiColor.RED);
                 }
             }
             if (!chain.getCertificateReportList().isEmpty()) {
@@ -410,16 +410,16 @@ public class SiteReportPrinter {
                     }
                     if (report.getValidFrom() != null) {
                         if (report.getValidFrom().before(new Date())) {
-                            prettyAppend(builder, "Valid From", report.getValidFrom().toString(), AnsiColor.ANSI_GREEN);
+                            prettyAppend(builder, "Valid From", report.getValidFrom().toString(), AnsiColor.GREEN);
                         } else {
-                            prettyAppend(builder, "Valid From", report.getValidFrom().toString() + " - NOT YET VALID", AnsiColor.ANSI_RED);
+                            prettyAppend(builder, "Valid From", report.getValidFrom().toString() + " - NOT YET VALID", AnsiColor.RED);
                         }
                     }
                     if (report.getValidTo() != null) {
                         if (report.getValidTo().after(new Date())) {
-                            prettyAppend(builder, "Valid Till", report.getValidTo().toString(), AnsiColor.ANSI_GREEN);
+                            prettyAppend(builder, "Valid Till", report.getValidTo().toString(), AnsiColor.GREEN);
                         } else {
-                            prettyAppend(builder, "Valid Till", report.getValidTo().toString() + " - EXPIRED", AnsiColor.ANSI_RED);
+                            prettyAppend(builder, "Valid Till", report.getValidTo().toString() + " - EXPIRED", AnsiColor.RED);
                         }
 
                     }
@@ -427,26 +427,26 @@ public class SiteReportPrinter {
                         long time = report.getValidTo().getTime() - System.currentTimeMillis();
                         long days = TimeUnit.MILLISECONDS.toDays(time);
                         if (days < 1) {
-                            prettyAppend(builder, "Expires in", "<1 day! This certificate expires very soon", AnsiColor.ANSI_RED);
+                            prettyAppend(builder, "Expires in", "<1 day! This certificate expires very soon", AnsiColor.RED);
                         } else if (days < 3) {
-                            prettyAppend(builder, "Expires in", days + " days! This certificate expires soon", AnsiColor.ANSI_RED);
+                            prettyAppend(builder, "Expires in", days + " days! This certificate expires soon", AnsiColor.RED);
                         } else if (days < 14) {
-                            prettyAppend(builder, "Expires in", days + " days. This certificate expires soon", AnsiColor.ANSI_YELLOW);
+                            prettyAppend(builder, "Expires in", days + " days. This certificate expires soon", AnsiColor.YELLOW);
                         } else if (days < 31) {
                             prettyAppend(builder, "Expires in", days + " days.", AnsiColor.DEFAULT_COLOR);
                         } else if (days < 730) {
-                            prettyAppend(builder, "Expires in", days + " days.", AnsiColor.ANSI_GREEN);
+                            prettyAppend(builder, "Expires in", days + " days.", AnsiColor.GREEN);
                         } else if (Objects.equals(report.getLeafCertificate(), Boolean.TRUE)) {
-                            prettyAppend(builder, "Expires in", days + " days. This is usually too long for a leaf certificate", AnsiColor.ANSI_RED);
+                            prettyAppend(builder, "Expires in", days + " days. This is usually too long for a leaf certificate", AnsiColor.RED);
                         } else {
-                            prettyAppend(builder, "Expires in", days / 365 + " years", AnsiColor.ANSI_GREEN);
+                            prettyAppend(builder, "Expires in", days / 365 + " years", AnsiColor.GREEN);
                         }
                     }
                     if (report.getPublicKey() != null) {
                         prettyAppend(builder, "PublicKey", report.getPublicKey().toString());
                     }
                     if (report.getWeakDebianKey() != null) {
-                        prettyAppend(builder, "Weak Debian Key", report.getWeakDebianKey(), report.getWeakDebianKey() ? AnsiColor.ANSI_RED : AnsiColor.ANSI_GREEN);
+                        prettyAppend(builder, "Weak Debian Key", report.getWeakDebianKey(), report.getWeakDebianKey() ? AnsiColor.RED : AnsiColor.GREEN);
                     }
                     if (report.getSignatureAndHashAlgorithm() != null) {
                         prettyAppend(builder, "Signature Algorithm", report.getSignatureAndHashAlgorithm().getSignatureAlgorithm().name());
@@ -454,38 +454,38 @@ public class SiteReportPrinter {
                     if (report.getSignatureAndHashAlgorithm() != null) {
                         if (report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1 || report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5) {
                             if (!report.isTrustAnchor() && !report.getSelfSigned()) {
-                                prettyAppend(builder, "Hash Algorithm", report.getSignatureAndHashAlgorithm().getHashAlgorithm().name(), AnsiColor.ANSI_RED);
+                                prettyAppend(builder, "Hash Algorithm", report.getSignatureAndHashAlgorithm().getHashAlgorithm().name(), AnsiColor.RED);
                             } else {
                                 prettyAppend(builder, "Hash Algorithm", report.getSignatureAndHashAlgorithm().getHashAlgorithm().name() + " - Not critical");
                             }
                         } else {
-                            prettyAppend(builder, "Hash Algorithm", report.getSignatureAndHashAlgorithm().getHashAlgorithm().name(), AnsiColor.ANSI_GREEN);
+                            prettyAppend(builder, "Hash Algorithm", report.getSignatureAndHashAlgorithm().getHashAlgorithm().name(), AnsiColor.GREEN);
                         }
                     }
                     if (report.getExtendedValidation() != null) {
-                        prettyAppend(builder, "Extended Validation", report.getExtendedValidation(), report.getExtendedValidation() ? AnsiColor.ANSI_GREEN : AnsiColor.DEFAULT_COLOR);
+                        prettyAppend(builder, "Extended Validation", report.getExtendedValidation(), report.getExtendedValidation() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
                     }
                     if (report.getCertificateTransparency() != null) {
-                        prettyAppend(builder, "Certificate Transparency", report.getCertificateTransparency(), report.getCertificateTransparency() ? AnsiColor.ANSI_GREEN : AnsiColor.ANSI_YELLOW);
+                        prettyAppend(builder, "Certificate Transparency", report.getCertificateTransparency(), report.getCertificateTransparency() ? AnsiColor.GREEN : AnsiColor.YELLOW);
                     }
 
                     if (report.getCrlSupported() != null) {
-                        prettyAppend(builder, "CRL Supported", report.getCrlSupported(), report.getCrlSupported() ? AnsiColor.ANSI_GREEN : AnsiColor.DEFAULT_COLOR);
+                        prettyAppend(builder, "CRL Supported", report.getCrlSupported(), report.getCrlSupported() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
                     }
                     if (report.getOcspSupported() != null) {
-                        prettyAppend(builder, "OCSP Supported", report.getOcspSupported(), report.getOcspSupported() ? AnsiColor.ANSI_GREEN : AnsiColor.ANSI_YELLOW);
+                        prettyAppend(builder, "OCSP Supported", report.getOcspSupported(), report.getOcspSupported() ? AnsiColor.GREEN : AnsiColor.YELLOW);
                     }
                     if (report.getOcspMustStaple() != null) {
                         prettyAppend(builder, "OCSP must Staple", report.getOcspMustStaple());
                     }
                     if (report.getRevoked() != null) {
-                        prettyAppend(builder, "RevocationStatus", report.getRevoked(), report.getRevoked() ? AnsiColor.ANSI_RED : AnsiColor.ANSI_GREEN);
+                        prettyAppend(builder, "RevocationStatus", report.getRevoked(), report.getRevoked() ? AnsiColor.RED : AnsiColor.GREEN);
                     }
                     if (report.getDnsCAA() != null) {
-                        prettyAppend(builder, "DNS CCA", report.getDnsCAA(), report.getDnsCAA() ? AnsiColor.ANSI_GREEN : AnsiColor.DEFAULT_COLOR);
+                        prettyAppend(builder, "DNS CCA", report.getDnsCAA(), report.getDnsCAA() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
                     }
                     if (report.getRocaVulnerable() != null) {
-                        prettyAppend(builder, "ROCA (simple)", report.getRocaVulnerable(), report.getRocaVulnerable() ? AnsiColor.ANSI_RED : AnsiColor.ANSI_GREEN);
+                        prettyAppend(builder, "ROCA (simple)", report.getRocaVulnerable(), report.getRocaVulnerable() ? AnsiColor.RED : AnsiColor.GREEN);
                     } else {
                         builder.append("ROCA (simple): not tested");
                     }
@@ -515,14 +515,14 @@ public class SiteReportPrinter {
         } else {
             switch (report.getGcmPattern()) {
                 case AKWARD:
-                    prettyAppend(builder, "GCM Pattern", report.getGcmPattern().name(), AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, "GCM Pattern", report.getGcmPattern().name(), AnsiColor.YELLOW);
                     break;
                 case INCREMENTING:
                 case RANDOM:
-                    prettyAppend(builder, "GCM Pattern", report.getGcmPattern().name(), AnsiColor.ANSI_GREEN);
+                    prettyAppend(builder, "GCM Pattern", report.getGcmPattern().name(), AnsiColor.GREEN);
                     break;
                 case REPEATING:
-                    prettyAppend(builder, "GCM Pattern", report.getGcmPattern().name(), AnsiColor.ANSI_RED);
+                    prettyAppend(builder, "GCM Pattern", report.getGcmPattern().name(), AnsiColor.RED);
                     break;
                 default:
                     prettyAppend(builder, "GCM Pattern", report.getGcmPattern().name(), AnsiColor.DEFAULT_COLOR);
@@ -559,7 +559,7 @@ public class SiteReportPrinter {
         if (report.getKnownVulnerability() == null) {
             prettyAppend(builder, "Padding Oracle", AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE);
         } else {
-            prettyAppend(builder, "Padding Oracle", "true - " + report.getKnownVulnerability().getShortName(), AnsiColor.ANSI_RED);
+            prettyAppend(builder, "Padding Oracle", "true - " + report.getKnownVulnerability().getShortName(), AnsiColor.RED);
         }
         prettyAppend(builder, "Bleichenbacher", AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER);
         prettyAppend(builder, "CRIME", AnalyzedProperty.VULNERABLE_TO_CRIME);
@@ -582,29 +582,29 @@ public class SiteReportPrinter {
 
             if (report.getKnownVulnerability() != null) {
                 KnownPaddingOracleVulnerability knownVulnerability = report.getKnownVulnerability();
-                prettyAppend(builder, "Identification", knownVulnerability.getLongName(), AnsiColor.ANSI_RED);
-                prettyAppend(builder, "CVE", knownVulnerability.getCve(), AnsiColor.ANSI_RED);
+                prettyAppend(builder, "Identification", knownVulnerability.getLongName(), AnsiColor.RED);
+                prettyAppend(builder, "CVE", knownVulnerability.getCve(), AnsiColor.RED);
                 if (knownVulnerability.getStrength() != PaddingOracleStrength.WEAK) {
-                    prettyAppend(builder, "Strength", knownVulnerability.getStrength().name(), AnsiColor.ANSI_RED);
+                    prettyAppend(builder, "Strength", knownVulnerability.getStrength().name(), AnsiColor.RED);
                 } else {
-                    prettyAppend(builder, "Strength", knownVulnerability.getStrength().name(), AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, "Strength", knownVulnerability.getStrength().name(), AnsiColor.YELLOW);
                 }
                 if (knownVulnerability.isObservable()) {
-                    prettyAppend(builder, "Observable", "" + knownVulnerability.isObservable(), AnsiColor.ANSI_RED);
+                    prettyAppend(builder, "Observable", "" + knownVulnerability.isObservable(), AnsiColor.RED);
                 } else {
-                    prettyAppend(builder, "Observable", "" + knownVulnerability.isObservable(), AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, "Observable", "" + knownVulnerability.isObservable(), AnsiColor.YELLOW);
                 }
                 prettyAppend(builder, "\n");
                 prettyAppend(builder, knownVulnerability.getDescription());
                 prettyAppendHeading(builder, "Affected Products");
 
                 for (String s : knownVulnerability.getAffectedProducts()) {
-                    prettyAppend(builder, s, AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, s, AnsiColor.YELLOW);
                 }
                 prettyAppend(builder, "");
                 prettyAppend(builder, "If your tested software/hardware is not in this list, please let us know so we can add it here.");
             } else {
-                prettyAppend(builder, "Identification", "Could not identify vulnerability. Please contact us if you know which software/hardware is generating this behavior.", AnsiColor.ANSI_YELLOW);
+                prettyAppend(builder, "Identification", "Could not identify vulnerability. Please contact us if you know which software/hardware is generating this behavior.", AnsiColor.YELLOW);
             }
         }
         prettyAppendHeading(builder, "PaddingOracle Responsemap");
@@ -614,20 +614,20 @@ public class SiteReportPrinter {
             for (PaddingOracleCipherSuiteFingerprint testResult : report.getPaddingOracleTestResultList()) {
                 String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
                 if (testResult.isHasScanningError()) {
-                    prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
                 } else if (Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.ANSI_RED);
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
                 } else if (testResult.isShakyScans()) {
-                    prettyAppend(builder, resultString + "\t - Non Deterministic", AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, resultString + "\t - Non Deterministic", AnsiColor.YELLOW);
                 } else if (Objects.equals(testResult.getVulnerable(), Boolean.FALSE)) {
-                    prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.ANSI_GREEN);
+                    prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
                 } else {
-                    prettyAppend(builder, resultString + "\t # Unknown", AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, resultString + "\t # Unknown", AnsiColor.YELLOW);
                 }
 
                 if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
-                        prettyAppend(builder, "Response Map", AnsiColor.ANSI_YELLOW);
+                        prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
                         appendPaddingOracleResponseMapList(builder, testResult.getResponseMapList());
                     }
                 }
@@ -642,18 +642,18 @@ public class SiteReportPrinter {
             for (int vectorIndex = 0; vectorIndex < responseMapList.get(0).size(); vectorIndex++) {
                 VectorResponse vectorResponse = responseMapList.get(0).get(vectorIndex);
                 if (vectorResponse.isErrorDuringHandshake()) {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + "ERROR", AnsiColor.ANSI_RED);
+                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + "ERROR", AnsiColor.RED);
                 } else if (vectorResponse.isMissingEquivalent()) {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.ANSI_RED);
+                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.RED);
                 } else if (vectorResponse.isShaky()) {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
 
                     for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
                         VectorResponse shakyVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
                         if (shakyVectorResponse.getFingerprint() == null) {
-                            prettyAppend(builder, "\t" + padToLength("", 39) + "null", AnsiColor.ANSI_YELLOW);
+                            prettyAppend(builder, "\t" + padToLength("", 39) + "null", AnsiColor.YELLOW);
                         } else {
-                            prettyAppend(builder, "\t" + padToLength("", 39) + shakyVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.ANSI_YELLOW);
+                            prettyAppend(builder, "\t" + padToLength("", 39) + shakyVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
                         }
                     }
                 } else {
@@ -662,10 +662,10 @@ public class SiteReportPrinter {
                         for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
                             VectorResponse tempVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
                             if (tempVectorResponse == null || tempVectorResponse.getFingerprint() == null) {
-                                prettyAppend(builder, "\t" + padToLength("", 39) + "Missing", AnsiColor.ANSI_RED);
+                                prettyAppend(builder, "\t" + padToLength("", 39) + "Missing", AnsiColor.RED);
                             } else {
                                 if (tempVectorResponse.isShaky()) {
-                                    prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.ANSI_YELLOW);
+                                    prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
                                 } else {
                                     prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable());
                                 }
@@ -688,16 +688,16 @@ public class SiteReportPrinter {
             for (BleichenbacherTestResult testResult : report.getBleichenbacherTestResultList()) {
                 String resultString = "" + padToLength(testResult.getWorkflowType().name(), 40);
                 if (testResult.getVulnerable() == Boolean.TRUE) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.ANSI_RED);
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
                 } else if (testResult.getVulnerable() == Boolean.FALSE) {
-                    prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.ANSI_GREEN);
+                    prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
                 } else {
-                    prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
                 }
 
                 if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
-                        prettyAppend(builder, "Response Map", AnsiColor.ANSI_YELLOW);
+                        prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
                         if (testResult.getVectorFingerPrintPairList() != null && !testResult.getVectorFingerPrintPairList().isEmpty()) {
                             for (VectorFingerprintPair vectorFingerPrintPair : testResult.getVectorFingerPrintPairList()) {
                                 prettyAppend(builder, padToLength("\t" + vectorFingerPrintPair.getVector().getDescription(), 60) + vectorFingerPrintPair.getFingerprint().toHumanReadable());
@@ -857,14 +857,14 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "max-age (seconds)", (long) report.getHpkpMaxAge());
                 if (report.getNormalHpkpPins().size() > 0) {
                     prettyAppend(builder, "");
-                    prettyAppend(builder, "HPKP-Pins:", AnsiColor.ANSI_GREEN);
+                    prettyAppend(builder, "HPKP-Pins:", AnsiColor.GREEN);
                     for (HpkpPin pin : report.getNormalHpkpPins()) {
                         prettyAppend(builder, pin.toString());
                     }
                 }
                 if (report.getReportOnlyHpkpPins().size() > 0) {
                     prettyAppend(builder, "");
-                    prettyAppend(builder, "Report Only HPKP-Pins:", AnsiColor.ANSI_GREEN);
+                    prettyAppend(builder, "Report Only HPKP-Pins:", AnsiColor.GREEN);
                     for (HpkpPin pin : report.getReportOnlyHpkpPins()) {
                         prettyAppend(builder, pin.toString());
                     }
@@ -923,20 +923,20 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Uses Common DH Primes", AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES);
         if (report.getUsedCommonDhValueList() != null && report.getUsedCommonDhValueList().size() != 0) {
             for (CommonDhValues value : report.getUsedCommonDhValueList()) {
-                prettyAppend(builder, "\t" + value.getName(), AnsiColor.ANSI_YELLOW);
+                prettyAppend(builder, "\t" + value.getName(), AnsiColor.YELLOW);
             }
         }
         prettyAppend(builder, "Uses only prime moduli", AnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI);
         prettyAppend(builder, "Uses only safe-prime moduli", AnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI);
         if (report.getWeakestDhStrength() != null) {
             if (report.getWeakestDhStrength() < 1000) {
-                prettyAppend(builder, "DH Strength", "" + report.getWeakestDhStrength(), AnsiColor.ANSI_RED);
+                prettyAppend(builder, "DH Strength", "" + report.getWeakestDhStrength(), AnsiColor.RED);
             } else if (report.getWeakestDhStrength() < 2000) {
-                prettyAppend(builder, "DH Strength", "" + report.getWeakestDhStrength(), AnsiColor.ANSI_YELLOW);
+                prettyAppend(builder, "DH Strength", "" + report.getWeakestDhStrength(), AnsiColor.YELLOW);
             } else if (report.getWeakestDhStrength() < 4100) {
-                prettyAppend(builder, "DH Strength", "" + report.getWeakestDhStrength(), AnsiColor.ANSI_GREEN);
+                prettyAppend(builder, "DH Strength", "" + report.getWeakestDhStrength(), AnsiColor.GREEN);
             } else {
-                prettyAppend(builder, "DH Strength", "" + report.getWeakestDhStrength(), AnsiColor.ANSI_YELLOW);
+                prettyAppend(builder, "DH Strength", "" + report.getWeakestDhStrength(), AnsiColor.YELLOW);
             }
         }
     }
@@ -971,18 +971,18 @@ public class SiteReportPrinter {
                 }
                 String result = recommendation.getShortName() + ": " + influencer.getResult() + additionalInfo;
                 if (scoreInluence > 0) {
-                    prettyAppend(builder, result, AnsiColor.ANSI_GREEN);
+                    prettyAppend(builder, result, AnsiColor.GREEN);
 //                } else if(scoreInluence == 0) {
 //                    prettyAppend(builder, result);
                 } else if (scoreInluence < -50) {
-                    prettyAppend(builder, result, AnsiColor.ANSI_RED);
+                    prettyAppend(builder, result, AnsiColor.RED);
                 } else if (scoreInluence < 0) {
-                    prettyAppend(builder, result, AnsiColor.ANSI_YELLOW);
+                    prettyAppend(builder, result, AnsiColor.YELLOW);
                 }
             });
         } catch (JAXBException ex) {
-            prettyAppend(builder, "Could not append scoring results", AnsiColor.ANSI_RED);
-            prettyAppend(builder, ex.getLocalizedMessage(), AnsiColor.ANSI_RED);
+            prettyAppend(builder, "Could not append scoring results", AnsiColor.RED);
+            prettyAppend(builder, ex.getLocalizedMessage(), AnsiColor.RED);
         }
     }
 
@@ -1006,8 +1006,8 @@ public class SiteReportPrinter {
                 }
             });
         } catch (JAXBException ex) {
-            prettyAppend(builder, "Could not append recommendations", AnsiColor.ANSI_RED);
-            prettyAppend(builder, ex.getLocalizedMessage(), AnsiColor.ANSI_RED);
+            prettyAppend(builder, "Could not append recommendations", AnsiColor.RED);
+            prettyAppend(builder, ex.getLocalizedMessage(), AnsiColor.RED);
         }
     }
 
@@ -1041,13 +1041,13 @@ public class SiteReportPrinter {
         CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
         switch (grade) {
             case GOOD:
-                prettyAppend(builder, suite.name(), AnsiColor.ANSI_GREEN);
+                prettyAppend(builder, suite.name(), AnsiColor.GREEN);
                 break;
             case LOW:
-                prettyAppend(builder, suite.name(), AnsiColor.ANSI_RED);
+                prettyAppend(builder, suite.name(), AnsiColor.RED);
                 break;
             case MEDIUM:
-                prettyAppend(builder, suite.name(), AnsiColor.ANSI_YELLOW);
+                prettyAppend(builder, suite.name(), AnsiColor.YELLOW);
                 break;
             case NONE:
                 prettyAppend(builder, suite.name());
@@ -1100,15 +1100,15 @@ public class SiteReportPrinter {
     }
 
     private String getGreenString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColor.ANSI_GREEN.getCode() : AnsiColor.ANSI_RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.ANSI_RESET.getCode();
+        return (report.isNoColor() == false ? AnsiColor.GREEN.getCode() : AnsiColor.RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
     }
 
     private String getYellowString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColor.ANSI_YELLOW.getCode() : AnsiColor.ANSI_RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.ANSI_RESET.getCode();
+        return (report.isNoColor() == false ? AnsiColor.YELLOW.getCode() : AnsiColor.RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
     }
 
     private String getRedString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColor.ANSI_RED.getCode() : AnsiColor.ANSI_RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.ANSI_RESET.getCode();
+        return (report.isNoColor() == false ? AnsiColor.RED.getCode() : AnsiColor.RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
@@ -1121,7 +1121,7 @@ public class SiteReportPrinter {
         }
         builder.append(value);
         if (!report.isNoColor()) {
-            builder.append(AnsiColor.ANSI_RESET.getCode());
+            builder.append(AnsiColor.RESET.getCode());
         }
         builder.append("\n");
         return builder;
@@ -1157,7 +1157,7 @@ public class SiteReportPrinter {
         }
         builder.append(value);
         if (!report.isNoColor()) {
-            builder.append(AnsiColor.ANSI_RESET.getCode());
+            builder.append(AnsiColor.RESET.getCode());
         }
         builder.append("\n");
         return builder;
@@ -1166,34 +1166,34 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         depth = 0;
 
-        return builder.append(report.isNoColor() == false ? AnsiColor.ANSI_BOLD.getCode() + AnsiColor.ANSI_BLUE.getCode() : AnsiColor.ANSI_RESET.getCode()).append("\n------------------------------------------------------------\n").append(value).append("\n\n").append(AnsiColor.ANSI_RESET.getCode());
+        return builder.append(report.isNoColor() == false ? AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode() : AnsiColor.RESET.getCode()).append("\n------------------------------------------------------------\n").append(value).append("\n\n").append(AnsiColor.RESET.getCode());
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, String value) {
-        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColor.ANSI_UNDERLINE.getCode() + value + AnsiColor.ANSI_RESET.getCode() : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColor.UNDERLINE.getCode() + value + AnsiColor.RESET.getCode() : value)).append("\n");
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColor.ANSI_UNDERLINE.getCode() + value + AnsiColor.ANSI_RESET.getCode() : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColor.UNDERLINE.getCode() + value + AnsiColor.RESET.getCode() : value)).append("\n");
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, long value) {
-        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColor.ANSI_UNDERLINE.getCode() + value + AnsiColor.ANSI_RESET.getCode() : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColor.UNDERLINE.getCode() + value + AnsiColor.RESET.getCode() : value)).append("\n");
     }
 
     private StringBuilder prettyAppendSubheading(StringBuilder builder, String name) {
         depth = 1;
-        return builder.append("|_\n |").append(report.isNoColor() == false ? AnsiColor.ANSI_BOLD.getCode() + AnsiColor.ANSI_PURPLE.getCode() + AnsiColor.ANSI_UNDERLINE.getCode() + name + "\n\n" + AnsiColor.ANSI_RESET.getCode() : name + "\n\n");
+        return builder.append("|_\n |").append(report.isNoColor() == false ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private StringBuilder prettyAppendSubSubheading(StringBuilder builder, String name) {
         depth = 2;
-        return builder.append("|_\n |_\n  |").append(report.isNoColor() == false ? AnsiColor.ANSI_BOLD.getCode() + AnsiColor.ANSI_PURPLE.getCode() + AnsiColor.ANSI_UNDERLINE.getCode() + name + "\n\n" + AnsiColor.ANSI_RESET.getCode() : name + "\n\n");
+        return builder.append("|_\n |_\n  |").append(report.isNoColor() == false ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private StringBuilder prettyAppendSubSubSubheading(StringBuilder builder, String name) {
         depth = 3;
-        return builder.append("|_\n |_\n  |_\n   |").append(report.isNoColor() == false ? AnsiColor.ANSI_BOLD.getCode() + AnsiColor.ANSI_PURPLE.getCode() + AnsiColor.ANSI_UNDERLINE.getCode() + name + "\n\n" + AnsiColor.ANSI_RESET.getCode() : name + "\n\n");
+        return builder.append("|_\n |_\n  |_\n   |").append(report.isNoColor() == false ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
@@ -1204,13 +1204,13 @@ public class SiteReportPrinter {
         }
         switch (drownVulnerable) {
             case FULL:
-                prettyAppend(builder, "true - fully exploitable", AnsiColor.ANSI_RED);
+                prettyAppend(builder, "true - fully exploitable", AnsiColor.RED);
                 break;
             case SSL2:
-                prettyAppend(builder, "true - SSL 2 supported!", AnsiColor.ANSI_RED);
+                prettyAppend(builder, "true - SSL 2 supported!", AnsiColor.RED);
                 break;
             case NONE:
-                prettyAppend(builder, "false", AnsiColor.ANSI_GREEN);
+                prettyAppend(builder, "false", AnsiColor.GREEN);
                 break;
             case UNKNOWN:
                 prettyAppend(builder, "Unknown");
@@ -1226,13 +1226,13 @@ public class SiteReportPrinter {
         }
         switch (earlyCcsVulnerable) {
             case VULN_EXPLOITABLE:
-                prettyAppend(builder, "true - exploitable", AnsiColor.ANSI_RED);
+                prettyAppend(builder, "true - exploitable", AnsiColor.RED);
                 break;
             case VULN_NOT_EXPLOITABLE:
-                prettyAppend(builder, "true - probably not exploitable", AnsiColor.ANSI_RED);
+                prettyAppend(builder, "true - probably not exploitable", AnsiColor.RED);
                 break;
             case NOT_VULNERABLE:
-                prettyAppend(builder, "false", AnsiColor.ANSI_GREEN);
+                prettyAppend(builder, "false", AnsiColor.GREEN);
                 break;
             case UNKNOWN:
                 prettyAppend(builder, "Unknown");
@@ -1247,10 +1247,10 @@ public class SiteReportPrinter {
         builder = builder.append(addIndentations(value)).append(": ");
         switch (pattern.getType()) {
             case CORRECT:
-                return prettyAppend(builder, pattern.toString(), AnsiColor.ANSI_GREEN);
+                return prettyAppend(builder, pattern.toString(), AnsiColor.GREEN);
             case NONE:
             case PARTIAL:
-                return prettyAppend(builder, pattern.toString(), AnsiColor.ANSI_RED);
+                return prettyAppend(builder, pattern.toString(), AnsiColor.RED);
             case UNKNOWN:
                 return prettyAppend(builder, pattern.toString());
             default:
@@ -1307,7 +1307,7 @@ public class SiteReportPrinter {
         }
         switch (randomEvaluationResult) {
             case DUPLICATES:
-                prettyAppend(builder, testName, "true - exploitable", AnsiColor.ANSI_RED);
+                prettyAppend(builder, testName, "true - exploitable", AnsiColor.RED);
                 break;
             case NOT_ANALYZED:
                 prettyAppend(builder, testName, "not analyzed", AnsiColor.DEFAULT_COLOR);
@@ -1319,7 +1319,7 @@ public class SiteReportPrinter {
                 prettyAppend(builder, testName, "contains unix time", AnsiColor.DEFAULT_COLOR);
                 break;
             case NO_DUPLICATES:
-                prettyAppend(builder, testName, "no duplicates (wip)", AnsiColor.ANSI_GREEN);
+                prettyAppend(builder, testName, "no duplicates (wip)", AnsiColor.GREEN);
                 break;
         }
     }
