@@ -1049,7 +1049,7 @@ public class SiteReportPrinter {
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
             scoreReport.getInfluencers().entrySet().forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
-                if (influencer.hasNegativeScore() || influencer.getReferencedProperty() != null) {
+                if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
                     Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
                     PropertyResultRecommendation resultRecommendation = recommendation.getPropertyResultRecommendation(influencer.getResult());
                     if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {

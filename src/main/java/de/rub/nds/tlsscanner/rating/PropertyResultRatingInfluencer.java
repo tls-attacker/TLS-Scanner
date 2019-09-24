@@ -94,7 +94,7 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         this.referencedPropertyResult = referencedPropertyResult;
     }
 
-    public boolean hasNegativeScore() {
+    public boolean isBadInfluence() {
         return (influence != null && influence < 0 || scoreCap != null);
     }
 
