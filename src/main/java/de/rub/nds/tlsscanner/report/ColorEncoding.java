@@ -32,7 +32,7 @@ public class ColorEncoding {
     public String encode(TestResult result, String encodedText) {
         AnsiColor color = this.getColor(result);
         if (color != AnsiColor.DEFAULT_COLOR) {
-            return color.getCode() + encodedText + AnsiColor.ANSI_RESET.getCode();
+            return color.getCode() + encodedText + AnsiColor.RESET.getCode();
         } else {
             return encodedText;
         }
