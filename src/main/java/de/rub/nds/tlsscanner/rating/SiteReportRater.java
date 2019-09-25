@@ -17,8 +17,12 @@ import java.util.LinkedHashMap;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SiteReportRater {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private static String INFLUENCERS_RESOURCE_LOCATION = "rating/influencers.xml";
 
@@ -57,6 +61,7 @@ public class SiteReportRater {
         String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + recommendationLanguage + ".xml";
         URL u = classLoader.getResource(fileName);
         if (u == null) {
+            LOGGER.warn("Could not find language resources \"" + fileName + "\" for SiteReportRater. Using default (english).");
             fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
         }
         in = classLoader.getResourceAsStream(fileName);
@@ -74,9 +79,11 @@ public class SiteReportRater {
             if (result != null) {
                 PropertyResultRatingInfluencer propertyRatingInfluencer = ratingInfluencer.getPropertyRatingInfluencer(result);
                 ratingInfluencers.put(ratingInfluencer.getAnalyzedProperty(), propertyRatingInfluencer);
+            } else {
+                LOGGER.warn("ResultMap contains null values");
             }
         }
-        
+
         int score = computeScore(ratingInfluencers);
         return new ScoreReport(score, ratingInfluencers);
     }
@@ -86,9 +93,12 @@ public class SiteReportRater {
         for (PropertyResultRatingInfluencer influencer : influencers.values()) {
             if (influencer.getInfluence() != null) {
                 score += influencer.getInfluence();
+            } else {
+                LOGGER.warn("Influencer has 'null' influence");
             }
         }
-        for (PropertyResultRatingInfluencer influencer : influencers.values()) {
+        for (PropertyResultRatingInfluencer influencer
+                : influencers.values()) {
             if (influencer.getScoreCap() != null && score >= influencer.getScoreCap()) {
                 score = influencer.getScoreCap();
             }
