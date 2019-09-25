@@ -33,7 +33,7 @@ public class SiteReportRater {
     private SiteReportRater() {
     }
 
-    public static SiteReportRater getSiteReportRater(String language) throws JAXBException {
+    public static SiteReportRater getSiteReportRater(String recommendationLanguage) throws JAXBException {
         if (instance == null) {
             ClassLoader classLoader = SiteReport.class.getClassLoader();
             JAXBContext context = JAXBContext.newInstance(RatingInfluencers.class);
@@ -43,7 +43,7 @@ public class SiteReportRater {
 
             context = JAXBContext.newInstance(Recommendations.class);
             um = context.createUnmarshaller();
-            String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + language + ".xml";
+            String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + recommendationLanguage + ".xml";
             URL u = classLoader.getResource(fileName);
             if (u == null) {
                 fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
