@@ -26,7 +26,7 @@ public class Recommendations implements Serializable {
 
     private List<Recommendation> recommendations;
 
-    Recommendations() {
+    private Recommendations() {
 
     }
 
@@ -45,7 +45,6 @@ public class Recommendations implements Serializable {
 
     public static Recommendations createRecommendations(InputStream stream) {
         return RatingIO.readRecommendations(stream);
-        // todo: close stream? https://www.tutorialspoint.com/java/xml/javax_xml_bind_jaxb_unmarshal_inputstream
     }
 
     @XmlElement(name = "recommendation")
