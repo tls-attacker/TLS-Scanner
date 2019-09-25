@@ -41,9 +41,9 @@ public class RecommendationsSerializationTest {
 
     @Before
     public void setUp() throws JAXBException {
-        original = new Recommendations();
-        List<Recommendation> propertyRecommendations = new LinkedList<>();
 
+        List<Recommendation> propertyRecommendations = new LinkedList<>();
+        original = new Recommendations(propertyRecommendations);
         List<PropertyResultRecommendation> recommendations = new LinkedList<>();
         PropertyResultRecommendation r = new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
         recommendations.add(r);

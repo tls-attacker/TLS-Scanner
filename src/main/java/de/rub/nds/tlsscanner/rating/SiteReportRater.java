@@ -20,9 +20,9 @@ import javax.xml.bind.Unmarshaller;
 
 public class SiteReportRater {
 
-    public static String INFLUENCERS_FILE = "rating/influencers.xml";
+    private static String INFLUENCERS_RESOURCE_LOCATION = "rating/influencers.xml";
 
-    public static String RECOMMENDATIONS_FILE = "rating/recommendations";
+    private static String RECOMMENDATIONS_RESOURCE_LOCATION = "rating/recommendations";
 
     private static SiteReportRater instance;
 
@@ -38,15 +38,15 @@ public class SiteReportRater {
             ClassLoader classLoader = SiteReport.class.getClassLoader();
             JAXBContext context = JAXBContext.newInstance(RatingInfluencers.class);
             Unmarshaller um = context.createUnmarshaller();
-            InputStream in = classLoader.getResourceAsStream(INFLUENCERS_FILE);
+            InputStream in = classLoader.getResourceAsStream(INFLUENCERS_RESOURCE_LOCATION);
             RatingInfluencers influencers = (RatingInfluencers) um.unmarshal(in);
 
             context = JAXBContext.newInstance(Recommendations.class);
             um = context.createUnmarshaller();
-            String fileName = RECOMMENDATIONS_FILE + "_" + language + ".xml";
+            String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + language + ".xml";
             URL u = classLoader.getResource(fileName);
             if (u == null) {
-                fileName = RECOMMENDATIONS_FILE + ".xml";
+                fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
             }
             in = classLoader.getResourceAsStream(fileName);
             Recommendations recommendations = (Recommendations) um.unmarshal(in);
