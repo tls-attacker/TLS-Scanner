@@ -76,10 +76,7 @@ public class SiteReportRater {
                 ratingInfluencers.put(ratingInfluencer.getAnalyzedProperty(), propertyRatingInfluencer);
             }
         }
-
-//        LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> sortedRatingInfluencers = ratingInfluencers.entrySet().stream().
-//                sorted(Entry.comparingByValue()).collect(
-//                        Collectors.toMap(Entry::getKey, Entry::getValue,(e1, e2) -> e1, LinkedHashMap::new));
+        
         int score = computeScore(ratingInfluencers);
         return new ScoreReport(score, ratingInfluencers);
     }
