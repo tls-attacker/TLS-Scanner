@@ -24,38 +24,45 @@ public class SiteReportRater {
 
     private static String RECOMMENDATIONS_RESOURCE_LOCATION = "rating/recommendations";
 
-    private static SiteReportRater instance;
-
     private RatingInfluencers influencers;
 
     private Recommendations recommendations;
 
+    private SiteReportRater(RatingInfluencers influencers, Recommendations recommendations) {
+        this.influencers = influencers;
+        this.recommendations = recommendations;
+    }
+
     private SiteReportRater() {
     }
 
+    /**
+     * Returns a generic SiteReportRater
+     *
+     * @param recommendationLanguage Language of the recommendations. If no
+     * language file can be found for selected language a default recommendation
+     * file in english is returned
+     * @return
+     * @throws JAXBException
+     */
     public static SiteReportRater getSiteReportRater(String recommendationLanguage) throws JAXBException {
-        if (instance == null) {
-            ClassLoader classLoader = SiteReport.class.getClassLoader();
-            JAXBContext context = JAXBContext.newInstance(RatingInfluencers.class);
-            Unmarshaller um = context.createUnmarshaller();
-            InputStream in = classLoader.getResourceAsStream(INFLUENCERS_RESOURCE_LOCATION);
-            RatingInfluencers influencers = (RatingInfluencers) um.unmarshal(in);
+        ClassLoader classLoader = SiteReport.class.getClassLoader();
+        JAXBContext context = JAXBContext.newInstance(RatingInfluencers.class);
+        Unmarshaller um = context.createUnmarshaller();
+        InputStream in = classLoader.getResourceAsStream(INFLUENCERS_RESOURCE_LOCATION);
+        RatingInfluencers influencers = (RatingInfluencers) um.unmarshal(in);
 
-            context = JAXBContext.newInstance(Recommendations.class);
-            um = context.createUnmarshaller();
-            String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + recommendationLanguage + ".xml";
-            URL u = classLoader.getResource(fileName);
-            if (u == null) {
-                fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
-            }
-            in = classLoader.getResourceAsStream(fileName);
-            Recommendations recommendations = (Recommendations) um.unmarshal(in);
-
-            instance = new SiteReportRater();
-            instance.influencers = influencers;
-            instance.recommendations = recommendations;
+        context = JAXBContext.newInstance(Recommendations.class);
+        um = context.createUnmarshaller();
+        String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + recommendationLanguage + ".xml";
+        URL u = classLoader.getResource(fileName);
+        if (u == null) {
+            fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
         }
+        in = classLoader.getResourceAsStream(fileName);
+        Recommendations recommendations = (Recommendations) um.unmarshal(in);
 
+        SiteReportRater instance = new SiteReportRater(influencers, recommendations);
         return instance;
     }
 
