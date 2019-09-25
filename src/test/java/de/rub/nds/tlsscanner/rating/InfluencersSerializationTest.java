@@ -41,8 +41,9 @@ public class InfluencersSerializationTest {
 
     @Before
     public void setUp() throws JAXBException {
-        original = new RatingInfluencers();
         LinkedList<RatingInfluencer> influencers = new LinkedList<>();
+
+        original = new RatingInfluencers(influencers);
         RatingInfluencer i = new RatingInfluencer();
         i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_SSL_2);
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500));

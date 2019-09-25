@@ -26,7 +26,7 @@ public class RatingInfluencers implements Serializable {
 
     private LinkedList<RatingInfluencer> ratingInfluencers;
 
-    RatingInfluencers() {
+    private RatingInfluencers() {
 
     }
 
