@@ -49,11 +49,10 @@ public class SiteReport {
     private List<PerformanceData> performanceList;
 
     private final String host;
-    // TODO: Add to hashmap? 
+    
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
 
-    //Quirks
     //Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
@@ -82,14 +81,6 @@ public class SiteReport {
     //Certificate
     private Certificate certificate = null;
     private CertificateChain certificateChain;
-    // TODO: Add to hashmap?
-    private Boolean certificateExpired = null;
-    private Boolean certificateNotYetValid = null;
-    private Boolean certificateHasWeakHashAlgorithm = null;
-    private Boolean certificateHasWeakSignAlgorithm = null;
-    private Boolean certificateMachtesDomainName = null;
-    private Boolean certificateIsTrusted = null;
-    private Boolean certificateKeyIsBlacklisted = null;
 
     //Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -335,62 +326,6 @@ public class SiteReport {
 
     public void setSupportsSslTls(Boolean supportsSslTls) {
         this.supportsSslTls = supportsSslTls;
-    }
-
-    public Boolean getCertificateExpired() {
-        return certificateExpired;
-    }
-
-    public void setCertificateExpired(Boolean certificateExpired) {
-        this.certificateExpired = certificateExpired;
-    }
-
-    public Boolean getCertificateNotYetValid() {
-        return certificateNotYetValid;
-    }
-
-    public void setCertificateNotYetValid(Boolean certificateNotYetValid) {
-        this.certificateNotYetValid = certificateNotYetValid;
-    }
-
-    public Boolean getCertificateHasWeakHashAlgorithm() {
-        return certificateHasWeakHashAlgorithm;
-    }
-
-    public void setCertificateHasWeakHashAlgorithm(Boolean certificateHasWeakHashAlgorithm) {
-        this.certificateHasWeakHashAlgorithm = certificateHasWeakHashAlgorithm;
-    }
-
-    public Boolean getCertificateHasWeakSignAlgorithm() {
-        return certificateHasWeakSignAlgorithm;
-    }
-
-    public void setCertificateHasWeakSignAlgorithm(Boolean certificateHasWeakSignAlgorithm) {
-        this.certificateHasWeakSignAlgorithm = certificateHasWeakSignAlgorithm;
-    }
-
-    public Boolean getCertificateMachtesDomainName() {
-        return certificateMachtesDomainName;
-    }
-
-    public void setCertificateMachtesDomainName(Boolean certificateMachtesDomainName) {
-        this.certificateMachtesDomainName = certificateMachtesDomainName;
-    }
-
-    public Boolean getCertificateIsTrusted() {
-        return certificateIsTrusted;
-    }
-
-    public void setCertificateIsTrusted(Boolean certificateIsTrusted) {
-        this.certificateIsTrusted = certificateIsTrusted;
-    }
-
-    public Boolean getCertificateKeyIsBlacklisted() {
-        return certificateKeyIsBlacklisted;
-    }
-
-    public void setCertificateKeyIsBlacklisted(Boolean certificateKeyIsBlacklisted) {
-        this.certificateKeyIsBlacklisted = certificateKeyIsBlacklisted;
     }
 
     public GcmPattern getGcmPattern() {
