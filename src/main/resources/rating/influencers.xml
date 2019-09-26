@@ -1044,7 +1044,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_WITH_REUSE</analyzedProperty>
+        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-800</influence>

@@ -308,7 +308,7 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000),
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_WITH_REUSE,
+        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE,
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500),
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_POODLE,

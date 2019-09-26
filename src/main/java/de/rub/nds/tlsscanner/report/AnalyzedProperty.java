@@ -72,7 +72,7 @@ public enum AnalyzedProperty {
     SUPPORTS_EXTENDED_MASTER_SECRET(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_ENCRYPT_THEN_MAC(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_TOKENBINDING(AnalyzedPropertyCategory.EXTENSIONS),
-    SUPPORTS_MONTGOMERY_CURVES(AnalyzedPropertyCategory.EC), // ?
+    SUPPORTS_MONTGOMERY_CURVES(AnalyzedPropertyCategory.EC),
 
     SUPPORTS_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_IDS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
@@ -81,23 +81,23 @@ public enum AnalyzedProperty {
     SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_FALLBACK_SCSV(AnalyzedPropertyCategory.RENEGOTIATION),
-    SUPPORTS_TLS_COMPRESSION(AnalyzedPropertyCategory.COMPRESSION), // ?
+    SUPPORTS_TLS_COMPRESSION(AnalyzedPropertyCategory.COMPRESSION),
 
     SUPPORTS_COMMON_DH_PRIMES(AnalyzedPropertyCategory.FFDHE),
     SUPPORTS_ONLY_PRIME_MODULI(AnalyzedPropertyCategory.FFDHE),
     SUPPORTS_ONLY_SAFEPRIME_MODULI(AnalyzedPropertyCategory.FFDHE),
-    SUPPORTS_INSECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION), // ?
-    SUPPORTS_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION), // ?
+    SUPPORTS_INSECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
 
     SUPPORTS_HTTPS(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS_PRELOADING(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HPKP(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HPKP_REPORTING(AnalyzedPropertyCategory.HTTPS_HEADERS),
-    SUPPORTS_HTTP_COMPRESSION(AnalyzedPropertyCategory.HTTPS_HEADERS), // ?
+    SUPPORTS_HTTP_COMPRESSION(AnalyzedPropertyCategory.HTTPS_HEADERS),
 
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
-    ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES), // ?
+    ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFOCRES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
     /**
      * does it handle unknown versions correctly?
@@ -167,7 +167,7 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_PADDING_ORACLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_INVALID_CURVE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_INVALID_CURVE_EPHEMERAL(AnalyzedPropertyCategory.ATTACKS),
-    VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_WITH_REUSE(AnalyzedPropertyCategory.ATTACKS), // ?
+    VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_POODLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_TLS_POODLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_SWEET_32(AnalyzedPropertyCategory.ATTACKS),
@@ -180,12 +180,12 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_LOGJAM(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_FREAK(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK(AnalyzedPropertyCategory.ATTACKS),
-    MISSES_MAC_APPDATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE), // ?
-    MISSES_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE), // ?
-    MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),// ?
+    MISSES_MAC_APPDATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
+    MISSES_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
+    MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_GCM_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     HAS_CERTIFICATE_ISSUES(AnalyzedPropertyCategory.CERTIFICATE),
-    HAS_WEAK_RANDOMNESS(AnalyzedPropertyCategory.FRESHNESS), // ?
+    HAS_WEAK_RANDOMNESS(AnalyzedPropertyCategory.FRESHNESS),
 
     REUSES_EC_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_DH_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),

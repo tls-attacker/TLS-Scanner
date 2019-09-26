@@ -392,7 +392,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server is vulnerable to an innvalid curve attack on ephemeral cipher suites",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites", "There is a vulnerability in your TLS implementation. Update your software or contact the developers."),
                 ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_WITH_REUSE, "Vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse",
+        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE, "Vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse",
                 "Evaluates whether the TLS server is vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse", "There is a critical vulnerability in your TLS implementation. Update your software or contact the developers."),
                 ""));

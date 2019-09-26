@@ -1208,7 +1208,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_WITH_REUSE</analyzedProperty>
+        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE</analyzedProperty>
         <shortName>Vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse</shortName>
         <shortDescription>Evaluates whether the TLS server is vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse</shortDescription>
         <links>
