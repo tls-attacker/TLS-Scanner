@@ -1027,8 +1027,6 @@ public class SiteReportPrinter {
                 String result = recommendation.getShortName() + ": " + influencer.getResult() + additionalInfo;
                 if (scoreInluence > 0) {
                     prettyAppend(builder, result, AnsiColor.GREEN);
-//                } else if(scoreInluence == 0) {
-//                    prettyAppend(builder, result);
                 } else if (scoreInluence < -50) {
                     prettyAppend(builder, result, AnsiColor.RED);
                 } else if (scoreInluence < 0) {
