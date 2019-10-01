@@ -86,8 +86,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
                 adjustCipherType(suite);
             }
             report.setCipherSuites(allSupported);
-        }else
-        {
+        } else {
             supportsAeadCiphers = TestResult.COULD_NOT_TEST;
             prefersPfsCiphers = TestResult.COULD_NOT_TEST;
             supportsAeadCiphers = TestResult.COULD_NOT_TEST;

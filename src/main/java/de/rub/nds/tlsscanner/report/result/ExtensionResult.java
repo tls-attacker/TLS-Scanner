@@ -54,8 +54,7 @@ public class ExtensionResult extends ProbeResult {
                     sessionTickets = TestResult.TRUE;
                 }
             }
-        }else
-        {
+        } else {
             encryptThenMac = TestResult.COULD_NOT_TEST;
             extendedMasterSecret = TestResult.COULD_NOT_TEST;
             secureRenegotiation = TestResult.COULD_NOT_TEST;

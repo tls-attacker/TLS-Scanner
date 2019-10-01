@@ -73,7 +73,6 @@ public enum AnalyzedProperty {
     SUPPORTS_ENCRYPT_THEN_MAC(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_TOKENBINDING(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_MONTGOMERY_CURVES(AnalyzedPropertyCategory.EC),
-
     SUPPORTS_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_IDS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_ROTATION_HINT(AnalyzedPropertyCategory.SESSION_RESUMPTION),
@@ -82,20 +81,17 @@ public enum AnalyzedProperty {
     SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_FALLBACK_SCSV(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_COMPRESSION(AnalyzedPropertyCategory.COMPRESSION),
-
     SUPPORTS_COMMON_DH_PRIMES(AnalyzedPropertyCategory.FFDHE),
     SUPPORTS_ONLY_PRIME_MODULI(AnalyzedPropertyCategory.FFDHE),
     SUPPORTS_ONLY_SAFEPRIME_MODULI(AnalyzedPropertyCategory.FFDHE),
     SUPPORTS_INSECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
-
     SUPPORTS_HTTPS(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS_PRELOADING(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HPKP(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HPKP_REPORTING(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HTTP_COMPRESSION(AnalyzedPropertyCategory.HTTPS_HEADERS),
-
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFOCRES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
@@ -186,7 +182,6 @@ public enum AnalyzedProperty {
     MISSES_GCM_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     HAS_CERTIFICATE_ISSUES(AnalyzedPropertyCategory.CERTIFICATE),
     HAS_WEAK_RANDOMNESS(AnalyzedPropertyCategory.FRESHNESS),
-
     REUSES_EC_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_DH_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_GCM_NONCES(AnalyzedPropertyCategory.FRESHNESS),

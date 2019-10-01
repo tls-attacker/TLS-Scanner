@@ -97,7 +97,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     public abstract ProbeResult executeTest();
 
     public abstract boolean canBeExecuted(SiteReport report);
-    
+
     public abstract ProbeResult getCouldNotExecuteResult();
 
     public abstract void adjustConfig(SiteReport report);

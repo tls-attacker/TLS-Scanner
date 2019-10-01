@@ -38,8 +38,7 @@ public class PaddingOracleResponseMap extends ProbeResult {
         if (resultList != null && resultList.isEmpty() && vulnerable == null) {
             vulnerable = TestResult.FALSE;
         }
-        if(resultList == null)
-        {
+        if (resultList == null) {
             vulnerable = TestResult.COULD_NOT_TEST;
         }
         report.setPaddingOracleTestResultList(resultList);

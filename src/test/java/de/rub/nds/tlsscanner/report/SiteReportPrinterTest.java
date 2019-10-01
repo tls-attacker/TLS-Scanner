@@ -59,9 +59,5 @@ public class SiteReportPrinterTest {
             printer.getFullReport();
         }
     }
-    
-    
-
-    
 
 }

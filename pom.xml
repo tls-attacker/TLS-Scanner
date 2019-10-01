@@ -105,7 +105,7 @@
                                     <destFileName>${project.build.finalName}.${project.packaging}</destFileName>
                                 </artifactItem>
                         
-    </artifactItems>
+                            </artifactItems>
                             <outputDirectory>${basedir}/apps</outputDirectory>
                         </configuration>
                     </execution>
