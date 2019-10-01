@@ -13,6 +13,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.SignatureAndHashAlgorithmResult;
 
 /**
  *
@@ -30,7 +31,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -39,7 +40,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return null;
+    public ProbeResult getCouldNotExecuteResult() {
+        return new SignatureAndHashAlgorithmResult(null);
     }
 }

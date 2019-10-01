@@ -55,6 +55,7 @@ public class BleichenbacherProbe extends TlsProbe {
             StarttlsDelegate starttlsDelegate = (StarttlsDelegate) bleichenbacherConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
             ((CiphersuiteDelegate) (bleichenbacherConfig.getDelegate(CiphersuiteDelegate.class))).setCipherSuites(suiteList);
             RSAPublicKey publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(bleichenbacherConfig.createConfig());
             if (publicKey == null) {
@@ -86,7 +87,7 @@ public class BleichenbacherProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE;
     }
 
@@ -108,7 +109,7 @@ public class BleichenbacherProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new BleichenbacherResult(TestResult.COULD_NOT_TEST, new LinkedList<BleichenbacherTestResult>());
+    public ProbeResult getCouldNotExecuteResult() {
+        return new BleichenbacherResult(TestResult.COULD_NOT_TEST, null);
     }
 }

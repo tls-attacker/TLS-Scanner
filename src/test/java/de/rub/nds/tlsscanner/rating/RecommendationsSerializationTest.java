@@ -41,13 +41,13 @@ public class RecommendationsSerializationTest {
 
     @Before
     public void setUp() throws JAXBException {
-        original = new Recommendations();
+
         List<Recommendation> propertyRecommendations = new LinkedList<>();
-        
-        List<PropertyRecommendation> recommendations = new LinkedList<>();
-        PropertyRecommendation r = new PropertyRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
+        original = new Recommendations(propertyRecommendations);
+        List<PropertyResultRecommendation> recommendations = new LinkedList<>();
+        PropertyResultRecommendation r = new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
         recommendations.add(r);
-        
+
         propertyRecommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_2, recommendations));
         original.setRecommendations(propertyRecommendations);
 
@@ -64,21 +64,20 @@ public class RecommendationsSerializationTest {
 
         String xmlString = writer.toString();
         LOGGER.info(xmlString);
-        System.out.println(xmlString);
 
         um = context.createUnmarshaller();
         result = (Recommendations) um.unmarshal(new StringReader(xmlString));
-        
+
         assertEquals("Recommendation length check.", original.getRecommendations().size(), result.getRecommendations().size());
-        
+
         Recommendation oRecommendation = original.getRecommendations().get(0);
         Recommendation rRecommendation = result.getRecommendations().get(0);
         assertEquals(oRecommendation.getAnalyzedProperty(), rRecommendation.getAnalyzedProperty());
-        
-        PropertyRecommendation or = oRecommendation.getPropertyRecommendations().get(0);
-        PropertyRecommendation rr = rRecommendation.getPropertyRecommendations().get(0);
-        assertEquals(or.getInformation(), rr.getInformation());
+
+        PropertyResultRecommendation or = oRecommendation.getPropertyRecommendations().get(0);
+        PropertyResultRecommendation rr = rRecommendation.getPropertyRecommendations().get(0);
+        assertEquals(or.getShortDescription(), rr.getShortDescription());
         assertEquals(or.getHandlingRecommendation(), rr.getHandlingRecommendation());
     }
-    
+
 }

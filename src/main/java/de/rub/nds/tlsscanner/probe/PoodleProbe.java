@@ -37,18 +37,19 @@ public class PoodleProbe extends TlsProbe {
             PoodleCommandConfig poodleCommandConfig = new PoodleCommandConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
             StarttlsDelegate starttlsDelegate = (StarttlsDelegate) poodleCommandConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
             PoodleAttacker attacker = new PoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
             Boolean vulnerable = attacker.isVulnerable();
             return new PoodleResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new PoodleResult(TestResult.ERROR_DURING_TEST);
-        }    
+        }
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS) == TestResult.TRUE;
     }
 
@@ -57,7 +58,7 @@ public class PoodleProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new PoodleResult(TestResult.COULD_NOT_TEST);
     }
 }

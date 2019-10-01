@@ -21,7 +21,7 @@ public class LogjamAfterprobe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        TestResult vulnerable = TestResult.UNTESTED;
+        TestResult vulnerable = TestResult.NOT_TESTED_YET;
         try {
             if (report.getCipherSuites() != null) {
                 for (CipherSuite suite : report.getCipherSuites()) {
@@ -33,7 +33,7 @@ public class LogjamAfterprobe extends AfterProbe {
             } else {
                 vulnerable = TestResult.UNCERTAIN;
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             vulnerable = TestResult.ERROR_DURING_TEST;
         }
         report.putResult(AnalyzedProperty.VULNERABLE_TO_LOGJAM, vulnerable);

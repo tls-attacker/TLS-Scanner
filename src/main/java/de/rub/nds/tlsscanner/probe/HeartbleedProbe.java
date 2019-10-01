@@ -43,6 +43,7 @@ public class HeartbleedProbe extends TlsProbe {
             HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
             StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
             if (supportedCiphers != null) {
@@ -52,13 +53,13 @@ public class HeartbleedProbe extends TlsProbe {
             HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
             Boolean vulnerable = attacker.isVulnerable();
             return new HeartbleedResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new HeartbleedResult(TestResult.ERROR_DURING_TEST);
         }
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         if (report.getSupportedExtensions() != null) {
             for (ExtensionType type : report.getSupportedExtensions()) {
                 if (type == ExtensionType.HEARTBEAT) {
@@ -81,7 +82,7 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new HeartbleedResult(TestResult.COULD_NOT_TEST);
     }
 }

@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.rating.TestResult;
@@ -49,11 +50,10 @@ public class SiteReport extends Observable {
     private List<PerformanceData> performanceList;
 
     private final String host;
-    // TODO: Add to hashmap? 
+
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
 
-    //Quirks
     //Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
@@ -82,14 +82,6 @@ public class SiteReport extends Observable {
     //Certificate
     private Certificate certificate = null;
     private CertificateChain certificateChain;
-    // TODO: Add to hashmap?
-    private Boolean certificateExpired = null;
-    private Boolean certificateNotYetValid = null;
-    private Boolean certificateHasWeakHashAlgorithm = null;
-    private Boolean certificateHasWeakSignAlgorithm = null;
-    private Boolean certificateMachtesDomainName = null;
-    private Boolean certificateIsTrusted = null;
-    private Boolean certificateKeyIsBlacklisted = null;
 
     //Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -125,8 +117,11 @@ public class SiteReport extends Observable {
     private Integer connectionInsecureCounter = null;
     private List<SimulatedClientResult> simulatedClientList = null;
 
-    public SiteReport(String host) {
+    private List<ProbeType> probeTypeList;
+    
+    public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
+        this.probeTypeList = probeTypeList;
         performanceList = new LinkedList<>();
         extractedValueContainerList = new LinkedList<>();
         resultMap = new HashMap<>();
@@ -142,7 +137,7 @@ public class SiteReport extends Observable {
 
     public TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
-        return (result == null) ? TestResult.UNTESTED : result;
+        return (result == null) ? TestResult.NOT_TESTED_YET : result;
     }
 
     public synchronized void putResult(AnalyzedProperty property, TestResult result) {
@@ -157,35 +152,45 @@ public class SiteReport extends Observable {
 
     public synchronized void putResult(DrownVulnerabilityType result) {
         // todo: divide DROWN to several vulnerabilities ???
-        switch (result) {
-            case NONE:
-                this.putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
-                break;
-            case UNKNOWN:
-                this.putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.UNCERTAIN);
-                break;
-            default:
-                this.putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE);
+        if (result != null) {
+            switch (result) {
+                case NONE:
+                    putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
+                    break;
+                case UNKNOWN:
+                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_DROWN.toString(), TestResult.UNCERTAIN);
+                    break;
+                default:
+                    putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE);
+            }
         }
     }
 
     public synchronized void putResult(EarlyCcsVulnerabilityType result) {
         // todo: divide EARLY CCS to several vulnerabilities ???
         // also: EarlyFinishedVulnerabilityType
-        switch (result) {
-            case NOT_VULNERABLE:
-                this.putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
-                break;
-            case UNKNOWN:
-                this.putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, TestResult.UNCERTAIN);
-                break;
-            default:
-                putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, true);
+        if (result != null) {
+            switch (result) {
+                case NOT_VULNERABLE:
+                    putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
+                    break;
+                case UNKNOWN:
+                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.UNCERTAIN);
+                    break;
+                default:
+                    putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, true);
+            }
+        } else {
+            resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.COULD_NOT_TEST);
         }
     }
 
     public String getHost() {
         return host;
+    }
+
+    public List<ProbeType> getProbeTypeList() {
+        return probeTypeList;
     }
 
     public Boolean getServerIsAlive() {
@@ -348,76 +353,6 @@ public class SiteReport extends Observable {
         this.notifyObservers();
     }
 
-    public Boolean getCertificateExpired() {
-        return certificateExpired;
-    }
-
-    public void setCertificateExpired(Boolean certificateExpired) {
-        this.certificateExpired = certificateExpired;
-        this.hasChanged();
-        this.notifyObservers();
-    }
-
-    public Boolean getCertificateNotYetValid() {
-        return certificateNotYetValid;
-    }
-
-    public void setCertificateNotYetValid(Boolean certificateNotYetValid) {
-        this.certificateNotYetValid = certificateNotYetValid;
-        this.hasChanged();
-        this.notifyObservers();
-    }
-
-    public Boolean getCertificateHasWeakHashAlgorithm() {
-        return certificateHasWeakHashAlgorithm;
-    }
-
-    public void setCertificateHasWeakHashAlgorithm(Boolean certificateHasWeakHashAlgorithm) {
-        this.certificateHasWeakHashAlgorithm = certificateHasWeakHashAlgorithm;
-        this.hasChanged();
-        this.notifyObservers();
-    }
-
-    public Boolean getCertificateHasWeakSignAlgorithm() {
-        return certificateHasWeakSignAlgorithm;
-    }
-
-    public void setCertificateHasWeakSignAlgorithm(Boolean certificateHasWeakSignAlgorithm) {
-        this.certificateHasWeakSignAlgorithm = certificateHasWeakSignAlgorithm;
-        this.hasChanged();
-        this.notifyObservers();
-    }
-
-    public Boolean getCertificateMachtesDomainName() {
-        return certificateMachtesDomainName;
-    }
-
-    public void setCertificateMachtesDomainName(Boolean certificateMachtesDomainName) {
-        this.certificateMachtesDomainName = certificateMachtesDomainName;
-        this.hasChanged();
-        this.notifyObservers();
-    }
-
-    public Boolean getCertificateIsTrusted() {
-        return certificateIsTrusted;
-    }
-
-    public void setCertificateIsTrusted(Boolean certificateIsTrusted) {
-        this.certificateIsTrusted = certificateIsTrusted;
-        this.hasChanged();
-        this.notifyObservers();
-    }
-
-    public Boolean getCertificateKeyIsBlacklisted() {
-        return certificateKeyIsBlacklisted;
-    }
-
-    public void setCertificateKeyIsBlacklisted(Boolean certificateKeyIsBlacklisted) {
-        this.certificateKeyIsBlacklisted = certificateKeyIsBlacklisted;
-        this.hasChanged();
-        this.notifyObservers();
-    }
-
     public GcmPattern getGcmPattern() {
         return gcmPattern;
     }
@@ -488,13 +423,13 @@ public class SiteReport extends Observable {
         this.notifyObservers();
     }
 
-    public String getFullReport(ScannerDetail detail, boolean colour) {
-        return new SiteReportPrinter(this, detail, colour).getFullReport();
+    public String getFullReport(ScannerDetail detail, boolean printColorful) {
+        return new SiteReportPrinter(this, detail, printColorful).getFullReport();
     }
 
     @Override
     public String toString() {
-        return getFullReport(ScannerDetail.NORMAL, true);
+        return getFullReport(ScannerDetail.NORMAL, false);
     }
 
     public CheckPattern getMacCheckPatternFinished() {

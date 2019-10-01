@@ -30,8 +30,9 @@ public class RenegotiationResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
-        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION_EXTENSION, insecureRenegotiation);
+        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION, secureRenegotiation);
+        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, insecureRenegotiation);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK, insecureRenegotiation);
     }
 
 }

@@ -21,7 +21,6 @@ import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.CommonBugProbe;
 import de.rub.nds.tlsscanner.probe.CompressionsProbe;
-import de.rub.nds.tlsscanner.probe.Cve20162107Probe;
 import de.rub.nds.tlsscanner.probe.DrownProbe;
 import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
@@ -130,7 +129,6 @@ public class TlsScanner {
         probeList.add(new BleichenbacherProbe(config, parallelExecutor));
         probeList.add(new PoodleProbe(config, parallelExecutor));
         probeList.add(new TlsPoodleProbe(config, parallelExecutor));
-        probeList.add(new Cve20162107Probe(config, parallelExecutor));
         probeList.add(new InvalidCurveProbe(config, parallelExecutor));
         probeList.add(new DrownProbe(config, parallelExecutor));
         probeList.add(new EarlyCcsProbe(config, parallelExecutor));
@@ -158,7 +156,7 @@ public class TlsScanner {
                 if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls()) || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(probeList, afterList);
-                    MultiThreadedScanJobExecutor executor = new MultiThreadedScanJobExecutor(config, job, config.getOverallThreads(), "test");
+                    MultiThreadedScanJobExecutor executor = new MultiThreadedScanJobExecutor(config, job, config.getOverallThreads(), config.getClientDelegate().getHost());
                     SiteReport report = executor.execute();
                     executor.shutdown();
                     return report;
@@ -166,7 +164,7 @@ public class TlsScanner {
                     isConnectable = true;
                 }
             }
-            SiteReport report = new SiteReport(config.getClientDelegate().getHost());
+            SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>());
             report.setServerIsAlive(isConnectable);
             report.setSupportsSslTls(false);
             return report;

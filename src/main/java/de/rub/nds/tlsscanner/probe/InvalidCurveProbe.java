@@ -37,14 +37,15 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        TestResult vulnerableClassic = TestResult.UNTESTED;
-        TestResult vulnerableEphemeral = TestResult.UNTESTED;
+        TestResult vulnerableClassic = TestResult.NOT_TESTED_YET;
+        TestResult vulnerableEphemeral = TestResult.NOT_TESTED_YET;
         if (supportsStatic == TestResult.TRUE) {
             try {
 
                 InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
                 ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
                 delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+                delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
                 StarttlsDelegate starttlsDelegate = (StarttlsDelegate) invalidCurveAttackConfig.getDelegate(StarttlsDelegate.class);
                 starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
                 InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
@@ -71,6 +72,7 @@ public class InvalidCurveProbe extends TlsProbe {
                 starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
                 ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
                 delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+                delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
                 InvalidCurveAttacker attacker = new InvalidCurveAttacker(invalidCurveAttackConfig, invalidCurveAttackConfig.createConfig());
                 Boolean vuln = attacker.isVulnerable();
                 if (vuln == null) {
@@ -91,20 +93,20 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report
+    public boolean canBeExecuted(SiteReport report
     ) {
         return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResult.FALSE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResult.FALSE;
     }
 
     @Override
-    public void adjustConfig(SiteReport report
-    ) {
+    public void adjustConfig(SiteReport report) {
         supportsEphemeral = report.getResult(AnalyzedProperty.SUPPORTS_ECDH);
         supportsStatic = report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH);
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new InvalidCurveResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
+
 }

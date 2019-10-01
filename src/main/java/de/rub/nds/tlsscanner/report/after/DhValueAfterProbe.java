@@ -27,24 +27,25 @@ public class DhValueAfterProbe extends AfterProbe {
         List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
         List<CommonDhValues> loadedCommonDhValues = CommonDhLoader.loadCommonDhValues();
         Set<CommonDhValues> usedCommonValues = new HashSet<>();
-        Boolean onlyPrime = true;
-        Boolean onlySafePrime = true;
-        Boolean reuse = false;
+        TestResult onlyPrime = TestResult.TRUE;
+        TestResult onlySafePrime = TestResult.TRUE;
+        TestResult reuse = TestResult.FALSE;
+
         int shortestBitLength = Integer.MAX_VALUE;
         for (ExtractedValueContainer container : extractedValueContainerList) {
             if (container.getType() == TrackableValueType.DH_PUBKEY) {
                 if (!container.areAllValuesDiffernt()) {
-                    reuse = true;
+                    reuse = TestResult.TRUE;
                     break;
                 }
             }
             if (container.getType() == TrackableValueType.DH_MODULUS) {
                 for (Object o : container.getExtractedValueList()) {
-                    if (onlyPrime && !((BigInteger) o).isProbablePrime(30)) {
-                        onlyPrime = false;
+                    if (onlyPrime == TestResult.TRUE && !((BigInteger) o).isProbablePrime(30)) {
+                        onlyPrime = TestResult.FALSE;
                     }
-                    if (onlySafePrime && !isSafePrime((BigInteger) o)) {
-                        onlySafePrime = false;
+                    if (onlySafePrime == TestResult.TRUE && !isSafePrime((BigInteger) o)) {
+                        onlySafePrime = TestResult.FALSE;
                     }
 
                     for (CommonDhValues value : loadedCommonDhValues) {
@@ -60,13 +61,21 @@ public class DhValueAfterProbe extends AfterProbe {
                 }
             }
         }
-        if (usedCommonValues.size() > 0) {
-            report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.TRUE);
+
+        if (extractedValueContainerList.isEmpty()) {
+            report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.COULD_NOT_TEST);
+            onlyPrime = TestResult.COULD_NOT_TEST;
+            onlySafePrime = TestResult.COULD_NOT_TEST;
+            reuse = TestResult.COULD_NOT_TEST;
         } else {
-            report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.FALSE);
+            if (usedCommonValues.size() > 0) {
+                report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.TRUE);
+            } else {
+                report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.FALSE);
+            }
         }
-        report.putResult(AnalyzedProperty.SUPPORTS_PRIME_MODULI, !onlyPrime);
-        report.putResult(AnalyzedProperty.SUPPORTS_SAFEPRIME_MODULI, !onlySafePrime);
+        report.putResult(AnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI, onlyPrime);
+        report.putResult(AnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI, onlySafePrime);
         report.setUsedCommonDhValueList(usedCommonValues);
         report.putResult(AnalyzedProperty.REUSES_DH_PUBLICKEY, reuse);
         if (shortestBitLength != Integer.MAX_VALUE) {

@@ -42,7 +42,7 @@ public class RenegotiationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-       try {
+        try {
             TestResult supportsSecureRenegotiation;
             if (supportsRenegotiationExtension == TestResult.TRUE) {
                 supportsSecureRenegotiation = supportsSecureClientRenegotiation();
@@ -51,7 +51,7 @@ public class RenegotiationProbe extends TlsProbe {
             }
             TestResult supportsInsecureRenegotiation = supportsInsecureClientRenegotiation();
             return new RenegotiationResult(supportsSecureRenegotiation, supportsInsecureRenegotiation);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new RenegotiationResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }
@@ -109,7 +109,7 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return (report.getCipherSuites() != null && report.getCipherSuites().size() > 0);
     }
 
@@ -120,8 +120,7 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new ResumptionResult(TestResult.COULD_NOT_TEST);
+    public ProbeResult getCouldNotExecuteResult() {
+        return new RenegotiationResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
-
 }

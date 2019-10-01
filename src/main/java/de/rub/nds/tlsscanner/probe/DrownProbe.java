@@ -31,6 +31,7 @@ public class DrownProbe extends TlsProbe {
         DrownCommandConfig drownCommandConfig = new DrownCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         DrownAttacker attacker = new DrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
@@ -39,7 +40,7 @@ public class DrownProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -48,8 +49,7 @@ public class DrownProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new DrownResult(DrownVulnerabilityType.UNKNOWN);
+    public ProbeResult getCouldNotExecuteResult() {
+        return new DrownResult(null);
     }
-
 }

@@ -66,13 +66,13 @@ public class SniProbe extends TlsProbe {
             //We cannot get a ServerHello from this Server...
             LOGGER.warn("SNI Test could not get a ServerHello message from the Server!");
             return new SniResult(TestResult.ERROR_DURING_TEST);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new SniResult(TestResult.ERROR_DURING_TEST);
         }
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -81,8 +81,7 @@ public class SniProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new SniResult(TestResult.COULD_NOT_TEST);
     }
-
 }

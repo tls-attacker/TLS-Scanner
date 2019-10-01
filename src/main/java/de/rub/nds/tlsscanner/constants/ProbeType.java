@@ -23,7 +23,6 @@ public enum ProbeType {
     EARLY_CCS,
     NAMED_GROUPS,
     PADDING_ORACLE,
-    CVE20162107,
     POODLE,
     TLS_POODLE,
     PROTOCOL_VERSION,

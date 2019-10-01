@@ -63,7 +63,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor implements Obs
     public SiteReport execute() {
         this.notScheduledTasks = new ArrayList<>(scanJob.getProbeList());
 
-        SiteReport report = new SiteReport(config.getClientDelegate().getHost());
+        SiteReport report = new SiteReport(config.getClientDelegate().getHost(),new LinkedList<>());
         //TODO check that server is online?
         report.addObserver(this);
         this.update(report, null);
@@ -151,7 +151,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor implements Obs
             SiteReport report = (SiteReport) o;
             List<TlsProbe> newNotSchedulesTasksList = new LinkedList<>();
             for (TlsProbe probe : notScheduledTasks) {
-                if (probe.shouldBeExecuted(report)) {
+                if (probe.canBeExecuted(report)) {
                     LOGGER.info("Scheduling: " + probe.getProbeName());
                     Future<ProbeResult> future = executor.submit(probe);
                     futureResults.add(future);

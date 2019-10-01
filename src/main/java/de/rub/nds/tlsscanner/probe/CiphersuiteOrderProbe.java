@@ -44,10 +44,10 @@ public class CiphersuiteOrderProbe extends TlsProbe {
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
             toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-            Collections.reverseOrder();
+            Collections.reverse(toTestList);
             CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
             return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);
         }
     }
@@ -73,7 +73,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -82,7 +82,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new CipherSuiteOrderResult(TestResult.COULD_NOT_TEST);
     }
 }

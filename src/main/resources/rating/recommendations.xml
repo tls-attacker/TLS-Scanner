@@ -2,10 +2,1548 @@
 <recommendations>
     <recommendation>
         <analyzedProperty>SUPPORTS_SSL_2</analyzedProperty>
-        <propertyRecommendation>
-            <result>TRUE</result>
-            <information>SSLv2 is enabled</information>
-            <handlingRecommendation>Disable SSLv2</handlingRecommendation>
-        </propertyRecommendation>
+        <shortName>SSL 2.0 support</shortName>
+        <shortDescription>Evaluates whether the SSL 2.0 protocol is supported</shortDescription>
+        <links>
+            <link>https://www-archive.mozilla.org/projects/security/pki/nss/ssl/draft02.html</link>
+            <link>https://drownattack.com</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>SSL 2.0 is enabled</shortDescription>
+                <handlingRecommendation>Disable SSL 2.0</handlingRecommendation>
+                <detailedDescription></detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SSL_3</analyzedProperty>
+        <shortName>SSL 3.0 support</shortName>
+        <shortDescription>Evaluates whether the SSL 3.0 protocol is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc6101</link>
+            <link>https://www.openssl.org/~bodo/ssl-poodle.pdf</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>SSL 3.0 is enabled</shortDescription>
+                <handlingRecommendation>Disable SSL 3.0</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+        <shortName>TLS 1.0 support</shortName>
+        <shortDescription>Evaluates whether the TLS 1.0 protocol is supported</shortDescription>
+        <links>
+            <link>https://www.ietf.org/rfc/rfc2246</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>TLS 1.0 is enabled</shortDescription>
+                <handlingRecommendation>Consider disabling TLS 1.0</handlingRecommendation>
+                <detailedDescription></detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+        <shortName>TLS 1.1 support</shortName>
+        <shortDescription>Evaluates whether the TLS 1.1 protocol is supported</shortDescription>
+        <links>
+            <link>https://www.ietf.org/rfc/rfc4346</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>TLS 1.1 is enabled</shortDescription>
+                <handlingRecommendation>Consider disabling TLS 1.1</handlingRecommendation>
+                <detailedDescription></detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+        <shortName>TLS 1.2 support</shortName>
+        <shortDescription>Evaluates whether the TLS 1.2 protocol is supported</shortDescription>
+        <links>
+            <link>https://www.ietf.org/rfc/rfc5246.txt</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>TLS 1.2 is disabled</shortDescription>
+                <handlingRecommendation>Enable TLS 1.2</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+        <shortName>TLS 1.3 support</shortName>
+        <shortDescription>Evaluates whether the TLS 1.3 protocol is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc8446</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>TLS 1.3 is disabled</shortDescription>
+                <handlingRecommendation>Enable TLS 1.3</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_1_3_DRAFT</analyzedProperty>
+        <shortName>TLS 1.3 draft version support</shortName>
+        <shortDescription>Evaluates whether a TLS 1.3 version draft is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc8446</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>TLS 1.3 draft version is enabled</shortDescription>
+                <handlingRecommendation>Update your server and enable the TLS 1.3 final version</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DTLS_1_0</analyzedProperty>
+        <shortName>DTLS 1.0 support</shortName>
+        <shortDescription>Evaluates whether the DTLS 1.0 protocol is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc4347</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>DTLS 1.0 is enabled</shortDescription>
+                <handlingRecommendation>Disable DTLS 1.0, it is a UDP protocol</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DTLS_1_2</analyzedProperty>
+        <shortName>DTLS 1.2 support</shortName>
+        <shortDescription>Evaluates whether the DTLS 1.2 protocol is supported</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc6347</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>DTLS 1.2 is enabled</shortDescription>
+                <handlingRecommendation>Disable DTLS 1.2, it is a UDP protocol</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DTLS_1_3</analyzedProperty>
+        <shortName>DTLS 1.3 support</shortName>
+        <shortDescription>Evaluates whether the DTLS 1.3 protocol is supported</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>DTLS 1.3 is enabled</shortDescription>
+                <handlingRecommendation>Disable DTLS 1.3, it is a UDP protocol</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_NULL_CIPHERS</analyzedProperty>
+        <shortName>Null cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports null ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Null ciphers are supported</shortDescription>
+                <handlingRecommendation>Disable insecure null ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_FORTEZZA</analyzedProperty>
+        <shortName>Fortezza support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Fortezza ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Fortezza ciphers are supported</shortDescription>
+                <handlingRecommendation>Disable Fortezza cipher suites</handlingRecommendation>
+                <detailedDescription>Fortezza cipher suittes were developed by NSA in the 90s. You should better get rid of Fortezza algorithms.</detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_EXPORT</analyzedProperty>
+        <shortName>Export cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports export ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Export ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable export ciphers</handlingRecommendation>
+                <detailedDescription></detailedDescription>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ANON</analyzedProperty>
+        <shortName>Anonymous cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports anonymous ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Anonymous ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable anonymous ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DES</analyzedProperty>
+        <shortName>DES support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports DES ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>DES ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable DES ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_3DES</analyzedProperty>
+        <shortName>3DES (Triple DES) support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports 3DES (Triple DES) ciphers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>3DES ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable 3DES ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SEED</analyzedProperty>
+        <shortName>SEED cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports SEED ciphers</shortDescription>
+        <detailedDescription>SEED is a 128 bit block cipher developed by the KISA (Korea Information Security Agency) in 1998</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc4162</link>
+        </links>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_IDEA</analyzedProperty>
+        <shortName>IDEA cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports IDEA ciphers</shortDescription>
+        <detailedDescription>IDEA (International Data Encryption Algorithm) is a block cipher. It uses a 128 bit key and operates on 64 bit blocks.</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc5469</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>IDEA ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable IDEA ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_RC2</analyzedProperty>
+        <shortName>RC2 cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports RC2 ciphers</shortDescription>
+        <detailedDescription>RC2 is a 64 bit block cipher designed by Ron Rivest in 1987</detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>RC2 ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable RC2 ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_RC4</analyzedProperty>
+        <shortName>RC4 cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports RC4 ciphers</shortDescription>
+        <detailedDescription>RC4 is a stream cipher designed by Ron Rivest in 1987</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc7465</link>
+            <link>https://www.rc4nomore.com/</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>RC4 ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable RC4 ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CBC</analyzedProperty>
+        <shortName>CBC cipher suite support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports CBC cipher suites</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>CBC cipher suites are enabled</shortDescription>
+                <handlingRecommendation>Disable CBC cipher suites</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_AEAD</analyzedProperty>
+        <shortName>AEAD cipher suites support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports AEAD (Authenticated Encryption with Associated Data) cipher suites, e.g., AES-GCM</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>AEAD cipher suites are disabled</shortDescription>
+                <handlingRecommendation>Enable AEAD cipher suites, e.g., AES-GCM</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PFS</analyzedProperty>
+        <shortName>Perfect Forward Secrecy (PFS) support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Perfect Forward Secrecy (PFS)</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>PFS is not supported</shortDescription>
+                <handlingRecommendation>Enable perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ONLY_PFS</analyzedProperty>
+        <shortName>Support for only PFS cipher suites</shortName>
+        <shortDescription>Evaluates whether the TLS server exclusively supports Perfect Forward Secrecy (PFS)</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Not all cipher suites are perfect forward secure</shortDescription>
+                <handlingRecommendation>Consider disabling cipher suites which are not perfect forward secure. Enable only perfect forward secure cipher suites, e.g., TLS-DHE or TLS-ECDHE</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>PREFERS_PFS</analyzedProperty>
+        <shortName>Perfect Forward Secrecy (PFS) preference</shortName>
+        <shortDescription>Evaluates whether the TLS server prefers Perfect Forward Secrecy (PFS) cipher suites</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>PFS cipher suites are not prefered</shortDescription>
+                <handlingRecommendation>Enable cipher suite ordering and prefer PFS cipher suites</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>ENFORCES_PFS</analyzedProperty>
+        <shortName>Perfect Forward Secrecy (PFS) enforcing</shortName>
+        <shortDescription>Evaluates whether the TLS server enforces Perfect Forward Secrecy (PFS) cipher suites</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>PFS cipher suites are not enforced</shortDescription>
+                <handlingRecommendation>Enable cipher suite ordering and enforce PFS cipher suites</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_AES</analyzedProperty>
+        <shortName>AES cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports AES cipher</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>AES cipher suites are disabled</shortDescription>
+                <handlingRecommendation>Enable AES cipher suites</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CAMELLIA</analyzedProperty>
+        <shortName>Camellia cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Camellia cipher</shortDescription>
+        <detailedDescription>Camellia is a 128 bit block cipher designed by Mitsubishi and NTT in 2000</detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ARIA</analyzedProperty>
+        <shortName>ARIA cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports ARIA cipher</shortDescription>
+        <detailedDescription>ARIA is a 128 bit block cipher designed in 2003</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc5794</link>
+        </links>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CHACHA</analyzedProperty>
+        <shortName>ChaCha cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports ChaCha cipher</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc7905</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>ChaCha cipher is disabled</shortDescription>
+                <handlingRecommendation>Enable ChaCha cipher</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_RSA</analyzedProperty>
+        <shortName>RSA key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports RSA key exchange</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>RSA key exchange is enabled</shortDescription>
+                <handlingRecommendation>Disable RSA key exchange</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DH</analyzedProperty>
+        <shortName>Diffie-Hellman (DH) key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Diffie-Hellman (DH) key exchange</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ECDH</analyzedProperty>
+        <shortName>Elliptic Curve Diffie-Hellman (ECDH) key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Elliptic Curve Diffie-Hellman (ECDH) key exchange</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Elliptic Curve Diffie-Hellman (ECDH) key exchange is disabled</shortDescription>
+                <handlingRecommendation>Enable Elliptic Curve Diffie-Hellman (ECDH)</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_STATIC_ECDH</analyzedProperty>
+        <shortName>Static Elliptic Curve Diffie-Hellman (ECDH) key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports static Elliptic Curve Diffie-Hellman (ECDH) key exchange</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Static Elliptic Curve Diffie-Hellman (ECDH) key exchange is enabled</shortDescription>
+                <handlingRecommendation>Disable static Elliptic Curve Diffie-Hellman (ECDH)</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_GOST</analyzedProperty>
+        <shortName>GOST cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports GOST cipher</shortDescription>
+        <detailedDescription>GOST is a block cipher designed in the USSR in the nineties. It has a block size of 64 bits. </detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>GOST ciphers are enabled</shortDescription>
+                <handlingRecommendation>Disable GOST ciphers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SRP</analyzedProperty>
+        <shortName>Secure Remote Password (SRP) support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Secure Remote Password (SRP) cipher suites</shortDescription>
+        <detailedDescription>https://tools.ietf.org/html/rfc5054</detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_KERBEROS</analyzedProperty>
+        <shortName>Kerberos cipher suites support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Kerberos cipher suites</shortDescription>
+        <detailedDescription>https://tools.ietf.org/html/rfc2712</detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PSK_PLAIN</analyzedProperty>
+        <shortName>Supports plain PSK</shortName>
+        <shortDescription>For now we do not consider in our scoring</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PSK_RSA</analyzedProperty>
+        <shortName>Supports RSA PSK</shortName>
+        <shortDescription>For now we do not consider in our scoring</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PSK_DHE</analyzedProperty>
+        <shortName>Supports DHE PSK</shortName>
+        <shortDescription>For now we do not consider in our scoring</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_PSK_ECDHE</analyzedProperty>
+        <shortName>Supports ECDHE PSK</shortName>
+        <shortDescription>For now we do not consider in our scoring</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_POST_QUANTUM</analyzedProperty>
+        <shortName>Post quantum algorithms support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports post quantum algorithms</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_NEWHOPE</analyzedProperty>
+        <shortName>Post quantum new hope algorihtm support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports the new hope post quantum algorithm</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ECMQV</analyzedProperty>
+        <shortName>Post quantum ECMQV algorithm support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports the ECMQV post quantum algorithm</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_STREAM_CIPHERS</analyzedProperty>
+        <shortName>Stream cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports stream ciphers</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_BLOCK_CIPHERS</analyzedProperty>
+        <shortName>Block cipher support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports block ciphers</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_EXTENDED_MASTER_SECRET</analyzedProperty>
+        <shortName>Extended master secret support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports extended master secret extension</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc7627</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Extended master secret extension is not supported</shortDescription>
+                <handlingRecommendation>Enable support for the extended master secret</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ENCRYPT_THEN_MAC</analyzedProperty>
+        <shortName>Encrypt-then-MAC extension support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Encrypt-then-MAC extension</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc7366</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Encrypt-then-MAC extension is not supported</shortDescription>
+                <handlingRecommendation>Enable support for the Encrypt-then-MAC</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TOKENBINDING</analyzedProperty>
+        <shortName>Token binding support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports token binding</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_MONTGOMERY_CURVES</analyzedProperty>
+        <shortName>Montgomery curve support</shortName>
+        <shortDescription></shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SESSION_TICKETS</analyzedProperty>
+        <shortName>Support for session resumption with session tickets</shortName>
+        <shortDescription>Evaluates whether the TLS server supports session resumption with session tickets</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Session tickets are disabled</shortDescription>
+                <handlingRecommendation>Enable session resumption with session tickets</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SESSION_IDS</analyzedProperty>
+        <shortName>Support for session resumption with session IDs</shortName>
+        <shortDescription>Evaluates whether the TLS server supports session resumption with session IDs</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SESSION_TICKET_ROTATION_HINT</analyzedProperty>
+        <shortName>Support for rotated session tickets</shortName>
+        <shortDescription>Evaluates whether the TLS server supports session resumption with session tickets whose keys are being rotated</shortDescription>
+        <detailedDescription>Session tickets are created with symmetric keys. The lifetime of the symmetric keys used for session tickets should be restricted to reduce the attack surface. The ticket lifetime is typically indicated in the ticket lifetime hint.</detailedDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Session resumption with rotating session tickets is disabled</shortDescription>
+                <handlingRecommendation>Frequently changing session ticket keys improves the security, enable rotated session tickets.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_RENEGOTIATION</analyzedProperty>
+        <shortName>TLS renegoatiation support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports renegotiation.</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_INSECURE_RENEGOTIATION</analyzedProperty>
+        <shortName>TLS insecure renegoatiation support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports renegotiation.</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Insecure renegotiation is enabled</shortDescription>
+                <handlingRecommendation>Disable renegotiation or enable only secure renegotiation.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
+        <shortName>Support for secure renegotiation extension</shortName>
+        <shortDescription>Evaluates whether the TLS server supports secure renegotiation extension.</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc5746</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Secure renegotiation extension is disabled</shortDescription>
+                <handlingRecommendation>Consider to enable secure renegotiation extension.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION</analyzedProperty>
+        <shortName>Support for client-side secure renegotiation</shortName>
+        <shortDescription>Evaluates whether the TLS server supports client-side secure renegotiation.</shortDescription>
+        <detailedDescription>TLS secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc5746</link>
+        </links>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
+        <shortName>Support for client-side insecure renegotiation</shortName>
+        <shortDescription>Evaluates whether the TLS server supports client-side insecure renegotiation.</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc5746</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>Insecure renegotiation is enabled</shortDescription>
+                <handlingRecommendation>Disable renegotiation or enable only secure renegotiation.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_FALLBACK_SCSV</analyzedProperty>
+        <shortName>TLS Fallback Signaling Cipher Suite Value (SCSV) support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports TLS Fallback Signaling Cipher Suite Value (SCSV)</shortDescription>
+        <detailedDescription>In order to establish the highest possible TLS version, TLS clients attempt to perform several TLS handshake starting with the one with the highetst version. If a TLS handshake with a particular version does not work, the TLS client attampts to execute the handshake with a lower version. This of course allows an attacker to downgrade the TLS connection. TLS Fallback Signaling Cipher Suite Value (SCSV) was introduced to prevent downgrade attacks. For example, if a TLS client attempts to establish a TLS 1.1 conenction after an unsuccessful TLS 1.2 handshake attempt, it includes a TLS SCSV cipher suite into the ClientHello message. The server accepts this handshake if and only if its highest version is TLS 1.1.</detailedDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc7507</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>TLS SCSV is disabled</shortDescription>
+                <handlingRecommendation> Enable TLS Fallback Signaling Cipher Suite Value (SCSV)</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_TLS_COMPRESSION</analyzedProperty>
+        <shortName>TLS compression support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports TLS compresssion</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>TLS compression is supported</shortDescription>
+                <handlingRecommendation>Disable TLS compression</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ONLY_PRIME_MODULI</analyzedProperty>
+        <shortName>Moduli provided in FFDHE ServerKeyExchange messages are prime</shortName>
+        <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are prime</shortDescription>
+        <links>
+            <link>https://eprint.iacr.org/2016/995.pdf</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>DH group moduli are not prime</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_COMMON_DH_PRIMES</analyzedProperty>
+        <shortName>Moduli provided in FFDHE ServerKeyExchange messages are from common groups</shortName>
+        <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are from common groups defined by standardization bodies or RFCs</shortDescription>
+        <detailedDescription>https://github.com/cryptosense/diffie-hellman-groups</detailedDescription>
+        <links>
+            <link>https://eprint.iacr.org/2016/995.pdf</link>
+        </links>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ONLY_SAFEPRIME_MODULI</analyzedProperty>
+        <shortName>Moduli provided in FFDHE ServerKeyExchange messages are safe primes</shortName>
+        <shortDescription>Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are safe primes</shortDescription>
+        <links>
+            <link>https://eprint.iacr.org/2016/995.pdf</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>DH group moduli are not safe primes</shortDescription>
+                <handlingRecommendation>There is a vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HTTPS</analyzedProperty>
+        <shortName>HTTPS support</shortName>
+        <shortDescription></shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HSTS</analyzedProperty>
+        <shortName>Support for HTTP Strict Transport Security (HSTS)</shortName>
+        <shortDescription>Evaluates whether the TLS server supports HTTP Strict Transport Security (HSTS)</shortDescription>
+        <links>
+            <link>https://tools.ietf.org/html/rfc6797</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>HSTS is disabled</shortDescription>
+                <handlingRecommendation>Enable HSTS</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HSTS_PRELOADING</analyzedProperty>
+        <shortName>Support for HTTP Strict Transport Security (HSTS) preloading</shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>HSTS is disabled</shortDescription>
+                <handlingRecommendation>Enable HSTS</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HPKP</analyzedProperty>
+        <shortName>HTTP Public Key Pinning (HPKP) support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Public Key Pinning Extension for HTTP</shortDescription>
+        <detailedDescription>https://tools.ietf.org/html/rfc7469</detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HPKP_REPORTING</analyzedProperty>
+        <shortName>HTTP Public Key Pinning (HPKP) report-only mode support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports Public Key Pinning Extension for HTTP in a report-only mode</shortDescription>
+        <detailedDescription>https://tools.ietf.org/html/rfc7469</detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_HTTP_COMPRESSION</analyzedProperty>
+        <shortName>HTTP compression support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports HTTP compression</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>HTTP compression is enabled</shortDescription>
+                <handlingRecommendation>Disable HTTP compression</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>ENFOCRES_CS_ORDERING</analyzedProperty>
+        <shortName>Cipher suite ordering support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports cipher suite ordering</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Cipher suite ordering is disabled</shortDescription>
+                <handlingRecommendation>Enable cipher suite ordering</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_VERSION_INTOLERANCE</analyzedProperty>
+        <shortName>TLS version intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server is TLS version intolerant</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server is TLS version intolerant</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_CIPHERSUITE_INTOLERANCE</analyzedProperty>
+        <shortName>TLS cipher suite intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server is cipher suite intolerant</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server is cipher suite intolerant</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_EXTENSION_INTOLERANCE</analyzedProperty>
+        <shortName>TLS extension intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server is TLS extension intolerant</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server is TLS extension intolerant</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_CIPHERSUITE_LENGTH_INTOLERANCE</analyzedProperty>
+        <shortName>TLS cipher suite length intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server has TLS cipher suite length intolerance</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server has TLS cipher suite length intolerance</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_COMPRESSION_INTOLERANCE</analyzedProperty>
+        <shortName>TLS compression intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server is TLS compression intolerant</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server is TLS compression intolerant</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_ALPN_INTOLERANCE</analyzedProperty>
+        <shortName>ALPN intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server has Application-Layer Protocol Negotiation (ALPN) intolerance</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server is ALPN intolerant</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_CLIENT_HELLO_LENGTH_INTOLERANCE</analyzedProperty>
+        <shortName>TLS ClientHello length intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server has TLS ClientHello length intolerance</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server has TLS ClientHello length intolerance</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_EMPTY_LAST_EXTENSION_INTOLERANCE</analyzedProperty>
+        <shortName>TLS ClientHello last extension intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server has TLS ClientHello last extension intolerance</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server has TLS ClientHello last extension intolerance</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_SIG_HASH_ALGORITHM_INTOLERANCE</analyzedProperty>
+        <shortName>Signature and hash algorithm intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server has TLS signature and hash algorithm intolerance</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server has TLS signature and hash algorithm intolerance</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_BIG_CLIENT_HELLO_INTOLERANCE</analyzedProperty>
+        <shortName>Big TLS ClientHello intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server has big TLS ClientHello intolerance</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server has big TLS ClientHello intolerance</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_NAMED_GROUP_INTOLERANCE</analyzedProperty>
+        <shortName>Elliptic curve named group intolerance</shortName>
+        <shortDescription>Evaluates whether the TLS server has elliptic curve named group intolerance</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server has elliptic curve named group intolerance</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_SECOND_CIPHERSUITE_BYTE_BUG</analyzedProperty>
+        <shortName>Second cipher suite bug</shortName>
+        <shortDescription>Evaluates whether the TLS server always evaluates only the second cipher suite byte</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server always evaluates only the second cipher suite byte</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REFLECTS_OFFERED_CIPHERSUITES</analyzedProperty>
+        <shortName>Cipher suite reflection</shortName>
+        <shortDescription>Evaluates whether the TLS server reflects offered cipher suites</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server reflects offered cipher suites</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>IGNORES_OFFERED_CIPHERSUITES</analyzedProperty>
+        <shortName>Ignoring offered cipher suites</shortName>
+        <shortDescription>Evaluates whether the TLS server ignores offered cipher suites</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server ignores offered cipher suites</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>IGNORES_OFFERED_NAMED_GROUPS</analyzedProperty>
+        <shortName>Ignoring offered named groups</shortName>
+        <shortDescription>Evaluates whether the TLS server ignores offered named groups</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server ignores offered named groups</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>IGNORES_OFFERED_SIG_HASH_ALGOS</analyzedProperty>
+        <shortName>Ignoring offered signature and hash algorithms</shortName>
+        <shortDescription>Evaluates whether the TLS server ignores offered signature and hash algorithms</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server ignores offered signature and hash algorithms</shortDescription>
+                <handlingRecommendation>There is a bug in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_BLEICHENBACHER</analyzedProperty>
+        <shortName>Vulnerable to a Bleichenbacher attack</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to a Bleichenbacher attack</shortDescription>
+        <links>
+            <link>https://robotattack.org/</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to a Bleichenbacher attack</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_PADDING_ORACLE</analyzedProperty>
+        <shortName>Vulnerable to a CBC padding oracle attack vulnerability</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to a CBC padding oracle attack</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to a CBC padding oracle attack</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE</analyzedProperty>
+        <shortName>Vulnerable to an invalid curve attack</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to an invalid curve attack</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to an invalid curve attack</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL</analyzedProperty>
+        <shortName>Vulnerable to an innvalid curve attack on ephemeral cipher suites</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to an innvalid curve attack on ephemeral cipher suites</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites</shortDescription>
+                <handlingRecommendation>There is a vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE</analyzedProperty>
+        <shortName>Vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_POODLE</analyzedProperty>
+        <shortName>Vulnerable to POODLE</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to POODLE (Padding Oracle On Downgraded Legacy Encryption)</shortDescription>
+        <links>
+            <link>https://www.openssl.org/~bodo/ssl-poodle.pdf</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to POODLE</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_TLS_POODLE</analyzedProperty>
+        <shortName>Vulnerable to TLS POODLE</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to TLS POODLE (Padding Oracle On Downgraded Legacy Encryption)</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to POODLE with TLS</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_SWEET_32</analyzedProperty>
+        <shortName>Vulnerable to Sweet32</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to Sweet32</shortDescription>
+        <links>
+            <link>https://sweet32.info</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to Sweet32</shortDescription>
+                <handlingRecommendation>Disable 64 bit block siphers like 3DES.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_DROWN</analyzedProperty>
+        <shortName>Vulnerable to DROWN</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened eNcryption)</shortDescription>
+        <links>
+            <link>https://drownattack.com</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to DROWN</shortDescription>
+                <handlingRecommendation>Disable SSL 2.0</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_HEARTBLEED</analyzedProperty>
+        <shortName>Vulnerable to Heartbleed</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to Heartbleed</shortDescription>
+        <links>
+            <link>http://heartbleed.com</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to Heartbleed</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_TICKETBLEED</analyzedProperty>
+        <shortName>Vulnerable to Ticketbleed</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to Ticketbleed</shortDescription>
+        <links>
+            <link>https://filippo.io/ticketbleed</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to Ticketbleed</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_EARLY_CCS</analyzedProperty>
+        <shortName>Vulnerable to CCS injection / Early CCS</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to CCS injection / Early CCS</shortDescription>
+        <links>
+            <link>http://ccsinjection.lepidum.co.jp/blog/2014-06-05/CCS-Injection-en/index.html</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to CCS injection / Early CCS</shortDescription>
+                <handlingRecommendation>There is a vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_CRIME</analyzedProperty>
+        <shortName>Vulnerable to CRIME</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to CRIME</shortDescription>
+        <links>
+            <link>https://www.ekoparty.org/archive/2012/CRIME_ekoparty2012.pdf</link>
+            <link>https://www.iacr.org/cryptodb/data/paper.php?pubkey=3091</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to CRIME</shortDescription>
+                <handlingRecommendation>Disable TLS compression</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_BREACH</analyzedProperty>
+        <shortName>Vulnerable to BREACH</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to BREACH</shortDescription>
+        <links>
+            <link>http://breachattack.com</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to BREACH</shortDescription>
+                <handlingRecommendation>Disable TLS compression</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_LOGJAM</analyzedProperty>
+        <shortName>Vulnerable to Logjam</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to Logjam</shortDescription>
+        <links>
+            <link>https://weakdh.org</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to Logjam</shortDescription>
+                <handlingRecommendation>Disable export cipher suites and short Diffie-Hellman groups. Use at least 2048-bit Diffie-Hellman keys.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_FREAK</analyzedProperty>
+        <shortName>Vulnerable to FREAK</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to FREAK</shortDescription>
+        <links>
+            <link>https://www.smacktls.com/smack.pdf</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to FREAK</shortDescription>
+                <handlingRecommendation>Disable export cipher suites.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK</analyzedProperty>
+        <shortName>Vulnerable to the renegotiation attack</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to the renegotiation attack</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to the renegotiation attack</shortDescription>
+                <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>MISSES_MAC_APPDATA_CHECKS</analyzedProperty>
+        <shortName>Misses Application message MAC check</shortName>
+        <shortDescription>Evaluates whether the TLS server correctly validates the Application message MACs</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server does not verify MACs in Application messages</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>MISSES_MAC_FINISHED_CHECKS</analyzedProperty>
+        <shortName>Misses Finished message MAC check</shortName>
+        <shortDescription>Evaluates whether the TLS server correctly validates the Finished message MAC</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server does not verify the Finished message MAC</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>MISSES_VERIFY_DATA_CHECKS</analyzedProperty>
+        <shortName>Misses verify data verification in the Finished messages</shortName>
+        <shortDescription>Evaluates whether the TLS server correctly validates the verify data in the Finished messages</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server does not correctly process verify data in the Finished messages</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>MISSES_GCM_CHECKS</analyzedProperty>
+        <shortName>Misses GCM authentication tag check</shortName>
+        <shortDescription>Evaluates whether the TLS server correctly validates the AES-GCM authentication tags</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server does not verify the AES-GCM authentication tags</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_WEAK_RANDOMNESS</analyzedProperty>
+        <shortName>Uses weak randomness</shortName>
+        <shortDescription>Evaluates whether the TLS server uses weak random values</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server uses weak random values</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REUSES_EC_PUBLICKEY</analyzedProperty>
+        <shortName>Reuses ephemeral elliptic curve Diffie-Hellman keys</shortName>
+        <shortDescription>Evaluates whether the TLS server reuses ephemeral elliptic curve keys transported in the ServerKeyExchange message</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server reuses ephemeral elliptic curve keys</shortDescription>
+                <handlingRecommendation>Configure your server to always use fresh elliptic curve keys</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REUSES_DH_PUBLICKEY</analyzedProperty>
+        <shortName>Reuses ephemeral Diffie-Hellman keys</shortName>
+        <shortDescription>Evaluates whether the TLS server reuses ephemeral Diffie-Hellman keys transported in the ServerKeyExchange message</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server reuses ephemeral Diffie-Hellman keys</shortDescription>
+                <handlingRecommendation>Configure your server to always use fresh Diffie-Hellman keys</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REUSES_GCM_NONCES</analyzedProperty>
+        <shortName>Reuses GCM nonces</shortName>
+        <shortDescription>Evaluates whether the TLS server reuses GCM nonces and is vulnerable to nonce-reuse attacks</shortDescription>
+        <links>
+            <link>https://eprint.iacr.org/2016/475</link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server reuses GCM nonces and is vulnerable to nonce-reuse attacks</shortDescription>
+                <handlingRecommendation>There is a critical vulnerability in your TLS implementation. Update your software or contact the developers.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>REQUIRES_SNI</analyzedProperty>
+        <shortName>SNI requirement</shortName>
+        <shortDescription>Evaluates whether the TLS server requires the client to send a Server Name Indication (SNI) extension</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_CERTIFICATE_ISSUES</analyzedProperty>
+        <shortName>Certificate issues</shortName>
+        <shortDescription></shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription></shortDescription>
+                <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
     </recommendation>
 </recommendations>

@@ -117,13 +117,13 @@ public class HttpHeaderProbe extends TlsProbe {
                 headerList = new LinkedList<>();
             }
             return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
-        }           
+        }
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -132,7 +132,7 @@ public class HttpHeaderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, new LinkedList<HttpsHeader>());
+    public ProbeResult getCouldNotExecuteResult() {
+        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, null);
     }
 }

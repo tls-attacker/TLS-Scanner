@@ -19,19 +19,27 @@ public class EcPublicKeyAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        TestResult reuse = TestResult.UNTESTED;
+        TestResult reuse = null;
         try {
             List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
-            reuse = TestResult.FALSE;
+            boolean hasSomeEcKey = false;
             for (ExtractedValueContainer container : extractedValueContainerList) {
                 if (container.getType() == TrackableValueType.ECDHE_PUBKEY) {
                     if (!container.areAllValuesDiffernt()) {
                         reuse = TestResult.TRUE;
                         break;
                     }
+                    hasSomeEcKey = true;
                 }
             }
-        } catch(Exception e) {
+            if (hasSomeEcKey && reuse == null) {
+                reuse = TestResult.FALSE;
+            } else {
+                if (!hasSomeEcKey) {
+                    reuse = TestResult.COULD_NOT_TEST;
+                }
+            }
+        } catch (Exception e) {
             reuse = TestResult.ERROR_DURING_TEST;
         }
         report.putResult(AnalyzedProperty.REUSES_EC_PUBLICKEY, reuse);

@@ -59,18 +59,17 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setAddRenegotiationInfoExtension(true);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-            tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
             State state = new State(tlsConfig);
             executeState(state);
             return new ResumptionResult(state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new ResumptionResult(TestResult.ERROR_DURING_TEST);
         }
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
-        return report.getCipherSuites() != null && (report.getCipherSuites().size() > 0);
+    public boolean canBeExecuted(SiteReport report) {
+        return report.getCipherSuites() != null || (report.getCipherSuites().size() > 0);
     }
 
     @Override
@@ -83,8 +82,7 @@ public class ResumptionProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
+    public ProbeResult getCouldNotExecuteResult() {
         return new ResumptionResult(TestResult.COULD_NOT_TEST);
     }
-
 }

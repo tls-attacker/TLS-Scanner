@@ -39,19 +39,26 @@ public class ExtensionResult extends ProbeResult {
         } else {
             report.getSupportedExtensions().addAll(allSupportedExtensions);
         }
-        for (ExtensionType type : allSupportedExtensions) {
-            if (type == ExtensionType.ENCRYPT_THEN_MAC) {
-                encryptThenMac = TestResult.TRUE;
+        if (allSupportedExtensions != null) {
+            for (ExtensionType type : allSupportedExtensions) {
+                if (type == ExtensionType.ENCRYPT_THEN_MAC) {
+                    encryptThenMac = TestResult.TRUE;
+                }
+                if (type == ExtensionType.EXTENDED_MASTER_SECRET) {
+                    extendedMasterSecret = TestResult.TRUE;
+                }
+                if (type == ExtensionType.RENEGOTIATION_INFO) {
+                    secureRenegotiation = TestResult.TRUE;
+                }
+                if (type == ExtensionType.SESSION_TICKET) {
+                    sessionTickets = TestResult.TRUE;
+                }
             }
-            if (type == ExtensionType.EXTENDED_MASTER_SECRET) {
-                extendedMasterSecret = TestResult.TRUE;
-            }
-            if (type == ExtensionType.RENEGOTIATION_INFO) {
-                secureRenegotiation = TestResult.TRUE;
-            }
-            if (type == ExtensionType.SESSION_TICKET) {
-                sessionTickets = TestResult.TRUE;
-            }
+        } else {
+            encryptThenMac = TestResult.COULD_NOT_TEST;
+            extendedMasterSecret = TestResult.COULD_NOT_TEST;
+            secureRenegotiation = TestResult.COULD_NOT_TEST;
+            sessionTickets = TestResult.COULD_NOT_TEST;
         }
         report.putResult(AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
         report.putResult(AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);

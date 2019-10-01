@@ -323,7 +323,7 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
         if (report.getCipherSuites() == null) {
             return false;
@@ -355,8 +355,7 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new MacResult(new CheckPattern(CheckPatternType.UNKNOWN, false, null), new CheckPattern(CheckPatternType.UNKNOWN, false, null), new CheckPattern(CheckPatternType.UNKNOWN, false, null));
+    public ProbeResult getCouldNotExecuteResult() {
+        return new MacResult(null, null, null);
     }
-
 }

@@ -97,17 +97,12 @@ public class CommonBugProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
-    }
-
-    @Override
-    public ProbeResult getNotExecutedResult() {
-        return new CommonBugProbeResult(TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED, TestResult.UNTESTED);
     }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {
@@ -134,7 +129,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -152,7 +147,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -181,7 +176,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -214,7 +209,7 @@ public class CommonBugProbe extends TlsProbe {
                 LOGGER.debug("Received a SH for invalid NamedGroup, server selected: " + state.getTlsContext().getSelectedGroup().name());
             }
             return receivedShd == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -269,7 +264,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -307,7 +302,7 @@ public class CommonBugProbe extends TlsProbe {
             } else {
                 return TestResult.FALSE;
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -334,8 +329,8 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-            return receivedShd  == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+            return receivedShd == true ? TestResult.TRUE : TestResult.FALSE;
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -353,7 +348,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -370,7 +365,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -387,7 +382,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -408,7 +403,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -425,7 +420,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -443,7 +438,7 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -465,8 +460,13 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return TestResult.ERROR_DURING_TEST;
         }
+    }
+
+    @Override
+    public ProbeResult getCouldNotExecuteResult() {
+        return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 }

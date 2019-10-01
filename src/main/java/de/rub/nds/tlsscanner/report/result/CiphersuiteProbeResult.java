@@ -70,22 +70,59 @@ public class CiphersuiteProbeResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        Set<CipherSuite> allSupported = new HashSet<>();
-        supportsOnlyPfsCiphers = TestResult.TRUE;
-        prefersPfsCiphers = TestResult.TRUE;
-        for (VersionSuiteListPair pair : pairLists) {
-            if (pair.getCiphersuiteList().size() > 0 && !pair.getCiphersuiteList().get(0).isEphemeral()) {
-                prefersPfsCiphers = TestResult.FALSE;
+        if (pairLists != null) {
+            Set<CipherSuite> allSupported = new HashSet<>();
+            supportsOnlyPfsCiphers = TestResult.TRUE;
+            prefersPfsCiphers = TestResult.TRUE;
+            for (VersionSuiteListPair pair : pairLists) {
+                if (pair.getCiphersuiteList().size() > 0 && !pair.getCiphersuiteList().get(0).isEphemeral()) {
+                    prefersPfsCiphers = TestResult.FALSE;
+                }
+                allSupported.addAll(pair.getCiphersuiteList());
             }
-            allSupported.addAll(pair.getCiphersuiteList());
+            for (CipherSuite suite : allSupported) {
+                adjustBulk(suite);
+                adjustKeyExchange(suite);
+                adjustCipherType(suite);
+            }
+            report.setCipherSuites(allSupported);
+        } else {
+            supportsAeadCiphers = TestResult.COULD_NOT_TEST;
+            prefersPfsCiphers = TestResult.COULD_NOT_TEST;
+            supportsAeadCiphers = TestResult.COULD_NOT_TEST;
+            supportsAes = TestResult.COULD_NOT_TEST;
+            supportsAnonCiphers = TestResult.COULD_NOT_TEST;
+            supportsAria = TestResult.COULD_NOT_TEST;
+            supportsBlockCiphers = TestResult.COULD_NOT_TEST;
+            supportsCamellia = TestResult.COULD_NOT_TEST;
+            supportsChacha = TestResult.COULD_NOT_TEST;
+            supportsDesCiphers = TestResult.COULD_NOT_TEST;
+            supportsDh = TestResult.COULD_NOT_TEST;
+            supportsEcdh = TestResult.COULD_NOT_TEST;
+            supportsEcmqv = TestResult.COULD_NOT_TEST;
+            supportsExportCiphers = TestResult.COULD_NOT_TEST;
+            supportsFortezza = TestResult.COULD_NOT_TEST;
+            supportsGost = TestResult.COULD_NOT_TEST;
+            supportsIdeaCiphers = TestResult.COULD_NOT_TEST;
+            supportsKerberos = TestResult.COULD_NOT_TEST;
+            supportsNewHope = TestResult.COULD_NOT_TEST;
+            supportsNullCiphers = TestResult.COULD_NOT_TEST;
+            supportsOnlyPfsCiphers = TestResult.COULD_NOT_TEST;
+            supportsPfsCiphers = TestResult.COULD_NOT_TEST;
+            supportsPostQuantumCiphers = TestResult.COULD_NOT_TEST;
+            supportsPskDhe = TestResult.COULD_NOT_TEST;
+            supportsPskEcdhe = TestResult.COULD_NOT_TEST;
+            supportsPskPlain = TestResult.COULD_NOT_TEST;
+            supportsPskRsa = TestResult.COULD_NOT_TEST;
+            supportsRc2Ciphers = TestResult.COULD_NOT_TEST;
+            supportsRc4Ciphers = TestResult.COULD_NOT_TEST;
+            supportsRsa = TestResult.COULD_NOT_TEST;
+            supportsSeedCiphers = TestResult.COULD_NOT_TEST;
+            supportsSrp = TestResult.COULD_NOT_TEST;
+            supportsStaticEcdh = TestResult.COULD_NOT_TEST;
+            supportsStreamCiphers = TestResult.COULD_NOT_TEST;
+            supportsTrippleDesCiphers = TestResult.COULD_NOT_TEST;
         }
-        for (CipherSuite suite : allSupported) {
-            adjustBulk(suite);
-            adjustKeyExchange(suite);
-            adjustCipherType(suite);
-        }
-        report.setCipherSuites(allSupported);
-
         writeToReport(report);
     }
 
