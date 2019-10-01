@@ -10,10 +10,9 @@ package de.rub.nds.tlsscanner.report;
 
 import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.probe.HandshakeSimulationProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
@@ -43,18 +42,19 @@ public class ProbeResultTest {
     public void testResultMerge() throws Exception {
         LOGGER.info("Testint result merging:");
         Reflections reflections = new Reflections("de.rub.nds.tlsscanner.probe");
-        Set<Class<? extends TlsProbe>> resultClasses = reflections.getSubTypesOf(TlsProbe.class);
-        for (Class<? extends TlsProbe> someResultClass : resultClasses) {
-            if (Modifier.isAbstract(someResultClass.getModifiers())) {
-                CONSOLE.info("Skipping:" + someResultClass.getSimpleName());
+        Set<Class<? extends TlsProbe>> probeClasses = reflections.getSubTypesOf(TlsProbe.class);
+        for (Class<? extends TlsProbe> someProbeClass : probeClasses) {
+            if (Modifier.isAbstract(someProbeClass.getModifiers())) {
+                CONSOLE.info("Skipping:" + someProbeClass.getSimpleName());
                 continue;
             }
-            String testName = someResultClass.getSimpleName().replace("Result", "");
-            if (someResultClass.equals(HandshakeSimulationResult.class)) {
+            String testName = someProbeClass.getSimpleName().replace("Probe", "");
+            if (someProbeClass.equals(HandshakeSimulationProbe.class)) {
                 LOGGER.info("Skipping: HandshakeSimulation due to performance reasons");
+                continue;
             }
             // Trying to find equivalent preparator, message and serializer
-            for (Constructor c : someResultClass.getConstructors()) {
+            for (Constructor c : someProbeClass.getConstructors()) {
                 if (c.getParameterCount() == 2) {
                     if (c.getParameterTypes()[0].equals(ScannerConfig.class)) {
                         LOGGER.info("Testing mergability:" + testName);
