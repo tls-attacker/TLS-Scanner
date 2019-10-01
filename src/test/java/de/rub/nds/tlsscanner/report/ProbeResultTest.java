@@ -59,11 +59,11 @@ public class ProbeResultTest {
                     if (c.getParameterTypes()[0].equals(ScannerConfig.class)) {
                         LOGGER.info("Testing mergability:" + testName);
                         TlsProbe probe = (TlsProbe) c.newInstance(null, null);
-                        SiteReport report = new SiteReport("somehost", new LinkedList<>(), true);
+                        SiteReport report = new SiteReport("somehost", new LinkedList<>());
                         probe.getCouldNotExecuteResult().merge(report);
                         LOGGER.info("--Success");
                         LOGGER.info("Testing printability:");
-                        SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.ALL);
+                        SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.ALL, true);
                         printer.getFullReport();
                         LOGGER.info("--Success");
                     }

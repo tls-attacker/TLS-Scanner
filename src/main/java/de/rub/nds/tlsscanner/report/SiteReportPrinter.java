@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
-import org.fusesource.jansi.Ansi;
 
 public class SiteReportPrinter {
 
@@ -76,19 +75,22 @@ public class SiteReportPrinter {
     private final String hsForwardSecrecyFormat = "%-19s";
     private final String hsKeyLengthFormat = "%-17s";
     private final PrintingScheme scheme;
+    private final boolean printColorful;
 
-    public SiteReportPrinter(SiteReport report, ScannerDetail detail) {
+    public SiteReportPrinter(SiteReport report, ScannerDetail detail, boolean printColorful) {
         this.report = report;
         this.detail = detail;
         depth = 0;
-        scheme = PrintingScheme.getDefaultPrintingScheme();
+        this.printColorful = printColorful;
+        scheme = PrintingScheme.getDefaultPrintingScheme(printColorful);
     }
 
-    public SiteReportPrinter(SiteReport report, ScannerDetail detail, PrintingScheme scheme) {
+    public SiteReportPrinter(SiteReport report, ScannerDetail detail, PrintingScheme scheme, boolean printColorful) {
         this.report = report;
         this.detail = detail;
         depth = 0;
         this.scheme = scheme;
+        this.printColorful = printColorful;
     }
 
     public String getFullReport() {
@@ -1154,15 +1156,15 @@ public class SiteReportPrinter {
     }
 
     private String getGreenString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColor.GREEN.getCode() : AnsiColor.RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        return (printColorful ? AnsiColor.GREEN.getCode() : AnsiColor.RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
     }
 
     private String getYellowString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColor.YELLOW.getCode() : AnsiColor.RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        return (printColorful ? AnsiColor.YELLOW.getCode() : AnsiColor.RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
     }
 
     private String getRedString(String value, String format) {
-        return (report.isNoColor() == false ? AnsiColor.RED.getCode() : AnsiColor.RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        return (printColorful ? AnsiColor.RED.getCode() : AnsiColor.RESET.getCode()) + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
@@ -1170,11 +1172,11 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String value, AnsiColor color) {
-        if (!report.isNoColor()) {
+        if (printColorful) {
             builder.append(color.getCode());
         }
         builder.append(value);
-        if (!report.isNoColor()) {
+        if (printColorful) {
             builder.append(AnsiColor.RESET.getCode());
         }
         builder.append("\n");
@@ -1206,11 +1208,11 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppend(StringBuilder builder, String name, String value, AnsiColor color) {
         builder.append(addIndentations(name)).append(": ");
-        if (!report.isNoColor()) {
+        if (printColorful) {
             builder.append(color.getCode());
         }
         builder.append(value);
-        if (!report.isNoColor()) {
+        if (printColorful) {
             builder.append(AnsiColor.RESET.getCode());
         }
         builder.append("\n");
@@ -1220,34 +1222,34 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         depth = 0;
 
-        return builder.append(report.isNoColor() == false ? AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode() : AnsiColor.RESET.getCode()).append("\n------------------------------------------------------------\n").append(value).append("\n\n").append(AnsiColor.RESET.getCode());
+        return builder.append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode() : AnsiColor.RESET.getCode()).append("\n------------------------------------------------------------\n").append(value).append("\n\n").append(AnsiColor.RESET.getCode());
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, String value) {
-        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColor.UNDERLINE.getCode() + value + AnsiColor.RESET.getCode() : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append((printColorful ? AnsiColor.UNDERLINE.getCode() + value + AnsiColor.RESET.getCode() : value)).append("\n");
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, boolean value) {
-        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColor.UNDERLINE.getCode() + value + AnsiColor.RESET.getCode() : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append((printColorful ? AnsiColor.UNDERLINE.getCode() + value + AnsiColor.RESET.getCode() : value)).append("\n");
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, long value) {
-        return builder.append(addIndentations(name)).append(": ").append((report.isNoColor() == false ? AnsiColor.UNDERLINE.getCode() + value + AnsiColor.RESET.getCode() : value)).append("\n");
+        return builder.append(addIndentations(name)).append(": ").append((printColorful == false ? AnsiColor.UNDERLINE.getCode() + value + AnsiColor.RESET.getCode() : value)).append("\n");
     }
 
     private StringBuilder prettyAppendSubheading(StringBuilder builder, String name) {
         depth = 1;
-        return builder.append("|_\n |").append(report.isNoColor() == false ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
+        return builder.append("|_\n |").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private StringBuilder prettyAppendSubSubheading(StringBuilder builder, String name) {
         depth = 2;
-        return builder.append("|_\n |_\n  |").append(report.isNoColor() == false ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
+        return builder.append("|_\n |_\n  |").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private StringBuilder prettyAppendSubSubSubheading(StringBuilder builder, String name) {
         depth = 3;
-        return builder.append("|_\n |_\n  |_\n   |").append(report.isNoColor() == false ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
+        return builder.append("|_\n |_\n  |_\n   |").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {

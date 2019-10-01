@@ -93,7 +93,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
 
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegate(ClientDelegate.class);
         String hostname = clientDelegate.getHost();
-        SiteReport report = new SiteReport(hostname, probeTypes, config.isNoColor());
+        SiteReport report = new SiteReport(hostname, probeTypes);
         report.setServerIsAlive(Boolean.TRUE);
         for (ProbeResult result : resultList) {
             result.merge(report);

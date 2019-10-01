@@ -24,15 +24,17 @@ public class PrintingScheme {
 
     private TextEncoding defaultTextEncoding;
     private ColorEncoding defaultColorEncoding;
+    private boolean useColors;
 
     public PrintingScheme() {
     }
 
-    public PrintingScheme(HashMap<AnalyzedProperty, ColorEncoding> colorEncodings, HashMap<AnalyzedPropertyCategory, TextEncoding> textEncodings, TextEncoding defaultTextEncoding, ColorEncoding defaultColorEncoding) {
+    public PrintingScheme(HashMap<AnalyzedProperty, ColorEncoding> colorEncodings, HashMap<AnalyzedPropertyCategory, TextEncoding> textEncodings, TextEncoding defaultTextEncoding, ColorEncoding defaultColorEncoding, boolean useColors) {
         this.colorEncodings = colorEncodings;
         this.textEncodings = textEncodings;
         this.defaultTextEncoding = defaultTextEncoding;
         this.defaultColorEncoding = defaultColorEncoding;
+        this.useColors = useColors;
     }
 
     public HashMap<AnalyzedProperty, ColorEncoding> getColorEncodings() {
@@ -48,10 +50,14 @@ public class PrintingScheme {
         TextEncoding textEncoding = textEncodings.getOrDefault(property.getCategory(), defaultTextEncoding);
         ColorEncoding colorEncoding = colorEncodings.getOrDefault(property, defaultColorEncoding);
         String encodedText = textEncoding.encode(result);
-        return colorEncoding.encode(result, encodedText);
+        if (useColors) {
+            return colorEncoding.encode(result, encodedText);
+        } else {
+            return encodedText;
+        }
     }
 
-    public static PrintingScheme getDefaultPrintingScheme() {
+    public static PrintingScheme getDefaultPrintingScheme(boolean useColors) {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
         textEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test");
         textEncodingMap.put(TestResult.ERROR_DURING_TEST, "error");
@@ -203,7 +209,7 @@ public class PrintingScheme {
 
         HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
-        PrintingScheme scheme = new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding);
+        PrintingScheme scheme = new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding, useColors);
         return scheme;
     }
 

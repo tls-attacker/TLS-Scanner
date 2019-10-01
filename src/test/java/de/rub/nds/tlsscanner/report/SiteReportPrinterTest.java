@@ -53,9 +53,9 @@ public class SiteReportPrinterTest {
      */
     @Test
     public void testPrintEmptyReport() {
-        SiteReport report = new SiteReport("Somehost", new LinkedList<ProbeType>(), true);
+        SiteReport report = new SiteReport("Somehost", new LinkedList<ProbeType>());
         for (ScannerDetail detail : ScannerDetail.values()) {
-            SiteReportPrinter printer = new SiteReportPrinter(report, detail);
+            SiteReportPrinter printer = new SiteReportPrinter(report, detail, true);
             printer.getFullReport();
         }
     }

@@ -49,7 +49,7 @@ public class SiteReport {
     private List<PerformanceData> performanceList;
 
     private final String host;
-    
+
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
 
@@ -109,9 +109,6 @@ public class SiteReport {
     private Set<CommonDhValues> usedCommonDhValueList = null;
     private Integer weakestDhStrength = null;
 
-    //NoColor Flag
-    private boolean noColor = false;
-
     //Handshake Simulation
     private Integer handshakeSuccessfulCounter = null;
     private Integer handshakeFailedCounter = null;
@@ -119,10 +116,9 @@ public class SiteReport {
     private Integer connectionInsecureCounter = null;
     private List<SimulatedClientResult> simulatedClientList = null;
 
-    public SiteReport(String host, List<ProbeType> probeTypeList, boolean noColor) {
+    public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
         this.probeTypeList = probeTypeList;
-        this.noColor = noColor;
         performanceList = new LinkedList<>();
         extractedValueContainerList = new LinkedList<>();
         resultMap = new HashMap<>();
@@ -194,10 +190,6 @@ public class SiteReport {
 
     public List<ProbeType> getProbeTypeList() {
         return probeTypeList;
-    }
-
-    public boolean isNoColor() {
-        return noColor;
     }
 
     public Boolean getServerIsAlive() {
@@ -384,13 +376,13 @@ public class SiteReport {
         this.simulatedClientList = simulatedClientList;
     }
 
-    public String getFullReport(ScannerDetail detail) {
-        return new SiteReportPrinter(this, detail).getFullReport();
+    public String getFullReport(ScannerDetail detail, boolean printColorful) {
+        return new SiteReportPrinter(this, detail, printColorful).getFullReport();
     }
 
     @Override
     public String toString() {
-        return getFullReport(ScannerDetail.NORMAL);
+        return getFullReport(ScannerDetail.NORMAL, false);
     }
 
     public CheckPattern getMacCheckPatternFinished() {
