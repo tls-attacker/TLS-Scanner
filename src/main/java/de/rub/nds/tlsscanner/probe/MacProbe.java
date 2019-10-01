@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -306,7 +306,7 @@ public class MacProbe extends TlsProbe {
             try {
                 stateIndexPair.getState().getTlsContext().getTransportHandler().closeConnection();
             } catch (IOException ex) {
-                LOGGER.warn("Could not close TransportHandler");
+                LOGGER.warn("Could not close TransportHandler", ex);
             }
         }
         return byteCheckArray;
@@ -321,7 +321,7 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
         allSuiteList.addAll(report.getCipherSuites());
         for (CipherSuite suite : allSuiteList) {
@@ -350,8 +350,7 @@ public class MacProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new MacResult(new CheckPattern(CheckPatternType.UNKNOWN, false, null), new CheckPattern(CheckPatternType.UNKNOWN, false, null), new CheckPattern(CheckPatternType.UNKNOWN, false, null));
+    public ProbeResult getCouldNotExecuteResult() {
+        return new MacResult(null, null, null);
     }
-
 }

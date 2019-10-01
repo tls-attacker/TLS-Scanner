@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -19,15 +19,11 @@ import org.bouncycastle.crypto.tls.Certificate;
  */
 public class CertificateResult extends ProbeResult {
 
-    private boolean expiredCertificates = false;
-    private boolean notYetValidCertificates = false;
-    private boolean weakHashAlgorithms = false;
-    private boolean weakSignatureAlgorithms = false;
     private Certificate certs;
     private CertificateChain chain;
 
-    public CertificateResult(ProbeType type, CertificateChain chain, Certificate certs) {
-        super(type);
+    public CertificateResult(CertificateChain chain, Certificate certs) {
+        super(ProbeType.CERTIFICATE);
         this.chain = chain;
         this.certs = certs;
     }

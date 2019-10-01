@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -96,11 +96,11 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     public abstract ProbeResult executeTest();
 
-    public abstract boolean shouldBeExecuted(SiteReport report);
+    public abstract boolean canBeExecuted(SiteReport report);
+
+    public abstract ProbeResult getCouldNotExecuteResult();
 
     public abstract void adjustConfig(SiteReport report);
-
-    public abstract ProbeResult getNotExecutedResult();
 
     public ParallelExecutor getParallelExecutor() {
         return parallelExecutor;

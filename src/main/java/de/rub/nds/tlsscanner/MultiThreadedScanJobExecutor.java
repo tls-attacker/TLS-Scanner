@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -93,7 +93,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
 
         ClientDelegate clientDelegate = (ClientDelegate) config.getDelegate(ClientDelegate.class);
         String hostname = clientDelegate.getHost();
-        SiteReport report = new SiteReport(hostname, probeTypes, config.isNoColor());
+        SiteReport report = new SiteReport(hostname, probeTypes);
         report.setServerIsAlive(Boolean.TRUE);
         for (ProbeResult result : resultList) {
             result.merge(report);
@@ -109,10 +109,10 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor {
         for (TlsProbe probe : scanJob.getPhaseTwoTestList()) {
             if (probe.getDanger() <= config.getDangerLevel()) {
                 probeTypes.add(probe.getType());
-                if (probe.shouldBeExecuted(report)) {
+                if (probe.canBeExecuted(report)) {
                     futureResults.add(executor.submit(probe));
-                } else if (!config.isImplementation()) {
-                    ProbeResult result = probe.getNotExecutedResult();
+                } else {
+                    ProbeResult result = probe.getCouldNotExecuteResult();
                     if (result != null) {
                         resultList.add(result);
                         if (pb != null) {

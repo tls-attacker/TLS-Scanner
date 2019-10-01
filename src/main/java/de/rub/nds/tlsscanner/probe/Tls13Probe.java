@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -288,7 +288,7 @@ public class Tls13Probe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -297,7 +297,7 @@ public class Tls13Probe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new Tls13Result(new LinkedList<ProtocolVersion>(), new LinkedList<ProtocolVersion>(), new LinkedList<NamedGroup>(), new LinkedList<CipherSuite>());
+    public ProbeResult getCouldNotExecuteResult() {
+        return new Tls13Result(null, null, null, null);
     }
 }

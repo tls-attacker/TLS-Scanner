@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -17,6 +17,8 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.RenegotiationResult;
@@ -32,7 +34,7 @@ import java.util.Set;
 public class RenegotiationProbe extends TlsProbe {
 
     private Set<CipherSuite> supportedSuites;
-    private boolean supportsRenegotiationExtension;
+    private TestResult supportsRenegotiationExtension;
 
     public RenegotiationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RENEGOTIATION, scannerConfig, 0);
@@ -40,18 +42,21 @@ public class RenegotiationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-
-        boolean supportsSecureRenegotiation;
-        if (supportsRenegotiationExtension == Boolean.TRUE) {
-            supportsSecureRenegotiation = supportsSecureClientRenegotiation();
-        } else {
-            supportsSecureRenegotiation = false;
+        try {
+            TestResult supportsSecureRenegotiation;
+            if (supportsRenegotiationExtension == TestResult.TRUE) {
+                supportsSecureRenegotiation = supportsSecureClientRenegotiation();
+            } else {
+                supportsSecureRenegotiation = TestResult.FALSE;
+            }
+            TestResult supportsInsecureRenegotiation = supportsInsecureClientRenegotiation();
+            return new RenegotiationResult(supportsSecureRenegotiation, supportsInsecureRenegotiation);
+        } catch (Exception e) {
+            return new RenegotiationResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
-        boolean supportsInsecureRenegotiation = supportsInsecureClientRenegotiation();
-        return new RenegotiationResult(supportsSecureRenegotiation, supportsInsecureRenegotiation);
     }
 
-    private boolean supportsSecureClientRenegotiation() {
+    private TestResult supportsSecureClientRenegotiation() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         List<CipherSuite> ciphersuites = new LinkedList<>();
@@ -74,10 +79,10 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
         State state = new State(tlsConfig);
         executeState(state);
-        return state.getWorkflowTrace().executedAsPlanned();
+        return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
     }
 
-    private boolean supportsInsecureClientRenegotiation() {
+    private TestResult supportsInsecureClientRenegotiation() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         List<CipherSuite> ciphersuites = new LinkedList<>();
@@ -100,23 +105,22 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
         State state = new State(tlsConfig);
         executeState(state);
-        return state.getWorkflowTrace().executedAsPlanned();
+        return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return (report.getCipherSuites() != null && report.getCipherSuites().size() > 0);
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
         supportedSuites = report.getCipherSuites();
-        supportsRenegotiationExtension = report.getSupportsSecureRenegotiation();
+        supportsRenegotiationExtension = report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new ResumptionResult(null);
+    public ProbeResult getCouldNotExecuteResult() {
+        return new RenegotiationResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
-
 }

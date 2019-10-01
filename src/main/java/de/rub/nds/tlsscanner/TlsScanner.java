@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -21,7 +21,6 @@ import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.CommonBugProbe;
 import de.rub.nds.tlsscanner.probe.CompressionsProbe;
-import de.rub.nds.tlsscanner.probe.Cve20162107Probe;
 import de.rub.nds.tlsscanner.probe.DrownProbe;
 import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
@@ -139,7 +138,6 @@ public class TlsScanner {
         phaseTwoTestList.add(new BleichenbacherProbe(config, parallelExecutor));
         phaseTwoTestList.add(new PoodleProbe(config, parallelExecutor));
         phaseTwoTestList.add(new TlsPoodleProbe(config, parallelExecutor));
-        phaseTwoTestList.add(new Cve20162107Probe(config, parallelExecutor));
         phaseTwoTestList.add(new InvalidCurveProbe(config, parallelExecutor));
         phaseTwoTestList.add(new DrownProbe(config, parallelExecutor));
         phaseTwoTestList.add(new EarlyCcsProbe(config, parallelExecutor));
@@ -173,7 +171,7 @@ public class TlsScanner {
                     isConnectable = true;
                 }
             }
-            SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>(), config.isNoColor());
+            SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>());
             report.setServerIsAlive(isConnectable);
             report.setSupportsSslTls(false);
             return report;

@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.Arrays;
@@ -37,14 +38,18 @@ public class CiphersuiteOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<CipherSuite> toTestList = new LinkedList<>();
-        toTestList.addAll(Arrays.asList(CipherSuite.values()));
-        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-        Collections.reverseOrder();
-        CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-        return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite);
+        try {
+            List<CipherSuite> toTestList = new LinkedList<>();
+            toTestList.addAll(Arrays.asList(CipherSuite.values()));
+            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+            CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
+            Collections.reverse(toTestList);
+            CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
+            return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
+        } catch (Exception e) {
+            return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);
+        }
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -68,7 +73,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -77,7 +82,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return null;
+    public ProbeResult getCouldNotExecuteResult() {
+        return new CipherSuiteOrderResult(TestResult.COULD_NOT_TEST);
     }
 }
