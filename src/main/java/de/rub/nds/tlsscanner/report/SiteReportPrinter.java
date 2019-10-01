@@ -381,7 +381,6 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "Renegotioation");
         prettyAppend(builder, "Clientside Secure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION);
         prettyAppend(builder, "Clientside Insecure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION);
-        //prettyAppendRedOnFailure(builder, "SCSV Fallback", report.getTlsFallbackSCSVsupported());
         return builder;
     }
 
@@ -400,33 +399,33 @@ public class SiteReportPrinter {
             }
             if (!chain.getCertificateReportList().isEmpty()) {
                 for (int i = 0; i < chain.getCertificateReportList().size(); i++) {
-                    CertificateReport report = chain.getCertificateReportList().get(i);
+                    CertificateReport certReport = chain.getCertificateReportList().get(i);
                     prettyAppendSubheading(builder, "Certificate #" + (i + 1));
 
-                    if (report.getSubject() != null) {
-                        prettyAppend(builder, "Subject", report.getSubject());
+                    if (certReport.getSubject() != null) {
+                        prettyAppend(builder, "Subject", certReport.getSubject());
                     }
 
-                    if (report.getIssuer() != null) {
-                        prettyAppend(builder, "Issuer", report.getIssuer());
+                    if (certReport.getIssuer() != null) {
+                        prettyAppend(builder, "Issuer", certReport.getIssuer());
                     }
-                    if (report.getValidFrom() != null) {
-                        if (report.getValidFrom().before(new Date())) {
-                            prettyAppend(builder, "Valid From", report.getValidFrom().toString(), AnsiColor.GREEN);
+                    if (certReport.getValidFrom() != null) {
+                        if (certReport.getValidFrom().before(new Date())) {
+                            prettyAppend(builder, "Valid From", certReport.getValidFrom().toString(), AnsiColor.GREEN);
                         } else {
-                            prettyAppend(builder, "Valid From", report.getValidFrom().toString() + " - NOT YET VALID", AnsiColor.RED);
+                            prettyAppend(builder, "Valid From", certReport.getValidFrom().toString() + " - NOT YET VALID", AnsiColor.RED);
                         }
                     }
-                    if (report.getValidTo() != null) {
-                        if (report.getValidTo().after(new Date())) {
-                            prettyAppend(builder, "Valid Till", report.getValidTo().toString(), AnsiColor.GREEN);
+                    if (certReport.getValidTo() != null) {
+                        if (certReport.getValidTo().after(new Date())) {
+                            prettyAppend(builder, "Valid Till", certReport.getValidTo().toString(), AnsiColor.GREEN);
                         } else {
-                            prettyAppend(builder, "Valid Till", report.getValidTo().toString() + " - EXPIRED", AnsiColor.RED);
+                            prettyAppend(builder, "Valid Till", certReport.getValidTo().toString() + " - EXPIRED", AnsiColor.RED);
                         }
 
                     }
-                    if (report.getValidFrom() != null && report.getValidTo() != null && report.getValidTo().after(new Date())) {
-                        long time = report.getValidTo().getTime() - System.currentTimeMillis();
+                    if (certReport.getValidFrom() != null && certReport.getValidTo() != null && certReport.getValidTo().after(new Date())) {
+                        long time = certReport.getValidTo().getTime() - System.currentTimeMillis();
                         long days = TimeUnit.MILLISECONDS.toDays(time);
                         if (days < 1) {
                             prettyAppend(builder, "Expires in", "<1 day! This certificate expires very soon", AnsiColor.RED);
@@ -438,60 +437,60 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Expires in", days + " days.", AnsiColor.DEFAULT_COLOR);
                         } else if (days < 730) {
                             prettyAppend(builder, "Expires in", days + " days.", AnsiColor.GREEN);
-                        } else if (Objects.equals(report.getLeafCertificate(), Boolean.TRUE)) {
+                        } else if (Objects.equals(certReport.getLeafCertificate(), Boolean.TRUE)) {
                             prettyAppend(builder, "Expires in", days + " days. This is usually too long for a leaf certificate", AnsiColor.RED);
                         } else {
                             prettyAppend(builder, "Expires in", days / 365 + " years", AnsiColor.GREEN);
                         }
                     }
-                    if (report.getPublicKey() != null) {
-                        prettyAppend(builder, "PublicKey", report.getPublicKey().toString());
+                    if (certReport.getPublicKey() != null) {
+                        prettyAppend(builder, "PublicKey", certReport.getPublicKey().toString());
                     }
-                    if (report.getWeakDebianKey() != null) {
-                        prettyAppend(builder, "Weak Debian Key", report.getWeakDebianKey(), report.getWeakDebianKey() ? AnsiColor.RED : AnsiColor.GREEN);
+                    if (certReport.getWeakDebianKey() != null) {
+                        prettyAppend(builder, "Weak Debian Key", certReport.getWeakDebianKey(), certReport.getWeakDebianKey() ? AnsiColor.RED : AnsiColor.GREEN);
                     }
-                    if (report.getSignatureAndHashAlgorithm() != null) {
-                        prettyAppend(builder, "Signature Algorithm", report.getSignatureAndHashAlgorithm().getSignatureAlgorithm().name());
+                    if (certReport.getSignatureAndHashAlgorithm() != null) {
+                        prettyAppend(builder, "Signature Algorithm", certReport.getSignatureAndHashAlgorithm().getSignatureAlgorithm().name());
                     }
-                    if (report.getSignatureAndHashAlgorithm() != null) {
-                        if (report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1 || report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5) {
-                            if (!report.isTrustAnchor() && !report.getSelfSigned()) {
-                                prettyAppend(builder, "Hash Algorithm", report.getSignatureAndHashAlgorithm().getHashAlgorithm().name(), AnsiColor.RED);
+                    if (certReport.getSignatureAndHashAlgorithm() != null) {
+                        if (certReport.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1 || certReport.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5) {
+                            if (!certReport.isTrustAnchor() && !certReport.getSelfSigned()) {
+                                prettyAppend(builder, "Hash Algorithm", certReport.getSignatureAndHashAlgorithm().getHashAlgorithm().name(), AnsiColor.RED);
                             } else {
-                                prettyAppend(builder, "Hash Algorithm", report.getSignatureAndHashAlgorithm().getHashAlgorithm().name() + " - Not critical");
+                                prettyAppend(builder, "Hash Algorithm", certReport.getSignatureAndHashAlgorithm().getHashAlgorithm().name() + " - Not critical");
                             }
                         } else {
-                            prettyAppend(builder, "Hash Algorithm", report.getSignatureAndHashAlgorithm().getHashAlgorithm().name(), AnsiColor.GREEN);
+                            prettyAppend(builder, "Hash Algorithm", certReport.getSignatureAndHashAlgorithm().getHashAlgorithm().name(), AnsiColor.GREEN);
                         }
                     }
-                    if (report.getExtendedValidation() != null) {
-                        prettyAppend(builder, "Extended Validation", report.getExtendedValidation(), report.getExtendedValidation() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
+                    if (certReport.getExtendedValidation() != null) {
+                        prettyAppend(builder, "Extended Validation", certReport.getExtendedValidation(), certReport.getExtendedValidation() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
                     }
-                    if (report.getCertificateTransparency() != null) {
-                        prettyAppend(builder, "Certificate Transparency", report.getCertificateTransparency(), report.getCertificateTransparency() ? AnsiColor.GREEN : AnsiColor.YELLOW);
+                    if (certReport.getCertificateTransparency() != null) {
+                        prettyAppend(builder, "Certificate Transparency", certReport.getCertificateTransparency(), certReport.getCertificateTransparency() ? AnsiColor.GREEN : AnsiColor.YELLOW);
                     }
 
-                    if (report.getCrlSupported() != null) {
-                        prettyAppend(builder, "CRL Supported", report.getCrlSupported(), report.getCrlSupported() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
+                    if (certReport.getCrlSupported() != null) {
+                        prettyAppend(builder, "CRL Supported", certReport.getCrlSupported(), certReport.getCrlSupported() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
                     }
-                    if (report.getOcspSupported() != null) {
-                        prettyAppend(builder, "OCSP Supported", report.getOcspSupported(), report.getOcspSupported() ? AnsiColor.GREEN : AnsiColor.YELLOW);
+                    if (certReport.getOcspSupported() != null) {
+                        prettyAppend(builder, "OCSP Supported", certReport.getOcspSupported(), certReport.getOcspSupported() ? AnsiColor.GREEN : AnsiColor.YELLOW);
                     }
-                    if (report.getOcspMustStaple() != null) {
-                        prettyAppend(builder, "OCSP must Staple", report.getOcspMustStaple());
+                    if (certReport.getOcspMustStaple() != null) {
+                        prettyAppend(builder, "OCSP must Staple", certReport.getOcspMustStaple());
                     }
-                    if (report.getRevoked() != null) {
-                        prettyAppend(builder, "RevocationStatus", report.getRevoked(), report.getRevoked() ? AnsiColor.RED : AnsiColor.GREEN);
+                    if (certReport.getRevoked() != null) {
+                        prettyAppend(builder, "RevocationStatus", certReport.getRevoked(), certReport.getRevoked() ? AnsiColor.RED : AnsiColor.GREEN);
                     }
-                    if (report.getDnsCAA() != null) {
-                        prettyAppend(builder, "DNS CCA", report.getDnsCAA(), report.getDnsCAA() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
+                    if (certReport.getDnsCAA() != null) {
+                        prettyAppend(builder, "DNS CCA", certReport.getDnsCAA(), certReport.getDnsCAA() ? AnsiColor.GREEN : AnsiColor.DEFAULT_COLOR);
                     }
-                    if (report.getRocaVulnerable() != null) {
-                        prettyAppend(builder, "ROCA (simple)", report.getRocaVulnerable(), report.getRocaVulnerable() ? AnsiColor.RED : AnsiColor.GREEN);
+                    if (certReport.getRocaVulnerable() != null) {
+                        prettyAppend(builder, "ROCA (simple)", certReport.getRocaVulnerable(), certReport.getRocaVulnerable() ? AnsiColor.RED : AnsiColor.GREEN);
                     } else {
                         builder.append("ROCA (simple): not tested");
                     }
-                    prettyAppend(builder, "Fingerprint (SHA256)", report.getSHA256Fingerprint());
+                    prettyAppend(builder, "Fingerprint (SHA256)", certReport.getSHA256Fingerprint());
 
                 }
             }
