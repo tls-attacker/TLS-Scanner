@@ -17,15 +17,18 @@ import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class HttpHeaderResult extends ProbeResult {
+
+    private final static Logger LOGGER = LogManager.getLogger();
 
     private List<HttpsHeader> headerList = null;
     private TestResult speaksHttps = null;
     private TestResult supportsHsts = TestResult.FALSE;
     private Long hstsMaxAge = null;
     private Integer hpkpMaxAge = null;
-    private TestResult hstsCeasing = null;
     private TestResult hstsIncludesSubdomains = TestResult.FALSE;
     private TestResult hpkpIncludesSubdomains = TestResult.FALSE;
     private TestResult supportsHstsPreloading = TestResult.FALSE;
@@ -66,7 +69,7 @@ public class HttpHeaderResult extends ProbeResult {
                                 try {
                                     hstsMaxAge = Long.parseLong(maxAge[1].trim());
                                 } catch (Exception E) {
-                                    E.printStackTrace();
+                                    LOGGER.warn("HSTS was not parseable", E);
                                     hstsNotParseable = TestResult.TRUE;
                                 }
                             } else {
@@ -89,7 +92,7 @@ public class HttpHeaderResult extends ProbeResult {
                                 try {
                                     hpkpMaxAge = Integer.parseInt(maxAge[1].trim());
                                 } catch (Exception E) {
-                                    E.printStackTrace();
+                                    LOGGER.warn("HPKP was not parseable", E);
                                     hpkpNotParseable = TestResult.TRUE;
                                 }
                             } else {
@@ -116,7 +119,7 @@ public class HttpHeaderResult extends ProbeResult {
                                 try {
                                     hpkpMaxAge = Integer.parseInt(maxAge[1].trim());
                                 } catch (Exception E) {
-                                    E.printStackTrace();
+                                    LOGGER.warn("HPKP was not parseable", E);
                                     hpkpNotParseable = TestResult.TRUE;
                                 }
                             } else {
