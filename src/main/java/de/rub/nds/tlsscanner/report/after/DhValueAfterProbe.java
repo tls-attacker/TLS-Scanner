@@ -27,18 +27,10 @@ public class DhValueAfterProbe extends AfterProbe {
         List<ExtractedValueContainer> extractedValueContainerList = report.getExtractedValueContainerList();
         List<CommonDhValues> loadedCommonDhValues = CommonDhLoader.loadCommonDhValues();
         Set<CommonDhValues> usedCommonValues = new HashSet<>();
-        TestResult onlyPrime;
-        TestResult onlySafePrime;
-        TestResult reuse;
-        if (extractedValueContainerList.isEmpty()) {
-            onlyPrime = TestResult.COULD_NOT_TEST;
-            onlySafePrime = TestResult.COULD_NOT_TEST;
-            reuse = TestResult.COULD_NOT_TEST;
-        } else {
-            onlyPrime = TestResult.TRUE;
-            onlySafePrime = TestResult.TRUE;
-            reuse = TestResult.FALSE;
-        }
+        TestResult onlyPrime = TestResult.TRUE;
+        TestResult onlySafePrime = TestResult.TRUE;
+        TestResult reuse = TestResult.FALSE;
+
         int shortestBitLength = Integer.MAX_VALUE;
         for (ExtractedValueContainer container : extractedValueContainerList) {
             if (container.getType() == TrackableValueType.DH_PUBKEY) {
@@ -69,8 +61,12 @@ public class DhValueAfterProbe extends AfterProbe {
                 }
             }
         }
+
         if (extractedValueContainerList.isEmpty()) {
             report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.COULD_NOT_TEST);
+            onlyPrime = TestResult.COULD_NOT_TEST;
+            onlySafePrime = TestResult.COULD_NOT_TEST;
+            reuse = TestResult.COULD_NOT_TEST;
         } else {
             if (usedCommonValues.size() > 0) {
                 report.putResult(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, TestResult.TRUE);
