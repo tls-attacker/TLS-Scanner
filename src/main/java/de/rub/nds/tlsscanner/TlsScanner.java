@@ -156,7 +156,7 @@ public class TlsScanner {
                 if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls()) || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(probeList, afterList);
-                    MultiThreadedScanJobExecutor executor = new MultiThreadedScanJobExecutor(config, job, config.getOverallThreads(), config.getClientDelegate().getHost());
+                    ThreadedScanJobExecutor executor = new ThreadedScanJobExecutor(config, job, config.getOverallThreads(), config.getClientDelegate().getHost());
                     SiteReport report = executor.execute();
                     executor.shutdown();
                     return report;

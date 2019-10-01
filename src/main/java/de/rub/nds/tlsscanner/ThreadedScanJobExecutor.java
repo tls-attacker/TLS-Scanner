@@ -33,7 +33,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Robert Merget - robert.merget@rub.de
  */
-public class MultiThreadedScanJobExecutor extends ScanJobExecutor implements Observer {
+public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -47,13 +47,13 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor implements Obs
 
     private final ThreadPoolExecutor executor;
 
-    public MultiThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
+    public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
         executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(), new NamedThreadFactory(prefix));
         this.config = config;
         this.scanJob = scanJob;
     }
 
-    public MultiThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, ThreadPoolExecutor executor) {
+    public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, ThreadPoolExecutor executor) {
         this.executor = executor;
         this.config = config;
         this.scanJob = scanJob;
@@ -152,6 +152,7 @@ public class MultiThreadedScanJobExecutor extends ScanJobExecutor implements Obs
             List<TlsProbe> newNotSchedulesTasksList = new LinkedList<>();
             for (TlsProbe probe : notScheduledTasks) {
                 if (probe.canBeExecuted(report)) {
+                    probe.adjustConfig(report);
                     LOGGER.info("Scheduling: " + probe.getProbeName());
                     Future<ProbeResult> future = executor.submit(probe);
                     futureResults.add(future);
