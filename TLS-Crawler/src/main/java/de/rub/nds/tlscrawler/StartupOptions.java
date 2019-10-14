@@ -102,7 +102,7 @@ public class StartupOptions extends OptionsBase {
     @Option(
             name = "multipleTestsMode",
             abbrev = 'q',
-            help = "Instances in the same workspace share the same databases.",
+            help = "Performs multiple scans in a row",
             defaultValue = "false"
     )
     public boolean multipleTestsMode;
