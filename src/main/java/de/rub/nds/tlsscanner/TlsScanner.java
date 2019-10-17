@@ -22,6 +22,7 @@ import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.CommonBugProbe;
 import de.rub.nds.tlsscanner.probe.CompressionsProbe;
 import de.rub.nds.tlsscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.probe.ECPointFormatProbe;
 import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
 import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
@@ -131,6 +132,7 @@ public class TlsScanner {
         phaseOneTestList.add(new Tls13Probe(config, parallelExecutor));
         phaseOneTestList.add(new TokenbindingProbe(config, parallelExecutor));
         phaseOneTestList.add(new HttpHeaderProbe(config, parallelExecutor));
+        phaseOneTestList.add(new ECPointFormatProbe(config, parallelExecutor));
         phaseTwoTestList.add(new ResumptionProbe(config, parallelExecutor));
         phaseTwoTestList.add(new RenegotiationProbe(config, parallelExecutor));
         phaseTwoTestList.add(new HeartbleedProbe(config, parallelExecutor));
