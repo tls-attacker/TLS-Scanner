@@ -8,6 +8,9 @@
  */
 package de.rub.nds.tlsscanner.constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author Robert Merget <robert.merget@rub.de>
@@ -36,10 +39,24 @@ public enum AnsiColor {
 
     private String code;
 
+    private static final Map<String, AnsiColor> MAP;
+    
     private AnsiColor(String code) {
         this.code = code;
     }
+    
+    static {
+        MAP = new HashMap<>();
+        for (AnsiColor c : AnsiColor.values()) {
+            MAP.put(c.code, c);
+        }
+    }
 
+    public static AnsiColor getAnsiColor(String code) {
+        return MAP.get(code);
+    }
+    
+    
     public String getCode() {
         return code;
     }
