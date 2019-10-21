@@ -21,17 +21,20 @@ public class InvalidCurveResult extends ProbeResult {
 
     private final TestResult vulnerableClassic;
     private final TestResult vulnerableEphemeral;
+    private final TestResult vulnerableTwist;
 
-    public InvalidCurveResult(TestResult vulnerableClassic, TestResult vulnerableEphemeral) {
+    public InvalidCurveResult(TestResult vulnerableClassic, TestResult vulnerableEphemeral, TestResult vulnerableTwist) {
         super(ProbeType.INVALID_CURVE);
         this.vulnerableClassic = vulnerableClassic;
         this.vulnerableEphemeral = vulnerableEphemeral;
+        this.vulnerableTwist = vulnerableTwist;
     }
 
     @Override
     public void mergeData(SiteReport report) {
         report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, vulnerableClassic);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, vulnerableEphemeral);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, vulnerableTwist);
     }
 
 }
