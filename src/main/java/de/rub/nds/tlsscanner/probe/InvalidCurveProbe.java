@@ -30,7 +30,9 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.InvalidCurveResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,17 +46,17 @@ public class InvalidCurveProbe extends TlsProbe {
 
     private TestResult supportsStatic;
     
+    private TestResult supportsRenegotiation;
+    
     private List<ProtocolVersion> supportedProtocolVersions;
     
     private List<NamedGroup> supportedFpGroups;
     
     private List<NamedGroup> supportedTls13FpGroups;
     
-    private List<CipherSuite> supportedECDHCipherSuites;
+    private HashMap<ProtocolVersion, List<CipherSuite>> supportedECDHCipherSuites;
     
-    private List<ECPointFormat> supportedFpPointFormats;
-    
-    private List<CipherSuite> supportedTls13CipherSuites;
+    private List<ECPointFormat> supportedFpPointFormats;   
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config, 10);
@@ -70,19 +72,17 @@ public class InvalidCurveProbe extends TlsProbe {
         
         for(ProtocolVersion protocolVersion: supportedProtocolVersions)
         {
-            List<CipherSuite> tlsVersionCipherSuites;
+            if(protocolVersion != ProtocolVersion.TLS12) {continue;}
             List<NamedGroup> groupList;
             if(protocolVersion == ProtocolVersion.TLS13)
             {
-                tlsVersionCipherSuites = supportedTls13CipherSuites;
                 groupList = supportedTls13FpGroups;
             }
             else
             {
-                tlsVersionCipherSuites = supportedECDHCipherSuites;
                 groupList = supportedFpGroups;
             }
-            for(int i = 0; i < tlsVersionCipherSuites.size(); i++)
+            for(int i = 0; i < supportedECDHCipherSuites.get(protocolVersion).size(); i++)
             {
                 for(NamedGroup group: groupList)
                 {
@@ -93,8 +93,12 @@ public class InvalidCurveProbe extends TlsProbe {
                     invalidCurveAttackConfig.setProtocolFlows(InvalidCurvePoint.fromNamedGroup(group).getOrder().intValue() * 2);
                     invalidCurveAttackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);
                     
-                    InvalidCurveAttacker attacker = prepareAttacker(invalidCurveAttackConfig, protocolVersion, tlsVersionCipherSuites.get(i), group);
+                    /*if(supportsRenegotiation == TestResult.TRUE && protocolVersion == ProtocolVersion.TLS13)
+                    {
+                        invalidCurveAttackConfig.setAttackInRenegotiation(true);
+                    }*/
                     
+                    InvalidCurveAttacker attacker = prepareAttacker(invalidCurveAttackConfig, protocolVersion, supportedECDHCipherSuites.get(protocolVersion).get(i), group);
                     Boolean vulnerable = attacker.isVulnerable();
                     
                     Boolean twistVulnerable = false;
@@ -119,7 +123,7 @@ public class InvalidCurveProbe extends TlsProbe {
                             TwistedCurveAttackConfig.setCurveTwistAttack(true);
                             TwistedCurveAttackConfig.setCurveTwistD(TwistedCurvePoint.fromIntendedNamedGroup(group).getD());
                             
-                            InvalidCurveAttacker twistAttacker = prepareAttacker(TwistedCurveAttackConfig, protocolVersion, tlsVersionCipherSuites.get(i), group);
+                            InvalidCurveAttacker twistAttacker = prepareAttacker(TwistedCurveAttackConfig, protocolVersion, supportedECDHCipherSuites.get(protocolVersion).get(i), group);
                             
                             twistVulnerable = twistAttacker.isVulnerable();   
                         }
@@ -129,7 +133,7 @@ public class InvalidCurveProbe extends TlsProbe {
                     {
                         LOGGER.warn("Was unable to test for vulnerability");
                     }
-                    else if(vulnerable && supportedECDHCipherSuites.get(i).isEphemeral())
+                    else if(vulnerable && supportedECDHCipherSuites.get(protocolVersion).get(i).isEphemeral())
                     {
                         vulnerableEphemeral = TestResult.TRUE;
                     }
@@ -161,6 +165,10 @@ public class InvalidCurveProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
         supportsEphemeral = report.getResult(AnalyzedProperty.SUPPORTS_ECDH);
         supportsStatic = report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH);
+        supportsRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);
+        
+        System.out.println("Renegotiation: " + report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION).toString());
+        
         List<NamedGroup> groups = new LinkedList<>();
         for(NamedGroup group : report.getSupportedNamedGroups())
         {
@@ -169,16 +177,24 @@ public class InvalidCurveProbe extends TlsProbe {
                 groups.add(group);
             }
         }
-              
-        List<CipherSuite> ecdhCipherSuites = new LinkedList<>();
-        
-        for(CipherSuite cipherSuite: report.getCipherSuites())
+                   
+        HashMap<ProtocolVersion,List<CipherSuite>> cipherSuitesMap = new HashMap<>();
+        for(VersionSuiteListPair pair: report.getVersionSuitePairs())
         {
-            if(cipherSuite.name().contains("TLS_ECDH"))
+            if(!cipherSuitesMap.containsKey(pair.getVersion()))
             {
-                ecdhCipherSuites.add(cipherSuite);
+                cipherSuitesMap.put(pair.getVersion(), new LinkedList<>());
             }
+            for(CipherSuite cipherSuite: pair.getCiphersuiteList())
+            {
+                if(cipherSuite.name().contains("TLS_ECDH"))
+                {
+                    cipherSuitesMap.get(pair.getVersion()).add(cipherSuite);
+                }
+            }
+            
         }
+        
         List<ECPointFormat> fpPointFormats = new LinkedList<>();
         if(report.getResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT) == TestResult.TRUE)
         {
@@ -222,14 +238,14 @@ public class InvalidCurveProbe extends TlsProbe {
                     tls13CipherSuites.add(cipherSuite);
                 }
             }
-            supportedTls13CipherSuites = tls13CipherSuites;
+            cipherSuitesMap.put(ProtocolVersion.TLS13,tls13CipherSuites);
             supportedTls13FpGroups = tls13groups;
         }
         
         supportedFpPointFormats = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedFpGroups = groups;
-        supportedECDHCipherSuites = ecdhCipherSuites;
+        supportedECDHCipherSuites = cipherSuitesMap;
     }
 
     @Override
