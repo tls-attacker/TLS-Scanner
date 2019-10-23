@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
+import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -47,9 +48,13 @@ public class InvalidCurveProbe extends TlsProbe {
     
     private List<NamedGroup> supportedFpGroups;
     
+    private List<NamedGroup> supportedTls13FpGroups;
+    
     private List<CipherSuite> supportedECDHCipherSuites;
     
     private List<ECPointFormat> supportedFpPointFormats;
+    
+    private List<CipherSuite> supportedTls13CipherSuites;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config, 10);
@@ -63,11 +68,23 @@ public class InvalidCurveProbe extends TlsProbe {
         
         //ScannerDetail scanDetail = scannerConfig.getScanDetail();
         
-        for(int i = 0; i < supportedECDHCipherSuites.size(); i++)
+        for(ProtocolVersion protocolVersion: supportedProtocolVersions)
         {
-            for(ProtocolVersion protocolVersion: supportedProtocolVersions)
+            List<CipherSuite> tlsVersionCipherSuites;
+            List<NamedGroup> groupList;
+            if(protocolVersion == ProtocolVersion.TLS13)
             {
-                for(NamedGroup group: supportedFpGroups)
+                tlsVersionCipherSuites = supportedTls13CipherSuites;
+                groupList = supportedTls13FpGroups;
+            }
+            else
+            {
+                tlsVersionCipherSuites = supportedECDHCipherSuites;
+                groupList = supportedFpGroups;
+            }
+            for(int i = 0; i < tlsVersionCipherSuites.size(); i++)
+            {
+                for(NamedGroup group: groupList)
                 {
                     InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
                     invalidCurveAttackConfig.setNamedGroup(group);
@@ -76,7 +93,7 @@ public class InvalidCurveProbe extends TlsProbe {
                     invalidCurveAttackConfig.setProtocolFlows(InvalidCurvePoint.fromNamedGroup(group).getOrder().intValue() * 2);
                     invalidCurveAttackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);
                     
-                    InvalidCurveAttacker attacker = prepareAttacker(invalidCurveAttackConfig, protocolVersion, supportedECDHCipherSuites.get(i), group);
+                    InvalidCurveAttacker attacker = prepareAttacker(invalidCurveAttackConfig, protocolVersion, tlsVersionCipherSuites.get(i), group);
                     
                     Boolean vulnerable = attacker.isVulnerable();
                     
@@ -102,7 +119,7 @@ public class InvalidCurveProbe extends TlsProbe {
                             TwistedCurveAttackConfig.setCurveTwistAttack(true);
                             TwistedCurveAttackConfig.setCurveTwistD(TwistedCurvePoint.fromIntendedNamedGroup(group).getD());
                             
-                            InvalidCurveAttacker twistAttacker = prepareAttacker(TwistedCurveAttackConfig, protocolVersion, supportedECDHCipherSuites.get(i), group);
+                            InvalidCurveAttacker twistAttacker = prepareAttacker(TwistedCurveAttackConfig, protocolVersion, tlsVersionCipherSuites.get(i), group);
                             
                             twistVulnerable = twistAttacker.isVulnerable();   
                         }
@@ -121,7 +138,7 @@ public class InvalidCurveProbe extends TlsProbe {
                         vulnerableClassic = TestResult.TRUE;
                     }
                     
-                    if(twistVulnerable == true)
+                    if(twistVulnerable == null)
                     {
                         LOGGER.warn("Was unable to test for twist vulnerability");
                     }
@@ -185,11 +202,30 @@ public class InvalidCurveProbe extends TlsProbe {
         {
             protocolVersions.add(ProtocolVersion.TLS12);
         }
-        /*if(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE)
+        if(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE)
         {
             protocolVersions.add(ProtocolVersion.TLS13);
-        }*/
-
+            List<NamedGroup> tls13groups = new LinkedList();
+            for(NamedGroup group: report.getSupportedTls13Groups())
+            {
+                if(group != NamedGroup.ECDH_X25519 && group != NamedGroup.ECDH_X448 && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp)
+                {
+                    tls13groups.add(group);
+                }
+            }
+            
+            List<CipherSuite> tls13CipherSuites = new LinkedList<>();
+            for(CipherSuite cipherSuite: report.getSupportedTls13CipherSuites())
+            {
+                if(cipherSuite.isImplemented())
+                {
+                    tls13CipherSuites.add(cipherSuite);
+                }
+            }
+            supportedTls13CipherSuites = tls13CipherSuites;
+            supportedTls13FpGroups = tls13groups;
+        }
+        
         supportedFpPointFormats = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedFpGroups = groups;
@@ -209,10 +245,20 @@ public class InvalidCurveProbe extends TlsProbe {
        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) attackConfig.getDelegate(StarttlsDelegate.class);
        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
        InvalidCurveAttacker attacker = new InvalidCurveAttacker(attackConfig, attackConfig.createConfig());
-                    
+       
+       if(protocolVersion == ProtocolVersion.TLS13)
+       {
+           attacker.getTlsConfig().setAddKeyShareExtension(true);
+           attacker.getTlsConfig().setAddECPointFormatExtension(false);
+           attacker.getTlsConfig().setAddSupportedVersionsExtension(true);
+           attacker.getTlsConfig().setDefaultKeySharePrivateKey(new BigInteger("1"));
+       }
+       
        attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
+       attacker.getTlsConfig().setDefaultSelectedProtocolVersion(protocolVersion);
        attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuite);
-       attacker.getTlsConfig().setDefaultClientNamedGroups(group); 
+       attacker.getTlsConfig().setDefaultClientNamedGroups(group);
+       attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
        
        return attacker;
     }
