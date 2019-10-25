@@ -20,10 +20,13 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.crypto.ec.CurveFactory;
 import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurveOverFp;
+import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveParameterSet;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurvePoint;
+import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.probe.invalidCurve.TwistedCurvePoint;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
@@ -56,104 +59,22 @@ public class InvalidCurveProbe extends TlsProbe {
     
     private HashMap<ProtocolVersion, List<CipherSuite>> supportedECDHCipherSuites;
     
-    private List<ECPointFormat> supportedFpPointFormats;   
+    private List<ECPointFormat> supportedFpPointFormats;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config, 10);
     }
 
     @Override
-    public ProbeResult executeTest() {
-        TestResult vulnerableClassic = TestResult.NOT_TESTED_YET;
-        TestResult vulnerableEphemeral = TestResult.NOT_TESTED_YET;
-        TestResult vulnerableTwist = TestResult.NOT_TESTED_YET;
-        
-        //ScannerDetail scanDetail = scannerConfig.getScanDetail();
-        
-        for(ProtocolVersion protocolVersion: supportedProtocolVersions)
+    public ProbeResult executeTest() {   
+        List<InvalidCurveParameterSet> parameterSets = prepareParameterCombinations();
+        List<InvalidCurveResponse> responses = new LinkedList<>();
+        for(InvalidCurveParameterSet parameterSet: parameterSets)
         {
-            if(protocolVersion != ProtocolVersion.TLS12) {continue;}
-            List<NamedGroup> groupList;
-            if(protocolVersion == ProtocolVersion.TLS13)
-            {
-                groupList = supportedTls13FpGroups;
-            }
-            else
-            {
-                groupList = supportedFpGroups;
-            }
-            for(int i = 0; i < supportedECDHCipherSuites.get(protocolVersion).size(); i++)
-            {
-                for(NamedGroup group: groupList)
-                {
-                    InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
-                    invalidCurveAttackConfig.setNamedGroup(group);
-                    invalidCurveAttackConfig.setPublicPointBaseX(InvalidCurvePoint.fromNamedGroup(group).getPublicPointBaseX());
-                    invalidCurveAttackConfig.setPublicPointBaseY(InvalidCurvePoint.fromNamedGroup(group).getPublicPointBaseY());
-                    invalidCurveAttackConfig.setProtocolFlows(InvalidCurvePoint.fromNamedGroup(group).getOrder().intValue() * 2);
-                    invalidCurveAttackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);
-                    
-                    /*if(supportsRenegotiation == TestResult.TRUE && protocolVersion == ProtocolVersion.TLS13)
-                    {
-                        invalidCurveAttackConfig.setAttackInRenegotiation(true);
-                    }*/
-                    
-                    InvalidCurveAttacker attacker = prepareAttacker(invalidCurveAttackConfig, protocolVersion, supportedECDHCipherSuites.get(protocolVersion).get(i), group);
-                    Boolean vulnerable = attacker.isVulnerable();
-                    
-                    Boolean twistVulnerable = false;
-                    if(TwistedCurvePoint.fromIntendedNamedGroup(group) != null)
-                    { 
-                        //Check for twist attacks
-                        for(ECPointFormat format: supportedFpPointFormats)
-                        {
-                            InvalidCurveAttackConfig TwistedCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
-                            TwistedCurveAttackConfig.setNamedGroup(group);
-                            TwistedCurveAttackConfig.setPublicPointBaseX(TwistedCurvePoint.fromIntendedNamedGroup(group).getPublicPointBaseX());
-                            TwistedCurveAttackConfig.setPublicPointBaseY(TwistedCurvePoint.fromIntendedNamedGroup(group).getPublicPointBaseY());
-                            TwistedCurveAttackConfig.setProtocolFlows(TwistedCurvePoint.fromIntendedNamedGroup(group).getOrder().intValue() * 2);
-                            TwistedCurveAttackConfig.setPointCompressionFormat(format);
-                            
-                            EllipticCurveOverFp intendedCurve = (EllipticCurveOverFp)CurveFactory.getCurve(group);
-                            BigInteger modA = intendedCurve.getA().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(group).getD()).mod(intendedCurve.getModulus());
-                            BigInteger modB = intendedCurve.getB().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(group).getD()).mod(intendedCurve.getModulus());
-                            EllipticCurveOverFp twistedCurve = new EllipticCurveOverFp(modA, modB, intendedCurve.getModulus());
-                            
-                            TwistedCurveAttackConfig.setTwistedCurve(twistedCurve);
-                            TwistedCurveAttackConfig.setCurveTwistAttack(true);
-                            TwistedCurveAttackConfig.setCurveTwistD(TwistedCurvePoint.fromIntendedNamedGroup(group).getD());
-                            
-                            InvalidCurveAttacker twistAttacker = prepareAttacker(TwistedCurveAttackConfig, protocolVersion, supportedECDHCipherSuites.get(protocolVersion).get(i), group);
-                            
-                            twistVulnerable = twistAttacker.isVulnerable();   
-                        }
-                    }
-                    
-                    if(vulnerable == null)
-                    {
-                        LOGGER.warn("Was unable to test for vulnerability");
-                    }
-                    else if(vulnerable && supportedECDHCipherSuites.get(protocolVersion).get(i).isEphemeral())
-                    {
-                        vulnerableEphemeral = TestResult.TRUE;
-                    }
-                    else if(vulnerable)
-                    {
-                        vulnerableClassic = TestResult.TRUE;
-                    }
-                    
-                    if(twistVulnerable == null)
-                    {
-                        LOGGER.warn("Was unable to test for twist vulnerability");
-                    }
-                    else if(twistVulnerable)
-                    {
-                        vulnerableTwist = TestResult.TRUE;
-                    }
-                }
-            }  
+            responses.add(executeSingleScan(parameterSet));
         }
-        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist);
+        
+        return evaluateResponses(responses);
     }
 
     @Override
@@ -253,7 +174,7 @@ public class InvalidCurveProbe extends TlsProbe {
         return new InvalidCurveResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
     
-    private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig, ProtocolVersion protocolVersion, CipherSuite cipherSuite, NamedGroup group)
+    private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig, ProtocolVersion protocolVersion, List<CipherSuite> cipherSuites, NamedGroup group)
     {
        ClientDelegate delegate = (ClientDelegate) attackConfig.getDelegate(ClientDelegate.class);
        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
@@ -267,16 +188,218 @@ public class InvalidCurveProbe extends TlsProbe {
            attacker.getTlsConfig().setAddKeyShareExtension(true);
            attacker.getTlsConfig().setAddECPointFormatExtension(false);
            attacker.getTlsConfig().setAddSupportedVersionsExtension(true);
-           attacker.getTlsConfig().setDefaultKeySharePrivateKey(new BigInteger("1"));
        }
        
        attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
        attacker.getTlsConfig().setDefaultSelectedProtocolVersion(protocolVersion);
-       attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuite);
+       attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuites);
        attacker.getTlsConfig().setDefaultClientNamedGroups(group);
        attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
        
        return attacker;
     }
+    
+    private List<InvalidCurveParameterSet> prepareParameterCombinations()
+    {
+        LinkedList<InvalidCurveParameterSet> parameterSets = new LinkedList<>();
+        
+        for(ProtocolVersion protocolVersion: supportedProtocolVersions)
+        {
+            if(protocolVersion != ProtocolVersion.TLS12) {continue;}
+            List<NamedGroup> groupList = (protocolVersion == ProtocolVersion.TLS13)?supportedTls13FpGroups:supportedFpGroups;
 
+            for(NamedGroup group: groupList)
+            {
+                for(ECPointFormat format: supportedFpPointFormats)
+                {
+                    if(scannerConfig.getScanDetail().getLevelValue() >= ScannerDetail.DETAILED.getLevelValue())
+                    {
+                        //individual scans for every ciphersuite
+                        for(CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion))
+                        {   
+                            if(format == ECPointFormat.UNCOMPRESSED) //regular invalid curve attacks don't work with compressed points
+                            {
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group, format, false));
+                            }
+                            if(TwistedCurvePoint.fromIntendedNamedGroup(group) != null)
+                            {
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group, format, true));
+                            }
+                        } 
+                    }
+                    else 
+                    {
+                        //split ciphersuites in static and ephemeral and scan once for each list
+                        LinkedList<CipherSuite> ephemeralSuites = new LinkedList<>();
+                        LinkedList<CipherSuite> staticSuites = new LinkedList<>();
+                        for(CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion))
+                        {
+                            if(cipherSuite.isEphemeral())
+                            {
+                               ephemeralSuites.add(cipherSuite);
+                            }
+                            else
+                            {
+                               staticSuites.add(cipherSuite);
+                            }
+                        }
+                        
+                        
+                        if(ephemeralSuites.size() > 0)
+                        {
+                            if(format == ECPointFormat.UNCOMPRESSED) //regular invalid curve attacks don't work with compressed points
+                            {
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites, group, format, false));
+                            }
+                            if(TwistedCurvePoint.fromIntendedNamedGroup(group) != null)
+                            {
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites, group, format, true));
+                            }
+                        }
+                        if(staticSuites.size() > 0)
+                        {
+                            if(format == ECPointFormat.UNCOMPRESSED) //regular invalid curve attacks don't work with compressed points
+                            {
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites, group, format, false));
+                            }
+                            if(TwistedCurvePoint.fromIntendedNamedGroup(group) != null)
+                            {
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites, group, format, true));
+                            }
+                        }
+                    }
+                        
+                }
+                
+            }
+        }
+        
+        return parameterSets;
+    }
+    
+    private InvalidCurveResponse executeSingleScan(InvalidCurveParameterSet parameterSet)
+    {
+        TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
+        
+        InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
+        invalidCurveAttackConfig.setNamedGroup(parameterSet.getNamedGroup());
+        
+        if(parameterSet.isTwistAttack())
+        {
+            
+            invalidCurveAttackConfig.setPublicPointBaseX(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseX());
+            invalidCurveAttackConfig.setPublicPointBaseY(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseY());
+            invalidCurveAttackConfig.setProtocolFlows(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
+            invalidCurveAttackConfig.setPointCompressionFormat(parameterSet.getPointFormat());
+                            
+            EllipticCurveOverFp intendedCurve = (EllipticCurveOverFp)CurveFactory.getCurve(parameterSet.getNamedGroup());
+            BigInteger modA = intendedCurve.getA().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD()).mod(intendedCurve.getModulus());
+            BigInteger modB = intendedCurve.getB().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD()).mod(intendedCurve.getModulus());
+            EllipticCurveOverFp twistedCurve = new EllipticCurveOverFp(modA, modB, intendedCurve.getModulus());
+                            
+            invalidCurveAttackConfig.setTwistedCurve(twistedCurve);
+            invalidCurveAttackConfig.setCurveTwistAttack(true);
+            invalidCurveAttackConfig.setCurveTwistD(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD());                         
+        }
+        else
+        {
+            invalidCurveAttackConfig.setPublicPointBaseX(InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseX());
+            invalidCurveAttackConfig.setPublicPointBaseY(InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseY());
+            invalidCurveAttackConfig.setProtocolFlows(InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
+            invalidCurveAttackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);               
+        }
+        
+        InvalidCurveAttacker attacker = prepareAttacker(invalidCurveAttackConfig, parameterSet.getProtocolVersion(), parameterSet.getCipherSuites(), parameterSet.getNamedGroup());
+        Boolean foundCongruence = attacker.isVulnerable(); 
+        
+        if(foundCongruence == null)
+        {
+            LOGGER.warn("Was unable to finish scan for " + parameterSet.toString());
+            showsPointsAreNotValidated = TestResult.ERROR_DURING_TEST;
+        }
+        else if(foundCongruence == true)
+        {
+            showsPointsAreNotValidated = TestResult.TRUE;
+        }
+        else
+        {
+            showsPointsAreNotValidated = TestResult.FALSE;
+        }
+            
+        
+        return new InvalidCurveResponse(parameterSet, attacker.getResponseFingerprints(),showsPointsAreNotValidated, attacker.getReceivedEcPublicKeys());
+    }
+    
+    
+    private InvalidCurveResult evaluateResponses(List<InvalidCurveResponse> responses)
+    {
+        TestResult vulnerableClassic = TestResult.FALSE; //TODO: CouldNotTest == Not Vulnerable?!
+        TestResult vulnerableEphemeral = TestResult.FALSE;
+        TestResult vulnerableTwist = TestResult.FALSE;
+        
+        List<NamedGroup> keyReusingGroups = identifyKeyReusingGroups(responses);
+        
+
+        for(InvalidCurveResponse response: responses)
+        {
+            if(response.getShowsPointsAreNotValidated() == TestResult.TRUE && keyReusingGroups.contains(response.getParameterSet().getNamedGroup()))
+            {
+                response.setShowsVulnerability(TestResult.TRUE); //TODO: Add CurveTwist for safe curves? (=> found congruence != vulnerable)
+                response.setChosenGroupReusesKey(TestResult.TRUE);
+                
+                if(response.getParameterSet().isTwistAttack())
+                {
+                    vulnerableTwist = TestResult.TRUE;
+                }
+                else if(response.getParameterSet().getCipherSuites().get(0).isEphemeral())
+                {
+                    vulnerableEphemeral = TestResult.TRUE;
+                }
+                else
+                {
+                    vulnerableClassic = TestResult.TRUE;
+                }
+            }
+            else
+            {
+                response.setShowsVulnerability(TestResult.FALSE);
+                response.setChosenGroupReusesKey(TestResult.FALSE);
+            }           
+        }
+        
+        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist);
+    }
+    
+    private List<NamedGroup> identifyKeyReusingGroups(List<InvalidCurveResponse> responses)
+    {
+        HashMap<NamedGroup,List<Point>> groupKeys = new HashMap<>();
+        List<NamedGroup> keyReusingGroups = new LinkedList<>();
+        for(InvalidCurveResponse response: responses)
+        {
+            if(!groupKeys.containsKey(response.getParameterSet().getNamedGroup()))
+            {
+                groupKeys.put(response.getParameterSet().getNamedGroup(), new LinkedList<>());
+            }
+            groupKeys.get(response.getParameterSet().getNamedGroup()).addAll(response.getReceivedEcPublicKeys());
+        }
+        
+        for(NamedGroup group: groupKeys.keySet())
+        {
+            for(Point point: groupKeys.get(group))
+            {
+                for(Point cPoint: groupKeys.get(group))
+                {
+                    if(point != cPoint && (point.getX().getData().compareTo(cPoint.getX().getData()) == 0) && point.getY().getData().compareTo(cPoint.getY().getData()) == 0)
+                    {
+                        if(!keyReusingGroups.contains(group))
+                        {
+                            keyReusingGroups.add(group);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return keyReusingGroups;
+    }
 }
