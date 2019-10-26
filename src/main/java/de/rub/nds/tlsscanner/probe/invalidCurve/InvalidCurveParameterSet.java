@@ -79,4 +79,16 @@ public class InvalidCurveParameterSet {
     public boolean isTwistAttack() {
         return twistAttack;
     }
+    
+    @Override
+    public String toString(){
+        String parameter = ">";
+        for(CipherSuite cipherSuite: cipherSuites)
+        {
+            parameter = parameter + cipherSuite.toString();
+        }
+        
+        parameter = protocolVersion.toString() + ">" + namedGroup.toString() + ">" + pointFormat.toString() + parameter + (twistAttack?">CurveTwist":"");
+        return parameter;
+    }
 }
