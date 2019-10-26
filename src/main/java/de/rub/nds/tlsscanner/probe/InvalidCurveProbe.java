@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
-import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -66,7 +65,7 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult executeTest() {   
+    public ProbeResult executeTest() {
         List<InvalidCurveParameterSet> parameterSets = prepareParameterCombinations();
         List<InvalidCurveResponse> responses = new LinkedList<>();
         for(InvalidCurveParameterSet parameterSet: parameterSets)
@@ -86,9 +85,7 @@ public class InvalidCurveProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
         supportsEphemeral = report.getResult(AnalyzedProperty.SUPPORTS_ECDH);
         supportsStatic = report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH);
-        supportsRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);
-        
-        System.out.println("Renegotiation: " + report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION).toString());
+        supportsRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);     
         
         List<NamedGroup> groups = new LinkedList<>();
         for(NamedGroup group : report.getSupportedNamedGroups())
@@ -205,7 +202,6 @@ public class InvalidCurveProbe extends TlsProbe {
         
         for(ProtocolVersion protocolVersion: supportedProtocolVersions)
         {
-            if(protocolVersion != ProtocolVersion.TLS12) {continue;}
             List<NamedGroup> groupList = (protocolVersion == ProtocolVersion.TLS13)?supportedTls13FpGroups:supportedFpGroups;
 
             for(NamedGroup group: groupList)
