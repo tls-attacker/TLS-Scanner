@@ -24,16 +24,18 @@ public class InvalidCurveParameterSet {
     private NamedGroup namedGroup;
     private ECPointFormat pointFormat;
     private boolean twistAttack;
+    private boolean attackInRenegotiation;
     
-    public InvalidCurveParameterSet(ProtocolVersion protocolVersion, List<CipherSuite> cipherSuites, NamedGroup namedGroup, ECPointFormat pointFormat, boolean twistAttack)
+    public InvalidCurveParameterSet(ProtocolVersion protocolVersion, List<CipherSuite> cipherSuites, NamedGroup namedGroup, ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation)
     {
         this.protocolVersion = protocolVersion;
         this.cipherSuites = cipherSuites;
         this.namedGroup = namedGroup;
         this.pointFormat = pointFormat;
         this.twistAttack = twistAttack;
+        this.attackInRenegotiation = attackInRenegotiation;
     }
-    public InvalidCurveParameterSet(ProtocolVersion protocolVersion, CipherSuite cipherSuite, NamedGroup namedGroup, ECPointFormat pointFormat, boolean twistAttack)
+    public InvalidCurveParameterSet(ProtocolVersion protocolVersion, CipherSuite cipherSuite, NamedGroup namedGroup, ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation)
     {
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.add(cipherSuite);
@@ -43,6 +45,7 @@ public class InvalidCurveParameterSet {
         this.namedGroup = namedGroup;
         this.pointFormat = pointFormat;
         this.twistAttack = twistAttack;
+        this.attackInRenegotiation = attackInRenegotiation;
     }
 
     /**
@@ -88,7 +91,21 @@ public class InvalidCurveParameterSet {
             parameter = parameter + cipherSuite.toString();
         }
         
-        parameter = protocolVersion.toString() + ">" + namedGroup.toString() + ">" + pointFormat.toString() + parameter + (twistAttack?">CurveTwist":"");
+        parameter = protocolVersion.toString() + ">" + namedGroup.toString() + ">" + (attackInRenegotiation?"Renegotiation>":"") + pointFormat.toString() + parameter + (twistAttack?">CurveTwist":"");
         return parameter;
+    }
+
+    /**
+     * @return the attackInRenegotiation
+     */
+    public boolean isAttackInRenegotiation() {
+        return attackInRenegotiation;
+    }
+
+    /**
+     * @param attackInRenegotiation the attackInRenegotiation to set
+     */
+    public void setAttackInRenegotiation(boolean attackInRenegotiation) {
+        this.attackInRenegotiation = attackInRenegotiation;
     }
 }

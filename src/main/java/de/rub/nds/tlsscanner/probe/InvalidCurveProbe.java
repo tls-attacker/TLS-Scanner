@@ -203,23 +203,23 @@ public class InvalidCurveProbe extends TlsProbe {
         for(ProtocolVersion protocolVersion: supportedProtocolVersions)
         {
             List<NamedGroup> groupList = (protocolVersion == ProtocolVersion.TLS13)?supportedTls13FpGroups:supportedFpGroups;
-
+            
             for(NamedGroup group: groupList)
             {
                 for(ECPointFormat format: supportedFpPointFormats)
                 {
-                    if(scannerConfig.getScanDetail().getLevelValue() >= ScannerDetail.DETAILED.getLevelValue())
+                    if(scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED))
                     {
                         //individual scans for every ciphersuite
                         for(CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion))
                         {   
                             if(format == ECPointFormat.UNCOMPRESSED) //regular invalid curve attacks don't work with compressed points
                             {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group, format, false));
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group, format, false, false));
                             }
                             if(TwistedCurvePoint.fromIntendedNamedGroup(group) != null)
                             {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group, format, true));
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group, format, true, false));
                             }
                         } 
                     }
@@ -245,22 +245,22 @@ public class InvalidCurveProbe extends TlsProbe {
                         {
                             if(format == ECPointFormat.UNCOMPRESSED) //regular invalid curve attacks don't work with compressed points
                             {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites, group, format, false));
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites, group, format, false, false));
                             }
                             if(TwistedCurvePoint.fromIntendedNamedGroup(group) != null)
                             {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites, group, format, true));
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites, group, format, true, false));
                             }
                         }
                         if(staticSuites.size() > 0)
                         {
                             if(format == ECPointFormat.UNCOMPRESSED) //regular invalid curve attacks don't work with compressed points
                             {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites, group, format, false));
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites, group, format, false, false));
                             }
                             if(TwistedCurvePoint.fromIntendedNamedGroup(group) != null)
                             {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites, group, format, true));
+                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites, group, format, true, false));
                             }
                         }
                     }
@@ -270,6 +270,19 @@ public class InvalidCurveProbe extends TlsProbe {
             }
         }
         
+        //repeat scans in renegotiation 
+        if(scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) && supportsRenegotiation == TestResult.TRUE)
+        {
+            int setCount = parameterSets.size();
+            for(int i = 0; i < setCount; i++)
+            {
+                InvalidCurveParameterSet set = parameterSets.get(i);
+                if(set.getProtocolVersion() != ProtocolVersion.TLS13)
+                {
+                    parameterSets.add(new InvalidCurveParameterSet(set.getProtocolVersion(), set.getCipherSuites(), set.getNamedGroup(), set.getPointFormat(), set.isTwistAttack(), true));
+                }    
+            }
+        }
         return parameterSets;
     }
     
@@ -279,6 +292,7 @@ public class InvalidCurveProbe extends TlsProbe {
         
         InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
         invalidCurveAttackConfig.setNamedGroup(parameterSet.getNamedGroup());
+        invalidCurveAttackConfig.setAttackInRenegotiation(parameterSet.isAttackInRenegotiation());
         
         if(parameterSet.isTwistAttack())
         {
