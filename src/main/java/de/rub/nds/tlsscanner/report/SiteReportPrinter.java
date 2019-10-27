@@ -42,6 +42,7 @@ import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
+import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
@@ -115,6 +116,7 @@ public class SiteReportPrinter {
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
+        appendInvalidCurveResults(builder);
         //appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
@@ -567,6 +569,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Breach", AnalyzedProperty.VULNERABLE_TO_BREACH);
         prettyAppend(builder, "Invalid Curve", AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE);
         prettyAppend(builder, "Invalid Curve (ephemeral)", AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL);
+        prettyAppend(builder, "Invalid Curve (twist)", AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST);
         prettyAppend(builder, "SSL Poodle", AnalyzedProperty.VULNERABLE_TO_POODLE);
         prettyAppend(builder, "TLS Poodle", AnalyzedProperty.VULNERABLE_TO_TLS_POODLE);
         prettyAppend(builder, "Logjam", AnalyzedProperty.VULNERABLE_TO_LOGJAM);
@@ -710,6 +713,80 @@ public class SiteReportPrinter {
                 }
             }
         }
+        return builder;
+    }
+    
+    private StringBuilder appendInvalidCurveResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "Invalid Curve Details");
+        boolean foundCouldNotTest = false;
+        if(report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResult.NOT_TESTED_YET && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResult.NOT_TESTED_YET && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResult.NOT_TESTED_YET)
+        {
+            prettyAppend(builder, "Not Tested");
+        }
+        else if(report.getInvalidCurveResultList() == null)
+        {
+            prettyAppend(builder, "No Testresults");
+        }
+        else if(report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResult.FALSE && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResult.FALSE && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResult.FALSE && detail != ScannerDetail.ALL)
+        {
+            prettyAppend(builder, "No Vulnerabilities Found");
+        }
+        else
+        {
+            for(InvalidCurveResponse response: report.getInvalidCurveResultList())
+            {
+                if(response.getChosenGroupReusesKey() == TestResult.COULD_NOT_TEST || response.getShowsVulnerability() == TestResult.COULD_NOT_TEST || response.getShowsVulnerability() == TestResult.COULD_NOT_TEST)
+                {
+                    foundCouldNotTest = true;
+                }
+                if((response.getShowsVulnerability() == TestResult.TRUE && detail.isGreaterEqualTo(ScannerDetail.NORMAL)) || (response.getShowsPointsAreNotValidated() == TestResult.TRUE && detail.isGreaterEqualTo(ScannerDetail.DETAILED)) || detail == ScannerDetail.ALL)
+                {
+                    prettyAppend(builder, response.getParameterSet().toString());
+                    switch(response.getShowsPointsAreNotValidated())
+                    {
+                        case TRUE:
+                            prettyAppend(builder, "Server did not validate points", AnsiColor.YELLOW);
+                            break;
+                        case FALSE:
+                            prettyAppend(builder, "Server did validate points", AnsiColor.GREEN);
+                            break;
+                        default:
+                            prettyAppend(builder, "Could not test point validation", AnsiColor.YELLOW);
+                            break;      
+                    }
+                    switch(response.getChosenGroupReusesKey())
+                    {
+                        case TRUE:
+                            prettyAppend(builder, "Server did reuse key", AnsiColor.YELLOW);
+                            break;
+                        case FALSE:
+                            prettyAppend(builder, "Server did not reuse key", AnsiColor.GREEN);
+                            break;
+                        default:
+                            prettyAppend(builder, "Could not test key reuse", AnsiColor.YELLOW);
+                            break;      
+                    }
+                    switch(response.getShowsVulnerability())
+                    {
+                        case TRUE:
+                            prettyAppend(builder, "Server is vulnerable", AnsiColor.RED);
+                            break;
+                        case FALSE:
+                            prettyAppend(builder, "Server is not vulnerable", AnsiColor.GREEN);
+                            break;
+                        default:
+                            prettyAppend(builder, "Could not test for vulnerability", AnsiColor.YELLOW);
+                            break;      
+                    }
+                    
+                }
+            }
+            
+            if(foundCouldNotTest && detail.isGreaterEqualTo(ScannerDetail.NORMAL))
+            {
+               prettyAppend(builder, "Some tests did not finish", AnsiColor.YELLOW); 
+            }
+        }     
         return builder;
     }
 

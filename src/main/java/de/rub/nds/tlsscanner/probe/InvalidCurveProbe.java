@@ -168,7 +168,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new InvalidCurveResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new InvalidCurveResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, null);
     }
     
     private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig, ProtocolVersion protocolVersion, List<CipherSuite> cipherSuites, NamedGroup group)
@@ -363,7 +363,7 @@ public class InvalidCurveProbe extends TlsProbe {
             }           
         }
         
-        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist);
+        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist, responses);
     }
     
     private List<NamedGroup> identifyKeyReusingGroups(List<InvalidCurveResponse> responses)

@@ -9,9 +9,11 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import java.util.List;
 
 /**
  *
@@ -22,12 +24,14 @@ public class InvalidCurveResult extends ProbeResult {
     private final TestResult vulnerableClassic;
     private final TestResult vulnerableEphemeral;
     private final TestResult vulnerableTwist;
+    private final List<InvalidCurveResponse> responses;
 
-    public InvalidCurveResult(TestResult vulnerableClassic, TestResult vulnerableEphemeral, TestResult vulnerableTwist) {
+    public InvalidCurveResult(TestResult vulnerableClassic, TestResult vulnerableEphemeral, TestResult vulnerableTwist, List<InvalidCurveResponse> responses) {
         super(ProbeType.INVALID_CURVE);
         this.vulnerableClassic = vulnerableClassic;
         this.vulnerableEphemeral = vulnerableEphemeral;
         this.vulnerableTwist = vulnerableTwist;
+        this.responses = responses;
     }
 
     @Override
@@ -35,6 +39,7 @@ public class InvalidCurveResult extends ProbeResult {
         report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, vulnerableClassic);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, vulnerableEphemeral);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, vulnerableTwist);
+        report.setInvalidCurveResultList(responses);
     }
 
 }

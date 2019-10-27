@@ -25,6 +25,7 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
@@ -58,6 +59,7 @@ public class SiteReport {
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
+    private List<InvalidCurveResponse> invalidCurveResultList;
 
     //Version
     private List<ProtocolVersion> versions = null;
@@ -503,5 +505,19 @@ public class SiteReport {
 
     public void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
+    }
+
+    /**
+     * @return the invalidCurveResultList
+     */
+    public List<InvalidCurveResponse> getInvalidCurveResultList() {
+        return invalidCurveResultList;
+    }
+
+    /**
+     * @param invalidCurveResultList the invalidCurveResultList to set
+     */
+    public void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
+        this.invalidCurveResultList = invalidCurveResultList;
     }
 }
