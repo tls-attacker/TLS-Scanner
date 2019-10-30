@@ -88,29 +88,44 @@ public class InvalidCurveProbe extends TlsProbe {
         supportsRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);     
         
         List<NamedGroup> groups = new LinkedList<>();
-        for(NamedGroup group : report.getSupportedNamedGroups())
+        if(report.getSupportedNamedGroups() != null)
         {
-            if(group.isCurve() && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp)
+            for(NamedGroup group : report.getSupportedNamedGroups())
             {
-                groups.add(group);
+                if(group.isCurve() && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp)
+                {
+                    groups.add(group);
+                }
             }
+        }
+        else
+        {
+            LOGGER.warn("Supported Named Groups list has not been initialized");
         }
                    
         HashMap<ProtocolVersion,List<CipherSuite>> cipherSuitesMap = new HashMap<>();
-        for(VersionSuiteListPair pair: report.getVersionSuitePairs())
+        
+        if(report.getVersionSuitePairs() != null)
         {
-            if(!cipherSuitesMap.containsKey(pair.getVersion()))
+            for(VersionSuiteListPair pair: report.getVersionSuitePairs())
             {
-                cipherSuitesMap.put(pair.getVersion(), new LinkedList<>());
-            }
-            for(CipherSuite cipherSuite: pair.getCiphersuiteList())
-            {
-                if(cipherSuite.name().contains("TLS_ECDH"))
+                if(!cipherSuitesMap.containsKey(pair.getVersion()))
                 {
-                    cipherSuitesMap.get(pair.getVersion()).add(cipherSuite);
+                    cipherSuitesMap.put(pair.getVersion(), new LinkedList<>());
                 }
-            }
+                for(CipherSuite cipherSuite: pair.getCiphersuiteList())
+                {
+                    if(cipherSuite.name().contains("TLS_ECDH"))
+                    {
+                        cipherSuitesMap.get(pair.getVersion()).add(cipherSuite);
+                    }
+                }
             
+            }
+        }
+        else
+        {
+           LOGGER.warn("Supported CipherSuites list has not been initialized"); 
         }
         
         List<ECPointFormat> fpPointFormats = new LinkedList<>();
@@ -163,7 +178,7 @@ public class InvalidCurveProbe extends TlsProbe {
         supportedFpPointFormats = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedFpGroups = groups;
-        supportedECDHCipherSuites = cipherSuitesMap;
+        supportedECDHCipherSuites = cipherSuitesMap;    
     }
 
     @Override
@@ -187,12 +202,13 @@ public class InvalidCurveProbe extends TlsProbe {
            attacker.getTlsConfig().setAddSupportedVersionsExtension(true);
        }
        
-       attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
-       attacker.getTlsConfig().setDefaultSelectedProtocolVersion(protocolVersion);
-       attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuites);
-       attacker.getTlsConfig().setDefaultClientNamedGroups(group);
-       attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
-       
+        attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
+        attacker.getTlsConfig().setDefaultSelectedProtocolVersion(protocolVersion);
+        attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuites);
+        attacker.getTlsConfig().setDefaultClientNamedGroups(group);
+        attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
+        attacker.getTlsConfig().setAddRenegotiationInfoExtension(Boolean.TRUE);
+
        return attacker;
     }
     
@@ -288,56 +304,63 @@ public class InvalidCurveProbe extends TlsProbe {
     
     private InvalidCurveResponse executeSingleScan(InvalidCurveParameterSet parameterSet)
     {
-        TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
-        
-        InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
-        invalidCurveAttackConfig.setNamedGroup(parameterSet.getNamedGroup());
-        invalidCurveAttackConfig.setAttackInRenegotiation(parameterSet.isAttackInRenegotiation());
-        
-        if(parameterSet.isTwistAttack())
+        try
         {
+            TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
+        
+            InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
+            invalidCurveAttackConfig.setNamedGroup(parameterSet.getNamedGroup());
+            invalidCurveAttackConfig.setAttackInRenegotiation(parameterSet.isAttackInRenegotiation());
+        
+            if(parameterSet.isTwistAttack())
+            {
             
-            invalidCurveAttackConfig.setPublicPointBaseX(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseX());
-            invalidCurveAttackConfig.setPublicPointBaseY(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseY());
-            invalidCurveAttackConfig.setProtocolFlows(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
-            invalidCurveAttackConfig.setPointCompressionFormat(parameterSet.getPointFormat());
+                invalidCurveAttackConfig.setPublicPointBaseX(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseX());
+                invalidCurveAttackConfig.setPublicPointBaseY(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseY());
+                invalidCurveAttackConfig.setProtocolFlows(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
+                invalidCurveAttackConfig.setPointCompressionFormat(parameterSet.getPointFormat());
                             
-            EllipticCurveOverFp intendedCurve = (EllipticCurveOverFp)CurveFactory.getCurve(parameterSet.getNamedGroup());
-            BigInteger modA = intendedCurve.getA().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD()).mod(intendedCurve.getModulus());
-            BigInteger modB = intendedCurve.getB().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD()).mod(intendedCurve.getModulus());
-            EllipticCurveOverFp twistedCurve = new EllipticCurveOverFp(modA, modB, intendedCurve.getModulus());
+                EllipticCurveOverFp intendedCurve = (EllipticCurveOverFp)CurveFactory.getCurve(parameterSet.getNamedGroup());
+                BigInteger modA = intendedCurve.getA().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD()).mod(intendedCurve.getModulus());
+                BigInteger modB = intendedCurve.getB().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD()).mod(intendedCurve.getModulus());
+                EllipticCurveOverFp twistedCurve = new EllipticCurveOverFp(modA, modB, intendedCurve.getModulus());
                             
-            invalidCurveAttackConfig.setTwistedCurve(twistedCurve);
-            invalidCurveAttackConfig.setCurveTwistAttack(true);
-            invalidCurveAttackConfig.setCurveTwistD(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD());                         
-        }
-        else
-        {
-            invalidCurveAttackConfig.setPublicPointBaseX(InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseX());
-            invalidCurveAttackConfig.setPublicPointBaseY(InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseY());
-            invalidCurveAttackConfig.setProtocolFlows(InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
-            invalidCurveAttackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);               
-        }
+                invalidCurveAttackConfig.setTwistedCurve(twistedCurve);
+                invalidCurveAttackConfig.setCurveTwistAttack(true);
+                invalidCurveAttackConfig.setCurveTwistD(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD());                         
+            }
+            else
+            {
+                invalidCurveAttackConfig.setPublicPointBaseX(InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseX());
+                invalidCurveAttackConfig.setPublicPointBaseY(InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getPublicPointBaseY());
+                invalidCurveAttackConfig.setProtocolFlows(InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
+                invalidCurveAttackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);               
+            }
         
-        InvalidCurveAttacker attacker = prepareAttacker(invalidCurveAttackConfig, parameterSet.getProtocolVersion(), parameterSet.getCipherSuites(), parameterSet.getNamedGroup());
-        Boolean foundCongruence = attacker.isVulnerable(); 
+            InvalidCurveAttacker attacker = prepareAttacker(invalidCurveAttackConfig, parameterSet.getProtocolVersion(), parameterSet.getCipherSuites(), parameterSet.getNamedGroup());
+            Boolean foundCongruence = attacker.isVulnerable(); 
         
-        if(foundCongruence == null)
-        {
-            LOGGER.warn("Was unable to finish scan for " + parameterSet.toString());
-            showsPointsAreNotValidated = TestResult.ERROR_DURING_TEST;
-        }
-        else if(foundCongruence == true)
-        {
-            showsPointsAreNotValidated = TestResult.TRUE;
-        }
-        else
-        {
-            showsPointsAreNotValidated = TestResult.FALSE;
-        }
+            if(foundCongruence == null)
+            {
+                LOGGER.warn("Was unable to finish scan for " + parameterSet.toString());
+                showsPointsAreNotValidated = TestResult.ERROR_DURING_TEST;
+            }
+            else if(foundCongruence == true)
+            {
+                showsPointsAreNotValidated = TestResult.TRUE;
+            }
+            else
+            {
+                showsPointsAreNotValidated = TestResult.FALSE;
+            }
             
-        
-        return new InvalidCurveResponse(parameterSet, attacker.getResponseFingerprints(),showsPointsAreNotValidated, attacker.getReceivedEcPublicKeys());
+            return new InvalidCurveResponse(parameterSet, attacker.getResponseFingerprints(),showsPointsAreNotValidated, attacker.getReceivedEcPublicKeys());
+        }
+        catch(Exception ex)
+        {
+            LOGGER.warn("Was unable to get results for " + parameterSet.toString() + " Message: " + ex.getMessage());
+            return new InvalidCurveResponse(parameterSet, TestResult.ERROR_DURING_TEST);
+        }
     }
     
     
@@ -411,5 +434,5 @@ public class InvalidCurveProbe extends TlsProbe {
         }
         
         return keyReusingGroups;
-    }
+    } 
 }

@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.probe.invalidCurve;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -31,6 +32,14 @@ public class InvalidCurveResponse {
         this.responseFingerprints = responseFingerprints;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
         this.receivedEcPublicKeys = receivedEcPublicKeys;
+    }
+    
+    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, TestResult showsPointsAreNotValidated)
+    {
+        this.parameterSet = parameterSet;
+        this.showsPointsAreNotValidated = showsPointsAreNotValidated;
+        this.responseFingerprints = new LinkedList<>();
+        this.receivedEcPublicKeys = new LinkedList<>();
     }
 
     /**
