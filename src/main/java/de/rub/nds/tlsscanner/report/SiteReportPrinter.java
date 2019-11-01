@@ -748,7 +748,7 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Server did not validate points", AnsiColor.YELLOW);
                             break;
                         case FALSE:
-                            prettyAppend(builder, "Server did validate points", AnsiColor.GREEN);
+                            prettyAppend(builder, "Server did validate points / uses invulnerable algorithm", AnsiColor.GREEN);
                             break;
                         default:
                             prettyAppend(builder, "Could not test point validation", AnsiColor.YELLOW);
