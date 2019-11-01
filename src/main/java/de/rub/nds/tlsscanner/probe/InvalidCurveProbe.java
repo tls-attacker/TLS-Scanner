@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.crypto.ec.CurveFactory;
 import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurveOverFp;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
@@ -44,7 +45,9 @@ import java.util.List;
  */
 public class InvalidCurveProbe extends TlsProbe {
     
-    private TestResult supportsRenegotiation;
+    private boolean supportsRenegotiation;
+    
+    private TestResult supportsSecureRenegotiation;
     
     private List<ProtocolVersion> supportedProtocolVersions;
     
@@ -85,7 +88,8 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        supportsRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);     
+        supportsRenegotiation = (report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION) == TestResult.TRUE);
+        supportsSecureRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION);     
         
         List<NamedGroup> groups = new LinkedList<>();
         if(report.getSupportedNamedGroups() != null)
@@ -201,6 +205,10 @@ public class InvalidCurveProbe extends TlsProbe {
            attacker.getTlsConfig().setAddKeyShareExtension(true);
            attacker.getTlsConfig().setAddECPointFormatExtension(false);
            attacker.getTlsConfig().setAddSupportedVersionsExtension(true);
+           attacker.getTlsConfig().setAddPSKKeyExchangeModesExtension(true);
+           List<PskKeyExchangeMode> pskKex = new LinkedList<PskKeyExchangeMode>();
+           pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+           attacker.getTlsConfig().setPSKKeyExchangeModes(pskKex);
        }
        
         attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
@@ -208,8 +216,14 @@ public class InvalidCurveProbe extends TlsProbe {
         attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuites);
         attacker.getTlsConfig().setDefaultClientNamedGroups(group);
         attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
-        attacker.getTlsConfig().setAddRenegotiationInfoExtension(Boolean.TRUE);
-
+        if(supportsSecureRenegotiation == TestResult.TRUE)
+        {
+            attacker.getTlsConfig().setAddRenegotiationInfoExtension(true);
+        }
+        else
+        {
+            attacker.getTlsConfig().setAddRenegotiationInfoExtension(false);
+        }        
        return attacker;
     }
     
@@ -288,16 +302,16 @@ public class InvalidCurveProbe extends TlsProbe {
         }
         
         //repeat scans in renegotiation 
-        if(scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) && supportsRenegotiation == TestResult.TRUE)
+        if(scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL))
         {
             int setCount = parameterSets.size();
             for(int i = 0; i < setCount; i++)
             {
                 InvalidCurveParameterSet set = parameterSets.get(i);
-                if(set.getProtocolVersion() != ProtocolVersion.TLS13)
+                if(set.getProtocolVersion() == ProtocolVersion.TLS13 || supportsRenegotiation)
                 {
-                    parameterSets.add(new InvalidCurveParameterSet(set.getProtocolVersion(), set.getCipherSuites(), set.getNamedGroup(), set.getPointFormat(), set.isTwistAttack(), true));
-                }    
+                    parameterSets.add(new InvalidCurveParameterSet(set.getProtocolVersion(), set.getCipherSuites(), set.getNamedGroup(), set.getPointFormat(), set.isTwistAttack(), true));      
+                }
             }
         }
         return parameterSets;
