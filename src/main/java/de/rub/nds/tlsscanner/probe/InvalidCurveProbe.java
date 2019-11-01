@@ -43,10 +43,6 @@ import java.util.List;
  * @author Robert Merget - robert.merget@rub.de
  */
 public class InvalidCurveProbe extends TlsProbe {
-
-    private TestResult supportsEphemeral;
-
-    private TestResult supportsStatic;
     
     private TestResult supportsRenegotiation;
     
@@ -70,9 +66,15 @@ public class InvalidCurveProbe extends TlsProbe {
         List<InvalidCurveResponse> responses = new LinkedList<>();
         for(InvalidCurveParameterSet parameterSet: parameterSets)
         {
-            responses.add(executeSingleScan(parameterSet));
+            InvalidCurveResponse scanResponse = executeSingleScan(parameterSet);
+            if(scanResponse.getShowsPointsAreNotValidated() == TestResult.TRUE)
+            {
+                //rescan to reliably detect reused keys (especially TLS 1.3)
+                InvalidCurveResponse rescanResponse = executeSingleScan(parameterSet);
+                scanResponse.getReceivedEcPublicKeys().addAll(rescanResponse.getReceivedEcPublicKeys());
+            }
+            responses.add(scanResponse);
         }
-        
         return evaluateResponses(responses);
     }
 
@@ -83,8 +85,6 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        supportsEphemeral = report.getResult(AnalyzedProperty.SUPPORTS_ECDH);
-        supportsStatic = report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH);
         supportsRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION);     
         
         List<NamedGroup> groups = new LinkedList<>();
@@ -129,9 +129,10 @@ public class InvalidCurveProbe extends TlsProbe {
         }
         
         List<ECPointFormat> fpPointFormats = new LinkedList<>();
-        if(report.getResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT) == TestResult.TRUE)
+        fpPointFormats.add(ECPointFormat.UNCOMPRESSED);
+        if(report.getResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT) != TestResult.TRUE)
         {
-            fpPointFormats.add(ECPointFormat.UNCOMPRESSED);
+           LOGGER.warn("Server did not list uncompressed points as supported") ;
         }
         if(report.getResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME) == TestResult.TRUE)
         {
@@ -178,7 +179,7 @@ public class InvalidCurveProbe extends TlsProbe {
         supportedFpPointFormats = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedFpGroups = groups;
-        supportedECDHCipherSuites = cipherSuitesMap;    
+        supportedECDHCipherSuites = cipherSuitesMap;  
     }
 
     @Override
@@ -304,6 +305,7 @@ public class InvalidCurveProbe extends TlsProbe {
     
     private InvalidCurveResponse executeSingleScan(InvalidCurveParameterSet parameterSet)
     {
+        LOGGER.debug("Executing Invalid Curve scan for " + parameterSet.toString());
         try
         {
             TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
@@ -342,7 +344,7 @@ public class InvalidCurveProbe extends TlsProbe {
         
             if(foundCongruence == null)
             {
-                LOGGER.warn("Was unable to finish scan for " + parameterSet.toString());
+                LOGGER.warn("Was unable to determine if points are validated for " + parameterSet.toString());
                 showsPointsAreNotValidated = TestResult.ERROR_DURING_TEST;
             }
             else if(foundCongruence == true)
@@ -353,12 +355,11 @@ public class InvalidCurveProbe extends TlsProbe {
             {
                 showsPointsAreNotValidated = TestResult.FALSE;
             }
-            
             return new InvalidCurveResponse(parameterSet, attacker.getResponseFingerprints(),showsPointsAreNotValidated, attacker.getReceivedEcPublicKeys());
         }
         catch(Exception ex)
         {
-            LOGGER.warn("Was unable to get results for " + parameterSet.toString() + " Message: " + ex.getMessage());
+            LOGGER.warn("Was unable to get results for " + parameterSet.toString() + " Message: " + ex.getMessage());            
             return new InvalidCurveResponse(parameterSet, TestResult.ERROR_DURING_TEST);
         }
     }
@@ -366,19 +367,17 @@ public class InvalidCurveProbe extends TlsProbe {
     
     private InvalidCurveResult evaluateResponses(List<InvalidCurveResponse> responses)
     {
-        TestResult vulnerableClassic = TestResult.FALSE; //TODO: CouldNotTest == Not Vulnerable?!
+        TestResult vulnerableClassic = TestResult.FALSE;
         TestResult vulnerableEphemeral = TestResult.FALSE;
         TestResult vulnerableTwist = TestResult.FALSE;
         
-        List<NamedGroup> keyReusingGroups = identifyKeyReusingGroups(responses);
+        evaluateKeyBehavior(responses);
         
-
         for(InvalidCurveResponse response: responses)
         {
-            if(response.getShowsPointsAreNotValidated() == TestResult.TRUE && keyReusingGroups.contains(response.getParameterSet().getNamedGroup()))
+            if(response.getShowsPointsAreNotValidated() == TestResult.TRUE && response.getChosenGroupReusesKey() == TestResult.TRUE)
             {
-                response.setShowsVulnerability(TestResult.TRUE); //TODO: Add CurveTwist for safe curves? (=> found congruence != vulnerable)
-                response.setChosenGroupReusesKey(TestResult.TRUE);
+                response.setShowsVulnerability(TestResult.TRUE);
                 
                 if(response.getParameterSet().isTwistAttack())
                 {
@@ -396,43 +395,35 @@ public class InvalidCurveProbe extends TlsProbe {
             else
             {
                 response.setShowsVulnerability(TestResult.FALSE);
-                response.setChosenGroupReusesKey(TestResult.FALSE);
             }           
         }
         
         return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist, responses);
     }
     
-    private List<NamedGroup> identifyKeyReusingGroups(List<InvalidCurveResponse> responses)
+    private void evaluateKeyBehavior(List<InvalidCurveResponse> responses)
     {
-        HashMap<NamedGroup,List<Point>> groupKeys = new HashMap<>();
-        List<NamedGroup> keyReusingGroups = new LinkedList<>();
         for(InvalidCurveResponse response: responses)
         {
-            if(!groupKeys.containsKey(response.getParameterSet().getNamedGroup()))
+            if(response.getReceivedEcPublicKeys() == null || response.getReceivedEcPublicKeys().isEmpty())
             {
-                groupKeys.put(response.getParameterSet().getNamedGroup(), new LinkedList<>());
+                response.setChosenGroupReusesKey(TestResult.ERROR_DURING_TEST);
             }
-            groupKeys.get(response.getParameterSet().getNamedGroup()).addAll(response.getReceivedEcPublicKeys());
-        }
-        
-        for(NamedGroup group: groupKeys.keySet())
-        {
-            for(Point point: groupKeys.get(group))
+            else
             {
-                for(Point cPoint: groupKeys.get(group))
+                TestResult foundDuplicate = TestResult.FALSE;
+                for(Point point: response.getReceivedEcPublicKeys())
                 {
-                    if(point != cPoint && (point.getX().getData().compareTo(cPoint.getX().getData()) == 0) && point.getY().getData().compareTo(cPoint.getY().getData()) == 0)
+                    for(Point cPoint: response.getReceivedEcPublicKeys())
                     {
-                        if(!keyReusingGroups.contains(group))
+                        if(point != cPoint && (point.getX().getData().compareTo(cPoint.getX().getData()) == 0) && point.getY().getData().compareTo(cPoint.getY().getData()) == 0)
                         {
-                            keyReusingGroups.add(group);
+                            foundDuplicate = TestResult.TRUE;
                         }
                     }
                 }
+                response.setChosenGroupReusesKey(foundDuplicate);
             }
         }
-        
-        return keyReusingGroups;
-    } 
+    }
 }
