@@ -206,7 +206,7 @@ public class InvalidCurveProbe extends TlsProbe {
            attacker.getTlsConfig().setAddECPointFormatExtension(false);
            attacker.getTlsConfig().setAddSupportedVersionsExtension(true);
            attacker.getTlsConfig().setAddPSKKeyExchangeModesExtension(true);
-           List<PskKeyExchangeMode> pskKex = new LinkedList<PskKeyExchangeMode>();
+           List<PskKeyExchangeMode> pskKex = new LinkedList<>();
            pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
            attacker.getTlsConfig().setPSKKeyExchangeModes(pskKex);
        }
@@ -390,20 +390,23 @@ public class InvalidCurveProbe extends TlsProbe {
         for(InvalidCurveResponse response: responses)
         {
             if(response.getShowsPointsAreNotValidated() == TestResult.TRUE && response.getChosenGroupReusesKey() == TestResult.TRUE)
-            {
-                response.setShowsVulnerability(TestResult.TRUE);
-                
-                if(response.getParameterSet().isTwistAttack())
+            {     
+                if(response.getParameterSet().isTwistAttack() && TwistedCurvePoint.isTwistVulnerable(response.getParameterSet().getNamedGroup()))
                 {
+                    response.setShowsVulnerability(TestResult.TRUE);
                     vulnerableTwist = TestResult.TRUE;
                 }
-                else if(response.getParameterSet().getCipherSuites().get(0).isEphemeral())
+                else if(!response.getParameterSet().isTwistAttack())
                 {
-                    vulnerableEphemeral = TestResult.TRUE;
-                }
-                else
-                {
-                    vulnerableClassic = TestResult.TRUE;
+                    response.setShowsVulnerability(TestResult.TRUE);
+                    if(response.getParameterSet().getCipherSuites().get(0).isEphemeral())
+                    {
+                        vulnerableEphemeral = TestResult.TRUE;
+                    }
+                    else
+                    {
+                        vulnerableClassic = TestResult.TRUE;
+                    }
                 }
             }
             else
