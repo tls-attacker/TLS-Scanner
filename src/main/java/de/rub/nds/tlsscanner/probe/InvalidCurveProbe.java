@@ -83,7 +83,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResult.FALSE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResult.FALSE;
+        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
     }
 
     @Override
