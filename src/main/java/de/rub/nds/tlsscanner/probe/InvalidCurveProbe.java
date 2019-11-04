@@ -88,6 +88,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
+        //TODO: make sure results of renegotiation probe are already merged
         supportsRenegotiation = (report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION) == TestResult.TRUE);
         supportsSecureRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION);     
         
