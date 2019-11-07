@@ -160,15 +160,15 @@ public class SiteReport extends Observable {
         return (result == null) ? TestResult.NOT_TESTED_YET : result;
     }
 
-    public synchronized void putResult(AnalyzedProperty property, TestResult result) {
+    public void putResult(AnalyzedProperty property, TestResult result) {
         resultMap.put(property.toString(), result);
     }
 
-    public synchronized void putResult(AnalyzedProperty property, Boolean result) {
+    public void putResult(AnalyzedProperty property, Boolean result) {
         this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
-    public synchronized void putResult(DrownVulnerabilityType result) {
+    public void putResult(DrownVulnerabilityType result) {
         // todo: divide DROWN to several vulnerabilities ???
         if (result != null) {
             switch (result) {
@@ -184,7 +184,7 @@ public class SiteReport extends Observable {
         }
     }
 
-    public synchronized void putResult(EarlyCcsVulnerabilityType result) {
+    public void putResult(EarlyCcsVulnerabilityType result) {
         // todo: divide EARLY CCS to several vulnerabilities ???
         // also: EarlyFinishedVulnerabilityType
         if (result != null) {
@@ -203,7 +203,7 @@ public class SiteReport extends Observable {
         }
     }
 
-    public void markAsChangedAndNotify() {
+    public synchronized void markAsChangedAndNotify() {
         this.hasChanged();
         this.notifyObservers();
     }
