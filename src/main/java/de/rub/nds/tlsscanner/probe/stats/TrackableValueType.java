@@ -18,5 +18,4 @@ public enum TrackableValueType {
     DH_MODULUS,
     ECDHE_PUBKEY,
     GCM_NONCE_EXPLICIT,
-    CONNECTIONS,
 }
