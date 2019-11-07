@@ -63,11 +63,25 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     public SiteReport execute() {
         this.notScheduledTasks = new ArrayList<>(scanJob.getProbeList());
 
-        SiteReport report = new SiteReport(config.getClientDelegate().getHost(),new LinkedList<>());
+        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<>());
         //TODO check that server is online?
         report.addObserver(this);
-        this.update(report, null);
 
+        checkForExecutableProbes(report);
+        executeProbesTillNoneCanBeExecuted(report);
+        reportAboutNotExecutedProbes();
+        collectStatistics(report);
+        executeAfterProbes(report);
+
+        LOGGER.info("Finished scan for: " + config.getClientDelegate().getHost());
+        return report;
+    }
+
+    private void checkForExecutableProbes(SiteReport report) {
+        update(report, null);
+    }
+
+    private void executeProbesTillNoneCanBeExecuted(SiteReport report) {
         do {
             long lastMerge = System.currentTimeMillis();
             List<Future<ProbeResult>> finishedFutures = new LinkedList<>();
@@ -102,15 +116,17 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
             futureResults.removeAll(finishedFutures);
             update(report, this);
         } while (executor.getActiveCount() != 0 || !executor.getQueue().isEmpty());
+    }
 
-        List<ProbeResult> resultList = new LinkedList<>();
-
+    private void reportAboutNotExecutedProbes() {
         LOGGER.info("Did not execute the following probes:");
         for (TlsProbe probe : notScheduledTasks) {
             LOGGER.info(probe.getProbeName());
         }
+    }
 
-        //phase 3 - collect statistics
+    private void collectStatistics(SiteReport report) {
+        LOGGER.debug("Evaluating executed handshakes...");
         List<TlsProbe> allProbes = scanJob.getProbeList();
         List<ExtractedValueContainer> globalContainerList = new LinkedList<>();
         for (TlsProbe probe : allProbes) {
@@ -132,12 +148,15 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
             }
         }
         report.setExtractedValueContainerList(globalContainerList);
-        //phase 4 - afterprobes
+        LOGGER.info("Finished evaluation");
+    }
+
+    private void executeAfterProbes(SiteReport report) {
+        LOGGER.info("Analyzing data...");
         for (AfterProbe afterProbe : scanJob.getAfterList()) {
             afterProbe.analyze(report);
         }
-        LOGGER.info("Finished scan for: " + config.getClientDelegate().getHost());
-        return report;
+        LOGGER.info("Finished analysis");
     }
 
     @Override
@@ -161,6 +180,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                 }
             }
             this.notScheduledTasks = newNotSchedulesTasksList;
+        } else {
+            LOGGER.error(this.getClass().getName() + " received an update from a non-Sitereport");
         }
 
     }
