@@ -118,7 +118,7 @@ public class SiteReport extends Observable {
     private List<SimulatedClientResult> simulatedClientList = null;
 
     private List<ProbeType> probeTypeList;
-    
+
     public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
         this.probeTypeList = probeTypeList;
@@ -185,6 +185,11 @@ public class SiteReport extends Observable {
         }
     }
 
+    public void markAsChangedAndNotify() {
+        this.hasChanged();
+        this.notifyObservers();
+    }
+
     public String getHost() {
         return host;
     }
@@ -209,8 +214,6 @@ public class SiteReport extends Observable {
 
     public void setSupportedTokenBindingVersion(List<TokenBindingVersion> supportedTokenBindingVersion) {
         this.supportedTokenBindingVersion = supportedTokenBindingVersion;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<TokenBindingKeyParameters> getSupportedTokenBindingKeyParameters() {
@@ -219,8 +222,6 @@ public class SiteReport extends Observable {
 
     public void setSupportedTokenBindingKeyParameters(List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public CertificateChain getCertificateChain() {
@@ -229,8 +230,6 @@ public class SiteReport extends Observable {
 
     public void setCertificateChain(CertificateChain certificateChain) {
         this.certificateChain = certificateChain;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<ProtocolVersion> getVersions() {
@@ -239,8 +238,6 @@ public class SiteReport extends Observable {
 
     public void setVersions(List<ProtocolVersion> versions) {
         this.versions = versions;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Set<CipherSuite> getCipherSuites() {
@@ -249,8 +246,6 @@ public class SiteReport extends Observable {
 
     public void setCipherSuites(Set<CipherSuite> cipherSuites) {
         this.cipherSuites = cipherSuites;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<CipherSuite> getSupportedTls13CipherSuites() {
@@ -259,8 +254,6 @@ public class SiteReport extends Observable {
 
     public void setSupportedTls13CipherSuites(List<CipherSuite> supportedTls13CipherSuites) {
         this.supportedTls13CipherSuites = supportedTls13CipherSuites;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Certificate getCertificate() {
@@ -269,8 +262,6 @@ public class SiteReport extends Observable {
 
     public void setCertificate(Certificate certificate) {
         this.certificate = certificate;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<NamedGroup> getSupportedNamedGroups() {
@@ -279,8 +270,6 @@ public class SiteReport extends Observable {
 
     public void setSupportedNamedGroups(List<NamedGroup> supportedNamedGroups) {
         this.supportedNamedGroups = supportedNamedGroups;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<NamedGroup> getSupportedTls13Groups() {
@@ -289,8 +278,6 @@ public class SiteReport extends Observable {
 
     public void setSupportedTls13Groups(List<NamedGroup> supportedTls13Groups) {
         this.supportedTls13Groups = supportedTls13Groups;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
@@ -299,8 +286,6 @@ public class SiteReport extends Observable {
 
     public void setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<ExtensionType> getSupportedExtensions() {
@@ -309,8 +294,6 @@ public class SiteReport extends Observable {
 
     public void setSupportedExtensions(List<ExtensionType> supportedExtensions) {
         this.supportedExtensions = supportedExtensions;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<CompressionMethod> getSupportedCompressionMethods() {
@@ -319,8 +302,6 @@ public class SiteReport extends Observable {
 
     public void setSupportedCompressionMethods(List<CompressionMethod> supportedCompressionMethods) {
         this.supportedCompressionMethods = supportedCompressionMethods;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public CheckPattern getMacCheckPatternAppData() {
@@ -329,8 +310,6 @@ public class SiteReport extends Observable {
 
     public void setMacCheckPatterAppData(CheckPattern macCheckPatterAppData) {
         this.macCheckPatterAppData = macCheckPatterAppData;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public CheckPattern getVerifyCheckPattern() {
@@ -339,8 +318,6 @@ public class SiteReport extends Observable {
 
     public void setVerifyCheckPattern(CheckPattern verifyCheckPattern) {
         this.verifyCheckPattern = verifyCheckPattern;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Boolean getSupportsSslTls() {
@@ -349,8 +326,6 @@ public class SiteReport extends Observable {
 
     public void setSupportsSslTls(Boolean supportsSslTls) {
         this.supportsSslTls = supportsSslTls;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public GcmPattern getGcmPattern() {
@@ -359,8 +334,6 @@ public class SiteReport extends Observable {
 
     public void setGcmPattern(GcmPattern gcmPattern) {
         this.gcmPattern = gcmPattern;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<VersionSuiteListPair> getVersionSuitePairs() {
@@ -369,8 +342,6 @@ public class SiteReport extends Observable {
 
     public void setVersionSuitePairs(List<VersionSuiteListPair> versionSuitePairs) {
         this.versionSuitePairs = versionSuitePairs;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Integer getHandshakeSuccessfulCounter() {
@@ -379,8 +350,6 @@ public class SiteReport extends Observable {
 
     public void setHandshakeSuccessfulCounter(Integer handshakeSuccessfulCounter) {
         this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Integer getHandshakeFailedCounter() {
@@ -389,8 +358,6 @@ public class SiteReport extends Observable {
 
     public void setHandshakeFailedCounter(Integer handshakeFailedCounter) {
         this.handshakeFailedCounter = handshakeFailedCounter;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Integer getConnectionRfc7918SecureCounter() {
@@ -399,8 +366,6 @@ public class SiteReport extends Observable {
 
     public void setConnectionRfc7918SecureCounter(Integer connectionRfc7918SecureCounter) {
         this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Integer getConnectionInsecureCounter() {
@@ -409,8 +374,6 @@ public class SiteReport extends Observable {
 
     public void setConnectionInsecureCounter(Integer connectionInsecureCounter) {
         this.connectionInsecureCounter = connectionInsecureCounter;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<SimulatedClientResult> getSimulatedClientList() {
@@ -419,8 +382,6 @@ public class SiteReport extends Observable {
 
     public void setSimulatedClientList(List<SimulatedClientResult> simulatedClientList) {
         this.simulatedClientList = simulatedClientList;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public String getFullReport(ScannerDetail detail, boolean printColorful) {
@@ -438,8 +399,6 @@ public class SiteReport extends Observable {
 
     public void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
         this.macCheckPatternFinished = macCheckPatternFinished;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<PerformanceData> getPerformanceList() {
@@ -448,8 +407,6 @@ public class SiteReport extends Observable {
 
     public void setPerformanceList(List<PerformanceData> performanceList) {
         this.performanceList = performanceList;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleTestResultList() {
@@ -458,8 +415,6 @@ public class SiteReport extends Observable {
 
     public void setPaddingOracleTestResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<HttpsHeader> getHeaderList() {
@@ -468,8 +423,6 @@ public class SiteReport extends Observable {
 
     public void setHeaderList(List<HttpsHeader> headerList) {
         this.headerList = headerList;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Long getHstsMaxAge() {
@@ -478,8 +431,6 @@ public class SiteReport extends Observable {
 
     public void setHstsMaxAge(Long hstsMaxAge) {
         this.hstsMaxAge = hstsMaxAge;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Integer getHpkpMaxAge() {
@@ -488,8 +439,6 @@ public class SiteReport extends Observable {
 
     public void setHpkpMaxAge(Integer hpkpMaxAge) {
         this.hpkpMaxAge = hpkpMaxAge;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<HpkpPin> getNormalHpkpPins() {
@@ -498,8 +447,6 @@ public class SiteReport extends Observable {
 
     public void setNormalHpkpPins(List<HpkpPin> normalHpkpPins) {
         this.normalHpkpPins = normalHpkpPins;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<HpkpPin> getReportOnlyHpkpPins() {
@@ -508,8 +455,6 @@ public class SiteReport extends Observable {
 
     public void setReportOnlyHpkpPins(List<HpkpPin> reportOnlyHpkpPins) {
         this.reportOnlyHpkpPins = reportOnlyHpkpPins;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<ExtractedValueContainer> getExtractedValueContainerList() {
@@ -518,8 +463,6 @@ public class SiteReport extends Observable {
 
     public void setExtractedValueContainerList(List<ExtractedValueContainer> extractedValueContainerList) {
         this.extractedValueContainerList = extractedValueContainerList;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public RandomEvaluationResult getRandomEvaluationResult() {
@@ -528,8 +471,6 @@ public class SiteReport extends Observable {
 
     public void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
         this.randomEvaluationResult = randomEvaluationResult;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Set<CommonDhValues> getUsedCommonDhValueList() {
@@ -538,8 +479,6 @@ public class SiteReport extends Observable {
 
     public void setUsedCommonDhValueList(Set<CommonDhValues> usedCommonDhValueList) {
         this.usedCommonDhValueList = usedCommonDhValueList;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public Integer getWeakestDhStrength() {
@@ -548,8 +487,6 @@ public class SiteReport extends Observable {
 
     public void setWeakestDhStrength(Integer weakestDhStrength) {
         this.weakestDhStrength = weakestDhStrength;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<BleichenbacherTestResult> getBleichenbacherTestResultList() {
@@ -558,8 +495,6 @@ public class SiteReport extends Observable {
 
     public void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
         this.bleichenbacherTestResultList = bleichenbacherTestResultList;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public KnownPaddingOracleVulnerability getKnownVulnerability() {
@@ -568,8 +503,6 @@ public class SiteReport extends Observable {
 
     public void setKnownVulnerability(KnownPaddingOracleVulnerability knownVulnerability) {
         this.knownVulnerability = knownVulnerability;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleShakyEvalResultList() {
@@ -578,7 +511,5 @@ public class SiteReport extends Observable {
 
     public void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
-        this.hasChanged();
-        this.notifyObservers();
     }
 }
