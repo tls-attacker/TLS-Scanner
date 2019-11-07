@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -15,6 +15,8 @@ import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.CiphersuiteRater;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.Collections;
@@ -180,18 +182,18 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
 
     private void checkVulnerabilities(SiteReport report, SimulatedClientResult simulatedClient) {
         CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
-        if (report.getPaddingOracleVulnerable() != null && report.getPaddingOracleVulnerable()
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) != null && report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) == TestResult.TRUE
                 && cipherSuite.isCBC()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PADDING_ORACLE.getReason());
         }
-        if (report.getBleichenbacherVulnerable() != null && report.getBleichenbacherVulnerable()
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) != null && report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) == TestResult.TRUE
                 && simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.BLEICHENBACHER.getReason());
         }
         if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.CRIME.getReason());
         }
-        if (report.getSweet32Vulnerable() != null && report.getSweet32Vulnerable()) {
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) != null && report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) == TestResult.TRUE) {
             if (cipherSuite.name().contains("3DES")
                     || cipherSuite.name().contains("IDEA")
                     || cipherSuite.name().contains("GOST")) {

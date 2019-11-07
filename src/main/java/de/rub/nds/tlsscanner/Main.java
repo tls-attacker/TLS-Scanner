@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -13,7 +13,7 @@ import com.beust.jcommander.ParameterException;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.constants.AnsiColors;
+import de.rub.nds.tlsscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.constants.AnsiEscapeSequence;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import org.apache.logging.log4j.ThreadContext;
  */
 public class Main {
 
-    private static final Logger LOGGER = LogManager.getLogger(Main.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
@@ -40,19 +40,17 @@ public class Main {
             }
             // Cmd was parsable
             try {
-                if (config.getGeneralDelegate().isDebug()) {
-                    ThreadContext.put("ROUTINGKEY", "special");
-                }
                 TlsScanner scanner = new TlsScanner(config);
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
-                LOGGER.info("Scanned in:" + ((System.currentTimeMillis() - time) / 1000) + "s\n");
+                LOGGER.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n");
                 if (!config.getGeneralDelegate().isDebug() && !config.isNoProgressbar()) {
                     // ANSI escape sequences to erase the progressbar
                     ConsoleLogger.CONSOLE.info(AnsiEscapeSequence.ANSI_ONE_LINE_UP + AnsiEscapeSequence.ANSI_ERASE_LINE);
                 }
-                ConsoleLogger.CONSOLE.info(AnsiColors.ANSI_RESET + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail()));
+                ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
+
             } catch (ConfigurationException E) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", E);
             }

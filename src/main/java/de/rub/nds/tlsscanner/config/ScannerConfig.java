@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -38,9 +38,6 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @ParametersDelegate
     private GeneralDelegate generalDelegate;
-
-    @Parameter(names = "-implementation", required = false, description = "If you are interessted in the vulnerability of an implementation rather than a specific site")
-    private boolean implementation = false;
 
     @Parameter(names = "-scanDetail", required = false, description = "How detailed do you want to scan?")
     private ScannerDetail scanDetail = ScannerDetail.NORMAL;
@@ -117,14 +114,6 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setDangerLevel(int dangerLevel) {
         this.dangerLevel = dangerLevel;
-    }
-
-    public boolean isImplementation() {
-        return implementation;
-    }
-
-    public void setImplementation(boolean implementation) {
-        this.implementation = implementation;
     }
 
     public boolean isNoColor() {

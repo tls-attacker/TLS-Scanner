@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.SniResult;
@@ -35,39 +36,43 @@ public class SniProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config config = scannerConfig.createConfig();
-        config.setAddRenegotiationInfoExtension(true);
-        config.setAddServerNameIndicationExtension(false);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setStopActionsAfterFatal(true);
-        List<CipherSuite> toTestList = new LinkedList<>();
-        toTestList.addAll(Arrays.asList(CipherSuite.values()));
-        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCiphersuites(toTestList);
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
-        State state = new State(config, trace);
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            return new SniResult(Boolean.FALSE);
+        try {
+            Config config = scannerConfig.createConfig();
+            config.setAddRenegotiationInfoExtension(true);
+            config.setAddServerNameIndicationExtension(false);
+            config.setQuickReceive(true);
+            config.setEarlyStop(true);
+            config.setStopReceivingAfterFatal(true);
+            config.setStopActionsAfterFatal(true);
+            List<CipherSuite> toTestList = new LinkedList<>();
+            toTestList.addAll(Arrays.asList(CipherSuite.values()));
+            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+            config.setDefaultClientSupportedCiphersuites(toTestList);
+            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
+            State state = new State(config, trace);
+            executeState(state);
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+                return new SniResult(TestResult.FALSE);
+            }
+            //Test if we can get a hello with SNI
+            config.setAddServerNameIndicationExtension(true);
+            trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
+            state = new State(config, trace);
+            executeState(state);
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+                return new SniResult(TestResult.TRUE);
+            }
+            //We cannot get a ServerHello from this Server...
+            LOGGER.warn("SNI Test could not get a ServerHello message from the Server!");
+            return new SniResult(TestResult.ERROR_DURING_TEST);
+        } catch (Exception e) {
+            return new SniResult(TestResult.ERROR_DURING_TEST);
         }
-        //Test if we can get a hello with SNI
-        config.setAddServerNameIndicationExtension(true);
-        trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
-        state = new State(config, trace);
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-            return new SniResult(Boolean.TRUE);
-        }
-        //We cannot get a ServerHello from this Server...
-        LOGGER.warn("SNI Test could not get a ServerHello message from the Server!");
-        return new SniResult(null);
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -76,8 +81,7 @@ public class SniProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return null;
+    public ProbeResult getCouldNotExecuteResult() {
+        return new SniResult(TestResult.COULD_NOT_TEST);
     }
-
 }

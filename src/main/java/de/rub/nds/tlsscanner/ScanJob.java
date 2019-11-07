@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,32 +18,19 @@ import java.util.List;
  */
 public class ScanJob {
 
-    private final List<TlsProbe> phaseTwoTestList;
-    private final List<TlsProbe> phaseOneTestList;
+    private final List<TlsProbe> probeList;
     private final List<AfterProbe> afterList;
 
-    public ScanJob(List<TlsProbe> phaseOneTestList, List<TlsProbe> phaseTwoTestList, List<AfterProbe> afterList) {
-        this.phaseOneTestList = phaseOneTestList;
-        this.phaseTwoTestList = phaseTwoTestList;
+    public ScanJob(List<TlsProbe> probeList, List<AfterProbe> afterList) {
+        this.probeList = probeList;
         this.afterList = afterList;
     }
 
-    public List<TlsProbe> getPhaseOneTestList() {
-        return phaseOneTestList;
-    }
-
-    public List<TlsProbe> getPhaseTwoTestList() {
-        return phaseTwoTestList;
+    public List<TlsProbe> getProbeList() {
+        return probeList;
     }
 
     public List<AfterProbe> getAfterList() {
         return afterList;
-    }
-
-    public List<TlsProbe> getJoinedProbes() {
-        List<TlsProbe> probeList = new LinkedList<>();
-        probeList.addAll(phaseOneTestList);
-        probeList.addAll(phaseTwoTestList);
-        return probeList;
     }
 }

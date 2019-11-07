@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -16,9 +16,9 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.util.List;
 
-public class EcPublicKeyExtracot extends StatExtractor<ComparableByteArray> {
+public class EcPublicKeyExtractor extends StatExtractor<ComparableByteArray> {
 
-    public EcPublicKeyExtracot() {
+    public EcPublicKeyExtractor() {
         super(TrackableValueType.ECDHE_PUBKEY);
     }
 

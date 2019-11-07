@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -13,6 +13,8 @@ import de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CipherType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.util.HashSet;
 import java.util.List;
@@ -26,40 +28,40 @@ public class CiphersuiteProbeResult extends ProbeResult {
 
     private List<VersionSuiteListPair> pairLists;
 
-    private Boolean supportsNullCiphers = false;
-    private Boolean supportsAnonCiphers = false;
-    private Boolean supportsExportCiphers = false;
-    private Boolean supportsDesCiphers = false;
-    private Boolean supportsSeedCiphers = false;
-    private Boolean supportsIdeaCiphers = false;
-    private Boolean supportsRc2Ciphers = false;
-    private Boolean supportsRc4Ciphers = false;
-    private Boolean supportsTrippleDesCiphers = false;
-    private Boolean supportsPostQuantumCiphers = false;
-    private Boolean supportsAeadCiphers = false;
-    private Boolean supportsPfsCiphers = false;
-    private Boolean supportsOnlyPfsCiphers = false;
-    private Boolean supportsAes = false;
-    private Boolean supportsCamellia = false;
-    private Boolean supportsAria = false;
-    private Boolean supportsChacha = false;
-    private Boolean supportsRsa = false;
-    private Boolean supportsDh = false;
-    private Boolean supportsEcdh = false;
-    private Boolean supportsStaticEcdh = false;
-    private Boolean supportsGost = false;
-    private Boolean supportsSrp = null;
-    private Boolean supportsKerberos = false;
-    private Boolean supportsPskPlain = false;
-    private Boolean supportsPskRsa = false;
-    private Boolean supportsPskDhe = false;
-    private Boolean supportsPskEcdhe = false;
-    private Boolean supportsFortezza = false;
-    private Boolean supportsNewHope = false;
-    private Boolean supportsEcmqv = false;
-    private Boolean prefersPfsCiphers = false;
-    private Boolean supportsStreamCiphers = false;
-    private Boolean supportsBlockCiphers = false;
+    private TestResult supportsNullCiphers = TestResult.FALSE;
+    private TestResult supportsAnonCiphers = TestResult.FALSE;
+    private TestResult supportsExportCiphers = TestResult.FALSE;
+    private TestResult supportsDesCiphers = TestResult.FALSE;
+    private TestResult supportsSeedCiphers = TestResult.FALSE;
+    private TestResult supportsIdeaCiphers = TestResult.FALSE;
+    private TestResult supportsRc2Ciphers = TestResult.FALSE;
+    private TestResult supportsRc4Ciphers = TestResult.FALSE;
+    private TestResult supportsTrippleDesCiphers = TestResult.FALSE;
+    private TestResult supportsPostQuantumCiphers = TestResult.FALSE;
+    private TestResult supportsAeadCiphers = TestResult.FALSE;
+    private TestResult supportsPfsCiphers = TestResult.FALSE;
+    private TestResult supportsOnlyPfsCiphers = TestResult.FALSE;
+    private TestResult supportsAes = TestResult.FALSE;
+    private TestResult supportsCamellia = TestResult.FALSE;
+    private TestResult supportsAria = TestResult.FALSE;
+    private TestResult supportsChacha = TestResult.FALSE;
+    private TestResult supportsRsa = TestResult.FALSE;
+    private TestResult supportsDh = TestResult.FALSE;
+    private TestResult supportsEcdh = TestResult.FALSE;
+    private TestResult supportsStaticEcdh = TestResult.FALSE;
+    private TestResult supportsGost = TestResult.FALSE;
+    private TestResult supportsSrp = TestResult.FALSE;
+    private TestResult supportsKerberos = TestResult.FALSE;
+    private TestResult supportsPskPlain = TestResult.FALSE;
+    private TestResult supportsPskRsa = TestResult.FALSE;
+    private TestResult supportsPskDhe = TestResult.FALSE;
+    private TestResult supportsPskEcdhe = TestResult.FALSE;
+    private TestResult supportsFortezza = TestResult.FALSE;
+    private TestResult supportsNewHope = TestResult.FALSE;
+    private TestResult supportsEcmqv = TestResult.FALSE;
+    private TestResult prefersPfsCiphers = TestResult.FALSE;
+    private TestResult supportsStreamCiphers = TestResult.FALSE;
+    private TestResult supportsBlockCiphers = TestResult.FALSE;
 
     public CiphersuiteProbeResult(List<VersionSuiteListPair> pairLists) {
         super(ProbeType.CIPHERSUITE);
@@ -68,22 +70,59 @@ public class CiphersuiteProbeResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        Set<CipherSuite> allSupported = new HashSet<>();
-        supportsOnlyPfsCiphers = true;
-        prefersPfsCiphers = true;
-        for (VersionSuiteListPair pair : pairLists) {
-            if (pair.getCiphersuiteList().size() > 0 && !pair.getCiphersuiteList().get(0).isEphemeral()) {
-                prefersPfsCiphers = false;
+        if (pairLists != null) {
+            Set<CipherSuite> allSupported = new HashSet<>();
+            supportsOnlyPfsCiphers = TestResult.TRUE;
+            prefersPfsCiphers = TestResult.TRUE;
+            for (VersionSuiteListPair pair : pairLists) {
+                if (pair.getCiphersuiteList().size() > 0 && !pair.getCiphersuiteList().get(0).isEphemeral()) {
+                    prefersPfsCiphers = TestResult.FALSE;
+                }
+                allSupported.addAll(pair.getCiphersuiteList());
             }
-            allSupported.addAll(pair.getCiphersuiteList());
+            for (CipherSuite suite : allSupported) {
+                adjustBulk(suite);
+                adjustKeyExchange(suite);
+                adjustCipherType(suite);
+            }
+            report.setCipherSuites(allSupported);
+        } else {
+            supportsAeadCiphers = TestResult.COULD_NOT_TEST;
+            prefersPfsCiphers = TestResult.COULD_NOT_TEST;
+            supportsAeadCiphers = TestResult.COULD_NOT_TEST;
+            supportsAes = TestResult.COULD_NOT_TEST;
+            supportsAnonCiphers = TestResult.COULD_NOT_TEST;
+            supportsAria = TestResult.COULD_NOT_TEST;
+            supportsBlockCiphers = TestResult.COULD_NOT_TEST;
+            supportsCamellia = TestResult.COULD_NOT_TEST;
+            supportsChacha = TestResult.COULD_NOT_TEST;
+            supportsDesCiphers = TestResult.COULD_NOT_TEST;
+            supportsDh = TestResult.COULD_NOT_TEST;
+            supportsEcdh = TestResult.COULD_NOT_TEST;
+            supportsEcmqv = TestResult.COULD_NOT_TEST;
+            supportsExportCiphers = TestResult.COULD_NOT_TEST;
+            supportsFortezza = TestResult.COULD_NOT_TEST;
+            supportsGost = TestResult.COULD_NOT_TEST;
+            supportsIdeaCiphers = TestResult.COULD_NOT_TEST;
+            supportsKerberos = TestResult.COULD_NOT_TEST;
+            supportsNewHope = TestResult.COULD_NOT_TEST;
+            supportsNullCiphers = TestResult.COULD_NOT_TEST;
+            supportsOnlyPfsCiphers = TestResult.COULD_NOT_TEST;
+            supportsPfsCiphers = TestResult.COULD_NOT_TEST;
+            supportsPostQuantumCiphers = TestResult.COULD_NOT_TEST;
+            supportsPskDhe = TestResult.COULD_NOT_TEST;
+            supportsPskEcdhe = TestResult.COULD_NOT_TEST;
+            supportsPskPlain = TestResult.COULD_NOT_TEST;
+            supportsPskRsa = TestResult.COULD_NOT_TEST;
+            supportsRc2Ciphers = TestResult.COULD_NOT_TEST;
+            supportsRc4Ciphers = TestResult.COULD_NOT_TEST;
+            supportsRsa = TestResult.COULD_NOT_TEST;
+            supportsSeedCiphers = TestResult.COULD_NOT_TEST;
+            supportsSrp = TestResult.COULD_NOT_TEST;
+            supportsStaticEcdh = TestResult.COULD_NOT_TEST;
+            supportsStreamCiphers = TestResult.COULD_NOT_TEST;
+            supportsTrippleDesCiphers = TestResult.COULD_NOT_TEST;
         }
-        for (CipherSuite suite : allSupported) {
-            adjustBulk(suite);
-            adjustKeyExchange(suite);
-            adjustCipherType(suite);
-        }
-        report.setCipherSuites(allSupported);
-
         writeToReport(report);
     }
 
@@ -91,75 +130,75 @@ public class CiphersuiteProbeResult extends ProbeResult {
         CipherType cipherType = AlgorithmResolver.getCipherType(suite);
         switch (cipherType) {
             case AEAD:
-                supportsAeadCiphers = true;
+                supportsAeadCiphers = TestResult.TRUE;
                 break;
             case BLOCK:
-                supportsBlockCiphers = true;
+                supportsBlockCiphers = TestResult.TRUE;
                 break;
             case STREAM:
-                supportsStreamCiphers = true;
+                supportsStreamCiphers = TestResult.TRUE;
                 break;
         }
     }
 
     private void adjustKeyExchange(CipherSuite suite) {
         if (suite.name().contains("SRP")) {
-            supportsSrp = true;
+            supportsSrp = TestResult.TRUE;
         }
         if (suite.name().contains("_DH")) {
-            supportsDh = true;
+            supportsDh = TestResult.TRUE;
         }
         if (suite.name().contains("TLS_RSA")) {
-            supportsRsa = true;
+            supportsRsa = TestResult.TRUE;
         }
         if (suite.name().contains("ECDH_")) {
-            supportsStaticEcdh = true;
+            supportsStaticEcdh = TestResult.TRUE;
         }
         if (suite.name().contains("ECDH")) {
-            supportsEcdh = true;
+            supportsEcdh = TestResult.TRUE;
         }
         if (suite.name().contains("NULL")) {
-            supportsNullCiphers = true;
+            supportsNullCiphers = TestResult.TRUE;
         }
         if (suite.name().contains("GOST")) {
-            supportsGost = true;
+            supportsGost = TestResult.TRUE;
         }
         if (suite.name().contains("KRB5")) {
-            supportsKerberos = true;
+            supportsKerberos = TestResult.TRUE;
         }
         if (suite.name().contains("TLS_PSK_WITH")) {
-            supportsPskPlain = true;
+            supportsPskPlain = TestResult.TRUE;
         }
         if (suite.name().contains("_DHE_PSK")) {
-            supportsPskDhe = true;
+            supportsPskDhe = TestResult.TRUE;
         }
         if (suite.name().contains("ECDHE_PSK")) {
-            supportsPskEcdhe = true;
+            supportsPskEcdhe = TestResult.TRUE;
         }
         if (suite.name().contains("RSA_PSK")) {
-            supportsPskRsa = true;
+            supportsPskRsa = TestResult.TRUE;
         }
         if (suite.name().contains("FORTEZZA")) {
-            supportsFortezza = true;
+            supportsFortezza = TestResult.TRUE;
         }
         if (suite.name().contains("ECMQV")) {
-            supportsPostQuantumCiphers = true;
-            supportsEcmqv = true;
+            supportsPostQuantumCiphers = TestResult.TRUE;
+            supportsEcmqv = TestResult.TRUE;
         }
         if (suite.name().contains("CECPQ1")) {
-            supportsPostQuantumCiphers = true;
-            supportsNewHope = true;
+            supportsPostQuantumCiphers = TestResult.TRUE;
+            supportsNewHope = TestResult.TRUE;
         }
         if (suite.name().contains("anon")) {
-            supportsAnonCiphers = true;
+            supportsAnonCiphers = TestResult.TRUE;
         }
         if (suite.isEphemeral()) {
-            supportsPfsCiphers = true;
+            supportsPfsCiphers = TestResult.TRUE;
         } else {
-            supportsOnlyPfsCiphers = false;
+            supportsOnlyPfsCiphers = TestResult.FALSE;
         }
         if (suite.isExport()) {
-            supportsExportCiphers = true;
+            supportsExportCiphers = TestResult.TRUE;
         }
     }
 
@@ -167,83 +206,83 @@ public class CiphersuiteProbeResult extends ProbeResult {
         BulkCipherAlgorithm bulkCipherAlgorithm = AlgorithmResolver.getBulkCipherAlgorithm(suite);
         switch (bulkCipherAlgorithm) {
             case AES:
-                supportsAes = true;
+                supportsAes = TestResult.TRUE;
                 break;
             case CAMELLIA:
-                supportsCamellia = true;
+                supportsCamellia = TestResult.TRUE;
                 break;
             case DES40:
-                supportsDesCiphers = true;
-                supportsExportCiphers = true;
+                supportsDesCiphers = TestResult.TRUE;
+                supportsExportCiphers = TestResult.TRUE;
                 break;
             case DES:
-                supportsDesCiphers = true;
+                supportsDesCiphers = TestResult.TRUE;
                 break;
             case ARIA:
-                supportsAria = true;
+                supportsAria = TestResult.TRUE;
                 break;
             case DESede:
-                supportsTrippleDesCiphers = true;
+                supportsTrippleDesCiphers = TestResult.TRUE;
                 break;
             case FORTEZZA:
-                supportsFortezza = true;
+                supportsFortezza = TestResult.TRUE;
                 break;
             case IDEA:
-                supportsIdeaCiphers = true;
+                supportsIdeaCiphers = TestResult.TRUE;
                 break;
             case NULL:
-                supportsNullCiphers = true;
+                supportsNullCiphers = TestResult.TRUE;
                 break;
             case RC2:
-                supportsRc2Ciphers = true;
+                supportsRc2Ciphers = TestResult.TRUE;
                 break;
             case RC4:
-                supportsRc4Ciphers = true;
+                supportsRc4Ciphers = TestResult.TRUE;
                 break;
             case SEED:
-                supportsSeedCiphers = true;
+                supportsSeedCiphers = TestResult.TRUE;
                 break;
             case CHACHA20_POLY1305:
-                supportsChacha = true;
+                supportsChacha = TestResult.TRUE;
                 break;
         }
     }
 
     private void writeToReport(SiteReport report) {
-        report.setSupportsNullCiphers(supportsNullCiphers);
-        report.setSupportsAnonCiphers(supportsAnonCiphers);
-        report.setSupportsExportCiphers(supportsExportCiphers);
-        report.setSupportsDesCiphers(supportsDesCiphers);
-        report.setSupportsSeedCiphers(supportsSeedCiphers);
-        report.setSupportsIdeaCiphers(supportsIdeaCiphers);
-        report.setSupportsRc2Ciphers(supportsRc2Ciphers);
-        report.setSupportsRc4Ciphers(supportsRc4Ciphers);
-        report.setSupportsTrippleDesCiphers(supportsTrippleDesCiphers);
-        report.setSupportsPostQuantumCiphers(supportsPostQuantumCiphers);
-        report.setSupportsAeadCiphers(supportsAeadCiphers);
-        report.setSupportsPfsCiphers(supportsPfsCiphers);
-        report.setSupportsOnlyPfsCiphers(supportsOnlyPfsCiphers);
-        report.setSupportsAes(supportsAes);
-        report.setSupportsCamellia(supportsCamellia);
-        report.setSupportsAria(supportsAria);
-        report.setSupportsChacha(supportsChacha);
-        report.setSupportsRsa(supportsRsa);
-        report.setSupportsDh(supportsDh);
-        report.setSupportsStaticEcdh(supportsStaticEcdh);
-        report.setSupportsEcdh(supportsEcdh);
-        report.setSupportsGost(supportsGost);
-        report.setSupportsSrp(supportsSrp);
-        report.setSupportsKerberos(supportsKerberos);
-        report.setSupportsPskPlain(supportsPskPlain);
-        report.setSupportsPskRsa(supportsPskRsa);
-        report.setSupportsPskDhe(supportsPskDhe);
-        report.setSupportsPskEcdhe(supportsPskEcdhe);
-        report.setSupportsFortezza(supportsFortezza);
-        report.setSupportsNewHope(supportsNewHope);
-        report.setSupportsEcmqv(supportsEcmqv);
-        report.setPrefersPfsCiphers(prefersPfsCiphers);
-        report.setSupportsStreamCiphers(supportsStreamCiphers);
-        report.setSupportsBlockCiphers(supportsBlockCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_NULL_CIPHERS, supportsNullCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_ANON, supportsAnonCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_EXPORT, supportsExportCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_DES, supportsDesCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_SEED, supportsSeedCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_IDEA, supportsIdeaCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_RC2, supportsRc2Ciphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_RC4, supportsRc4Ciphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_3DES, supportsTrippleDesCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_POST_QUANTUM, supportsPostQuantumCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_AEAD, supportsAeadCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_PFS, supportsPfsCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_ONLY_PFS, supportsOnlyPfsCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_AES, supportsAes);
+        report.putResult(AnalyzedProperty.SUPPORTS_CAMELLIA, supportsCamellia);
+        report.putResult(AnalyzedProperty.SUPPORTS_ARIA, supportsAria);
+        report.putResult(AnalyzedProperty.SUPPORTS_CHACHA, supportsChacha);
+        report.putResult(AnalyzedProperty.SUPPORTS_RSA, supportsRsa);
+        report.putResult(AnalyzedProperty.SUPPORTS_DH, supportsDh);
+        report.putResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH, supportsStaticEcdh);
+        report.putResult(AnalyzedProperty.SUPPORTS_ECDH, supportsEcdh);
+        report.putResult(AnalyzedProperty.SUPPORTS_GOST, supportsGost);
+        report.putResult(AnalyzedProperty.SUPPORTS_SRP, supportsSrp);
+        report.putResult(AnalyzedProperty.SUPPORTS_KERBEROS, supportsKerberos);
+        report.putResult(AnalyzedProperty.SUPPORTS_PSK_PLAIN, supportsPskPlain);
+        report.putResult(AnalyzedProperty.SUPPORTS_PSK_RSA, supportsPskRsa);
+        report.putResult(AnalyzedProperty.SUPPORTS_PSK_DHE, supportsPskDhe);
+        report.putResult(AnalyzedProperty.SUPPORTS_PSK_ECDHE, supportsPskEcdhe);
+        report.putResult(AnalyzedProperty.SUPPORTS_FORTEZZA, supportsFortezza);
+        report.putResult(AnalyzedProperty.SUPPORTS_NEWHOPE, supportsNewHope);
+        report.putResult(AnalyzedProperty.SUPPORTS_ECMQV, supportsEcmqv);
+        report.putResult(AnalyzedProperty.PREFERS_PFS, prefersPfsCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_STREAM_CIPHERS, supportsStreamCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, supportsBlockCiphers);
         report.setVersionSuitePairs(pairLists);
     }
 

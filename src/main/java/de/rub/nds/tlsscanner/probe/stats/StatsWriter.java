@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -20,17 +20,20 @@ public class StatsWriter {
 
     private final List<StatExtractor> extractorList;
 
+    private int stateCounter = 0;
+
     public StatsWriter() {
         extractorList = new LinkedList<>();
         extractorList.add(new RandomExtractor());
         extractorList.add(new DhModulusExtractor());
         extractorList.add(new DhPublicKeyExtractor());
-        extractorList.add(new EcPublicKeyExtracot());
+        extractorList.add(new EcPublicKeyExtractor());
     }
 
     public void extract(State state) {
         for (StatExtractor extractor : extractorList) {
             extractor.extract(state);
+            stateCounter++;
         }
     }
 
@@ -41,4 +44,9 @@ public class StatsWriter {
         }
         return containerList;
     }
+
+    public int getStateCounter() {
+        return stateCounter;
+    }
+
 }

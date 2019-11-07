@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -34,6 +34,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.HttpHeaderResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -49,76 +50,80 @@ public class HttpHeaderProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setHttpsParsingEnabled(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
-        // Dont send extensions if we are in sslv2
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
+        try {
+            Config tlsConfig = getScannerConfig().createConfig();
+            List<CipherSuite> cipherSuites = new LinkedList<>();
+            cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+            cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+            cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+            tlsConfig.setQuickReceive(true);
+            tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+            tlsConfig.setEnforceSettings(false);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopReceivingAfterFatal(true);
+            tlsConfig.setStopActionsAfterFatal(true);
+            tlsConfig.setHttpsParsingEnabled(true);
+            tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
+            // Dont send extensions if we are in sslv2
+            tlsConfig.setAddECPointFormatExtension(true);
+            tlsConfig.setAddEllipticCurveExtension(true);
+            tlsConfig.setAddServerNameIndicationExtension(true);
+            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+            tlsConfig.setAddRenegotiationInfoExtension(true);
 
-        List<NamedGroup> namedGroups = NamedGroup.getImplemented();
-        namedGroups.remove(NamedGroup.ECDH_X25519);
-        tlsConfig.setDefaultClientNamedGroups(namedGroups);
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
+            List<NamedGroup> namedGroups = NamedGroup.getImplemented();
+            namedGroups.remove(NamedGroup.ECDH_X25519);
+            tlsConfig.setDefaultClientNamedGroups(namedGroups);
+            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
+            WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
+            trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+            trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+            trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+            trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+            HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
 
-        httpsRequestMessage.getHeader().add(new HostHeader());
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept",
-                "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader(
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
+            httpsRequestMessage.getHeader().add(new HostHeader());
+            httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
+            httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept",
+                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
+            httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
+            httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
+            httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
+            httpsRequestMessage.getHeader().add(new GenericHttpsHeader(
+                    "User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
 
-        trace.addTlsAction(new SendAction(httpsRequestMessage));
-        trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
-        State state = new State(tlsConfig, trace);
-        executeState(state);
-        ReceivingAction action = trace.getLastReceivingAction();
-        HttpsResponseMessage responseMessage = null;
-        if (action.getReceivedMessages() != null) {
-            for (ProtocolMessage message : action.getReceivedMessages()) {
-                if (message instanceof HttpsResponseMessage) {
-                    responseMessage = (HttpsResponseMessage) message;
-                    break;
+            trace.addTlsAction(new SendAction(httpsRequestMessage));
+            trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
+            State state = new State(tlsConfig, trace);
+            executeState(state);
+            ReceivingAction action = trace.getLastReceivingAction();
+            HttpsResponseMessage responseMessage = null;
+            if (action.getReceivedMessages() != null) {
+                for (ProtocolMessage message : action.getReceivedMessages()) {
+                    if (message instanceof HttpsResponseMessage) {
+                        responseMessage = (HttpsResponseMessage) message;
+                        break;
+                    }
                 }
             }
+            boolean speaksHttps = responseMessage != null;
+            List<HttpsHeader> headerList;
+            if (speaksHttps) {
+                headerList = responseMessage.getHeader();
+            } else {
+                headerList = new LinkedList<>();
+            }
+            return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
+        } catch (Exception e) {
+            return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
         }
-        boolean speaksHttps = responseMessage != null;
-        List<HttpsHeader> headerList;
-        if (speaksHttps) {
-            headerList = responseMessage.getHeader();
-        } else {
-            headerList = new LinkedList<>();
-        }
-        return new HttpHeaderResult(speaksHttps, headerList);
     }
 
     @Override
-    public boolean shouldBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(SiteReport report) {
         return true;
     }
 
@@ -127,7 +132,7 @@ public class HttpHeaderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getNotExecutedResult() {
-        return new HttpHeaderResult(false, null);
+    public ProbeResult getCouldNotExecuteResult() {
+        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, null);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -9,6 +9,8 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 /**
@@ -17,10 +19,10 @@ import de.rub.nds.tlsscanner.report.SiteReport;
  */
 public class InvalidCurveResult extends ProbeResult {
 
-    private final Boolean vulnerableClassic;
-    private final Boolean vulnerableEphemeral;
+    private final TestResult vulnerableClassic;
+    private final TestResult vulnerableEphemeral;
 
-    public InvalidCurveResult(Boolean vulnerableClassic, Boolean vulnerableEphemeral) {
+    public InvalidCurveResult(TestResult vulnerableClassic, TestResult vulnerableEphemeral) {
         super(ProbeType.INVALID_CURVE);
         this.vulnerableClassic = vulnerableClassic;
         this.vulnerableEphemeral = vulnerableEphemeral;
@@ -28,8 +30,8 @@ public class InvalidCurveResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setInvalidCurveVulnerable(vulnerableClassic);
-        report.setInvalidCurveEphermaralVulnerable(vulnerableEphemeral);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, vulnerableClassic);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, vulnerableEphemeral);
     }
 
 }

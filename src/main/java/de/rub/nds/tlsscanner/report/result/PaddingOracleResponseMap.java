@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -9,6 +9,8 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import java.util.List;
@@ -22,9 +24,9 @@ public class PaddingOracleResponseMap extends ProbeResult {
     private final List<PaddingOracleCipherSuiteFingerprint> resultList;
     private final List<PaddingOracleCipherSuiteFingerprint> shakyEvalList;
 
-    private Boolean vulnerable;
+    private TestResult vulnerable;
 
-    public PaddingOracleResponseMap(List<PaddingOracleCipherSuiteFingerprint> resultList, List<PaddingOracleCipherSuiteFingerprint> shakyEvalList, Boolean vulnerable) {
+    public PaddingOracleResponseMap(List<PaddingOracleCipherSuiteFingerprint> resultList, List<PaddingOracleCipherSuiteFingerprint> shakyEvalList, TestResult vulnerable) {
         super(ProbeType.PADDING_ORACLE);
         this.resultList = resultList;
         this.shakyEvalList = shakyEvalList;
@@ -33,13 +35,15 @@ public class PaddingOracleResponseMap extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        if (resultList.isEmpty() && vulnerable == null) {
-            vulnerable = false;
+        if (resultList != null && resultList.isEmpty() && vulnerable == null) {
+            vulnerable = TestResult.FALSE;
         }
-
+        if (resultList == null) {
+            vulnerable = TestResult.COULD_NOT_TEST;
+        }
         report.setPaddingOracleTestResultList(resultList);
         report.setPaddingOracleShakyEvalResultList(shakyEvalList);
-        report.setPaddingOracleVulnerable(vulnerable);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }
 
     public List<PaddingOracleCipherSuiteFingerprint> getResultList() {

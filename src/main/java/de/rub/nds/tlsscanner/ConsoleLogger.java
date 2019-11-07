@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ConsoleLogger {
 
-    public static final Logger CONSOLE = LogManager.getLogger("ConsoleLogger");
+    public static final Logger CONSOLE = LogManager.getLogger("Direct");
 
     private ConsoleLogger() {
     }

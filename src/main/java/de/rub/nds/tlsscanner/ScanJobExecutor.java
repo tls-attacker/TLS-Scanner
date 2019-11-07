@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner;
 
-import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 /**
@@ -17,7 +16,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
  */
 public abstract class ScanJobExecutor {
 
-    public abstract SiteReport execute(ScannerConfig config, ScanJob scanJob);
+    public abstract SiteReport execute();
 
     public abstract void shutdown();
 }

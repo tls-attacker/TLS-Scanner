@@ -1,5 +1,5 @@
 /**
- * TLS-Scanner - A TLS Configuration Analysistool based on TLS-Attacker
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
@@ -9,8 +9,9 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
 /**
  *
@@ -18,15 +19,15 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
  */
 public class CipherSuiteOrderResult extends ProbeResult {
 
-    private Boolean enforced;
+    private TestResult enforced;
 
-    public CipherSuiteOrderResult(Boolean enforced) {
+    public CipherSuiteOrderResult(TestResult enforced) {
         super(ProbeType.CIPHERSUITE_ORDER);
         this.enforced = enforced;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setEnforcesCipherSuiteOrdering(enforced);
+        report.putResult(AnalyzedProperty.ENFOCRES_CS_ORDERING, enforced);
     }
 }
