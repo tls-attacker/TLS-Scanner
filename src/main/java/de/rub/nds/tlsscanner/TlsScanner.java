@@ -150,15 +150,15 @@ public class TlsScanner {
         LOGGER.debug("Finished TrustAnchorManager initialization");
 
         boolean isConnectable = false;
+        ThreadedScanJobExecutor executor = null;
         try {
             if (isConnectable()) {
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                 if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls()) || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(probeList, afterList);
-                    ThreadedScanJobExecutor executor = new ThreadedScanJobExecutor(config, job, config.getOverallThreads(), config.getClientDelegate().getHost());
+                    executor = new ThreadedScanJobExecutor(config, job, config.getOverallThreads(), config.getClientDelegate().getHost());
                     SiteReport report = executor.execute();
-                    executor.shutdown();
                     return report;
                 } else {
                     isConnectable = true;
@@ -169,11 +169,15 @@ public class TlsScanner {
             report.setSupportsSslTls(false);
             return report;
         } finally {
+            if (executor != null) {
+                executor.shutdown();
+            }
             closeExecutorsIfNeeded();
         }
     }
 
     private void closeExecutorsIfNeeded() {
+
         if (closeAfterFinishParallel) {
             parallelExecutor.shutdown();
         }
