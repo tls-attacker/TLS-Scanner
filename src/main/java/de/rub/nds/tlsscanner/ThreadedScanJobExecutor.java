@@ -69,12 +69,20 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
 
         checkForExecutableProbes(report);
         executeProbesTillNoneCanBeExecuted(report);
+        updateSiteReportWithNotExecutedProbes(report);
         reportAboutNotExecutedProbes();
         collectStatistics(report);
         executeAfterProbes(report);
 
         LOGGER.info("Finished scan for: " + config.getClientDelegate().getHost());
         return report;
+    }
+
+    private void updateSiteReportWithNotExecutedProbes(SiteReport report) {
+        for(TlsProbe probe : notScheduledTasks)
+        {
+            probe.getCouldNotExecuteResult().merge(report);
+        }
     }
 
     private void checkForExecutableProbes(SiteReport report) {
