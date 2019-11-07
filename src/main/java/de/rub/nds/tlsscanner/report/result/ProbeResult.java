@@ -53,6 +53,7 @@ public abstract class ProbeResult {
     public void merge(SiteReport report) {
         report.getPerformanceList().add(getPerformanceData());
         this.mergeData(report);
+        report.markAsChangedAndNotify();
     }
 
     protected abstract void mergeData(SiteReport report);
