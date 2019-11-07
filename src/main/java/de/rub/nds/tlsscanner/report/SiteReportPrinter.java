@@ -56,6 +56,7 @@ import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -1046,7 +1047,10 @@ public class SiteReportPrinter {
         try {
             rater = SiteReportRater.getSiteReportRater("en");
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
-            scoreReport.getInfluencers().entrySet().forEach((entry) -> {
+            LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
+            influencers.entrySet().stream().sorted((o1, o2) -> {
+                return o1.getValue().compareTo(o2.getValue()); 
+            }).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
                     Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
