@@ -170,11 +170,11 @@ public class TlsScanner {
             if (executor != null) {
                 executor.shutdown();
             }
-            closeExecutorsIfNeeded();
+            closeParallelExecutorIfNeeded();
         }
     }
 
-    private void closeExecutorsIfNeeded() {
+    private void closeParallelExecutorIfNeeded() {
 
         if (closeAfterFinishParallel) {
             parallelExecutor.shutdown();
