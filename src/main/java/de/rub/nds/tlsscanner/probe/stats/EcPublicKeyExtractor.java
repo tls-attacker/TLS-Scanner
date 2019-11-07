@@ -16,9 +16,9 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.util.List;
 
-public class EcPublicKeyExtracot extends StatExtractor<ComparableByteArray> {
+public class EcPublicKeyExtractor extends StatExtractor<ComparableByteArray> {
 
-    public EcPublicKeyExtracot() {
+    public EcPublicKeyExtractor() {
         super(TrackableValueType.ECDHE_PUBKEY);
     }
 

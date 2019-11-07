@@ -42,6 +42,7 @@ import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
+import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
@@ -126,9 +127,8 @@ public class SiteReportPrinter {
         appendPublicKeyIssues(builder);
         appendScoringResults(builder);
         appendRecommendations(builder);
-        for (PerformanceData data : report.getPerformanceList()) {
-            LOGGER.debug("Type: " + data.getType() + "   Start: " + data.getStarttime() + "    Stop: " + data.getStoptime());
-        }
+        appendPerformanceData(builder);
+
         return builder.toString();
     }
 
@@ -1236,17 +1236,17 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendSubheading(StringBuilder builder, String name) {
         depth = 1;
-        return builder.append("|_\n |").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
+        return builder.append("--|").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private StringBuilder prettyAppendSubSubheading(StringBuilder builder, String name) {
         depth = 2;
-        return builder.append("|_\n |_\n  |").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
+        return builder.append("----|").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private StringBuilder prettyAppendSubSubSubheading(StringBuilder builder, String name) {
         depth = 3;
-        return builder.append("|_\n |_\n  |_\n   |").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
+        return builder.append("------|").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
@@ -1379,5 +1379,22 @@ public class SiteReportPrinter {
 
     public void setDepth(int depth) {
         this.depth = depth;
+    }
+
+    private void appendPerformanceData(StringBuilder builder) {
+        if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+            prettyAppendHeading(builder, "Scanner Performance");
+            prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
+            prettyAppendSubheading(builder, "Probe execution performance");
+            for (PerformanceData data : report.getPerformanceList()) {
+                prettyAppendSubheading(builder, data.getType().name());
+                prettyAppend(builder, "Started: " + data.getStarttime());
+                prettyAppend(builder, "Finished: " + data.getStoptime());
+                prettyAppend(builder, "Total:" + (data.getStoptime() - data.getStarttime()) + " ms");
+                prettyAppend(builder, "");
+            }
+        } else {
+            LOGGER.debug("Not printing performance data.");
+        }
     }
 }

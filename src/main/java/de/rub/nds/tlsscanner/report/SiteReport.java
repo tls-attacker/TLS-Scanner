@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -37,6 +38,7 @@ import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Observable;
 import java.util.Set;
@@ -103,7 +105,7 @@ public class SiteReport extends Observable {
     private List<HpkpPin> reportOnlyHpkpPins;
 
     //Randomness
-    private List<ExtractedValueContainer> extractedValueContainerList;
+    private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
     private RandomEvaluationResult randomEvaluationResult;
 
     //PublicKey Params
@@ -119,12 +121,30 @@ public class SiteReport extends Observable {
 
     private List<ProbeType> probeTypeList;
 
+    private int performedTcpConnections = 0;
+
     public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
         this.probeTypeList = probeTypeList;
         performanceList = new LinkedList<>();
-        extractedValueContainerList = new LinkedList<>();
+        extractedValueContainerMap = new HashMap<>();
         resultMap = new HashMap<>();
+    }
+
+    public Long getSessionTicketLengthHint() {
+        return sessionTicketLengthHint;
+    }
+
+    public void setSessionTicketLengthHint(Long sessionTicketLengthHint) {
+        this.sessionTicketLengthHint = sessionTicketLengthHint;
+    }
+
+    public int getPerformedTcpConnections() {
+        return performedTcpConnections;
+    }
+
+    public void setPerformedTcpConnections(int performedTcpConnections) {
+        this.performedTcpConnections = performedTcpConnections;
     }
 
     public HashMap<String, TestResult> getResultMap() {
@@ -457,12 +477,12 @@ public class SiteReport extends Observable {
         this.reportOnlyHpkpPins = reportOnlyHpkpPins;
     }
 
-    public List<ExtractedValueContainer> getExtractedValueContainerList() {
-        return extractedValueContainerList;
+    public Map<TrackableValueType, ExtractedValueContainer> getExtractedValueContainerMap() {
+        return extractedValueContainerMap;
     }
 
-    public void setExtractedValueContainerList(List<ExtractedValueContainer> extractedValueContainerList) {
-        this.extractedValueContainerList = extractedValueContainerList;
+    public void setExtractedValueContainerList(Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
+        this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
     public RandomEvaluationResult getRandomEvaluationResult() {
