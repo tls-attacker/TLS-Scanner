@@ -180,6 +180,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                 }
             }
             this.notScheduledTasks = newNotSchedulesTasksList;
+        } else {
+            LOGGER.error(this.getClass().getName() + " received an update from a non-Sitereport");
         }
 
     }
