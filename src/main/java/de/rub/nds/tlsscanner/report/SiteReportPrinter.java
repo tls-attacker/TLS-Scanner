@@ -1058,7 +1058,7 @@ public class SiteReportPrinter {
                     if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                         printFullRecommendation(builder, rater, recommendation, influencer, resultRecommendation);
                     } else {
-                        printShortRecommendation(builder, resultRecommendation);
+                        printShortRecommendation(builder, influencer, resultRecommendation);
                     }
                 }
             });
@@ -1070,8 +1070,9 @@ public class SiteReportPrinter {
 
     private void printFullRecommendation(StringBuilder builder, SiteReportRater rater, Recommendation recommendation,
             PropertyResultRatingInfluencer influencer, PropertyResultRecommendation resultRecommendation) {
-        prettyAppend(builder, "");
-        prettyAppend(builder, recommendation.getShortName() + ": " + influencer.getResult());
+        AnsiColor color = getRecommendationColor(influencer);
+        prettyAppend(builder, "", color);
+        prettyAppend(builder, recommendation.getShortName() + ": " + influencer.getResult(), color);
         int scoreInluence = 0;
         String additionalInfo = "";
         if (influencer.getReferencedProperty() != null) {
@@ -1082,16 +1083,29 @@ public class SiteReportPrinter {
         } else {
             scoreInluence = influencer.getInfluence();
         }
-        prettyAppend(builder, "  Score: " + scoreInluence + additionalInfo);
+        prettyAppend(builder, "  Score: " + scoreInluence + additionalInfo, color);
         if (influencer.hasScoreCap()) {
-            prettyAppend(builder, "  Score cap: " + influencer.getScoreCap());
+            prettyAppend(builder, "  Score cap: " + influencer.getScoreCap(), color);
         }
-        prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription());
-        prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation());
+        prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription(), color);
+        prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
     }
 
-    private void printShortRecommendation(StringBuilder builder, PropertyResultRecommendation resultRecommendation) {
-        prettyAppend(builder, resultRecommendation.getShortDescription() + ". " + resultRecommendation.getHandlingRecommendation());
+    private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer, 
+            PropertyResultRecommendation resultRecommendation) {
+        AnsiColor color = getRecommendationColor(influencer);
+        prettyAppend(builder, resultRecommendation.getShortDescription() + ". " + resultRecommendation.getHandlingRecommendation(), color);
+    }
+    
+    private AnsiColor getRecommendationColor(PropertyResultRatingInfluencer influencer) {
+        if(influencer.getInfluence() <= -200) {
+            return AnsiColor.RED;
+        } else if(influencer.getInfluence() < -50) {
+            return AnsiColor.YELLOW;
+        } else if(influencer.getInfluence() > 0) {
+            return AnsiColor.GREEN;
+        } 
+        return AnsiColor.DEFAULT_COLOR;
     }
 
     private void prettyPrintCipherSuite(StringBuilder builder, CipherSuite suite) {
