@@ -201,8 +201,8 @@ public class CertificateChain {
             CertPathValidationResult certPathValidationResult = evaluateGeneralTrust(orderedCertificateChain);
             generallyTrusted = certPathValidationResult.isValid();
             if (!generallyTrusted) {
-                if (certPathValidationResult.getCauses() != null) {
-                    CertPathValidationException[] causes = certPathValidationResult.getCauses();
+                CertPathValidationException[] causes = certPathValidationResult.getCauses();
+                if (causes != null) {
                     for (CertPathValidationException exception : causes) {
                         exception.printStackTrace();
                     }
