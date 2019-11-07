@@ -70,7 +70,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     @Override
     public ProbeResult call() {
-        LOGGER.info("Executing:" + getProbeName());
+        LOGGER.debug("Executing:" + getProbeName());
         long startTime = System.currentTimeMillis();
         ProbeResult result = executeTest();
         long stopTime = System.currentTimeMillis();
@@ -81,7 +81,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
             LOGGER.warn("" + getProbeName() + " - is null result");
         }
 
-        LOGGER.info(
+        LOGGER.debug(
                 "Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
         return result;
     }

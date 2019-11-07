@@ -79,8 +79,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     }
 
     private void updateSiteReportWithNotExecutedProbes(SiteReport report) {
-        for(TlsProbe probe : notScheduledTasks)
-        {
+        for (TlsProbe probe : notScheduledTasks) {
             probe.getCouldNotExecuteResult().merge(report);
         }
     }
@@ -98,6 +97,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                     lastMerge = System.currentTimeMillis();
                     try {
                         ProbeResult probeResult = result.get();
+                        ConsoleLogger.CONSOLE.info("+++" + probeResult.getProbeName() + " executed");
                         finishedFutures.add(result);
                         if (probeResult != null) {
                             probeResult.merge(report);
@@ -109,7 +109,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                 }
 
                 if (lastMerge + 1000 * 60 * 30 < System.currentTimeMillis()) {
-                    LOGGER.error("Last result merge is more than 30 minutes ago. Starting killing threads to unblock...");
+                    LOGGER.error("Last result merge is more than 30 minutes ago. Starting to kill threads to unblock...");
                     try {
                         ProbeResult probeResult = result.get(1, TimeUnit.MINUTES);
                         finishedFutures.add(result);
@@ -117,7 +117,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                     } catch (InterruptedException | ExecutionException | TimeoutException ex) {
                         result.cancel(true);
                         finishedFutures.add(result);
-                        LOGGER.error("Killed task...", ex);
+                        LOGGER.error("Killed task", ex);
                     }
                 }
             }
@@ -127,9 +127,9 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     }
 
     private void reportAboutNotExecutedProbes() {
-        LOGGER.info("Did not execute the following probes:");
+        LOGGER.debug("Did not execute the following probes:");
         for (TlsProbe probe : notScheduledTasks) {
-            LOGGER.info(probe.getProbeName());
+            LOGGER.debug(probe.getProbeName());
         }
     }
 
@@ -156,15 +156,15 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
             }
         }
         report.setExtractedValueContainerList(globalContainerList);
-        LOGGER.info("Finished evaluation");
+        LOGGER.debug("Finished evaluation");
     }
 
     private void executeAfterProbes(SiteReport report) {
-        LOGGER.info("Analyzing data...");
+        LOGGER.debug("Analyzing data...");
         for (AfterProbe afterProbe : scanJob.getAfterList()) {
             afterProbe.analyze(report);
         }
-        LOGGER.info("Finished analysis");
+        LOGGER.debug("Finished analysis");
     }
 
     @Override
@@ -180,7 +180,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
             for (TlsProbe probe : notScheduledTasks) {
                 if (probe.canBeExecuted(report)) {
                     probe.adjustConfig(report);
-                    LOGGER.info("Scheduling: " + probe.getProbeName());
+                    LOGGER.debug("Scheduling: " + probe.getProbeName());
                     Future<ProbeResult> future = executor.submit(probe);
                     futureResults.add(future);
                 } else {
