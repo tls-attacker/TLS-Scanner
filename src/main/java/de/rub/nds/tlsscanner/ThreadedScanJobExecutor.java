@@ -66,7 +66,6 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
         this.notScheduledTasks = new ArrayList<>(scanJob.getProbeList());
         
         SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<>());
-        //TODO check that server is online?
         report.addObserver(this);
         
         checkForExecutableProbes(report);
