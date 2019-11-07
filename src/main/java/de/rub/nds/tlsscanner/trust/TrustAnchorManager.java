@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import javax.security.auth.x500.X500Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -135,7 +136,7 @@ public class TrustAnchorManager {
         } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException | InvalidAlgorithmParameterException ex) {
             LOGGER.error("Could not build TrustAnchorSet", ex);
         }
-        return null;
+        return new HashSet<>();
     }
 
     public Set<TrustAnchor> getTrustAnchorSet() {

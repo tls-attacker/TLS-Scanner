@@ -384,7 +384,7 @@ public class PaddingOracleAttributor {
                 + "not directly allow an attacker to obtain the TLS private key.\n "
                 + "\n "
                 + "More Details: https://support.citrix.com/article/CTX240139";
-        knownVulnList.add(new KnownPaddingOracleVulnerability("CVE-2019-6485", "Citrix CVE-2019-6485", "Citrix Netscalar CVE-2019-6485",
+        knownVulnList.add(new KnownPaddingOracleVulnerability("CVE-2019-6485", "Citrix CVE-2019-6485", "Citrix NetScaler CVE-2019-6485",
                 PaddingOracleStrength.POODLE, true, knownVulnableSuites, knownNotVulnableSuites, description,
                 affectedProducts, responseList, false));
 
