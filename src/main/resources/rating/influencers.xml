@@ -1119,8 +1119,8 @@
         <analyzedProperty>VULNERABLE_TO_BREACH</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-500</influence>
-            <scoreCap>1000</scoreCap>
+            <influence>-200</influence>
+            <scoreCap>0</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>

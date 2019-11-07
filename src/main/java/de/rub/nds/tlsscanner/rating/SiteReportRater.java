@@ -79,8 +79,6 @@ public class SiteReportRater {
             if (result != null) {
                 PropertyResultRatingInfluencer propertyRatingInfluencer = ratingInfluencer.getPropertyRatingInfluencer(result);
                 ratingInfluencers.put(ratingInfluencer.getAnalyzedProperty(), propertyRatingInfluencer);
-            } else {
-                LOGGER.warn("ResultMap contains null values");
             }
         }
 

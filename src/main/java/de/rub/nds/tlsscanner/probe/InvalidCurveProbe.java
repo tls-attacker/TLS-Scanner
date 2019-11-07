@@ -41,7 +41,6 @@ public class InvalidCurveProbe extends TlsProbe {
         TestResult vulnerableEphemeral = TestResult.NOT_TESTED_YET;
         if (supportsStatic == TestResult.TRUE) {
             try {
-
                 InvalidCurveAttackConfig invalidCurveAttackConfig = new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
                 ClientDelegate delegate = (ClientDelegate) invalidCurveAttackConfig.getDelegate(ClientDelegate.class);
                 delegate.setHost(getScannerConfig().getClientDelegate().getHost());
@@ -58,7 +57,7 @@ public class InvalidCurveProbe extends TlsProbe {
                     vulnerableClassic = TestResult.FALSE;
                 }
             } catch (Exception E) {
-                LOGGER.error("Could not scan for EphemeralInvalidCurve. Error during probe execution", E);
+                LOGGER.error("Could not scan for StaticInvalidCurve. Error during probe execution", E);
                 vulnerableClassic = TestResult.ERROR_DURING_TEST;
             }
         } else {
@@ -87,15 +86,14 @@ public class InvalidCurveProbe extends TlsProbe {
                 vulnerableEphemeral = TestResult.ERROR_DURING_TEST;
             }
         } else {
-            vulnerableClassic = TestResult.COULD_NOT_TEST;
+            vulnerableEphemeral = TestResult.COULD_NOT_TEST;
         }
         return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral);
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report
-    ) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResult.FALSE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResult.FALSE;
+    public boolean canBeExecuted(SiteReport report) {
+        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE;
     }
 
     @Override

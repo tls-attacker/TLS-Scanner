@@ -27,7 +27,7 @@ import org.apache.logging.log4j.ThreadContext;
  */
 public class Main {
 
-    private static final Logger LOGGER = LogManager.getLogger(Main.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
@@ -40,9 +40,6 @@ public class Main {
             }
             // Cmd was parsable
             try {
-                if (config.getGeneralDelegate().isDebug()) {
-                    ThreadContext.put("ROUTINGKEY", "special");
-                }
                 TlsScanner scanner = new TlsScanner(config);
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");

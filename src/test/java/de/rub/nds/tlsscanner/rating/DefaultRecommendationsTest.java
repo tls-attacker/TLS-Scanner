@@ -491,5 +491,8 @@ public class DefaultRecommendationsTest {
 
         RatingIO.writeRecommendations(new Recommendations(recommendations),
                 new File("src/main/resources/" + Recommendations.DEFAULT_RECOMMENDATIONS_FILE));
+        RatingIO.writeRecommendations(new Recommendations(recommendations),
+                new File("src/main/resources/rating/recommendations_en.xml"));
+    
     }
 }

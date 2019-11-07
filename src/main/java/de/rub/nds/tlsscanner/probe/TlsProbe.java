@@ -18,7 +18,10 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,6 +41,8 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     private final ParallelExecutor parallelExecutor;
 
     private final StatsWriter writer;
+
+    private AtomicBoolean readyForExecution = new AtomicBoolean(false);
 
     public TlsProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig, int danger) {
         this.scannerConfig = scannerConfig;
@@ -65,7 +70,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     @Override
     public ProbeResult call() {
-        LOGGER.info("Executing:" + getProbeName());
+        LOGGER.debug("Executing:" + getProbeName());
         long startTime = System.currentTimeMillis();
         ProbeResult result = executeTest();
         long stopTime = System.currentTimeMillis();
@@ -76,7 +81,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
             LOGGER.warn("" + getProbeName() + " - is null result");
         }
 
-        LOGGER.info(
+        LOGGER.debug(
                 "Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
         return result;
     }
@@ -96,8 +101,13 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     public abstract ProbeResult executeTest();
 
-    public abstract boolean canBeExecuted(SiteReport report);
+    public void executeAndMerge(SiteReport report) {
+        ProbeResult result = this.call();
+        result.merge(report);
+    }
 
+    public abstract boolean canBeExecuted(SiteReport report);
+    
     public abstract ProbeResult getCouldNotExecuteResult();
 
     public abstract void adjustConfig(SiteReport report);
@@ -108,5 +118,9 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     public StatsWriter getWriter() {
         return writer;
+    }
+
+    public AtomicBoolean getReadyForExecution() {
+        return readyForExecution;
     }
 }
