@@ -133,7 +133,6 @@ public class TlsScanner {
         probeList.add(new DrownProbe(config, parallelExecutor));
         probeList.add(new EarlyCcsProbe(config, parallelExecutor));
         probeList.add(new MacProbe(config, parallelExecutor));
-        //phaseTwoTestList.add(new HandshakeSimulationProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterprobe());
@@ -141,7 +140,6 @@ public class TlsScanner {
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
-        //afterList.add(new HandshakeSimulationAfterProbe());
     }
 
     public SiteReport scan() {
