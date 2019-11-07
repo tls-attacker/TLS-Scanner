@@ -162,8 +162,6 @@ public class SiteReport extends Observable {
 
     public synchronized void putResult(AnalyzedProperty property, TestResult result) {
         resultMap.put(property.toString(), result);
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
@@ -224,8 +222,6 @@ public class SiteReport extends Observable {
 
     public void setServerIsAlive(Boolean serverIsAlive) {
         this.serverIsAlive = serverIsAlive;
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public List<TokenBindingVersion> getSupportedTokenBindingVersion() {
