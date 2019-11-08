@@ -83,12 +83,28 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
+        if(report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION) == TestResult.NOT_TESTED_YET || 
+                report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION) == TestResult.NOT_TESTED_YET ||
+                report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3)  == TestResult.NOT_TESTED_YET || 
+                report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2)  == TestResult.NOT_TESTED_YET ||
+                report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1)  == TestResult.NOT_TESTED_YET ||
+                report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0)  == TestResult.NOT_TESTED_YET ||
+                report.getVersionSuitePairs() == null)             
+        {
+            return false; //dependency is missing
+        }
+        else if(report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResult.TRUE && report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResult.TRUE && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE)
+        {
+            return false; //can actually not be exectued
+        }
+        else
+        {
+            return true;
+        }
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
-        //TODO: make sure results of renegotiation probe are already merged
         supportsRenegotiation = (report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION) == TestResult.TRUE || report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION) == TestResult.TRUE);
         supportsSecureRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION);     
         
