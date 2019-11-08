@@ -127,7 +127,7 @@ public class TlsScanner {
         probeList.add(new ResumptionProbe(config, parallelExecutor));
         probeList.add(new RenegotiationProbe(config, parallelExecutor));
         probeList.add(new HeartbleedProbe(config, parallelExecutor));
-        //probeList.add(new PaddingOracleProbe(config, parallelExecutor));
+        probeList.add(new PaddingOracleProbe(config, parallelExecutor));
         probeList.add(new BleichenbacherProbe(config, parallelExecutor));
         probeList.add(new PoodleProbe(config, parallelExecutor));
         probeList.add(new TlsPoodleProbe(config, parallelExecutor));
