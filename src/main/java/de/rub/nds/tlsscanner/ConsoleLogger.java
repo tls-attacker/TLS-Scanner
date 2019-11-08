@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ConsoleLogger {
 
-    public static final Logger CONSOLE = LogManager.getLogger("ConsoleLogger");
+    public static final Logger CONSOLE = LogManager.getLogger("Direct");
 
     private ConsoleLogger() {
     }

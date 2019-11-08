@@ -157,7 +157,7 @@ public class PaddingOracleProbe extends TlsProbe {
         if (report.getCipherSuites() == null) {
             return false;
         }
-        return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE) || report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS) == TestResult.UNCERTAIN;
+        return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
     }
 
     @Override

@@ -94,8 +94,10 @@ public class MacProbe extends TlsProbe {
         Config config = scannerConfig.createConfig();
         config.setAddRenegotiationInfoExtension(true);
         config.setQuickReceive(true);
-        config.setDefaultClientSupportedCiphersuites(suiteList.get(0));
-        config.setDefaultSelectedCipherSuite(suiteList.get(0));
+        if (suiteList != null) {
+            config.setDefaultClientSupportedCiphersuites(suiteList.get(0));
+            config.setDefaultSelectedCipherSuite(suiteList.get(0));
+        }
         config.setAddServerNameIndicationExtension(true);
         config.setWorkflowExecutorShouldClose(false);
 
@@ -239,9 +241,9 @@ public class MacProbe extends TlsProbe {
         executeState(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
-            if (receviedOnlyFinAndCcs(trace)) {
+            if (receivedOnlyFinAndCcs(trace)) {
                 byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
-            } else if (receviedFinAndCcs(trace)) {
+            } else if (receivedFinAndCcs(trace)) {
                 byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
             } else {
                 byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
@@ -295,9 +297,9 @@ public class MacProbe extends TlsProbe {
                     byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
                 }
             } else {
-                if (receviedOnlyFinAndCcs(trace)) {
+                if (receivedOnlyFinAndCcs(trace)) {
                     byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
-                } else if (receviedFinAndCcs(trace)) {
+                } else if (receivedFinAndCcs(trace)) {
                     byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
                 } else {
                     byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
@@ -312,17 +314,20 @@ public class MacProbe extends TlsProbe {
         return byteCheckArray;
     }
 
-    public boolean receviedOnlyFinAndCcs(WorkflowTrace trace) {
-        return trace.getLastReceivingAction().getReceivedMessages().size() == 2 && receviedFinAndCcs(trace);
+    public boolean receivedOnlyFinAndCcs(WorkflowTrace trace) {
+        return trace.getLastReceivingAction().getReceivedMessages().size() == 2 && receivedFinAndCcs(trace);
     }
 
-    public boolean receviedFinAndCcs(WorkflowTrace trace) {
+    public boolean receivedFinAndCcs(WorkflowTrace trace) {
         return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace) && WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.CHANGE_CIPHER_SPEC, trace);
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
+        if (report.getCipherSuites() == null) {
+            return false;
+        }
         allSuiteList.addAll(report.getCipherSuites());
         for (CipherSuite suite : allSuiteList) {
             if (suite.isUsingMac()) {

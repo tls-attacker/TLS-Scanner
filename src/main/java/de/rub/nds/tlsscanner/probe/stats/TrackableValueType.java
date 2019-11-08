@@ -17,5 +17,5 @@ public enum TrackableValueType {
     DH_PUBKEY,
     DH_MODULUS,
     ECDHE_PUBKEY,
-    GCM_NONCE_EXPLICIT
+    GCM_NONCE_EXPLICIT,
 }

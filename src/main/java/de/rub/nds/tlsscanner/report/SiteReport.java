@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -38,15 +39,17 @@ import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Observable;
 import java.util.Set;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class SiteReport {
+public class SiteReport extends Observable {
 
     private final HashMap<String, TestResult> resultMap;
 
     //General
-    private final List<ProbeType> probeTypeList;
     private List<PerformanceData> performanceList;
 
     private final String host;
@@ -104,7 +107,7 @@ public class SiteReport {
     private List<HpkpPin> reportOnlyHpkpPins;
 
     //Randomness
-    private List<ExtractedValueContainer> extractedValueContainerList;
+    private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
     private RandomEvaluationResult randomEvaluationResult;
 
     //PublicKey Params
@@ -118,40 +121,56 @@ public class SiteReport {
     private Integer connectionInsecureCounter = null;
     private List<SimulatedClientResult> simulatedClientList = null;
 
+    private List<ProbeType> probeTypeList;
+
+    private int performedTcpConnections = 0;
+
     public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
         this.probeTypeList = probeTypeList;
         performanceList = new LinkedList<>();
-        extractedValueContainerList = new LinkedList<>();
+        extractedValueContainerMap = new HashMap<>();
         resultMap = new HashMap<>();
     }
 
-    public HashMap<String, TestResult> getResultMap() {
+    public synchronized Long getSessionTicketLengthHint() {
+        return sessionTicketLengthHint;
+    }
+
+    public synchronized void setSessionTicketLengthHint(Long sessionTicketLengthHint) {
+        this.sessionTicketLengthHint = sessionTicketLengthHint;
+    }
+
+    public synchronized int getPerformedTcpConnections() {
+        return performedTcpConnections;
+    }
+
+    public synchronized void setPerformedTcpConnections(int performedTcpConnections) {
+        this.performedTcpConnections = performedTcpConnections;
+    }
+
+    public synchronized HashMap<String, TestResult> getResultMap() {
         return resultMap;
     }
 
-    public TestResult getResult(AnalyzedProperty property) {
+    public synchronized TestResult getResult(AnalyzedProperty property) {
         return getResult(property.toString());
     }
 
-    public TestResult getResult(String property) {
+    public synchronized TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null) ? TestResult.NOT_TESTED_YET : result;
     }
 
-    public void putResult(AnalyzedProperty property, TestResult result) {
+    public synchronized void putResult(AnalyzedProperty property, TestResult result) {
         resultMap.put(property.toString(), result);
     }
 
-    public void putResult(AnalyzedProperty property, Boolean result) {
-        if (result) {
-            resultMap.put(property.toString(), TestResult.TRUE);
-        } else {
-            resultMap.put(property.toString(), TestResult.FALSE);
-        }
+    public synchronized void putResult(AnalyzedProperty property, Boolean result) {
+        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
-    public void putResult(DrownVulnerabilityType result) {
+    public synchronized void putResult(DrownVulnerabilityType result) {
         // todo: divide DROWN to several vulnerabilities ???
         if (result != null) {
             switch (result) {
@@ -167,7 +186,7 @@ public class SiteReport {
         }
     }
 
-    public void putResult(EarlyCcsVulnerabilityType result) {
+    public synchronized void putResult(EarlyCcsVulnerabilityType result) {
         // todo: divide EARLY CCS to several vulnerabilities ???
         // also: EarlyFinishedVulnerabilityType
         if (result != null) {
@@ -186,324 +205,329 @@ public class SiteReport {
         }
     }
 
-    public String getHost() {
+    public synchronized void markAsChangedAndNotify() {
+        this.hasChanged();
+        this.notifyObservers();
+    }
+
+    public synchronized String getHost() {
         return host;
     }
 
-    public List<ProbeType> getProbeTypeList() {
+    public synchronized List<ProbeType> getProbeTypeList() {
         return probeTypeList;
     }
 
-    public Boolean getServerIsAlive() {
+    public synchronized Boolean getServerIsAlive() {
         return serverIsAlive;
     }
 
-    public void setServerIsAlive(Boolean serverIsAlive) {
+    public synchronized void setServerIsAlive(Boolean serverIsAlive) {
         this.serverIsAlive = serverIsAlive;
     }
 
-    public List<TokenBindingVersion> getSupportedTokenBindingVersion() {
+    public synchronized List<TokenBindingVersion> getSupportedTokenBindingVersion() {
         return supportedTokenBindingVersion;
     }
 
-    public void setSupportedTokenBindingVersion(List<TokenBindingVersion> supportedTokenBindingVersion) {
+    public synchronized void setSupportedTokenBindingVersion(List<TokenBindingVersion> supportedTokenBindingVersion) {
         this.supportedTokenBindingVersion = supportedTokenBindingVersion;
     }
 
-    public List<TokenBindingKeyParameters> getSupportedTokenBindingKeyParameters() {
+    public synchronized List<TokenBindingKeyParameters> getSupportedTokenBindingKeyParameters() {
         return supportedTokenBindingKeyParameters;
     }
 
-    public void setSupportedTokenBindingKeyParameters(List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
+    public synchronized void setSupportedTokenBindingKeyParameters(List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
-    public CertificateChain getCertificateChain() {
+    public synchronized CertificateChain getCertificateChain() {
         return certificateChain;
     }
 
-    public void setCertificateChain(CertificateChain certificateChain) {
+    public synchronized void setCertificateChain(CertificateChain certificateChain) {
         this.certificateChain = certificateChain;
     }
 
-    public List<ProtocolVersion> getVersions() {
+    public synchronized List<ProtocolVersion> getVersions() {
         return versions;
     }
 
-    public void setVersions(List<ProtocolVersion> versions) {
+    public synchronized void setVersions(List<ProtocolVersion> versions) {
         this.versions = versions;
     }
 
-    public Set<CipherSuite> getCipherSuites() {
+    public synchronized Set<CipherSuite> getCipherSuites() {
         return cipherSuites;
     }
 
-    public void setCipherSuites(Set<CipherSuite> cipherSuites) {
+    public synchronized void setCipherSuites(Set<CipherSuite> cipherSuites) {
         this.cipherSuites = cipherSuites;
     }
 
-    public List<CipherSuite> getSupportedTls13CipherSuites() {
+    public synchronized List<CipherSuite> getSupportedTls13CipherSuites() {
         return supportedTls13CipherSuites;
     }
 
-    public void setSupportedTls13CipherSuites(List<CipherSuite> supportedTls13CipherSuites) {
+    public synchronized void setSupportedTls13CipherSuites(List<CipherSuite> supportedTls13CipherSuites) {
         this.supportedTls13CipherSuites = supportedTls13CipherSuites;
     }
 
-    public Certificate getCertificate() {
+    public synchronized Certificate getCertificate() {
         return certificate;
     }
 
-    public void setCertificate(Certificate certificate) {
+    public synchronized void setCertificate(Certificate certificate) {
         this.certificate = certificate;
     }
 
-    public List<NamedGroup> getSupportedNamedGroups() {
+    public synchronized List<NamedGroup> getSupportedNamedGroups() {
         return supportedNamedGroups;
     }
 
-    public void setSupportedNamedGroups(List<NamedGroup> supportedNamedGroups) {
+    public synchronized void setSupportedNamedGroups(List<NamedGroup> supportedNamedGroups) {
         this.supportedNamedGroups = supportedNamedGroups;
     }
 
-    public List<NamedGroup> getSupportedTls13Groups() {
+    public synchronized List<NamedGroup> getSupportedTls13Groups() {
         return supportedTls13Groups;
     }
 
-    public void setSupportedTls13Groups(List<NamedGroup> supportedTls13Groups) {
+    public synchronized void setSupportedTls13Groups(List<NamedGroup> supportedTls13Groups) {
         this.supportedTls13Groups = supportedTls13Groups;
     }
 
-    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
+    public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
         return supportedSignatureAndHashAlgorithms;
     }
 
-    public void setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+    public synchronized void setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
     }
 
-    public List<ExtensionType> getSupportedExtensions() {
+    public synchronized List<ExtensionType> getSupportedExtensions() {
         return supportedExtensions;
     }
 
-    public void setSupportedExtensions(List<ExtensionType> supportedExtensions) {
+    public synchronized void setSupportedExtensions(List<ExtensionType> supportedExtensions) {
         this.supportedExtensions = supportedExtensions;
     }
 
-    public List<CompressionMethod> getSupportedCompressionMethods() {
+    public synchronized List<CompressionMethod> getSupportedCompressionMethods() {
         return supportedCompressionMethods;
     }
 
-    public void setSupportedCompressionMethods(List<CompressionMethod> supportedCompressionMethods) {
+    public synchronized void setSupportedCompressionMethods(List<CompressionMethod> supportedCompressionMethods) {
         this.supportedCompressionMethods = supportedCompressionMethods;
     }
 
-    public CheckPattern getMacCheckPatternAppData() {
+    public synchronized CheckPattern getMacCheckPatternAppData() {
         return macCheckPatterAppData;
     }
 
-    public void setMacCheckPatterAppData(CheckPattern macCheckPatterAppData) {
+    public synchronized void setMacCheckPatterAppData(CheckPattern macCheckPatterAppData) {
         this.macCheckPatterAppData = macCheckPatterAppData;
     }
 
-    public CheckPattern getVerifyCheckPattern() {
+    public synchronized CheckPattern getVerifyCheckPattern() {
         return verifyCheckPattern;
     }
 
-    public void setVerifyCheckPattern(CheckPattern verifyCheckPattern) {
+    public synchronized void setVerifyCheckPattern(CheckPattern verifyCheckPattern) {
         this.verifyCheckPattern = verifyCheckPattern;
     }
 
-    public Boolean getSupportsSslTls() {
+    public synchronized Boolean getSupportsSslTls() {
         return supportsSslTls;
     }
 
-    public void setSupportsSslTls(Boolean supportsSslTls) {
+    public synchronized void setSupportsSslTls(Boolean supportsSslTls) {
         this.supportsSslTls = supportsSslTls;
     }
 
-    public GcmPattern getGcmPattern() {
+    public synchronized GcmPattern getGcmPattern() {
         return gcmPattern;
     }
 
-    public void setGcmPattern(GcmPattern gcmPattern) {
+    public synchronized void setGcmPattern(GcmPattern gcmPattern) {
         this.gcmPattern = gcmPattern;
     }
 
-    public List<VersionSuiteListPair> getVersionSuitePairs() {
+    public synchronized List<VersionSuiteListPair> getVersionSuitePairs() {
         return versionSuitePairs;
     }
 
-    public void setVersionSuitePairs(List<VersionSuiteListPair> versionSuitePairs) {
+    public synchronized void setVersionSuitePairs(List<VersionSuiteListPair> versionSuitePairs) {
         this.versionSuitePairs = versionSuitePairs;
     }
 
-    public Integer getHandshakeSuccessfulCounter() {
+    public synchronized Integer getHandshakeSuccessfulCounter() {
         return handshakeSuccessfulCounter;
     }
 
-    public void setHandshakeSuccessfulCounter(Integer handshakeSuccessfulCounter) {
+    public synchronized void setHandshakeSuccessfulCounter(Integer handshakeSuccessfulCounter) {
         this.handshakeSuccessfulCounter = handshakeSuccessfulCounter;
     }
 
-    public Integer getHandshakeFailedCounter() {
+    public synchronized Integer getHandshakeFailedCounter() {
         return handshakeFailedCounter;
     }
 
-    public void setHandshakeFailedCounter(Integer handshakeFailedCounter) {
+    public synchronized void setHandshakeFailedCounter(Integer handshakeFailedCounter) {
         this.handshakeFailedCounter = handshakeFailedCounter;
     }
 
-    public Integer getConnectionRfc7918SecureCounter() {
+    public synchronized Integer getConnectionRfc7918SecureCounter() {
         return connectionRfc7918SecureCounter;
     }
 
-    public void setConnectionRfc7918SecureCounter(Integer connectionRfc7918SecureCounter) {
+    public synchronized void setConnectionRfc7918SecureCounter(Integer connectionRfc7918SecureCounter) {
         this.connectionRfc7918SecureCounter = connectionRfc7918SecureCounter;
     }
 
-    public Integer getConnectionInsecureCounter() {
+    public synchronized Integer getConnectionInsecureCounter() {
         return connectionInsecureCounter;
     }
 
-    public void setConnectionInsecureCounter(Integer connectionInsecureCounter) {
+    public synchronized void setConnectionInsecureCounter(Integer connectionInsecureCounter) {
         this.connectionInsecureCounter = connectionInsecureCounter;
     }
 
-    public List<SimulatedClientResult> getSimulatedClientList() {
+    public synchronized List<SimulatedClientResult> getSimulatedClientList() {
         return simulatedClientList;
     }
 
-    public void setSimulatedClientList(List<SimulatedClientResult> simulatedClientList) {
+    public synchronized void setSimulatedClientList(List<SimulatedClientResult> simulatedClientList) {
         this.simulatedClientList = simulatedClientList;
     }
 
-    public String getFullReport(ScannerDetail detail, boolean printColorful) {
+    public synchronized String getFullReport(ScannerDetail detail, boolean printColorful) {
         return new SiteReportPrinter(this, detail, printColorful).getFullReport();
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return getFullReport(ScannerDetail.NORMAL, false);
     }
 
-    public CheckPattern getMacCheckPatternFinished() {
+    public synchronized CheckPattern getMacCheckPatternFinished() {
         return macCheckPatternFinished;
     }
 
-    public void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
+    public synchronized void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
         this.macCheckPatternFinished = macCheckPatternFinished;
     }
 
-    public List<PerformanceData> getPerformanceList() {
+    public synchronized List<PerformanceData> getPerformanceList() {
         return performanceList;
     }
 
-    public void setPerformanceList(List<PerformanceData> performanceList) {
+    public synchronized void setPerformanceList(List<PerformanceData> performanceList) {
         this.performanceList = performanceList;
     }
 
-    public List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleTestResultList() {
+    public synchronized List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleTestResultList() {
         return paddingOracleTestResultList;
     }
 
-    public void setPaddingOracleTestResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
+    public synchronized void setPaddingOracleTestResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 
-    public List<HttpsHeader> getHeaderList() {
+    public synchronized List<HttpsHeader> getHeaderList() {
         return headerList;
     }
 
-    public void setHeaderList(List<HttpsHeader> headerList) {
+    public synchronized void setHeaderList(List<HttpsHeader> headerList) {
         this.headerList = headerList;
     }
 
-    public Long getHstsMaxAge() {
+    public synchronized Long getHstsMaxAge() {
         return hstsMaxAge;
     }
 
-    public void setHstsMaxAge(Long hstsMaxAge) {
+    public synchronized void setHstsMaxAge(Long hstsMaxAge) {
         this.hstsMaxAge = hstsMaxAge;
     }
 
-    public Integer getHpkpMaxAge() {
+    public synchronized Integer getHpkpMaxAge() {
         return hpkpMaxAge;
     }
 
-    public void setHpkpMaxAge(Integer hpkpMaxAge) {
+    public synchronized void setHpkpMaxAge(Integer hpkpMaxAge) {
         this.hpkpMaxAge = hpkpMaxAge;
     }
 
-    public List<HpkpPin> getNormalHpkpPins() {
+    public synchronized List<HpkpPin> getNormalHpkpPins() {
         return normalHpkpPins;
     }
 
-    public void setNormalHpkpPins(List<HpkpPin> normalHpkpPins) {
+    public synchronized void setNormalHpkpPins(List<HpkpPin> normalHpkpPins) {
         this.normalHpkpPins = normalHpkpPins;
     }
 
-    public List<HpkpPin> getReportOnlyHpkpPins() {
+    public synchronized List<HpkpPin> getReportOnlyHpkpPins() {
         return reportOnlyHpkpPins;
     }
 
-    public void setReportOnlyHpkpPins(List<HpkpPin> reportOnlyHpkpPins) {
+    public synchronized void setReportOnlyHpkpPins(List<HpkpPin> reportOnlyHpkpPins) {
         this.reportOnlyHpkpPins = reportOnlyHpkpPins;
     }
 
-    public List<ExtractedValueContainer> getExtractedValueContainerList() {
-        return extractedValueContainerList;
+    public synchronized Map<TrackableValueType, ExtractedValueContainer> getExtractedValueContainerMap() {
+        return extractedValueContainerMap;
     }
 
-    public void setExtractedValueContainerList(List<ExtractedValueContainer> extractedValueContainerList) {
-        this.extractedValueContainerList = extractedValueContainerList;
+    public synchronized void setExtractedValueContainerList(Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
+        this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
-    public RandomEvaluationResult getRandomEvaluationResult() {
+    public synchronized RandomEvaluationResult getRandomEvaluationResult() {
         return randomEvaluationResult;
     }
 
-    public void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
+    public synchronized void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
         this.randomEvaluationResult = randomEvaluationResult;
     }
 
-    public Set<CommonDhValues> getUsedCommonDhValueList() {
+    public synchronized Set<CommonDhValues> getUsedCommonDhValueList() {
         return usedCommonDhValueList;
     }
 
-    public void setUsedCommonDhValueList(Set<CommonDhValues> usedCommonDhValueList) {
+    public synchronized void setUsedCommonDhValueList(Set<CommonDhValues> usedCommonDhValueList) {
         this.usedCommonDhValueList = usedCommonDhValueList;
     }
 
-    public Integer getWeakestDhStrength() {
+    public synchronized Integer getWeakestDhStrength() {
         return weakestDhStrength;
     }
 
-    public void setWeakestDhStrength(Integer weakestDhStrength) {
+    public synchronized void setWeakestDhStrength(Integer weakestDhStrength) {
         this.weakestDhStrength = weakestDhStrength;
     }
 
-    public List<BleichenbacherTestResult> getBleichenbacherTestResultList() {
+    public synchronized List<BleichenbacherTestResult> getBleichenbacherTestResultList() {
         return bleichenbacherTestResultList;
     }
 
-    public void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
+    public synchronized void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
         this.bleichenbacherTestResultList = bleichenbacherTestResultList;
     }
 
-    public KnownPaddingOracleVulnerability getKnownVulnerability() {
+    public synchronized KnownPaddingOracleVulnerability getKnownVulnerability() {
         return knownVulnerability;
     }
 
-    public void setKnownVulnerability(KnownPaddingOracleVulnerability knownVulnerability) {
+    public synchronized void setKnownVulnerability(KnownPaddingOracleVulnerability knownVulnerability) {
         this.knownVulnerability = knownVulnerability;
     }
 
-    public List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleShakyEvalResultList() {
+    public synchronized List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleShakyEvalResultList() {
         return paddingOracleShakyEvalResultList;
     }
 
-    public void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
+    public synchronized void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
     }
 

@@ -50,7 +50,7 @@ public class PoodleProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS) == TestResult.TRUE;
+        return report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE;
     }
 
     @Override

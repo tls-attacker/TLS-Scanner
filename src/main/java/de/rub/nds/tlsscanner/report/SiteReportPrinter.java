@@ -43,6 +43,7 @@ import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
+import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
@@ -57,6 +58,7 @@ import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +66,7 @@ import javax.xml.bind.JAXBException;
 
 public class SiteReportPrinter {
 
-    private static final Logger LOGGER = LogManager.getLogger(SiteReportPrinter.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final SiteReport report;
     private final ScannerDetail detail;
@@ -128,9 +130,8 @@ public class SiteReportPrinter {
         appendPublicKeyIssues(builder);
         appendScoringResults(builder);
         appendRecommendations(builder);
-        for (PerformanceData data : report.getPerformanceList()) {
-            LOGGER.debug("Type: " + data.getType() + "   Start: " + data.getStarttime() + "    Stop: " + data.getStoptime());
-        }
+        appendPerformanceData(builder);
+
         return builder.toString();
     }
 
@@ -1123,7 +1124,10 @@ public class SiteReportPrinter {
         try {
             rater = SiteReportRater.getSiteReportRater("en");
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
-            scoreReport.getInfluencers().entrySet().forEach((entry) -> {
+            LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
+            influencers.entrySet().stream().sorted((o1, o2) -> {
+                return o1.getValue().compareTo(o2.getValue()); 
+            }).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
                     Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
@@ -1131,7 +1135,7 @@ public class SiteReportPrinter {
                     if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                         printFullRecommendation(builder, rater, recommendation, influencer, resultRecommendation);
                     } else {
-                        printShortRecommendation(builder, resultRecommendation);
+                        printShortRecommendation(builder, influencer, resultRecommendation);
                     }
                 }
             });
@@ -1143,8 +1147,9 @@ public class SiteReportPrinter {
 
     private void printFullRecommendation(StringBuilder builder, SiteReportRater rater, Recommendation recommendation,
             PropertyResultRatingInfluencer influencer, PropertyResultRecommendation resultRecommendation) {
-        prettyAppend(builder, "");
-        prettyAppend(builder, recommendation.getShortName() + ": " + influencer.getResult());
+        AnsiColor color = getRecommendationColor(influencer);
+        prettyAppend(builder, "", color);
+        prettyAppend(builder, recommendation.getShortName() + ": " + influencer.getResult(), color);
         int scoreInluence = 0;
         String additionalInfo = "";
         if (influencer.getReferencedProperty() != null) {
@@ -1155,16 +1160,29 @@ public class SiteReportPrinter {
         } else {
             scoreInluence = influencer.getInfluence();
         }
-        prettyAppend(builder, "  Score: " + scoreInluence + additionalInfo);
+        prettyAppend(builder, "  Score: " + scoreInluence + additionalInfo, color);
         if (influencer.hasScoreCap()) {
-            prettyAppend(builder, "  Score cap: " + influencer.getScoreCap());
+            prettyAppend(builder, "  Score cap: " + influencer.getScoreCap(), color);
         }
-        prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription());
-        prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation());
+        prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription(), color);
+        prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
     }
 
-    private void printShortRecommendation(StringBuilder builder, PropertyResultRecommendation resultRecommendation) {
-        prettyAppend(builder, resultRecommendation.getShortDescription() + ". " + resultRecommendation.getHandlingRecommendation());
+    private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer, 
+            PropertyResultRecommendation resultRecommendation) {
+        AnsiColor color = getRecommendationColor(influencer);
+        prettyAppend(builder, resultRecommendation.getShortDescription() + ". " + resultRecommendation.getHandlingRecommendation(), color);
+    }
+    
+    private AnsiColor getRecommendationColor(PropertyResultRatingInfluencer influencer) {
+        if(influencer.getInfluence() <= -200) {
+            return AnsiColor.RED;
+        } else if(influencer.getInfluence() < -50) {
+            return AnsiColor.YELLOW;
+        } else if(influencer.getInfluence() > 0) {
+            return AnsiColor.GREEN;
+        } 
+        return AnsiColor.DEFAULT_COLOR;
     }
 
     private void prettyPrintCipherSuite(StringBuilder builder, CipherSuite suite) {
@@ -1313,17 +1331,17 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendSubheading(StringBuilder builder, String name) {
         depth = 1;
-        return builder.append("|_\n |").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
+        return builder.append("--|").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private StringBuilder prettyAppendSubSubheading(StringBuilder builder, String name) {
         depth = 2;
-        return builder.append("|_\n |_\n  |").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
+        return builder.append("----|").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private StringBuilder prettyAppendSubSubSubheading(StringBuilder builder, String name) {
         depth = 3;
-        return builder.append("|_\n |_\n  |_\n   |").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
+        return builder.append("------|").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
     }
 
     private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
@@ -1456,5 +1474,22 @@ public class SiteReportPrinter {
 
     public void setDepth(int depth) {
         this.depth = depth;
+    }
+
+    private void appendPerformanceData(StringBuilder builder) {
+        if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+            prettyAppendHeading(builder, "Scanner Performance");
+            prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
+            prettyAppendSubheading(builder, "Probe execution performance");
+            for (PerformanceData data : report.getPerformanceList()) {
+                prettyAppendSubheading(builder, data.getType().name());
+                prettyAppend(builder, "Started: " + data.getStarttime());
+                prettyAppend(builder, "Finished: " + data.getStoptime());
+                prettyAppend(builder, "Total:" + (data.getStoptime() - data.getStarttime()) + " ms");
+                prettyAppend(builder, "");
+            }
+        } else {
+            LOGGER.debug("Not printing performance data.");
+        }
     }
 }
