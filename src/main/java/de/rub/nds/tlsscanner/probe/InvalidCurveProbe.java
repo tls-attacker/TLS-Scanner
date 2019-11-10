@@ -353,12 +353,6 @@ public class InvalidCurveProbe extends TlsProbe {
                 invalidCurveAttackConfig.setProtocolFlows(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
                 invalidCurveAttackConfig.setPointCompressionFormat(parameterSet.getPointFormat());
                             
-                EllipticCurveOverFp intendedCurve = (EllipticCurveOverFp)CurveFactory.getCurve(parameterSet.getNamedGroup());
-                BigInteger modA = intendedCurve.getA().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD().pow(2)).mod(intendedCurve.getModulus());
-                BigInteger modB = intendedCurve.getB().getData().multiply(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD().pow(3)).mod(intendedCurve.getModulus());
-                EllipticCurveOverFp twistedCurve = new EllipticCurveOverFp(modA, modB, intendedCurve.getModulus());
-                            
-                invalidCurveAttackConfig.setTwistedCurve(twistedCurve);
                 invalidCurveAttackConfig.setCurveTwistAttack(true);
                 invalidCurveAttackConfig.setCurveTwistD(TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getD());                         
             }
