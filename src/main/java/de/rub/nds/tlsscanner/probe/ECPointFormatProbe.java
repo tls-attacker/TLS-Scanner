@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -67,8 +68,15 @@ public class ECPointFormatProbe extends TlsProbe {
             if (state.getTlsContext().getServerPointFormatsList() != null) {
                 return(new ECPointFormatResult(state.getTlsContext().getServerPointFormatsList()));
             }
+            else
+            {
+                //no extension means only uncompressed
+                List<ECPointFormat> format = new LinkedList<>();
+                format.add(ECPointFormat.UNCOMPRESSED);
+                return(new ECPointFormatResult(format));
+            }
         }
-        LOGGER.debug("Server did not send his supported point formats");
+        LOGGER.debug("Unable to determine supported point formats");
         return(new ECPointFormatResult(null));
     }
 
