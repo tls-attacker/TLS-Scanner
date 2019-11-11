@@ -47,6 +47,12 @@ public class ECPointFormatResult extends ProbeResult {
                 }   
             }
         }
+        else
+        {
+            supportsUncompressedPoint = TestResult.COULD_NOT_TEST;
+            supportsANSIX962CompressedPrime = TestResult.COULD_NOT_TEST;
+            supportsANSIX962CompressedChar2 = TestResult.COULD_NOT_TEST;
+        }
         report.putResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
         report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
         report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, supportsANSIX962CompressedChar2);
