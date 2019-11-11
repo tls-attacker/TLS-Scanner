@@ -114,6 +114,7 @@ public class SiteReportPrinter {
         appendCipherSuites(builder);
         appendExtensions(builder);
         appendCompressions(builder);
+        appendEcPointFormats(builder);
         appendIntolerances(builder);
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
@@ -714,6 +715,14 @@ public class SiteReportPrinter {
                 }
             }
         }
+        return builder;
+    }
+    
+    private StringBuilder appendEcPointFormats(StringBuilder builder) {
+        prettyAppendHeading(builder, "Elliptic Curve Point Formats");
+        prettyAppend(builder, "Uncompressed", AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT);
+        prettyAppend(builder, "ANSIX962 Prime", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME);
+        prettyAppend(builder, "ANSIX962 Char2", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2);
         return builder;
     }
     
