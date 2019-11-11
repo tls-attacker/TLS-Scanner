@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -254,6 +255,54 @@ public class Tls13Probe extends TlsProbe {
         algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512);
         return algos;
     }
+    
+    private List<ECPointFormat> getSupportedPointFormats(List<ProtocolVersion> supportedProtocolVersions)
+    {
+        Config tlsConfig = getScannerConfig().createConfig();
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(getTls13Suite());
+        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
+        tlsConfig.setSupportedVersions(supportedProtocolVersions);
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1, NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
+        tlsConfig.setAddECPointFormatExtension(false);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setUseFreshRandom(true);
+        tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
+        State state = new State(tlsConfig);
+        WorkflowTrace workflowTrace = state.getWorkflowTrace();
+        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE, workflowTrace);
+        if (keyShareExtension == null) {
+            keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
+        }
+        if (keyShareExtension != null) {
+            ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
+        }
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            if (state.getTlsContext().getServerPointFormatsList() != null) {
+                return state.getTlsContext().getServerPointFormatsList();
+            }
+            else
+            {
+                //no extension means only uncompressed
+                List<ECPointFormat> format = new LinkedList<>();
+                format.add(ECPointFormat.UNCOMPRESSED);
+                return format;
+            }
+        } 
+        else {
+            return null;
+        }
+    }
 
     private List<CipherSuite> getTls13Suite() {
         List<CipherSuite> tls13Suites = new LinkedList<>();
@@ -284,7 +333,8 @@ public class Tls13Probe extends TlsProbe {
         }
         List<NamedGroup> supportedNamedGroups = getSupportedGroups();
         List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
-        return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups, supportedTls13Suites);
+        List<ECPointFormat> supportedTls13PointFormats = getSupportedPointFormats(supportedProtocolVersions);
+        return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups, supportedTls13Suites, supportedTls13PointFormats);
     }
 
     @Override
@@ -298,6 +348,6 @@ public class Tls13Probe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new Tls13Result(null, null, null, null);
+        return new Tls13Result(null, null, null, null, null);
     }
 }
