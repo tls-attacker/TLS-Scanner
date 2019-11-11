@@ -57,7 +57,9 @@ public class InvalidCurveProbe extends TlsProbe {
     
     private HashMap<ProtocolVersion, List<CipherSuite>> supportedECDHCipherSuites;
     
-    private List<ECPointFormat> supportedFpPointFormats;
+    private List<ECPointFormat> fpPointFormatsToTest;
+    
+    private List<ECPointFormat> tls13FpPointFormatsToTest;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config, 10);
@@ -153,9 +155,10 @@ public class InvalidCurveProbe extends TlsProbe {
         fpPointFormats.add(ECPointFormat.UNCOMPRESSED);
         if(report.getResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT) != TestResult.TRUE)
         {
-           LOGGER.warn("Server did not list uncompressed points as supported") ;
+           LOGGER.warn("Server did not list uncompressed points as supported");
         }
-        if(report.getResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME) == TestResult.TRUE)
+        if(report.getResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME) == TestResult.TRUE || 
+                scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED))
         {
             fpPointFormats.add(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
         }
@@ -193,11 +196,24 @@ public class InvalidCurveProbe extends TlsProbe {
                     tls13CipherSuites.add(cipherSuite);
                 }
             }
+            
+            List<ECPointFormat> tls13FpPointFormats = new LinkedList<>();
+            tls13FpPointFormats.add(ECPointFormat.UNCOMPRESSED);
+            if(report.getResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT_TLS13) != TestResult.TRUE)
+            {
+               LOGGER.warn("Server did not list uncompressed points as supported for TLS 1.3");         
+            }
+            if(report.getResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME_TLS13) != TestResult.TRUE || 
+                scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                tls13FpPointFormats.add(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
+            }
+            
             cipherSuitesMap.put(ProtocolVersion.TLS13,tls13CipherSuites);
             supportedTls13FpGroups = tls13groups;
+            tls13FpPointFormatsToTest = tls13FpPointFormats;
         }
         
-        supportedFpPointFormats = fpPointFormats;
+        fpPointFormatsToTest = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedFpGroups = groups;
         supportedECDHCipherSuites = cipherSuitesMap;  
@@ -251,18 +267,21 @@ public class InvalidCurveProbe extends TlsProbe {
         for(ProtocolVersion protocolVersion: supportedProtocolVersions)
         {
             List<NamedGroup> groupList;
+            List<ECPointFormat> formatList;
             if(protocolVersion == ProtocolVersion.TLS13)
             {
                 groupList = supportedTls13FpGroups;
+                formatList = tls13FpPointFormatsToTest;
             }
             else
             {
                 groupList = supportedFpGroups;
+                formatList = fpPointFormatsToTest;
             }
                 
             for(NamedGroup group: groupList)
             {
-                for(ECPointFormat format: supportedFpPointFormats)
+                for(ECPointFormat format: formatList)
                 {
                     if(scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED))
                     {
