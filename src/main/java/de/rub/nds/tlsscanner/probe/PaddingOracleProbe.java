@@ -85,6 +85,18 @@ public class PaddingOracleProbe extends TlsProbe {
             }
             List<PaddingOracleCipherSuiteFingerprint> shakyScanEvaluation = new LinkedList<>();
             //Classic tests cannnot confirm a vulnerability - check for shaky scans
+            if ((isVulnerable(testResultList) != TestResult.TRUE) || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+                for (PaddingOracleCipherSuiteFingerprint fingerprint : testResultList) {
+                    if (isCandidateForShakyEvaluation(fingerprint)) {
+                        LOGGER.debug("Found a candidate for the ShakyScan reevaluation: " + fingerprint.getSuite() + "-" + fingerprint.getVersion());
+                        shakyScanEvaluation.add(getPaddingOracleCipherSuiteFingerprintList(paddingOracleConfig, 20, false, fingerprint.getVectorGeneratorType(), fingerprint.getRecordGeneratorType(), fingerprint.getVersion(), fingerprint.getSuite()));
+                    } else {
+                        if (fingerprint.isShakyScans()) {
+                            LOGGER.debug("Found a weired shaky/error mix scan. Cannot analyze. Sorry...");
+                        }
+                    }
+                }
+            }
 
             return new PaddingOracleResponseMap(testResultList, shakyScanEvaluation, isVulnerable(testResultList));
         } catch (Exception e) {

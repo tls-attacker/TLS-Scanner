@@ -49,6 +49,8 @@ import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.after.padding.ShakyEvaluationReport;
+import de.rub.nds.tlsscanner.report.after.padding.ShakyVectorHolder;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
@@ -636,6 +638,24 @@ public class SiteReportPrinter {
             }
 
         }
+        if (report.getPaddingOracleShakyEvalResultList() != null && !report.getPaddingOracleShakyEvalResultList().isEmpty()) {
+            prettyAppendHeading(builder, "PaddingOracle-ShakyReport");
+            ShakyEvaluationReport shakyReport = report.getPaddingOracleShakyReport();
+            prettyAppend(builder, "Probably Vulnerable", shakyReport.getConsideredVulnerable(), shakyReport.getConsideredVulnerable() == Boolean.TRUE ? AnsiColor.RED : AnsiColor.GREEN);
+            prettyAppend(builder, "Type", "" + shakyReport.getShakyType());
+            prettyAppend(builder, "Consistent", shakyReport.getConsistentAcrossCvPairs());
+            prettyAppend(builder, "");
+            for (ShakyVectorHolder holder : shakyReport.getVectorHolderList()) {
+                double pValue = holder.computePValue();
+                if (pValue > 0.05) {
+                    prettyAppend(builder, "" + holder.getFingerprint().getSuite() + "/" + holder.getFingerprint().getVersion(), "Pvalue: " + String.format("%.12f", pValue), AnsiColor.GREEN);
+                } else if (pValue > 0.01) {
+                    prettyAppend(builder, "" + holder.getFingerprint().getSuite() + "/" + holder.getFingerprint().getVersion(), "Pvalue: " + String.format("%.12f", pValue), AnsiColor.YELLOW);
+                } else {
+                    prettyAppend(builder, "" + holder.getFingerprint().getSuite() + "/" + holder.getFingerprint().getVersion(), "Pvalue: " + String.format("%.12f", pValue), AnsiColor.RED);
+                }
+            }
+        }
         return builder;
     }
 
@@ -1049,7 +1069,7 @@ public class SiteReportPrinter {
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
             influencers.entrySet().stream().sorted((o1, o2) -> {
-                return o1.getValue().compareTo(o2.getValue()); 
+                return o1.getValue().compareTo(o2.getValue());
             }).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
@@ -1091,20 +1111,20 @@ public class SiteReportPrinter {
         prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
     }
 
-    private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer, 
+    private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer,
             PropertyResultRecommendation resultRecommendation) {
         AnsiColor color = getRecommendationColor(influencer);
         prettyAppend(builder, resultRecommendation.getShortDescription() + ". " + resultRecommendation.getHandlingRecommendation(), color);
     }
-    
+
     private AnsiColor getRecommendationColor(PropertyResultRatingInfluencer influencer) {
-        if(influencer.getInfluence() <= -200) {
+        if (influencer.getInfluence() <= -200) {
             return AnsiColor.RED;
-        } else if(influencer.getInfluence() < -50) {
+        } else if (influencer.getInfluence() < -50) {
             return AnsiColor.YELLOW;
-        } else if(influencer.getInfluence() > 0) {
+        } else if (influencer.getInfluence() > 0) {
             return AnsiColor.GREEN;
-        } 
+        }
         return AnsiColor.DEFAULT_COLOR;
     }
 

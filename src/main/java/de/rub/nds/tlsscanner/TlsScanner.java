@@ -47,6 +47,7 @@ import de.rub.nds.tlsscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
 import de.rub.nds.tlsscanner.report.after.PaddingOracleIdentificationAfterProbe;
+import de.rub.nds.tlsscanner.report.after.ShakyPaddingOracleEvaluation;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
@@ -139,7 +140,9 @@ public class TlsScanner {
         afterList.add(new EvaluateRandomnessAfterProbe());
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
+        afterList.add(new ShakyPaddingOracleEvaluation());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
+        
     }
 
     public SiteReport scan() {

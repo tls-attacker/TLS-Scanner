@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.report.after.padding.ShakyEvaluationReport;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -61,6 +62,7 @@ public class SiteReport extends Observable {
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
+    private ShakyEvaluationReport paddingOracleShakyReport = null;
 
     //Version
     private List<ProtocolVersion> versions = null;
@@ -155,6 +157,10 @@ public class SiteReport extends Observable {
         return getResult(property.toString());
     }
 
+    public synchronized void removeResult(AnalyzedProperty property) {
+        resultMap.remove(property.toString());
+    }
+
     public synchronized TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null) ? TestResult.NOT_TESTED_YET : result;
@@ -206,6 +212,14 @@ public class SiteReport extends Observable {
     public synchronized void markAsChangedAndNotify() {
         this.hasChanged();
         this.notifyObservers();
+    }
+
+    public ShakyEvaluationReport getPaddingOracleShakyReport() {
+        return paddingOracleShakyReport;
+    }
+
+    public void setPaddingOracleShakyReport(ShakyEvaluationReport paddingOracleShakyReport) {
+        this.paddingOracleShakyReport = paddingOracleShakyReport;
     }
 
     public synchronized String getHost() {
