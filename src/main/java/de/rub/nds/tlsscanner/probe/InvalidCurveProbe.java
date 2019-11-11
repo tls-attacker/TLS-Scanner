@@ -250,8 +250,16 @@ public class InvalidCurveProbe extends TlsProbe {
         
         for(ProtocolVersion protocolVersion: supportedProtocolVersions)
         {
-            List<NamedGroup> groupList = (protocolVersion == ProtocolVersion.TLS13)?supportedTls13FpGroups:supportedFpGroups;
-            
+            List<NamedGroup> groupList;
+            if(protocolVersion == ProtocolVersion.TLS13)
+            {
+                groupList = supportedTls13FpGroups;
+            }
+            else
+            {
+                groupList = supportedFpGroups;
+            }
+                
             for(NamedGroup group: groupList)
             {
                 for(ECPointFormat format: supportedFpPointFormats)
