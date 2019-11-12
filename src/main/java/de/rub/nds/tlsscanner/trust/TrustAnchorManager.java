@@ -65,8 +65,7 @@ public class TrustAnchorManager {
             trustPlatformList.add(readPlatform("mozilla_nss.yaml"));
             trustPlatformList.add(readPlatform("openjdk.yaml"));
             trustPlatformList.add(readPlatform("oracle_java.yaml"));
-            trustPlatformList.add(readPlatform("apple_ios.yaml"));
-            trustPlatformList.add(readPlatform("apple_macos.yaml"));
+            trustPlatformList.add(readPlatform("apple.yaml"));
         } catch (IOException ex) {
             LOGGER.error("Could not load trusted platforms", ex);
         }
