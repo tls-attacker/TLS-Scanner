@@ -142,7 +142,7 @@ public class TlsScanner {
         afterList.add(new DhValueAfterProbe());
         afterList.add(new ShakyPaddingOracleEvaluation());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
-        
+
     }
 
     public SiteReport scan() {
@@ -185,15 +185,25 @@ public class TlsScanner {
     }
 
     public boolean isConnectable() {
-        Config tlsConfig = config.createConfig();
-        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-        return checker.isConnectable();
+        try {
+            Config tlsConfig = config.createConfig();
+            ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+            return checker.isConnectable();
+        } catch (Exception E) {
+            LOGGER.warn("Could not test if we can connect to the server", E);
+            return false;
+        }
     }
 
     private boolean speaksTls() {
-        Config tlsConfig = config.createConfig();
-        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-        return checker.speaksTls(tlsConfig);
+        try {
+            Config tlsConfig = config.createConfig();
+            ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+            return checker.speaksTls(tlsConfig);
+        } catch (Exception E) {
+            LOGGER.warn("Could not test if the server speaks TLS", E);
+            return false;
+        }
     }
 
     private boolean speaksStartTls() {
