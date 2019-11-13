@@ -71,7 +71,7 @@ public class BleichenbacherProbe extends TlsProbe {
             }
             return new BleichenbacherResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE, resultList);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for Bleichenbacher");
+            LOGGER.error("Could not scan for Bleichenbacher", e);
             return new BleichenbacherResult(TestResult.ERROR_DURING_TEST, new LinkedList<BleichenbacherTestResult>());
         }
     }
