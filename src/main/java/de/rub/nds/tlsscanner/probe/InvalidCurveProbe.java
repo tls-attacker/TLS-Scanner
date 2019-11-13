@@ -109,7 +109,8 @@ public class InvalidCurveProbe extends TlsProbe {
         List<NamedGroup> groups = new LinkedList<>();
         if (report.getSupportedNamedGroups() != null) {
             for (NamedGroup group : report.getSupportedNamedGroups()) {
-                if (group.isCurve() && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
+                if (group != NamedGroup.ECDH_X25519 && group != NamedGroup.ECDH_X448
+                        && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
                     groups.add(group);
                 }
             }
