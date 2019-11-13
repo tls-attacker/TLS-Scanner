@@ -32,6 +32,9 @@ public class ShakyEvaluationReport {
                     break;
                 }
             }
+            if (consideredVulnerable == null) {
+                consideredVulnerable = false;
+            }
         }
     }
 

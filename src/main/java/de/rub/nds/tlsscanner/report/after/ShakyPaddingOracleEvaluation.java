@@ -33,23 +33,25 @@ public class ShakyPaddingOracleEvaluation extends AfterProbe {
     public void analyze(SiteReport report) {
         List<ShakyVectorHolder> vectorHolderList = new LinkedList<>();
         Boolean truePositive = null;
-        for (PaddingOracleCipherSuiteFingerprint fingerprint : report.getPaddingOracleShakyEvalResultList()) {
-            if (!fingerprint.isShakyScans() && fingerprint.getEqualityError() != EqualityError.NONE) {
-                LOGGER.info("Shaky Scan evaluation found a true positive padding oracle");
-                truePositive = true;
-            } else {
-                ShakyVectorHolder vectorHolder = new ShakyVectorHolder(fingerprint);
-                vectorHolderList.add(vectorHolder);
+        if (report.getPaddingOracleShakyEvalResultList() != null) {
+            for (PaddingOracleCipherSuiteFingerprint fingerprint : report.getPaddingOracleShakyEvalResultList()) {
+                if (!fingerprint.isShakyScans() && fingerprint.getEqualityError() != EqualityError.NONE) {
+                    LOGGER.info("Shaky Scan evaluation found a true positive padding oracle");
+                    truePositive = true;
+                } else {
+                    ShakyVectorHolder vectorHolder = new ShakyVectorHolder(fingerprint);
+                    vectorHolderList.add(vectorHolder);
+                }
             }
-        }
-        Boolean isConsistentAccrossCvPairs = isConsistent(vectorHolderList);
-        ShakyType shakyType = extractShakyType(vectorHolderList);
-        ShakyEvaluationReport shakyReport = new ShakyEvaluationReport(truePositive, shakyType, isConsistentAccrossCvPairs, vectorHolderList);
-        if (vectorHolderList.size() > 0) {
-            report.setPaddingOracleShakyReport(shakyReport);
-            if (Objects.equals(shakyReport.getConsideredVulnerable(), Boolean.TRUE)) {
-                report.removeResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE);
-                report.putResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, TestResult.TRUE);
+            Boolean isConsistentAccrossCvPairs = isConsistent(vectorHolderList);
+            ShakyType shakyType = extractShakyType(vectorHolderList);
+            ShakyEvaluationReport shakyReport = new ShakyEvaluationReport(truePositive, shakyType, isConsistentAccrossCvPairs, vectorHolderList);
+            if (vectorHolderList.size() > 0) {
+                report.setPaddingOracleShakyReport(shakyReport);
+                if (Objects.equals(shakyReport.getConsideredVulnerable(), Boolean.TRUE)) {
+                    report.removeResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE);
+                    report.putResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, TestResult.TRUE);
+                }
             }
         }
     }
@@ -84,7 +86,7 @@ public class ShakyPaddingOracleEvaluation extends AfterProbe {
             }
             return allEqual;
         } else {
-            return null;
+            return true;
         }
     }
 
