@@ -32,6 +32,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -123,7 +124,10 @@ public class MacProbe extends TlsProbe {
 
         ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
         try {
-            state.getTlsContext().getTransportHandler().closeConnection();
+            TlsContext tlsContext = state.getTlsContext();
+                if (tlsContext.getTransportHandler() != null) {
+                    tlsContext.getTransportHandler().closeConnection();
+                }
         } catch (IOException ex) {
             LOGGER.warn("Could not close TransportHandler correctly", ex);
         }
@@ -249,7 +253,10 @@ public class MacProbe extends TlsProbe {
                 byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
             }
             try {
-                stateIndexPair.getState().getTlsContext().getTransportHandler().closeConnection();
+                TlsContext tlsContext = stateIndexPair.getState().getTlsContext();
+                if (tlsContext.getTransportHandler() != null) {
+                    tlsContext.getTransportHandler().closeConnection();
+                }
             } catch (IOException ex) {
                 LOGGER.warn("Could not close TransportHandler", ex);
             }
@@ -306,7 +313,10 @@ public class MacProbe extends TlsProbe {
                 }
             }
             try {
-                stateIndexPair.getState().getTlsContext().getTransportHandler().closeConnection();
+                TlsContext tlsContext = stateIndexPair.getState().getTlsContext();
+                if (tlsContext.getTransportHandler() != null) {
+                    tlsContext.getTransportHandler().closeConnection();
+                }
             } catch (IOException ex) {
                 LOGGER.warn("Could not close TransportHandler", ex);
             }
