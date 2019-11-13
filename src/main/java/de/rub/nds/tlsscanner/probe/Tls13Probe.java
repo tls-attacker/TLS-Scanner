@@ -55,7 +55,7 @@ public class Tls13Probe extends TlsProbe {
             if (selectedSuite != null) {
                 if (!toTestList.contains(selectedSuite)) {
                     LOGGER.warn("Server chose a CipherSuite we did not propose!");
-                    //TODO write to sitereport
+                    // TODO write to sitereport
                     break;
                 }
                 supportedSuits.add(selectedSuite);
@@ -99,7 +99,8 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         WorkflowTrace workflowTrace = state.getWorkflowTrace();
-        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE, workflowTrace);
+        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
+                workflowTrace);
         if (keyShareExtension == null) {
             keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
         }
@@ -108,9 +109,12 @@ public class Tls13Probe extends TlsProbe {
         }
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            //ServerHelloMessage message = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
+            // ServerHelloMessage message = (ServerHelloMessage)
+            // WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
+            // state.getWorkflowTrace());
             return state.getTlsContext().getSelectedCipherSuite();
-        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST, state.getWorkflowTrace())) {
+        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST,
+                state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCipherSuite();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -134,7 +138,7 @@ public class Tls13Probe extends TlsProbe {
                 for (NamedGroup group : tempSupportedGroups) {
                     if (!toTestList.contains(group)) {
                         LOGGER.warn("Server chose a group we did not offer");
-                        //TODO add to site report
+                        // TODO add to site report
                         return supportedGroups;
                     }
                 }
@@ -175,7 +179,8 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         WorkflowTrace workflowTrace = state.getWorkflowTrace();
-        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE, workflowTrace);
+        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
+                workflowTrace);
         if (keyShareExtension == null) {
             keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
         }
@@ -186,9 +191,12 @@ public class Tls13Probe extends TlsProbe {
         if (state.getTlsContext().isExtensionNegotiated(ExtensionType.ELLIPTIC_CURVES)) {
             return state.getTlsContext().getServerNamedGroupsList();
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            //ServerHelloMessage message = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
+            // ServerHelloMessage message = (ServerHelloMessage)
+            // WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
+            // state.getWorkflowTrace());
             return new ArrayList(Arrays.asList(state.getTlsContext().getSelectedGroup()));
-        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST, state.getWorkflowTrace())) {
+        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST,
+                state.getWorkflowTrace())) {
             return new ArrayList(Arrays.asList(state.getTlsContext().getSelectedGroup()));
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -208,7 +216,8 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1, NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1,
+                NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
@@ -219,7 +228,8 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         WorkflowTrace workflowTrace = state.getWorkflowTrace();
-        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE, workflowTrace);
+        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
+                workflowTrace);
         if (keyShareExtension == null) {
             keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
         }
@@ -255,9 +265,8 @@ public class Tls13Probe extends TlsProbe {
         algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512);
         return algos;
     }
-    
-    private List<ECPointFormat> getSupportedPointFormats(List<ProtocolVersion> supportedProtocolVersions)
-    {
+
+    private List<ECPointFormat> getSupportedPointFormats(List<ProtocolVersion> supportedProtocolVersions) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(getTls13Suite());
@@ -268,7 +277,8 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1, NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1,
+                NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
@@ -279,7 +289,8 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         WorkflowTrace workflowTrace = state.getWorkflowTrace();
-        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE, workflowTrace);
+        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
+                workflowTrace);
         if (keyShareExtension == null) {
             keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
         }
@@ -290,16 +301,13 @@ public class Tls13Probe extends TlsProbe {
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             if (state.getTlsContext().getServerPointFormatsList() != null) {
                 return state.getTlsContext().getServerPointFormatsList();
-            }
-            else
-            {
-                //no extension means only uncompressed
+            } else {
+                // no extension means only uncompressed
                 List<ECPointFormat> format = new LinkedList<>();
                 format.add(ECPointFormat.UNCOMPRESSED);
                 return format;
             }
-        } 
-        else {
+        } else {
             return null;
         }
     }
@@ -334,7 +342,8 @@ public class Tls13Probe extends TlsProbe {
         List<NamedGroup> supportedNamedGroups = getSupportedGroups();
         List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
         List<ECPointFormat> supportedTls13PointFormats = getSupportedPointFormats(supportedProtocolVersions);
-        return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups, supportedTls13Suites, supportedTls13PointFormats);
+        return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups,
+                supportedTls13Suites, supportedTls13PointFormats);
     }
 
     @Override

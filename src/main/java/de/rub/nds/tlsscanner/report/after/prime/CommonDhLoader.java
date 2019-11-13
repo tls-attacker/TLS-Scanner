@@ -29,7 +29,8 @@ public class CommonDhLoader {
         try {
             List<CommonDhValues> commonValuesList = new LinkedList<>();
             JSONParser parser = new JSONParser();
-            InputStream resourceAsStream = CommonDhLoader.class.getClassLoader().getResourceAsStream("common/common.json");
+            InputStream resourceAsStream = CommonDhLoader.class.getClassLoader().getResourceAsStream(
+                    "common/common.json");
             Object obj = parser.parse(new InputStreamReader(resourceAsStream));
 
             JSONObject jsonObject = (JSONObject) obj;

@@ -13,7 +13,10 @@ package de.rub.nds.tlsscanner.constants;
  * @author robert
  */
 public enum ScannerDetail implements Comparable<ScannerDetail> {
-    ALL(100), DETAILED(75), NORMAL(50), QUICK(25);
+    ALL(100),
+    DETAILED(75),
+    NORMAL(50),
+    QUICK(25);
 
     private int levelValue;
 

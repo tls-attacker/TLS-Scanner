@@ -45,7 +45,8 @@ public class RecommendationsSerializationTest {
         List<Recommendation> propertyRecommendations = new LinkedList<>();
         original = new Recommendations(propertyRecommendations);
         List<PropertyResultRecommendation> recommendations = new LinkedList<>();
-        PropertyResultRecommendation r = new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
+        PropertyResultRecommendation r = new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled",
+                "Disable SSLv2");
         recommendations.add(r);
 
         propertyRecommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_2, recommendations));
@@ -68,7 +69,8 @@ public class RecommendationsSerializationTest {
         um = context.createUnmarshaller();
         result = (Recommendations) um.unmarshal(new StringReader(xmlString));
 
-        assertEquals("Recommendation length check.", original.getRecommendations().size(), result.getRecommendations().size());
+        assertEquals("Recommendation length check.", original.getRecommendations().size(), result.getRecommendations()
+                .size());
 
         Recommendation oRecommendation = original.getRecommendations().get(0);
         Recommendation rRecommendation = result.getRecommendations().get(0);

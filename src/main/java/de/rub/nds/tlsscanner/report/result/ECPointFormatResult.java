@@ -20,22 +20,19 @@ public class ECPointFormatResult extends ProbeResult {
     private TestResult supportsUncompressedPoint = TestResult.FALSE;
     private TestResult supportsANSIX962CompressedPrime = TestResult.FALSE;
     private TestResult supportsANSIX962CompressedChar2 = TestResult.FALSE;
-    
+
     private final List<ECPointFormat> supportedFormats;
-    
+
     public ECPointFormatResult(List<ECPointFormat> formats) {
         super(ProbeType.EC_POINT_FORMAT);
         this.supportedFormats = formats;
     }
-    
+
     @Override
     protected void mergeData(SiteReport report) {
-        if(supportedFormats != null)
-        {
-            for(ECPointFormat format: supportedFormats)
-            {
-                switch(format)
-                {
+        if (supportedFormats != null) {
+            for (ECPointFormat format : supportedFormats) {
+                switch (format) {
                     case UNCOMPRESSED:
                         supportsUncompressedPoint = TestResult.TRUE;
                         break;
@@ -44,11 +41,9 @@ public class ECPointFormatResult extends ProbeResult {
                         break;
                     case ANSIX962_COMPRESSED_CHAR2:
                         supportsANSIX962CompressedChar2 = TestResult.TRUE;
-                }   
+                }
             }
-        }
-        else
-        {
+        } else {
             supportsUncompressedPoint = TestResult.COULD_NOT_TEST;
             supportsANSIX962CompressedPrime = TestResult.COULD_NOT_TEST;
             supportsANSIX962CompressedChar2 = TestResult.COULD_NOT_TEST;
@@ -56,7 +51,7 @@ public class ECPointFormatResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
         report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
         report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, supportsANSIX962CompressedChar2);
-        
+
     }
-    
+
 }

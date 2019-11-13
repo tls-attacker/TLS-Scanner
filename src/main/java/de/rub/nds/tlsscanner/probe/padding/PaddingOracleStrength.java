@@ -13,5 +13,7 @@ package de.rub.nds.tlsscanner.probe.padding;
  * @author ic0ns
  */
 public enum PaddingOracleStrength {
-    WEAK, STRONG, POODLE
+    WEAK,
+    STRONG,
+    POODLE
 }

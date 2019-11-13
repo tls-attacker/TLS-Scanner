@@ -24,12 +24,14 @@ public class RatingInfluencer {
         this.propertyRatingInfluencers = new LinkedList<>();
     }
 
-    public RatingInfluencer(AnalyzedProperty influencerConstant, List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
+    public RatingInfluencer(AnalyzedProperty influencerConstant,
+            List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
 
-    public RatingInfluencer(AnalyzedProperty influencerConstant, PropertyResultRatingInfluencer... propertyRatingInfluencers) {
+    public RatingInfluencer(AnalyzedProperty influencerConstant,
+            PropertyResultRatingInfluencer... propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = Arrays.asList(propertyRatingInfluencers);
     }

@@ -46,7 +46,8 @@ public class CiphersuiteOrderProbe extends TlsProbe {
             CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
             Collections.reverse(toTestList);
             CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-            return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
+            return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE
+                    : TestResult.FALSE);
         } catch (Exception e) {
             return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);
         }

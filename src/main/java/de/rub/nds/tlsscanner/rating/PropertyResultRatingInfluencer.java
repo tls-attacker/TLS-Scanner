@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder = {"result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult"})
+@XmlType(propOrder = { "result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult" })
 public class PropertyResultRatingInfluencer implements Comparable<PropertyResultRatingInfluencer> {
 
     private TestResult result;
@@ -34,7 +34,8 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         this.influence = influence;
     }
 
-    public PropertyResultRatingInfluencer(TestResult result, AnalyzedProperty referencedProperty, TestResult referencedPropertyResult) {
+    public PropertyResultRatingInfluencer(TestResult result, AnalyzedProperty referencedProperty,
+            TestResult referencedPropertyResult) {
         this.result = result;
         this.referencedProperty = referencedProperty;
         this.referencedPropertyResult = referencedPropertyResult;

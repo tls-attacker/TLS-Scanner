@@ -20,14 +20,14 @@ import java.util.List;
  * @author Robert Merget <robert.merget@rub.de>
  */
 public class CompressionsResult extends ProbeResult {
-    
+
     private List<CompressionMethod> compressions;
-    
+
     public CompressionsResult(List<CompressionMethod> compressions) {
         super(ProbeType.COMPRESSIONS);
         this.compressions = compressions;
     }
-    
+
     @Override
     public void mergeData(SiteReport report) {
         if (compressions != null) {
@@ -41,5 +41,5 @@ public class CompressionsResult extends ProbeResult {
             report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.COULD_NOT_TEST);
         }
     }
-    
+
 }

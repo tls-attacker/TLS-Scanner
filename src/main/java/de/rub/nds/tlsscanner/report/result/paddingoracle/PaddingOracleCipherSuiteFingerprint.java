@@ -29,7 +29,10 @@ public class PaddingOracleCipherSuiteFingerprint {
     private final boolean shakyScans;
     private final boolean hasScanningError;
 
-    public PaddingOracleCipherSuiteFingerprint(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType, List<List<VectorResponse>> responseMapList, EqualityError equalityError, boolean shakyScans, boolean hasScanningError) {
+    public PaddingOracleCipherSuiteFingerprint(Boolean vulnerable, ProtocolVersion version, CipherSuite suite,
+            PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType,
+            List<List<VectorResponse>> responseMapList, EqualityError equalityError, boolean shakyScans,
+            boolean hasScanningError) {
         this.vulnerable = vulnerable;
         this.version = version;
         this.suite = suite;

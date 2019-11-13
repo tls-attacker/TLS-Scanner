@@ -27,10 +27,12 @@ public class Tls13Result extends ProbeResult {
     private final List<NamedGroup> supportedNamedGroups;
 
     private final List<CipherSuite> supportedCipherSuites;
-    
+
     private final List<ECPointFormat> supportedPointFormats;
 
-    public Tls13Result(List<ProtocolVersion> supportedProtocolVersion, List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups, List<CipherSuite> supportedCipherSuites, List<ECPointFormat> supportedPointFormats) {
+    public Tls13Result(List<ProtocolVersion> supportedProtocolVersion,
+            List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups,
+            List<CipherSuite> supportedCipherSuites, List<ECPointFormat> supportedPointFormats) {
         super(ProbeType.TLS13);
         this.supportedProtocolVersion = supportedProtocolVersion;
         this.unsupportedProtocolVersion = unsupportedProtocolVersion;
@@ -161,49 +163,44 @@ public class Tls13Result extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28, TestResult.COULD_NOT_TEST);
         }
-        if (supportedNamedGroups
-                != null) {
+        if (supportedNamedGroups != null) {
             report.setSupportedTls13Groups(supportedNamedGroups);
         }
-        if (supportedCipherSuites
-                != null) {
+        if (supportedCipherSuites != null) {
             report.setSupportedTls13CipherSuites(supportedCipherSuites);
         }
 
-        if (report.getVersions()
-                != null) {
+        if (report.getVersions() != null) {
             report.getVersions().addAll(supportedProtocolVersion);
         } else {
             report.setVersions(supportedProtocolVersion);
         }
-        
-        if(supportedPointFormats != null) {
+
+        if (supportedPointFormats != null) {
             TestResult supportsUncompressed = TestResult.FALSE;
             TestResult supportsANSIPrime = TestResult.FALSE;
             TestResult supportsANSIChar2 = TestResult.FALSE;
-            
-            for(ECPointFormat format : supportedPointFormats)
-            {
-                switch(format){
-                        case UNCOMPRESSED:
-                            supportsUncompressed = TestResult.TRUE;
-                            break;
-                        case ANSIX962_COMPRESSED_PRIME:
-                            supportsANSIPrime = TestResult.TRUE;
-                            break;
-                        case ANSIX962_COMPRESSED_CHAR2:
-                            supportsANSIChar2 = TestResult.TRUE;
+
+            for (ECPointFormat format : supportedPointFormats) {
+                switch (format) {
+                    case UNCOMPRESSED:
+                        supportsUncompressed = TestResult.TRUE;
+                        break;
+                    case ANSIX962_COMPRESSED_PRIME:
+                        supportsANSIPrime = TestResult.TRUE;
+                        break;
+                    case ANSIX962_COMPRESSED_CHAR2:
+                        supportsANSIChar2 = TestResult.TRUE;
                 }
             }
             report.putResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT_TLS13, supportsUncompressed);
             report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME_TLS13, supportsANSIPrime);
             report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2_TLS13, supportsANSIChar2);
-        }
-        else {
+        } else {
             report.putResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT_TLS13, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME_TLS13, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2_TLS13, TestResult.COULD_NOT_TEST);
         }
-           
+
     }
 }

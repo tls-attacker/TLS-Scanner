@@ -120,20 +120,23 @@ public class TrustAnchorManager {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
             for (CertificateEntry entry : trustAnchors.values()) {
-                InputStream resourceAsStream = TrustAnchorManager.class.getClassLoader().getResourceAsStream("trust/" + entry.getFingerprint() + ".pem");
+                InputStream resourceAsStream = TrustAnchorManager.class.getClassLoader().getResourceAsStream(
+                        "trust/" + entry.getFingerprint() + ".pem");
                 try {
-                    X509Certificate ca = (X509Certificate) CertificateFactory.getInstance(
-                            "X.509").generateCertificate(new BufferedInputStream(resourceAsStream));
+                    X509Certificate ca = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(
+                            new BufferedInputStream(resourceAsStream));
                     keyStore.setCertificateEntry("" + i, ca);
                 } catch (CertificateException ex) {
-                    LOGGER.error("Could not load Certificate:" + entry.getSubjectName() + "/" + entry.getFingerprint(), ex);
+                    LOGGER.error("Could not load Certificate:" + entry.getSubjectName() + "/" + entry.getFingerprint(),
+                            ex);
                 }
                 i++;
             }
             PKIXParameters params = new PKIXParameters(keyStore);
             return params.getTrustAnchors();
 
-        } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException | InvalidAlgorithmParameterException ex) {
+        } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException
+                | InvalidAlgorithmParameterException ex) {
             LOGGER.error("Could not build TrustAnchorSet", ex);
         }
         return new HashSet<>();
@@ -178,7 +181,8 @@ public class TrustAnchorManager {
     private Set<Certificate> getFullCaCertificateSet() {
         Set<Certificate> certificateSet = new HashSet<>();
         for (CertificateEntry entry : trustAnchors.values()) {
-            InputStream resourceAsStream = TrustAnchorManager.class.getClassLoader().getResourceAsStream("trust/" + entry.getFingerprint() + ".pem");
+            InputStream resourceAsStream = TrustAnchorManager.class.getClassLoader().getResourceAsStream(
+                    "trust/" + entry.getFingerprint() + ".pem");
             try {
                 org.bouncycastle.crypto.tls.Certificate cert = PemUtil.readCertificate(resourceAsStream);
                 certificateSet.add(cert.getCertificateAt(0));

@@ -25,17 +25,16 @@ public class InvalidCurveResponse {
     private TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
     private TestResult showsVulnerability = TestResult.NOT_TESTED_YET;
     private TestResult chosenGroupReusesKey = TestResult.NOT_TESTED_YET;
-    
-    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, List<ResponseFingerprint> responseFingerprints, TestResult showsPointsAreNotValidated, List<Point> receivedEcPublicKeys)
-    {
+
+    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, List<ResponseFingerprint> responseFingerprints,
+            TestResult showsPointsAreNotValidated, List<Point> receivedEcPublicKeys) {
         this.parameterSet = parameterSet;
         this.responseFingerprints = responseFingerprints;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
         this.receivedEcPublicKeys = receivedEcPublicKeys;
     }
-    
-    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, TestResult showsPointsAreNotValidated)
-    {
+
+    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, TestResult showsPointsAreNotValidated) {
         this.parameterSet = parameterSet;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
         this.responseFingerprints = new LinkedList<>();
@@ -64,7 +63,8 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param showsPointsAreNotValidated the showsPointsAreNotValidated to set
+     * @param showsPointsAreNotValidated
+     *            the showsPointsAreNotValidated to set
      */
     public void setShowsPointsAreNotValuated(TestResult showsPointsAreNotValidated) {
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
@@ -78,7 +78,8 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param showsVulnerability the showsVulnerability to set
+     * @param showsVulnerability
+     *            the showsVulnerability to set
      */
     public void setShowsVulnerability(TestResult showsVulnerability) {
         this.showsVulnerability = showsVulnerability;
@@ -92,7 +93,8 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param chosenGroupReusesKey the chosenGroupReusesKey to set
+     * @param chosenGroupReusesKey
+     *            the chosenGroupReusesKey to set
      */
     public void setChosenGroupReusesKey(TestResult chosenGroupReusesKey) {
         this.chosenGroupReusesKey = chosenGroupReusesKey;
@@ -106,11 +108,11 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param receivedEcPublicKeys the receivedEcPublicKeys to set
+     * @param receivedEcPublicKeys
+     *            the receivedEcPublicKeys to set
      */
     public void setReceivedEcPublicKeys(List<Point> receivedEcPublicKeys) {
         this.receivedEcPublicKeys = receivedEcPublicKeys;
     }
-    
-    
+
 }

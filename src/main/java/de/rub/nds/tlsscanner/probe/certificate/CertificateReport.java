@@ -250,7 +250,8 @@ public class CertificateReport {
                     .append("\n");
         }
         if (signatureAndHashAlgorithm != null) {
-            builder.append("Hash Algorithm     : ").append(signatureAndHashAlgorithm.getHashAlgorithm().name()).append("\n");
+            builder.append("Hash Algorithm     : ").append(signatureAndHashAlgorithm.getHashAlgorithm().name())
+                    .append("\n");
         }
         if (extendedValidation != null) {
             builder.append("Extended Validation: ").append(extendedValidation).append("\n");

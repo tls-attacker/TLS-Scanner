@@ -36,11 +36,12 @@ public class ConfigSelector {
         List<SignatureAndHashAlgorithm> sigHashList = new LinkedList<>();
         sigHashList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashList);
-        config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL, CompressionMethod.LZS, CompressionMethod.DEFLATE);
+        config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL, CompressionMethod.LZS,
+                CompressionMethod.DEFLATE);
         config.setQuickReceive(true);
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);
-        //cleanupConfig(config);
+        // cleanupConfig(config);
         return config;
     }
 

@@ -24,8 +24,10 @@ public class DhValueAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        ExtractedValueContainer publicKeyContainer = report.getExtractedValueContainerMap().get(TrackableValueType.DH_PUBKEY);
-        ExtractedValueContainer modulusContainer = report.getExtractedValueContainerMap().get(TrackableValueType.DH_MODULUS);
+        ExtractedValueContainer publicKeyContainer = report.getExtractedValueContainerMap().get(
+                TrackableValueType.DH_PUBKEY);
+        ExtractedValueContainer modulusContainer = report.getExtractedValueContainerMap().get(
+                TrackableValueType.DH_MODULUS);
         List<CommonDhValues> loadedCommonDhValues = CommonDhLoader.loadCommonDhValues();
         Set<CommonDhValues> usedCommonValues = new HashSet<>();
         TestResult onlyPrime = TestResult.TRUE;

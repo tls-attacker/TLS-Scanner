@@ -13,5 +13,8 @@ package de.rub.nds.tlsscanner.constants;
  * @author Robert Merget <robert.merget@rub.de>
  */
 public enum CipherSuiteGrade {
-    GOOD, LOW, MEDIUM, NONE
+    GOOD,
+    LOW,
+    MEDIUM,
+    NONE
 }

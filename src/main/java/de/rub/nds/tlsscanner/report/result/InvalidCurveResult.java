@@ -26,7 +26,8 @@ public class InvalidCurveResult extends ProbeResult {
     private final TestResult vulnerableTwist;
     private final List<InvalidCurveResponse> responses;
 
-    public InvalidCurveResult(TestResult vulnerableClassic, TestResult vulnerableEphemeral, TestResult vulnerableTwist, List<InvalidCurveResponse> responses) {
+    public InvalidCurveResult(TestResult vulnerableClassic, TestResult vulnerableEphemeral, TestResult vulnerableTwist,
+            List<InvalidCurveResponse> responses) {
         super(ProbeType.INVALID_CURVE);
         this.vulnerableClassic = vulnerableClassic;
         this.vulnerableEphemeral = vulnerableEphemeral;

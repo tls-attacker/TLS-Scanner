@@ -13,5 +13,8 @@ package de.rub.nds.tlsscanner.constants;
  * @author Robert Merget <robert.merget@rub.de>
  */
 public enum GcmPattern {
-    INCREMENTING, RANDOM, REPEATING, AKWARD
+    INCREMENTING,
+    RANDOM,
+    REPEATING,
+    AKWARD
 }
