@@ -30,22 +30,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ECPointFormatProbe extends TlsProbe {
-    
+
     public ECPointFormatProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.EC_POINT_FORMAT, scannerConfig, 0);
     }
-    
+
     @Override
     public ProbeResult executeTest() {
-        List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();;
-        for(CipherSuite cipherSuite: CipherSuite.values())
-        {
-           if(cipherSuite.name().contains("TLS_ECDH")) 
-           {
-               ourECDHCipherSuites.add(cipherSuite);
-           }
+        List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
+        ;
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
+            if (cipherSuite.name().contains("TLS_ECDH")) {
+                ourECDHCipherSuites.add(cipherSuite);
+            }
         }
-        
+
         List<NamedGroup> groups = new LinkedList<>();
         groups.addAll(Arrays.asList(NamedGroup.values()));
         Config config = getScannerConfig().createConfig();
@@ -66,18 +65,16 @@ public class ECPointFormatProbe extends TlsProbe {
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             if (state.getTlsContext().getServerPointFormatsList() != null) {
-                return(new ECPointFormatResult(state.getTlsContext().getServerPointFormatsList()));
-            }
-            else
-            {
-                //no extension means only uncompressed
+                return (new ECPointFormatResult(state.getTlsContext().getServerPointFormatsList()));
+            } else {
+                // no extension means only uncompressed
                 List<ECPointFormat> format = new LinkedList<>();
                 format.add(ECPointFormat.UNCOMPRESSED);
-                return(new ECPointFormatResult(format));
+                return (new ECPointFormatResult(format));
             }
         }
         LOGGER.debug("Unable to determine supported point formats");
-        return(new ECPointFormatResult(null));
+        return (new ECPointFormatResult(null));
     }
 
     @Override
@@ -93,5 +90,5 @@ public class ECPointFormatProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
     }
-    
+
 }
