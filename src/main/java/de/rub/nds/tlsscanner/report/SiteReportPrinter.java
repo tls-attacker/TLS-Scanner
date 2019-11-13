@@ -1082,9 +1082,9 @@ public class SiteReportPrinter {
                     }
                 }
             });
-        } catch (JAXBException ex) {
-            prettyAppend(builder, "Could not append recommendations", AnsiColor.RED);
-            prettyAppend(builder, ex.getLocalizedMessage(), AnsiColor.RED);
+        } catch (Exception ex) {
+            prettyAppend(builder, "Could not append recommendations - unreleated error", AnsiColor.RED);
+            LOGGER.error("Could not append recommendations", ex);
         }
     }
 
