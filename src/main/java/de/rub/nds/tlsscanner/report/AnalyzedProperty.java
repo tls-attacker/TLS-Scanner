@@ -185,7 +185,14 @@ public enum AnalyzedProperty {
     REUSES_EC_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_DH_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_GCM_NONCES(AnalyzedPropertyCategory.FRESHNESS),
-    REQUIRES_SNI(AnalyzedPropertyCategory.SNI);
+    REQUIRES_SNI(AnalyzedPropertyCategory.SNI),
+
+    /**
+     * CCA Properties
+     */
+    SUPPORTS_CCA(AnalyzedPropertyCategory.CERTIFICATE),
+    VULNERABLE_TO_CCA_BYPASS(AnalyzedPropertyCategory.ATTACKS);
+
 
     private AnalyzedPropertyCategory category;
 

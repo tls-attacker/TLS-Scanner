@@ -32,6 +32,7 @@ import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
+import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
@@ -118,6 +119,10 @@ public class SiteReport extends Observable {
     private Integer connectionRfc7918SecureCounter = null;
     private Integer connectionInsecureCounter = null;
     private List<SimulatedClientResult> simulatedClientList = null;
+
+    // CCA
+    private Boolean ccaSupported = null;
+    private List<CcaTestResult> ccaTestResultList;
 
     private List<ProbeType> probeTypeList;
 
@@ -527,5 +532,17 @@ public class SiteReport extends Observable {
 
     public synchronized void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
+    }
+
+    public synchronized Boolean getCcaSupported() { return ccaSupported; }
+
+    public synchronized void setCcaSupported(Boolean ccaSupported) {
+        this.ccaSupported = ccaSupported;
+    }
+
+    public synchronized List<CcaTestResult> getCcaTestResultList() {return ccaTestResultList;}
+
+    public synchronized void setCcaTestResultList(List<CcaTestResult> ccaTestResultList) {
+        this.ccaTestResultList = ccaTestResultList;
     }
 }

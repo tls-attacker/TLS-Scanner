@@ -15,31 +15,8 @@ import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.probe.BleichenbacherProbe;
-import de.rub.nds.tlsscanner.probe.CertificateProbe;
-import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
-import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
-import de.rub.nds.tlsscanner.probe.CommonBugProbe;
-import de.rub.nds.tlsscanner.probe.CompressionsProbe;
-import de.rub.nds.tlsscanner.probe.DrownProbe;
-import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
-import de.rub.nds.tlsscanner.probe.ExtensionProbe;
-import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
-import de.rub.nds.tlsscanner.probe.HttpHeaderProbe;
-import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
-import de.rub.nds.tlsscanner.probe.MacProbe;
-import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
-import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
-import de.rub.nds.tlsscanner.probe.PoodleProbe;
+import de.rub.nds.tlsscanner.probe.*;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
-import de.rub.nds.tlsscanner.probe.ResumptionProbe;
-import de.rub.nds.tlsscanner.probe.SniProbe;
-import de.rub.nds.tlsscanner.probe.Tls13Probe;
-import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
-import de.rub.nds.tlsscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.report.after.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.report.after.EcPublicKeyAfterProbe;
@@ -133,6 +110,8 @@ public class TlsScanner {
         probeList.add(new DrownProbe(config, parallelExecutor));
         probeList.add(new EarlyCcsProbe(config, parallelExecutor));
         probeList.add(new MacProbe(config, parallelExecutor));
+        probeList.add(new CcaSupportProbe(config, parallelExecutor));
+        probeList.add(new CcaProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterprobe());
@@ -140,6 +119,7 @@ public class TlsScanner {
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
+
     }
 
     public SiteReport scan() {

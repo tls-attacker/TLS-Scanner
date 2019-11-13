@@ -10,9 +10,6 @@ package de.rub.nds.tlsscanner.report;
 
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
-import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
-import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
-import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
@@ -42,7 +39,6 @@ import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
-import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
@@ -51,6 +47,7 @@ import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
+import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
@@ -126,6 +123,7 @@ public class SiteReportPrinter {
         appendHttps(builder);
         appendRandom(builder);
         appendPublicKeyIssues(builder);
+        appendClientAuthentication(builder);
         appendScoringResults(builder);
         appendRecommendations(builder);
         appendPerformanceData(builder);
@@ -1413,6 +1411,20 @@ public class SiteReportPrinter {
             }
         } else {
             LOGGER.debug("Not printing performance data.");
+        }
+    }
+
+    private void appendClientAuthentication(StringBuilder builder) {
+        prettyAppendHeading(builder, "Client authentication");
+        prettyAppend(builder, "Supported", report.getCcaSupported());
+        if (report.getCcaTestResultList() != null) {
+            for (CcaTestResult ccaTestResult : report.getCcaTestResultList()) {
+                prettyAppend(builder, ccaTestResult.getWorkflowType().name().concat(".")
+                                .concat(ccaTestResult.getCertificateType().name()).concat(".")
+                                .concat(ccaTestResult.getProtocolVersion().name()).concat(".")
+                                .concat(ccaTestResult.getCipherSuite().name()), ccaTestResult.getBypassable(),
+                        ccaTestResult.getBypassable() ? AnsiColor.RED : AnsiColor.GREEN);
+            }
         }
     }
 }
