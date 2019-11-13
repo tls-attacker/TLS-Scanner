@@ -130,13 +130,15 @@ public class CcaProbe extends TlsProbe {
                             LOGGER.error("Error while testing for client authentication bypasses.");
                         }
                         // TODO: implement check for reponse of unkown cipher suite. It's just confusing in the results.
+                        // I'm unsure how to exactly do that since I doubt all implementations will just tell me they
+                        // don't know the ciphersuite. Maybe I can find a way around that. 
                         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
                             bypassable = true;
                             resultList.add(new CcaTestResult(true, ccaWorkflowType, ccaCertificateType,
                                     protocolVersion, cipherSuite));
                         } else {
                             resultList.add(new CcaTestResult(false, ccaWorkflowType, ccaCertificateType,
-                                    protocolVersion, cipherSuite));
+                                protocolVersion, cipherSuite));
                         }
                     }
                 }
