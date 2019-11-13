@@ -1354,7 +1354,7 @@
             <resultingRecommendation>
                 <result>TRUE</result>
                 <shortDescription>The TLS server is vulnerable to BREACH</shortDescription>
-                <handlingRecommendation>Disable TLS compression</handlingRecommendation>
+                <handlingRecommendation>Disable HTTP compression</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>

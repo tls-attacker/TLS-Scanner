@@ -430,7 +430,7 @@ public class DefaultRecommendationsTest {
                 "https://www.ekoparty.org/archive/2012/CRIME_ekoparty2012.pdf", "https://www.iacr.org/cryptodb/data/paper.php?pubkey=3091"));
         recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_BREACH, "Vulnerable to BREACH",
                 "Evaluates whether the TLS server is vulnerable to BREACH",
-                new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to BREACH", "Disable TLS compression"),
+                new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to BREACH", "Disable HTTP compression"),
                 "http://breachattack.com"));
         recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_LOGJAM, "Vulnerable to Logjam",
                 "Evaluates whether the TLS server is vulnerable to Logjam",
