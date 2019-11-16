@@ -368,7 +368,7 @@ public class InvalidCurveProbe extends TlsProbe {
             } else {
                 showsPointsAreNotValidated = TestResult.FALSE;
             }
-            return new InvalidCurveResponse(parameterSet, attacker.getResponseFingerprints(),
+            return new InvalidCurveResponse(parameterSet, attacker.getResponsePairs(),
                     showsPointsAreNotValidated, attacker.getReceivedEcPublicKeys());
         } catch (Exception ex) {
             LOGGER.warn("Was unable to get results for " + parameterSet.toString() + " Message: " + ex.getMessage());

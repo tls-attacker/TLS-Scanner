@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.probe.invalidCurve;
 
+import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsscanner.rating.TestResult;
@@ -20,16 +21,18 @@ import java.util.List;
  */
 public class InvalidCurveResponse {
     private InvalidCurveParameterSet parameterSet;
-    private List<ResponseFingerprint> responseFingerprints;
+    private List<FingerprintSecretPair> fingerprintSecretPairs;
     private List<Point> receivedEcPublicKeys;
     private TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
     private TestResult showsVulnerability = TestResult.NOT_TESTED_YET;
     private TestResult chosenGroupReusesKey = TestResult.NOT_TESTED_YET;
+    
+    private TestResult finishedHandshakeHadReusedKey = TestResult.FALSE;
 
-    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, List<ResponseFingerprint> responseFingerprints,
+    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, List<FingerprintSecretPair> fingerprintSecretPairs,
             TestResult showsPointsAreNotValidated, List<Point> receivedEcPublicKeys) {
         this.parameterSet = parameterSet;
-        this.responseFingerprints = responseFingerprints;
+        this.fingerprintSecretPairs = fingerprintSecretPairs;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
         this.receivedEcPublicKeys = receivedEcPublicKeys;
     }
@@ -37,7 +40,7 @@ public class InvalidCurveResponse {
     public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, TestResult showsPointsAreNotValidated) {
         this.parameterSet = parameterSet;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
-        this.responseFingerprints = new LinkedList<>();
+        this.fingerprintSecretPairs = new LinkedList<>();
         this.receivedEcPublicKeys = new LinkedList<>();
     }
 
@@ -47,14 +50,7 @@ public class InvalidCurveResponse {
     public InvalidCurveParameterSet getParameterSet() {
         return parameterSet;
     }
-
-    /**
-     * @return the responseFingerprints
-     */
-    public List<ResponseFingerprint> getResponseFingerprints() {
-        return responseFingerprints;
-    }
-
+    
     /**
      * @return the showsPointsAreNotValidated
      */
@@ -113,6 +109,20 @@ public class InvalidCurveResponse {
      */
     public void setReceivedEcPublicKeys(List<Point> receivedEcPublicKeys) {
         this.receivedEcPublicKeys = receivedEcPublicKeys;
+    }
+
+    /**
+     * @return the fingerprintSecretPairs
+     */
+    public List<FingerprintSecretPair> getFingerprintSecretPairs() {
+        return fingerprintSecretPairs;
+    }
+
+    /**
+     * @param fingerprintSecretPairs the fingerprintSecretPairs to set
+     */
+    public void setFingerprintSecretPairs(List<FingerprintSecretPair> fingerprintSecretPairs) {
+        this.fingerprintSecretPairs = fingerprintSecretPairs;
     }
 
 }
