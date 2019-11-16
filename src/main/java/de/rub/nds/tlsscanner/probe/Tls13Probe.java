@@ -66,47 +66,9 @@ public class Tls13Probe extends TlsProbe {
     }
 
     private CipherSuite getSelectedCiphersuite(List<CipherSuite> toTestList) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<ProtocolVersion> tls13VersionList = new LinkedList<>();
-        for (ProtocolVersion version : ProtocolVersion.values()) {
-            if (version.isTLS13()) {
-                tls13VersionList.add(version);
-            }
-        }
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(tls13VersionList);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        List<NamedGroup> tls13Groups = new LinkedList<>();
-        for (NamedGroup group : NamedGroup.values()) {
-            if (group.isTls13()) {
-                tls13Groups.add(group);
-            }
-        }
-        tlsConfig.setDefaultClientNamedGroups(tls13Groups);
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
+        Config tlsConfig = getCommonConfig(WorkflowTraceType.SHORT_HELLO, ProtocolVersion.TLS13, getTls13ProtocolVersions(), toTestList, getTls13Groups());
         State state = new State(tlsConfig);
-        WorkflowTrace workflowTrace = state.getWorkflowTrace();
-        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
-                workflowTrace);
-        if (keyShareExtension == null) {
-            keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
-        }
-        if (keyShareExtension != null) {
-            ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
-        }
+        setupKeyShares(state.getWorkflowTrace());
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             // ServerHelloMessage message = (ServerHelloMessage)
@@ -152,41 +114,9 @@ public class Tls13Probe extends TlsProbe {
     }
 
     public List<NamedGroup> getSupportedGroups(List<NamedGroup> group) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        List<ProtocolVersion> tls13VersionList = new LinkedList<>();
-        for (ProtocolVersion version : ProtocolVersion.values()) {
-            if (version.isTLS13()) {
-                tls13VersionList.add(version);
-            }
-        }
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(getTls13Suite());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(tls13VersionList);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        tlsConfig.setDefaultClientNamedGroups(group);
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
+        Config tlsConfig = getCommonConfig(WorkflowTraceType.SHORT_HELLO, ProtocolVersion.TLS13, getTls13ProtocolVersions(), getTls13Suite(), group);
         State state = new State(tlsConfig);
-        WorkflowTrace workflowTrace = state.getWorkflowTrace();
-        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
-                workflowTrace);
-        if (keyShareExtension == null) {
-            keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
-        }
-        if (keyShareExtension != null) {
-            ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
-        }
+        setupKeyShares(state.getWorkflowTrace());
         executeState(state);
         if (state.getTlsContext().isExtensionNegotiated(ExtensionType.ELLIPTIC_CURVES)) {
             return state.getTlsContext().getServerNamedGroupsList();
@@ -206,36 +136,9 @@ public class Tls13Probe extends TlsProbe {
     }
 
     private boolean isTls13Supported(ProtocolVersion toTest) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(getTls13Suite());
-        tlsConfig.setHighestProtocolVersion(toTest);
-        tlsConfig.setSupportedVersions(toTest);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1,
-                NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
+        Config tlsConfig = getCommonConfig(WorkflowTraceType.SHORT_HELLO, toTest, getTls13Suite(), getTls13Groups());
         State state = new State(tlsConfig);
-        WorkflowTrace workflowTrace = state.getWorkflowTrace();
-        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
-                workflowTrace);
-        if (keyShareExtension == null) {
-            keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
-        }
-        if (keyShareExtension != null) {
-            ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
-        }
+        setupKeyShares(state.getWorkflowTrace());
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -267,36 +170,9 @@ public class Tls13Probe extends TlsProbe {
     }
 
     private List<ECPointFormat> getSupportedPointFormats(List<ProtocolVersion> supportedProtocolVersions) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(getTls13Suite());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(supportedProtocolVersions);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519, NamedGroup.SECP256R1, NamedGroup.SECP384R1,
-                NamedGroup.SECP521R1, NamedGroup.ECDH_X448);
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
+        Config tlsConfig = getCommonConfig(WorkflowTraceType.SHORT_HELLO, ProtocolVersion.TLS13, supportedProtocolVersions, getTls13Suite(), getTls13Groups());
         State state = new State(tlsConfig);
-        WorkflowTrace workflowTrace = state.getWorkflowTrace();
-        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
-                workflowTrace);
-        if (keyShareExtension == null) {
-            keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
-        }
-        if (keyShareExtension != null) {
-            ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
-        }
+        setupKeyShares(state.getWorkflowTrace());
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             if (state.getTlsContext().getServerPointFormatsList() != null) {
@@ -320,6 +196,26 @@ public class Tls13Probe extends TlsProbe {
             }
         }
         return tls13Suites;
+    }
+    
+    private List<NamedGroup> getTls13Groups() {
+        List<NamedGroup> tls13Groups = new LinkedList<>();
+        for (NamedGroup group : NamedGroup.values()) {
+            if (group.isTls13()) {
+                tls13Groups.add(group);
+            }
+        }
+        return tls13Groups;
+    }
+    
+    private List<ProtocolVersion> getTls13ProtocolVersions() {
+        List<ProtocolVersion> tls13VersionList = new LinkedList<>();
+        for (ProtocolVersion version : ProtocolVersion.values()) {
+            if (version.isTLS13()) {
+                tls13VersionList.add(version);
+            }
+        }
+        return tls13VersionList;
     }
 
     @Override
@@ -358,5 +254,50 @@ public class Tls13Probe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new Tls13Result(null, null, null, null, null);
+    }
+    
+    private Config getCommonConfig(WorkflowTraceType traceType, ProtocolVersion highestProtocolVersion, List<ProtocolVersion> supportedProtocolVersions, List<CipherSuite> supportedCipherSuites, List<NamedGroup> supportedGroups)
+    {
+        Config tlsConfig = getScannerConfig().createConfig();
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(supportedCipherSuites);
+        tlsConfig.setHighestProtocolVersion(highestProtocolVersion);
+        tlsConfig.setSupportedVersions(supportedProtocolVersions);
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setWorkflowTraceType(traceType);
+        tlsConfig.setDefaultClientNamedGroups(supportedGroups);
+        tlsConfig.setAddECPointFormatExtension(false);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setUseFreshRandom(true);
+        tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
+        
+        return tlsConfig;
+    }
+    
+    private Config getCommonConfig(WorkflowTraceType traceType, ProtocolVersion protocolVersion, List<CipherSuite> supportedCipherSuites, List<NamedGroup> supportedGroups)
+    {
+        List<ProtocolVersion> protocolVersionList = new LinkedList<>();
+        protocolVersionList.add(protocolVersion);
+        return getCommonConfig(traceType, protocolVersion, protocolVersionList, supportedCipherSuites, supportedGroups);
+    }
+    
+    private WorkflowTrace setupKeyShares(WorkflowTrace workflowTrace)
+    {
+        ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
+                workflowTrace);
+        if (keyShareExtension == null) {
+            keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE_OLD, workflowTrace);
+        }
+        if (keyShareExtension != null) {
+            ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
+        }
+        return workflowTrace;
     }
 }
