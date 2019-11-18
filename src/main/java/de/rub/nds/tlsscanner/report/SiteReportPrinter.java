@@ -1415,6 +1415,10 @@ public class SiteReportPrinter {
     }
 
     private void appendClientAuthentication(StringBuilder builder) {
+        /**
+         * TODO: I want to make this better to read.
+         * Maybe implement a comparator which sorts accordingly
+         */
         prettyAppendHeading(builder, "Client authentication");
         prettyAppend(builder, "Supported", report.getCcaSupported());
         if (report.getCcaTestResultList() != null) {

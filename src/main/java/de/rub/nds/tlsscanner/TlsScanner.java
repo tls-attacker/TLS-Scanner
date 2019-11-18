@@ -87,6 +87,10 @@ public class TlsScanner {
     }
 
     private void fillDefaultProbeLists() {
+        /**
+         * TODO: when commenting the padding oracle probe the executor is already
+         * shut down once the CCA probe gets executed.
+         */
         probeList.add(new CommonBugProbe(config, parallelExecutor));
         probeList.add(new SniProbe(config, parallelExecutor));
         probeList.add(new CompressionsProbe(config, parallelExecutor));

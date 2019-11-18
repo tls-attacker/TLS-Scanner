@@ -17,7 +17,6 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
-import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -31,19 +30,18 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.CcaResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class CcaProbe extends TlsProbe {
-    private List<CipherSuite> suiteList;
-    private List<ProtocolVersion> versions;
+    private List<VersionSuiteListPair> versionSuiteListPairsList;
 
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config, 5);
-        suiteList = new LinkedList<>();
-        versions = new LinkedList<>();
+        versionSuiteListPairsList = new LinkedList<>();
     }
 
     @Override
@@ -55,71 +53,69 @@ public class CcaProbe extends TlsProbe {
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
         /**
-         * Select the cipher suites to be used during testing
+         * Add any protocol version (1.0-1.2) to the versions we iterate
          */
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+        List<ProtocolVersion> desiredVersions = new LinkedList<>();
+        desiredVersions.add(ProtocolVersion.TLS11);
+        desiredVersions.add(ProtocolVersion.TLS10);
+        desiredVersions.add(ProtocolVersion.TLS12);
 
-            cipherSuites.addAll(this.suiteList);
-            cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
 
-        } else {
-            for(CipherSuite cipherSuite : this.suiteList) {
-                if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.DHE_RSA
-                || AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.DHE_DSS) {
-                    cipherSuites.add(cipherSuite);
-                    break;
-                }
-            }
-            /**
-             * We couldn't find a DHE cipher suite.
-             * Let's try out luck with a DH cipher suite.
-             */
-            if (cipherSuites.isEmpty()) {
-                for(CipherSuite cipherSuite : this.suiteList) {
-                    if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.DH_RSA
-                            || AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.DH_DSS) {
-                        cipherSuites.add(cipherSuite);
-                        break;
-                    }
-                }
-            }
-            /**
-             * Still no luck finding a matching cipher suite, we'll throw an error for now.
-             */
-            if (cipherSuites.isEmpty()) {
-                LOGGER.error("Couldn't find any cipher suite to execute all tests. " +
-                        "Consider scanning again with -scanDetail DETAILED.");
-                return new CcaResult(TestResult.COULD_NOT_TEST, null);
+        /**
+         * Add any VersionSuitePair that is supported by the target
+         * and by our test cases (Version 1.0 - 1.2)
+         */
+        List<VersionSuiteListPair> versionSuiteListPairs = new LinkedList<>();
+        for(VersionSuiteListPair versionSuiteListPair: this.versionSuiteListPairsList) {
+            if (desiredVersions.contains(versionSuiteListPair.getVersion())) {
+                versionSuiteListPairs.add(versionSuiteListPair);
             }
         }
 
         /**
-         * Add any protocol version (1.0-1.2) to the versions we iterate
+         * If we do not want a detailed scan, use only one cipher suite per protocol version.
+         * TODO: Do I want to make sure it's the same for all? If yes I'd have the take a DH/DHE suite from the lowest
+         * protocol version and use that.
          */
-        List<ProtocolVersion> protocolVersions = new LinkedList<>();
-        List<ProtocolVersion> desiredVersions = new LinkedList<>();
-        desiredVersions.add(ProtocolVersion.TLS10);
-        desiredVersions.add(ProtocolVersion.TLS11);
-        desiredVersions.add(ProtocolVersion.TLS12);
-
-        for(ProtocolVersion protocolVersion : this.versions) {
-            if (desiredVersions.contains(protocolVersion)) {
-                protocolVersions.add(protocolVersion);
+        List<VersionSuiteListPair> _ = new LinkedList<>();
+        if (!getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            for(VersionSuiteListPair versionSuiteListPair: versionSuiteListPairs) {
+                List<CipherSuite> cipherSuites = new LinkedList<>();
+                for(CipherSuite cipherSuite: versionSuiteListPair.getCiphersuiteList()) {
+                    if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh()) {
+                        cipherSuites.add(cipherSuite);
+                        break;
+                    }
+                }
+                /**
+                 * Only add a version if we found a matching cipher suite (DH[E])
+                 */
+                if (!cipherSuites.isEmpty()) {
+                    _.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
+                }
             }
+        }
+
+        if (!_.isEmpty()) {
+            versionSuiteListPairs = _;
         }
 
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
-                for (ProtocolVersion protocolVersion : protocolVersions) {
-                    for (CipherSuite cipherSuite : cipherSuites) {
+                for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
+                    for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
                         CertificateMessage certificateMessage = null;
                         Config tlsConfig = ccaConfig.createConfig();
                         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
-                        tlsConfig.setHighestProtocolVersion(protocolVersion);
+                        tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
+                        /**
+                         * TODO: I want to build an attacker for this. It should allow easier testing and debugging of
+                         * specific test cases. So the code below and above will be changed.
+                         * Likely I will set the version for the commandConfig and afterwards create a config in there.
+                         * Maybe a also need to pass a tlsConfig, compare with bleichenbacher
+                         */
                         certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaConfig, ccaCertificateType);
                         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
                                 certificateMessage);
@@ -127,18 +123,15 @@ public class CcaProbe extends TlsProbe {
                         try {
                             executeState(state);
                         } catch (Exception E) {
-                            LOGGER.error("Error while testing for client authentication bypasses.");
+                            LOGGER.error("Error while testing for client authentication bypasses." + E);
                         }
-                        // TODO: implement check for reponse of unkown cipher suite. It's just confusing in the results.
-                        // I'm unsure how to exactly do that since I doubt all implementations will just tell me they
-                        // don't know the ciphersuite. Maybe I can find a way around that. 
                         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
                             bypassable = true;
                             resultList.add(new CcaTestResult(true, ccaWorkflowType, ccaCertificateType,
-                                    protocolVersion, cipherSuite));
+                                    versionSuiteListPair.getVersion(), cipherSuite));
                         } else {
                             resultList.add(new CcaTestResult(false, ccaWorkflowType, ccaCertificateType,
-                                protocolVersion, cipherSuite));
+                                    versionSuiteListPair.getVersion(), cipherSuite));
                         }
                     }
                 }
@@ -150,13 +143,7 @@ public class CcaProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         if ((report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE)
-                && (report.getCipherSuites() != null)
-                && (report.getVersions() != null)
-                && ((report.getVersions().contains(ProtocolVersion.TLS12)
-                    || report.getVersions().contains(ProtocolVersion.TLS11)
-                    || (report.getVersions().contains(ProtocolVersion.TLS10)))
-                    )
-        ) {
+                && (report.getVersionSuitePairs() != null)) {
             return true;
         };
         return false;
@@ -164,8 +151,7 @@ public class CcaProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        this.suiteList.addAll(report.getCipherSuites());
-        this.versions.addAll(report.getVersions());
+        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 
     @Override
@@ -174,3 +160,24 @@ public class CcaProbe extends TlsProbe {
     }
 
 }
+
+
+/**
+ * TODO: Note that when using a pem encoded certificate we still got the following results
+ * check what this means.
+ * Client authentication
+ *
+ * Supported			 : true
+ * CRT_CKE_CCS_FIN.CLIENT_INPUT.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CRT_CKE_CCS_FIN.CLIENT_INPUT.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CRT_CKE_CCS_FIN.CLIENT_INPUT.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CKE_CCS_FIN.CLIENT_INPUT.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CKE_CCS_FIN.CLIENT_INPUT.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CKE_CCS_FIN.CLIENT_INPUT.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CKE_CCS_FIN.EMPTY.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CKE_CCS_FIN.EMPTY.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CKE_CCS_FIN.EMPTY.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CKE_CCS_CRT_FIN_CCS_RND.CLIENT_INPUT.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CKE_CCS_CRT_FIN_CCS_RND.CLIENT_INPUT.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ * CKE_CCS_CRT_FIN_CCS_RND.CLIENT_INPUT.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
+ */
