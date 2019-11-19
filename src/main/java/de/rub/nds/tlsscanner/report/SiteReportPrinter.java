@@ -546,6 +546,7 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "Session");
         prettyAppend(builder, "Supports Session resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
         prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+        prettyAppend(builder, "Issues TLS 1.3 Session Tickets", AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
         // prettyAppend(builder, "Session Ticket Hint",
         // report.getSessionTicketLengthHint());
         // prettyAppendYellowOnFailure(builder, "Session Ticket Rotation",
@@ -789,11 +790,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Uncompressed", AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT);
         prettyAppend(builder, "ANSIX962 Prime", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME);
         prettyAppend(builder, "ANSIX962 Char2", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2);
-
-        prettyAppendHeading(builder, "Elliptic Curve TLS 1.3 Point Formats");
-        prettyAppend(builder, "Uncompressed", AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT_TLS13);
-        prettyAppend(builder, "ANSIX962 Prime", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME_TLS13);
-        prettyAppend(builder, "ANSIX962 Char2", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2_TLS13);
+        prettyAppend(builder, "TLS 1.3 ANSIX962  SECP", AnalyzedProperty.SUPPORTS_SECP_COMPRESSION_TLS13);
         return builder;
     }
 

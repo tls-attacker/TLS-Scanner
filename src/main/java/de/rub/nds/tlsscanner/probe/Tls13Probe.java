@@ -15,7 +15,9 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareEntry;
@@ -23,9 +25,11 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.Tls13Result;
@@ -68,7 +72,7 @@ public class Tls13Probe extends TlsProbe {
     private CipherSuite getSelectedCiphersuite(List<CipherSuite> toTestList) {
         Config tlsConfig = getCommonConfig(WorkflowTraceType.SHORT_HELLO, ProtocolVersion.TLS13, getTls13ProtocolVersions(), toTestList, getTls13Groups());
         State state = new State(tlsConfig);
-        setupKeyShares(state.getWorkflowTrace());
+        setupEmptyKeyShares(state.getWorkflowTrace());
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             // ServerHelloMessage message = (ServerHelloMessage)
@@ -116,7 +120,7 @@ public class Tls13Probe extends TlsProbe {
     public List<NamedGroup> getSupportedGroups(List<NamedGroup> group) {
         Config tlsConfig = getCommonConfig(WorkflowTraceType.SHORT_HELLO, ProtocolVersion.TLS13, getTls13ProtocolVersions(), getTls13Suite(), group);
         State state = new State(tlsConfig);
-        setupKeyShares(state.getWorkflowTrace());
+        setupEmptyKeyShares(state.getWorkflowTrace());
         executeState(state);
         if (state.getTlsContext().isExtensionNegotiated(ExtensionType.ELLIPTIC_CURVES)) {
             return state.getTlsContext().getServerNamedGroupsList();
@@ -138,7 +142,7 @@ public class Tls13Probe extends TlsProbe {
     private boolean isTls13Supported(ProtocolVersion toTest) {
         Config tlsConfig = getCommonConfig(WorkflowTraceType.SHORT_HELLO, toTest, getTls13Suite(), getTls13Groups());
         State state = new State(tlsConfig);
-        setupKeyShares(state.getWorkflowTrace());
+        setupEmptyKeyShares(state.getWorkflowTrace());
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -169,25 +173,46 @@ public class Tls13Probe extends TlsProbe {
         return algos;
     }
 
-    private List<ECPointFormat> getSupportedPointFormats(List<ProtocolVersion> supportedProtocolVersions) {
-        Config tlsConfig = getCommonConfig(WorkflowTraceType.SHORT_HELLO, ProtocolVersion.TLS13, supportedProtocolVersions, getTls13Suite(), getTls13Groups());
-        State state = new State(tlsConfig);
-        setupKeyShares(state.getWorkflowTrace());
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            if (state.getTlsContext().getServerPointFormatsList() != null) {
-                return state.getTlsContext().getServerPointFormatsList();
-            } else {
-                // no extension means only uncompressed
-                List<ECPointFormat> format = new LinkedList<>();
-                format.add(ECPointFormat.UNCOMPRESSED);
-                return format;
+    private TestResult getSECPCompressionSupported(List<ProtocolVersion> supportedProtocolVersions) {
+        //SECP curves in TLS 1.3 don't use compression, some implementations
+        //might still accept compression
+        List<NamedGroup> secpGroups = new LinkedList<>();
+        for(NamedGroup group: getTls13Groups()){
+            if(group.name().contains("SECP"))
+            {
+                secpGroups.add(group);
             }
-        } else {
-            return null;
         }
-    }
+        Config tlsConfig = getCommonConfig(WorkflowTraceType.HELLO, ProtocolVersion.TLS13, supportedProtocolVersions, getTls13Suite(), secpGroups);
+        tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
+        tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
+        State state = new State(tlsConfig);
 
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            return TestResult.TRUE;
+        }
+        return TestResult.FALSE;
+    }
+    
+    private TestResult getIssuesSessionTicket(List<ProtocolVersion> supportedProtocolVersions)
+    {
+        Config tlsConfig = getCommonConfig(WorkflowTraceType.HANDSHAKE, ProtocolVersion.TLS13, supportedProtocolVersions, getTls13Suite(), getImplementedTls13Groups());
+        List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+        pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+        pskKex.add(PskKeyExchangeMode.PSK_KE);
+        tlsConfig.setPSKKeyExchangeModes(pskKex);
+        tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+        State state = new State(tlsConfig);
+        state.getWorkflowTrace().addTlsAction(new ReceiveAction(ReceiveAction.ReceiveOption.CHECK_ONLY_EXPECTED, new NewSessionTicketMessage(false)));
+        
+        executeState(state);
+        if (state.getWorkflowTrace().getLastMessageAction().executedAsPlanned()) {
+            return TestResult.TRUE;
+        }
+        return TestResult.FALSE;
+    }
+    
     private List<CipherSuite> getTls13Suite() {
         List<CipherSuite> tls13Suites = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.values()) {
@@ -202,6 +227,16 @@ public class Tls13Probe extends TlsProbe {
         List<NamedGroup> tls13Groups = new LinkedList<>();
         for (NamedGroup group : NamedGroup.values()) {
             if (group.isTls13()) {
+                tls13Groups.add(group);
+            }
+        }
+        return tls13Groups;
+    }
+    
+      private List<NamedGroup> getImplementedTls13Groups() {
+        List<NamedGroup> tls13Groups = new LinkedList<>();
+        for (NamedGroup group : NamedGroup.values()) {
+            if (group.isTls13() && NamedGroup.getImplemented().contains(group)) {
                 tls13Groups.add(group);
             }
         }
@@ -237,9 +272,13 @@ public class Tls13Probe extends TlsProbe {
         }
         List<NamedGroup> supportedNamedGroups = getSupportedGroups();
         List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
-        List<ECPointFormat> supportedTls13PointFormats = getSupportedPointFormats(supportedProtocolVersions);
+        TestResult supportsSECPCompression = null;
+        if(containsSECPGroup(supportedNamedGroups)) {
+            supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);
+        }
+        TestResult issuesSessionTicket = getIssuesSessionTicket(supportedProtocolVersions);    
         return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups,
-                supportedTls13Suites, supportedTls13PointFormats);
+                supportedTls13Suites, supportsSECPCompression, issuesSessionTicket);
     }
 
     @Override
@@ -253,7 +292,7 @@ public class Tls13Probe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new Tls13Result(null, null, null, null, null);
+        return new Tls13Result(null, null, null, null, null, null);
     }
     
     private Config getCommonConfig(WorkflowTraceType traceType, ProtocolVersion highestProtocolVersion, List<ProtocolVersion> supportedProtocolVersions, List<CipherSuite> supportedCipherSuites, List<NamedGroup> supportedGroups)
@@ -288,7 +327,7 @@ public class Tls13Probe extends TlsProbe {
         return getCommonConfig(traceType, protocolVersion, protocolVersionList, supportedCipherSuites, supportedGroups);
     }
     
-    private WorkflowTrace setupKeyShares(WorkflowTrace workflowTrace)
+    private WorkflowTrace setupEmptyKeyShares(WorkflowTrace workflowTrace)
     {
         ExtensionMessage keyShareExtension = WorkflowTraceUtil.getFirstSendExtension(ExtensionType.KEY_SHARE,
                 workflowTrace);
@@ -299,5 +338,14 @@ public class Tls13Probe extends TlsProbe {
             ((KeyShareExtensionMessage) keyShareExtension).setKeyShareList(new LinkedList<KeyShareEntry>());
         }
         return workflowTrace;
+    }
+    
+    private boolean containsSECPGroup(List<NamedGroup> groups) {
+        for(NamedGroup group: groups) {
+            if(group.name().contains("SECP")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
