@@ -100,6 +100,18 @@ public class CcaProbe extends TlsProbe {
             versionSuiteListPairs = _;
         }
 
+        /**
+         * TODO: Currently, if no DH/DHE suite is supported in any TLSv1.0-1.2 Version we fall back to a detailed scan
+         * Do we really want this?
+         * Additionally we do not ensure that at least one cipher suite for any version of TLSv1.0-1.2 is supported.
+         * This will lead to problems with servers supporting none of these.
+         */
+
+        /**
+         * TODO: Currently we only send a single certificate. But we'll need to send the whole chain later on. That
+         * won't work with the way we currently specify the client_input. Gotta see how to handle that
+         */
+
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
@@ -110,12 +122,6 @@ public class CcaProbe extends TlsProbe {
                         Config tlsConfig = ccaConfig.createConfig();
                         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
-                        /**
-                         * TODO: I want to build an attacker for this. It should allow easier testing and debugging of
-                         * specific test cases. So the code below and above will be changed.
-                         * Likely I will set the version for the commandConfig and afterwards create a config in there.
-                         * Maybe a also need to pass a tlsConfig, compare with bleichenbacher
-                         */
                         certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
                         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
                                 certificateMessage);
