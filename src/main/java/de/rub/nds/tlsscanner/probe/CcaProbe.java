@@ -116,7 +116,7 @@ public class CcaProbe extends TlsProbe {
                          * Likely I will set the version for the commandConfig and afterwards create a config in there.
                          * Maybe a also need to pass a tlsConfig, compare with bleichenbacher
                          */
-                        certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaConfig, ccaCertificateType);
+                        certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
                         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
                                 certificateMessage);
                         State state = new State(tlsConfig, trace);
