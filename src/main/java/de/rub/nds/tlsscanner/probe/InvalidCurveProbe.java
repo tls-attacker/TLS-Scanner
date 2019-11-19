@@ -48,7 +48,7 @@ public class InvalidCurveProbe extends TlsProbe {
     private boolean supportsRenegotiation;
 
     private TestResult supportsSecureRenegotiation;
-    
+
     private TestResult issuesTls13SessionTickets;
 
     private List<ProtocolVersion> supportedProtocolVersions;
@@ -108,11 +108,12 @@ public class InvalidCurveProbe extends TlsProbe {
                 .getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION) == TestResult.TRUE);
         supportsSecureRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION);
         issuesTls13SessionTickets = report.getResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
-        
+
         List<NamedGroup> groups = new LinkedList<>();
         if (report.getSupportedNamedGroups() != null) {
             for (NamedGroup group : report.getSupportedNamedGroups()) {
-                if (NamedGroup.getImplemented().contains(group) && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
+                if (NamedGroup.getImplemented().contains(group)
+                        && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
                     groups.add(group);
                 }
             }
@@ -162,7 +163,8 @@ public class InvalidCurveProbe extends TlsProbe {
             protocolVersions.add(ProtocolVersion.TLS13);
             List<NamedGroup> tls13groups = new LinkedList();
             for (NamedGroup group : report.getSupportedTls13Groups()) {
-                if (NamedGroup.getImplemented().contains(group) && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
+                if (NamedGroup.getImplemented().contains(group)
+                        && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
                     tls13groups.add(group);
                 }
             }
@@ -204,7 +206,8 @@ public class InvalidCurveProbe extends TlsProbe {
         delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) attackConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-        InvalidCurveAttacker attacker = new InvalidCurveAttacker(attackConfig, attackConfig.createConfig(), getParallelExecutor());
+        InvalidCurveAttacker attacker = new InvalidCurveAttacker(attackConfig, attackConfig.createConfig(),
+                getParallelExecutor());
 
         if (protocolVersion == ProtocolVersion.TLS13) {
             attacker.getTlsConfig().setAddKeyShareExtension(true);
@@ -248,8 +251,7 @@ public class InvalidCurveProbe extends TlsProbe {
                     if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                         // individual scans for every ciphersuite
                         for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
-                            if (legitInvalidCurveVector(group, format))
-                            {
+                            if (legitInvalidCurveVector(group, format)) {
                                 parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group,
                                         format, false, false));
                             }
@@ -270,7 +272,7 @@ public class InvalidCurveProbe extends TlsProbe {
                                 staticSuites.add(cipherSuite);
                             }
                         }
-                        
+
                         if (ephemeralSuites.size() > 0) {
                             if (legitInvalidCurveVector(group, format)) {
                                 parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites, group,
@@ -303,7 +305,8 @@ public class InvalidCurveProbe extends TlsProbe {
             int setCount = parameterSets.size();
             for (int i = 0; i < setCount; i++) {
                 InvalidCurveParameterSet set = parameterSets.get(i);
-                if ((set.getProtocolVersion() == ProtocolVersion.TLS13 && issuesTls13SessionTickets == TestResult.TRUE) || supportsRenegotiation) {
+                if ((set.getProtocolVersion() == ProtocolVersion.TLS13 && issuesTls13SessionTickets == TestResult.TRUE)
+                        || supportsRenegotiation) {
                     parameterSets.add(new InvalidCurveParameterSet(set.getProtocolVersion(), set.getCipherSuites(), set
                             .getNamedGroup(), set.getPointFormat(), set.isTwistAttack(), true));
                 }
@@ -358,14 +361,13 @@ public class InvalidCurveProbe extends TlsProbe {
                 showsPointsAreNotValidated = TestResult.FALSE;
             }
             TestResult dirtyKeysWarning;
-            if(attacker.isDirtyKeysWarning()) {
+            if (attacker.isDirtyKeysWarning()) {
                 dirtyKeysWarning = TestResult.TRUE;
-            }
-            else {
+            } else {
                 dirtyKeysWarning = TestResult.FALSE;
             }
-            return new InvalidCurveResponse(parameterSet, attacker.getResponsePairs(),
-                    showsPointsAreNotValidated, attacker.getReceivedEcPublicKeys(), attacker.getFinishedKeys(), dirtyKeysWarning);
+            return new InvalidCurveResponse(parameterSet, attacker.getResponsePairs(), showsPointsAreNotValidated,
+                    attacker.getReceivedEcPublicKeys(), attacker.getFinishedKeys(), dirtyKeysWarning);
         } catch (Exception ex) {
             LOGGER.warn("Was unable to get results for " + parameterSet.toString() + " Message: " + ex.getMessage());
             return new InvalidCurveResponse(parameterSet, TestResult.ERROR_DURING_TEST);
@@ -417,9 +419,9 @@ public class InvalidCurveProbe extends TlsProbe {
                         }
                     }
                 }
-                
-                //Compare again for keys from handshakes that lead to a
-                //Finished message
+
+                // Compare again for keys from handshakes that lead to a
+                // Finished message
                 for (Point point : response.getReceivedFinishedEcKeys()) {
                     for (Point cPoint : response.getReceivedEcPublicKeys()) {
                         if (point != cPoint && (point.getX().getData().compareTo(cPoint.getX().getData()) == 0)
@@ -433,40 +435,27 @@ public class InvalidCurveProbe extends TlsProbe {
             }
         }
     }
-    
-    private boolean legitInvalidCurveVector(NamedGroup group, ECPointFormat format)
-    {
-        if(format != ECPointFormat.UNCOMPRESSED)
-        {
-            return false; //not applicable for compressed point
-        }
-        else if(group == NamedGroup.ECDH_X25519 || group == NamedGroup.ECDH_X448)
-        {
-            return false; //not applicable for compressed point
-        }
-        else if(InvalidCurvePoint.fromNamedGroup(group) == null)
-        {
-            return false; //no suitable point configured
-        }
-        else
-        {
+
+    private boolean legitInvalidCurveVector(NamedGroup group, ECPointFormat format) {
+        if (format != ECPointFormat.UNCOMPRESSED) {
+            return false; // not applicable for compressed point
+        } else if (group == NamedGroup.ECDH_X25519 || group == NamedGroup.ECDH_X448) {
+            return false; // not applicable for compressed point
+        } else if (InvalidCurvePoint.fromNamedGroup(group) == null) {
+            return false; // no suitable point configured
+        } else {
             return true;
         }
     }
-    
-    private boolean legitTwistVector(NamedGroup group, ECPointFormat format)
-    {
-        if(TwistedCurvePoint.fromIntendedNamedGroup(group) == null)
-        {
-            return false; //no suitable point configured
-        }
-        else if(format == ECPointFormat.ANSIX962_COMPRESSED_PRIME && (group == NamedGroup.ECDH_X25519 || group == NamedGroup.ECDH_X448))
-        {
-            return false; //format is *pointless*     
-        }
-        else
-        {
+
+    private boolean legitTwistVector(NamedGroup group, ECPointFormat format) {
+        if (TwistedCurvePoint.fromIntendedNamedGroup(group) == null) {
+            return false; // no suitable point configured
+        } else if (format == ECPointFormat.ANSIX962_COMPRESSED_PRIME
+                && (group == NamedGroup.ECDH_X25519 || group == NamedGroup.ECDH_X448)) {
+            return false; // format is *pointless*
+        } else {
             return true;
         }
-    }   
+    }
 }

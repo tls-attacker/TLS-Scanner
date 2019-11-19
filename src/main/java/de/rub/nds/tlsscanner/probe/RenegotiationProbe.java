@@ -110,7 +110,8 @@ public class RenegotiationProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return (report.getCipherSuites() != null && report.getCipherSuites().size() > 0 && report.getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION) != TestResult.NOT_TESTED_YET);
+        return (report.getCipherSuites() != null && report.getCipherSuites().size() > 0 && report
+                .getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION) != TestResult.NOT_TESTED_YET);
     }
 
     @Override

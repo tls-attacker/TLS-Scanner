@@ -27,12 +27,13 @@ public class InvalidCurveResponse {
     private TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
     private TestResult showsVulnerability = TestResult.NOT_TESTED_YET;
     private TestResult chosenGroupReusesKey = TestResult.NOT_TESTED_YET;
-    
+
     private TestResult finishedHandshakeHadReusedKey = TestResult.FALSE;
     private TestResult dirtyKeysWarning = TestResult.FALSE;
 
-    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, List<FingerprintSecretPair> fingerprintSecretPairs,
-            TestResult showsPointsAreNotValidated, List<Point> receivedEcPublicKeys, List<Point> receivedFinishedEcKeys, TestResult dirtyKeysWarning) {
+    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet,
+            List<FingerprintSecretPair> fingerprintSecretPairs, TestResult showsPointsAreNotValidated,
+            List<Point> receivedEcPublicKeys, List<Point> receivedFinishedEcKeys, TestResult dirtyKeysWarning) {
         this.parameterSet = parameterSet;
         this.fingerprintSecretPairs = fingerprintSecretPairs;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
@@ -54,7 +55,7 @@ public class InvalidCurveResponse {
     public InvalidCurveParameterSet getParameterSet() {
         return parameterSet;
     }
-    
+
     /**
      * @return the showsPointsAreNotValidated
      */
@@ -123,7 +124,8 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param fingerprintSecretPairs the fingerprintSecretPairs to set
+     * @param fingerprintSecretPairs
+     *            the fingerprintSecretPairs to set
      */
     public void setFingerprintSecretPairs(List<FingerprintSecretPair> fingerprintSecretPairs) {
         this.fingerprintSecretPairs = fingerprintSecretPairs;
@@ -137,7 +139,8 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param finishedHandshakeHadReusedKey the finishedHandshakeHadReusedKey to set
+     * @param finishedHandshakeHadReusedKey
+     *            the finishedHandshakeHadReusedKey to set
      */
     public void setFinishedHandshakeHadReusedKey(TestResult finishedHandshakeHadReusedKey) {
         this.finishedHandshakeHadReusedKey = finishedHandshakeHadReusedKey;
@@ -151,7 +154,8 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param receivedFinishedEcKeys the receivedFinishedEcKeys to set
+     * @param receivedFinishedEcKeys
+     *            the receivedFinishedEcKeys to set
      */
     public void setReceivedFinishedEcKeys(List<Point> receivedFinishedEcKeys) {
         this.receivedFinishedEcKeys = receivedFinishedEcKeys;
@@ -165,7 +169,8 @@ public class InvalidCurveResponse {
     }
 
     /**
-     * @param dirtyKeysWarning the dirtyKeysWarning to set
+     * @param dirtyKeysWarning
+     *            the dirtyKeysWarning to set
      */
     public void setDirtyKeysWarning(TestResult dirtyKeysWarning) {
         this.dirtyKeysWarning = dirtyKeysWarning;
