@@ -77,6 +77,7 @@ public class InvalidCurveProbe extends TlsProbe {
                 // rescan to reliably detect reused keys (especially TLS 1.3)
                 InvalidCurveResponse rescanResponse = executeSingleScan(parameterSet);
                 scanResponse.getReceivedEcPublicKeys().addAll(rescanResponse.getReceivedEcPublicKeys());
+                scanResponse.getReceivedFinishedEcKeys().addAll(rescanResponse.getReceivedFinishedEcKeys());
             }
             responses.add(scanResponse);
         }
@@ -186,7 +187,7 @@ public class InvalidCurveProbe extends TlsProbe {
             supportedTls13FpGroups = tls13groups;
             tls13FpPointFormatsToTest = tls13FpPointFormats;
         }
-
+        
         fpPointFormatsToTest = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedFpGroups = groups;
@@ -326,7 +327,7 @@ public class InvalidCurveProbe extends TlsProbe {
             invalidCurveAttackConfig.setAttackInRenegotiation(parameterSet.isAttackInRenegotiation());
 
             if (parameterSet.isTwistAttack()) {
-
+                
                 invalidCurveAttackConfig.setPublicPointBaseX(TwistedCurvePoint.fromIntendedNamedGroup(
                         parameterSet.getNamedGroup()).getPublicPointBaseX());
                 invalidCurveAttackConfig.setPublicPointBaseY(TwistedCurvePoint.fromIntendedNamedGroup(
