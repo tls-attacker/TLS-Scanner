@@ -125,7 +125,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
             }
             futureResults.removeAll(finishedFutures);
             update(report, this);
-        } while (executor.getActiveCount() != 0 || !executor.getQueue().isEmpty());
+        } while (!futureResults.isEmpty());
     }
 
     private void reportAboutNotExecutedProbes() {
