@@ -187,7 +187,7 @@ public class InvalidCurveProbe extends TlsProbe {
             supportedTls13FpGroups = tls13groups;
             tls13FpPointFormatsToTest = tls13FpPointFormats;
         }
-        
+
         fpPointFormatsToTest = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedFpGroups = groups;
@@ -327,13 +327,18 @@ public class InvalidCurveProbe extends TlsProbe {
             invalidCurveAttackConfig.setAttackInRenegotiation(parameterSet.isAttackInRenegotiation());
 
             if (parameterSet.isTwistAttack()) {
-                
+
                 invalidCurveAttackConfig.setPublicPointBaseX(TwistedCurvePoint.fromIntendedNamedGroup(
                         parameterSet.getNamedGroup()).getPublicPointBaseX());
                 invalidCurveAttackConfig.setPublicPointBaseY(TwistedCurvePoint.fromIntendedNamedGroup(
                         parameterSet.getNamedGroup()).getPublicPointBaseY());
-                invalidCurveAttackConfig.setProtocolFlows(TwistedCurvePoint
-                        .fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
+                if (parameterSet.getNamedGroup() == NamedGroup.ECDH_X25519
+                        || parameterSet.getNamedGroup() == NamedGroup.ECDH_X448) {
+                    invalidCurveAttackConfig.setProtocolFlows(1);
+                } else {
+                    invalidCurveAttackConfig.setProtocolFlows(TwistedCurvePoint
+                            .fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
+                }
                 invalidCurveAttackConfig.setPointCompressionFormat(parameterSet.getPointFormat());
 
                 invalidCurveAttackConfig.setCurveTwistAttack(true);
