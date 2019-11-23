@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +99,16 @@ public class TlsCrawlerMaster extends TlsCrawler {
         } finally {
             targets.remove();
         }
+    }
+    
+    private static void setUp(IOrganizer org, Collection<IScanTask> tasks) {
+            org.getPersistenceProvider().setUpScanTasks(tasks);
+
+            Collection<String> tids = tasks.stream()
+                    .map(x -> x.getId())
+                    .collect(Collectors.toList());
+
+            org.getOrchestrationProvider().addScanTasks(tids);
     }
 
     public IMasterStats getStats() {
