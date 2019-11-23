@@ -10,6 +10,7 @@ package de.rub.nds.tlscrawler.scans;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
+import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -32,11 +33,11 @@ public class FriendlyTlsScan extends TlsScan {
     }
 
     @Override
-    public IScanResult scan(IScanTarget target) {
+    public IScanResult scan(String slaveInstanceId, IScanTarget target) {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
-   //     generalDelegate.setLogLevel(null);
+        generalDelegate.setQuiet(true);
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setDangerLevel(4);
@@ -49,6 +50,11 @@ public class FriendlyTlsScan extends TlsScan {
 
         SiteReport report = scanner.scan();
 
-        return scanResultFromSiteReport(report, SCAN_NAME);
+        IScanResult result = new ScanResult(SCAN_NAME);
+        result.addString(SLAVE_INSTANCE_ID, slaveInstanceId);
+
+        populateScanResultFromSiteReport(result, report);
+
+        return result;
     }
 }

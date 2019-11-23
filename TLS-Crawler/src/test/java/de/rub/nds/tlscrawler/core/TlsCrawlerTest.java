@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +47,7 @@ public class TlsCrawlerTest {
 
         List<IScan> scans = Arrays.asList(scan1, scan3);
 
-        this.subject = new TlsCrawler(op, pp, scans);
+        this.subject = new TlsCrawler("slaveId", op, pp, scans);
     }
 
     @Test
@@ -67,7 +68,7 @@ public class TlsCrawlerTest {
 
     @Test
     public void getScans() {
-        List<IScan> scans = this.subject.getScans();
+        Collection<IScan> scans = this.subject.getScans();
 
         Assert.assertEquals(2, scans.size());
 

@@ -40,12 +40,16 @@ public class TlsCrawlerMaster extends TlsCrawler {
     /**
      * TLS-Crawler master constructor.
      *
+     * @param instanceId The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TlsCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
-        super(orchestrationProvider, persistenceProvider, scans);
+    public TlsCrawlerMaster(String instanceId,
+                            IOrchestrationProvider orchestrationProvider,
+                            IPersistenceProvider persistenceProvider,
+                            List<IScan> scans) {
+        super(instanceId, orchestrationProvider, persistenceProvider, scans);
 
         this.taskGeneratorThreadList = new HashMap<>();
     }
@@ -57,22 +61,30 @@ public class TlsCrawlerMaster extends TlsCrawler {
 
         // TODO: This should be parallelized.
 
+        int ctr = 0;
+        Collection<IScanTask> bulk = new ArrayList<>(1000);
+
         for (String target : targets) {
             String taskId = UUID.randomUUID().toString();
 
-            IScanTask newTask = new ScanTask(
+            bulk.add(new ScanTask(
                     taskId,
                     scanId,
+                    this.getInstanceId(),
                     Instant.now(),
                     null,
                     null,
                     null,
                     target,
                     ports,
-                    scans);
+                    scans)
+            );
 
-            this.getPersistenceProvider().setUpScanTask(newTask);
-            this.getOrchestrationProvider().addScanTask(newTask.getId());
+            if (++ctr >= 1000) {
+                setUp(this, bulk);
+                ctr = 0;
+                bulk = new ArrayList<>(1000);
+            }
         }
 
         try {

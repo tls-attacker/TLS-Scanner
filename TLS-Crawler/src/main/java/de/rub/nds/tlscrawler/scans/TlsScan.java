@@ -7,22 +7,36 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ScanResult;
+import de.rub.nds.tlsscanner.SingleThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
+import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Scan using TLS Scanner, i. e. TLS Attacker.
@@ -30,9 +44,16 @@ import java.util.Set;
  * @author janis.fliegenschmidt@rub.de
  */
 public class TlsScan implements IScan {
+
     private static Logger LOG = LoggerFactory.getLogger(TlsScan.class);
 
     private static String SCAN_NAME = "tls_scan";
+
+    private final ParallelExecutor parallelExecutor;
+
+    public TlsScan() {
+        parallelExecutor = new ParallelExecutor(600, 5);
+    }
 
     @Override
     public String getName() {
@@ -40,28 +61,39 @@ public class TlsScan implements IScan {
     }
 
     @Override
-    public IScanResult scan(IScanTarget target) {
+    public IScanResult scan(String slaveInstanceId, IScanTarget target) {
         LOG.trace("scan()");
 
+        SingleThreadedScanJobExecutor executor = new SingleThreadedScanJobExecutor();
+
         GeneralDelegate generalDelegate = new GeneralDelegate();
-   //     generalDelegate.setLogLevel(null);
+        generalDelegate.setQuiet(true);
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
-        config.setThreads(1);
-
+        config.setNoProgressbar(true);
+        config.setScanDetail(ScannerDetail.NORMAL);
+        config.setTimeout(1000);
+        // TODO: Make port not hardcoded.
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
+        List<TlsProbe> phaseOneList = new LinkedList<>();
+        phaseOneList.add(new CiphersuiteProbe(config, parallelExecutor));
+        phaseOneList.add(new ProtocolVersionProbe(config, parallelExecutor));
+        List<TlsProbe> phaseTwoList = new LinkedList<>();
 
-        TlsScanner scanner = new TlsScanner(config);
-
+        phaseTwoList.add(new PaddingOracleProbe(config, parallelExecutor));
+        List<AfterProbe> afterList = new LinkedList<>();
+        TlsScanner scanner = new TlsScanner(config, executor, parallelExecutor, phaseOneList, phaseTwoList, afterList);
         SiteReport report = scanner.scan();
 
-        return scanResultFromSiteReport(report, SCAN_NAME);
+        IScanResult result = new ScanResult(SCAN_NAME);
+        result.addString(SLAVE_INSTANCE_ID, slaveInstanceId);
+        populateScanResultFromSiteReport(result, report);
+
+        return result;
     }
 
-    IScanResult scanResultFromSiteReport(SiteReport report, String scanName) {
-        IScanResult result = new ScanResult(scanName);
-
+    static IScanResult populateScanResultFromSiteReport(IScanResult result, SiteReport report) {
         result.addString("host", report.getHost());
         result.addBoolean("serverIsAlive", report.getServerIsAlive());
         result.addBoolean("supportsSslTls", report.getSupportsSslTls());
@@ -87,11 +119,13 @@ public class TlsScan implements IScan {
         result.addSubResult("renegotiation", getRenegotiationPage(report));
         result.addSubResult("gcm", getGcmPage(report));
         result.addSubResult("intolerances", getIntolerancesPage(report));
+        result.addSubResult("performance", getPerformancePage(report));
+        result.addSubResult("paddingOracle", getPaddingOraclePage(report));
 
         return result;
     }
 
-    IScanResult getAttacksPage(SiteReport report) {
+    static IScanResult getAttacksPage(SiteReport report) {
         IScanResult attacks = new ScanResult("attacks");
 
         attacks.addBoolean("bleichenbacherVulnerable", report.getBleichenbacherVulnerable());
@@ -104,16 +138,65 @@ public class TlsScan implements IScan {
         attacks.addBoolean("crimeVulnerable", report.getCrimeVulnerable());
         attacks.addBoolean("breachVulnerable", report.getBreachVulnerable());
         attacks.addBoolean("sweet32Vulnerable", report.getSweet32Vulnerable());
-        attacks.addDrownVulnerabilityType("drownVulnerable", report.getDrownVulnerable());
+        attacks.addString("drownVulnerable", report.getDrownVulnerable() != null ? report.getDrownVulnerable().name() : "");
         attacks.addBoolean("logjamVulnerable", report.getLogjamVulnerable());
-      //  attacks.addBoolean("lucky13Vulnerable", report.getLucky13Vulnerable());
         attacks.addBoolean("heartbleedVulnerable", report.getHeartbleedVulnerable());
-        attacks.addEarlyCcsVulnerabilityType("earlyCcsVulnerable", report.getEarlyCcsVulnerable());
-
+        attacks.addString("earlyCcsVulnerable", report.getEarlyCcsVulnerable() != null ? report.getEarlyCcsVulnerable().name() : "");
         return attacks;
     }
 
-    IScanResult getVersionPage(SiteReport report) {
+    static IScanResult getPaddingOraclePage(SiteReport report) {
+        IScanResult paddingOracle = new ScanResult("paddingOracle");
+
+        List<PaddingOracleCipherSuiteFingerprint> _rawPaddingOracleresult = report.getPaddingOracleTestResultList();
+
+        if (_rawPaddingOracleresult == null) {
+            return null;
+        }
+
+        List<IScanResult> paddingOracleResults = new LinkedList<>();
+        paddingOracle.addString("CVE", report.getKnownVulnerability() == null ? "none" : report.getKnownVulnerability().getCve());
+        for (PaddingOracleCipherSuiteFingerprint potr : _rawPaddingOracleresult) {
+            IScanResult tmp = new ScanResult("_paddingOracleResult");
+
+            tmp.addString("getEqualityError", potr.getEqualityError().name());
+            tmp.addString("recordGeneratorType", potr.getRecordGeneratorType().name());
+            tmp.addString("vectorGeneratorType", potr.getVectorGeneratorType().name());
+            tmp.addString("suite", potr.getSuite().name());
+            tmp.addString("version", potr.getVersion().name());
+            tmp.addBoolean("vulnerable", potr.getVulnerable());
+            tmp.addBoolean("scanningError", potr.isHasScanningError());
+
+            /*
+            List<IScanResult> map = new LinkedList<>();
+            for (Integer i : potr.getResponseMap().keySet()) {
+                IScanResult response = new ScanResult(i.toString());
+
+                List<ResponseFingerprint> fingerprints = potr.getResponseMap().get(i);
+
+                response.addStringArray("responseFingerprint",
+                        fingerprints.stream()
+                                .map(ResponseFingerprint::toString)
+                                .collect(Collectors.toList()));
+            }
+             */
+            List<VectorResponse> fp = potr.getResponseMapList().size() > 0 ? potr.getResponseMapList().get(0) : new LinkedList<>();
+            List<String> fp_toString = fp.stream()
+                    .map(VectorResponse::toString)
+                    .collect(Collectors.toList());
+
+            tmp.addStringArray("responseMap", fp_toString);
+            tmp.addBoolean("shaky", potr.isShakyScans());
+            tmp.addBoolean("scanError", potr.isHasScanningError());
+            paddingOracleResults.add(tmp);
+        }
+
+        paddingOracle.addSubResultArray("paddingOracleResults", paddingOracleResults);
+
+        return paddingOracle;
+    }
+
+    static IScanResult getVersionPage(SiteReport report) {
         IScanResult version = new ScanResult("version");
 
         List<String> _versions = new LinkedList<>();
@@ -147,7 +230,7 @@ public class TlsScan implements IScan {
         return version;
     }
 
-    IScanResult getExtensionsPage(SiteReport report) {
+    static IScanResult getExtensionsPage(SiteReport report) {
         IScanResult extensions = new ScanResult("extensions");
 
         List<String> _supportedExtensions = new LinkedList<>();
@@ -207,16 +290,17 @@ public class TlsScan implements IScan {
         return extensions;
     }
 
-    IScanResult getRfcPage(SiteReport report) {
+    static IScanResult getRfcPage(SiteReport report) {
         IScanResult rfc = new ScanResult("rfc");
 
-        rfc.addString("checksMac", report.getMacCheckPatternAppData().toString());
-        rfc.addString("checksFinished", report.getVerifyCheckPattern().toString());
+        rfc.addString("macCheckPatternAppData", report.getMacCheckPatternAppData() != null ? report.getMacCheckPatternAppData().toString() : "");
+        rfc.addString("macCheckPatternFinished", report.getMacCheckPatternFinished() != null ? report.getMacCheckPatternFinished().toString() : "");
+        rfc.addString("checksFinished", report.getVerifyCheckPattern() != null ? report.getVerifyCheckPattern().getType().toString() : "");
 
         return rfc;
     }
 
-    IScanResult getCertificatePage(SiteReport report) {
+    static IScanResult getCertificatePage(SiteReport report) {
         IScanResult certificate = new ScanResult("certificate");
 
         List<String> _certificateReports = new LinkedList<>();
@@ -243,7 +327,7 @@ public class TlsScan implements IScan {
         return certificate;
     }
 
-    IScanResult getCiphersPage(SiteReport report) {
+    static IScanResult getCiphersPage(SiteReport report) {
         IScanResult ciphers = new ScanResult("ciphers");
 
         List<String> _versionSuitePairs = new LinkedList<>();
@@ -257,7 +341,7 @@ public class TlsScan implements IScan {
         ciphers.addStringArray("versionSuitePairs", _versionSuitePairs);
 
         List<String> _cipherSuites = new LinkedList<>();
-        Set<CipherSuite> _rawCipherSuites = report.getCipherSuites();
+        Collection<CipherSuite> _rawCipherSuites = report.getCipherSuites();
         if (_rawCipherSuites != null) {
             for (CipherSuite x : _rawCipherSuites) {
                 _cipherSuites.add(x == null ? null : x.toString());
@@ -303,7 +387,7 @@ public class TlsScan implements IScan {
         return ciphers;
     }
 
-    IScanResult getSessionPage(SiteReport report) {
+    static IScanResult getSessionPage(SiteReport report) {
         IScanResult session = new ScanResult("session");
 
         session.addBoolean("supportsSessionTicket", report.getSupportsSessionTicket());
@@ -315,7 +399,7 @@ public class TlsScan implements IScan {
         return session;
     }
 
-    IScanResult getRenegotiationPage(SiteReport report) {
+    static IScanResult getRenegotiationPage(SiteReport report) {
         IScanResult renegotiation = new ScanResult("renegotiation");
 
         renegotiation.addBoolean("supportsSecureRenegotiation", report.getSupportsSecureRenegotiation());
@@ -326,7 +410,7 @@ public class TlsScan implements IScan {
         return renegotiation;
     }
 
-    IScanResult getGcmPage(SiteReport report) {
+    static IScanResult getGcmPage(SiteReport report) {
         IScanResult gcm = new ScanResult("gcm");
 
         gcm.addBoolean("gcmReuse", report.getGcmReuse());
@@ -336,14 +420,29 @@ public class TlsScan implements IScan {
         return gcm;
     }
 
-    IScanResult getIntolerancesPage(SiteReport report) {
+    static IScanResult getIntolerancesPage(SiteReport report) {
         IScanResult intolerances = new ScanResult("intolerances");
 
         intolerances.addBoolean("versionIntolerance", report.getVersionIntolerance());
         intolerances.addBoolean("extensionIntolerance", report.getExtensionIntolerance());
         intolerances.addBoolean("cipherSuiteIntolerance", report.getCipherSuiteIntolerance());
-        intolerances.addBoolean("clientHelloSizeIntolerance", report.getClientHelloLengthIntolerance());
+        intolerances.addBoolean("clientHelloLengthIntolerance", report.getClientHelloLengthIntolerance());
 
         return intolerances;
+    }
+
+    static IScanResult getPerformancePage(SiteReport report) {
+        IScanResult performance = new ScanResult("performance");
+
+        Collection<PerformanceData> _perfData = report.getPerformanceList();
+        for (PerformanceData data : _perfData) {
+            IScanResult perfDataPoint = new ScanResult(data.getType().name());
+            perfDataPoint.addTimestamp("Starttime", Instant.ofEpochMilli(data.getStarttime()));
+            perfDataPoint.addTimestamp("Stoptime", Instant.ofEpochMilli(data.getStoptime()));
+
+            performance.addSubResult(data.getType().name(), perfDataPoint);
+        }
+
+        return performance;
     }
 }

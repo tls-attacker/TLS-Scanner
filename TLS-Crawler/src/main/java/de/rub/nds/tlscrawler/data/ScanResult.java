@@ -101,6 +101,9 @@ public class ScanResult implements IScanResult {
     }
 
     @Override
+    public void addSubResultArray(String key, List<IScanResult> substructures) {
+        this.checkedAdd(Tuple.create(key, substructures));
+    }
     public void addDrownVulnerabilityType(String key, DrownVulnerabilityType value) { this.checkedAdd(Tuple.create(key, value)); }
 
     @Override

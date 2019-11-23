@@ -35,10 +35,11 @@ public class NullScan implements IScan {
     }
 
     @Override
-    public IScanResult scan(IScanTarget target) {
+    public IScanResult scan(String slaveInstanceId, IScanTarget target) {
         LOG.trace("scan()");
 
         IScanResult result = new ScanResult(this.getName());
+        result.addString(SLAVE_INSTANCE_ID, slaveInstanceId);
 
         result.addString("target_ip", target.getIp());
         result.addString("target_ports", target.getPorts().stream()
