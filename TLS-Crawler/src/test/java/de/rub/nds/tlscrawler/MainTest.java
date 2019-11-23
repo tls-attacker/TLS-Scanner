@@ -12,6 +12,7 @@ import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.utility.Tuple;
+import java.util.LinkedList;
 import org.junit.Test;
 
 import java.util.List;
@@ -34,9 +35,9 @@ public class MainTest {
         for (IScan scan : scans) {
             assertNotNull(scan);
         }
-
+        
         List<String> scanNames = scans.stream().map(x -> x.getName()).collect(Collectors.toList());
-
+        
         for (int i = 0; i < scanNames.size(); i++) {
             for (int j = 0; j < scanNames.size(); j++) {
                 if (i != j) {

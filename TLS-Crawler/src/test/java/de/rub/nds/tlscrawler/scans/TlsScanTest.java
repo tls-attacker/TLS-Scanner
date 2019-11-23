@@ -22,7 +22,7 @@ public class TlsScanTest {
 
     @Test
     public void ParserTest() {
-        SiteReport sr = new SiteReport("local", new LinkedList<>(), false);
+        SiteReport sr = new SiteReport("local", new LinkedList<>());
         List<List<VectorResponse>> fullList = new LinkedList<>();
         List<VectorResponse> porm = new LinkedList<>();
         LinkedList<ResponseFingerprint> rfl = new LinkedList<>();
@@ -42,8 +42,10 @@ public class TlsScanTest {
 
         IScanResult result = new ScanResult("scan");
         result.addString("slaveInstId", "slave");
+        
+        TlsScan scan = new TlsScan();
 
-        TlsScan.populateScanResultFromSiteReport(result, sr);
+        scan.populateScanResultFromSiteReport(result, sr);
 
         new Object();
     }
