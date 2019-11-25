@@ -70,7 +70,7 @@ public class TlsScan implements IScan {
     private final ParallelExecutor parallelExecutor;
 
     public TlsScan() {
-        parallelExecutor = new ParallelExecutor(600, 5);
+        parallelExecutor = new ParallelExecutor(900, 4);
     }
 
     @Override
@@ -202,6 +202,8 @@ public class TlsScan implements IScan {
     
     static IScanResult getInvalidCurvePage(SiteReport report) {
         IScanResult invalidCurve = new ScanResult("invalidCurve");
+        invalidCurve.addInteger("parameterCombinations", report.getParameterCombinations());
+        invalidCurve.addInteger("executedCombinations", report.getExecutedCombinations());
         if(report.getInvalidCurveResultList() != null)
         {
             List<IScanResult> scanResultList = new LinkedList<>();
@@ -239,6 +241,7 @@ public class TlsScan implements IScan {
                     {
                         resultPair.addString("responseFingerprint", "noneExtracted");
                     }
+                    resultPair.addString("trace", fpsPair.getTrace().toString());
                     pairResultList.add(resultPair);
                 }
                 tmp.addSubResultArray("fingerprintSecretPairs", pairResultList);
@@ -387,15 +390,22 @@ public class TlsScan implements IScan {
     IScanResult getCiphersPage(SiteReport report) {
         IScanResult ciphers = new ScanResult("ciphers");
 
-        List<String> _versionSuitePairs = new LinkedList<>();
         List<VersionSuiteListPair> _rawVersionSuitePairs = report.getVersionSuitePairs();
         if (_rawVersionSuitePairs != null) {
+            List<IScanResult> cipherList = new LinkedList<>();
             for (VersionSuiteListPair x : _rawVersionSuitePairs) {
-                _versionSuitePairs.add(x == null ? null : x.toString());
+                IScanResult versionResult = new ScanResult(x.getVersion().name()); 
+                List<String> cipherNames = new LinkedList<>(); 
+                if(x != null) {
+                    for(CipherSuite versionCipher : x.getCiphersuiteList()) {
+                        cipherNames.add(versionCipher.name());
+                    }
+                }
+                versionResult.addStringArray("_ciphers", cipherNames);
+                cipherList.add(versionResult);
             }
+            ciphers.addSubResultArray("_cipherResults", cipherList);
         }
-
-        ciphers.addStringArray("versionSuitePairs", _versionSuitePairs);
 
         List<String> _cipherSuites = new LinkedList<>();
         Set<CipherSuite> _rawCipherSuites = report.getCipherSuites();
