@@ -22,8 +22,16 @@ import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
+import de.rub.nds.tlsscanner.probe.CommonBugProbe;
+import de.rub.nds.tlsscanner.probe.ECPointFormatProbe;
+import de.rub.nds.tlsscanner.probe.ExtensionProbe;
+import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
+import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
 import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
+import de.rub.nds.tlsscanner.probe.ResumptionProbe;
+import de.rub.nds.tlsscanner.probe.Tls13Probe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateIssue;
@@ -86,12 +94,18 @@ public class TlsScan implements IScan {
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
         List<TlsProbe> probeList = new LinkedList<>();
-        probeList.add(new CiphersuiteProbe(config, parallelExecutor));
+        probeList.add(new CommonBugProbe(config, parallelExecutor));
+        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
         probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
+        probeList.add(new CiphersuiteProbe(config, parallelExecutor));
+        probeList.add(new ExtensionProbe(config, parallelExecutor));
+        probeList.add(new Tls13Probe(config, parallelExecutor));
+        probeList.add(new ECPointFormatProbe(config, parallelExecutor));
+        probeList.add(new RenegotiationProbe(config, parallelExecutor));
+        probeList.add(new InvalidCurveProbe(config, parallelExecutor));
+        
         List<AfterProbe> afterList = new LinkedList<>();
         
-        // REMARK:  both of these two are replaced by the scanner
-        //          the constructor still requires them
         ScanJob scanJob = new ScanJob(probeList, afterList);
         ThreadedScanJobExecutor executor = new ThreadedScanJobExecutor(config, scanJob, parallelExecutor.getSize(), config
                             .getClientDelegate().getHost());
@@ -217,7 +231,14 @@ public class TlsScan implements IScan {
                 {
                     IScanResult resultPair = new ScanResult("_fingerprintSecretPair"); 
                     resultPair.addInteger("appliedSecret", fpsPair.getAppliedSecret());
-                    resultPair.addString("responseFingerprint", fpsPair.getFingerprint().toString());
+                    if(fpsPair.getFingerprint() != null)
+                    {
+                        resultPair.addString("responseFingerprint", fpsPair.getFingerprint().toString());
+                    }
+                    else
+                    {
+                        resultPair.addString("responseFingerprint", "noneExtracted");
+                    }
                     pairResultList.add(resultPair);
                 }
                 tmp.addSubResultArray("fingerprintSecretPairs", pairResultList);
@@ -227,7 +248,7 @@ public class TlsScan implements IScan {
                 {
                     IScanResult receivedPublic = new ScanResult("_receivedPublicKey");
                     receivedPublic.addString("x" , point.getX().getData().toString());
-                    receivedPublic.addString("y" , point.getX().getData().toString());
+                    receivedPublic.addString("y" , point.getY().getData().toString());
                     receivedPublicResultList.add(receivedPublic);
                 }
                 tmp.addSubResultArray("receivedPublicKeys", receivedPublicResultList);
@@ -237,7 +258,7 @@ public class TlsScan implements IScan {
                 {
                     IScanResult finishedPublic = new ScanResult("_receivedFinishedKey");
                     finishedPublic.addString("x" , point.getX().getData().toString());
-                    finishedPublic.addString("y" , point.getX().getData().toString());
+                    finishedPublic.addString("y" , point.getY().getData().toString());
                     finishedPublicResultList.add(finishedPublic);
                 }
                 tmp.addSubResultArray("receivedFinishedKeys", finishedPublicResultList);
