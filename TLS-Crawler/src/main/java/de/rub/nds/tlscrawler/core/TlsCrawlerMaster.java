@@ -57,6 +57,7 @@ public class TlsCrawlerMaster extends TlsCrawler {
     }
 
     public void crawl(List<String> scans, IAddressIterator targets, List<Integer> ports, String scanId) {
+        LOG.info("Crawling started");
         if (areNotValidArgs(scans, targets, ports)) {
             LOG.error("Crawling task has not been established due to invalid arguments.");
         }
@@ -66,7 +67,8 @@ public class TlsCrawlerMaster extends TlsCrawler {
         int ctr = 0;
         Collection<IScanTask> bulk = new ArrayList<>(1000);
 
-        for (String target : targets) {
+        while (targets.iterator().hasNext()) {
+            String target = targets.iterator().next();
             String taskId = UUID.randomUUID().toString();
 
             bulk.add(new ScanTask(
@@ -82,7 +84,7 @@ public class TlsCrawlerMaster extends TlsCrawler {
                     scans)
             );
 
-            if (++ctr >= 1000) {
+            if (++ctr >= 1000 || targets.iterator().hasNext() == false) {
                 setUp(this, bulk);
                 ctr = 0;
                 bulk = new ArrayList<>(1000);
@@ -99,6 +101,7 @@ public class TlsCrawlerMaster extends TlsCrawler {
         } finally {
             targets.remove();
         }
+        LOG.info("All ScanTasks have been scheduled");
     }
     
     private static void setUp(IOrganizer org, Collection<IScanTask> tasks) {
