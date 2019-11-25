@@ -249,53 +249,59 @@ public class InvalidCurveProbe extends TlsProbe {
 
             for (NamedGroup group : groupList) {
                 for (ECPointFormat format : formatList) {
-                    if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        // individual scans for every ciphersuite
-                        for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
-                            if (legitInvalidCurveVector(group, format)) {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group,
-                                        format, false, false));
-                            }
-                            if (legitTwistVector(group, format)) {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group,
-                                        format, true, false));
-                            }
-                        }
+                    if (supportedECDHCipherSuites.get(protocolVersion) == null) {
+                        LOGGER.warn("Protocol Version " + protocolVersion
+                                + " had no entry in Ciphersuite map - omitting from InvalidCurve scan");
                     } else {
-                        // split ciphersuites in static and ephemeral and scan
-                        // once for each list
-                        LinkedList<CipherSuite> ephemeralSuites = new LinkedList<>();
-                        LinkedList<CipherSuite> staticSuites = new LinkedList<>();
-                        for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
-                            if (cipherSuite.isEphemeral()) {
-                                ephemeralSuites.add(cipherSuite);
-                            } else {
-                                staticSuites.add(cipherSuite);
+                        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                            // individual scans for every ciphersuite
+                            for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
+                                if (legitInvalidCurveVector(group, format)) {
+                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group,
+                                            format, false, false));
+                                }
+                                if (legitTwistVector(group, format)) {
+                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite, group,
+                                            format, true, false));
+                                }
+                            }
+                        } else {
+                            // split ciphersuites in static and ephemeral and
+                            // scan
+                            // once for each list
+                            LinkedList<CipherSuite> ephemeralSuites = new LinkedList<>();
+                            LinkedList<CipherSuite> staticSuites = new LinkedList<>();
+                            for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
+                                if (cipherSuite.isEphemeral()) {
+                                    ephemeralSuites.add(cipherSuite);
+                                } else {
+                                    staticSuites.add(cipherSuite);
+                                }
+                            }
+
+                            if (ephemeralSuites.size() > 0) {
+                                if (legitInvalidCurveVector(group, format)) {
+                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites,
+                                            group, format, false, false));
+                                }
+                                if (legitTwistVector(group, format)) {
+                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites,
+                                            group, format, true, false));
+                                }
+                            }
+                            if (staticSuites.size() > 0) {
+                                if (legitInvalidCurveVector(group, format)) {
+                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites,
+                                            group, format, false, false));
+                                }
+                                if (legitTwistVector(group, format)) {
+                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites,
+                                            group, format, true, false));
+                                }
                             }
                         }
 
-                        if (ephemeralSuites.size() > 0) {
-                            if (legitInvalidCurveVector(group, format)) {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites, group,
-                                        format, false, false));
-                            }
-                            if (legitTwistVector(group, format)) {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites, group,
-                                        format, true, false));
-                            }
-                        }
-                        if (staticSuites.size() > 0) {
-                            if (legitInvalidCurveVector(group, format)) {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites, group,
-                                        format, false, false));
-                            }
-                            if (legitTwistVector(group, format)) {
-                                parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites, group,
-                                        format, true, false));
-                            }
-                        }
                     }
-
                 }
 
             }
