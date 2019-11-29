@@ -82,29 +82,35 @@ public class RacoonAttackProbe extends TlsProbe {
 
         try {
             executor.executeWorkflow();
-            KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(state.getTlsContext().getSelectedCipherSuite());
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()) && keyExchangeAlgorithm == KeyExchangeAlgorithm.DH_DSS || keyExchangeAlgorithm == KeyExchangeAlgorithm.DH_RSA) {
-                //static dh is supported
-                staticDhModulus = state.getTlsContext().getServerDhModulus();
-
+            if (state.getTlsContext().getSelectedCipherSuite() != null) {
+                KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(state.getTlsContext().getSelectedCipherSuite());
+                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()) && keyExchangeAlgorithm == KeyExchangeAlgorithm.DH_DSS || keyExchangeAlgorithm == KeyExchangeAlgorithm.DH_RSA) {
+                    //static dh is supported
+                    staticDhModulus = state.getTlsContext().getServerDhModulus();
+                }
             }
             config.setDefaultClientSupportedCiphersuites(ephemeralDhCipherSuites);
             state = new State(config);
             executor.executeWorkflow();
 
             BigInteger firstPk = null;
-            keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(state.getTlsContext().getSelectedCipherSuite());
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()) && keyExchangeAlgorithm.isKeyExchangeDh() && state.getTlsContext().getSelectedCipherSuite().isEphemeral()) {
-                //static dh is supported
-                firstPk = state.getTlsContext().getServerDhPublicKey();
+            if (state.getTlsContext().getSelectedCipherSuite() != null) {
+
+                KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(state.getTlsContext().getSelectedCipherSuite());
+                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()) && keyExchangeAlgorithm.isKeyExchangeDh() && state.getTlsContext().getSelectedCipherSuite().isEphemeral()) {
+                    //static dh is supported
+                    firstPk = state.getTlsContext().getServerDhPublicKey();
+                }
             }
             executor.executeWorkflow();
 
             BigInteger secondPk = null;
-            keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(state.getTlsContext().getSelectedCipherSuite());
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()) && keyExchangeAlgorithm.isKeyExchangeDh() && state.getTlsContext().getSelectedCipherSuite().isEphemeral()) {
-                //static dh is supported
-                firstPk = state.getTlsContext().getServerDhPublicKey();
+            if (state.getTlsContext().getSelectedCipherSuite() != null) {
+                KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(state.getTlsContext().getSelectedCipherSuite());
+                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()) && keyExchangeAlgorithm.isKeyExchangeDh() && state.getTlsContext().getSelectedCipherSuite().isEphemeral()) {
+                    //static dh is supported
+                    firstPk = state.getTlsContext().getServerDhPublicKey();
+                }
             }
             if (firstPk != null && secondPk != null && firstPk.equals(secondPk)) {
                 reusedDheModulus = state.getTlsContext().getServerDhModulus();
