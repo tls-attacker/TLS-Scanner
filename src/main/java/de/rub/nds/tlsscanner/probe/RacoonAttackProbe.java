@@ -16,10 +16,9 @@ import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.PRFAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
@@ -45,9 +44,21 @@ public class RacoonAttackProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         Config config = scannerConfig.createConfig();
+        config.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        config.setEnforceSettings(true);
+        config.setAddServerNameIndicationExtension(true);
+        config.setAddEllipticCurveExtension(false);
+        config.setAddECPointFormatExtension(false);
+        config.setAddSignatureAndHashAlgorithmsExtension(true);
+        config.setAddRenegotiationInfoExtension(true);
+        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        config.setQuickReceive(true);
+        config.setEarlyStop(true);
+        config.setStopActionsAfterFatal(true);
+
         List<CipherSuite> staticDhCipherSuites = new LinkedList<>();
         List<CipherSuite> ephemeralDhCipherSuites = new LinkedList<>();
-        ;
+
         BigInteger reusedDheModulus = null; // Its not just a reused modulus - its a reused modulus for a reused public key...
         BigInteger staticDhModulus = null;
         Boolean supportsSha384Prf = false;
@@ -78,10 +89,8 @@ public class RacoonAttackProbe extends TlsProbe {
         }
         config.setDefaultClientSupportedCiphersuites(staticDhCipherSuites);
         State state = new State(config);
-        WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
-
         try {
-            executor.executeWorkflow();
+            executeState(state);
             if (state.getTlsContext().getSelectedCipherSuite() != null) {
                 KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(state.getTlsContext().getSelectedCipherSuite());
                 if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()) && keyExchangeAlgorithm == KeyExchangeAlgorithm.DH_DSS || keyExchangeAlgorithm == KeyExchangeAlgorithm.DH_RSA) {
@@ -90,8 +99,7 @@ public class RacoonAttackProbe extends TlsProbe {
                 }
             }
             config.setDefaultClientSupportedCiphersuites(ephemeralDhCipherSuites);
-            state = new State(config);
-            executor.executeWorkflow();
+            executeState(state);
 
             BigInteger firstPk = null;
             if (state.getTlsContext().getSelectedCipherSuite() != null) {
@@ -102,17 +110,20 @@ public class RacoonAttackProbe extends TlsProbe {
                     firstPk = state.getTlsContext().getServerDhPublicKey();
                 }
             }
-            executor.executeWorkflow();
-
+            executeState(state);
             BigInteger secondPk = null;
             if (state.getTlsContext().getSelectedCipherSuite() != null) {
                 KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(state.getTlsContext().getSelectedCipherSuite());
                 if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace()) && keyExchangeAlgorithm.isKeyExchangeDh() && state.getTlsContext().getSelectedCipherSuite().isEphemeral()) {
                     //static dh is supported
-                    firstPk = state.getTlsContext().getServerDhPublicKey();
+                    secondPk = state.getTlsContext().getServerDhPublicKey();
                 }
             }
+            System.out.println("CipherSUite: " + state.getTlsContext().getSelectedCipherSuite());
+            System.out.println("First PK: " + firstPk);
+            System.out.println("Second PK: " + secondPk);
             if (firstPk != null && secondPk != null && firstPk.equals(secondPk)) {
+                System.out.println("reuse detected!");
                 reusedDheModulus = state.getTlsContext().getServerDhModulus();
             }
             return new RacoonAttackResult(reusedDheModulus, staticDhModulus, supportsSha384Prf, supportsSha256Prf, supportsLegacyPrf, supportsSSLv3);

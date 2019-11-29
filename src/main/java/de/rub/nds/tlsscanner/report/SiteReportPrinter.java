@@ -586,9 +586,11 @@ public class SiteReportPrinter {
         if (report.getRacoonAttackProbabilities() != null) {
             prettyAppendHeading(builder, "Racoon Attacks Details");
             prettyAppend(builder, "Available Injection points:", (long) report.getRacoonAttackProbabilities().size());
-            prettyAppendSubheading(builder, "Probabilties");
-            for (RacoonAttackProbabilities probabilbities : report.getRacoonAttackProbabilities()) {
-                builder.append(probabilbities.getPosition().name() + "\t BitsReq:" + probabilbities.getZeroBitsRequiredToNextBlockBorder() + "\t" + probabilbities.getChanceForEquation().toEngineeringString());
+            if (report.getRacoonAttackProbabilities().size() > 0) {
+                prettyAppendSubheading(builder, "Probabilties");
+                for (RacoonAttackProbabilities probabilbities : report.getRacoonAttackProbabilities()) {
+                    builder.append(addIndentations(probabilbities.getPosition().name()) + "\t BitsReq:" + probabilbities.getZeroBitsRequiredToNextBlockBorder() + "\t" + probabilbities.getChanceForEquation().toEngineeringString() + "\n");
+                }
             }
         }
         return builder;
