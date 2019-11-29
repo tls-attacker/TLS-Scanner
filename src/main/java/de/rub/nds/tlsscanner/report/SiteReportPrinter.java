@@ -42,7 +42,6 @@ import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
-import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
@@ -56,7 +55,6 @@ import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuit
 import de.rub.nds.tlsscanner.report.result.racoonattack.RacoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.racoonattack.RacoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
-import java.math.BigDecimal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Date;
@@ -592,7 +590,7 @@ public class SiteReportPrinter {
                 for (RacoonAttackProbabilities probabilbities : report.getRacoonAttackProbabilities()) {
                     builder.append(addIndentations(probabilbities.getPosition().name()) + "\t BitsReq:" + probabilbities.getZeroBitsRequiredToNextBlockBorder() + "\t" + probabilbities.getChanceForEquation().toEngineeringString() + "\n");
                 }
-                if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) || report.getResult(AnalyzedProperty.SUPPORTS_PSK_DHE) == TestResult.TRUE) {
                     prettyAppendSubheading(builder, "PSK Length Probabilties");
                     prettyAppendSubheading(builder, addIndentations("PSK Length") + addIndentations("BitsReq") + "Probability");
 

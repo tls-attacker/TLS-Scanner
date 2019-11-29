@@ -62,14 +62,8 @@ public class RacoonAttackResult extends ProbeResult {
         this.supportsSha256Sha1 = supportsSha256;
         this.supportsLegacyPrf = supportsLegacyPrf;
         this.supportsSslv3 = supportsSslv3;
-        System.out.println("RC: " + this.toString());
     }
-
-    @Override
-    public String toString() {
-        return "RacoonAttackResult{" + "reusedDheModulus=" + reusedDheModulus + ", staticDhModulus=" + staticDhModulus + ", supportsSha384=" + supportsSha384 + ", supportsSha256Sha1=" + supportsSha256Sha1 + ", supportsLegacyPrf=" + supportsLegacyPrf + ", supportsSslv3=" + supportsSslv3 + ", attackProbabilityList=" + attackProbabilityList + ", didNotExecute=" + didNotExecute + '}';
-    }
-
+    
     @Override
     protected void mergeData(SiteReport report) {
 

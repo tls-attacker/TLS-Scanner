@@ -119,11 +119,7 @@ public class RacoonAttackProbe extends TlsProbe {
                     secondPk = state.getTlsContext().getServerDhPublicKey();
                 }
             }
-            System.out.println("CipherSUite: " + state.getTlsContext().getSelectedCipherSuite());
-            System.out.println("First PK: " + firstPk);
-            System.out.println("Second PK: " + secondPk);
             if (firstPk != null && secondPk != null && firstPk.equals(secondPk)) {
-                System.out.println("reuse detected!");
                 reusedDheModulus = state.getTlsContext().getServerDhModulus();
             }
             return new RacoonAttackResult(reusedDheModulus, staticDhModulus, supportsSha384Prf, supportsSha256Prf, supportsLegacyPrf, supportsSSLv3);
