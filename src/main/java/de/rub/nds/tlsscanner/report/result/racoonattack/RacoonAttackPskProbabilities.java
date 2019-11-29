@@ -1,16 +1,26 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.report.result.racoonattack;
+
+import java.math.BigDecimal;
 
 public class RacoonAttackPskProbabilities {
 
     private int pskLength;
 
-    private int zeroBytesRequiredToNextBlockBorder;
+    private int zeroBitsRequiredToNextBlockBorder;
 
-    private double chanceForEquation;
+    private BigDecimal chanceForEquation;
 
-    public RacoonAttackPskProbabilities(int pskLength, int zeroBytesRequiredToNextBlockBorder, double chanceForEquation) {
+    public RacoonAttackPskProbabilities(int pskLength, int zeroBitsRequiredToNextBlockBorder, BigDecimal chanceForEquation) {
         this.pskLength = pskLength;
-        this.zeroBytesRequiredToNextBlockBorder = zeroBytesRequiredToNextBlockBorder;
+        this.zeroBitsRequiredToNextBlockBorder = zeroBitsRequiredToNextBlockBorder;
         this.chanceForEquation = chanceForEquation;
     }
 
@@ -22,19 +32,19 @@ public class RacoonAttackPskProbabilities {
         this.pskLength = pskLength;
     }
 
-    public int getZeroBytesRequiredToNextBlockBorder() {
-        return zeroBytesRequiredToNextBlockBorder;
+    public int getZeroBitsRequiredToNextBlockBorder() {
+        return zeroBitsRequiredToNextBlockBorder;
     }
 
-    public void setZeroBytesRequiredToNextBlockBorder(int zeroBytesRequiredToNextBlockBorder) {
-        this.zeroBytesRequiredToNextBlockBorder = zeroBytesRequiredToNextBlockBorder;
+    public void setZeroBitsRequiredToNextBlockBorder(int zeroBitsRequiredToNextBlockBorder) {
+        this.zeroBitsRequiredToNextBlockBorder = zeroBitsRequiredToNextBlockBorder;
     }
 
-    public double getChanceForEquation() {
+    public BigDecimal getChanceForEquation() {
         return chanceForEquation;
     }
 
-    public void setChanceForEquation(double chanceForEquation) {
+    public void setChanceForEquation(BigDecimal chanceForEquation) {
         this.chanceForEquation = chanceForEquation;
     }
 

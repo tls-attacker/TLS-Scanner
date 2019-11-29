@@ -34,6 +34,7 @@ import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.report.result.racoonattack.RacoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -61,6 +62,7 @@ public class SiteReport extends Observable {
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
+    private List<RacoonAttackProbabilities> racoonAttackProbabilities;
 
     //Version
     private List<ProtocolVersion> versions = null;
@@ -528,4 +530,13 @@ public class SiteReport extends Observable {
     public synchronized void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
     }
+
+    public synchronized List<RacoonAttackProbabilities> getRacoonAttackProbabilities() {
+        return racoonAttackProbabilities;
+    }
+
+    public synchronized void setRacoonAttackProbabilities(List<RacoonAttackProbabilities> racoonAttackProbabilities) {
+        this.racoonAttackProbabilities = racoonAttackProbabilities;
+    }
+
 }
