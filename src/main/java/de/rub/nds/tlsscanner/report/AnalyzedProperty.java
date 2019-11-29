@@ -176,6 +176,7 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_LOGJAM(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_FREAK(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_RACOON_ATTACK(AnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
