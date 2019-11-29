@@ -53,7 +53,9 @@ import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.report.result.racoonattack.RacoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+import java.math.BigDecimal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Date;
@@ -117,6 +119,7 @@ public class SiteReportPrinter {
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
+        appendRacoonAttackDetails(builder);
         //appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
@@ -575,6 +578,19 @@ public class SiteReportPrinter {
         prettyAppend(builder, "DROWN", AnalyzedProperty.VULNERABLE_TO_DROWN);
         prettyAppend(builder, "Heartbleed", AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
+        prettyAppend(builder, "Racoon", AnalyzedProperty.VULNERABLE_TO_RACOON_ATTACK);
+        return builder;
+    }
+
+    private StringBuilder appendRacoonAttackDetails(StringBuilder builder) {
+        if (report.getRacoonAttackProbabilities() != null) {
+            prettyAppendHeading(builder, "Racoon Attacks Details");
+            prettyAppend(builder, "Available Injection points:", (long) report.getRacoonAttackProbabilities().size());
+            prettyAppendSubheading(builder, "Probabilties");
+            for (RacoonAttackProbabilities probabilbities : report.getRacoonAttackProbabilities()) {
+                builder.append(probabilbities.getPosition().name() + "\t BitsReq:" + probabilbities.getZeroBitsRequiredToNextBlockBorder() + "\t" + probabilbities.getChanceForEquation().toEngineeringString());
+            }
+        }
         return builder;
     }
 
@@ -1049,7 +1065,7 @@ public class SiteReportPrinter {
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
             influencers.entrySet().stream().sorted((o1, o2) -> {
-                return o1.getValue().compareTo(o2.getValue()); 
+                return o1.getValue().compareTo(o2.getValue());
             }).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
@@ -1091,20 +1107,20 @@ public class SiteReportPrinter {
         prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
     }
 
-    private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer, 
+    private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer,
             PropertyResultRecommendation resultRecommendation) {
         AnsiColor color = getRecommendationColor(influencer);
         prettyAppend(builder, resultRecommendation.getShortDescription() + ". " + resultRecommendation.getHandlingRecommendation(), color);
     }
-    
+
     private AnsiColor getRecommendationColor(PropertyResultRatingInfluencer influencer) {
-        if(influencer.getInfluence() <= -200) {
+        if (influencer.getInfluence() <= -200) {
             return AnsiColor.RED;
-        } else if(influencer.getInfluence() < -50) {
+        } else if (influencer.getInfluence() < -50) {
             return AnsiColor.YELLOW;
-        } else if(influencer.getInfluence() > 0) {
+        } else if (influencer.getInfluence() > 0) {
             return AnsiColor.GREEN;
-        } 
+        }
         return AnsiColor.DEFAULT_COLOR;
     }
 

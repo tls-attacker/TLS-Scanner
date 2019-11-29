@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.PoodleProbe;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.probe.RacoonAttackProbe;
 import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
 import de.rub.nds.tlsscanner.probe.ResumptionProbe;
 import de.rub.nds.tlsscanner.probe.SniProbe;
@@ -133,6 +134,7 @@ public class TlsScanner {
         probeList.add(new DrownProbe(config, parallelExecutor));
         probeList.add(new EarlyCcsProbe(config, parallelExecutor));
         probeList.add(new MacProbe(config, parallelExecutor));
+        probeList.add(new RacoonAttackProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterprobe());

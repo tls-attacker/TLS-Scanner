@@ -38,7 +38,7 @@ public class RacoonAttackProbe extends TlsProbe {
 
     private List<VersionSuiteListPair> suitePairList;
 
-    public RacoonAttackProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
+    public RacoonAttackProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RACOON_ATTACK, scannerConfig, 0);
     }
 
