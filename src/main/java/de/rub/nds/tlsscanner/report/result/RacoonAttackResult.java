@@ -138,7 +138,7 @@ public class RacoonAttackResult extends ProbeResult {
         int bitsToNextSmallerBlock = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, minPadding, hashLengthField);
 
         List<RacoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength, fixedLength, minPadding, hashLengthField, modulus);
-        return new RacoonAttackProbabilities(RacoonAttackVulnerabilityPosition.TLS10_11_LEGACY, bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList);
+        return new RacoonAttackProbabilities(RacoonAttackVulnerabilityPosition.TLS_LEGACY_PRF, bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList);
     }
 
     /**
@@ -175,7 +175,7 @@ public class RacoonAttackResult extends ProbeResult {
         int bitsToNextSmallerBlock = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, minPadding, hashLengthField);
 
         List<RacoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength, fixedLength, minPadding, hashLengthField, modulus);
-        return new RacoonAttackProbabilities(RacoonAttackVulnerabilityPosition.TLS12_SHA256SHA1, bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList);
+        return new RacoonAttackProbabilities(RacoonAttackVulnerabilityPosition.TLS12_SHA256PRF, bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList);
 
     }
 
@@ -189,7 +189,7 @@ public class RacoonAttackResult extends ProbeResult {
         int bitsToNextSmallerBlock = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, minPadding, hashLengthField);
 
         List<RacoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength, fixedLength, minPadding, hashLengthField, modulus);
-        return new RacoonAttackProbabilities(RacoonAttackVulnerabilityPosition.TLS12_SHA384, bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList);
+        return new RacoonAttackProbabilities(RacoonAttackVulnerabilityPosition.TLS12_SHA384PRF, bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList);
     }
 
     private RacoonAttackProbabilities computeSslv3OuterMd5Probability(BigInteger modulus) {

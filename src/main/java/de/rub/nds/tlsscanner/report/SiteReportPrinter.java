@@ -54,6 +54,7 @@ import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResu
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.racoonattack.RacoonAttackProbabilities;
+import de.rub.nds.tlsscanner.report.result.racoonattack.RacoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.math.BigDecimal;
 import org.apache.logging.log4j.LogManager;
@@ -591,6 +592,20 @@ public class SiteReportPrinter {
                 for (RacoonAttackProbabilities probabilbities : report.getRacoonAttackProbabilities()) {
                     builder.append(addIndentations(probabilbities.getPosition().name()) + "\t BitsReq:" + probabilbities.getZeroBitsRequiredToNextBlockBorder() + "\t" + probabilbities.getChanceForEquation().toEngineeringString() + "\n");
                 }
+                if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    prettyAppendSubheading(builder, "PSK Length Probabilties");
+                    prettyAppendSubheading(builder, addIndentations("PSK Length") + addIndentations("BitsReq") + "Probability");
+
+                    for (RacoonAttackProbabilities probabilbities : report.getRacoonAttackProbabilities()) {
+
+                        prettyAppendSubheading(builder, "-------" + probabilbities.getPosition().name() + "-------");
+
+                        for (RacoonAttackPskProbabilities pskProbability : probabilbities.getPskProbabilityList()) {
+                            prettyAppend(builder, addIndentations("" + pskProbability.getPskLength()) + addIndentations("" + pskProbability.getZeroBitsRequiredToNextBlockBorder()) + pskProbability.getChanceForEquation().toEngineeringString());
+                        }
+                    }
+                }
+
             }
         }
         return builder;
