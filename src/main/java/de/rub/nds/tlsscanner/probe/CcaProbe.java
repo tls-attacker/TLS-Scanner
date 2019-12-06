@@ -112,6 +112,20 @@ public class CcaProbe extends TlsProbe {
          * won't work with the way we currently specify the client_input. Gotta see how to handle that
          */
 
+        /**
+         * TODO: We have to determine which test cases to execute based on the input provided. I.e. if a only a
+         * TODO: certificate without key was provided we can't use any test cases that send legitimate CertificateVerify
+         * TODO: messages. But if we have at least one certificateKeyPair that's valid we could use some more.
+         * TODO: Then if we have the key to an intermediate CA/root CA and the certificate we could execute all tests.
+         */
+
+        /**
+         * TODO: The current model assumes that certificates for which a key is provided are trusted by the server.
+         * TODO: is that ok to assume? Might we miss important bugs using that assumption?
+         * TODO: Maybe we should have test cases where we provide the complete certificate chain, including an untrusted
+         * TODO: root certificate.
+         */
+
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
