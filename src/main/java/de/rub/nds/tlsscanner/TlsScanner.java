@@ -91,38 +91,39 @@ public class TlsScanner {
          * TODO: when commenting the padding oracle probe the executor is already
          * shut down once the CCA probe gets executed.
          */
-        probeList.add(new CommonBugProbe(config, parallelExecutor));
-        probeList.add(new SniProbe(config, parallelExecutor));
-        probeList.add(new CompressionsProbe(config, parallelExecutor));
-        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
-        probeList.add(new CertificateProbe(config, parallelExecutor));
-        probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
-        probeList.add(new CiphersuiteProbe(config, parallelExecutor));
-        probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
-        probeList.add(new ExtensionProbe(config, parallelExecutor));
-        probeList.add(new Tls13Probe(config, parallelExecutor));
-        probeList.add(new TokenbindingProbe(config, parallelExecutor));
-        probeList.add(new HttpHeaderProbe(config, parallelExecutor));
-        probeList.add(new ResumptionProbe(config, parallelExecutor));
-        probeList.add(new RenegotiationProbe(config, parallelExecutor));
-        probeList.add(new HeartbleedProbe(config, parallelExecutor));
-        probeList.add(new PaddingOracleProbe(config, parallelExecutor));
-        probeList.add(new BleichenbacherProbe(config, parallelExecutor));
-        probeList.add(new PoodleProbe(config, parallelExecutor));
-        probeList.add(new TlsPoodleProbe(config, parallelExecutor));
-        probeList.add(new InvalidCurveProbe(config, parallelExecutor));
-        probeList.add(new DrownProbe(config, parallelExecutor));
-        probeList.add(new EarlyCcsProbe(config, parallelExecutor));
-        probeList.add(new MacProbe(config, parallelExecutor));
-        probeList.add(new CcaSupportProbe(config, parallelExecutor));
-        probeList.add(new CcaProbe(config, parallelExecutor));
-        afterList.add(new Sweet32AfterProbe());
-        afterList.add(new FreakAfterProbe());
-        afterList.add(new LogjamAfterprobe());
-        afterList.add(new EvaluateRandomnessAfterProbe());
-        afterList.add(new EcPublicKeyAfterProbe());
-        afterList.add(new DhValueAfterProbe());
-        afterList.add(new PaddingOracleIdentificationAfterProbe());
+//        probeList.add(new CommonBugProbe(config, parallelExecutor));
+//        probeList.add(new SniProbe(config, parallelExecutor));
+//        probeList.add(new CompressionsProbe(config, parallelExecutor));
+//        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
+//        probeList.add(new CertificateProbe(config, parallelExecutor));
+//        probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
+//        probeList.add(new CiphersuiteProbe(config, parallelExecutor));
+//        probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
+//        probeList.add(new ExtensionProbe(config, parallelExecutor));
+//        probeList.add(new Tls13Probe(config, parallelExecutor));
+//        probeList.add(new TokenbindingProbe(config, parallelExecutor));
+//        probeList.add(new HttpHeaderProbe(config, parallelExecutor));
+//        probeList.add(new ResumptionProbe(config, parallelExecutor));
+//        probeList.add(new RenegotiationProbe(config, parallelExecutor));
+//        probeList.add(new HeartbleedProbe(config, parallelExecutor));
+//        probeList.add(new PaddingOracleProbe(config, parallelExecutor));
+//        probeList.add(new BleichenbacherProbe(config, parallelExecutor));
+//        probeList.add(new PoodleProbe(config, parallelExecutor));
+//        probeList.add(new TlsPoodleProbe(config, parallelExecutor));
+//        probeList.add(new InvalidCurveProbe(config, parallelExecutor));
+//        probeList.add(new DrownProbe(config, parallelExecutor));
+//        probeList.add(new EarlyCcsProbe(config, parallelExecutor));
+//        probeList.add(new MacProbe(config, parallelExecutor));
+//        probeList.add(new CcaSupportProbe(config, parallelExecutor));
+        probeList.add(new DebugProbe(config, parallelExecutor));
+//        probeList.add(new CcaProbe(config, parallelExecutor));
+//        afterList.add(new Sweet32AfterProbe());
+//        afterList.add(new FreakAfterProbe());
+//        afterList.add(new LogjamAfterprobe());
+//        afterList.add(new EvaluateRandomnessAfterProbe());
+//        afterList.add(new EcPublicKeyAfterProbe());
+//        afterList.add(new DhValueAfterProbe());
+//        afterList.add(new PaddingOracleIdentificationAfterProbe());
 
     }
 
@@ -174,7 +175,7 @@ public class TlsScanner {
     private boolean speaksTls() {
         Config tlsConfig = config.createConfig();
         ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-        return checker.speaksTls(tlsConfig);
+        return true;//checker.speaksTls(tlsConfig);
     }
 
     private boolean speaksStartTls() {
