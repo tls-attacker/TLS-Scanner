@@ -51,6 +51,7 @@ public class DebugProbe extends TlsProbe {
         ClientDelegate delegate = (ClientDelegate) ccaConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
         /**
@@ -58,92 +59,80 @@ public class DebugProbe extends TlsProbe {
          */
         List<ProtocolVersion> desiredVersions = new LinkedList<>();
 //        desiredVersions.add(ProtocolVersion.TLS11);
-        desiredVersions.add(ProtocolVersion.TLS10);
-//        desiredVersions.add(ProtocolVersion.TLS12);
+//        desiredVersions.add(ProtocolVersion.TLS10);
+        desiredVersions.add(ProtocolVersion.TLS12);
 
-
-        /**
-         * Add any VersionSuitePair that is supported by the target
-         * and by our test cases (Version 1.0 - 1.2)
-         */
-
-        /**
-         * If we do not want a detailed scan, use only one cipher suite per protocol version.
-         * TODO: Do I want to make sure it's the same for all? If yes I'd have the take a DH/DHE suite from the lowest
-         * protocol version and use that.
-         */
 
 
         List<CipherSuite> cipherSuites = new LinkedList<>();
 
-        cipherSuites.add(CipherSuite.TLS_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_CHACHA20_POLY1305_SHA256);
-        cipherSuites.add(CipherSuite.TLS_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-
-//        cipherSuites.addAll(CipherSuite.getImplemented());
+//        cipherSuites.add(CipherSuite.TLS_AES_256_GCM_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_CHACHA20_POLY1305_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_AES_128_GCM_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384);
 //        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+
+        cipherSuites.addAll(CipherSuite.getImplemented());
 
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
-        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_ZFIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.CLIENT_INPUT;
+        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.LEAF_RSA;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
-                for (ProtocolVersion protocolVersion : desiredVersions) {
-                    CipherSuite cipherSuite = CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA;
-                    CertificateMessage certificateMessage = null;
-                        Config tlsConfig = ccaConfig.createConfig();
-                        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
-                        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-                        tlsConfig.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
-                        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-                        certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
-                        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
-                                certificateMessage);
-                        State state = new State(tlsConfig, trace);
-                        try {
-                            executeState(state);
-                        } catch (Exception E) {
-                            LOGGER.error("Error while testing for client authentication bypasses." + E);
-                        }
-                        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-                            bypassable = true;
-                            resultList.add(new CcaTestResult(true, ccaWorkflowType, ccaCertificateType,
-                                    protocolVersion, cipherSuite));
-                        } else {
-                            resultList.add(new CcaTestResult(false, ccaWorkflowType, ccaCertificateType,
-                                    protocolVersion, cipherSuite));
-                        }
-
-
+        for (ProtocolVersion protocolVersion : desiredVersions) {
+            // Dummy for output since I do not iterate Ciphersuites
+            CipherSuite cipherSuite = CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA;
+            CertificateMessage certificateMessage = null;
+            Config tlsConfig = ccaConfig.createConfig();
+            tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+            // Needed for CyaSSL/WolfSSL. The server answers only to client hellos which have Version 1.0 in the Record Protocol
+//          tlsConfig.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
+            tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+            certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
+            WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
+                    certificateMessage);
+            State state = new State(tlsConfig, trace);
+            try {
+                executeState(state);
+            } catch (Exception E) {
+                LOGGER.error("Error while testing for client authentication bypasses." + E);
+            }
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+                bypassable = true;
+                resultList.add(new CcaTestResult(true, ccaWorkflowType, ccaCertificateType,
+                        protocolVersion, cipherSuite));
+            } else {
+                resultList.add(new CcaTestResult(false, ccaWorkflowType, ccaCertificateType,
+                        protocolVersion, cipherSuite));
+            }
         }
         return new CcaResult(bypassable ? TestResult.TRUE : TestResult.FALSE, resultList);
     }
@@ -154,9 +143,7 @@ public class DebugProbe extends TlsProbe {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-        //this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
-    }
+    public void adjustConfig(SiteReport report) {}
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
@@ -164,24 +151,3 @@ public class DebugProbe extends TlsProbe {
     }
 
 }
-
-
-/**
- * TODO: Note that when using a pem encoded certificate we still got the following results
- * check what this means.
- * Client authentication
- *
- * Supported			 : true
- * CRT_CKE_CCS_FIN.CLIENT_INPUT.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CRT_CKE_CCS_FIN.CLIENT_INPUT.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CRT_CKE_CCS_FIN.CLIENT_INPUT.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.CLIENT_INPUT.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.CLIENT_INPUT.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.CLIENT_INPUT.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.EMPTY.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.EMPTY.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.EMPTY.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_CRT_FIN_CCS_RND.CLIENT_INPUT.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_CRT_FIN_CCS_RND.CLIENT_INPUT.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_CRT_FIN_CCS_RND.CLIENT_INPUT.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- */
