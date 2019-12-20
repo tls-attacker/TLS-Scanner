@@ -175,7 +175,7 @@ public class TlsScanner {
     private boolean speaksTls() {
         Config tlsConfig = config.createConfig();
         ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-        return true;//checker.speaksTls(tlsConfig);
+        return checker.speaksTls(tlsConfig);
     }
 
     private boolean speaksStartTls() {
