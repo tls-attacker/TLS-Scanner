@@ -104,7 +104,7 @@ public class DebugProbe extends TlsProbe {
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.LEAF_RSA;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.CA_LEAF_RSA;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
         for (ProtocolVersion protocolVersion : desiredVersions) {
             // Dummy for output since I do not iterate Ciphersuites
@@ -116,10 +116,15 @@ public class DebugProbe extends TlsProbe {
             // Needed for CyaSSL/WolfSSL. The server answers only to client hellos which have Version 1.0 in the Record Protocol
 //          tlsConfig.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-            certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
+            try {
+                certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
+            } catch (Exception e) {
+                LOGGER.error("Error while generating certificateMessage." + e);
+            }
             WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
                     certificateMessage);
             State state = new State(tlsConfig, trace);
+
             try {
                 executeState(state);
             } catch (Exception E) {

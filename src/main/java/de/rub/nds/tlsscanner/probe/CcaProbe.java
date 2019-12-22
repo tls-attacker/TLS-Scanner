@@ -136,7 +136,11 @@ public class CcaProbe extends TlsProbe {
                         Config tlsConfig = ccaConfig.createConfig();
                         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
-                        certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
+                        try {
+                            certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
+                        } catch (Exception e) {
+                            LOGGER.error("Error while generating certificateMessage." + e);
+                        }
                         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
                                 certificateMessage);
                         State state = new State(tlsConfig, trace);
