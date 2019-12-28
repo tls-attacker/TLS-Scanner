@@ -1,8 +1,8 @@
 <asn1XmlContent>
 
     <asn1Sequence identifier="leaf_certificate1" type="Certificate">
-        <keyInfo identifier="key">
-            <keyFile>2_key.pem</keyFile>
+        <keyInfo identifier="key" keyType="RSA">
+            <keyFile>rsakey_2.pem</keyFile>
         </keyInfo>
         <asn1Sequence identifier="tbsCertificate" type="TBSCertificate">
             <asn1Explicit identifier="version">
@@ -89,7 +89,7 @@
 
     <asn1Sequence identifier="ca_certificate1" type="Certificate">
         <keyInfo identifier="key">
-            <keyFile>1_key.pem</keyFile>
+            <keyFile>rsakey_1.pem</keyFile>
         </keyInfo>
         <asn1Sequence identifier="tbsCertificate" type="TBSCertificate">
             <asn1Explicit identifier="version">
