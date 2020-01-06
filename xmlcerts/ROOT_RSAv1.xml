@@ -1,8 +1,8 @@
 <asn1XmlContent>
 
-    <asn1Sequence identifier="ROOT_RSAv1__root_ca_certificate" type="Certificate">
+    <asn1Sequence identifier="root-v1" type="Certificate">
         <keyInfo identifier="key">
-            <keyFile>rsakey_0.pem</keyFile>
+            <keyFile>root-v1.pem</keyFile>
         </keyInfo>
         <asn1Sequence identifier="tbsCertificate" type="TBSCertificate">
             <asn1Explicit identifier="version">
@@ -14,8 +14,8 @@
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
                 <value>1</value>
             </asn1Integer>
-            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOT_RSAv1__root_ca_certificate/signatureAlgorithm" />
-            <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ROOT_RSAv1__root_ca_certificate/subject"/>
+            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/root-v1/signatureAlgorithm" />
+            <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/root-v1/tbsCertificate/subject"/>
             <asn1Sequence identifier="validity" type="Validity">
                 <asn1PrimitiveUtcTime identifier="notBefore" type="Time">
                     <value>191212000000Z</value>
@@ -34,7 +34,9 @@
                             <value>DE</value>
                         </asn1PrimitivePrintableString>
                     </asn1Sequence>
-                    <asn1Sequence identifier="attributeTypeAndValue1" type="AttributeTypeAndValue">
+                </asn1Set>
+                <asn1Set identifier="relativeDistinguishedName1" type="RelativeDistinguishedName">
+                    <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.10</value>
                         </asn1ObjectIdentifier>
@@ -42,7 +44,9 @@
                             <value>RUB</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
-                    <asn1Sequence identifier="attributeTypeAndValue2" type="AttributeTypeAndValue">
+                </asn1Set>
+                <asn1Set identifier="relativeDistinguishedName2" type="RelativeDistinguishedName">
+                    <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
@@ -52,7 +56,7 @@
                     </asn1Sequence>
                 </asn1Set>
             </asn1Sequence>
-            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/ROOT_RSAv1__root_ca_certificate/key" />
+            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/root-v1/key" />
         </asn1Sequence>
         <asn1Sequence identifier="signatureAlgorithm" type="AlgorithmIdentifier">
             <asn1ObjectIdentifier identifier="algorithm">
@@ -62,13 +66,13 @@
         </asn1Sequence>
         <asn1PrimitiveBitString identifier="signatureValue" />
     </asn1Sequence>
-    
-    <signatureInfo identifier="ROOT_RSAv1__root_ca_certificateSignatureInfo">
-        <toBeSignedIdentifier>/ROOT_RSAv1__root_ca_certificate/tbsCertificate</toBeSignedIdentifier>
-        <signatureValueTargetIdentifier>/ROOT_RSAv1__root_ca_certificate/signatureValue</signatureValueTargetIdentifier>
-        <keyInfoIdentifier>/ROOT_RSAv1__root_ca_certificate/key</keyInfoIdentifier>
-        <signatureAlgorithmOidIdentifier>/ROOT_RSAv1__root_ca_certificate/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
-        <parametersIdentifier>/ROOT_RSAv1__root_ca_certificate/signatureAlgorithm/parameters</parametersIdentifier>
+
+    <signatureInfo identifier="root-v1SignatureInfo">
+        <toBeSignedIdentifier>/root-v1/tbsCertificate</toBeSignedIdentifier>
+        <signatureValueTargetIdentifier>/root-v1/signatureValue</signatureValueTargetIdentifier>
+        <keyInfoIdentifier>/root-v1/key</keyInfoIdentifier>
+        <signatureAlgorithmOidIdentifier>/root-v1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
+        <parametersIdentifier>/root-v1/signatureAlgorithm/parameters</parametersIdentifier>
     </signatureInfo>
 
 
