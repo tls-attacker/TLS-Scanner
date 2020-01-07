@@ -44,6 +44,11 @@ public class CcaProbe extends TlsProbe {
         versionSuiteListPairsList = new LinkedList<>();
     }
 
+    /**
+     * TODO: idea empty CKE message (see post robert slack)
+     * @return
+     */
+
     @Override
     public ProbeResult executeTest() {
         CcaCommandConfig ccaConfig = new CcaCommandConfig(getScannerConfig().getGeneralDelegate());
@@ -146,6 +151,16 @@ public class CcaProbe extends TlsProbe {
                         State state = new State(tlsConfig, trace);
                         try {
                             executeState(state);
+                            /**
+                             * ParallelExecution:
+                             *  - executeState can take a list/array
+                             *  - TlsTask in PaddingOracleAttacker
+                             *      - see how to do that
+                             *      - bulkExecuteTasks
+                             *  - Need to save the parallelExecutor
+                             *  - Implementation of TlsTask that does what I want
+                             *  - There should be examples of that
+                             */
                         } catch (Exception E) {
                             LOGGER.error("Error while testing for client authentication bypasses." + E);
                         }

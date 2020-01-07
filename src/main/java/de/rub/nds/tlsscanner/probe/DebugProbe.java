@@ -99,7 +99,7 @@ public class DebugProbe extends TlsProbe {
 //        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA);
 //        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
 //        cipherSuites.add(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_DES_CBC_SHA);
         cipherSuites.addAll(CipherSuite.getImplemented());
 
         List<CcaTestResult> resultList = new LinkedList<>();
