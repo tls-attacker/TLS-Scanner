@@ -16,8 +16,12 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateVerifyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareEntry;
@@ -26,6 +30,8 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -216,6 +222,43 @@ public class Tls13Probe extends TlsProbe {
         return TestResult.FALSE;
     }
 
+    private TestResult getSupportsPskDhe(List<ProtocolVersion> supportedProtocolVersions) {
+        Config tlsConfig = getCommonConfig(WorkflowTraceType.HANDSHAKE, ProtocolVersion.TLS13,
+                supportedProtocolVersions, getTls13Suite(), getImplementedTls13Groups());
+        tlsConfig.setTls13BackwardsCompatibilityMode(Boolean.TRUE);
+        List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+        pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+        tlsConfig.setPSKKeyExchangeModes(pskKex);
+        tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+        State state = new State(tlsConfig);
+        WorkflowTrace trace = state.getWorkflowTrace();
+
+        trace.addTlsAction(new ReceiveAction(ReceiveAction.ReceiveOption.CHECK_ONLY_EXPECTED,
+                new NewSessionTicketMessage(false)));
+        trace.addTlsAction(new ResetConnectionAction());
+
+        tlsConfig.setAddPreSharedKeyExtension(Boolean.TRUE);
+        WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
+                WorkflowTraceType.HANDSHAKE, RunningModeType.CLIENT);
+
+        // remove certificate messages from 2nd handshake
+        ReceiveAction firstServerMsgs = (ReceiveAction) secondHandshake.getTlsActions().get(1);
+        List<ProtocolMessage> newExpectedMsgs = new LinkedList<>();
+        for (ProtocolMessage msg : firstServerMsgs.getExpectedMessages()) {
+            if (!(msg instanceof CertificateMessage || msg instanceof CertificateVerifyMessage)) {
+                newExpectedMsgs.add(msg);
+            }
+        }
+        firstServerMsgs.setExpectedMessages(newExpectedMsgs);
+        trace.addTlsActions(secondHandshake.getTlsActions());
+
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResult.TRUE;
+        }
+        return TestResult.FALSE;
+    }
+
     private List<CipherSuite> getTls13Suite() {
         List<CipherSuite> tls13Suites = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.values()) {
@@ -280,8 +323,9 @@ public class Tls13Probe extends TlsProbe {
             supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);
         }
         TestResult issuesSessionTicket = getIssuesSessionTicket(supportedProtocolVersions);
+        TestResult supportsPskDhe = getSupportsPskDhe(supportedProtocolVersions);
         return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups,
-                supportedTls13Suites, supportsSECPCompression, issuesSessionTicket);
+                supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe);
     }
 
     @Override
@@ -295,7 +339,7 @@ public class Tls13Probe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new Tls13Result(null, null, null, null, null, null);
+        return new Tls13Result(null, null, null, null, null, null, null);
     }
 
     private Config getCommonConfig(WorkflowTraceType traceType, ProtocolVersion highestProtocolVersion,
@@ -319,7 +363,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
 
         return tlsConfig;
     }
