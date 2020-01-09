@@ -108,6 +108,6 @@ public class NamedCurvesProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new NamedGroupResult(null);
+        return new NamedGroupResult(new LinkedList<>());
     }
 }
