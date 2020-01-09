@@ -63,6 +63,9 @@ public class SiteReport extends Observable {
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
     private List<InvalidCurveResponse> invalidCurveResultList;
+    private int parameterCombinations = -2;
+    private int executedCombinations = -2;
+    private String debugString = "noneGiven";
 
     // Version
     private List<ProtocolVersion> versions = null;
@@ -541,7 +544,7 @@ public class SiteReport extends Observable {
     /**
      * @return the invalidCurveResultList
      */
-    public List<InvalidCurveResponse> getInvalidCurveResultList() {
+    public synchronized List<InvalidCurveResponse> getInvalidCurveResultList() {
         return invalidCurveResultList;
     }
 
@@ -549,7 +552,37 @@ public class SiteReport extends Observable {
      * @param invalidCurveResultList
      *            the invalidCurveResultList to set
      */
-    public void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
+    public synchronized void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
         this.invalidCurveResultList = invalidCurveResultList;
+    }
+
+    /**
+     * @return the parameterCombinations
+     */
+    public int getParameterCombinations() {
+        return parameterCombinations;
+    }
+
+    /**
+     * @param parameterCombinations
+     *            the parameterCombinations to set
+     */
+    public void setParameterCombinations(int parameterCombinations) {
+        this.parameterCombinations = parameterCombinations;
+    }
+
+    /**
+     * @return the executedCombinations
+     */
+    public int getExecutedCombinations() {
+        return executedCombinations;
+    }
+
+    /**
+     * @param executedCombinations
+     *            the executedCombinations to set
+     */
+    public void setExecutedCombinations(int executedCombinations) {
+        this.executedCombinations = executedCombinations;
     }
 }

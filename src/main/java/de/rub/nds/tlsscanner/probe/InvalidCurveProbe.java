@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.ec.CurveFactory;
 import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurveOverFp;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
@@ -45,11 +46,19 @@ import java.util.List;
  */
 public class InvalidCurveProbe extends TlsProbe {
 
+    /**
+     * We schedule order * factor handshakes for each combination. Order is the
+     * point's order on the invalid curve
+     */
+    private final int ORDER_REPETITION_FACTOR = 2;
+
     private boolean supportsRenegotiation;
 
     private TestResult supportsSecureRenegotiation;
 
     private TestResult issuesTls13SessionTickets;
+
+    private TestResult supportsTls13PskDhe;
 
     private List<ProtocolVersion> supportedProtocolVersions;
 
@@ -63,6 +72,9 @@ public class InvalidCurveProbe extends TlsProbe {
 
     private List<ECPointFormat> tls13FpPointFormatsToTest;
 
+    private int parameterCombinations;
+    private int executedCombinations = 0;
+
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config, 10);
     }
@@ -70,15 +82,12 @@ public class InvalidCurveProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         List<InvalidCurveParameterSet> parameterSets = prepareParameterCombinations();
+        parameterCombinations = parameterSets.size();
+        executedCombinations = 0;
         List<InvalidCurveResponse> responses = new LinkedList<>();
         for (InvalidCurveParameterSet parameterSet : parameterSets) {
             InvalidCurveResponse scanResponse = executeSingleScan(parameterSet);
-            if (scanResponse.getShowsPointsAreNotValidated() == TestResult.TRUE) {
-                // rescan to reliably detect reused keys (especially TLS 1.3)
-                InvalidCurveResponse rescanResponse = executeSingleScan(parameterSet);
-                scanResponse.getReceivedEcPublicKeys().addAll(rescanResponse.getReceivedEcPublicKeys());
-                scanResponse.getReceivedFinishedEcKeys().addAll(rescanResponse.getReceivedFinishedEcKeys());
-            }
+            executedCombinations++;
             responses.add(scanResponse);
         }
         return evaluateResponses(responses);
@@ -92,7 +101,8 @@ public class InvalidCurveProbe extends TlsProbe {
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.NOT_TESTED_YET
-                || report.getVersionSuitePairs() == null) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT) == TestResult.NOT_TESTED_YET
+                || report.getSupportedNamedGroups() == null || report.getVersionSuitePairs() == null) {
             return false; // dependency is missing
         } else if (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResult.TRUE
                 && report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResult.TRUE
@@ -109,6 +119,7 @@ public class InvalidCurveProbe extends TlsProbe {
                 .getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION) == TestResult.TRUE);
         supportsSecureRenegotiation = report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION);
         issuesTls13SessionTickets = report.getResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+        supportsTls13PskDhe = report.getResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
         List<NamedGroup> groups = new LinkedList<>();
         if (report.getSupportedNamedGroups() != null) {
@@ -123,7 +134,6 @@ public class InvalidCurveProbe extends TlsProbe {
         }
 
         HashMap<ProtocolVersion, List<CipherSuite>> cipherSuitesMap = new HashMap<>();
-
         if (report.getVersionSuitePairs() != null) {
             for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
                 if (!cipherSuitesMap.containsKey(pair.getVersion())) {
@@ -146,7 +156,7 @@ public class InvalidCurveProbe extends TlsProbe {
             LOGGER.warn("Server did not list uncompressed points as supported");
         }
         if (report.getResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME) == TestResult.TRUE
-                || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                || getScannerConfig().getScanDetail() == ScannerDetail.ALL) {
             fpPointFormats.add(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
         }
 
@@ -188,16 +198,26 @@ public class InvalidCurveProbe extends TlsProbe {
             tls13FpPointFormatsToTest = tls13FpPointFormats;
         }
 
+        // sometimes we found more versions while testing ciphersuites
+        if (cipherSuitesMap.keySet().size() > protocolVersions.size()) {
+            for (ProtocolVersion version : cipherSuitesMap.keySet()) {
+                if (!protocolVersions.contains(version)) {
+                    protocolVersions.add(version);
+                }
+            }
+        }
+
         fpPointFormatsToTest = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
         supportedFpGroups = groups;
         supportedECDHCipherSuites = cipherSuitesMap;
+
     }
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new InvalidCurveResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-                null);
+                null, -1, -1);
     }
 
     private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig,
@@ -218,6 +238,8 @@ public class InvalidCurveProbe extends TlsProbe {
             List<PskKeyExchangeMode> pskKex = new LinkedList<>();
             pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
             attacker.getTlsConfig().setPSKKeyExchangeModes(pskKex);
+            attacker.getTlsConfig().setDefaultClientSupportedSignatureAndHashAlgorithms(
+                    getTls13SignatureAndHashAlgorithms());
         }
 
         attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
@@ -225,6 +247,7 @@ public class InvalidCurveProbe extends TlsProbe {
         attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuites);
         attacker.getTlsConfig().setDefaultClientNamedGroups(group);
         attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
+        attacker.getTlsConfig().setAllowServerCertificateRequest(true);
         if (supportsSecureRenegotiation == TestResult.TRUE) {
             attacker.getTlsConfig().setAddRenegotiationInfoExtension(true);
         } else {
@@ -236,6 +259,8 @@ public class InvalidCurveProbe extends TlsProbe {
     private List<InvalidCurveParameterSet> prepareParameterCombinations() {
         LinkedList<InvalidCurveParameterSet> parameterSets = new LinkedList<>();
 
+        HashMap<ProtocolVersion, List<CipherSuite>> filteredCipherSuites = filterCipherSuites();
+        List<ProtocolVersion> pickedProtocolVersions = pickProtocolVersions();
         for (ProtocolVersion protocolVersion : supportedProtocolVersions) {
             List<NamedGroup> groupList;
             List<ECPointFormat> formatList;
@@ -253,7 +278,7 @@ public class InvalidCurveProbe extends TlsProbe {
                         LOGGER.warn("Protocol Version " + protocolVersion
                                 + " had no entry in Ciphersuite map - omitting from InvalidCurve scan");
                     } else {
-                        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
                             // individual scans for every ciphersuite
                             for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
                                 if (legitInvalidCurveVector(group, format)) {
@@ -266,41 +291,23 @@ public class InvalidCurveProbe extends TlsProbe {
                                 }
                             }
                         } else {
-                            // split ciphersuites in static and ephemeral and
-                            // scan
-                            // once for each list
-                            LinkedList<CipherSuite> ephemeralSuites = new LinkedList<>();
-                            LinkedList<CipherSuite> staticSuites = new LinkedList<>();
-                            for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
-                                if (cipherSuite.isEphemeral()) {
-                                    ephemeralSuites.add(cipherSuite);
-                                } else {
-                                    staticSuites.add(cipherSuite);
-                                }
-                            }
-
-                            if (ephemeralSuites.size() > 0) {
-                                if (legitInvalidCurveVector(group, format)) {
-                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites,
-                                            group, format, false, false));
-                                }
-                                if (legitTwistVector(group, format)) {
-                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, ephemeralSuites,
-                                            group, format, true, false));
-                                }
-                            }
-                            if (staticSuites.size() > 0) {
-                                if (legitInvalidCurveVector(group, format)) {
-                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites,
-                                            group, format, false, false));
-                                }
-                                if (legitTwistVector(group, format)) {
-                                    parameterSets.add(new InvalidCurveParameterSet(protocolVersion, staticSuites,
-                                            group, format, true, false));
+                            // reduced list of ciphersuites (varying by
+                            // ScannerDetail)
+                            if (pickedProtocolVersions.contains(protocolVersion)
+                                    || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                                List<CipherSuite> versionSuiteList = filteredCipherSuites.get(protocolVersion);
+                                for (CipherSuite cipherSuite : versionSuiteList) {
+                                    if (legitInvalidCurveVector(group, format)) {
+                                        parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite,
+                                                group, format, false, false));
+                                    }
+                                    if (legitTwistVector(group, format)) {
+                                        parameterSets.add(new InvalidCurveParameterSet(protocolVersion, cipherSuite,
+                                                group, format, true, false));
+                                    }
                                 }
                             }
                         }
-
                     }
                 }
 
@@ -308,16 +315,30 @@ public class InvalidCurveProbe extends TlsProbe {
         }
 
         // repeat scans in renegotiation
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            ProtocolVersion renegVersion = pickRenegotiationVersion();
             int setCount = parameterSets.size();
-            for (int i = 0; i < setCount; i++) {
-                InvalidCurveParameterSet set = parameterSets.get(i);
-                if ((set.getProtocolVersion() == ProtocolVersion.TLS13 && issuesTls13SessionTickets == TestResult.TRUE)
-                        || supportsRenegotiation) {
-                    parameterSets.add(new InvalidCurveParameterSet(set.getProtocolVersion(), set.getCipherSuites(), set
-                            .getNamedGroup(), set.getPointFormat(), set.isTwistAttack(), true));
+            if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
+                // scan all possible combinations in renegotiation
+                for (int i = 0; i < setCount; i++) {
+                    InvalidCurveParameterSet set = parameterSets.get(i);
+                    if ((set.getProtocolVersion() == ProtocolVersion.TLS13 && (issuesTls13SessionTickets == TestResult.TRUE && supportsTls13PskDhe == TestResult.TRUE))
+                            || supportsRenegotiation) {
+                        parameterSets.add(new InvalidCurveParameterSet(set.getProtocolVersion(), set.getCipherSuites(),
+                                set.getNamedGroup(), set.getPointFormat(), set.isTwistAttack(), true));
+                    }
+                }
+            } else if (renegVersion != null) {
+                // scan only one version in renegotiation
+                for (int i = 0; i < setCount; i++) {
+                    InvalidCurveParameterSet set = parameterSets.get(i);
+                    if (set.getProtocolVersion() == renegVersion) {
+                        parameterSets.add(new InvalidCurveParameterSet(set.getProtocolVersion(), set.getCipherSuites(),
+                                set.getNamedGroup(), set.getPointFormat(), set.isTwistAttack(), true));
+                    }
                 }
             }
+
         }
         return parameterSets;
     }
@@ -343,7 +364,8 @@ public class InvalidCurveProbe extends TlsProbe {
                     invalidCurveAttackConfig.setProtocolFlows(1);
                 } else {
                     invalidCurveAttackConfig.setProtocolFlows(TwistedCurvePoint
-                            .fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
+                            .fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue()
+                            * ORDER_REPETITION_FACTOR);
                 }
                 invalidCurveAttackConfig.setPointCompressionFormat(parameterSet.getPointFormat());
 
@@ -356,7 +378,8 @@ public class InvalidCurveProbe extends TlsProbe {
                 invalidCurveAttackConfig.setPublicPointBaseY(InvalidCurvePoint.fromNamedGroup(
                         parameterSet.getNamedGroup()).getPublicPointBaseY());
                 invalidCurveAttackConfig.setProtocolFlows(InvalidCurvePoint
-                        .fromNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() * 2);
+                        .fromNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue()
+                        * ORDER_REPETITION_FACTOR);
                 invalidCurveAttackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);
             }
 
@@ -413,7 +436,8 @@ public class InvalidCurveProbe extends TlsProbe {
             }
         }
 
-        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist, responses);
+        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist, responses,
+                parameterCombinations, executedCombinations);
     }
 
     private void evaluateKeyBehavior(List<InvalidCurveResponse> responses) {
@@ -465,9 +489,147 @@ public class InvalidCurveProbe extends TlsProbe {
             return false; // no suitable point configured
         } else if (format == ECPointFormat.ANSIX962_COMPRESSED_PRIME
                 && (group == NamedGroup.ECDH_X25519 || group == NamedGroup.ECDH_X448)) {
-            return false; // format is *pointless*
+            // X-curves are neither uncompressed nor ANSIX962, we schedule them
+            // as uncompressed as it is the default format (format is ignored)
+            return false;
         } else {
             return true;
         }
+    }
+
+    /**
+     * Picks one version for which we run scans in renegotiation
+     */
+    private ProtocolVersion pickRenegotiationVersion() {
+        if (supportedProtocolVersions.contains(ProtocolVersion.TLS12) && supportsRenegotiation) {
+            return ProtocolVersion.TLS12;
+        } else if (supportedProtocolVersions.contains(ProtocolVersion.TLS11) && supportsRenegotiation) {
+            return ProtocolVersion.TLS11;
+        } else if (supportedProtocolVersions.contains(ProtocolVersion.TLS10) && supportsRenegotiation) {
+            return ProtocolVersion.TLS10;
+        } else if (supportedProtocolVersions.contains(ProtocolVersion.TLS13)
+                && (issuesTls13SessionTickets == TestResult.TRUE && supportsTls13PskDhe == TestResult.TRUE)) {
+            return ProtocolVersion.TLS13;
+        }
+        LOGGER.info("Could not find a suitable version for Invalid Curve renegotiation scans");
+        return null;
+    }
+
+    /**
+     * Select highest pre-Tls13 version and Tls13 if available
+     */
+    private List<ProtocolVersion> pickProtocolVersions() {
+        List<ProtocolVersion> picked = new LinkedList<>();
+        if (supportedProtocolVersions.contains(ProtocolVersion.TLS12)) {
+            picked.add(ProtocolVersion.TLS12);
+        } else if (supportedProtocolVersions.contains(ProtocolVersion.TLS11)) {
+            picked.add(ProtocolVersion.TLS11);
+        } else if (supportedProtocolVersions.contains(ProtocolVersion.TLS10)) {
+            picked.add(ProtocolVersion.TLS10);
+        }
+
+        if (supportedProtocolVersions.contains(ProtocolVersion.TLS13)) {
+            picked.add(ProtocolVersion.TLS13);
+        }
+
+        return picked;
+    }
+
+    /**
+     * Groups ciphersuites per Version in a hopefully sensible way that reduces
+     * the probe count but still provides enough accuracy
+     */
+
+    private HashMap<ProtocolVersion, List<CipherSuite>> filterCipherSuites() {
+        HashMap<ProtocolVersion, List<CipherSuite>> groupedMap = new HashMap<>();
+        for (ProtocolVersion protocolVersion : supportedProtocolVersions) {
+            List<CipherSuite> coveredSuites = new LinkedList<CipherSuite>();
+            boolean gotStatic = false;
+            boolean gotEphemeral = false;
+            boolean gotGCM = false;
+            boolean gotCBC = false;
+            boolean gotSHA = false;
+            boolean gotSHA256 = false;
+            boolean gotSHA384 = false;
+            boolean gotSHA512 = false;
+            boolean gotECDSA = false;
+            boolean gotRSA = false;
+            boolean gotWeak = false; // very wide ranged
+            if (supportedECDHCipherSuites.get(protocolVersion) != null) {
+                for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
+                    boolean addCandidate = false;
+
+                    if (!cipherSuite.isEphemeral() && gotStatic == false) {
+                        addCandidate = true;
+                        gotStatic = true;
+                    }
+                    if (cipherSuite.isEphemeral() && gotEphemeral == false) {
+                        addCandidate = true;
+                        gotEphemeral = true;
+                    }
+
+                    if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        if (cipherSuite.isGCM() && gotGCM == false) {
+                            addCandidate = true;
+                            gotGCM = true;
+                        } else if (cipherSuite.isCBC() && gotCBC == false) {
+                            addCandidate = true;
+                            gotCBC = true;
+                        }
+
+                        if (cipherSuite.isSHA() && gotSHA == false) {
+                            addCandidate = true;
+                            gotSHA = true;
+                        } else if (cipherSuite.isSHA256() && gotSHA256 == false) {
+                            addCandidate = true;
+                            gotSHA256 = true;
+                        } else if (cipherSuite.isSHA384() && gotSHA384 == false) {
+                            addCandidate = true;
+                            gotSHA384 = true;
+                        } else if (cipherSuite.isSHA512() && gotSHA512 == false) {
+                            addCandidate = true;
+                            gotSHA512 = true;
+                        }
+
+                        if (cipherSuite.isECDSA() && gotECDSA == false) {
+                            addCandidate = true;
+                            gotECDSA = true;
+                        } else if (cipherSuite.name().contains("RSA") && gotRSA == false) {
+                            addCandidate = true;
+                            gotRSA = true;
+                        }
+
+                        if (cipherSuite.isWeak() && gotWeak == false) {
+                            addCandidate = true;
+                            gotWeak = true;
+                        }
+                    }
+                    if (addCandidate) {
+                        coveredSuites.add(cipherSuite);
+                    }
+
+                }
+            }
+            groupedMap.put(protocolVersion, coveredSuites);
+        }
+
+        return groupedMap;
+    }
+
+    private List<SignatureAndHashAlgorithm> getTls13SignatureAndHashAlgorithms() {
+        List<SignatureAndHashAlgorithm> algos = new LinkedList<>();
+        algos.add(SignatureAndHashAlgorithm.RSA_SHA256);
+        algos.add(SignatureAndHashAlgorithm.RSA_SHA384);
+        algos.add(SignatureAndHashAlgorithm.RSA_SHA512);
+        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA256);
+        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA384);
+        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA512);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384);
+        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512);
+        return algos;
     }
 }

@@ -25,14 +25,18 @@ public class InvalidCurveResult extends ProbeResult {
     private final TestResult vulnerableEphemeral;
     private final TestResult vulnerableTwist;
     private final List<InvalidCurveResponse> responses;
+    private final int parameterCombinations;
+    private final int executedCombinations;
 
     public InvalidCurveResult(TestResult vulnerableClassic, TestResult vulnerableEphemeral, TestResult vulnerableTwist,
-            List<InvalidCurveResponse> responses) {
+            List<InvalidCurveResponse> responses, int parameterCombinations, int executedCombinations) {
         super(ProbeType.INVALID_CURVE);
         this.vulnerableClassic = vulnerableClassic;
         this.vulnerableEphemeral = vulnerableEphemeral;
         this.vulnerableTwist = vulnerableTwist;
         this.responses = responses;
+        this.parameterCombinations = parameterCombinations;
+        this.executedCombinations = executedCombinations;
     }
 
     @Override
@@ -41,6 +45,8 @@ public class InvalidCurveResult extends ProbeResult {
         report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, vulnerableEphemeral);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, vulnerableTwist);
         report.setInvalidCurveResultList(responses);
+        report.setExecutedCombinations(executedCombinations);
+        report.setParameterCombinations(parameterCombinations);
     }
 
 }

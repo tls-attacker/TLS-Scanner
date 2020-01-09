@@ -32,9 +32,12 @@ public class Tls13Result extends ProbeResult {
 
     private final TestResult issuesSessionTicket;
 
+    private final TestResult supportsPskDhe;
+
     public Tls13Result(List<ProtocolVersion> supportedProtocolVersion,
             List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups,
-            List<CipherSuite> supportedCipherSuites, TestResult supportsSECPCompression, TestResult issuesSessionTicket) {
+            List<CipherSuite> supportedCipherSuites, TestResult supportsSECPCompression,
+            TestResult issuesSessionTicket, TestResult supportsPskDhe) {
         super(ProbeType.TLS13);
         this.supportedProtocolVersion = supportedProtocolVersion;
         this.unsupportedProtocolVersion = unsupportedProtocolVersion;
@@ -42,6 +45,7 @@ public class Tls13Result extends ProbeResult {
         this.supportedCipherSuites = supportedCipherSuites;
         this.supportsSECPCompression = supportsSECPCompression;
         this.issuesSessionTicket = issuesSessionTicket;
+        this.supportsPskDhe = supportsPskDhe;
     }
 
     @Override
@@ -189,6 +193,12 @@ public class Tls13Result extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, issuesSessionTicket);
         } else {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, TestResult.COULD_NOT_TEST);
+        }
+
+        if (supportsPskDhe != null) {
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsPskDhe);
+        } else {
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TestResult.COULD_NOT_TEST);
         }
     }
 }

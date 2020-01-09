@@ -981,6 +981,7 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "Fortezza", AnalyzedProperty.SUPPORTS_FORTEZZA);
                 prettyAppend(builder, "New Hope", AnalyzedProperty.SUPPORTS_NEWHOPE);
                 prettyAppend(builder, "ECMQV", AnalyzedProperty.SUPPORTS_ECMQV);
+                prettyAppend(builder, "TLS 1.3 PSK_DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
                 prettyAppendHeading(builder, "Cipher Types Supports");
                 prettyAppend(builder, "Stream", AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
