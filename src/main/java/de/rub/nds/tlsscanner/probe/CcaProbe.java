@@ -12,7 +12,10 @@ import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateGenerator;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
+import de.rub.nds.tlsattacker.attacks.cca.vector.CcaTaskVectorPair;
+import de.rub.nds.tlsattacker.attacks.cca.vector.CcaVector;
 import de.rub.nds.tlsattacker.attacks.config.CcaCommandConfig;
+import de.rub.nds.tlsattacker.attacks.task.CcaTask;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
@@ -22,6 +25,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
@@ -39,6 +43,12 @@ import java.util.List;
 public class CcaProbe extends TlsProbe {
     private List<VersionSuiteListPair> versionSuiteListPairsList;
 
+    private boolean increasingTimeout = false;
+
+    private long additionalTimeout = 1000;
+
+    private long additionalTcpTimeout = 5000;
+
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config, 5);
         versionSuiteListPairsList = new LinkedList<>();
@@ -51,6 +61,13 @@ public class CcaProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
+
+        /**
+         * Get the parallel executor
+         * Note: the executor is affected by -parallelProbes. If not set the size is 1 (yawn)
+         */
+        ParallelExecutor parallelExecutor = getParallelExecutor();
+
         CcaCommandConfig ccaConfig = new CcaCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) ccaConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
@@ -113,11 +130,6 @@ public class CcaProbe extends TlsProbe {
          */
 
         /**
-         * TODO: Currently we only send a single certificate. But we'll need to send the whole chain later on. That
-         * won't work with the way we currently specify the client_input. Gotta see how to handle that
-         */
-
-        /**
          * TODO: We have to determine which test cases to execute based on the input provided. I.e. if a only a
          * TODO: certificate without key was provided we can't use any test cases that send legitimate CertificateVerify
          * TODO: messages. But if we have at least one certificateKeyPair that's valid we could use some more.
@@ -131,8 +143,9 @@ public class CcaProbe extends TlsProbe {
          * TODO: root certificate.
          */
 
-        List<CcaTestResult> resultList = new LinkedList<>();
-        Boolean bypassable = false;
+        List<TlsTask> taskList = new LinkedList<>();
+        List<CcaTaskVectorPair> taskVectorPairList = new LinkedList<>();
+
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
@@ -141,41 +154,47 @@ public class CcaProbe extends TlsProbe {
                         Config tlsConfig = ccaConfig.createConfig();
                         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
+
+                        CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType, ccaCertificateType);
+
                         try {
                             certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
                         } catch (Exception e) {
-                            LOGGER.error("Error while generating certificateMessage." + e);
+                            LOGGER.error("Error while generating certificateMessage for vector " + ccaVector + "." + e);
                         }
                         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
                                 certificateMessage);
                         State state = new State(tlsConfig, trace);
-                        try {
-                            executeState(state);
-                            /**
-                             * ParallelExecution:
-                             *  - executeState can take a list/array
-                             *  - TlsTask in PaddingOracleAttacker
-                             *      - see how to do that
-                             *      - bulkExecuteTasks
-                             *  - Need to save the parallelExecutor
-                             *  - Implementation of TlsTask that does what I want
-                             *  - There should be examples of that
-                             */
-                        } catch (Exception E) {
-                            LOGGER.error("Error while testing for client authentication bypasses." + E);
-                        }
-                        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-                            bypassable = true;
-                            resultList.add(new CcaTestResult(true, ccaWorkflowType, ccaCertificateType,
-                                    versionSuiteListPair.getVersion(), cipherSuite));
-                        } else {
-                            resultList.add(new CcaTestResult(false, ccaWorkflowType, ccaCertificateType,
-                                    versionSuiteListPair.getVersion(), cipherSuite));
-                        }
+                        CcaTask ccaTask = new CcaTask(state, additionalTimeout, increasingTimeout,
+                                parallelExecutor.getReexecutions(), additionalTcpTimeout);
+                        taskList.add(ccaTask);
+                        taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
                     }
                 }
             }
         }
+
+        List<CcaTestResult> resultList = new LinkedList<>();
+        Boolean bypassable = false;
+        parallelExecutor.bulkExecuteTasks(taskList);
+        for (CcaTaskVectorPair ccaTaskVectorPair : taskVectorPairList) {
+            if (ccaTaskVectorPair.getCcaTask().isHasError()) {
+                LOGGER.warn("Failed to scan " + ccaTaskVectorPair);
+            } else {
+                Boolean vectorVulnerable = false;
+                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, ccaTaskVectorPair.getCcaTask()
+                        .getState().getWorkflowTrace())) {
+                    bypassable = true;
+                    vectorVulnerable = true;
+                } else {
+                    vectorVulnerable = false;
+                }
+                resultList.add(new CcaTestResult(vectorVulnerable, ccaTaskVectorPair.getVector().getCcaWorkflowType(),
+                        ccaTaskVectorPair.getVector().getCcaCertificateType(), ccaTaskVectorPair.getVector().getProtocolVersion(),
+                        ccaTaskVectorPair.getVector().getCipherSuite()));
+            }
+        }
+
         return new CcaResult(bypassable ? TestResult.TRUE : TestResult.FALSE, resultList);
     }
 

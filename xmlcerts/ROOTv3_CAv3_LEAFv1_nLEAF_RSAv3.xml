@@ -93,7 +93,7 @@
             <asn1Explicit identifier="version">
                 <offset>0</offset>
                 <asn1Integer identifier="version" type="Version">
-                    <value>2</value>
+                    <value>0</value>
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
@@ -166,7 +166,7 @@
                 <value>1</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_LEAFv1_nLEAF_RSAv3__ca_certificate1/signatureAlgorithm" />
-            <asn1Sequence identifier="issuer" type="Name" placeholder="replace_me"/>
+            <asn1RawBytes identifier="issuer" type="RawBytes" placeholder="replace_me"><value></value></asn1RawBytes>
             <asn1Sequence identifier="validity" type="Validity">
                 <asn1PrimitiveUtcTime identifier="notBefore" type="Time">
                     <value>191212000000Z</value>

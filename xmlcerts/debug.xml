@@ -1,8 +1,7 @@
 <asn1XmlContent>
-
-    <asn1Sequence identifier="root-v3" type="Certificate">
-        <keyInfo identifier="key">
-            <keyFile>root-v3.pem</keyFile>
+    <asn1Sequence identifier="debug__ca_certificate1" type="Certificate">
+        <keyInfo identifier="key" keyType="RSA">
+            <keyFile>rsakey_1.pem</keyFile>
         </keyInfo>
         <asn1Sequence identifier="tbsCertificate" type="TBSCertificate">
             <asn1Explicit identifier="version">
@@ -14,8 +13,8 @@
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
                 <value>1</value>
             </asn1Integer>
-            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/root-v3/signatureAlgorithm" />
-            <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/root-v3/tbsCertificate/subject"/>
+            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/debug__ca_certificate1/signatureAlgorithm" />
+            <asn1RawBytes identifier="issuer" type="RawBytes" placeholder="replace_me"><value></value></asn1RawBytes>
             <asn1Sequence identifier="validity" type="Validity">
                 <asn1PrimitiveUtcTime identifier="notBefore" type="Time">
                     <value>191212000000Z</value>
@@ -34,9 +33,7 @@
                             <value>DE</value>
                         </asn1PrimitivePrintableString>
                     </asn1Sequence>
-                </asn1Set>
-                <asn1Set identifier="relativeDistinguishedName1" type="RelativeDistinguishedName">
-                    <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
+                    <asn1Sequence identifier="attributeTypeAndValue1" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.10</value>
                         </asn1ObjectIdentifier>
@@ -44,19 +41,17 @@
                             <value>RUB</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
-                </asn1Set>
-                <asn1Set identifier="relativeDistinguishedName2" type="RelativeDistinguishedName">
-                    <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
+                    <asn1Sequence identifier="attributeTypeAndValue2" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>TLS-Scanner CCA RSA ROOT-CA v3</value>
+                            <value>TLS-Scanner CCA CA 1 v3</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
                 </asn1Set>
             </asn1Sequence>
-            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/root-v3/key" />
+            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/debug__ca_certificate1/key" />
             <asn1Explicit identifier="explicitExtensions">
                 <offset>3</offset>
                 <asn1Sequence identifier="extensions" type="Extensions">
@@ -72,7 +67,7 @@
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>
                     <!--KeyUsageextension-->
-                    <!-- <asn1Sequence identifier="extension2" type="Extension">
+                    <asn1Sequence identifier="extension2" type="Extension">
                         <asn1ObjectIdentifier identifier="extnID">
                             <value>2.5.29.15</value>
                         </asn1ObjectIdentifier>
@@ -82,10 +77,10 @@
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1PrimitiveBitString identifier="keyUsage" type="KeyUsage">
                                 <unusedBits>7</unusedBits>
-                                <value>0400</value>
+                                <value>0c00</value>
                             </asn1PrimitiveBitString>
                         </asn1EncapsulatingOctetString>
-                    </asn1Sequence> -->
+                    </asn1Sequence>
                     <!--BasicConstraintsextension-->
                     <asn1Sequence identifier="extension3" type="Extension">
                         <asn1ObjectIdentifier identifier="extnID">
@@ -100,7 +95,7 @@
                                     <value>true</value>
                                 </asn1Boolean>
                                 <asn1Integer identifier="pathLenConstraint">
-                                    <value>5</value>
+                                    <value>1</value>
                                 </asn1Integer>
                             </asn1Sequence>
                         </asn1EncapsulatingOctetString>
@@ -117,13 +112,20 @@
         <asn1PrimitiveBitString identifier="signatureValue" />
     </asn1Sequence>
 
-    <signatureInfo identifier="root-v3SignatureInfo">
-        <toBeSignedIdentifier>/root-v3/tbsCertificate</toBeSignedIdentifier>
-        <signatureValueTargetIdentifier>/root-v3/signatureValue</signatureValueTargetIdentifier>
-        <keyInfoIdentifier>/root-v3/key</keyInfoIdentifier>
-        <signatureAlgorithmOidIdentifier>/root-v3/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
-        <parametersIdentifier>/root-v3/signatureAlgorithm/parameters</parametersIdentifier>
+
+
+
+
+    <signatureInfo identifier="debug__ca_certificate1SignatureInfo">
+        <toBeSignedIdentifier>/debug__ca_certificate1/tbsCertificate</toBeSignedIdentifier>
+        <signatureValueTargetIdentifier>/debug__ca_certificate1/signatureValue</signatureValueTargetIdentifier>
+        <keyInfoIdentifier>/root_ca_key</keyInfoIdentifier>
+        <signatureAlgorithmOidIdentifier>/debug__ca_certificate1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
+        <parametersIdentifier>/debug__ca_certificate1/signatureAlgorithm/parameters</parametersIdentifier>
     </signatureInfo>
 
+    <keyInfo identifier="root_ca_key">
+        <keyFile>replace_me_im_a_dummy_key</keyFile>
+    </keyInfo>
 
 </asn1XmlContent>

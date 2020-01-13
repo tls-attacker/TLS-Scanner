@@ -29,7 +29,7 @@ public class CcaSupportProbe extends TlsProbe {
     private List<CipherSuite> suiteList;
 
     public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA, config, 1);
+        super(parallelExecutor, ProbeType.CCA_SUPPORT, config, 1);
         suiteList = new LinkedList<>();
     }
 

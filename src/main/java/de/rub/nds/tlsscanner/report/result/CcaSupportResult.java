@@ -18,7 +18,7 @@ public class CcaSupportResult extends ProbeResult {
     private TestResult supportsCca;
 
     public CcaSupportResult(TestResult supportsCca) {
-        super(ProbeType.CCA);
+        super(ProbeType.CCA_SUPPORT);
         this.supportsCca = supportsCca;
     }
 
