@@ -10,6 +10,8 @@ package de.rub.nds.tlsscanner.report;
 
 public enum AnalyzedProperty {
 
+	SUPPORTS_ESNI(AnalyzedPropertyCategory.ESNI),
+	
     SUPPORTS_SSL_2(AnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_SSL_3(AnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_TLS_1_0(AnalyzedPropertyCategory.VERSIONS),

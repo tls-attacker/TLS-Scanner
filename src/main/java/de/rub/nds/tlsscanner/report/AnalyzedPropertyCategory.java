@@ -9,7 +9,9 @@
 package de.rub.nds.tlsscanner.report;
 
 public enum AnalyzedPropertyCategory {
-    VERSIONS,
+    ESNI,
+	
+	VERSIONS,
     CIPHER_SUITES,
     EXTENSIONS,
     SESSION_RESUMPTION,

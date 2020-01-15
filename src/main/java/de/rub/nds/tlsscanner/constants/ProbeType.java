@@ -13,7 +13,9 @@ package de.rub.nds.tlsscanner.constants;
  * @author Robert Merget - robert.merget@rub.de
  */
 public enum ProbeType {
-    CERTIFICATE,
+    ESNI,
+	
+	CERTIFICATE,
     CIPHERSUITE_ORDER,
     CIPHERSUITE,
     HEARTBLEED,
