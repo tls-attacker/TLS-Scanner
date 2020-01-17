@@ -212,7 +212,7 @@ public class CcaProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if ((report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE)
+        if ((report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
                 && (report.getVersionSuitePairs() != null)) {
             return true;
         };

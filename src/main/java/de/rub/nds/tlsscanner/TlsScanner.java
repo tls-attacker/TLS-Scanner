@@ -115,6 +115,7 @@ public class TlsScanner {
 //        probeList.add(new EarlyCcsProbe(config, parallelExecutor));
 //        probeList.add(new MacProbe(config, parallelExecutor));
         probeList.add(new CcaSupportProbe(config, parallelExecutor));
+        probeList.add(new CcaRequiredProbe(config, parallelExecutor));
 //        probeList.add(new DebugProbe(config, parallelExecutor));
         probeList.add(new CcaProbe(config, parallelExecutor));
 //        afterList.add(new Sweet32AfterProbe());

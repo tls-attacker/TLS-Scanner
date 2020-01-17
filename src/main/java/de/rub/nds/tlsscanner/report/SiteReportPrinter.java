@@ -1421,6 +1421,7 @@ public class SiteReportPrinter {
          */
         prettyAppendHeading(builder, "Client authentication");
         prettyAppend(builder, "Supported", report.getCcaSupported());
+        prettyAppend(builder, "Required", report.getCcaRequired());
         if (report.getCcaTestResultList() != null) {
             for (CcaTestResult ccaTestResult : report.getCcaTestResultList()) {
                 prettyAppend(builder, ccaTestResult.getWorkflowType().name().concat(".")

@@ -69,9 +69,9 @@ public class CcaRequiredProbe extends TlsProbe {
             LOGGER.error("Could not test if client authentication is required.");
         }
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return new CcaRequiredResult(TestResult.TRUE);
-        } else {
             return new CcaRequiredResult(TestResult.FALSE);
+        } else {
+            return new CcaRequiredResult(TestResult.TRUE);
         }
     }
 
@@ -86,7 +86,7 @@ public class CcaRequiredProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CcaSupportResult(TestResult.COULD_NOT_TEST);
+        return new CcaRequiredResult(TestResult.COULD_NOT_TEST);
     }
 
     private Config generateConfig() {
