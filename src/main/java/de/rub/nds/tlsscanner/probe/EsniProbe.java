@@ -59,7 +59,7 @@ public class EsniProbe extends TlsProbe{
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE); // ?
+        //tlsConfig.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE); // HELLO vs HANDSHAKE ?
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
         tlsConfig.setDefaultSelectedNamedGroup(NamedGroup.ECDH_X25519);
         tlsConfig.setAddECPointFormatExtension(false);
@@ -73,7 +73,7 @@ public class EsniProbe extends TlsProbe{
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
 
        
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT); //// HELLO vs HANDSHAKE ?
         State state = new State(tlsConfig,trace);
         executeState(state);
         
@@ -88,7 +88,6 @@ public class EsniProbe extends TlsProbe{
         }else
         	return(new EsniResult(TestResult.FALSE));		
 	}
-	
 	
     @Override
     public boolean canBeExecuted(SiteReport report) {

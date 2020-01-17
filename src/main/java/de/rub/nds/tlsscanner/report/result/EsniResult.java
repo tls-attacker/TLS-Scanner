@@ -14,21 +14,15 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 public class EsniResult  extends ProbeResult {
-	
-    //private TestResult dnsKeyRecordAvailable;
     private TestResult receivedCorrectNonce;
 
     public EsniResult(TestResult receivedCorrectNonce) {
         super(ProbeType.ESNI);
-        //this.dnsKeyRecordAvailable = dnsKeyRecordAvailable;
         this.receivedCorrectNonce = receivedCorrectNonce;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        //report.putResult(AnalyzedProperty.REQUIRES_SNI, receivedCorrectNonce);
     	report.putResult(AnalyzedProperty.SUPPORTS_ESNI, receivedCorrectNonce);
     }	
-
-    
 }
