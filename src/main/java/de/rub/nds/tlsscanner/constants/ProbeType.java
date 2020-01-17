@@ -39,5 +39,6 @@ public enum ProbeType {
     TLS13,
     MAC,
     CCA_SUPPORT,
+    CCA_REQUIRED,
     CCA,
 }

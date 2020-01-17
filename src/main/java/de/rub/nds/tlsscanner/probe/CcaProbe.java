@@ -14,17 +14,16 @@ import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.cca.vector.CcaTaskVectorPair;
 import de.rub.nds.tlsattacker.attacks.cca.vector.CcaVector;
-import de.rub.nds.tlsattacker.attacks.config.CcaCommandConfig;
 import de.rub.nds.tlsattacker.attacks.task.CcaTask;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -37,6 +36,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class CcaProbe extends TlsProbe {
     private long additionalTcpTimeout = 5000;
 
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA, config, 5);
+        super(parallelExecutor, ProbeType.CCA, config, 7);
         versionSuiteListPairsList = new LinkedList<>();
     }
 
@@ -68,10 +68,6 @@ public class CcaProbe extends TlsProbe {
          */
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
-        CcaCommandConfig ccaConfig = new CcaCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) ccaConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
         /**
@@ -96,15 +92,14 @@ public class CcaProbe extends TlsProbe {
 
         /**
          * If we do not want a detailed scan, use only one cipher suite per protocol version.
-         * TODO: Do I want to make sure it's the same for all? If yes I'd have the take a DH/DHE suite from the lowest
-         * protocol version and use that.
          */
+        List<CipherSuite> implementedCipherSuites = CipherSuite.getImplemented();
         List<VersionSuiteListPair> _ = new LinkedList<>();
         if (!getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            for(VersionSuiteListPair versionSuiteListPair: versionSuiteListPairs) {
+            for (VersionSuiteListPair versionSuiteListPair: versionSuiteListPairs) {
                 List<CipherSuite> cipherSuites = new LinkedList<>();
-                for(CipherSuite cipherSuite: versionSuiteListPair.getCiphersuiteList()) {
-                    if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh()) {
+                for (CipherSuite cipherSuite: versionSuiteListPair.getCiphersuiteList()) {
+                    if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh() && implementedCipherSuites.contains(cipherSuite)) {
                         cipherSuites.add(cipherSuite);
                         break;
                     }
@@ -118,40 +113,61 @@ public class CcaProbe extends TlsProbe {
             }
         }
 
-        if (!_.isEmpty()) {
-            versionSuiteListPairs = _;
+        if (_.isEmpty()) {
+            /**
+             * We haven't found a DH ciphersuite that's implemented by TLS-Scanner/Attacker
+             * Remove any cipherSuite not implemented by TLS-Scanner/Attacker to prevent confusing results
+             */
+            for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
+                List<CipherSuite> cipherSuites = new LinkedList<>();
+                for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
+                    if (implementedCipherSuites.contains(cipherSuite)) {
+                        cipherSuites.add(cipherSuite);
+                    }
+                }
+                if (!cipherSuites.isEmpty()) {
+                    _.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
+                }
+            }
+        }
+        /**
+         * versionSuiteListPairs by now contains either any ciphersuite that both the server and TLS-Scanner/Attacker
+         * support for TLS1.0-1.2 or at most a single DH ciphersuite per version. If it's empty we can't continue.
+         */
+        versionSuiteListPairs = _;
+
+        if (versionSuiteListPairs.isEmpty()) {
+            LOGGER.error("No common ciphersuites found. Can't continue scan.");
+            return new CcaResult(TestResult.COULD_NOT_TEST, null);
         }
 
-        /**
-         * TODO: Currently, if no DH/DHE suite is supported in any TLSv1.0-1.2 Version we fall back to a detailed scan
-         * Do we really want this?
-         * Additionally we do not ensure that at least one cipher suite for any version of TLSv1.0-1.2 is supported.
-         * This will lead to problems with servers supporting none of these.
-         */
 
-        /**
-         * TODO: We have to determine which test cases to execute based on the input provided. I.e. if a only a
-         * TODO: certificate without key was provided we can't use any test cases that send legitimate CertificateVerify
-         * TODO: messages. But if we have at least one certificateKeyPair that's valid we could use some more.
-         * TODO: Then if we have the key to an intermediate CA/root CA and the certificate we could execute all tests.
-         */
-
-        /**
-         * TODO: The current model assumes that certificates for which a key is provided are trusted by the server.
-         * TODO: is that ok to assume? Might we miss important bugs using that assumption?
-         * TODO: Maybe we should have test cases where we provide the complete certificate chain, including an untrusted
-         * TODO: root certificate.
-         */
+        Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
+        Boolean gotDirectoryParameters = ccaDelegate.directoriesSupplied();
 
         List<TlsTask> taskList = new LinkedList<>();
         List<CcaTaskVectorPair> taskVectorPairList = new LinkedList<>();
 
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
+            /**
+             * Skip workflow types not usable with supplied CLI parameters
+             */
+            if ((ccaWorkflowType.getRequiresCertificate() && !haveClientCertificate)
+            || (ccaWorkflowType.getRequiresKey() && !gotDirectoryParameters)) {
+                continue;
+            }
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
+                /**
+                 * Skip certificate types for which we are lacking the corresponding CLI parameters
+                 */
+                if ((ccaCertificateType.getRequiresCertificate() && !haveClientCertificate)
+                || (ccaCertificateType.getRequiresCaCertAndKeys() && !gotDirectoryParameters)) {
+                    continue;
+                }
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                     for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
                         CertificateMessage certificateMessage = null;
-                        Config tlsConfig = ccaConfig.createConfig();
+                        Config tlsConfig = generateConfig();
                         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
 
@@ -215,6 +231,20 @@ public class CcaProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new CcaResult(TestResult.COULD_NOT_TEST, null);
+    }
+
+    private Config generateConfig() {
+        Config config = getScannerConfig().createConfig();
+        config.setAutoSelectCertificate(false);
+        config.setAddServerNameIndicationExtension(true);
+        config.setStopActionsAfterFatal(true);
+        config.setStopReceivingAfterFatal(true);
+        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+
+        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
+        config.setDefaultClientNamedGroups(namedGroups);
+
+        return config;
     }
 
 }

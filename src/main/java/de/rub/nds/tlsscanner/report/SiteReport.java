@@ -122,6 +122,7 @@ public class SiteReport extends Observable {
 
     // CCA
     private Boolean ccaSupported = null;
+    private Boolean ccaRequired = null;
     private List<CcaTestResult> ccaTestResultList;
 
     private List<ProbeType> probeTypeList;
@@ -538,6 +539,12 @@ public class SiteReport extends Observable {
 
     public synchronized void setCcaSupported(Boolean ccaSupported) {
         this.ccaSupported = ccaSupported;
+    }
+
+    public synchronized Boolean getCcaRequired() { return ccaRequired; }
+
+    public synchronized void setCcaRequired(Boolean ccaRequired) {
+        this.ccaRequired = ccaRequired;
     }
 
     public synchronized List<CcaTestResult> getCcaTestResultList() {return ccaTestResultList;}

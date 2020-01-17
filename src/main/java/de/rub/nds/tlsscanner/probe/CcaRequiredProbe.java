@@ -8,18 +8,27 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateGenerator;
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
+import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
+import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.result.CcaRequiredResult;
 import de.rub.nds.tlsscanner.report.result.CcaSupportResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
@@ -27,32 +36,48 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaSupportProbe extends TlsProbe {
+public class CcaRequiredProbe extends TlsProbe {
     private List<CipherSuite> suiteList;
 
-    public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+    public CcaRequiredProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA_SUPPORT, config, 1);
         suiteList = new LinkedList<>();
     }
 
     @Override
     public ProbeResult executeTest() {
-        State state = new State(generateConfig());
+
+        CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
+
+        CertificateMessage certificateMessage = null;
+
+        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_CCS_FIN;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.EMPTY;
+        Config tlsConfig = generateConfig();
+        try {
+            certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
+        } catch (Exception e) {
+            LOGGER.error("Error while generating certificateMessage for certificateRequiredProbe." + e);
+            return new CcaRequiredResult(TestResult.COULD_NOT_TEST);
+        }
+        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
+                certificateMessage);
+        State state = new State(tlsConfig, trace);
         try {
             executeState(state);
         } catch (Exception E) {
-            LOGGER.error("Could not test for client authentication support.");
+            LOGGER.error("Could not test if client authentication is required.");
         }
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
-            return new CcaSupportResult(TestResult.TRUE);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            return new CcaRequiredResult(TestResult.TRUE);
         } else {
-            return new CcaSupportResult(TestResult.FALSE);
+            return new CcaRequiredResult(TestResult.FALSE);
         }
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
+        return report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE;
     }
 
     @Override

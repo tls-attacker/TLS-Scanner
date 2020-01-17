@@ -12,10 +12,8 @@ import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateGenerator;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
-import de.rub.nds.tlsattacker.attacks.config.CcaCommandConfig;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
@@ -27,15 +25,14 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.CcaResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,10 +46,7 @@ public class DebugProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        CcaCommandConfig ccaConfig = new CcaCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) ccaConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+
 
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
@@ -112,7 +106,7 @@ public class DebugProbe extends TlsProbe {
             // Dummy for output since I do not iterate Ciphersuites
             CipherSuite cipherSuite = CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA;
             CertificateMessage certificateMessage = null;
-            Config tlsConfig = ccaConfig.createConfig();
+            Config tlsConfig = generateConfig();
             tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             // Needed for CyaSSL/WolfSSL. The server answers only to client hellos which have Version 1.0 in the Record Protocol
@@ -158,5 +152,17 @@ public class DebugProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new CcaResult(TestResult.COULD_NOT_TEST, null);
     }
+    private Config generateConfig() {
+        Config config = getScannerConfig().createConfig();
+        config.setAutoSelectCertificate(false);
+        config.setAddServerNameIndicationExtension(true);
+        config.setStopActionsAfterFatal(true);
+        config.setStopReceivingAfterFatal(true);
+        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
+        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
+        config.setDefaultClientNamedGroups(namedGroups);
+
+        return config;
+    }
 }

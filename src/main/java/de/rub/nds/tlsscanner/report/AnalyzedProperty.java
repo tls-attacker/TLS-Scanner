@@ -191,6 +191,7 @@ public enum AnalyzedProperty {
      * CCA Properties
      */
     SUPPORTS_CCA(AnalyzedPropertyCategory.CERTIFICATE),
+    REQUIRES_CCA(AnalyzedPropertyCategory.CERTIFICATE),
     VULNERABLE_TO_CCA_BYPASS(AnalyzedPropertyCategory.ATTACKS);
 
 
