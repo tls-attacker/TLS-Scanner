@@ -149,19 +149,15 @@ public class CcaProbe extends TlsProbe {
         List<CcaTaskVectorPair> taskVectorPairList = new LinkedList<>();
 
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
-            /**
-             * Skip workflow types not usable with supplied CLI parameters
-             */
-            if ((ccaWorkflowType.getRequiresCertificate() && !haveClientCertificate)
-            || (ccaWorkflowType.getRequiresKey() && !gotDirectoryParameters)) {
-                continue;
-            }
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
                 /**
                  * Skip certificate types for which we are lacking the corresponding CLI parameters
+                 * Additionally skip certificate types that aren't required. I.e. a flow not sending a certificate message
+                 * can simply run once with the CcaCertificateType EMPTY
                  */
                 if ((ccaCertificateType.getRequiresCertificate() && !haveClientCertificate)
-                || (ccaCertificateType.getRequiresCaCertAndKeys() && !gotDirectoryParameters)) {
+                || (ccaCertificateType.getRequiresCaCertAndKeys() && !gotDirectoryParameters)
+                || (!ccaWorkflowType.getRequiresCertificate() && ccaCertificateType != CcaCertificateType.EMPTY)) {
                     continue;
                 }
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
