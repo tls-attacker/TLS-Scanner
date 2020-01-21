@@ -79,8 +79,15 @@ public class Main{
     public void scanParallel(int threadCount) {
     	List<Thread> scanThreads= new ArrayList();	
     	domains = readListFormFile(domainsFileName);  
+    	if (domains.isEmpty())
+    	{
+    		LOGGER.warn("Empty input file.");
+    	}
+    	else {
+    		
+
     	List<String>[] domainSublists = splitList(domains,threadCount);
-    	
+
     	LOGGER.info("Start scanning with "+ domainSublists.length + " threads.");
     	for (List<String> domainSublist : domainSublists) {
     		scanThreads.add(this.startNewScannerThread(domainSublist));
@@ -92,6 +99,7 @@ public class Main{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+    	}
     	}
        	if (this.supportingDomainsOutFileName  != null) {
        		writeListToFile(this.supportingDomainsOutFileName , this.esniSupportingDomains);
