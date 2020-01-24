@@ -94,17 +94,17 @@ public class DebugProbe extends TlsProbe {
 //        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
 //        cipherSuites.add(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
 //        cipherSuites.add(CipherSuite.TLS_RSA_WITH_DES_CBC_SHA);
-        cipherSuites.addAll(CipherSuite.getImplemented());
-
+//        cipherSuites.addAll(CipherSuite.getImplemented());
+        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256);
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAFv1_nLEAF_RSAv3;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
         for (ProtocolVersion protocolVersion : desiredVersions) {
             // Dummy for output since I do not iterate Ciphersuites
-            CipherSuite cipherSuite = CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA;
+            CipherSuite cipherSuite = CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256;
             CertificateMessage certificateMessage = null;
             Config tlsConfig = generateConfig();
             tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
@@ -112,13 +112,8 @@ public class DebugProbe extends TlsProbe {
             // Needed for CyaSSL/WolfSSL. The server answers only to client hellos which have Version 1.0 in the Record Protocol
 //          tlsConfig.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-            try {
-                certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
-            } catch (Exception e) {
-                LOGGER.error("Error while generating certificateMessage." + e);
-            }
-            WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
-                    certificateMessage);
+            WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaDelegate, ccaWorkflowType,
+                    ccaCertificateType);
             ApplicationMessage applicationMessage = new ApplicationMessage();
             trace.addTlsAction(new SendAction(applicationMessage));
             State state = new State(tlsConfig, trace);

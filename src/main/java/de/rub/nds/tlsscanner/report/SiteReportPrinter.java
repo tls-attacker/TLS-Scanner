@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
+import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
@@ -53,10 +55,8 @@ import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuit
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
 
@@ -1422,13 +1422,59 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "Client authentication");
         prettyAppend(builder, "Supported", report.getCcaSupported());
         prettyAppend(builder, "Required", report.getCcaRequired());
+
         if (report.getCcaTestResultList() != null) {
-            for (CcaTestResult ccaTestResult : report.getCcaTestResultList()) {
-                prettyAppend(builder, ccaTestResult.getWorkflowType().name().concat(".")
-                                .concat(ccaTestResult.getCertificateType().name()).concat(".")
-                                .concat(ccaTestResult.getProtocolVersion().name()).concat(".")
-                                .concat(ccaTestResult.getCipherSuite().name()), ccaTestResult.getBypassable(),
-                        ccaTestResult.getBypassable() ? AnsiColor.RED : AnsiColor.GREEN);
+            List<CcaTestResult> ccaTestResults = report.getCcaTestResultList();
+            ccaTestResults.sort(new Comparator<CcaTestResult>() {
+                @Override
+                public int compare(CcaTestResult ccaTestResult, CcaTestResult t1) {
+                    int c;
+                    c = ccaTestResult.getWorkflowType().compareTo(t1.getWorkflowType());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getCertificateType().compareTo(t1.getCertificateType());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getProtocolVersion().compareTo(t1.getProtocolVersion());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getCipherSuite().compareTo(t1.getCipherSuite());
+                    return c;
+                }
+            });
+            CcaWorkflowType lastCcaWorkflowType = null;
+            CcaCertificateType lastCcaCertificateType = null;
+            ProtocolVersion lastProtocolVersion = null;
+            for (CcaTestResult ccaTestResult : ccaTestResults) {
+                if (ccaTestResult.getWorkflowType() != lastCcaWorkflowType) {
+                    lastCcaWorkflowType = ccaTestResult.getWorkflowType();
+                    prettyAppendSubheading(builder, lastCcaWorkflowType.name());
+                }
+                if (ccaTestResult.getCertificateType() != lastCcaCertificateType) {
+                    lastCcaCertificateType = ccaTestResult.getCertificateType();
+                    prettyAppendSubSubheading(builder, lastCcaCertificateType.name());
+                }
+                if (ccaTestResult.getProtocolVersion() != lastProtocolVersion) {
+                    lastProtocolVersion = ccaTestResult.getProtocolVersion();
+                    prettyAppendSubSubSubheading(builder, lastProtocolVersion.name());
+                }
+                prettyAppend(builder, ccaTestResult.getCipherSuite().name(), ccaTestResult.getBypassable(), ccaTestResult.getBypassable() ? AnsiColor.RED : AnsiColor.GREEN);
+//                prettyAppend(builder, ccaTestResult.getProtocolVersion().name().concat(".")
+//                                .concat(ccaTestResult.getCipherSuite().name()).concat(".")
+//                                .concat(ccaTestResult.getWorkflowType().name()).concat(".")
+//                                .concat(ccaTestResult.getCertificateType().name()), ccaTestResult.getBypassable(),
+//                        ccaTestResult.getBypassable() ? AnsiColor.RED : AnsiColor.GREEN);
+//                prettyAppend(builder, ccaTestResult.getWorkflowType().name().concat(".")
+//                                .concat(ccaTestResult.getCertificateType().name()).concat(".")
+//                                .concat(ccaTestResult.getProtocolVersion().name()).concat(".")
+//                                .concat(ccaTestResult.getCipherSuite().name()), ccaTestResult.getBypassable(),
+//                        ccaTestResult.getBypassable() ? AnsiColor.RED : AnsiColor.GREEN);
             }
         }
     }

@@ -54,14 +54,7 @@ public class CcaRequiredProbe extends TlsProbe {
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_CCS_FIN;
         CcaCertificateType ccaCertificateType = CcaCertificateType.EMPTY;
         Config tlsConfig = generateConfig();
-        try {
-            certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
-        } catch (Exception e) {
-            LOGGER.error("Error while generating certificateMessage for certificateRequiredProbe." + e);
-            return new CcaRequiredResult(TestResult.COULD_NOT_TEST);
-        }
-        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
-                certificateMessage);
+        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaDelegate, ccaWorkflowType, ccaCertificateType);
         State state = new State(tlsConfig, trace);
         try {
             executeState(state);

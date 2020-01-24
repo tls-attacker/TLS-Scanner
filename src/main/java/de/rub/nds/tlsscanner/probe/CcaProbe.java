@@ -169,13 +169,7 @@ public class CcaProbe extends TlsProbe {
 
                         CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType, ccaCertificateType);
 
-                        try {
-                            certificateMessage = CcaCertificateGenerator.generateCertificate(ccaDelegate, ccaCertificateType);
-                        } catch (Exception e) {
-                            LOGGER.error("Error while generating certificateMessage for vector " + ccaVector + "." + e);
-                        }
-                        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaWorkflowType,
-                                certificateMessage);
+                        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaDelegate, ccaWorkflowType, ccaCertificateType);
                         State state = new State(tlsConfig, trace);
                         CcaTask ccaTask = new CcaTask(state, additionalTimeout, increasingTimeout,
                                 parallelExecutor.getReexecutions(), additionalTcpTimeout);
