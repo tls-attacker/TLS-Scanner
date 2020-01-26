@@ -8,6 +8,10 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.asn1.Asn1Encodable;
+import de.rub.nds.asn1.parser.Asn1Parser;
+import de.rub.nds.asn1.translator.ParseNativeTypesContext;
+import de.rub.nds.asn1tool.xmlparser.Asn1XmlContent;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateGenerator;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
@@ -31,10 +35,15 @@ import de.rub.nds.tlsscanner.report.result.CcaResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralSubtree;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import static de.rub.nds.x509attacker.X509Attacker.*;
 
 public class DebugProbe extends TlsProbe {
     private List<VersionSuiteListPair> versionSuiteListPairsList;
@@ -47,7 +56,24 @@ public class DebugProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
 
+        registerXmlClasses();
+        registerTypes();
+        registerContexts();
+        registerContentUnpackers();
+        try {
+            GeneralSubtree generalSubtree = new GeneralSubtree(new GeneralName(GeneralName.dNSName, "test"), BigInteger.valueOf(0), BigInteger.valueOf(10));
+//            GeneralSubtree generalSubtree = new GeneralSubtree(new GeneralName(GeneralName.dNSName, "test"), 0);
+            GeneralName generalName = new GeneralName(GeneralName.dNSName, "test");
+            // Parse certificate
+            byte[] encodedName = generalName.getEncoded();
+            byte[] encodedSubtree = generalSubtree.getEncoded();
+            Asn1Parser asn1Parser = new Asn1Parser(encodedSubtree, false);
+            List<Asn1Encodable> asn1Encodables = asn1Parser.parse(ParseNativeTypesContext.NAME);
+            Asn1XmlContent asn1XmlContent = new Asn1XmlContent();
+            asn1XmlContent.setAsn1Encodables(asn1Encodables);
+        } catch (Exception e) {
 
+        }
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
         /**
@@ -100,7 +126,7 @@ public class DebugProbe extends TlsProbe {
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_NameConstraints_LEAF_RSAv3;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
         for (ProtocolVersion protocolVersion : desiredVersions) {
             // Dummy for output since I do not iterate Ciphersuites
