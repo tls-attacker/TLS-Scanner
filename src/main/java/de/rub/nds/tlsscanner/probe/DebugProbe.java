@@ -56,7 +56,7 @@ public class DebugProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
 
-        registerXmlClasses();
+        /*registerXmlClasses();
         registerTypes();
         registerContexts();
         registerContentUnpackers();
@@ -73,7 +73,7 @@ public class DebugProbe extends TlsProbe {
             asn1XmlContent.setAsn1Encodables(asn1Encodables);
         } catch (Exception e) {
 
-        }
+        }*/
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
         /**
@@ -126,7 +126,7 @@ public class DebugProbe extends TlsProbe {
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_NameConstraints_LEAF_RSAv3;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3_extendedKeyUsageCodeSign;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
         for (ProtocolVersion protocolVersion : desiredVersions) {
             // Dummy for output since I do not iterate Ciphersuites
