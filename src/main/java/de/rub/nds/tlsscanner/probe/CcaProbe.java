@@ -68,19 +68,8 @@ public class CcaProbe extends TlsProbe {
 
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
-        /**
-         * Initialize the FileManger respectively. If we don't do this we would have to serialize access to it
-         * which would end up breaking parallelism.
-         * TODO: The keyFileManager also is likely to serialize the access. Maybe we need to create our "own" and
-         * allow parallel access.
-         */
-        CcaFileManager.getReference(ccaDelegate.getXmlDirectory() + "/");
-        CcaFileManager.getReference(ccaDelegate.getCertificateInputDirectory() + "/");
-        try {
-            KeyFileManager.getReference().init(ccaDelegate.getKeyDirectory() + "/");
-        } catch (Exception e) {
-            LOGGER.error("Failed to initialize KeyFileManager" + e);
-        }
+        // TODO: Patch keyfilemanager to only open the directory if no entries are present (less IO)
+
         /**
          * Add any protocol version (1.0-1.2) to the versions we iterate
          */
@@ -180,6 +169,9 @@ public class CcaProbe extends TlsProbe {
 
                         CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType, ccaCertificateType);
 
+                        /**
+                         * TODO: move state generation into task. This will allow us to to all computational intensive stuff in parallel.
+                         */
                         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaDelegate, ccaWorkflowType, ccaCertificateType);
                         State state = new State(tlsConfig, trace);
                         CcaTask ccaTask = new CcaTask(state, additionalTimeout, increasingTimeout,
