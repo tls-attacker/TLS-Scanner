@@ -8,10 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateGenerator;
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
-import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
-import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
+import de.rub.nds.tlsattacker.attacks.cca.*;
 import de.rub.nds.tlsattacker.attacks.cca.vector.CcaTaskVectorPair;
 import de.rub.nds.tlsattacker.attacks.cca.vector.CcaVector;
 import de.rub.nds.tlsattacker.attacks.task.CcaTask;
@@ -35,6 +32,7 @@ import de.rub.nds.tlsscanner.report.result.CcaResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
+import de.rub.nds.x509attacker.keyfilemanager.KeyFileManager;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -70,6 +68,19 @@ public class CcaProbe extends TlsProbe {
 
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
+        /**
+         * Initialize the FileManger respectively. If we don't do this we would have to serialize access to it
+         * which would end up breaking parallelism.
+         * TODO: The keyFileManager also is likely to serialize the access. Maybe we need to create our "own" and
+         * allow parallel access.
+         */
+        CcaFileManager.getReference(ccaDelegate.getXmlDirectory() + "/");
+        CcaFileManager.getReference(ccaDelegate.getCertificateInputDirectory() + "/");
+        try {
+            KeyFileManager.getReference().init(ccaDelegate.getKeyDirectory() + "/");
+        } catch (Exception e) {
+            LOGGER.error("Failed to initialize KeyFileManager" + e);
+        }
         /**
          * Add any protocol version (1.0-1.2) to the versions we iterate
          */
