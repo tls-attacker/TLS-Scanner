@@ -32,7 +32,6 @@ import de.rub.nds.tlsscanner.report.result.CcaResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
-import de.rub.nds.x509attacker.keyfilemanager.KeyFileManager;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -162,19 +161,20 @@ public class CcaProbe extends TlsProbe {
                 }
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                     for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
-                        CertificateMessage certificateMessage = null;
-                        Config tlsConfig = generateConfig();
+                        /*CertificateMessage certificateMessage = null;
                         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
 
-                        CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType, ccaCertificateType);
 
-                        /**
+                        *//**
                          * TODO: move state generation into task. This will allow us to to all computational intensive stuff in parallel.
-                         */
+                         *//*
                         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaDelegate, ccaWorkflowType, ccaCertificateType);
                         State state = new State(tlsConfig, trace);
-                        CcaTask ccaTask = new CcaTask(state, additionalTimeout, increasingTimeout,
+                        */
+                        CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType, ccaCertificateType);
+                        Config tlsConfig = generateConfig();
+                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaDelegate, additionalTimeout, increasingTimeout,
                                 parallelExecutor.getReexecutions(), additionalTcpTimeout);
                         taskList.add(ccaTask);
                         taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
