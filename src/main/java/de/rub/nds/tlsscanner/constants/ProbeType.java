@@ -38,4 +38,5 @@ public enum ProbeType {
     HANDSHAKE_SIMULATION,
     TLS13,
     MAC,
+    MASTER_SECRET
 }

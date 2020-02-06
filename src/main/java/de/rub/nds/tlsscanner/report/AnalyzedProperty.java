@@ -159,6 +159,7 @@ public enum AnalyzedProperty {
      * does it ignore the sig hash algorithms
      */
     IGNORES_OFFERED_SIG_HASH_ALGOS(AnalyzedPropertyCategory.QUIRKS),
+    VULNERABLE_TO_MASTER_SECRET(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_PADDING_ORACLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_INVALID_CURVE(AnalyzedPropertyCategory.ATTACKS),
