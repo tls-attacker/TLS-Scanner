@@ -158,8 +158,6 @@ public class DirectRaccoonProbe extends TlsProbe {
                 responseList.add(getVectorResponse(version, suite, type, initialDhSecret, true));
             }
         }
-        // TODO: Remove Log after test
-        LOGGER.info("\n");
         return responseList;
     }
 
