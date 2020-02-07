@@ -18,11 +18,12 @@ import java.util.List;
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
 public class DirectRaccoonCipherSuiteFingerprint {
-    
+
     private final Boolean vulnerable;
     private final ProtocolVersion version;
     private final CipherSuite suite;
     private final List<List<VectorResponse>> responseMapList;
+    private Boolean handshakeIsWorking;
 
     private final EqualityError equalityError;
     private final boolean shakyScans;
@@ -36,6 +37,15 @@ public class DirectRaccoonCipherSuiteFingerprint {
         this.equalityError = equalityError;
         this.shakyScans = shakyScans;
         this.hasScanningError = hasScanningError;
+        handshakeIsWorking = null;
+    }
+
+    public Boolean getHandshakeIsWorking() {
+        return handshakeIsWorking;
+    }
+
+    public void setHandshakeIsWorking(Boolean handshakeIsWorking) {
+        this.handshakeIsWorking = handshakeIsWorking;
     }
 
     public boolean isShakyScans() {
@@ -64,5 +74,5 @@ public class DirectRaccoonCipherSuiteFingerprint {
 
     public EqualityError getEqualityError() {
         return equalityError;
-    } 
+    }
 }
