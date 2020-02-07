@@ -27,7 +27,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.DirectRaccoonResponseMap;
@@ -39,17 +38,19 @@ import de.rub.nds.tlsscanner.probe.mastersecret.DirectRaccoonWorkflowType;
 import de.rub.nds.tlsscanner.probe.mastersecret.VectorResponse;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
 public class DirectRaccoonProbe extends TlsProbe {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final boolean increasingTimeout = true;
 
@@ -111,7 +112,7 @@ public class DirectRaccoonProbe extends TlsProbe {
                     referenceResponseMap = responseMap;
                     referenceError = getEqualityError(responseMap);
                     if (referenceError == EqualityError.NONE) {
-                        LOGGER.debug("Server appears not vulnerable");
+                        LOGGER.info("Server appears not vulnerable");
                         break;
                     }
                 } else {
@@ -148,15 +149,19 @@ public class DirectRaccoonProbe extends TlsProbe {
         List<VectorResponse> responseList = new LinkedList<>();
         // TODO: Remove Log after test
         LOGGER.info("Version: " + version + "; Ciphersuite: " + suite + "; Type: " + DirectRaccoonWorkflowType.INITIAL);
-        responseList.add(getVectorResponseForInitialHandshake(version, suite));
+        try {
+            responseList.add(getVectorResponseForInitialHandshake(version, suite));
+        } catch (Exception E) {
+            E.printStackTrace();
+        }
         // TODO: Change secret to 4000 after test
-        BigInteger clientDhSecret = new BigInteger("10");
+        BigInteger initialDhSecret = new BigInteger("4000");
         for (DirectRaccoonWorkflowType type : DirectRaccoonWorkflowType.values()) {
             if (type != DirectRaccoonWorkflowType.INITIAL) {
                 // TODO: Remove Log after test
                 LOGGER.info("Version: " + version + "; Ciphersuite: " + suite + "; Type: " + type);
-                responseList.add(getVectorResponse(version, suite, type, clientDhSecret, false));
-                responseList.add(getVectorResponse(version, suite, type, clientDhSecret, true));
+                responseList.add(getVectorResponse(version, suite, type, initialDhSecret, false));
+                responseList.add(getVectorResponse(version, suite, type, initialDhSecret, true));
             }
         }
         // TODO: Remove Log after test
@@ -216,8 +221,7 @@ public class DirectRaccoonProbe extends TlsProbe {
 
             // Generate result
             return evaluateFingerPrintTask(version, suite, workflowTtype, withNullByte, fingerPrintTask);
-        }else
-        {
+        } else {
             return new VectorResponse(null, workflowTtype, version, suite, withNullByte);
         }
     }
