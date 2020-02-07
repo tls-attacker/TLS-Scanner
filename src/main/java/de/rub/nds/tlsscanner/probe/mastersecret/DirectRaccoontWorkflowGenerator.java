@@ -25,7 +25,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class MasterSecretWorkflowGenerator {
+public class DirectRaccoontWorkflowGenerator {
 
     /**
      *
@@ -47,7 +47,7 @@ public class MasterSecretWorkflowGenerator {
      * @param clientPublicKey
      * @return
      */
-    public static WorkflowTrace generateWorkflowSecondStep(Config tlsConfig, MasterSecretWorkflowType type, byte[] clientPublicKey) {
+    public static WorkflowTrace generateWorkflowSecondStep(Config tlsConfig, DirectRaccoonWorkflowType type, byte[] clientPublicKey) {
         WorkflowTrace trace = new WorkflowTrace();
         DHClientKeyExchangeMessage cke = new DHClientKeyExchangeMessage(tlsConfig);
         cke.setPublicKey(Modifiable.explicit(clientPublicKey));
@@ -71,7 +71,7 @@ public class MasterSecretWorkflowGenerator {
         return trace;
     }
 
-    private MasterSecretWorkflowGenerator() {
+    private DirectRaccoontWorkflowGenerator() {
 
     }
     

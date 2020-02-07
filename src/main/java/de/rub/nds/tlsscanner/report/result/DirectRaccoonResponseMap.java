@@ -12,22 +12,22 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.probe.mastersecret.MasterSecretCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.probe.mastersecret.DirectRaccoonCipherSuiteFingerprint;
 import java.util.List;
 
 /**
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class MasterSecretResponseMap extends ProbeResult {
+public class DirectRaccoonResponseMap extends ProbeResult {
     
-    private List<MasterSecretCipherSuiteFingerprint> resultList;
+    private List<DirectRaccoonCipherSuiteFingerprint> resultList;
     
     private TestResult vulnerable;
 
 
-    public MasterSecretResponseMap(List<MasterSecretCipherSuiteFingerprint> resultList, TestResult vulnerable) {
-        super(ProbeType.MASTER_SECRET);
+    public DirectRaccoonResponseMap(List<DirectRaccoonCipherSuiteFingerprint> resultList, TestResult vulnerable) {
+        super(ProbeType.DIRECT_RACCOON);
         this.resultList = resultList;
         this.vulnerable = vulnerable;
     }
@@ -44,7 +44,7 @@ public class MasterSecretResponseMap extends ProbeResult {
         report.putResult(AnalyzedProperty.VULNERABLE_TO_MASTER_SECRET, vulnerable);
     }
     
-    public List<MasterSecretCipherSuiteFingerprint> getResultList() {
+    public List<DirectRaccoonCipherSuiteFingerprint> getResultList() {
         return resultList;
     }
 }

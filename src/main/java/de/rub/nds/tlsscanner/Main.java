@@ -49,7 +49,7 @@ public class Main {
                     // ANSI escape sequences to erase the progressbar
                     ConsoleLogger.CONSOLE.info(AnsiEscapeSequence.ANSI_ONE_LINE_UP + AnsiEscapeSequence.ANSI_ERASE_LINE);
                 }
-                //ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
+                ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n" + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
 
             } catch (ConfigurationException E) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", E);

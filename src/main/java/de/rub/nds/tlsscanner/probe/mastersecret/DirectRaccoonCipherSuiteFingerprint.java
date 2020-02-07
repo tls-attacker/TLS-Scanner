@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class MasterSecretCipherSuiteFingerprint {
+public class DirectRaccoonCipherSuiteFingerprint {
     
     private final Boolean vulnerable;
     private final ProtocolVersion version;
@@ -28,7 +28,7 @@ public class MasterSecretCipherSuiteFingerprint {
     private final boolean shakyScans;
     private final boolean hasScanningError;
 
-    public MasterSecretCipherSuiteFingerprint(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, List<List<VectorResponse>> responseMapList, EqualityError equalityError, boolean shakyScans, boolean hasScanningError) {
+    public DirectRaccoonCipherSuiteFingerprint(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, List<List<VectorResponse>> responseMapList, EqualityError equalityError, boolean shakyScans, boolean hasScanningError) {
         this.vulnerable = vulnerable;
         this.version = version;
         this.suite = suite;

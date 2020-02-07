@@ -6,11 +6,6 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -35,12 +30,12 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.MasterSecretResponseMap;
+import de.rub.nds.tlsscanner.report.result.DirectRaccoonResponseMap;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.probe.mastersecret.MasterSecretCipherSuiteFingerprint;
-import de.rub.nds.tlsscanner.probe.mastersecret.MasterSecretWorkflowGenerator;
-import de.rub.nds.tlsscanner.probe.mastersecret.MasterSecretWorkflowType;
+import de.rub.nds.tlsscanner.probe.mastersecret.DirectRaccoonCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.probe.mastersecret.DirectRaccoontWorkflowGenerator;
+import de.rub.nds.tlsscanner.probe.mastersecret.DirectRaccoonWorkflowType;
 import de.rub.nds.tlsscanner.probe.mastersecret.VectorResponse;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.math.BigInteger;
@@ -54,59 +49,58 @@ import java.util.Objects;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class MasterSecretProbe extends TlsProbe {
-   
+public class DirectRaccoonProbe extends TlsProbe {
+
     private final boolean increasingTimeout = true;
-    
+
     private final long additionalTimeout = 4000;
-    
-    private final long additionalTcpTimeout = 5000; 
-    
+
+    private final long additionalTcpTimeout = 5000;
+
     private final int mapListDepth = 3;
-    
+
     private List<VersionSuiteListPair> serverSupportedSuites;
-    
-    public MasterSecretProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        // TODO: ProbeType und Danger Level richtig wählen
-        super(parallelExecutor, ProbeType.MASTER_SECRET, config, 5);
+
+    public DirectRaccoonProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.DIRECT_RACCOON, config, 1);
     }
 
     @Override
     public ProbeResult executeTest() {
-        try {    
+        try {
             /*
             serverSupportedSuites = new LinkedList<>();
             List<CipherSuite> ciphersuiteList = new LinkedList<>();
             ciphersuiteList.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384);
             serverSupportedSuites.add(new VersionSuiteListPair(ProtocolVersion.TLS12, ciphersuiteList));
-            */
-            List<MasterSecretCipherSuiteFingerprint> testResultList = new LinkedList<>();  
+             */
+            List<DirectRaccoonCipherSuiteFingerprint> testResultList = new LinkedList<>();
             for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCiphersuiteList()) {
                         if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
-                            testResultList.add(getMasterSecretCipherSuiteFingerprint(pair.getVersion(), suite));
+                            testResultList.add(getDirectRaccoonCipherSuiteFingerprint(pair.getVersion(), suite));
                         }
                     }
                 }
             }
-            for (MasterSecretCipherSuiteFingerprint fingerprint : testResultList) {
+            for (DirectRaccoonCipherSuiteFingerprint fingerprint : testResultList) {
                 if (Objects.equals(fingerprint.getVulnerable(), Boolean.TRUE)) {
-                    return new MasterSecretResponseMap(testResultList, TestResult.TRUE);
+                    return new DirectRaccoonResponseMap(testResultList, TestResult.TRUE);
                 }
             }
-            return new MasterSecretResponseMap(testResultList, TestResult.FALSE);
+            return new DirectRaccoonResponseMap(testResultList, TestResult.FALSE);
         } catch (Exception e) {
-            return new MasterSecretResponseMap(new LinkedList<MasterSecretCipherSuiteFingerprint>(), TestResult.ERROR_DURING_TEST);
+            return new DirectRaccoonResponseMap(new LinkedList<DirectRaccoonCipherSuiteFingerprint>(), TestResult.ERROR_DURING_TEST);
         }
     }
-    
-    private MasterSecretCipherSuiteFingerprint getMasterSecretCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite) {
+
+    private DirectRaccoonCipherSuiteFingerprint getDirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite) {
         Boolean isVulnerable;
         boolean shakyScans = false;
         boolean errornousScans = false;
         EqualityError referenceError = null;
-        
+
         List<VectorResponse> referenceResponseMap = null;
         List<List<VectorResponse>> responseMapList = new LinkedList<>();
         try {
@@ -128,37 +122,37 @@ public class MasterSecretProbe extends TlsProbe {
                         shakyScans = true;
                         CONSOLE.info("Rescan[" + i + "] shows different results");
                     }
-                }  
+                }
             }
         } catch (AttackFailedException E) {
             CONSOLE.info(E.getMessage());
             isVulnerable = null;
-        }      
+        }
         if (shakyScans) {
             isVulnerable = null;
         }
         isVulnerable = referenceError != EqualityError.NONE;
         loop:
-        for(List<VectorResponse> list : responseMapList) {
-            for(VectorResponse vector : list) {
-                if(vector.isErrorDuringHandshake()) {
+        for (List<VectorResponse> list : responseMapList) {
+            for (VectorResponse vector : list) {
+                if (vector.isErrorDuringHandshake()) {
                     errornousScans = true;
                     break loop;
                 }
             }
         }
-        return new MasterSecretCipherSuiteFingerprint(isVulnerable, version, suite, responseMapList, referenceError, shakyScans, errornousScans);
+        return new DirectRaccoonCipherSuiteFingerprint(isVulnerable, version, suite, responseMapList, referenceError, shakyScans, errornousScans);
     }
-    
+
     private List<VectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite) {
         List<VectorResponse> responseList = new LinkedList<>();
         // TODO: Remove Log after test
-        LOGGER.info("Version: " + version + "; Ciphersuite: " + suite + "; Type: " + MasterSecretWorkflowType.INITIAL);
+        LOGGER.info("Version: " + version + "; Ciphersuite: " + suite + "; Type: " + DirectRaccoonWorkflowType.INITIAL);
         responseList.add(getVectorResponseForInitialHandshake(version, suite));
         // TODO: Change secret to 4000 after test
         BigInteger clientDhSecret = new BigInteger("10");
-        for(MasterSecretWorkflowType type : MasterSecretWorkflowType.values()) {
-            if(type != MasterSecretWorkflowType.INITIAL) {
+        for (DirectRaccoonWorkflowType type : DirectRaccoonWorkflowType.values()) {
+            if (type != DirectRaccoonWorkflowType.INITIAL) {
                 // TODO: Remove Log after test
                 LOGGER.info("Version: " + version + "; Ciphersuite: " + suite + "; Type: " + type);
                 responseList.add(getVectorResponse(version, suite, type, clientDhSecret, false));
@@ -169,88 +163,92 @@ public class MasterSecretProbe extends TlsProbe {
         LOGGER.info("\n");
         return responseList;
     }
-    
+
     private VectorResponse getVectorResponseForInitialHandshake(ProtocolVersion version, CipherSuite suite) {
         // Prepare config
         Config config = getScannerConfig().createConfig();
         config.setHighestProtocolVersion(version);
         config.setDefaultSelectedProtocolVersion(version);
         config.setDefaultClientSupportedCiphersuites(suite);
-        config.setStopActionsAfterFatal(true); 
-        config.setStopReceivingAfterFatal(true); 
-        config.setEarlyStop(true);  
+        config.setStopActionsAfterFatal(true);
+        config.setStopReceivingAfterFatal(true);
+        config.setEarlyStop(true);
         // Prepare workflow trace
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         // Execute
         State state = new State(config, trace);
         FingerPrintTask fingerPrintTask = new FingerPrintTask(state, additionalTimeout, increasingTimeout, getParallelExecutor().getReexecutions(), additionalTcpTimeout);
-        getParallelExecutor().bulkExecuteTasks(fingerPrintTask);        
+        getParallelExecutor().bulkExecuteTasks(fingerPrintTask);
         // Generate result
-        return evaluateFingerPrintTask(version, suite, MasterSecretWorkflowType.INITIAL, false, fingerPrintTask);
+        return evaluateFingerPrintTask(version, suite, DirectRaccoonWorkflowType.INITIAL, false, fingerPrintTask);
     }
-    
-    private VectorResponse getVectorResponse(ProtocolVersion version, CipherSuite suite, MasterSecretWorkflowType workflowTtype, BigInteger clientDhSecret, boolean withNullByte) {
+
+    private VectorResponse getVectorResponse(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowTtype, BigInteger clientDhSecret, boolean withNullByte) {
         // Prepare config
         Config config = getScannerConfig().createConfig();
         config.setHighestProtocolVersion(version);
         config.setDefaultSelectedProtocolVersion(version);
         config.setDefaultClientSupportedCiphersuites(suite);
         config.setWorkflowExecutorShouldClose(false);
-        config.setStopActionsAfterFatal(true); 
-        config.setStopReceivingAfterFatal(true); 
-        config.setEarlyStop(true);   
+        config.setStopActionsAfterFatal(true);
+        config.setStopReceivingAfterFatal(true);
+        config.setEarlyStop(true);
         // Prepare workflow trace 
-        WorkflowTrace trace = MasterSecretWorkflowGenerator.generateWorkflowFirstStep(config);
+        WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflowFirstStep(config);
         // Execute
         State state = new State(config, trace);
         executeState(state);
-        
-        // Prepare config 
-        config.setWorkflowExecutorShouldOpen(false);
-        config.setWorkflowExecutorShouldClose(true);
-        config.setStopActionsAfterFatal(false); 
-        config.setStopReceivingAfterFatal(false);
-        TlsContext oldTlsContext = state.getTlsContext();
-        // Prepare workflow trace 
-        byte[] clientPublicKey = getClientPublicKey(state.getTlsContext().getServerDhGenerator(), state.getTlsContext().getServerDhModulus(), state.getTlsContext().getServerDhPublicKey(), clientDhSecret, withNullByte);
-        trace = MasterSecretWorkflowGenerator.generateWorkflowSecondStep(config, workflowTtype, clientPublicKey);
-        // Execute
-        state = new State(config, trace);
-        state.replaceTlsContext(oldTlsContext);
-        FingerPrintTask fingerPrintTask = new FingerPrintTask(state, additionalTimeout, increasingTimeout, this.getParallelExecutor().getReexecutions(), additionalTcpTimeout);
-        this.getParallelExecutor().bulkExecuteTasks(fingerPrintTask);
-        
-        // Generate result
-        return evaluateFingerPrintTask(version, suite, workflowTtype, withNullByte, fingerPrintTask);
+        if (trace.executedAsPlanned()) {
+            // Prepare config 
+            config.setWorkflowExecutorShouldOpen(false);
+            config.setWorkflowExecutorShouldClose(true);
+            config.setStopActionsAfterFatal(false);
+            config.setStopReceivingAfterFatal(false);
+            TlsContext oldTlsContext = state.getTlsContext();
+            // Prepare workflow trace 
+            byte[] clientPublicKey = getClientPublicKey(state.getTlsContext().getServerDhGenerator(), state.getTlsContext().getServerDhModulus(), state.getTlsContext().getServerDhPublicKey(), clientDhSecret, withNullByte);
+            trace = DirectRaccoontWorkflowGenerator.generateWorkflowSecondStep(config, workflowTtype, clientPublicKey);
+            // Execute
+            state = new State(config, trace);
+            state.replaceTlsContext(oldTlsContext);
+            FingerPrintTask fingerPrintTask = new FingerPrintTask(state, additionalTimeout, increasingTimeout, this.getParallelExecutor().getReexecutions(), additionalTcpTimeout);
+            this.getParallelExecutor().bulkExecuteTasks(fingerPrintTask);
+
+            // Generate result
+            return evaluateFingerPrintTask(version, suite, workflowTtype, withNullByte, fingerPrintTask);
+        }else
+        {
+            return new VectorResponse(null, workflowTtype, version, suite, withNullByte);
+        }
     }
-    
-    private VectorResponse evaluateFingerPrintTask (ProtocolVersion version, CipherSuite suite, MasterSecretWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
+
+    private VectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
         VectorResponse vectorResponse = null;
         if (fingerPrintTask.isHasError()) {
             //errornousScans = true;
             LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version="
-                + version + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
+                    + version + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
             vectorResponse = new VectorResponse(null, workflowType, version, suite, withNullByte);
-            vectorResponse.setErrorDuringHandshake(true);          
+            vectorResponse.setErrorDuringHandshake(true);
         } else {
             vectorResponse = new VectorResponse(fingerPrintTask.getFingerprint(), workflowType, version, suite, withNullByte);
         }
         return vectorResponse;
     }
-    
-    private byte[] getClientPublicKey(BigInteger g, BigInteger m, BigInteger serverPublicKey, BigInteger clientDhSecret, boolean withNullByte) {
+
+    private byte[] getClientPublicKey(BigInteger g, BigInteger m, BigInteger serverPublicKey, BigInteger initialClientDhSecret, boolean withNullByte) {
         int length = ArrayConverter.bigIntegerToByteArray(m).length;
-        byte[] pms = ArrayConverter.bigIntegerToNullPaddedByteArray(serverPublicKey.modPow(clientDhSecret, m), length);
+        byte[] pms = ArrayConverter.bigIntegerToNullPaddedByteArray(serverPublicKey.modPow(initialClientDhSecret, m), length);
         if ((withNullByte && pms[0] == 0) || (!withNullByte && pms[0] != 0)) {
             // TODO: Remove Log after test
-            LOGGER.info("Client DH Secret: " + clientDhSecret.toString());
-            return g.modPow(clientDhSecret,m).toByteArray();         
+            LOGGER.info("Client DH Secret: " + initialClientDhSecret.toString());
+            return g.modPow(initialClientDhSecret, m).toByteArray();
         } else {
-            clientDhSecret = clientDhSecret.add(new BigInteger("1"));
-            return getClientPublicKey(g, m, serverPublicKey, clientDhSecret, withNullByte);
+            initialClientDhSecret = initialClientDhSecret.add(new BigInteger("1"));
+            return getClientPublicKey(g, m, serverPublicKey, initialClientDhSecret, withNullByte);
         }
     }
-    
+
     /**
      *
      * @param responseVectorListOne
@@ -304,7 +302,7 @@ public class MasterSecretProbe extends TlsProbe {
         }
         return result;
     }
-    
+
     /**
      *
      * @param responseVectorList
@@ -343,7 +341,7 @@ public class MasterSecretProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        
+
         if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE)) && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE)) && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
             return false;
         }
@@ -357,9 +355,9 @@ public class MasterSecretProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
         serverSupportedSuites = report.getVersionSuitePairs();
     }
-    
+
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new MasterSecretResponseMap(null, TestResult.COULD_NOT_TEST);
-    }   
+        return new DirectRaccoonResponseMap(null, TestResult.COULD_NOT_TEST);
+    }
 }

@@ -28,7 +28,7 @@ import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
 import de.rub.nds.tlsscanner.probe.HttpHeaderProbe;
 import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
 import de.rub.nds.tlsscanner.probe.MacProbe;
-import de.rub.nds.tlsscanner.probe.MasterSecretProbe;
+import de.rub.nds.tlsscanner.probe.DirectRaccoonProbe;
 import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
 import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.PoodleProbe;
@@ -118,7 +118,7 @@ public class TlsScanner {
         //probeList.add(new CertificateProbe(config, parallelExecutor));
         probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
         probeList.add(new CiphersuiteProbe(config, parallelExecutor));
-        probeList.add(new MasterSecretProbe(config, parallelExecutor));
+        probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
         //probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
         //probeList.add(new ExtensionProbe(config, parallelExecutor));
         //probeList.add(new Tls13Probe(config, parallelExecutor));

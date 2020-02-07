@@ -33,7 +33,7 @@ import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.probe.mastersecret.MasterSecretCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.probe.mastersecret.DirectRaccoonCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.HashMap;
@@ -62,7 +62,7 @@ public class SiteReport extends Observable {
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
-    private List<MasterSecretCipherSuiteFingerprint> masterSecretTestResultList;
+    private List<DirectRaccoonCipherSuiteFingerprint> masterSecretTestResultList;
 
     //Version
     private List<ProtocolVersion> versions = null;
@@ -435,11 +435,11 @@ public class SiteReport extends Observable {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
     
-    public synchronized List<MasterSecretCipherSuiteFingerprint> getMasterSecretTestResultList() {
+    public synchronized List<DirectRaccoonCipherSuiteFingerprint> getMasterSecretTestResultList() {
         return masterSecretTestResultList;
     }
 
-    public synchronized void setMasterSecretTestResultList(List<MasterSecretCipherSuiteFingerprint> masterSecretTestResultList) {
+    public synchronized void setMasterSecretTestResultList(List<DirectRaccoonCipherSuiteFingerprint> masterSecretTestResultList) {
         this.masterSecretTestResultList = masterSecretTestResultList;
     }
 

@@ -12,7 +12,7 @@ package de.rub.nds.tlsscanner.probe.mastersecret;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public enum MasterSecretWorkflowType {
+public enum DirectRaccoonWorkflowType {
     
     /**
      *
@@ -33,7 +33,7 @@ public enum MasterSecretWorkflowType {
 
     String description;
 
-    MasterSecretWorkflowType(String description) {
+    DirectRaccoonWorkflowType(String description) {
         this.description = description;
     }
 

@@ -20,7 +20,7 @@ public class VectorResponse {
     
     private final ResponseFingerprint fingerprint;
 
-    private final MasterSecretWorkflowType type;
+    private final DirectRaccoonWorkflowType type;
 
     private final ProtocolVersion version;
 
@@ -34,7 +34,7 @@ public class VectorResponse {
     
     private boolean errorDuringHandshake = false;
     
-    public VectorResponse (ResponseFingerprint fingerprint, MasterSecretWorkflowType type, ProtocolVersion version, CipherSuite suite, boolean pmsWithNullByte) {
+    public VectorResponse (ResponseFingerprint fingerprint, DirectRaccoonWorkflowType type, ProtocolVersion version, CipherSuite suite, boolean pmsWithNullByte) {
         this.fingerprint = fingerprint;
         this.type = type;
         this.version = version;
@@ -74,7 +74,7 @@ public class VectorResponse {
         return fingerprint;
     }
 
-    public MasterSecretWorkflowType getWorkflowType() {
+    public DirectRaccoonWorkflowType getWorkflowType() {
         return type;
     }
 
