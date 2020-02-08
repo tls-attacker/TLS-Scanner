@@ -42,9 +42,9 @@ public class CcaProbe extends TlsProbe {
 
     private boolean increasingTimeout = false;
 
-    private long additionalTimeout = 1000;
+    private long additionalTimeout = 0;
 
-    private long additionalTcpTimeout = 5000;
+    private long additionalTcpTimeout = 0;
 
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config, 7);
@@ -175,7 +175,7 @@ public class CcaProbe extends TlsProbe {
                         CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType, ccaCertificateType);
                         Config tlsConfig = generateConfig();
                         CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaDelegate, additionalTimeout, increasingTimeout,
-                                parallelExecutor.getReexecutions(), additionalTcpTimeout);
+                                0, additionalTcpTimeout);
                         taskList.add(ccaTask);
                         taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
                     }
