@@ -17,19 +17,19 @@ public enum DirectRaccoonWorkflowType {
     /**
      *
      */
-    INITIAL("Complete TLS protocol flow"),
+    INITIAL("Complete TLS protocol flow with CCS and Finished messages"),
     /**
      *
      */
-    CKE_CCS_FIN("Protocol flow with CKE, CCS and FIN messages"),
+    CKE("TLS protocol flow with missing CCS and Finished messages"),
     /**
      *
      */
-    CKE("Protocol flow with CKE messages"),
+    CKE_CCS("TLS protocol flow with missing Finished message"),
     /**
      *
      */
-    CKE_CCS("Protocol flow with CKE and CCS messages");
+    CKE_CCS_FIN("Complete TLS protocol flow with CCS and Finished messages");
 
     String description;
 

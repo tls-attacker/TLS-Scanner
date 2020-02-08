@@ -35,7 +35,7 @@ import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoontWorkflowGenerator;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.tlsscanner.probe.directRaccoon.VectorResponse;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonVectorResponse;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -101,11 +101,11 @@ public class DirectRaccoonProbe extends TlsProbe {
         boolean errornousScans = false;
         EqualityError referenceError = null;
 
-        List<VectorResponse> referenceResponseMap = null;
-        List<List<VectorResponse>> responseMapList = new LinkedList<>();
+        List<DirectRaccoonVectorResponse> referenceResponseMap = null;
+        List<List<DirectRaccoonVectorResponse>> responseMapList = new LinkedList<>();
         try {
             for (int i = 0; i < mapListDepth; i++) {
-                List<VectorResponse> responseMap = createVectorResponseList(version, suite);
+                List<DirectRaccoonVectorResponse> responseMap = createVectorResponseList(version, suite);
                 responseMapList.add(responseMap);
                 if (i == 0) {
                     referenceResponseMap = responseMap;
@@ -133,8 +133,8 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
         isVulnerable = referenceError != EqualityError.NONE;
         loop:
-        for (List<VectorResponse> list : responseMapList) {
-            for (VectorResponse vector : list) {
+        for (List<DirectRaccoonVectorResponse> list : responseMapList) {
+            for (DirectRaccoonVectorResponse vector : list) {
                 if (vector.isErrorDuringHandshake()) {
                     errornousScans = true;
                     break loop;
@@ -144,8 +144,8 @@ public class DirectRaccoonProbe extends TlsProbe {
         return new DirectRaccoonCipherSuiteFingerprint(isVulnerable, version, suite, responseMapList, referenceError, shakyScans, errornousScans);
     }
 
-    private List<VectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite) {
-        List<VectorResponse> responseList = new LinkedList<>();
+    private List<DirectRaccoonVectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite) {
+        List<DirectRaccoonVectorResponse> responseList = new LinkedList<>();
         BigInteger initialDhSecret = new BigInteger("4000");
         for (DirectRaccoonWorkflowType type : DirectRaccoonWorkflowType.values()) {
             if (type != DirectRaccoonWorkflowType.INITIAL) {
@@ -180,7 +180,7 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
     }
 
-    private VectorResponse getVectorResponse(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowTtype, BigInteger clientDhSecret, boolean withNullByte) {
+    private DirectRaccoonVectorResponse getVectorResponse(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowTtype, BigInteger clientDhSecret, boolean withNullByte) {
         // Prepare config
         try {
             Config config = getScannerConfig().createConfig();
@@ -215,22 +215,22 @@ public class DirectRaccoonProbe extends TlsProbe {
                 // Generate result
                 return evaluateFingerPrintTask(version, suite, workflowTtype, withNullByte, fingerPrintTask);
             } else {
-                return new VectorResponse(null, workflowTtype, version, suite, withNullByte);
+                return new DirectRaccoonVectorResponse(null, workflowTtype, version, suite, withNullByte);
             }
         } catch (Exception E) {
-            return new VectorResponse(null, workflowTtype, version, suite, withNullByte);
+            return new DirectRaccoonVectorResponse(null, workflowTtype, version, suite, withNullByte);
         }
     }
 
-    private VectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
-        VectorResponse vectorResponse = null;
+    private DirectRaccoonVectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
+        DirectRaccoonVectorResponse vectorResponse = null;
         if (fingerPrintTask.isHasError()) {
             LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version="
                     + version + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
-            vectorResponse = new VectorResponse(null, workflowType, version, suite, withNullByte);
+            vectorResponse = new DirectRaccoonVectorResponse(null, workflowType, version, suite, withNullByte);
             vectorResponse.setErrorDuringHandshake(true);
         } else {
-            vectorResponse = new VectorResponse(fingerPrintTask.getFingerprint(), workflowType, version, suite, withNullByte);
+            vectorResponse = new DirectRaccoonVectorResponse(fingerPrintTask.getFingerprint(), workflowType, version, suite, withNullByte);
         }
         return vectorResponse;
     }
@@ -254,17 +254,17 @@ public class DirectRaccoonProbe extends TlsProbe {
      * @param testedSuite
      * @return
      */
-    public boolean lookEqual(List<VectorResponse> responseVectorListOne, List<VectorResponse> responseVectorListTwo, ProtocolVersion testedVersion, CipherSuite testedSuite) {
+    public boolean lookEqual(List<DirectRaccoonVectorResponse> responseVectorListOne, List<DirectRaccoonVectorResponse> responseVectorListTwo, ProtocolVersion testedVersion, CipherSuite testedSuite) {
         boolean result = true;
         if (responseVectorListOne.size() != responseVectorListTwo.size()) {
             throw new OracleUnstableException(
                     "The Oracle seems to be unstable - there is something going terrible wrong. We recommend manual analysis");
         }
 
-        for (VectorResponse vectorResponseOne : responseVectorListOne) {
+        for (DirectRaccoonVectorResponse vectorResponseOne : responseVectorListOne) {
             // Find equivalent
-            VectorResponse equivalentVector = null;
-            for (VectorResponse vectorResponseTwo : responseVectorListTwo) {
+            DirectRaccoonVectorResponse equivalentVector = null;
+            for (DirectRaccoonVectorResponse vectorResponseTwo : responseVectorListTwo) {
                 if (vectorResponseOne.getWorkflowType().equals(vectorResponseTwo.getWorkflowType()) && vectorResponseOne.isPmsWithNullybte() == (vectorResponseTwo.isPmsWithNullybte())) {
                     equivalentVector = vectorResponseTwo;
                     break;
@@ -305,9 +305,9 @@ public class DirectRaccoonProbe extends TlsProbe {
      * @param responseVectorList
      * @return
      */
-    public EqualityError getEqualityError(List<VectorResponse> responseVectorList) {
-        for (VectorResponse responseOne : responseVectorList) {
-            for (VectorResponse responseTwo : responseVectorList) {
+    public EqualityError getEqualityError(List<DirectRaccoonVectorResponse> responseVectorList) {
+        for (DirectRaccoonVectorResponse responseOne : responseVectorList) {
+            for (DirectRaccoonVectorResponse responseTwo : responseVectorList) {
                 // Compare pairs with and without nullbyte
                 if (responseOne == responseTwo || responseOne.getWorkflowType() != responseTwo.getWorkflowType()) {
                     continue;

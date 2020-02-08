@@ -37,6 +37,8 @@ import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonVectorResponse;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
@@ -117,6 +119,7 @@ public class SiteReportPrinter {
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
+        appendDirectRaccoonResults(builder);
         //appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
@@ -564,6 +567,7 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Padding Oracle", "true - " + report.getKnownVulnerability().getShortName(), AnsiColor.RED);
         }
         prettyAppend(builder, "Bleichenbacher", AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER);
+        prettyAppend(builder, "Direct Raccoon", AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON);
         prettyAppend(builder, "CRIME", AnalyzedProperty.VULNERABLE_TO_CRIME);
         prettyAppend(builder, "Breach", AnalyzedProperty.VULNERABLE_TO_BREACH);
         prettyAppend(builder, "Invalid Curve", AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE);
@@ -578,6 +582,78 @@ public class SiteReportPrinter {
         return builder;
     }
 
+    private StringBuilder appendDirectRaccoonResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "Direct Raccoon Responsemap");
+        if (report.getDirectRaccoonResultList()== null || report.getDirectRaccoonResultList().isEmpty()) {
+            prettyAppend(builder, "No Testresults");
+        } else {
+            for (DirectRaccoonCipherSuiteFingerprint testResult : report.getDirectRaccoonResultList()) {
+                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
+                if (testResult.isHasScanningError()) {
+                    prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
+                } else if (Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) {
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
+                } else if (testResult.isShakyScans()) {
+                    prettyAppend(builder, resultString + "\t - Non Deterministic", AnsiColor.YELLOW);
+                } else if (Objects.equals(testResult.getVulnerable(), Boolean.FALSE)) {
+                    prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
+                } else {
+                    prettyAppend(builder, resultString + "\t # Unknown", AnsiColor.YELLOW);
+                }
+
+                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
+                    if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
+                        prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
+                        appendDirectRaccoonResponseMapList(builder, testResult.getResponseMapList());
+                    }
+                }
+            }
+        }
+        return builder;
+    }
+    
+    private StringBuilder appendDirectRaccoonResponseMapList(StringBuilder builder, List<List<DirectRaccoonVectorResponse>> responseMapList) {
+        if (responseMapList != null && !responseMapList.isEmpty()) {
+            for (int vectorIndex = 0; vectorIndex < responseMapList.get(0).size(); vectorIndex++) {
+                DirectRaccoonVectorResponse vectorResponse = responseMapList.get(0).get(vectorIndex);
+                if (vectorResponse.isErrorDuringHandshake()) {
+                    prettyAppend(builder, padToLength("\t" + vectorResponse.getVectorName(), 40) + "ERROR", AnsiColor.RED);
+                } else if (vectorResponse.isMissingEquivalent()) {
+                    prettyAppend(builder, padToLength("\t" + vectorResponse.getVectorName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.RED);
+                } else if (vectorResponse.isShaky()) {
+                    prettyAppend(builder, padToLength("\t" + vectorResponse.getVectorName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
+                    for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
+                        DirectRaccoonVectorResponse shakyVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
+                        if (shakyVectorResponse.getFingerprint() == null) {
+                            prettyAppend(builder, "\t" + padToLength("", 39) + "null", AnsiColor.YELLOW);
+                        } else {
+                            prettyAppend(builder, "\t" + padToLength("", 39) + shakyVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
+                        }
+                    }
+                } else {
+                    prettyAppend(builder, padToLength("\t" + vectorResponse.getVectorName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+                    if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                        for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
+                            DirectRaccoonVectorResponse tempVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
+                            if (tempVectorResponse == null || tempVectorResponse.getFingerprint() == null) {
+                                prettyAppend(builder, "\t" + padToLength("", 39) + "Missing", AnsiColor.RED);
+                            } else {
+                                if (tempVectorResponse.isShaky()) {
+                                    prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
+                                } else {
+                                    prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            prettyAppend(builder, "\tNULL");
+        }
+        return builder;
+    }
+    
     private StringBuilder appendPaddingOracleResults(StringBuilder builder) {
         if (Objects.equals(report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResult.TRUE)) {
             prettyAppendHeading(builder, "PaddingOracle Details");

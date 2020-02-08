@@ -22,14 +22,14 @@ public class DirectRaccoonCipherSuiteFingerprint {
     private final Boolean vulnerable;
     private final ProtocolVersion version;
     private final CipherSuite suite;
-    private final List<List<VectorResponse>> responseMapList;
+    private final List<List<DirectRaccoonVectorResponse>> responseMapList;
     private Boolean handshakeIsWorking;
 
     private final EqualityError equalityError;
     private final boolean shakyScans;
     private final boolean hasScanningError;
 
-    public DirectRaccoonCipherSuiteFingerprint(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, List<List<VectorResponse>> responseMapList, EqualityError equalityError, boolean shakyScans, boolean hasScanningError) {
+    public DirectRaccoonCipherSuiteFingerprint(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, List<List<DirectRaccoonVectorResponse>> responseMapList, EqualityError equalityError, boolean shakyScans, boolean hasScanningError) {
         this.vulnerable = vulnerable;
         this.version = version;
         this.suite = suite;
@@ -60,7 +60,7 @@ public class DirectRaccoonCipherSuiteFingerprint {
         return vulnerable;
     }
 
-    public List<List<VectorResponse>> getResponseMapList() {
+    public List<List<DirectRaccoonVectorResponse>> getResponseMapList() {
         return responseMapList;
     }
 

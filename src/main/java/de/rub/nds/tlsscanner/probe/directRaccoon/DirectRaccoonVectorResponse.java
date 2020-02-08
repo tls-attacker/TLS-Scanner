@@ -16,7 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class VectorResponse {
+public class DirectRaccoonVectorResponse {
     
     private final ResponseFingerprint fingerprint;
 
@@ -34,7 +34,7 @@ public class VectorResponse {
     
     private boolean errorDuringHandshake = false;
     
-    public VectorResponse (ResponseFingerprint fingerprint, DirectRaccoonWorkflowType type, ProtocolVersion version, CipherSuite suite, boolean pmsWithNullByte) {
+    public DirectRaccoonVectorResponse (ResponseFingerprint fingerprint, DirectRaccoonWorkflowType type, ProtocolVersion version, CipherSuite suite, boolean pmsWithNullByte) {
         this.fingerprint = fingerprint;
         this.type = type;
         this.version = version;
@@ -84,6 +84,16 @@ public class VectorResponse {
 
     public CipherSuite getSuite() {
         return suite;
+    }
+    
+    public String getVectorName() {
+        String name = type.name();
+        if(pmsWithNullByte) {
+            name += "-with nullbyte";
+        } else {
+            name += "-without nullbyte";
+        }
+        return name;
     }
 
     @Override
