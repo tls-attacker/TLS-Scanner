@@ -146,13 +146,9 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     private List<VectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite) {
         List<VectorResponse> responseList = new LinkedList<>();
-        // TODO: Remove Log after test
-
-        // TODO: Change secret to 4000 after test
         BigInteger initialDhSecret = new BigInteger("4000");
         for (DirectRaccoonWorkflowType type : DirectRaccoonWorkflowType.values()) {
             if (type != DirectRaccoonWorkflowType.INITIAL) {
-                // TODO: Remove Log after test
                 LOGGER.info("Version: " + version + "; Ciphersuite: " + suite + "; Type: " + type);
                 responseList.add(getVectorResponse(version, suite, type, initialDhSecret, false));
                 responseList.add(getVectorResponse(version, suite, type, initialDhSecret, true));
@@ -162,8 +158,8 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     private boolean isNormalHandshakeWorking(ProtocolVersion version, CipherSuite suite) {
-        // Prepare config
         try {
+            // Prepare config
             Config config = getScannerConfig().createConfig();
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
@@ -229,7 +225,6 @@ public class DirectRaccoonProbe extends TlsProbe {
     private VectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
         VectorResponse vectorResponse = null;
         if (fingerPrintTask.isHasError()) {
-            //errornousScans = true;
             LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version="
                     + version + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
             vectorResponse = new VectorResponse(null, workflowType, version, suite, withNullByte);
@@ -244,8 +239,6 @@ public class DirectRaccoonProbe extends TlsProbe {
         int length = ArrayConverter.bigIntegerToByteArray(m).length;
         byte[] pms = ArrayConverter.bigIntegerToNullPaddedByteArray(serverPublicKey.modPow(initialClientDhSecret, m), length);
         if ((withNullByte && pms[0] == 0) || (!withNullByte && pms[0] != 0)) {
-            // TODO: Remove Log after test
-            //LOGGER.info("Client DH Secret: " + initialClientDhSecret.toString());
             return g.modPow(initialClientDhSecret, m).toByteArray();
         } else {
             initialClientDhSecret = initialClientDhSecret.add(new BigInteger("1"));
@@ -345,7 +338,6 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-
         if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE)) && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE)) && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
             return false;
         }

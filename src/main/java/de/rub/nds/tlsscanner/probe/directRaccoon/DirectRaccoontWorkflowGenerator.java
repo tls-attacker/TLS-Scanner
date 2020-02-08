@@ -34,7 +34,6 @@ public class DirectRaccoontWorkflowGenerator {
      */
     public static WorkflowTrace generateWorkflowFirstStep (Config tlsConfig) {
         WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
-        //WorkflowTrace trace = new WorkflowTrace();
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
         return trace;
