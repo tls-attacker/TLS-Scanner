@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.probe.mastersecret.DirectRaccoonCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
 import java.util.List;
 
 /**
@@ -40,8 +40,8 @@ public class DirectRaccoonResponseMap extends ProbeResult {
         if (resultList == null) {
             vulnerable = TestResult.COULD_NOT_TEST;
         }
-        report.setMasterSecretTestResultList(resultList);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_MASTER_SECRET, vulnerable);
+        report.setDirectRaccoonTestResultList(resultList);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
     }
     
     public List<DirectRaccoonCipherSuiteFingerprint> getResultList() {

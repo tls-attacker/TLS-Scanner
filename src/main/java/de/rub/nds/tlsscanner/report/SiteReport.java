@@ -33,7 +33,7 @@ import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.probe.mastersecret.DirectRaccoonCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.HashMap;
@@ -62,7 +62,7 @@ public class SiteReport extends Observable {
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
-    private List<DirectRaccoonCipherSuiteFingerprint> masterSecretTestResultList;
+    private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList;
 
     //Version
     private List<ProtocolVersion> versions = null;
@@ -435,12 +435,12 @@ public class SiteReport extends Observable {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
     
-    public synchronized List<DirectRaccoonCipherSuiteFingerprint> getMasterSecretTestResultList() {
-        return masterSecretTestResultList;
+    public synchronized List<DirectRaccoonCipherSuiteFingerprint> getDirectRaccoonResultList() {
+        return directRaccoonTestResultList;
     }
 
-    public synchronized void setMasterSecretTestResultList(List<DirectRaccoonCipherSuiteFingerprint> masterSecretTestResultList) {
-        this.masterSecretTestResultList = masterSecretTestResultList;
+    public synchronized void setDirectRaccoonTestResultList(List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList) {
+        this.directRaccoonTestResultList = directRaccoonTestResultList;
     }
 
     public synchronized List<HttpsHeader> getHeaderList() {
