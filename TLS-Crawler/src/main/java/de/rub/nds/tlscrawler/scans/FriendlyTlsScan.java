@@ -40,7 +40,7 @@ public class FriendlyTlsScan extends TlsScan {
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setDangerLevel(4);
-        config.setThreads(1);
+        config.setParallelProbes(1);
 
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);

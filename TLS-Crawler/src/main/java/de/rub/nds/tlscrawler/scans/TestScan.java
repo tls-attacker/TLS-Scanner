@@ -35,7 +35,7 @@ public class TestScan implements IScan {
         LOG.trace("scan()");
 
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
-        config.setThreads(1);
+        config.setParallelProbes(1);
 
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
