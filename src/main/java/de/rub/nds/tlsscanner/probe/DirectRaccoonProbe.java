@@ -104,22 +104,27 @@ public class DirectRaccoonProbe extends TlsProbe {
         List<List<DirectRaccoonVectorResponse>> responseMapList = new LinkedList<>();
         try {
             for (int i = 0; i < mapListDepth; i++) {
-                List<DirectRaccoonVectorResponse> responseMap = createVectorResponseList(version, suite);
-                responseMapList.add(responseMap);
-                if (i == 0) {
-                    referenceResponseMap = responseMap;
-                    referenceError = getEqualityError(responseMap);
-                    if (referenceError == EqualityError.NONE) {
-                        LOGGER.info("Server appears not vulnerable");
-                        break;
+                for (DirectRaccoonWorkflowType type : DirectRaccoonWorkflowType.values()) {
+                    if (type.equals(DirectRaccoonWorkflowType.INITIAL)) {
+                        continue;
                     }
-                } else {
-                    EqualityError error = getEqualityError(responseMap);
-                    if (error == referenceError && lookEqual(referenceResponseMap, responseMap, version, suite)) {
-                        CONSOLE.info("Rescan[" + i + "] shows same results");
+                    List<DirectRaccoonVectorResponse> responseMap = createVectorResponseList(version, suite,type);
+                    responseMapList.add(responseMap);
+                    if (i == 0) {
+                        referenceResponseMap = responseMap;
+                        referenceError = getEqualityError(responseMap);
+                        if (referenceError == EqualityError.NONE) {
+                            LOGGER.info("Server appears not vulnerable");
+                            break;
+                        }
                     } else {
-                        shakyScans = true;
-                        CONSOLE.info("Rescan[" + i + "] shows different results");
+                        EqualityError error = getEqualityError(responseMap);
+                        if (error == referenceError && lookEqual(referenceResponseMap, responseMap, version, suite)) {
+                            CONSOLE.info("Rescan[" + i + "] shows same results");
+                        } else {
+                            shakyScans = true;
+                            CONSOLE.info("Rescan[" + i + "] shows different results");
+                        }
                     }
                 }
             }
@@ -143,16 +148,14 @@ public class DirectRaccoonProbe extends TlsProbe {
         return new DirectRaccoonCipherSuiteFingerprint(isVulnerable, version, suite, responseMapList, referenceError, shakyScans, errornousScans);
     }
 
-    private List<DirectRaccoonVectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite) {
+    private List<DirectRaccoonVectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType type) {
         List<DirectRaccoonVectorResponse> responseList = new LinkedList<>();
         BigInteger initialDhSecret = new BigInteger("4000");
-        for (DirectRaccoonWorkflowType type : DirectRaccoonWorkflowType.values()) {
-            if (type != DirectRaccoonWorkflowType.INITIAL) {
-                LOGGER.info("Version: " + version + "; Ciphersuite: " + suite + "; Type: " + type);
-                responseList.add(getVectorResponse(version, suite, type, initialDhSecret, false));
-                responseList.add(getVectorResponse(version, suite, type, initialDhSecret, true));
-            }
+        if (type != DirectRaccoonWorkflowType.INITIAL) {
+            responseList.add(getVectorResponse(version, suite, type, initialDhSecret, false));
+            responseList.add(getVectorResponse(version, suite, type, initialDhSecret, true));
         }
+
         return responseList;
     }
 
@@ -233,9 +236,9 @@ public class DirectRaccoonProbe extends TlsProbe {
         byte[] pms = ArrayConverter.bigIntegerToNullPaddedByteArray(serverPublicKey.modPow(initialClientDhSecret, m), length);
         if (((withNullByte && pms[0] == 0)) || (!withNullByte && pms[0] != 0)) {
             System.out.println("initial secret: " + initialClientDhSecret);
-            System.out.println("g:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(g),false,false).replace(" ", "")));
-            System.out.println("m:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(m),false,false).replace(" ", "")));
-            System.out.println("spk:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(serverPublicKey),false,false).replace(" ", "")));
+            System.out.println("g:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(g), false, false).replace(" ", "")));
+            System.out.println("m:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(m), false, false).replace(" ", "")));
+            System.out.println("spk:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(serverPublicKey), false, false).replace(" ", "")));
             System.out.println("shared s:" + ArrayConverter.bytesToHexString(pms, false, false));
             System.out.println("with null:" + m);
             return g.modPow(initialClientDhSecret, m).toByteArray();
@@ -291,7 +294,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             EqualityError error = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(),
                     equivalentVector.getFingerprint(), true);
             if (error != EqualityError.NONE) {
-                LOGGER.warn("There is an error beween rescan:" + error + " - " + testedSuite + " - " + testedVersion);
+                LOGGER.warn("There is an error between rescan:" + error + " - " + testedSuite + " - " + testedVersion);
                 result = false;
                 vectorResponseOne.setShaky(true);
             }
