@@ -75,7 +75,6 @@ public class DirectRaccoonProbe extends TlsProbe {
                 if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCiphersuiteList()) {
                         if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
-                            LOGGER.info("Version: " + pair.getVersion() + "; Ciphersuite: " + suite + "; Type: " + DirectRaccoonWorkflowType.INITIAL);
                             boolean normalHandshakeWorking = isNormalHandshakeWorking(pair.getVersion(), suite);
                             DirectRaccoonCipherSuiteFingerprint directRaccoonCipherSuiteFingerprint = getDirectRaccoonCipherSuiteFingerprint(pair.getVersion(), suite);
                             directRaccoonCipherSuiteFingerprint.setHandshakeIsWorking(normalHandshakeWorking);
@@ -159,7 +158,6 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     private boolean isNormalHandshakeWorking(ProtocolVersion version, CipherSuite suite) {
         try {
-            // Prepare config
             Config config = getScannerConfig().createConfig();
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
@@ -167,12 +165,9 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setStopActionsAfterFatal(true);
             config.setStopReceivingAfterFatal(true);
             config.setEarlyStop(true);
-            // Prepare workflow trace
             WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-            // Execute
             State state = new State(config, trace);
             executeState(state);
-            // Generate result
             return state.getWorkflowTrace().executedAsPlanned();
         } catch (Exception E) {
             LOGGER.warn("Could not perform initial handshake", E);
@@ -180,8 +175,7 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
     }
 
-    private DirectRaccoonVectorResponse getVectorResponse(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowTtype, BigInteger clientDhSecret, boolean withNullByte) {
-        // Prepare config
+    private DirectRaccoonVectorResponse getVectorResponse(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowTtype, BigInteger initialClientDhSecret, boolean withNullByte) {
         try {
             Config config = getScannerConfig().createConfig();
             config.setHighestProtocolVersion(version);
@@ -191,20 +185,19 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setStopActionsAfterFatal(true);
             config.setStopReceivingAfterFatal(true);
             config.setEarlyStop(true);
-            // Prepare workflow trace 
+
             WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflowFirstStep(config);
-            // Execute
+
             State state = new State(config, trace);
             executeState(state);
+
             if (trace.executedAsPlanned()) {
-                // Prepare config 
                 config.setWorkflowExecutorShouldOpen(false);
                 config.setWorkflowExecutorShouldClose(true);
                 config.setStopActionsAfterFatal(false);
                 config.setStopReceivingAfterFatal(false);
                 TlsContext oldTlsContext = state.getTlsContext();
-                // Prepare workflow trace 
-                byte[] clientPublicKey = getClientPublicKey(state.getTlsContext().getServerDhGenerator(), state.getTlsContext().getServerDhModulus(), state.getTlsContext().getServerDhPublicKey(), clientDhSecret, withNullByte);
+                byte[] clientPublicKey = getClientPublicKey(state.getTlsContext().getServerDhGenerator(), state.getTlsContext().getServerDhModulus(), state.getTlsContext().getServerDhPublicKey(), initialClientDhSecret, withNullByte);
                 trace = DirectRaccoontWorkflowGenerator.generateWorkflowSecondStep(config, workflowTtype, clientPublicKey);
                 // Execute
                 state = new State(config, trace);
@@ -238,7 +231,13 @@ public class DirectRaccoonProbe extends TlsProbe {
     private byte[] getClientPublicKey(BigInteger g, BigInteger m, BigInteger serverPublicKey, BigInteger initialClientDhSecret, boolean withNullByte) {
         int length = ArrayConverter.bigIntegerToByteArray(m).length;
         byte[] pms = ArrayConverter.bigIntegerToNullPaddedByteArray(serverPublicKey.modPow(initialClientDhSecret, m), length);
-        if ((withNullByte && pms[0] == 0) || (!withNullByte && pms[0] != 0)) {
+        if (((withNullByte && pms[0] == 0)) || (!withNullByte && pms[0] != 0)) {
+            System.out.println("initial secret: " + initialClientDhSecret);
+            System.out.println("g:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(g),false,false).replace(" ", "")));
+            System.out.println("m:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(m),false,false).replace(" ", "")));
+            System.out.println("spk:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(serverPublicKey),false,false).replace(" ", "")));
+            System.out.println("shared s:" + ArrayConverter.bytesToHexString(pms, false, false));
+            System.out.println("with null:" + m);
             return g.modPow(initialClientDhSecret, m).toByteArray();
         } else {
             initialClientDhSecret = initialClientDhSecret.add(new BigInteger("1"));
