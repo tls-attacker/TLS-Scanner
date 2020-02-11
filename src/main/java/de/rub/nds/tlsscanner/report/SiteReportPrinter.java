@@ -44,7 +44,6 @@ import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
-import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
@@ -593,8 +592,6 @@ public class SiteReportPrinter {
                     prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
                 } else if (Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) {
                     prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
-                } else if (testResult.isShakyScans()) {
-                    prettyAppend(builder, resultString + "\t - Non Deterministic", AnsiColor.YELLOW);
                 } else if (Objects.equals(testResult.getVulnerable(), Boolean.FALSE)) {
                     prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
                 } else {

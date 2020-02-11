@@ -8,8 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.tlsattacker.attacks.exception.AttackFailedException;
 import de.rub.nds.tlsattacker.attacks.exception.OracleUnstableException;
 import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
@@ -19,11 +17,11 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -38,6 +36,7 @@ import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonWorkflowType;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonVectorResponse;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -52,13 +51,7 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final boolean increasingTimeout = true;
-
-    private final long additionalTimeout = 4000;
-
-    private final long additionalTcpTimeout = 5000;
-
-    private final int mapListDepth = 3;
+    private final int iterationsPerHandshake = 10;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
@@ -69,8 +62,8 @@ public class DirectRaccoonProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-
             List<DirectRaccoonCipherSuiteFingerprint> testResultList = new LinkedList<>();
+            loop:
             for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCiphersuiteList()) {
@@ -79,6 +72,7 @@ public class DirectRaccoonProbe extends TlsProbe {
                             DirectRaccoonCipherSuiteFingerprint directRaccoonCipherSuiteFingerprint = getDirectRaccoonCipherSuiteFingerprint(pair.getVersion(), suite);
                             directRaccoonCipherSuiteFingerprint.setHandshakeIsWorking(normalHandshakeWorking);
                             testResultList.add(directRaccoonCipherSuiteFingerprint);
+                            break loop;
                         }
                     }
                 }
@@ -90,52 +84,25 @@ public class DirectRaccoonProbe extends TlsProbe {
             }
             return new DirectRaccoonResponseMap(testResultList, TestResult.FALSE);
         } catch (Exception e) {
-            return new DirectRaccoonResponseMap(new LinkedList<DirectRaccoonCipherSuiteFingerprint>(), TestResult.ERROR_DURING_TEST);
+            LOGGER.error("Error", e);
+            return new DirectRaccoonResponseMap(new LinkedList<>(), TestResult.ERROR_DURING_TEST);
         }
     }
 
     private DirectRaccoonCipherSuiteFingerprint getDirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite) {
-        Boolean isVulnerable;
-        boolean shakyScans = false;
         boolean errornousScans = false;
         EqualityError referenceError = null;
 
-        List<DirectRaccoonVectorResponse> referenceResponseMap = null;
         List<List<DirectRaccoonVectorResponse>> responseMapList = new LinkedList<>();
-        try {
-            for (int i = 0; i < mapListDepth; i++) {
-                for (DirectRaccoonWorkflowType type : DirectRaccoonWorkflowType.values()) {
-                    if (type.equals(DirectRaccoonWorkflowType.INITIAL)) {
-                        continue;
-                    }
-                    List<DirectRaccoonVectorResponse> responseMap = createVectorResponseList(version, suite,type);
-                    responseMapList.add(responseMap);
-                    if (i == 0) {
-                        referenceResponseMap = responseMap;
-                        referenceError = getEqualityError(responseMap);
-                        if (referenceError == EqualityError.NONE) {
-                            LOGGER.info("Server appears not vulnerable");
-                            break;
-                        }
-                    } else {
-                        EqualityError error = getEqualityError(responseMap);
-                        if (error == referenceError && lookEqual(referenceResponseMap, responseMap, version, suite)) {
-                            CONSOLE.info("Rescan[" + i + "] shows same results");
-                        } else {
-                            shakyScans = true;
-                            CONSOLE.info("Rescan[" + i + "] shows different results");
-                        }
-                    }
-                }
+        for (DirectRaccoonWorkflowType type : DirectRaccoonWorkflowType.values()) {
+            if (type.equals(DirectRaccoonWorkflowType.INITIAL)) {
+                continue;
             }
-        } catch (AttackFailedException E) {
-            CONSOLE.info(E.getMessage());
-            isVulnerable = null;
+            List<DirectRaccoonVectorResponse> responseMap = createVectorResponseList(version, suite, type, iterationsPerHandshake);
+            responseMapList.add(responseMap);
         }
-        if (shakyScans) {
-            isVulnerable = null;
-        }
-        isVulnerable = referenceError != EqualityError.NONE;
+        Boolean vulnerable = true; //TODO Check if the server is vulnerable 
+
         loop:
         for (List<DirectRaccoonVectorResponse> list : responseMapList) {
             for (DirectRaccoonVectorResponse vector : list) {
@@ -145,18 +112,18 @@ public class DirectRaccoonProbe extends TlsProbe {
                 }
             }
         }
-        return new DirectRaccoonCipherSuiteFingerprint(isVulnerable, version, suite, responseMapList, referenceError, shakyScans, errornousScans);
+        return new DirectRaccoonCipherSuiteFingerprint(vulnerable, version, suite, responseMapList, referenceError, errornousScans);
     }
 
-    private List<DirectRaccoonVectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType type) {
-        List<DirectRaccoonVectorResponse> responseList = new LinkedList<>();
+    private List<DirectRaccoonVectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType type, int numberOfExecutionsEach) {
         BigInteger initialDhSecret = new BigInteger("4000");
-        if (type != DirectRaccoonWorkflowType.INITIAL) {
-            responseList.add(getVectorResponse(version, suite, type, initialDhSecret, false));
-            responseList.add(getVectorResponse(version, suite, type, initialDhSecret, true));
+        List<Boolean> booleanList = new LinkedList<>();
+        for (int i = 0; i < numberOfExecutionsEach; i++) {
+            booleanList.add(true);
+            booleanList.add(false);
         }
-
-        return responseList;
+        Collections.shuffle(booleanList);
+        return getVectorResponseList(version, suite, type, initialDhSecret, booleanList);
     }
 
     private boolean isNormalHandshakeWorking(ProtocolVersion version, CipherSuite suite) {
@@ -178,44 +145,35 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
     }
 
-    private DirectRaccoonVectorResponse getVectorResponse(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowTtype, BigInteger initialClientDhSecret, boolean withNullByte) {
-        try {
+    private List<DirectRaccoonVectorResponse> getVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, BigInteger initialClientDhSecret, List<Boolean> withNullByteList) {
+        List<TlsTask> taskList = new LinkedList<>();
+        for (Boolean nullByte : withNullByteList) {
             Config config = getScannerConfig().createConfig();
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
             config.setDefaultClientSupportedCiphersuites(suite);
             config.setWorkflowExecutorShouldClose(false);
-            config.setStopActionsAfterFatal(true);
-            config.setStopReceivingAfterFatal(true);
+            config.setStopActionsAfterFatal(false);
+            config.setStopReceivingAfterFatal(false);
             config.setEarlyStop(true);
 
-            WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflowFirstStep(config);
-
+            WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflow(config, workflowType, initialClientDhSecret, nullByte);
+            //Store 
+            trace.setName("" + nullByte);
             State state = new State(config, trace);
-            executeState(state);
 
-            if (trace.executedAsPlanned()) {
-                config.setWorkflowExecutorShouldOpen(false);
-                config.setWorkflowExecutorShouldClose(true);
-                config.setStopActionsAfterFatal(false);
-                config.setStopReceivingAfterFatal(false);
-                TlsContext oldTlsContext = state.getTlsContext();
-                byte[] clientPublicKey = getClientPublicKey(state.getTlsContext().getServerDhGenerator(), state.getTlsContext().getServerDhModulus(), state.getTlsContext().getServerDhPublicKey(), initialClientDhSecret, withNullByte);
-                trace = DirectRaccoontWorkflowGenerator.generateWorkflowSecondStep(config, workflowTtype, clientPublicKey);
-                // Execute
-                state = new State(config, trace);
-                state.replaceTlsContext(oldTlsContext);
-                FingerPrintTask fingerPrintTask = new FingerPrintTask(state, additionalTimeout, increasingTimeout, this.getParallelExecutor().getReexecutions(), additionalTcpTimeout);
-                this.getParallelExecutor().bulkExecuteTasks(fingerPrintTask);
-
-                // Generate result
-                return evaluateFingerPrintTask(version, suite, workflowTtype, withNullByte, fingerPrintTask);
-            } else {
-                return new DirectRaccoonVectorResponse(null, workflowTtype, version, suite, withNullByte);
-            }
-        } catch (Exception E) {
-            return new DirectRaccoonVectorResponse(null, workflowTtype, version, suite, withNullByte);
+            FingerPrintTask fingerPrintTask = new FingerPrintTask(state, 3);
+            taskList.add(fingerPrintTask);
         }
+        this.getParallelExecutor().bulkExecuteTasks(taskList);
+        List<DirectRaccoonVectorResponse> responseList = new LinkedList<>();
+        for (TlsTask task : taskList) {
+            FingerPrintTask fingerPrintTask = (FingerPrintTask) task;
+            Boolean nullByte = Boolean.parseBoolean(fingerPrintTask.getState().getWorkflowTrace().getName());
+            responseList.add(evaluateFingerPrintTask(version, suite, workflowType, nullByte, fingerPrintTask));
+        }
+        // Generate result
+        return responseList;
     }
 
     private DirectRaccoonVectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
@@ -229,23 +187,6 @@ public class DirectRaccoonProbe extends TlsProbe {
             vectorResponse = new DirectRaccoonVectorResponse(fingerPrintTask.getFingerprint(), workflowType, version, suite, withNullByte);
         }
         return vectorResponse;
-    }
-
-    private byte[] getClientPublicKey(BigInteger g, BigInteger m, BigInteger serverPublicKey, BigInteger initialClientDhSecret, boolean withNullByte) {
-        int length = ArrayConverter.bigIntegerToByteArray(m).length;
-        byte[] pms = ArrayConverter.bigIntegerToNullPaddedByteArray(serverPublicKey.modPow(initialClientDhSecret, m), length);
-        if (((withNullByte && pms[0] == 0)) || (!withNullByte && pms[0] != 0)) {
-            System.out.println("initial secret: " + initialClientDhSecret);
-            System.out.println("g:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(g), false, false).replace(" ", "")));
-            System.out.println("m:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(m), false, false).replace(" ", "")));
-            System.out.println("spk:" + (ArrayConverter.bytesToHexString(ArrayConverter.bigIntegerToByteArray(serverPublicKey), false, false).replace(" ", "")));
-            System.out.println("shared s:" + ArrayConverter.bytesToHexString(pms, false, false));
-            System.out.println("with null:" + m);
-            return g.modPow(initialClientDhSecret, m).toByteArray();
-        } else {
-            initialClientDhSecret = initialClientDhSecret.add(new BigInteger("1"));
-            return getClientPublicKey(g, m, serverPublicKey, initialClientDhSecret, withNullByte);
-        }
     }
 
     /**

@@ -8,18 +8,18 @@
  */
 package de.rub.nds.tlsscanner.probe.directRaccoon;
 
-import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.DHClientKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendRaccoonCkeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import java.math.BigInteger;
 
 /**
  *
@@ -27,39 +27,20 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
  */
 public class DirectRaccoontWorkflowGenerator {
 
-    /**
-     *
-     * @param tlsConfig
-     * @return
-     */
-    public static WorkflowTrace generateWorkflowFirstStep (Config tlsConfig) {
+    public static WorkflowTrace generateWorkflow (Config tlsConfig, DirectRaccoonWorkflowType type, BigInteger initialDhSecret, boolean withNullByte) {
         WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
-        return trace;
-    } 
-    
-    /**
-     *
-     * @param tlsConfig
-     * @param type
-     * @param clientPublicKey
-     * @return
-     */
-    public static WorkflowTrace generateWorkflowSecondStep(Config tlsConfig, DirectRaccoonWorkflowType type, byte[] clientPublicKey) {
-        WorkflowTrace trace = new WorkflowTrace();
-        DHClientKeyExchangeMessage cke = new DHClientKeyExchangeMessage(tlsConfig);
-        cke.setPublicKey(Modifiable.explicit(clientPublicKey));
+        trace.addTlsAction(new SendRaccoonCkeAction(withNullByte, initialDhSecret));
         if (null != type) {
             switch (type) {
                 case CKE:
-                    trace.addTlsAction(new SendAction(cke));
                     break;
                 case CKE_CCS:
-                    trace.addTlsAction(new SendAction(cke, new ChangeCipherSpecMessage(tlsConfig)));
+                    trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(tlsConfig)));
                     break;
                 case CKE_CCS_FIN:
-                    trace.addTlsAction(new SendAction(cke, new ChangeCipherSpecMessage(tlsConfig), new FinishedMessage(
+                    trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(tlsConfig), new FinishedMessage(
                             tlsConfig)));
                     break;
                 default:
@@ -68,8 +49,8 @@ public class DirectRaccoontWorkflowGenerator {
         }
         trace.addTlsAction(new GenericReceiveAction());
         return trace;
-    }
-
+    } 
+    
     private DirectRaccoontWorkflowGenerator() {
 
     }
