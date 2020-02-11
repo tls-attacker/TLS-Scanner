@@ -50,6 +50,8 @@ import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.after.padding.ShakyEvaluationReport;
+import de.rub.nds.tlsscanner.report.after.padding.ShakyVectorHolder;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
@@ -687,6 +689,24 @@ public class SiteReportPrinter {
             }
 
         }
+        if (report.getPaddingOracleShakyEvalResultList() != null && !report.getPaddingOracleShakyEvalResultList().isEmpty()) {
+            prettyAppendHeading(builder, "PaddingOracle-ShakyReport");
+            ShakyEvaluationReport shakyReport = report.getPaddingOracleShakyReport();
+            prettyAppend(builder, "Probably Vulnerable", shakyReport.getConsideredVulnerable(), shakyReport.getConsideredVulnerable() == Boolean.TRUE ? AnsiColor.RED : AnsiColor.GREEN);
+            prettyAppend(builder, "Type", "" + shakyReport.getShakyType());
+            prettyAppend(builder, "Consistent", shakyReport.getConsistentAcrossCvPairs());
+            prettyAppend(builder, "");
+            for (ShakyVectorHolder holder : shakyReport.getVectorHolderList()) {
+                double pValue = holder.computePValue();
+                if (pValue > 0.05) {
+                    prettyAppend(builder, "" + holder.getFingerprint().getSuite() + "/" + holder.getFingerprint().getVersion(), "Pvalue: " + String.format("%.12f", pValue), AnsiColor.GREEN);
+                } else if (pValue > 0.01) {
+                    prettyAppend(builder, "" + holder.getFingerprint().getSuite() + "/" + holder.getFingerprint().getVersion(), "Pvalue: " + String.format("%.12f", pValue), AnsiColor.YELLOW);
+                } else {
+                    prettyAppend(builder, "" + holder.getFingerprint().getSuite() + "/" + holder.getFingerprint().getVersion(), "Pvalue: " + String.format("%.12f", pValue), AnsiColor.RED);
+                }
+            }
+        }
         return builder;
     }
 
@@ -1113,9 +1133,9 @@ public class SiteReportPrinter {
                     }
                 }
             });
-        } catch (JAXBException ex) {
-            prettyAppend(builder, "Could not append recommendations", AnsiColor.RED);
-            prettyAppend(builder, ex.getLocalizedMessage(), AnsiColor.RED);
+        } catch (Exception ex) {
+            prettyAppend(builder, "Could not append recommendations - unreleated error", AnsiColor.RED);
+            LOGGER.error("Could not append recommendations", ex);
         }
     }
 

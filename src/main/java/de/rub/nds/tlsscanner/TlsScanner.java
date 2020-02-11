@@ -48,6 +48,7 @@ import de.rub.nds.tlsscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
 import de.rub.nds.tlsscanner.report.after.PaddingOracleIdentificationAfterProbe;
+import de.rub.nds.tlsscanner.report.after.ShakyPaddingOracleEvaluation;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
@@ -184,15 +185,25 @@ public class TlsScanner {
     }
 
     public boolean isConnectable() {
-        Config tlsConfig = config.createConfig();
-        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-        return checker.isConnectable();
+        try {
+            Config tlsConfig = config.createConfig();
+            ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+            return checker.isConnectable();
+        } catch (Exception E) {
+            LOGGER.warn("Could not test if we can connect to the server", E);
+            return false;
+        }
     }
 
     private boolean speaksTls() {
-        Config tlsConfig = config.createConfig();
-        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-        return checker.speaksTls(tlsConfig);
+        try {
+            Config tlsConfig = config.createConfig();
+            ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+            return checker.speaksTls(tlsConfig);
+        } catch (Exception E) {
+            LOGGER.warn("Could not test if the server speaks TLS", E);
+            return false;
+        }
     }
 
     private boolean speaksStartTls() {
