@@ -8,10 +8,8 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.exception.OracleUnstableException;
 import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -22,7 +20,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
-import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
@@ -40,6 +37,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +49,7 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final int iterationsPerHandshake = 10;
+    private final int iterationsPerHandshake = 50;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
@@ -68,11 +66,15 @@ public class DirectRaccoonProbe extends TlsProbe {
                 if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCiphersuiteList()) {
                         if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
-                            boolean normalHandshakeWorking = isNormalHandshakeWorking(pair.getVersion(), suite);
-                            DirectRaccoonCipherSuiteFingerprint directRaccoonCipherSuiteFingerprint = getDirectRaccoonCipherSuiteFingerprint(pair.getVersion(), suite);
-                            directRaccoonCipherSuiteFingerprint.setHandshakeIsWorking(normalHandshakeWorking);
-                            testResultList.add(directRaccoonCipherSuiteFingerprint);
-                            break loop;
+                            for (DirectRaccoonWorkflowType workflowType : DirectRaccoonWorkflowType.values()) {
+                                if (workflowType == DirectRaccoonWorkflowType.INITIAL) {
+                                    continue;
+                                }
+                                boolean normalHandshakeWorking = isNormalHandshakeWorking(pair.getVersion(), suite);
+                                DirectRaccoonCipherSuiteFingerprint directRaccoonCipherSuiteFingerprint = getDirectRaccoonCipherSuiteFingerprint(pair.getVersion(), suite, workflowType);
+                                directRaccoonCipherSuiteFingerprint.setHandshakeIsWorking(normalHandshakeWorking);
+                                testResultList.add(directRaccoonCipherSuiteFingerprint);
+                            }
                         }
                     }
                 }
@@ -89,34 +91,26 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
     }
 
-    private DirectRaccoonCipherSuiteFingerprint getDirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite) {
+    private DirectRaccoonCipherSuiteFingerprint getDirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
         boolean errornousScans = false;
         EqualityError referenceError = null;
 
-        List<List<DirectRaccoonVectorResponse>> responseMapList = new LinkedList<>();
-        for (DirectRaccoonWorkflowType type : DirectRaccoonWorkflowType.values()) {
-            if (type.equals(DirectRaccoonWorkflowType.INITIAL)) {
-                continue;
-            }
-            List<DirectRaccoonVectorResponse> responseMap = createVectorResponseList(version, suite, type, iterationsPerHandshake);
-            responseMapList.add(responseMap);
-        }
+        List<DirectRaccoonVectorResponse> responseMap = createVectorResponseList(version, suite, workflowType, iterationsPerHandshake);
+
         Boolean vulnerable = true; //TODO Check if the server is vulnerable 
 
-        loop:
-        for (List<DirectRaccoonVectorResponse> list : responseMapList) {
-            for (DirectRaccoonVectorResponse vector : list) {
-                if (vector.isErrorDuringHandshake()) {
-                    errornousScans = true;
-                    break loop;
-                }
+        for (DirectRaccoonVectorResponse vector : responseMap) {
+            if (vector.isErrorDuringHandshake()) {
+                errornousScans = true;
+                break;
             }
         }
-        return new DirectRaccoonCipherSuiteFingerprint(vulnerable, version, suite, responseMapList, referenceError, errornousScans);
+        return new DirectRaccoonCipherSuiteFingerprint(vulnerable, version, suite, workflowType, responseMap, referenceError, errornousScans);
     }
 
     private List<DirectRaccoonVectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType type, int numberOfExecutionsEach) {
-        BigInteger initialDhSecret = new BigInteger("4000");
+        Random r = new Random();
+        BigInteger initialDhSecret = new BigInteger("" + (r.nextInt()));
         List<Boolean> booleanList = new LinkedList<>();
         for (int i = 0; i < numberOfExecutionsEach; i++) {
             booleanList.add(true);
@@ -162,7 +156,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             trace.setName("" + nullByte);
             State state = new State(config, trace);
 
-            FingerPrintTask fingerPrintTask = new FingerPrintTask(state, 3);
+            FingerPrintTask fingerPrintTask = new FingerPrintTask(state, 1);
             taskList.add(fingerPrintTask);
         }
         this.getParallelExecutor().bulkExecuteTasks(taskList);
@@ -187,96 +181,6 @@ public class DirectRaccoonProbe extends TlsProbe {
             vectorResponse = new DirectRaccoonVectorResponse(fingerPrintTask.getFingerprint(), workflowType, version, suite, withNullByte);
         }
         return vectorResponse;
-    }
-
-    /**
-     *
-     * @param responseVectorListOne
-     * @param responseVectorListTwo
-     * @param testedVersion
-     * @param testedSuite
-     * @return
-     */
-    public boolean lookEqual(List<DirectRaccoonVectorResponse> responseVectorListOne, List<DirectRaccoonVectorResponse> responseVectorListTwo, ProtocolVersion testedVersion, CipherSuite testedSuite) {
-        boolean result = true;
-        if (responseVectorListOne.size() != responseVectorListTwo.size()) {
-            throw new OracleUnstableException(
-                    "The Oracle seems to be unstable - there is something going terrible wrong. We recommend manual analysis");
-        }
-
-        for (DirectRaccoonVectorResponse vectorResponseOne : responseVectorListOne) {
-            // Find equivalent
-            DirectRaccoonVectorResponse equivalentVector = null;
-            for (DirectRaccoonVectorResponse vectorResponseTwo : responseVectorListTwo) {
-                if (vectorResponseOne.getWorkflowType().equals(vectorResponseTwo.getWorkflowType()) && vectorResponseOne.isPmsWithNullybte() == (vectorResponseTwo.isPmsWithNullybte())) {
-                    equivalentVector = vectorResponseTwo;
-                    break;
-                }
-            }
-            if (vectorResponseOne.getFingerprint() == null) {
-                LOGGER.error("First vector has no fingerprint:" + testedSuite + " - " + testedVersion);
-                vectorResponseOne.setErrorDuringHandshake(true);
-                result = false;
-                continue;
-            }
-            if (equivalentVector == null) {
-                LOGGER.error("Equivalent vector is null:" + testedSuite + " - " + testedVersion);
-                result = false;
-                vectorResponseOne.setMissingEquivalent(true);
-                continue;
-            }
-            if (equivalentVector.getFingerprint() == null) {
-                LOGGER.warn("Equivalent vector has no fingerprint:" + testedSuite + " - " + testedVersion);
-                equivalentVector.setErrorDuringHandshake(true);
-                result = false;
-                continue;
-            }
-
-            EqualityError error = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(),
-                    equivalentVector.getFingerprint(), true);
-            if (error != EqualityError.NONE) {
-                LOGGER.warn("There is an error between rescan:" + error + " - " + testedSuite + " - " + testedVersion);
-                result = false;
-                vectorResponseOne.setShaky(true);
-            }
-        }
-        return result;
-    }
-
-    /**
-     *
-     * @param responseVectorList
-     * @return
-     */
-    public EqualityError getEqualityError(List<DirectRaccoonVectorResponse> responseVectorList) {
-        for (DirectRaccoonVectorResponse responseOne : responseVectorList) {
-            for (DirectRaccoonVectorResponse responseTwo : responseVectorList) {
-                // Compare pairs with and without nullbyte
-                if (responseOne == responseTwo || responseOne.getWorkflowType() != responseTwo.getWorkflowType()) {
-                    continue;
-                }
-                boolean shouldCompare = true;
-                if (responseOne.getFingerprint() == null) {
-                    responseOne.setErrorDuringHandshake(true);
-                    shouldCompare = false;
-                }
-                if (responseTwo.getFingerprint() == null) {
-                    responseOne.setErrorDuringHandshake(true);
-                    shouldCompare = false;
-                }
-                if (shouldCompare) {
-                    EqualityError error = FingerPrintChecker.checkEquality(responseOne.getFingerprint(),
-                            responseTwo.getFingerprint(), true);
-                    if (error != EqualityError.NONE) {
-                        CONSOLE.info("Found an EqualityError: " + error);
-                        LOGGER.debug("Fingerprint1: " + responseOne.getFingerprint().toString());
-                        LOGGER.debug("Fingerprint2: " + responseTwo.getFingerprint().toString());
-                        return error;
-                    }
-                }
-            }
-        }
-        return EqualityError.NONE;
     }
 
     @Override

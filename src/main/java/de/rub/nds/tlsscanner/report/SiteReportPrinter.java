@@ -583,7 +583,7 @@ public class SiteReportPrinter {
 
     private StringBuilder appendDirectRaccoonResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Direct Raccoon Responsemap");
-        if (report.getDirectRaccoonResultList()== null || report.getDirectRaccoonResultList().isEmpty()) {
+        if (report.getDirectRaccoonResultList() == null || report.getDirectRaccoonResultList().isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
             for (DirectRaccoonCipherSuiteFingerprint testResult : report.getDirectRaccoonResultList()) {
@@ -591,9 +591,9 @@ public class SiteReportPrinter {
                 if (testResult.isHasScanningError()) {
                     prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
                 } else if (Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE - Working: " + testResult.getHandshakeIsWorking(), AnsiColor.RED);
                 } else if (Objects.equals(testResult.getVulnerable(), Boolean.FALSE)) {
-                    prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
+                    prettyAppend(builder, resultString + "\t - No Behavior Difference - Working: " + testResult.getHandshakeIsWorking(), AnsiColor.GREEN);
                 } else {
                     prettyAppend(builder, resultString + "\t # Unknown", AnsiColor.YELLOW);
                 }
@@ -608,49 +608,27 @@ public class SiteReportPrinter {
         }
         return builder;
     }
-    
-    private StringBuilder appendDirectRaccoonResponseMapList(StringBuilder builder, List<List<DirectRaccoonVectorResponse>> responseMapList) {
-        if (responseMapList != null && !responseMapList.isEmpty()) {
-            for (int vectorIndex = 0; vectorIndex < responseMapList.get(0).size(); vectorIndex++) {
-                DirectRaccoonVectorResponse vectorResponse = responseMapList.get(0).get(vectorIndex);
-                if (vectorResponse.isErrorDuringHandshake()) {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getVectorName(), 40) + "ERROR", AnsiColor.RED);
-                } else if (vectorResponse.isMissingEquivalent()) {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getVectorName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.RED);
-                } else if (vectorResponse.isShaky()) {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getVectorName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
-                    for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
-                        DirectRaccoonVectorResponse shakyVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
-                        if (shakyVectorResponse.getFingerprint() == null) {
-                            prettyAppend(builder, "\t" + padToLength("", 39) + "null", AnsiColor.YELLOW);
-                        } else {
-                            prettyAppend(builder, "\t" + padToLength("", 39) + shakyVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
-                        }
-                    }
-                } else {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getVectorName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
-                    if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                        for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
-                            DirectRaccoonVectorResponse tempVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
-                            if (tempVectorResponse == null || tempVectorResponse.getFingerprint() == null) {
-                                prettyAppend(builder, "\t" + padToLength("", 39) + "Missing", AnsiColor.RED);
-                            } else {
-                                if (tempVectorResponse.isShaky()) {
-                                    prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
-                                } else {
-                                    prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            prettyAppend(builder, "\tNULL");
+
+    private StringBuilder appendDirectRaccoonResponseMapList(StringBuilder builder, List<DirectRaccoonVectorResponse> responseMapList) {
+        for (int i = 0; i < responseMapList.size(); i++) {
+            appendDirectRaccoonVectorResponse(builder, responseMapList.get(i));
         }
         return builder;
     }
-    
+
+    private StringBuilder appendDirectRaccoonVectorResponse(StringBuilder builder, DirectRaccoonVectorResponse response) {
+        if (response == null || response.getFingerprint() == null) {
+            prettyAppend(builder, response.getVectorName() + "\t" + padToLength("", 39) + "Missing", AnsiColor.RED);
+        } else {
+            if (response.isShaky()) {
+                prettyAppend(builder, response.getVectorName() + "\t" + padToLength("", 39) + response.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
+            } else {
+                prettyAppend(builder, response.getVectorName() + "\t" + padToLength("", 39) + response.getFingerprint().toHumanReadable());
+            }
+        }
+        return builder;
+    }
+
     private StringBuilder appendPaddingOracleResults(StringBuilder builder) {
         if (Objects.equals(report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResult.TRUE)) {
             prettyAppendHeading(builder, "PaddingOracle Details");
@@ -1122,7 +1100,7 @@ public class SiteReportPrinter {
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
             influencers.entrySet().stream().sorted((o1, o2) -> {
-                return o1.getValue().compareTo(o2.getValue()); 
+                return o1.getValue().compareTo(o2.getValue());
             }).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
@@ -1164,20 +1142,20 @@ public class SiteReportPrinter {
         prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
     }
 
-    private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer, 
+    private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer,
             PropertyResultRecommendation resultRecommendation) {
         AnsiColor color = getRecommendationColor(influencer);
         prettyAppend(builder, resultRecommendation.getShortDescription() + ". " + resultRecommendation.getHandlingRecommendation(), color);
     }
-    
+
     private AnsiColor getRecommendationColor(PropertyResultRatingInfluencer influencer) {
-        if(influencer.getInfluence() <= -200) {
+        if (influencer.getInfluence() <= -200) {
             return AnsiColor.RED;
-        } else if(influencer.getInfluence() < -50) {
+        } else if (influencer.getInfluence() < -50) {
             return AnsiColor.YELLOW;
-        } else if(influencer.getInfluence() > 0) {
+        } else if (influencer.getInfluence() > 0) {
             return AnsiColor.GREEN;
-        } 
+        }
         return AnsiColor.DEFAULT_COLOR;
     }
 
