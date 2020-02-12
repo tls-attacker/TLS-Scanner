@@ -1,7 +1,7 @@
 #!/bin/bash
 
-openssl genrsa -out root-v1.pem 2048;
-openssl genrsa -out root-v3.pem 2048;
+openssl genrsa -out rootv1.pem 2048;
+openssl genrsa -out rootv3.pem 2048;
 
 for i in `seq 1 10`; do
   openssl genrsa -out rsakey_${i}.pem 2048;

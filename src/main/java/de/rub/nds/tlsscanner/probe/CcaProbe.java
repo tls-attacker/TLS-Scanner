@@ -42,9 +42,9 @@ public class CcaProbe extends TlsProbe {
 
     private boolean increasingTimeout = false;
 
-    private long additionalTimeout = 0;
+    private long additionalTimeout = 1000;
 
-    private long additionalTcpTimeout = 0;
+    private long additionalTcpTimeout = 1000;
 
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config, 7);
@@ -66,7 +66,8 @@ public class CcaProbe extends TlsProbe {
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
-
+        CcaCertificateManager ccaCertificateManager = CcaCertificateManager.getReference();
+        ccaCertificateManager.init(ccaDelegate);
         // TODO: Patch keyfilemanager to only open the directory if no entries are present (less IO)
 
         /**
@@ -175,7 +176,7 @@ public class CcaProbe extends TlsProbe {
                         CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType, ccaCertificateType);
                         Config tlsConfig = generateConfig();
                         CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaDelegate, additionalTimeout, increasingTimeout,
-                                0, additionalTcpTimeout);
+                                3, additionalTcpTimeout);
                         taskList.add(ccaTask);
                         taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
                     }

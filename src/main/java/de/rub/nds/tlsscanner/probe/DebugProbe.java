@@ -12,10 +12,7 @@ import de.rub.nds.asn1.Asn1Encodable;
 import de.rub.nds.asn1.parser.Asn1Parser;
 import de.rub.nds.asn1.translator.ParseNativeTypesContext;
 import de.rub.nds.asn1tool.xmlparser.Asn1XmlContent;
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateGenerator;
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
-import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
-import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
+import de.rub.nds.tlsattacker.attacks.cca.*;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
@@ -60,6 +57,7 @@ public class DebugProbe extends TlsProbe {
         registerTypes();
         registerContexts();
         registerContentUnpackers();
+
         try {
             GeneralSubtree generalSubtree = new GeneralSubtree(new GeneralName(GeneralName.dNSName, "test"), BigInteger.valueOf(0), BigInteger.valueOf(10));
 //            GeneralSubtree generalSubtree = new GeneralSubtree(new GeneralName(GeneralName.dNSName, "test"), 0);
@@ -75,6 +73,10 @@ public class DebugProbe extends TlsProbe {
 
         }
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
+        CcaCertificateManager ccaCertificateManager = CcaCertificateManager.getReference();
+        ccaCertificateManager.init(ccaDelegate);
+//        CcaFileManager ccaFileManager = CcaFileManager.getReference()
+
 
         /**
          * Add any protocol version (1.0-1.2) to the versions we iterate
