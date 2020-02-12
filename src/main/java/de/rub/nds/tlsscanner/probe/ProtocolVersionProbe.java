@@ -97,20 +97,10 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        if (toTest == ProtocolVersion.SSL2) {
-            // Dont send extensions if we are in sslv2
-            tlsConfig.setAddECPointFormatExtension(false);
-            tlsConfig.setAddEllipticCurveExtension(false);
-            tlsConfig.setAddHeartbeatExtension(false);
-            tlsConfig.setAddMaxFragmentLengthExtension(false);
-            tlsConfig.setAddServerNameIndicationExtension(false);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(false);
-        } else {
-            tlsConfig.setAddServerNameIndicationExtension(true);
-            tlsConfig.setAddECPointFormatExtension(true);
-            tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        }
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddECPointFormatExtension(true);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
 
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
