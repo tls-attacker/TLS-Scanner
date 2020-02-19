@@ -73,8 +73,8 @@ public class DebugProbe extends TlsProbe {
 
         }
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
-        CcaCertificateManager ccaCertificateManager = CcaCertificateManager.getReference();
-        ccaCertificateManager.init(ccaDelegate);
+//        CcaCertificateManager ccaCertificateManager = CcaCertificateManager.getReference();
+//        ccaCertificateManager.init(ccaDelegate);
 //        CcaFileManager ccaFileManager = CcaFileManager.getReference()
 
 
@@ -123,16 +123,16 @@ public class DebugProbe extends TlsProbe {
 //        cipherSuites.add(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
 //        cipherSuites.add(CipherSuite.TLS_RSA_WITH_DES_CBC_SHA);
 //        cipherSuites.addAll(CipherSuite.getImplemented());
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256);
+        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_debug;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
         for (ProtocolVersion protocolVersion : desiredVersions) {
             // Dummy for output since I do not iterate Ciphersuites
-            CipherSuite cipherSuite = CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256;
+            CipherSuite cipherSuite = CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384;
             CertificateMessage certificateMessage = null;
             Config tlsConfig = generateConfig();
             tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);

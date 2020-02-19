@@ -47,7 +47,7 @@
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>TLS-Scanner CCA Leaf Certificate</value>
+                            <value>TLS-Scanner CCA Leaf Certificate (ROOTv3_CAv3_LEAF_RSAv2)</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
                 </asn1Set>

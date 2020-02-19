@@ -8,17 +8,16 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.cca.*;
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
+import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.cca.vector.CcaTaskVectorPair;
 import de.rub.nds.tlsattacker.attacks.cca.vector.CcaVector;
 import de.rub.nds.tlsattacker.attacks.task.CcaTask;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.constants.*;
-import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
-import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
@@ -66,9 +65,8 @@ public class CcaProbe extends TlsProbe {
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
-        CcaCertificateManager ccaCertificateManager = CcaCertificateManager.getReference();
-        ccaCertificateManager.init(ccaDelegate);
-        // TODO: Patch keyfilemanager to only open the directory if no entries are present (less IO)
+//        CcaCertificateManager ccaCertificateManager = CcaCertificateManager.getReference(ccaDelegate);
+//        ccaCertificateManager.init(ccaDelegate);
 
         /**
          * Add any protocol version (1.0-1.2) to the versions we iterate
@@ -141,6 +139,14 @@ public class CcaProbe extends TlsProbe {
             return new CcaResult(TestResult.COULD_NOT_TEST, null);
         }
 
+        // Debugging (limit ciphersuites/version)
+        List<CipherSuite> cipherSuites = new LinkedList<>();
+        List<VersionSuiteListPair> _versionSuiteListPairs = new LinkedList<>();
+        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
+        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS12, cipherSuites));
+
+        versionSuiteListPairs = _versionSuiteListPairs;
+
 
         Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
         Boolean gotDirectoryParameters = ccaDelegate.directoriesSupplied();
@@ -148,7 +154,8 @@ public class CcaProbe extends TlsProbe {
         List<TlsTask> taskList = new LinkedList<>();
         List<CcaTaskVectorPair> taskVectorPairList = new LinkedList<>();
 
-        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
+//        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
+        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
                 /**
                  * Skip certificate types for which we are lacking the corresponding CLI parameters
@@ -162,17 +169,7 @@ public class CcaProbe extends TlsProbe {
                 }
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                     for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
-                        /*CertificateMessage certificateMessage = null;
-                        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
-                        tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
 
-
-                        *//**
-                         * TODO: move state generation into task. This will allow us to to all computational intensive stuff in parallel.
-                         *//*
-                        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaDelegate, ccaWorkflowType, ccaCertificateType);
-                        State state = new State(tlsConfig, trace);
-                        */
                         CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType, ccaCertificateType);
                         Config tlsConfig = generateConfig();
                         CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaDelegate, additionalTimeout, increasingTimeout,
@@ -182,7 +179,7 @@ public class CcaProbe extends TlsProbe {
                     }
                 }
             }
-        }
+//        }
 
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
@@ -242,24 +239,3 @@ public class CcaProbe extends TlsProbe {
     }
 
 }
-
-
-/**
- * TODO: Note that when using a pem encoded certificate we still got the following results
- * check what this means.
- * Client authentication
- *
- * Supported			 : true
- * CRT_CKE_CCS_FIN.CLIENT_INPUT.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CRT_CKE_CCS_FIN.CLIENT_INPUT.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CRT_CKE_CCS_FIN.CLIENT_INPUT.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.CLIENT_INPUT.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.CLIENT_INPUT.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.CLIENT_INPUT.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.EMPTY.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.EMPTY.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_FIN.EMPTY.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_CRT_FIN_CCS_RND.CLIENT_INPUT.TLS10.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_CRT_FIN_CCS_RND.CLIENT_INPUT.TLS11.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- * CKE_CCS_CRT_FIN_CCS_RND.CLIENT_INPUT.TLS12.TLS_DHE_RSA_WITH_AES_128_CBC_SHA : true
- */
