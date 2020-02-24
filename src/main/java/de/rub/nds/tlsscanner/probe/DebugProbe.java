@@ -32,6 +32,7 @@ import de.rub.nds.tlsscanner.report.result.CcaResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
+import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralSubtree;
 
@@ -59,15 +60,18 @@ public class DebugProbe extends TlsProbe {
         registerContentUnpackers();
 
         try {
-            GeneralSubtree generalSubtree = new GeneralSubtree(new GeneralName(GeneralName.dNSName, "test"), BigInteger.valueOf(0), BigInteger.valueOf(10));
+            GeneralSubtree generalSubtree = new GeneralSubtree(new GeneralName(GeneralName.dNSName, "AAAAAAAA"), BigInteger.valueOf(0), BigInteger.valueOf(10));
 //            GeneralSubtree generalSubtree = new GeneralSubtree(new GeneralName(GeneralName.dNSName, "test"), 0);
-            GeneralName generalName = new GeneralName(GeneralName.dNSName, "test");
+            DERIA5String deria5String = new DERIA5String("AAAAAAAA");
+            byte[] encodedIa5String = deria5String.getEncoded();
+            GeneralName generalName = new GeneralName(GeneralName.dNSName, "AAAAAAAA");
             // Parse certificate
             byte[] encodedName = generalName.getEncoded();
             byte[] encodedSubtree = generalSubtree.getEncoded();
             Asn1Parser asn1Parser = new Asn1Parser(encodedSubtree, false);
             List<Asn1Encodable> asn1Encodables = asn1Parser.parse(ParseNativeTypesContext.NAME);
             Asn1XmlContent asn1XmlContent = new Asn1XmlContent();
+
             asn1XmlContent.setAsn1Encodables(asn1Encodables);
         } catch (Exception e) {
 
@@ -128,7 +132,7 @@ public class DebugProbe extends TlsProbe {
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_debug;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
         for (ProtocolVersion protocolVersion : desiredVersions) {
             // Dummy for output since I do not iterate Ciphersuites

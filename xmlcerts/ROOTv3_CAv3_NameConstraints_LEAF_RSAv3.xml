@@ -34,15 +34,19 @@
                             <value>DE</value>
                         </asn1PrimitivePrintableString>
                     </asn1Sequence>
-                    <asn1Sequence identifier="attributeTypeAndValue1" type="AttributeTypeAndValue">
+                </asn1Set>
+                <asn1Set identifier="relativeDistinguishedName1" type="RelativeDistinguishedName">
+                    <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.10</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>RUB</value>
+                            <value>Not RUB</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
-                    <asn1Sequence identifier="attributeTypeAndValue2" type="AttributeTypeAndValue">
+                </asn1Set>
+                <asn1Set identifier="relativeDistinguishedName2" type="RelativeDistinguishedName">
+                    <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
@@ -69,32 +73,6 @@
                                 <asn1Boolean identifier="cA">
                                     <value>false</value>
                                 </asn1Boolean>
-                            </asn1Sequence>
-                        </asn1EncapsulatingOctetString>
-                    </asn1Sequence>
-                    <asn1Sequence identifier="extension2" type="Extensions">
-                        <asn1ObjectIdentifier identifier="extnID">
-                            <value>2.5.29.30</value>
-                        </asn1ObjectIdentifier>
-                        <asn1Boolean identifier="critical">
-                            <value>true</value>
-                        </asn1Boolean>
-                        <asn1EncapsulatingOctetString identifier="extnValue">
-                            <asn1Sequence identifier="nameConstraintsExtension" type="NameConstraints">
-                                <asn1Implicit identifier="permittedSubtrees">
-                                    <offset>0</offset>
-
-                                    <asn1Sequence identifier="generalSubtrees0" type="GeneralSubtreeSequence">
-                                        <asn1Sequence identifier="generalSubtree0" type="GeneralSubtree">
-                                            <asn1Implicit identifier="base" type="GeneralName">
-                                                <offset>2</offset>
-                                                <asn1PrimitiveIa5String identifier="dnsName">
-                                                    <value>test</value>
-                                                </asn1PrimitiveIa5String>
-                                            </asn1Implicit>
-                                        </asn1Sequence>
-                                    </asn1Sequence>
-                                </asn1Implicit>
                             </asn1Sequence>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>
@@ -211,6 +189,51 @@
                                 <asn1Integer identifier="pathLenConstraint">
                                     <value>1</value>
                                 </asn1Integer>
+                            </asn1Sequence>
+                        </asn1EncapsulatingOctetString>
+                    </asn1Sequence>
+                    <!-- NameConstraint Extension -->
+                    <asn1Sequence identifier="extension4" type="Extensions">
+                        <asn1ObjectIdentifier identifier="extnID">
+                            <value>2.5.29.30</value>
+                        </asn1ObjectIdentifier>
+                        <asn1Boolean identifier="critical">
+                            <value>true</value>
+                        </asn1Boolean>
+                        <asn1EncapsulatingOctetString identifier="extnValue">
+                            <asn1Sequence identifier="nameConstraintsExtension" type="NameConstraints">
+                                <asn1Implicit identifier="permittedSubtrees">
+                                    <offset>0</offset>
+                                    <asn1Sequence identifier="generalSubtrees0" type="GeneralSubtreeSequence">
+                                        <asn1Sequence identifier="generalSubtree0" type="GeneralSubtree">
+                                            <asn1Explicit identifier="base" type="GeneralName">
+                                                <offset>4</offset>
+                                                <asn1Sequence identifier="subject" type="Name">
+                                                    <asn1Set identifier="relativeDistinguishedName0" type="RelativeDistinguishedName">
+                                                        <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
+                                                            <asn1ObjectIdentifier identifier="type" type="AttributeType">
+                                                                <value>2.5.4.6</value>
+                                                            </asn1ObjectIdentifier>
+                                                            <asn1PrimitivePrintableString identifier="value" type="AttributeValue">
+                                                                <value>DE</value>
+                                                            </asn1PrimitivePrintableString>
+                                                        </asn1Sequence>
+                                                    </asn1Set>
+                                                    <asn1Set identifier="relativeDistinguishedName1" type="RelativeDistinguishedName">
+                                                        <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
+                                                            <asn1ObjectIdentifier identifier="type" type="AttributeType">
+                                                                <value>2.5.4.10</value>
+                                                            </asn1ObjectIdentifier>
+                                                            <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
+                                                                <value>RUB</value>
+                                                            </asn1PrimitiveUtf8String>
+                                                        </asn1Sequence>
+                                                    </asn1Set>
+                                                </asn1Sequence>
+                                            </asn1Explicit>
+                                        </asn1Sequence>
+                                    </asn1Sequence>
+                                </asn1Implicit>
                             </asn1Sequence>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>
