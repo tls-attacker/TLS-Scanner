@@ -42,7 +42,7 @@
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>TLS-Scanner CCA CA 1 v3</value>
+                            <value>TLS-Scanner CCA CA 1 v3 (ROOTv3_CAv3_LEAF_RSAv3__RDN_difference)</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
                 </asn1Set>
@@ -78,7 +78,7 @@
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>TLS-Scanner CCA Leaf Certificate</value>
+                            <value>TLS-Scanner CCA Leaf Certificate (ROOTv3_CAv3_LEAF_RSAv3__RDN_difference)</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
                 </asn1Set>
@@ -165,7 +165,7 @@
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>TLS-Scanner CCA CA 1 v3</value>
+                            <value>TLS-Scanner CCA CA 1 v3 (ROOTv3_CAv3_LEAF_RSAv3__RDN_difference)</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
                 </asn1Set>
