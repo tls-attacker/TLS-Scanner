@@ -29,7 +29,7 @@ import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.report.after.padding.ShakyEvaluationReport;
+import de.rub.nds.tlsscanner.report.after.statistic.padding.NonDetermnisimEvaluationReport;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -63,7 +63,7 @@ public class SiteReport extends Observable {
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
-    private ShakyEvaluationReport paddingOracleShakyReport = null;
+    private NonDetermnisimEvaluationReport paddingOracleShakyReport = null;
     private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList;
 
     //Version
@@ -216,11 +216,11 @@ public class SiteReport extends Observable {
         this.notifyObservers();
     }
 
-    public ShakyEvaluationReport getPaddingOracleShakyReport() {
+    public NonDetermnisimEvaluationReport getPaddingOracleShakyReport() {
         return paddingOracleShakyReport;
     }
 
-    public void setPaddingOracleShakyReport(ShakyEvaluationReport paddingOracleShakyReport) {
+    public void setPaddingOracleShakyReport(NonDetermnisimEvaluationReport paddingOracleShakyReport) {
         this.paddingOracleShakyReport = paddingOracleShakyReport;
     }
 

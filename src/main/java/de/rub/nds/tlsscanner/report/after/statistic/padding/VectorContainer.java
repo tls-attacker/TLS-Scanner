@@ -6,9 +6,10 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report.after.padding;
+package de.rub.nds.tlsscanner.report.after.statistic.padding;
 
-import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
+import de.rub.nds.tlsattacker.attacks.general.Vector;
+import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,30 +19,26 @@ import java.util.Objects;
 
 public class VectorContainer {
 
-    private final String identifier;
+    private final Vector vector;
 
     private final List<ResponseCounter> distinctResponsesCounterList;
 
-    private final List<VectorResponse> responseList;
+    private final List<ResponseFingerprint> responseList;
 
-    public VectorContainer(String identifier, List<VectorResponse> responseList) {
-        this.identifier = identifier;
+    public VectorContainer(Vector vector, List<ResponseFingerprint> responseFingerprintList) {
+        this.vector = vector;
         this.distinctResponsesCounterList = new LinkedList<>();
-        this.responseList = responseList;
+        this.responseList = responseFingerprintList;
         HashSet<ResponseFingerprint> fingerprintSet = new HashSet<>();
-        for (VectorResponse vectorResponse : responseList) {
-            if (!fingerprintSet.contains(vectorResponse.getFingerprint())) {
-                fingerprintSet.add(vectorResponse.getFingerprint());
-            }
-        }
+        fingerprintSet.addAll(responseFingerprintList);
         for (ResponseFingerprint fingerprint : fingerprintSet) {
             int counter = 0;
-            for (VectorResponse response : responseList) {
-                if (Objects.equals(response.getFingerprint(), fingerprint)) {
+            for (ResponseFingerprint tempFingerprint : responseFingerprintList) {
+                if (Objects.equals(fingerprint, tempFingerprint)) {
                     counter++;
                 }
             }
-            distinctResponsesCounterList.add(new ResponseCounter(fingerprint, counter, responseList.size()));
+            distinctResponsesCounterList.add(new ResponseCounter(fingerprint, counter, responseFingerprintList.size()));
         }
     }
 
@@ -60,7 +57,6 @@ public class VectorContainer {
     }
 
     public double getRandomProbability(List<ResponseCounter> totalResponseCounterList) {
-        int total = responseList.size();
         double totalProbability = factorial(distinctResponsesCounterList.size());
         for (ResponseCounter counter : totalResponseCounterList) {
             for (ResponseCounter responseCounter : distinctResponsesCounterList) {
@@ -80,15 +76,11 @@ public class VectorContainer {
         return solution;
     }
 
-    public String getIdentifier() {
-        return identifier;
-    }
-
     public List<ResponseCounter> getDistinctResponsesCounterList() {
         return Collections.unmodifiableList(distinctResponsesCounterList);
     }
 
-    public List<VectorResponse> getResponseList() {
+    public List<ResponseFingerprint> getResponseFingerprintList() {
         return Collections.unmodifiableList(responseList);
     }
 
@@ -99,5 +91,9 @@ public class VectorContainer {
             }
         }
         return null;
+    }
+
+    public Vector getVector() {
+        return vector;
     }
 }

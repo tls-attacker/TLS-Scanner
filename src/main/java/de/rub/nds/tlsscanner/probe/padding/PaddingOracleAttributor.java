@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.probe.padding;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
+import de.rub.nds.tlsattacker.attacks.padding.vector.PaddingVector;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
@@ -697,8 +698,8 @@ public class PaddingOracleAttributor {
     private boolean checkTestVectorResponseListPlausible(KnownPaddingOracleVulnerability vulnerability, List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
         List<VectorResponse> vulnerableVectorResponseList = null;
         for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-            if (Objects.equals(fingerprint.getVulnerable(), Boolean.TRUE) && !fingerprint.isShakyScans()) {
-                vulnerableVectorResponseList = fingerprint.getResponseMapList().get(0);
+            if (fingerprint.getVulnerable() == Boolean.TRUE) {
+                vulnerableVectorResponseList = fingerprint.getResponseMap();
             }
         }
         if (vulnerableVectorResponseList == null) {
@@ -707,7 +708,8 @@ public class PaddingOracleAttributor {
         for (VectorResponse vulnResponse : vulnerableVectorResponseList) {
             boolean found = false;
             for (IdentifierResponse response : vulnerability.getResponseIdentification()) {
-                if (response.getIdentifier().equals(vulnResponse.getPaddingVector().getIdentifier())) {
+                PaddingVector paddingVector = (PaddingVector) vulnResponse.getVector();
+                if (response.getIdentifier().equals(paddingVector.getIdentifier())) {
                     found = true;
                     if (FingerPrintChecker.checkSimpleEquality(response.getFingerprint(), vulnResponse.getFingerprint(), true) != EqualityError.NONE) {
                         return false;

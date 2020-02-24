@@ -22,27 +22,23 @@ import java.util.List;
 public class PaddingOracleResponseMap extends ProbeResult {
 
     private final List<PaddingOracleCipherSuiteFingerprint> resultList;
-    private final List<PaddingOracleCipherSuiteFingerprint> shakyEvalList;
 
-    private TestResult vulnerable;
-
-    public PaddingOracleResponseMap(List<PaddingOracleCipherSuiteFingerprint> resultList, List<PaddingOracleCipherSuiteFingerprint> shakyEvalList, TestResult vulnerable) {
+    public PaddingOracleResponseMap(List<PaddingOracleCipherSuiteFingerprint> resultList) {
         super(ProbeType.PADDING_ORACLE);
         this.resultList = resultList;
-        this.shakyEvalList = shakyEvalList;
-        this.vulnerable = vulnerable;
     }
 
     @Override
     public void mergeData(SiteReport report) {
+        TestResult vulnerable = TestResult.UNCERTAIN;
         if (resultList != null && resultList.isEmpty() && vulnerable == null) {
             vulnerable = TestResult.FALSE;
         }
         if (resultList == null) {
             vulnerable = TestResult.COULD_NOT_TEST;
         }
+        vulnerable = TestResult.TRUE;
         report.setPaddingOracleTestResultList(resultList);
-        report.setPaddingOracleShakyEvalResultList(shakyEvalList);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }
 

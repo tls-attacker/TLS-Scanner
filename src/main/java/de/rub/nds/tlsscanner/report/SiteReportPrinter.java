@@ -50,8 +50,8 @@ import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.report.after.padding.ShakyEvaluationReport;
-import de.rub.nds.tlsscanner.report.after.padding.ShakyVectorHolder;
+import de.rub.nds.tlsscanner.report.after.statistic.padding.NonDetermnisimEvaluationReport;
+import de.rub.nds.tlsscanner.report.after.statistic.padding.NondeterministicVectorContainerHolder;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
@@ -668,22 +668,18 @@ public class SiteReportPrinter {
         } else {
             for (PaddingOracleCipherSuiteFingerprint testResult : report.getPaddingOracleTestResultList()) {
                 String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
-                if (testResult.isHasScanningError()) {
-                    prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
-                } else if (Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) {
+                if (Objects.equals(testResult.getpValue() < 0.01, Boolean.TRUE)) {
                     prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
-                } else if (testResult.isShakyScans()) {
-                    prettyAppend(builder, resultString + "\t - Non Deterministic", AnsiColor.YELLOW);
-                } else if (Objects.equals(testResult.getVulnerable(), Boolean.FALSE)) {
+                } else if (Objects.equals(testResult.getpValue() < 0.05, Boolean.TRUE)) {
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + " PROBABLY VULNERABLE", AnsiColor.YELLOW);
+                } else (Objects.equals(testResult.getVulnerable(), Boolean.FALSE)) {
                     prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
-                } else {
-                    prettyAppend(builder, resultString + "\t # Unknown", AnsiColor.YELLOW);
                 }
 
                 if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                        appendPaddingOracleResponseMapList(builder, testResult.getResponseMapList());
+                        appendPaddingOracleResponseMapList(builder, testResult.getResponseMap());
                     }
                 }
             }
@@ -691,58 +687,32 @@ public class SiteReportPrinter {
         }
         if (report.getPaddingOracleShakyEvalResultList() != null && !report.getPaddingOracleShakyEvalResultList().isEmpty()) {
             prettyAppendHeading(builder, "PaddingOracle-ShakyReport");
-            ShakyEvaluationReport shakyReport = report.getPaddingOracleShakyReport();
+            NonDetermnisimEvaluationReport shakyReport = report.getPaddingOracleShakyReport();
             prettyAppend(builder, "Probably Vulnerable", shakyReport.getConsideredVulnerable(), shakyReport.getConsideredVulnerable() == Boolean.TRUE ? AnsiColor.RED : AnsiColor.GREEN);
             prettyAppend(builder, "Type", "" + shakyReport.getShakyType());
             prettyAppend(builder, "Consistent", shakyReport.getConsistentAcrossCvPairs());
             prettyAppend(builder, "");
-            for (ShakyVectorHolder holder : shakyReport.getVectorHolderList()) {
+            for (NondeterministicVectorContainerHolder holder : shakyReport.getVectorHolderList()) {
                 double pValue = holder.computePValue();
-                if (pValue > 0.05) {
-                    prettyAppend(builder, "" + holder.getFingerprint().getSuite() + "/" + holder.getFingerprint().getVersion(), "Pvalue: " + String.format("%.12f", pValue), AnsiColor.GREEN);
-                } else if (pValue > 0.01) {
-                    prettyAppend(builder, "" + holder.getFingerprint().getSuite() + "/" + holder.getFingerprint().getVersion(), "Pvalue: " + String.format("%.12f", pValue), AnsiColor.YELLOW);
-                } else {
-                    prettyAppend(builder, "" + holder.getFingerprint().getSuite() + "/" + holder.getFingerprint().getVersion(), "Pvalue: " + String.format("%.12f", pValue), AnsiColor.RED);
-                }
+                prettyAppend(builder, "Pvalue: " + String.format("%.12f", pValue), AnsiColor.RED);
+
             }
         }
         return builder;
     }
 
-    private StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder, List<List<VectorResponse>> responseMapList) {
+    private StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder, List<VectorResponse> responseMapList) {
         if (responseMapList != null && !responseMapList.isEmpty()) {
-            for (int vectorIndex = 0; vectorIndex < responseMapList.get(0).size(); vectorIndex++) {
-                VectorResponse vectorResponse = responseMapList.get(0).get(vectorIndex);
-                if (vectorResponse.isErrorDuringHandshake()) {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + "ERROR", AnsiColor.RED);
-                } else if (vectorResponse.isMissingEquivalent()) {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.RED);
-                } else if (vectorResponse.isShaky()) {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
-
+            for (int vectorIndex = 0; vectorIndex < responseMapList.size(); vectorIndex++) {
+                VectorResponse vectorResponse = responseMapList.get(vectorIndex);
+                prettyAppend(builder, padToLength("\t" + vectorResponse.getVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
+                if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
                     for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
-                        VectorResponse shakyVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
-                        if (shakyVectorResponse.getFingerprint() == null) {
-                            prettyAppend(builder, "\t" + padToLength("", 39) + "null", AnsiColor.YELLOW);
+                        VectorResponse tempVectorResponse = responseMapList.get(mapIndex);
+                        if (tempVectorResponse == null || tempVectorResponse.getFingerprint() == null) {
+                            prettyAppend(builder, "\t" + padToLength("", 39) + "Missing", AnsiColor.RED);
                         } else {
-                            prettyAppend(builder, "\t" + padToLength("", 39) + shakyVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
-                        }
-                    }
-                } else {
-                    prettyAppend(builder, padToLength("\t" + vectorResponse.getPaddingVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
-                    if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                        for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
-                            VectorResponse tempVectorResponse = responseMapList.get(mapIndex).get(vectorIndex);
-                            if (tempVectorResponse == null || tempVectorResponse.getFingerprint() == null) {
-                                prettyAppend(builder, "\t" + padToLength("", 39) + "Missing", AnsiColor.RED);
-                            } else {
-                                if (tempVectorResponse.isShaky()) {
-                                    prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
-                                } else {
-                                    prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable());
-                                }
-                            }
+                            prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable());
                         }
                     }
                 }

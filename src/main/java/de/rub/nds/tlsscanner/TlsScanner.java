@@ -48,7 +48,6 @@ import de.rub.nds.tlsscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
 import de.rub.nds.tlsscanner.report.after.PaddingOracleIdentificationAfterProbe;
-import de.rub.nds.tlsscanner.report.after.ShakyPaddingOracleEvaluation;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
@@ -84,7 +83,7 @@ public class TlsScanner {
 
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
         this.config = config;
-        closeAfterFinish = false;
+        closeAfterFinish = true;
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
         this.probeList = new LinkedList<>();
@@ -95,8 +94,8 @@ public class TlsScanner {
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor) {
         this.config = config;
         this.parallelExecutor = parallelExecutor;
-        closeAfterFinish = false;
-        closeAfterFinishParallel = false;
+        closeAfterFinish = true;
+        closeAfterFinishParallel = true;
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         fillDefaultProbeLists();
@@ -107,42 +106,42 @@ public class TlsScanner {
         this.config = config;
         this.probeList = probeList;
         this.afterList = afterList;
-        closeAfterFinish = false;
-        closeAfterFinishParallel = false;
+        closeAfterFinish = true;
+        closeAfterFinishParallel = true;
     }
 
     private void fillDefaultProbeLists() {
-        //probeList.add(new CommonBugProbe(config, parallelExecutor));
-        //probeList.add(new SniProbe(config, parallelExecutor));
-        //probeList.add(new CompressionsProbe(config, parallelExecutor));
-        //probeList.add(new NamedCurvesProbe(config, parallelExecutor));
-        //probeList.add(new CertificateProbe(config, parallelExecutor));
+        probeList.add(new CommonBugProbe(config, parallelExecutor));
+        probeList.add(new SniProbe(config, parallelExecutor));
+        probeList.add(new CompressionsProbe(config, parallelExecutor));
+        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
+        probeList.add(new CertificateProbe(config, parallelExecutor));
         probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
         probeList.add(new CiphersuiteProbe(config, parallelExecutor));
         probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
-        //probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
-        //probeList.add(new ExtensionProbe(config, parallelExecutor));
-        //probeList.add(new Tls13Probe(config, parallelExecutor));
-        //probeList.add(new TokenbindingProbe(config, parallelExecutor));
-        //probeList.add(new HttpHeaderProbe(config, parallelExecutor));
-        //probeList.add(new ResumptionProbe(config, parallelExecutor));
-        //probeList.add(new RenegotiationProbe(config, parallelExecutor));
-        //probeList.add(new HeartbleedProbe(config, parallelExecutor));
-        //probeList.add(new PaddingOracleProbe(config, parallelExecutor));
-        //probeList.add(new BleichenbacherProbe(config, parallelExecutor));
-        //probeList.add(new PoodleProbe(config, parallelExecutor));
-        //probeList.add(new TlsPoodleProbe(config, parallelExecutor));
-        //probeList.add(new InvalidCurveProbe(config, parallelExecutor));
-        //probeList.add(new DrownProbe(config, parallelExecutor));
-        //probeList.add(new EarlyCcsProbe(config, parallelExecutor));
-        //probeList.add(new MacProbe(config, parallelExecutor));
-        //afterList.add(new Sweet32AfterProbe());
-        //afterList.add(new FreakAfterProbe());
-        //afterList.add(new LogjamAfterprobe());
-        //afterList.add(new EvaluateRandomnessAfterProbe());
-        //afterList.add(new EcPublicKeyAfterProbe());
-        //afterList.add(new DhValueAfterProbe());
-        //afterList.add(new PaddingOracleIdentificationAfterProbe());
+        probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
+        probeList.add(new ExtensionProbe(config, parallelExecutor));
+        probeList.add(new Tls13Probe(config, parallelExecutor));
+        probeList.add(new TokenbindingProbe(config, parallelExecutor));
+        probeList.add(new HttpHeaderProbe(config, parallelExecutor));
+        probeList.add(new ResumptionProbe(config, parallelExecutor));
+        probeList.add(new RenegotiationProbe(config, parallelExecutor));
+        probeList.add(new HeartbleedProbe(config, parallelExecutor));
+        probeList.add(new PaddingOracleProbe(config, parallelExecutor));
+        probeList.add(new BleichenbacherProbe(config, parallelExecutor));
+        probeList.add(new PoodleProbe(config, parallelExecutor));
+        probeList.add(new TlsPoodleProbe(config, parallelExecutor));
+        probeList.add(new InvalidCurveProbe(config, parallelExecutor));
+        probeList.add(new DrownProbe(config, parallelExecutor));
+        probeList.add(new EarlyCcsProbe(config, parallelExecutor));
+        probeList.add(new MacProbe(config, parallelExecutor));
+        afterList.add(new Sweet32AfterProbe());
+        afterList.add(new FreakAfterProbe());
+        afterList.add(new LogjamAfterprobe());
+        afterList.add(new EvaluateRandomnessAfterProbe());
+        afterList.add(new EcPublicKeyAfterProbe());
+        afterList.add(new DhValueAfterProbe());
+        afterList.add(new PaddingOracleIdentificationAfterProbe());
     }
 
     public SiteReport scan() {

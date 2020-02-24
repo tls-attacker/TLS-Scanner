@@ -6,27 +6,28 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report.after.padding;
+package de.rub.nds.tlsscanner.report.after.statistic.padding;
 
+import de.rub.nds.tlsscanner.report.after.statistic.NondetermninismType;
 import java.util.List;
 
-public class ShakyEvaluationReport {
+public class NonDetermnisimEvaluationReport {
 
     private Boolean consideredVulnerable;
 
-    private final ShakyType shakyType;
+    private final NondetermninismType shakyType;
 
     private final Boolean consistentAcrossCvPairs;
 
-    private final List<ShakyVectorHolder> vectorHolderList;
+    private final List<NondeterministicVectorContainerHolder> vectorHolderList;
 
-    public ShakyEvaluationReport(Boolean consideredVulnerable, ShakyType shakyType, Boolean consistentAcrossCvPairs, List<ShakyVectorHolder> vectorHolderList) {
+    public NonDetermnisimEvaluationReport(Boolean consideredVulnerable, NondetermninismType shakyType, Boolean consistentAcrossCvPairs, List<NondeterministicVectorContainerHolder> vectorHolderList) {
         this.consideredVulnerable = consideredVulnerable;
         this.shakyType = shakyType;
         this.consistentAcrossCvPairs = consistentAcrossCvPairs;
         this.vectorHolderList = vectorHolderList;
         if (consideredVulnerable == null || consideredVulnerable == false) {
-            for (ShakyVectorHolder holder : vectorHolderList) {
+            for (NondeterministicVectorContainerHolder holder : vectorHolderList) {
                 if (holder.computePValue() < 0.01) {
                     this.consideredVulnerable = true;
                     break;
@@ -42,7 +43,7 @@ public class ShakyEvaluationReport {
         return consideredVulnerable;
     }
 
-    public ShakyType getShakyType() {
+    public NondetermninismType getShakyType() {
         return shakyType;
     }
 
@@ -50,7 +51,7 @@ public class ShakyEvaluationReport {
         return consistentAcrossCvPairs;
     }
 
-    public List<ShakyVectorHolder> getVectorHolderList() {
+    public List<NondeterministicVectorContainerHolder> getVectorHolderList() {
         return vectorHolderList;
     }
 

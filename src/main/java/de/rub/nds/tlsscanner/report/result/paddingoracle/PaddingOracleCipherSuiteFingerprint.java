@@ -12,49 +12,41 @@ import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import java.util.Collections;
 import java.util.List;
 
 public class PaddingOracleCipherSuiteFingerprint {
 
-    private final Boolean vulnerable;
     private final ProtocolVersion version;
     private final CipherSuite suite;
     private final PaddingVectorGeneratorType vectorGeneratorType;
     private final PaddingRecordGeneratorType recordGeneratorType;
-    private final List<List<VectorResponse>> responseMapList;
+    private final List<VectorResponse> responseMap;
 
-    private final EqualityError equalityError;
-    private final boolean shakyScans;
-    private final boolean hasScanningError;
+    private EqualityError equalityError;
+    private double pValue;
 
-    public PaddingOracleCipherSuiteFingerprint(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType, List<List<VectorResponse>> responseMapList, EqualityError equalityError, boolean shakyScans, boolean hasScanningError) {
-        this.vulnerable = vulnerable;
+    public PaddingOracleCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType, List<VectorResponse> responseMap) {
         this.version = version;
         this.suite = suite;
         this.vectorGeneratorType = vectorGeneratorType;
         this.recordGeneratorType = recordGeneratorType;
-        this.responseMapList = responseMapList;
-        this.equalityError = equalityError;
-        this.shakyScans = shakyScans;
-        this.hasScanningError = hasScanningError;
+        this.responseMap = responseMap;
+        pValue = computePValue();
+        equalityError = evaluateEqualityError();
     }
 
-    public boolean isShakyScans() {
-        return shakyScans;
+    public List<VectorResponse> getResponseMap() {
+        return Collections.unmodifiableList(responseMap);
     }
 
-    public boolean isHasScanningError() {
-        return hasScanningError;
-    }
-
-    public Boolean getVulnerable() {
-        return vulnerable;
-    }
-
-    public List<List<VectorResponse>> getResponseMapList() {
-        return responseMapList;
+    public void appendToResponseMap(List<VectorResponse> responseMap) {
+        this.responseMap.addAll(responseMap);
+        pValue = computePValue();
+        equalityError = evaluateEqualityError();
     }
 
     public ProtocolVersion getVersion() {
@@ -76,4 +68,28 @@ public class PaddingOracleCipherSuiteFingerprint {
     public EqualityError getEqualityError() {
         return equalityError;
     }
+
+    public double getpValue() {
+        return pValue;
+    }
+
+    private EqualityError evaluateEqualityError() {
+        for (VectorResponse vectorResponseOne : responseMap) {
+            for (VectorResponse vectorResponseTwo : responseMap) {
+                if (vectorResponseOne == vectorResponseTwo) {
+                    continue;
+                }
+                EqualityError equality = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(), vectorResponseTwo.getFingerprint(), true);
+                if (equality != EqualityError.NONE) {
+                    return equality;
+                }
+            }
+        }
+        return EqualityError.NONE;
+    }
+
+    private double computePValue() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
