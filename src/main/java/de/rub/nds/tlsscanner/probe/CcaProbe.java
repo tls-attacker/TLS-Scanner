@@ -92,7 +92,7 @@ public class CcaProbe extends TlsProbe {
          * If we do not want a detailed scan, use only one cipher suite per protocol version.
          */
         List<CipherSuite> implementedCipherSuites = CipherSuite.getImplemented();
-        List<VersionSuiteListPair> _ = new LinkedList<>();
+        List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
         if (!getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
             for (VersionSuiteListPair versionSuiteListPair: versionSuiteListPairs) {
                 List<CipherSuite> cipherSuites = new LinkedList<>();
@@ -106,12 +106,12 @@ public class CcaProbe extends TlsProbe {
                  * Only add a version if we found a matching cipher suite (DH[E])
                  */
                 if (!cipherSuites.isEmpty()) {
-                    _.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
+                    versionSuiteListPairList.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
                 }
             }
         }
 
-        if (_.isEmpty()) {
+        if (versionSuiteListPairList.isEmpty()) {
             /**
              * We haven't found a DH ciphersuite that's implemented by TLS-Scanner/Attacker
              * Remove any cipherSuite not implemented by TLS-Scanner/Attacker to prevent confusing results
@@ -124,7 +124,7 @@ public class CcaProbe extends TlsProbe {
                     }
                 }
                 if (!cipherSuites.isEmpty()) {
-                    _.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
+                    versionSuiteListPairList.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
                 }
             }
         }
@@ -132,7 +132,7 @@ public class CcaProbe extends TlsProbe {
          * versionSuiteListPairs by now contains either any ciphersuite that both the server and TLS-Scanner/Attacker
          * support for TLS1.0-1.2 or at most a single DH ciphersuite per version. If it's empty we can't continue.
          */
-        versionSuiteListPairs = _;
+        versionSuiteListPairs = versionSuiteListPairList;
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.error("No common ciphersuites found. Can't continue scan.");
