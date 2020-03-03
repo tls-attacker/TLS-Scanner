@@ -92,4 +92,12 @@ public class PaddingOracleCipherSuiteFingerprint {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public boolean isConsideredVulnerable(double pValueThreshhold) {
+        return (pValueThreshhold > this.pValue);
+    }
+    
+    public boolean isConsideredVulnerable() {
+        return this.pValue < 0.01d;
+    }
+
 }

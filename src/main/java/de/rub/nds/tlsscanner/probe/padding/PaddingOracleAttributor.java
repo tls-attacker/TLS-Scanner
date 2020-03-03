@@ -680,14 +680,14 @@ public class PaddingOracleAttributor {
     private boolean checkCipherSuitesPlausible(KnownPaddingOracleVulnerability vulnerability, List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
         for (CipherSuite suite : vulnerability.getKnownAffectedCiphersuites()) {
             for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-                if (fingerprint.getSuite() == suite && !Objects.equals(fingerprint.getVulnerable(), Boolean.TRUE)) {
+                if (fingerprint.getSuite() == suite && !Objects.equals(fingerprint.isConsideredVulnerable(), Boolean.TRUE)) {
                     return false;
                 }
             }
         }
         for (CipherSuite suite : vulnerability.getKnownNotAffectedCiphersuites()) {
             for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-                if (fingerprint.getSuite() == suite && Objects.equals(fingerprint.getVulnerable(), Boolean.TRUE)) {
+                if (fingerprint.getSuite() == suite && Objects.equals(fingerprint.isConsideredVulnerable(), Boolean.TRUE)) {
                     return false;
                 }
             }
@@ -698,7 +698,7 @@ public class PaddingOracleAttributor {
     private boolean checkTestVectorResponseListPlausible(KnownPaddingOracleVulnerability vulnerability, List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
         List<VectorResponse> vulnerableVectorResponseList = null;
         for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-            if (fingerprint.getVulnerable() == Boolean.TRUE) {
+            if (fingerprint.isConsideredVulnerable() == Boolean.TRUE) {
                 vulnerableVectorResponseList = fingerprint.getResponseMap();
             }
         }

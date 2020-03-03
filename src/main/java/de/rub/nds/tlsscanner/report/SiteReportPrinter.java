@@ -672,11 +672,11 @@ public class SiteReportPrinter {
                     prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
                 } else if (Objects.equals(testResult.getpValue() < 0.05, Boolean.TRUE)) {
                     prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + " PROBABLY VULNERABLE", AnsiColor.YELLOW);
-                } else (Objects.equals(testResult.getVulnerable(), Boolean.FALSE)) {
+                } else if (Objects.equals(testResult.isConsideredVulnerable(), Boolean.FALSE)) {
                     prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
                 }
 
-                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
+                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isConsideredVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
                         appendPaddingOracleResponseMapList(builder, testResult.getResponseMap());
