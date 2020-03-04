@@ -40,6 +40,10 @@ public class NondeterministicVectorContainerHolder {
                 vectorMap.put(response.getVector(), tempResponseList);
             }
         }
+        for (Vector vector : vectorMap.keySet()) {
+            List<ResponseFingerprint> tempResponseList = vectorMap.get(vector);
+            statisticList.add(new VectorContainer(vector, tempResponseList));
+        }
     }
 
     public NondetermninismType getShakyType() {
@@ -96,6 +100,21 @@ public class NondeterministicVectorContainerHolder {
 
     public double computePValue() {
         ChiSquareTest test = new ChiSquareTest();
+        ResponseCounter defaultAnswer = getDefaultAnswer();
+        double probability = defaultAnswer.getProbability();
+        double[] expected = new double[statisticList.size()];
+        long[] measured = new long[statisticList.size()];
+        for (int i = 0; i < statisticList.size(); i++) {
+            expected[i] = probability * statisticList.get(i).getResponseFingerprintList().size();
+            measured[i] = statisticList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint()).getCounter();
+        }
+        double chiSquare = test.chiSquare(expected, measured);
+        ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);
+        double pValue = 1 - distribution.cumulativeProbability(chiSquare);
+        return pValue;
+    }
+
+    public ResponseCounter getDefaultAnswer() {
         ResponseCounter defaultAnswer = null;
         for (ResponseCounter counter : getAllResponseCounters()) {
             if (defaultAnswer == null) {
@@ -104,16 +123,6 @@ public class NondeterministicVectorContainerHolder {
                 defaultAnswer = counter;
             }
         }
-        double probability = defaultAnswer.getProbability();
-        double[] expected = new double[getStatisticList().size()];
-        long[] measured = new long[getStatisticList().size()];
-        for (int i = 0; i < getStatisticList().size(); i++) {
-            expected[i] = probability * getStatisticList().get(i).getResponseFingerprintList().size();
-            measured[i] = getStatisticList().get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint()).getCounter();
-        }
-        double chiSquare = test.chiSquare(expected, measured);
-        ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);
-        double pValue = 1 - distribution.cumulativeProbability(chiSquare);
-        return pValue;
+        return defaultAnswer;
     }
 }

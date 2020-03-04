@@ -16,6 +16,7 @@ import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -50,13 +51,16 @@ import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
 import de.rub.nds.tlsscanner.report.after.statistic.padding.NonDetermnisimEvaluationReport;
 import de.rub.nds.tlsscanner.report.after.statistic.padding.NondeterministicVectorContainerHolder;
+import de.rub.nds.tlsscanner.report.after.statistic.padding.VectorContainer;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+import java.util.Collections;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Date;
@@ -669,9 +673,9 @@ public class SiteReportPrinter {
             for (PaddingOracleCipherSuiteFingerprint testResult : report.getPaddingOracleTestResultList()) {
                 String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
                 if (Objects.equals(testResult.getpValue() < 0.01, Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE\tP: " + String.format("%.2f", testResult.getpValue()), AnsiColor.RED);
                 } else if (Objects.equals(testResult.getpValue() < 0.05, Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + " PROBABLY VULNERABLE", AnsiColor.YELLOW);
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + " PROBABLY VULNERABLE\tP: " + String.format("%.2f", testResult.getpValue()), AnsiColor.YELLOW);
                 } else if (Objects.equals(testResult.isConsideredVulnerable(), Boolean.FALSE)) {
                     prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
                 }
@@ -685,40 +689,23 @@ public class SiteReportPrinter {
             }
 
         }
-        if (report.getPaddingOracleShakyEvalResultList() != null && !report.getPaddingOracleShakyEvalResultList().isEmpty()) {
-            prettyAppendHeading(builder, "PaddingOracle-ShakyReport");
-            NonDetermnisimEvaluationReport shakyReport = report.getPaddingOracleShakyReport();
-            prettyAppend(builder, "Probably Vulnerable", shakyReport.getConsideredVulnerable(), shakyReport.getConsideredVulnerable() == Boolean.TRUE ? AnsiColor.RED : AnsiColor.GREEN);
-            prettyAppend(builder, "Type", "" + shakyReport.getShakyType());
-            prettyAppend(builder, "Consistent", shakyReport.getConsistentAcrossCvPairs());
-            prettyAppend(builder, "");
-            for (NondeterministicVectorContainerHolder holder : shakyReport.getVectorHolderList()) {
-                double pValue = holder.computePValue();
-                prettyAppend(builder, "Pvalue: " + String.format("%.12f", pValue), AnsiColor.RED);
-
-            }
-        }
         return builder;
     }
 
     private StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder, List<VectorResponse> responseMapList) {
-        if (responseMapList != null && !responseMapList.isEmpty()) {
-            for (int vectorIndex = 0; vectorIndex < responseMapList.size(); vectorIndex++) {
-                VectorResponse vectorResponse = responseMapList.get(vectorIndex);
-                prettyAppend(builder, padToLength("\t" + vectorResponse.getVector().getName(), 40) + vectorResponse.getFingerprint().toHumanReadable());
-                if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                    for (int mapIndex = 1; mapIndex < responseMapList.size(); mapIndex++) {
-                        VectorResponse tempVectorResponse = responseMapList.get(mapIndex);
-                        if (tempVectorResponse == null || tempVectorResponse.getFingerprint() == null) {
-                            prettyAppend(builder, "\t" + padToLength("", 39) + "Missing", AnsiColor.RED);
-                        } else {
-                            prettyAppend(builder, "\t" + padToLength("", 39) + tempVectorResponse.getFingerprint().toHumanReadable());
-                        }
-                    }
+        NondeterministicVectorContainerHolder vectorContainerHolder = new NondeterministicVectorContainerHolder(responseMapList);
+        ResponseFingerprint defaultAnswer = vectorContainerHolder.getDefaultAnswer().getFingerprint();
+        for (VectorContainer vectorContainer : vectorContainerHolder.getStatisticList()) {
+            prettyAppend(builder, "\t" + padToLength(vectorContainer.getVector().getName(), 40));
+            for (ResponseCounter counter : vectorContainer.getDistinctResponsesCounterList()) {
+                AnsiColor color = AnsiColor.GREEN;
+                if (!counter.getFingerprint().equals(defaultAnswer)) {
+                    //TODO received app data should also make this red
+                    color = AnsiColor.RED;
                 }
+                prettyAppend(builder, "\t\t" + padToLength((counter.getFingerprint().toHumanReadable()), 40) + counter.getCounter() + "/" + counter.getTotal() + " (" + String.format("%.2f", counter.getProbability() * 100) + "%)", color);
+
             }
-        } else {
-            prettyAppend(builder, "\tNULL");
         }
         return builder;
     }

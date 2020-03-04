@@ -13,16 +13,9 @@ import de.rub.nds.tlsscanner.report.result.PaddingOracleResponseMap;
 import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
-import de.rub.nds.tlsattacker.attacks.general.Vector;
-import de.rub.nds.tlsattacker.attacks.impl.FisherExactTest;
 import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
-import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
-import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
-import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
-import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -35,12 +28,8 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -80,12 +69,11 @@ public class PaddingOracleProbe extends TlsProbe {
                 for (PaddingOracleCipherSuiteFingerprint fingerprint : testResultList) {
                     if (isPotentiallyVulnerable(fingerprint) || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                         LOGGER.debug("Found a candidate for the non-determinism eval:" + fingerprint.getSuite() + " - " + fingerprint.getVersion());
-                        extendFingerPrint(fingerprint, 20);
+                        extendFingerPrint(fingerprint, 7);
                     }
                 }
                 LOGGER.debug("Finished non-determinism evaluation");
             }
-
             return new PaddingOracleResponseMap(testResultList);
         } catch (Exception e) {
             LOGGER.error(e);
@@ -113,10 +101,7 @@ public class PaddingOracleProbe extends TlsProbe {
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         PaddingRecordGeneratorType recordGeneratorType;
         paddingOracleConfig.setNumberOfIterations(2);
-        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            recordGeneratorType = PaddingRecordGeneratorType.MEDIUM;
-            paddingOracleConfig.setNumberOfIterations(5);
-        } else if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
             recordGeneratorType = PaddingRecordGeneratorType.SHORT;
             paddingOracleConfig.setNumberOfIterations(3);
         } else {
@@ -173,7 +158,7 @@ public class PaddingOracleProbe extends TlsProbe {
         paddingOracleCommandConfig.setVectorGeneratorType(fingerprint.getVectorGeneratorType());
         paddingOracleCommandConfig.setNumberOfIterations(numberOfAdditionalIterations);
         PaddingOracleCipherSuiteFingerprint tempFingerprint = getPaddingOracleCipherSuiteFingerprint(paddingOracleCommandConfig);
-        fingerprint.getResponseMap().addAll(tempFingerprint.getResponseMap());
+        fingerprint.appendToResponseMap(tempFingerprint.getResponseMap());
     }
 
     private boolean isPotentiallyVulnerable(List<PaddingOracleCipherSuiteFingerprint> testResultList) {
@@ -186,6 +171,13 @@ public class PaddingOracleProbe extends TlsProbe {
     }
 
     private boolean isPotentiallyVulnerable(PaddingOracleCipherSuiteFingerprint fingerprint) {
-        return fingerprint.getpValue() != 1;
+        for (VectorResponse responseA : fingerprint.getResponseMap()) {
+            for (VectorResponse responseB : fingerprint.getResponseMap()) {
+                if (!responseA.getFingerprint().equals(responseB.getFingerprint())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

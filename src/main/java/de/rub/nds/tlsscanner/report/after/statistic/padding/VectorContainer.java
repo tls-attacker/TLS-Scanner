@@ -83,8 +83,7 @@ public class VectorContainer {
                 counter.increaseOnlyTotal();
             }
         }
-        if(!added)
-        {
+        if (!added) {
             ResponseCounter responseCounter = new ResponseCounter(fingerprint, 1, responseList.size());
             distinctResponsesCounterList.add(responseCounter);
             //We did not had this response yet 
@@ -113,7 +112,7 @@ public class VectorContainer {
                 return counter;
             }
         }
-        return null;
+        return new ResponseCounter(fingerprint, 0, responseList.size());
     }
 
     public Vector getVector() {
