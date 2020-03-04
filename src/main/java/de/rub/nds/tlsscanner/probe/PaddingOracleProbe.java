@@ -88,7 +88,7 @@ public class PaddingOracleProbe extends TlsProbe {
 
             return new PaddingOracleResponseMap(testResultList);
         } catch (Exception e) {
-            return new PaddingOracleResponseMap(new LinkedList<PaddingOracleCipherSuiteFingerprint>());
+            return new PaddingOracleResponseMap(new LinkedList<>());
         }
     }
 
