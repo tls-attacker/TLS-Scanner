@@ -76,14 +76,14 @@ public class PaddingOracleProbe extends TlsProbe {
             //If we found some difference in the server behavior we need to 
             if (isPotentiallyVulnerable(testResultList) || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
                 LOGGER.debug("We found non-determinism during the padding oracle scan");
-                LOGGER.debug("Starting non-determinism eval.");
+                LOGGER.debug("Starting non-determinism evaluation");
                 for (PaddingOracleCipherSuiteFingerprint fingerprint : testResultList) {
                     if (isPotentiallyVulnerable(fingerprint) || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                         LOGGER.debug("Found a candidate for the non-determinism eval:" + fingerprint.getSuite() + " - " + fingerprint.getVersion());
                         extendFingerPrint(fingerprint, 20);
                     }
                 }
-                LOGGER.debug("Finished non-determinism eval.");
+                LOGGER.debug("Finished non-determinism evaluation");
             }
 
             return new PaddingOracleResponseMap(testResultList);
