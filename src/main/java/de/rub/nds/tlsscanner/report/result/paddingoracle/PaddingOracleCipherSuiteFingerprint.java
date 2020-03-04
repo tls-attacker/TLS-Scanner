@@ -10,15 +10,28 @@ package de.rub.nds.tlsscanner.report.result.paddingoracle;
 
 import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
+import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
+import de.rub.nds.tlsscanner.report.after.statistic.padding.NondeterministicVectorContainerHolder;
+import de.rub.nds.tlsscanner.report.after.statistic.padding.VectorContainer;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PaddingOracleCipherSuiteFingerprint {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final ProtocolVersion version;
     private final CipherSuite suite;
@@ -89,13 +102,27 @@ public class PaddingOracleCipherSuiteFingerprint {
     }
 
     private double computePValue() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        Map<Vector, VectorContainer> vectorContainerMap = new HashMap<>();
+//        for (VectorResponse vectorResponse : responseMap) {
+//            VectorContainer container = vectorContainerMap.get(vectorResponse.getVector());
+//            if (container == null) {
+//                List<ResponseFingerprint> responseFingerprintList = new LinkedList<>();
+//                responseFingerprintList.add(vectorResponse.getFingerprint());
+//                container = new VectorContainer(vectorResponse.getVector(), responseFingerprintList);
+//                vectorContainerMap.put(vectorResponse.getVector(), container);
+//            } else {
+//                container.addResponseFingerprint(vectorResponse.getFingerprint());
+//            }
+//        }
+//        
+        NondeterministicVectorContainerHolder holder = new NondeterministicVectorContainerHolder(responseMap);
+        return holder.computePValue();
     }
 
     public boolean isConsideredVulnerable(double pValueThreshhold) {
         return (pValueThreshhold > this.pValue);
     }
-    
+
     public boolean isConsideredVulnerable() {
         return this.pValue < 0.01d;
     }

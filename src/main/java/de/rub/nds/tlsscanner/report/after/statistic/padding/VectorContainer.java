@@ -68,6 +68,29 @@ public class VectorContainer {
         return totalProbability;
     }
 
+    public void addResponseFingerprint(ResponseFingerprint fingerprint) {
+        responseList.add(fingerprint);
+        boolean added = false;
+        updateResponseCounter(fingerprint, added);
+    }
+
+    private void updateResponseCounter(ResponseFingerprint fingerprint, boolean added) {
+        for (ResponseCounter counter : distinctResponsesCounterList) {
+            if (counter.getFingerprint().equals(fingerprint)) {
+                added = true;
+                counter.increaseCounterAndTotal();
+            } else {
+                counter.increaseOnlyTotal();
+            }
+        }
+        if(!added)
+        {
+            ResponseCounter responseCounter = new ResponseCounter(fingerprint, 1, responseList.size());
+            distinctResponsesCounterList.add(responseCounter);
+            //We did not had this response yet 
+        }
+    }
+
     private int factorial(int n) {
         int solution = 1;
         for (int i = 1; i <= n; i++) {

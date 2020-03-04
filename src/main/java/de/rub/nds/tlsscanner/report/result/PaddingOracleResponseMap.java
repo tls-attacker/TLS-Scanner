@@ -14,12 +14,16 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Robert Merget <robert.merget@rub.de>
  */
 public class PaddingOracleResponseMap extends ProbeResult {
+
+    private final static Logger LOGGER = LogManager.getLogger();
 
     private final List<PaddingOracleCipherSuiteFingerprint> resultList;
 
@@ -33,11 +37,16 @@ public class PaddingOracleResponseMap extends ProbeResult {
         TestResult vulnerable = TestResult.UNCERTAIN;
         if (resultList != null && resultList.isEmpty() && vulnerable == null) {
             vulnerable = TestResult.FALSE;
-        }
-        if (resultList == null) {
+        } else if (resultList == null) {
             vulnerable = TestResult.COULD_NOT_TEST;
+        } else {
+            vulnerable = TestResult.FALSE;
+            for (PaddingOracleCipherSuiteFingerprint fingerprint : resultList) {
+                if (fingerprint.isConsideredVulnerable()) {
+                    vulnerable = TestResult.TRUE;
+                }
+            }
         }
-        vulnerable = TestResult.TRUE;
         report.setPaddingOracleTestResultList(resultList);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }
