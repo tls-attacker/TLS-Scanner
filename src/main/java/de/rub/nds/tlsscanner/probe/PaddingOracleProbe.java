@@ -13,8 +13,12 @@ import de.rub.nds.tlsscanner.report.result.PaddingOracleResponseMap;
 import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
+import de.rub.nds.tlsattacker.attacks.general.Vector;
+import de.rub.nds.tlsattacker.attacks.impl.FisherExactTest;
 import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
@@ -31,8 +35,12 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -178,5 +186,38 @@ public class PaddingOracleProbe extends TlsProbe {
 
     private boolean isPotentiallyVulnerable(PaddingOracleCipherSuiteFingerprint fingerprint) {
         return fingerprint.getpValue() != 1;
+    }
+    
+    private double getFisherTestPValue(List<VectorResponse> responseVectorList) {
+        // TODO: Make sure Vector and ResponseFingerprint implement hashCode().
+        HashSet<Vector> vectors = new HashSet<>();
+        HashSet<ResponseFingerprint> responseFingerprints = new HashSet<>();
+        HashMap<Map.Entry<Vector, ResponseFingerprint>, Integer> contingencyTable = new HashMap<>();
+        for (VectorResponse vectorResponse : responseVectorList) {
+            Vector vector = vectorResponse.getVector();
+            ResponseFingerprint fingerprint = vectorResponse.getFingerprint();
+            vectors.add(vector);
+            responseFingerprints.add(fingerprint);
+            AbstractMap.SimpleEntry<Vector, ResponseFingerprint> entry = new java.util.AbstractMap.SimpleEntry<>(vector,
+                    fingerprint);
+            contingencyTable.put(entry, 1 + contingencyTable.getOrDefault(entry, 0));
+        }
+        if (vectors.size() != 2) {
+            LOGGER.error("More than 2 vectors in Fisher test.");
+            return 0;
+        }
+        if (responseFingerprints.size() != 2) {
+            LOGGER.error("More than 2 responses in Fisher test.");
+            return 0;
+        }
+        Vector vectorA = (Vector) vectors.toArray()[0];
+        Vector vectorB = (Vector) vectors.toArray()[1];
+        ResponseFingerprint response1 = (ResponseFingerprint) responseFingerprints.toArray()[0];
+        ResponseFingerprint response2 = (ResponseFingerprint) responseFingerprints.toArray()[1];
+        int inputAOutput1 = contingencyTable.get(new java.util.AbstractMap.SimpleEntry<>(vectorA, response1));
+        int inputAOutput2 = contingencyTable.get(new java.util.AbstractMap.SimpleEntry<>(vectorA, response2));
+        int inputBOutput1 = contingencyTable.get(new java.util.AbstractMap.SimpleEntry<>(vectorB, response1));
+        int inputBOutput2 = contingencyTable.get(new java.util.AbstractMap.SimpleEntry<>(vectorB, response2));
+        return FisherExactTest.getLog2PValue(inputAOutput1, inputBOutput1, inputAOutput2, inputBOutput2);
     }
 }
