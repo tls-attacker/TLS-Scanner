@@ -13,18 +13,21 @@ import de.rub.nds.tlsscanner.report.after.statistic.NondetermninismType;
 import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.util.FisherExactTest;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author ic0ns
- */
 public class NondeterministicVectorContainerHolder {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final List<VectorContainer> statisticList;
 
@@ -99,6 +102,70 @@ public class NondeterministicVectorContainerHolder {
     }
 
     public double computePValue() {
+        
+        if (isFisherExactUsable()) {
+            double chi = computePValueChiSquared();
+            
+            LOGGER.debug("Computing P value based on fisher's exact test");
+            double fisher = computePValueFisherExact();
+            System.out.println(chi + " vs " + fisher);
+            return fisher;
+        } else {
+            LOGGER.debug("Computing P value based on Chi² test");
+            return computePValueChiSquared();
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    private double computePValueFisherExact() {
+        if (!isFisherExactUsable()) {
+            throw new RuntimeException("Trying to use fisher exact test when it it not possible");
+        }
+        VectorContainer container1 = statisticList.get(0);
+        VectorContainer container2 = statisticList.get(1);
+        ResponseFingerprint responseA = null;
+        ResponseFingerprint responseB = null;
+
+        if (container1.getDistinctResponsesCounterList().size() > 1) {
+            responseA = container1.getDistinctResponsesCounterList().get(0).getFingerprint();
+            responseB = container1.getDistinctResponsesCounterList().get(1).getFingerprint();
+        } else if (container2.getDistinctResponsesCounterList().size() > 1) {
+            responseA = container2.getDistinctResponsesCounterList().get(0).getFingerprint();
+            responseB = container2.getDistinctResponsesCounterList().get(1).getFingerprint();
+        } else {
+            //We only have 1 response - this is p=1
+            return 1;
+        }
+        int input1ResponseA = 0;
+        int input1ResponseB = 0;
+        int input2ResponseA = 0;
+        int input2ResponseB = 0;
+
+        for (ResponseCounter counter : container1.getDistinctResponsesCounterList()) {
+            if (counter.getFingerprint().equals(responseA)) {
+                input1ResponseA = counter.getCounter();
+            }
+            if (counter.getFingerprint().equals(responseB)) {
+                input1ResponseB = counter.getCounter();
+            }
+        }
+        for (ResponseCounter counter : container2.getDistinctResponsesCounterList()) {
+            if (counter.getFingerprint().equals(responseA)) {
+                input2ResponseA = counter.getCounter();
+            }
+            if (counter.getFingerprint().equals(responseB)) {
+                input2ResponseB = counter.getCounter();
+            }
+        }
+        System.out.println("Input to fisher test: " + input1ResponseA + " , " + input2ResponseA + " , " +  input1ResponseB + " , " + input2ResponseB);
+        return FisherExactTest.getLog2PValue(input1ResponseA, input2ResponseA, input1ResponseB, input2ResponseB);
+
+    }
+
+    private double computePValueChiSquared() {
         ChiSquareTest test = new ChiSquareTest();
         ResponseCounter defaultAnswer = getDefaultAnswer();
         double probability = defaultAnswer.getProbability();
@@ -112,6 +179,7 @@ public class NondeterministicVectorContainerHolder {
         ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);
         double pValue = 1 - distribution.cumulativeProbability(chiSquare);
         return pValue;
+
     }
 
     public ResponseCounter getDefaultAnswer() {
@@ -124,5 +192,21 @@ public class NondeterministicVectorContainerHolder {
             }
         }
         return defaultAnswer;
+    }
+
+    private boolean isFisherExactUsable() {
+        if (statisticList.size() > 2) {
+            return false;
+        }
+        List<ResponseCounter> counterList1 = statisticList.get(0).getDistinctResponsesCounterList();
+        List<ResponseCounter> counterList2 = statisticList.get(1).getDistinctResponsesCounterList();
+        Set<ResponseFingerprint> responseFingerprintSet = new HashSet<>();
+        for (ResponseCounter counter : counterList1) {
+            responseFingerprintSet.add(counter.getFingerprint());
+        }
+        for (ResponseCounter counter : counterList2) {
+            responseFingerprintSet.add(counter.getFingerprint());
+        }
+        return responseFingerprintSet.size() <= 2;
     }
 }

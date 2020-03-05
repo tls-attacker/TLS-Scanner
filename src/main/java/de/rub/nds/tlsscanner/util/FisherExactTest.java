@@ -16,10 +16,21 @@ public class FisherExactTest {
         int c = inputAoutput2;
         int d = inputBOutput2;
         int n = a + b + c + d;
-        double nominator = log2Factorial(a + b) + log2Factorial(c + d) + log2Factorial(a + c) + log2Factorial(b + d);
-        double denominator = log2Factorial(a) + log2Factorial(b) + log2Factorial(c) + log2Factorial(d)
-                + log2Factorial(n);
-        return nominator - denominator;
+        double nominator = factorial(a + b) * factorial(c + d) * factorial(a + c) * factorial(b + d);
+        double denominator = factorial(a) * factorial(b) * factorial(c) * factorial(d)
+                * factorial(n);
+        return nominator / denominator;
+    }
+    
+    public static double factorial(int k)
+    {
+        double res = 1;
+        for(int i = 1; i <= k; i ++)
+        {
+            res *= i;
+        }
+        return res;
+        
     }
 
     public static double log2Factorial(int k) {
