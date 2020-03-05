@@ -583,7 +583,7 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendDirectRaccoonResults(StringBuilder builder) {
-        
+
         prettyAppendHeading(builder, "DirectRaccoon Responsemap");
         if (report.getDirectRaccoonResultList() == null || report.getDirectRaccoonResultList().isEmpty()) {
             prettyAppend(builder, "No Testresults");
@@ -595,13 +595,13 @@ public class SiteReportPrinter {
                 } else {
                     pValue = "<0.001";
                 }
-                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
+                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | " + testResult.getVersion() + " | " + testResult.getWorkflowType();
                 if (Objects.equals(testResult.getpValue() < 0.01, Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE\tP: " + pValue, AnsiColor.RED);
+                    prettyAppend(builder, resultString + "\t | " + testResult.getEqualityError() + "  VULNERABLE\tP: " + pValue, AnsiColor.RED);
                 } else if (Objects.equals(testResult.getpValue() < 0.05, Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + " PROBABLY VULNERABLE\tP: " + pValue, AnsiColor.YELLOW);
+                    prettyAppend(builder, resultString + "\t | " + testResult.getEqualityError() + " PROBABLY VULNERABLE\tP: " + pValue, AnsiColor.YELLOW);
                 } else if (Objects.equals(testResult.isConsideredVulnerable(), Boolean.FALSE)) {
-                    prettyAppend(builder, resultString + "\t - No Behavior Difference\tP: " + pValue, AnsiColor.GREEN);
+                    prettyAppend(builder, resultString + "\t | No Behavior Difference\tP: " + pValue, AnsiColor.GREEN);
                 }
 
                 if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isConsideredVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
@@ -658,13 +658,13 @@ public class SiteReportPrinter {
                 } else {
                     pValue = "<0.001";
                 }
-                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
+                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | " + testResult.getVersion();
                 if (Objects.equals(testResult.getpValue() < 0.01, Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE\tP: " + pValue, AnsiColor.RED);
+                    prettyAppend(builder, resultString + "\t | " + testResult.getEqualityError() + "  VULNERABLE\tP: " + pValue, AnsiColor.RED);
                 } else if (Objects.equals(testResult.getpValue() < 0.05, Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + " PROBABLY VULNERABLE\tP: " + pValue, AnsiColor.YELLOW);
+                    prettyAppend(builder, resultString + "\t | " + testResult.getEqualityError() + " PROBABLY VULNERABLE\tP: " + pValue, AnsiColor.YELLOW);
                 } else if (Objects.equals(testResult.isConsideredVulnerable(), Boolean.FALSE)) {
-                    prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
+                    prettyAppend(builder, resultString + "\t | No Behavior Difference", AnsiColor.GREEN);
                 }
 
                 if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isConsideredVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
@@ -704,9 +704,9 @@ public class SiteReportPrinter {
             for (BleichenbacherTestResult testResult : report.getBleichenbacherTestResultList()) {
                 String resultString = "" + padToLength(testResult.getWorkflowType().name(), 40);
                 if (testResult.getVulnerable() == Boolean.TRUE) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
+                    prettyAppend(builder, resultString + "\t | " + testResult.getEqualityError() + "  VULNERABLE", AnsiColor.RED);
                 } else if (testResult.getVulnerable() == Boolean.FALSE) {
-                    prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
+                    prettyAppend(builder, resultString + "\t | No Behavior Difference", AnsiColor.GREEN);
                 } else {
                     prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
                 }
