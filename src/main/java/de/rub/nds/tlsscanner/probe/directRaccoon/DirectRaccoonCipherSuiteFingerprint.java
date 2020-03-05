@@ -8,8 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe.directRaccoon;
 
-import de.rub.nds.tlsattacker.attacks.general.Vector;
-import de.rub.nds.tlsattacker.attacks.impl.FisherExactTest;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
@@ -17,11 +15,8 @@ import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.report.after.statistic.padding.NondeterministicVectorContainerHolder;
-import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
