@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.report.after.statistic.padding.NondeterministicVectorContainerHolder;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,25 +31,22 @@ import org.apache.logging.log4j.Logger;
 public class DirectRaccoonCipherSuiteFingerprint {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    
-    private final Boolean vulnerable;
+
     private final ProtocolVersion version;
     private final CipherSuite suite;
     private final DirectRaccoonWorkflowType workflowType;
-    private final List<DirectRaccoonVectorResponse> responseMapList;
+    private final List<VectorResponse> responseMapList;
     private Boolean handshakeIsWorking;
 
     private final EqualityError equalityError;
-    private final boolean hasScanningError;
 
-    public DirectRaccoonCipherSuiteFingerprint(Boolean vulnerable, ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, List<DirectRaccoonVectorResponse> responseMapList, EqualityError equalityError, boolean hasScanningError) {
-        this.vulnerable = vulnerable;
+    public DirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, List<VectorResponse> responseMapList, EqualityError equalityError) {
+        
         this.version = version;
         this.suite = suite;
         this.workflowType = workflowType;
         this.responseMapList = responseMapList;
         this.equalityError = equalityError;
-        this.hasScanningError = hasScanningError;
         handshakeIsWorking = null;
     }
 
@@ -60,15 +58,7 @@ public class DirectRaccoonCipherSuiteFingerprint {
         this.handshakeIsWorking = handshakeIsWorking;
     }
 
-    public boolean isHasScanningError() {
-        return hasScanningError;
-    }
-
-    public Boolean getVulnerable() {
-        return vulnerable;
-    }
-
-    public List<DirectRaccoonVectorResponse> getResponseMapList() {
+    public List<VectorResponse> getResponseMapList() {
         return responseMapList;
     }
 
@@ -83,7 +73,11 @@ public class DirectRaccoonCipherSuiteFingerprint {
     public EqualityError getEqualityError() {
         return equalityError;
     }
-    
+
+    public double getpValue() {
+        return new NondeterministicVectorContainerHolder(responseMapList).computePValue();
+    }
+
     private double getFisherTestPValue(List<VectorResponse> responseVectorList) {
         // TODO: Make sure Vector and ResponseFingerprint implement hashCode().
         HashSet<Vector> vectors = new HashSet<>();
@@ -115,5 +109,13 @@ public class DirectRaccoonCipherSuiteFingerprint {
         int inputBOutput1 = contingencyTable.get(new java.util.AbstractMap.SimpleEntry<>(vectorB, response1));
         int inputBOutput2 = contingencyTable.get(new java.util.AbstractMap.SimpleEntry<>(vectorB, response2));
         return FisherExactTest.getLog2PValue(inputAOutput1, inputBOutput1, inputAOutput2, inputBOutput2);
+    }
+
+    public Boolean isConsideredVulnerable() {
+        return this.getpValue() <= 0.05;
+    }
+
+    public DirectRaccoonWorkflowType getWorkflowType() {
+        return workflowType;
     }
 }

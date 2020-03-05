@@ -13,7 +13,6 @@ import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
-import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
@@ -39,7 +38,6 @@ import de.rub.nds.tlsscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonVectorResponse;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
@@ -52,7 +50,6 @@ import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
-import de.rub.nds.tlsscanner.report.after.statistic.padding.NonDetermnisimEvaluationReport;
 import de.rub.nds.tlsscanner.report.after.statistic.padding.NondeterministicVectorContainerHolder;
 import de.rub.nds.tlsscanner.report.after.statistic.padding.VectorContainer;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
@@ -60,12 +57,10 @@ import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResu
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
-import java.util.Collections;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
@@ -588,49 +583,35 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendDirectRaccoonResults(StringBuilder builder) {
-        prettyAppendHeading(builder, "Direct Raccoon Responsemap");
+        
+        prettyAppendHeading(builder, "DirectRaccoon Responsemap");
         if (report.getDirectRaccoonResultList() == null || report.getDirectRaccoonResultList().isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
             for (DirectRaccoonCipherSuiteFingerprint testResult : report.getDirectRaccoonResultList()) {
-                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
-                if (testResult.isHasScanningError()) {
-                    prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
-                } else if (Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE - Working: " + testResult.getHandshakeIsWorking(), AnsiColor.RED);
-                } else if (Objects.equals(testResult.getVulnerable(), Boolean.FALSE)) {
-                    prettyAppend(builder, resultString + "\t - No Behavior Difference - Working: " + testResult.getHandshakeIsWorking(), AnsiColor.GREEN);
+                String pValue;
+                if (testResult.getpValue() >= 0.001) {
+                    pValue = String.format("%.3f", testResult.getpValue());
                 } else {
-                    prettyAppend(builder, resultString + "\t # Unknown", AnsiColor.YELLOW);
+                    pValue = "<0.001";
+                }
+                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
+                if (Objects.equals(testResult.getpValue() < 0.01, Boolean.TRUE)) {
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE\tP: " + pValue, AnsiColor.RED);
+                } else if (Objects.equals(testResult.getpValue() < 0.05, Boolean.TRUE)) {
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + " PROBABLY VULNERABLE\tP: " + pValue, AnsiColor.YELLOW);
+                } else if (Objects.equals(testResult.isConsideredVulnerable(), Boolean.FALSE)) {
+                    prettyAppend(builder, resultString + "\t - No Behavior Difference\tP: " + pValue, AnsiColor.GREEN);
                 }
 
-                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.getVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
+                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isConsideredVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                        appendDirectRaccoonResponseMapList(builder, testResult.getResponseMapList());
+                        appendPaddingOracleResponseMapList(builder, new NondeterministicVectorContainerHolder(testResult.getResponseMapList()));
                     }
                 }
             }
-        }
-        return builder;
-    }
 
-    private StringBuilder appendDirectRaccoonResponseMapList(StringBuilder builder, List<DirectRaccoonVectorResponse> responseMapList) {
-        for (int i = 0; i < responseMapList.size(); i++) {
-            appendDirectRaccoonVectorResponse(builder, responseMapList.get(i));
-        }
-        return builder;
-    }
-
-    private StringBuilder appendDirectRaccoonVectorResponse(StringBuilder builder, DirectRaccoonVectorResponse response) {
-        if (response == null || response.getFingerprint() == null) {
-            prettyAppend(builder, response.getVectorName() + "\t" + padToLength("", 39) + "Missing", AnsiColor.RED);
-        } else {
-            if (response.isShaky()) {
-                prettyAppend(builder, response.getVectorName() + "\t" + padToLength("", 39) + response.getFingerprint().toHumanReadable(), AnsiColor.YELLOW);
-            } else {
-                prettyAppend(builder, response.getVectorName() + "\t" + padToLength("", 39) + response.getFingerprint().toHumanReadable());
-            }
         }
         return builder;
     }
@@ -671,11 +652,17 @@ public class SiteReportPrinter {
             prettyAppend(builder, "No Testresults");
         } else {
             for (PaddingOracleCipherSuiteFingerprint testResult : report.getPaddingOracleTestResultList()) {
+                String pValue;
+                if (testResult.getpValue() >= 0.001) {
+                    pValue = String.format("%.3f", testResult.getpValue());
+                } else {
+                    pValue = "<0.001";
+                }
                 String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " - " + testResult.getVersion();
                 if (Objects.equals(testResult.getpValue() < 0.01, Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE\tP: " + String.format("%.2f", testResult.getpValue()), AnsiColor.RED);
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + "  VULNERABLE\tP: " + pValue, AnsiColor.RED);
                 } else if (Objects.equals(testResult.getpValue() < 0.05, Boolean.TRUE)) {
-                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + " PROBABLY VULNERABLE\tP: " + String.format("%.2f", testResult.getpValue()), AnsiColor.YELLOW);
+                    prettyAppend(builder, resultString + "\t - " + testResult.getEqualityError() + " PROBABLY VULNERABLE\tP: " + pValue, AnsiColor.YELLOW);
                 } else if (Objects.equals(testResult.isConsideredVulnerable(), Boolean.FALSE)) {
                     prettyAppend(builder, resultString + "\t - No Behavior Difference", AnsiColor.GREEN);
                 }
@@ -683,7 +670,7 @@ public class SiteReportPrinter {
                 if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isConsideredVulnerable(), Boolean.TRUE)) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                        appendPaddingOracleResponseMapList(builder, testResult.getResponseMap());
+                        appendPaddingOracleResponseMapList(builder, new NondeterministicVectorContainerHolder(testResult.getResponseMap()));
                     }
                 }
             }
@@ -692,8 +679,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder, List<VectorResponse> responseMapList) {
-        NondeterministicVectorContainerHolder vectorContainerHolder = new NondeterministicVectorContainerHolder(responseMapList);
+    private StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder, NondeterministicVectorContainerHolder vectorContainerHolder) {
         ResponseFingerprint defaultAnswer = vectorContainerHolder.getDefaultAnswer().getFingerprint();
         for (VectorContainer vectorContainer : vectorContainerHolder.getStatisticList()) {
             prettyAppend(builder, "\t" + padToLength(vectorContainer.getVector().getName(), 40));

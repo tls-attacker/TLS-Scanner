@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -28,9 +29,9 @@ import de.rub.nds.tlsscanner.report.result.DirectRaccoonResponseMap;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonVector;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoontWorkflowGenerator;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonVectorResponse;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -49,7 +50,7 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final int iterationsPerHandshake = 50;
+    private final int iterationsPerHandshake = 30;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
@@ -80,7 +81,7 @@ public class DirectRaccoonProbe extends TlsProbe {
                 }
             }
             for (DirectRaccoonCipherSuiteFingerprint fingerprint : testResultList) {
-                if (Objects.equals(fingerprint.getVulnerable(), Boolean.TRUE)) {
+                if (fingerprint.isConsideredVulnerable()) {
                     return new DirectRaccoonResponseMap(testResultList, TestResult.TRUE);
                 }
             }
@@ -92,23 +93,13 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     private DirectRaccoonCipherSuiteFingerprint getDirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
-        boolean errornousScans = false;
         EqualityError referenceError = null;
 
-        List<DirectRaccoonVectorResponse> responseMap = createVectorResponseList(version, suite, workflowType, iterationsPerHandshake);
-
-        Boolean vulnerable = true; //TODO Check if the server is vulnerable 
-
-        for (DirectRaccoonVectorResponse vector : responseMap) {
-            if (vector.isErrorDuringHandshake()) {
-                errornousScans = true;
-                break;
-            }
-        }
-        return new DirectRaccoonCipherSuiteFingerprint(vulnerable, version, suite, workflowType, responseMap, referenceError, errornousScans);
+        List<VectorResponse> responseMap = createVectorResponseList(version, suite, workflowType, iterationsPerHandshake);
+        return new DirectRaccoonCipherSuiteFingerprint(version, suite, workflowType, responseMap, referenceError);
     }
 
-    private List<DirectRaccoonVectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType type, int numberOfExecutionsEach) {
+    private List<VectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType type, int numberOfExecutionsEach) {
         Random r = new Random();
         BigInteger initialDhSecret = new BigInteger("" + (r.nextInt()));
         List<Boolean> booleanList = new LinkedList<>();
@@ -139,7 +130,7 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
     }
 
-    private List<DirectRaccoonVectorResponse> getVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, BigInteger initialClientDhSecret, List<Boolean> withNullByteList) {
+    private List<VectorResponse> getVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, BigInteger initialClientDhSecret, List<Boolean> withNullByteList) {
         List<TlsTask> taskList = new LinkedList<>();
         for (Boolean nullByte : withNullByteList) {
             Config config = getScannerConfig().createConfig();
@@ -160,27 +151,27 @@ public class DirectRaccoonProbe extends TlsProbe {
             taskList.add(fingerPrintTask);
         }
         this.getParallelExecutor().bulkExecuteTasks(taskList);
-        List<DirectRaccoonVectorResponse> responseList = new LinkedList<>();
+        List<VectorResponse> responseList = new LinkedList<>();
         for (TlsTask task : taskList) {
             FingerPrintTask fingerPrintTask = (FingerPrintTask) task;
             Boolean nullByte = Boolean.parseBoolean(fingerPrintTask.getState().getWorkflowTrace().getName());
-            responseList.add(evaluateFingerPrintTask(version, suite, workflowType, nullByte, fingerPrintTask));
+            
+            VectorResponse vectorResponseF = evaluateFingerPrintTask(version, suite, workflowType, nullByte, fingerPrintTask);
+            responseList.add(vectorResponseF);
         }
         // Generate result
         return responseList;
     }
 
-    private DirectRaccoonVectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
-        DirectRaccoonVectorResponse vectorResponse = null;
+    private VectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
+        DirectRaccoonVector raccoonVector = new DirectRaccoonVector(workflowType, version, suite, withNullByte);
         if (fingerPrintTask.isHasError()) {
             LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version="
                     + version + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
-            vectorResponse = new DirectRaccoonVectorResponse(null, workflowType, version, suite, withNullByte);
-            vectorResponse.setErrorDuringHandshake(true);
+            return null;
         } else {
-            vectorResponse = new DirectRaccoonVectorResponse(fingerPrintTask.getFingerprint(), workflowType, version, suite, withNullByte);
+            return new VectorResponse(raccoonVector, fingerPrintTask.getFingerprint());
         }
-        return vectorResponse;
     }
 
     @Override
