@@ -93,11 +93,9 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     private DirectRaccoonCipherSuiteFingerprint getDirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
-        EqualityError referenceError = null;
 
-        List<VectorResponse> responseMap = createVectorResponseList(version, suite, workflowType, iterationsPerHandshake);
-
-        DirectRaccoonCipherSuiteFingerprint cipherSuiteFingerprint = new DirectRaccoonCipherSuiteFingerprint(version, suite, workflowType, responseMap, referenceError);
+        List<VectorResponse> responseMap = createVectorResponseList(version, suite, workflowType, iterationsPerHandshake);        
+        DirectRaccoonCipherSuiteFingerprint cipherSuiteFingerprint = new DirectRaccoonCipherSuiteFingerprint(version, suite, workflowType, responseMap);
         if (cipherSuiteFingerprint.isPotentiallyVulnerable()) {
             LOGGER.debug("Found non identical answers, performing 20 additional tests");
             cipherSuiteFingerprint.appendToResponseMap(createVectorResponseList(version, suite, workflowType, 20));

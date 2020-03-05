@@ -25,22 +25,22 @@ import static org.junit.Assert.*;
  * @author ic0ns
  */
 public class FisherExactTestTest {
-    
+
     public FisherExactTestTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -51,12 +51,11 @@ public class FisherExactTestTest {
     @Test
     public void testGetLog2PValue() {
         System.out.println("getLog2PValue");
-        int inputAOutput1 = 20;
-        int inputBOutput1 = 31;
-        int inputAoutput2 = 30;
-        int inputBOutput2 = 19;
-        double expResult = 0.0;
-        double result = FisherExactTest.getLog2PValue(inputAOutput1, inputBOutput1, inputAoutput2, inputBOutput2);
+        int inputAOutput1 = 2000;
+        int inputBOutput1 = 3100;
+        int inputAoutput2 = 3000;
+        int inputBOutput2 = 1009;
+        double result = FisherExactTest.getPValue(inputAOutput1, inputBOutput1, inputAoutput2, inputBOutput2);
         System.out.println(result);
     }
 }

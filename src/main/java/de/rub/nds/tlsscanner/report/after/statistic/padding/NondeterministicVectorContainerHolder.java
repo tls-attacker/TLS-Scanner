@@ -102,12 +102,13 @@ public class NondeterministicVectorContainerHolder {
     }
 
     public double computePValue() {
-        
+
         if (isFisherExactUsable()) {
             double chi = computePValueChiSquared();
-            
+
             LOGGER.debug("Computing P value based on fisher's exact test");
             double fisher = computePValueFisherExact();
+            System.out.println("Chi:" + chi + " Fisher: " + fisher);
             return fisher;
         } else {
             LOGGER.debug("Computing P value based on Chi² test");
@@ -159,7 +160,7 @@ public class NondeterministicVectorContainerHolder {
                 input2ResponseB = counter.getCounter();
             }
         }
-        return FisherExactTest.getLog2PValue(input1ResponseA, input2ResponseA, input1ResponseB, input2ResponseB);
+        return FisherExactTest.getPValue(input1ResponseA, input2ResponseA, input1ResponseB, input2ResponseB);
 
     }
 

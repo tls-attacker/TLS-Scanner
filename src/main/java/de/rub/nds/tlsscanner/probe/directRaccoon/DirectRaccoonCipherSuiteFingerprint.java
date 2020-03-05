@@ -12,6 +12,7 @@ import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.impl.FisherExactTest;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -40,16 +41,31 @@ public class DirectRaccoonCipherSuiteFingerprint {
 
     private final EqualityError equalityError;
 
-    public DirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, List<VectorResponse> responseMapList, EqualityError equalityError) {
+    public DirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, List<VectorResponse> responseMapList) {
 
         this.version = version;
         this.suite = suite;
         this.workflowType = workflowType;
         this.responseMapList = responseMapList;
-        this.equalityError = equalityError;
+        this.equalityError = evaluateEqualityError();
         handshakeIsWorking = null;
     }
 
+    private EqualityError evaluateEqualityError() {
+        for (VectorResponse vectorResponseOne : responseMapList) {
+            for (VectorResponse vectorResponseTwo : responseMapList) {
+                if (vectorResponseOne == vectorResponseTwo) {
+                    continue;
+                }
+                EqualityError equality = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(), vectorResponseTwo.getFingerprint(), true);
+                if (equality != EqualityError.NONE) {
+                    return equality;
+                }
+            }
+        }
+        return EqualityError.NONE;
+    }
+    
     public void appendToResponseMap(List<VectorResponse> responseMap) {
         this.responseMapList.addAll(responseMap);
     }
