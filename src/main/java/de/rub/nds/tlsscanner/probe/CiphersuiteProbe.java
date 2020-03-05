@@ -105,6 +105,7 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
+            config.setStopActionsAfterIOException(true);
             config.setStopActionsAfterFatal(true);
             List<NamedGroup> namedGroup = new LinkedList<>();
             namedGroup.addAll(Arrays.asList(NamedGroup.values()));
