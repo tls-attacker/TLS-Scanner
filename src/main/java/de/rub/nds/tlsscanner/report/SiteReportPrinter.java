@@ -57,13 +57,17 @@ import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResu
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
+import org.joda.time.Duration;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
 
 public class SiteReportPrinter {
 
@@ -1423,11 +1427,11 @@ public class SiteReportPrinter {
             prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
             prettyAppendSubheading(builder, "Probe execution performance");
             for (PerformanceData data : report.getPerformanceList()) {
-                prettyAppendSubheading(builder, data.getType().name());
-                prettyAppend(builder, "Started: " + data.getStarttime());
-                prettyAppend(builder, "Finished: " + data.getStoptime());
-                prettyAppend(builder, "Total:" + (data.getStoptime() - data.getStarttime()) + " ms");
-                prettyAppend(builder, "");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                Duration duration = new Duration(data.getStarttime(), data.getStoptime());
+                Period period = new Period(data.getStoptime() - data.getStarttime());
+                prettyAppend(builder, padToLength(data.getType().name(), 25) + " Starttime: " + format.format(new Date(data.getStarttime())) + " Stoptime: " + format.format(new Date(data.getStoptime())) + " Total:" + PeriodFormat.getDefault().print(period));
+
             }
         } else {
             LOGGER.debug("Not printing performance data.");

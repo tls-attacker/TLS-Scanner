@@ -54,6 +54,11 @@
             <version>1.60</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.5</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
