@@ -595,7 +595,7 @@ public class SiteReportPrinter {
                 } else {
                     pValue = "<0.001";
                 }
-                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | " + testResult.getVersion() + " | " + padToLength(testResult.getWorkflowType().name(), 10);
+                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | " + testResult.getVersion() + " | " + padToLength(testResult.getWorkflowType().name(), 15);
                 if (testResult.getpValue() < 0.01) {
                     prettyAppend(builder, resultString + "\t | " + padToLength(testResult.getEqualityError().name(), 25) + padToLength("| VULNERABLE", 25) + "| P: " + pValue, AnsiColor.RED);
                 } else if (testResult.getpValue() < 0.05) {
@@ -660,7 +660,7 @@ public class SiteReportPrinter {
                 } else {
                     pValue = "<0.001";
                 }
-                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | " + testResult.getVersion() + " | " + padToLength(testResult.getVectorGeneratorType().name(), 10);
+                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | " + testResult.getVersion() + " | " + padToLength(testResult.getVectorGeneratorType().name(), 15);
                 if (testResult.getpValue() < 0.01) {
                     prettyAppend(builder, resultString + "\t | " + padToLength(testResult.getEqualityError().name(), 25) + padToLength("| VULNERABLE", 25) + "| P: " + pValue, AnsiColor.RED);
                 } else if (testResult.getpValue() < 0.05) {
