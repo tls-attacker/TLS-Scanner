@@ -124,6 +124,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setStopActionsAfterFatal(true);
             config.setStopReceivingAfterFatal(true);
             config.setStopActionsAfterIOException(true);
+            config.setQuickReceive(true);
             config.setEarlyStop(true);
             WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
             State state = new State(config, trace);
