@@ -181,13 +181,13 @@ public class SiteReport extends Observable {
         if (result != null) {
             switch (result) {
                 case NONE:
-                    putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
+                    putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, false);
                     break;
                 case UNKNOWN:
-                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_DROWN.toString(), TestResult.UNCERTAIN);
+                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN.toString(), TestResult.UNCERTAIN);
                     break;
                 default:
-                    putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE);
+                    putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, TestResult.TRUE);
             }
         }
     }

@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.report;
 
-import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
@@ -580,7 +579,8 @@ public class SiteReportPrinter {
         prettyAppend(builder, "TLS Poodle", AnalyzedProperty.VULNERABLE_TO_TLS_POODLE);
         prettyAppend(builder, "Logjam", AnalyzedProperty.VULNERABLE_TO_LOGJAM);
         prettyAppend(builder, "Sweet 32", AnalyzedProperty.VULNERABLE_TO_SWEET_32);
-        prettyAppend(builder, "DROWN", AnalyzedProperty.VULNERABLE_TO_DROWN);
+        prettyAppend(builder, "General DROWN", AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN);
+        prettyAppend(builder, "Extra Clear DROWN", AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
         return builder;
@@ -1287,28 +1287,6 @@ public class SiteReportPrinter {
     private StringBuilder prettyAppendSubSubSubheading(StringBuilder builder, String name) {
         depth = 3;
         return builder.append("------|").append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.PURPLE.getCode() + AnsiColor.UNDERLINE.getCode() + name + "\n\n" + AnsiColor.RESET.getCode() : name + "\n\n");
-    }
-
-    private void prettyAppendDrown(StringBuilder builder, String testName, DrownVulnerabilityType drownVulnerable) {
-        builder.append(addIndentations(testName)).append(": ");
-        if (drownVulnerable == null) {
-            prettyAppend(builder, "Unknown");
-            return;
-        }
-        switch (drownVulnerable) {
-            case FULL:
-                prettyAppend(builder, "true - fully exploitable", AnsiColor.RED);
-                break;
-            case SSL2:
-                prettyAppend(builder, "true - SSL 2 supported!", AnsiColor.RED);
-                break;
-            case NONE:
-                prettyAppend(builder, "false", AnsiColor.GREEN);
-                break;
-            case UNKNOWN:
-                prettyAppend(builder, "Unknown");
-                break;
-        }
     }
 
     private void prettyAppendEarlyCcs(StringBuilder builder, String testName, EarlyCcsVulnerabilityType earlyCcsVulnerable) {

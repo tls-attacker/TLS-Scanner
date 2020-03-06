@@ -408,7 +408,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server is vulnerable to Sweet32",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to Sweet32", "Disable 64 bit block siphers like 3DES."),
                 "https://sweet32.info"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_DROWN, "Vulnerable to DROWN",
+        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, "Vulnerable to DROWN",
                 "Evaluates whether the TLS server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened eNcryption)",
                 new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to DROWN", "Disable SSL 2.0"),
                 "https://drownattack.com"));
