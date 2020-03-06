@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.attacks.impl.drown.GeneralDrownAttacker;
 import de.rub.nds.tlsattacker.attacks.impl.drown.SpecialDrownAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -37,6 +38,7 @@ public class DrownProbe extends TlsProbe {
     private TestResult testForGeneralDrown() {
         try {
             GeneralDrownCommandConfig drownCommandConfig = new GeneralDrownCommandConfig(getScannerConfig().getGeneralDelegate());
+            drownCommandConfig.setCipherSuite(SSL2CipherSuite.SSL_CK_RC2_128_CBC_EXPORT40_WITH_MD5);
             ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
@@ -58,6 +60,7 @@ public class DrownProbe extends TlsProbe {
     private TestResult testForExtraClearDrown() {
         try {
             SpecialDrownCommandConfig drownCommandConfig = new SpecialDrownCommandConfig(getScannerConfig().getGeneralDelegate());
+            
             ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());

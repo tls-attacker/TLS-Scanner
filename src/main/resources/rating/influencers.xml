@@ -972,7 +972,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_DROWN</analyzedProperty>
+        <analyzedProperty>VULNERABLE_TO_GENERAL_DROWN</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-800</influence>
