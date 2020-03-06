@@ -65,6 +65,7 @@ public class HttpHeaderProbe extends TlsProbe {
             tlsConfig.setStopActionsAfterFatal(true);
             tlsConfig.setHttpsParsingEnabled(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
+            tlsConfig.setStopActionsAfterIOException(true);
             // Dont send extensions if we are in sslv2
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);

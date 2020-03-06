@@ -93,6 +93,7 @@ public class MacProbe extends TlsProbe {
 
     private ResponseFingerprint getCorrectAppDataFingerprint() {
         Config config = scannerConfig.createConfig();
+        config.setStopActionsAfterIOException(true);
         config.setAddRenegotiationInfoExtension(true);
         config.setQuickReceive(true);
         if (suiteList != null) {

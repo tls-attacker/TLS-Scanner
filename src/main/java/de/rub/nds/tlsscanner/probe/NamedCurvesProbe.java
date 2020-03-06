@@ -46,6 +46,7 @@ public class NamedCurvesProbe extends TlsProbe {
     private List<NamedGroup> getSupportedNamedGroups() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);

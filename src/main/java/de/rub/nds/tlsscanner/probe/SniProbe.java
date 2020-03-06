@@ -43,6 +43,7 @@ public class SniProbe extends TlsProbe {
             config.setQuickReceive(true);
             config.setEarlyStop(true);
             config.setStopReceivingAfterFatal(true);
+            config.setStopActionsAfterIOException(true);
             config.setStopActionsAfterFatal(true);
             List<CipherSuite> toTestList = new LinkedList<>();
             toTestList.addAll(Arrays.asList(CipherSuite.values()));

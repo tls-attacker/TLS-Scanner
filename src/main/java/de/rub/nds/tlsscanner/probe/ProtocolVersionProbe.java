@@ -96,6 +96,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddECPointFormatExtension(true);

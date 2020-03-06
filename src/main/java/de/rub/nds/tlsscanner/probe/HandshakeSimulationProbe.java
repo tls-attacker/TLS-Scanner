@@ -81,6 +81,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
 
     private void evaluateClientConfig(SimulatedClientResult simulatedClient) {
         Config config = simulatedClient.getState().getConfig();
+        config.setStopActionsAfterIOException(true);
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
         simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
         if (config.isAddAlpnExtension()) {

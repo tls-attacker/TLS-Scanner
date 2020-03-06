@@ -66,6 +66,7 @@ public class TokenbindingProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         // Dont send extensions if we are in sslv2
         tlsConfig.setAddECPointFormatExtension(true);

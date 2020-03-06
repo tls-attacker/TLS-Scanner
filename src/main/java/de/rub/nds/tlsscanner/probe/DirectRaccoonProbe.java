@@ -123,6 +123,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setDefaultClientSupportedCiphersuites(suite);
             config.setStopActionsAfterFatal(true);
             config.setStopReceivingAfterFatal(true);
+            config.setStopActionsAfterIOException(true);
             config.setEarlyStop(true);
             WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
             State state = new State(config, trace);
@@ -144,6 +145,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setWorkflowExecutorShouldClose(false);
             config.setStopActionsAfterFatal(false);
             config.setStopReceivingAfterFatal(false);
+            config.setStopActionsAfterIOException(true);
             config.setEarlyStop(true);
 
             WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflow(config, workflowType, initialClientDhSecret, nullByte);

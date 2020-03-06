@@ -78,6 +78,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setSupportedVersions(tls13VersionList);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);

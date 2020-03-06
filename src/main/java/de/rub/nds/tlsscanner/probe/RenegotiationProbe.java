@@ -22,7 +22,6 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.RenegotiationResult;
-import de.rub.nds.tlsscanner.report.result.ResumptionResult;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -74,6 +73,7 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
@@ -98,6 +98,7 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(false);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);

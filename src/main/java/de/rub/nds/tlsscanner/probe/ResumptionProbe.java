@@ -50,6 +50,7 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setEnforceSettings(false);
             tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopActionsAfterIOException(true);
             tlsConfig.setStopReceivingAfterFatal(true);
             tlsConfig.setStopActionsAfterFatal(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_RESUMPTION);
