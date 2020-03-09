@@ -80,9 +80,9 @@
                 <value>1.2.840.113549.1.1.13</value>
             </asn1ObjectIdentifier>
             <asn1Sequence identifier="parameters">
-                <asn1PrimitiveUtf8String>
-                    <value>garbage</value>
-                </asn1PrimitiveUtf8String>
+                <asn1PrimitiveOctetString>
+                    <value>DeadBeef</value>
+                </asn1PrimitiveOctetString>
             </asn1Sequence>
         </asn1Sequence>
         <asn1PrimitiveBitString identifier="signatureValue" />
