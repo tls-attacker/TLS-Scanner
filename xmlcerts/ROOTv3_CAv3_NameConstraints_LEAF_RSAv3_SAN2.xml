@@ -81,7 +81,7 @@
                             <value>2.5.29.17</value>
                         </asn1ObjectIdentifier>
                         <asn1Boolean identifier="critical">
-                            <value>true</value>
+                            <value>false</value>
                         </asn1Boolean>
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1Sequence identifier="subjectAlternativeNameExtension" type="GeneralNames">
