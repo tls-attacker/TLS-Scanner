@@ -132,7 +132,7 @@ public class DebugProbe extends TlsProbe {
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3_NullSigned;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
         for (ProtocolVersion protocolVersion : desiredVersions) {
             // Dummy for output since I do not iterate Ciphersuites
@@ -185,7 +185,8 @@ public class DebugProbe extends TlsProbe {
         config.setAddServerNameIndicationExtension(true);
         config.setStopActionsAfterFatal(true);
         config.setStopReceivingAfterFatal(true);
-        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        config.setStopTraceAfterUnexpected(true);
 
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
         config.setDefaultClientNamedGroups(namedGroups);

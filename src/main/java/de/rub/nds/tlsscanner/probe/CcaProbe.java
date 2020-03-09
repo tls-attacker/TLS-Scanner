@@ -230,7 +230,8 @@ public class CcaProbe extends TlsProbe {
         config.setAddServerNameIndicationExtension(true);
         config.setStopActionsAfterFatal(true);
         config.setStopReceivingAfterFatal(true);
-        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        config.setStopTraceAfterUnexpected(true);
 
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
         config.setDefaultClientNamedGroups(namedGroups);
