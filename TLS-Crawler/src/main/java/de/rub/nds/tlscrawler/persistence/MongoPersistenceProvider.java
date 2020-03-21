@@ -33,7 +33,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     private static Logger LOG = LoggerFactory.getLogger(MongoPersistenceProvider.class);
 
-    private static String COLL_NAME = "scans";
+    private static String COLL_NAME = "invalCurveScans";
 
     private boolean initialized = false;
     private ServerAddress address;
@@ -430,7 +430,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         static String COMPLETED_TIMESTAMP = "completedTimestamp";
         static String TARGET_IP = "targetIp";
         static String PORTS = "ports";
-        static String SCANS = "scans";
+        static String SCANS = "invalCurveScans";
         static String RESULTS = "results";
     }
 

@@ -37,7 +37,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
     private JedisPool jedisPool;
 
-    private String taskListName = "myList";
+    private String taskListName = "invalCurveTasks";
 
     public RedisOrchestrationProvider(String redisHost, int redisPort, String redisPass) {
         this.redisHost = redisHost;

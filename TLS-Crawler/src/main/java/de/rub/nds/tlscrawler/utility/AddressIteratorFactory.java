@@ -60,7 +60,7 @@ public class AddressIteratorFactory {
             LOG.error("Failed to connect to redis (Address source)");
             return null;
         }
-
+        
         return result;
     }
 
