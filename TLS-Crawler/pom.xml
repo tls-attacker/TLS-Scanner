@@ -27,7 +27,7 @@
         <dependency>
             <groupId>de.rub.nds.tlsscanner</groupId>
             <artifactId>TLS-Scanner</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.github.pcj</groupId>
