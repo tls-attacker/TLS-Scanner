@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.ec.InvalidCurvePoint;
 import de.rub.nds.tlsattacker.attacks.ec.TwistedCurvePoint;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
+import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -47,10 +48,9 @@ import java.util.List;
 public class InvalidCurveProbe extends TlsProbe {
 
     /**
-     * We schedule order * factor handshakes for each combination. Order is the
-     * point's order on the invalid curve
+     * Defines the error probability for each test vector
      */
-    private final int ORDER_REPETITION_FACTOR = 2;
+    private final double ERROR_PROBABILITY = 0.001; // increase if needed
 
     private boolean supportsRenegotiation;
 
@@ -82,12 +82,9 @@ public class InvalidCurveProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         List<InvalidCurveParameterSet> parameterSets = prepareParameterCombinations();
-        parameterCombinations = parameterSets.size();
-        executedCombinations = 0;
         List<InvalidCurveResponse> responses = new LinkedList<>();
         for (InvalidCurveParameterSet parameterSet : parameterSets) {
             InvalidCurveResponse scanResponse = executeSingleScan(parameterSet);
-            executedCombinations++;
             responses.add(scanResponse);
         }
         return evaluateResponses(responses);
@@ -217,7 +214,7 @@ public class InvalidCurveProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new InvalidCurveResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-                null, -1, -1);
+                null);
     }
 
     private InvalidCurveAttacker prepareAttacker(InvalidCurveAttackConfig attackConfig,
@@ -247,7 +244,6 @@ public class InvalidCurveProbe extends TlsProbe {
         attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuites);
         attacker.getTlsConfig().setDefaultClientNamedGroups(group);
         attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
-        attacker.getTlsConfig().setAllowServerCertificateRequest(true);
         if (supportsSecureRenegotiation == TestResult.TRUE) {
             attacker.getTlsConfig().setAddRenegotiationInfoExtension(true);
         } else {
@@ -363,9 +359,12 @@ public class InvalidCurveProbe extends TlsProbe {
                         || parameterSet.getNamedGroup() == NamedGroup.ECDH_X448) {
                     invalidCurveAttackConfig.setProtocolFlows(1);
                 } else {
-                    invalidCurveAttackConfig.setProtocolFlows(TwistedCurvePoint
-                            .fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue()
-                            * ORDER_REPETITION_FACTOR);
+                    double errorAttempt = (double) (TwistedCurvePoint
+                            .fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue() - 2)
+                            / TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder()
+                                    .intValue();
+                    double attempts = Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt);
+                    invalidCurveAttackConfig.setProtocolFlows((int) Math.ceil(attempts));
                 }
                 invalidCurveAttackConfig.setPointCompressionFormat(parameterSet.getPointFormat());
 
@@ -377,9 +376,12 @@ public class InvalidCurveProbe extends TlsProbe {
                         parameterSet.getNamedGroup()).getPublicPointBaseX());
                 invalidCurveAttackConfig.setPublicPointBaseY(InvalidCurvePoint.fromNamedGroup(
                         parameterSet.getNamedGroup()).getPublicPointBaseY());
-                invalidCurveAttackConfig.setProtocolFlows(InvalidCurvePoint
-                        .fromNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue()
-                        * ORDER_REPETITION_FACTOR);
+
+                double errorAttempt = (double) (InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup())
+                        .getOrder().intValue() - 2)
+                        / InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue();
+                double attempts = Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt);
+                invalidCurveAttackConfig.setProtocolFlows((int) Math.ceil(attempts));
                 invalidCurveAttackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);
             }
 
@@ -436,8 +438,7 @@ public class InvalidCurveProbe extends TlsProbe {
             }
         }
 
-        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist, responses,
-                parameterCombinations, executedCombinations);
+        return new InvalidCurveResult(vulnerableClassic, vulnerableEphemeral, vulnerableTwist, responses);
     }
 
     private void evaluateKeyBehavior(List<InvalidCurveResponse> responses) {
