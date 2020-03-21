@@ -541,48 +541,11 @@ public class SiteReport extends Observable {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
     }
 
-    /**
-     * @return the invalidCurveResultList
-     */
     public synchronized List<InvalidCurveResponse> getInvalidCurveResultList() {
         return invalidCurveResultList;
     }
 
-    /**
-     * @param invalidCurveResultList
-     *            the invalidCurveResultList to set
-     */
     public synchronized void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
         this.invalidCurveResultList = invalidCurveResultList;
-    }
-
-    /**
-     * @return the parameterCombinations
-     */
-    public int getParameterCombinations() {
-        return parameterCombinations;
-    }
-
-    /**
-     * @param parameterCombinations
-     *            the parameterCombinations to set
-     */
-    public void setParameterCombinations(int parameterCombinations) {
-        this.parameterCombinations = parameterCombinations;
-    }
-
-    /**
-     * @return the executedCombinations
-     */
-    public int getExecutedCombinations() {
-        return executedCombinations;
-    }
-
-    /**
-     * @param executedCombinations
-     *            the executedCombinations to set
-     */
-    public void setExecutedCombinations(int executedCombinations) {
-        this.executedCombinations = executedCombinations;
     }
 }
