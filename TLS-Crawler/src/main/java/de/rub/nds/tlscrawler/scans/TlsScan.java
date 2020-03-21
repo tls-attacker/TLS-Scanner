@@ -152,16 +152,18 @@ public class TlsScan implements IScan {
 
         result.addStringArray("supportedCompressionMethods", _supportedCompressionMethods);
 
-        //kresult.addSubResult("rfc", getRfcPage(report));
+        result.addSubResult("rfc", getRfcPage(report));
+        result.addSubResult("performance", getPerformancePage(report));
         result.addSubResult("certificate", getCertificatePage(report));
-        result.addSubResult("ciphers", getCiphersPage(report));
+        result.addSubResult("ciphersuites", getCiphersPage(report));
+        result.addSubResult("namedGroups", getNamedGroupsPage(report));
         result.addSubResult("gcm", getGcmPage(report));
         result.addSubResult("paddingOracle", getPaddingOraclePage(report));
         result.addSubResult("invalidCurve", getInvalidCurvePage(report));
         
         return result;
     }
-
+  
     static IScanResult getPaddingOraclePage(SiteReport report) {
         IScanResult paddingOracle = new ScanResult("paddingOracle");
 
@@ -200,10 +202,27 @@ public class TlsScan implements IScan {
         return paddingOracle;
     }
     
+    static IScanResult getNamedGroupsPage(SiteReport report) {
+        IScanResult namedGroupPage = new ScanResult("namedGroups");
+        List<String> preTls13Groups = new LinkedList<>();
+        List<String> tls13Groups = new LinkedList<>();
+        if(report.getSupportedNamedGroups() != null) {
+            for(NamedGroup group : report.getSupportedNamedGroups()) {
+                preTls13Groups.add(group.toString());
+            }
+        }
+        if(report.getSupportedTls13Groups() != null) {
+            for(NamedGroup group : report.getSupportedTls13Groups()) {
+                tls13Groups.add(group.toString());
+            }
+        }
+        namedGroupPage.addStringArray("preTLS13", preTls13Groups);
+        namedGroupPage.addStringArray("TLS13", tls13Groups);
+        return namedGroupPage;
+    }
+     
     static IScanResult getInvalidCurvePage(SiteReport report) {
         IScanResult invalidCurve = new ScanResult("invalidCurve");
-        invalidCurve.addInteger("parameterCombinations", report.getParameterCombinations());
-        invalidCurve.addInteger("executedCombinations", report.getExecutedCombinations());
         if(report.getInvalidCurveResultList() != null)
         {
             List<IScanResult> scanResultList = new LinkedList<>();
@@ -388,7 +407,7 @@ public class TlsScan implements IScan {
     }
 
     IScanResult getCiphersPage(SiteReport report) {
-        IScanResult ciphers = new ScanResult("ciphers");
+        IScanResult ciphers = new ScanResult("_ciphers");
 
         List<VersionSuiteListPair> _rawVersionSuitePairs = report.getVersionSuitePairs();
         if (_rawVersionSuitePairs != null) {
@@ -401,10 +420,10 @@ public class TlsScan implements IScan {
                         cipherNames.add(versionCipher.name());
                     }
                 }
-                versionResult.addStringArray("_ciphers", cipherNames);
+                versionResult.addStringArray("ciphers", cipherNames);
                 cipherList.add(versionResult);
             }
-            ciphers.addSubResultArray("_cipherResults", cipherList);
+            ciphers.addSubResultArray("byVersion", cipherList);
         }
 
         List<String> _cipherSuites = new LinkedList<>();
@@ -415,7 +434,7 @@ public class TlsScan implements IScan {
             }
         }
 
-        ciphers.addStringArray("cipherSuites", _cipherSuites);
+        ciphers.addStringArray("all", _cipherSuites);
         return ciphers;
     }
 
@@ -434,13 +453,14 @@ public class TlsScan implements IScan {
 
     static IScanResult getPerformancePage(SiteReport report) {
         IScanResult performance = new ScanResult("performance");
-
+        performance.addInteger("tcpConnections", report.getPerformedTcpConnections());
+        
         Collection<PerformanceData> _perfData = report.getPerformanceList();
         for (PerformanceData data : _perfData) {
             IScanResult perfDataPoint = new ScanResult(data.getType().name());
-            perfDataPoint.addTimestamp("Starttime", Instant.ofEpochMilli(data.getStarttime()));
-            perfDataPoint.addTimestamp("Stoptime", Instant.ofEpochMilli(data.getStoptime()));
-
+            perfDataPoint.addTimestamp("starttime", Instant.ofEpochMilli(data.getStarttime()));
+            perfDataPoint.addTimestamp("stoptime", Instant.ofEpochMilli(data.getStoptime()));
+            perfDataPoint.addLong("total", (data.getStoptime() - data.getStarttime()));
             performance.addSubResult(data.getType().name(), perfDataPoint);
         }
 
