@@ -1,22 +1,22 @@
 <asn1XmlContent>
 
-    <asn1Sequence identifier="ROOTv3_debug__leaf_certificate1" type="Certificate">
-        <keyInfo identifier="key" keyType="RSA">
-            <keyFile>rsakey_2.pem</keyFile>
-            <pubKeyFile>rsakey_2.pem</pubKeyFile>
+    <asn1Sequence identifier="ECROOTv3_CAv3_LEAF_ECv3__leaf_certificate1" type="Certificate">
+        <keyInfo identifier="key" keyType="ECDSA">
+            <keyFile>eckey_secp256r1.pem</keyFile>
+            <pubKeyFile>ecpubkey_secp256r1.pem</pubKeyFile>
         </keyInfo>
         <asn1Sequence identifier="tbsCertificate" type="TBSCertificate">
             <asn1Explicit identifier="version">
                 <offset>0</offset>
                 <asn1Integer identifier="version" type="Version">
-                    <value>0</value>
+                    <value>2</value>
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
                 <value>1</value>
             </asn1Integer>
-            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_debug__leaf_certificate1/signatureAlgorithm" />
-            <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ROOTv3_debug__ca_certificate1/tbsCertificate/subject"/>
+            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ECROOTv3_CAv3_LEAF_ECv3__leaf_certificate1/signatureAlgorithm" />
+            <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1/tbsCertificate/subject"/>
             <asn1Sequence identifier="validity" type="Validity">
                 <asn1PrimitiveUtcTime identifier="notBefore" type="Time">
                     <value>191212000000Z</value>
@@ -48,26 +48,12 @@
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>TLS-Scanner CCA Leaf Certificate (ROOTv3_debug)</value>
+                            <value>TLS-Scanner CCA Leaf Certificate (ECROOTv3_CAv3_LEAF_ECv3)</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
                 </asn1Set>
             </asn1Sequence>
-            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/ROOTv3_debug__leaf_certificate1/key" />
-            <asn1Implicit>
-                <offset>1</offset>
-                <asn1PrimitiveBitString>
-                    <unusedBits>0</unusedBits>
-                    <value>ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff</value>
-                </asn1PrimitiveBitString>
-            </asn1Implicit>
-            <asn1Implicit>
-                <offset>2</offset>
-                <asn1PrimitiveBitString>
-                    <unusedBits>0</unusedBits>
-                    <value>ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff</value>
-                </asn1PrimitiveBitString>
-            </asn1Implicit>
+            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/ECROOTv3_CAv3_LEAF_ECv3__leaf_certificate1/key" />
             <asn1Explicit identifier="explicitExtensions">
                 <offset>3</offset>
                 <asn1Sequence identifier="extensions" type="Extensions">
@@ -94,7 +80,36 @@
             <asn1ObjectIdentifier identifier="algorithm">
                 <value>1.2.840.10045.4.1</value>
             </asn1ObjectIdentifier>
-            <asn1Null />
+            <asn1Sequence identifier="ecParameters">
+                <asn1Integer identifier="version">
+                    <value>1</value>
+                </asn1Integer>
+                <asn1Sequence identifier="fieldID">
+                    <!-- Prime Field -->
+                    <asn1ObjectIdentifier identifier="fieldType">
+                        <value>1.2.840.10045.1.1</value>
+                    </asn1ObjectIdentifier>
+                    <asn1Integer identifier="primeP">
+                        <value>13</value>
+                    </asn1Integer>
+                </asn1Sequence>
+                <asn1Sequence identifier="curve">
+                    <asn1PrimitiveOctetString identifier="a">
+                        <value>01</value>
+                    </asn1PrimitiveOctetString>
+                    <asn1PrimitiveOctetString identifier="b">
+                        <value>01</value>
+                    </asn1PrimitiveOctetString>
+                    <!-- no seed -->
+                </asn1Sequence>
+                <asn1PrimitiveOctetString identifier="base">
+                    <value>01</value>
+                </asn1PrimitiveOctetString>
+                <asn1Integer identifier="order">
+                    <value>1</value>
+                </asn1Integer>
+                <!-- no cofactor specified -->
+            </asn1Sequence>
         </asn1Sequence>
         <asn1PrimitiveBitString identifier="signatureValue" />
     </asn1Sequence>
@@ -102,7 +117,7 @@
 
 
 
-    <asn1Sequence identifier="ROOTv3_debug__ca_certificate1" type="Certificate">
+    <asn1Sequence identifier="ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1" type="Certificate">
         <keyInfo identifier="key">
             <keyFile>eckey_secp160k1.pem</keyFile>
             <pubKeyFile>ecpubkey_secp160k1.pem</pubKeyFile>
@@ -117,7 +132,7 @@
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
                 <value>1</value>
             </asn1Integer>
-            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_debug__ca_certificate1/signatureAlgorithm" />
+            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1/signatureAlgorithm" />
             <asn1RawBytes identifier="issuer" type="RawBytes" placeholder="replace_me"><value></value></asn1RawBytes>
             <asn1Sequence identifier="validity" type="Validity">
                 <asn1PrimitiveUtcTime identifier="notBefore" type="Time">
@@ -150,12 +165,12 @@
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>TLS-Scanner CCA CA 1 v3 (ROOTv3_debug)</value>
+                            <value>TLS-Scanner CCA CA 1 v3 (ECROOTv3_CAv3_LEAF_ECv3)</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
                 </asn1Set>
             </asn1Sequence>
-            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/ROOTv3_debug__ca_certificate1/key" />
+            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1/key" />
             <asn1Explicit identifier="explicitExtensions">
                 <offset>3</offset>
                 <asn1Sequence identifier="extensions" type="Extensions">
@@ -209,7 +224,7 @@
         </asn1Sequence>
         <asn1Sequence identifier="signatureAlgorithm" type="AlgorithmIdentifier">
             <asn1ObjectIdentifier identifier="algorithm">
-                <value>1.2.840.113549.1.1.13</value>
+                <value>1.2.840.10045.4.1</value>
             </asn1ObjectIdentifier>
             <asn1Null />
         </asn1Sequence>
@@ -220,21 +235,21 @@
 
 
 
-    <signatureInfo identifier="ROOTv3_debug__ca_certificate1SignatureInfo">
-        <toBeSignedIdentifier>/ROOTv3_debug__ca_certificate1/tbsCertificate</toBeSignedIdentifier>
-        <signatureValueTargetIdentifier>/ROOTv3_debug__ca_certificate1/signatureValue</signatureValueTargetIdentifier>
+    <signatureInfo identifier="ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1SignatureInfo">
+        <toBeSignedIdentifier>/ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1/tbsCertificate</toBeSignedIdentifier>
+        <signatureValueTargetIdentifier>/ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1/signatureValue</signatureValueTargetIdentifier>
         <keyInfoIdentifier>/root_ca_key</keyInfoIdentifier>
-        <signatureAlgorithmOidIdentifier>/ROOTv3_debug__ca_certificate1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
-        <parametersIdentifier>/ROOTv3_debug__ca_certificate1/signatureAlgorithm/parameters</parametersIdentifier>
+        <signatureAlgorithmOidIdentifier>/ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
+        <parametersIdentifier>/ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1/signatureAlgorithm/parameters</parametersIdentifier>
     </signatureInfo>
 
 
-    <signatureInfo identifier="ROOTv3_debug__leaf_certificate1SignatureInfo">
-        <toBeSignedIdentifier>/ROOTv3_debug__leaf_certificate1/tbsCertificate</toBeSignedIdentifier>
-        <signatureValueTargetIdentifier>/ROOTv3_debug__leaf_certificate1/signatureValue</signatureValueTargetIdentifier>
-        <keyInfoIdentifier>/ROOTv3_debug__ca_certificate1/key</keyInfoIdentifier>
-        <signatureAlgorithmOidIdentifier>/ROOTv3_debug__leaf_certificate1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
-        <parametersIdentifier>/ROOTv3_debug__leaf_certificate1/signatureAlgorithm/parameters</parametersIdentifier>
+    <signatureInfo identifier="ECROOTv3_CAv3_LEAF_ECv3__leaf_certificate1SignatureInfo">
+        <toBeSignedIdentifier>/ECROOTv3_CAv3_LEAF_ECv3__leaf_certificate1/tbsCertificate</toBeSignedIdentifier>
+        <signatureValueTargetIdentifier>/ECROOTv3_CAv3_LEAF_ECv3__leaf_certificate1/signatureValue</signatureValueTargetIdentifier>
+        <keyInfoIdentifier>/ECROOTv3_CAv3_LEAF_ECv3__ca_certificate1/key</keyInfoIdentifier>
+        <signatureAlgorithmOidIdentifier>/ECROOTv3_CAv3_LEAF_ECv3__leaf_certificate1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
+        <parametersIdentifier>/ECROOTv3_CAv3_LEAF_ECv3__leaf_certificate1/signatureAlgorithm/parameters</parametersIdentifier>
     </signatureInfo>
 
 
