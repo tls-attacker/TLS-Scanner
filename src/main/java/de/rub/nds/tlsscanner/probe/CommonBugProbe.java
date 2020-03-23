@@ -130,6 +130,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -140,7 +141,7 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             config.setAddPaddingExtension(true);
-            config.setPaddingLength(65535);
+            config.setDefaultPaddingExtensionBytes(new byte[14000]);
             ClientHelloMessage message = new ClientHelloMessage(config);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
@@ -148,6 +149,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -177,6 +179,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -210,6 +213,7 @@ public class CommonBugProbe extends TlsProbe {
             }
             return receivedShd == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -265,6 +269,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -303,6 +308,7 @@ public class CommonBugProbe extends TlsProbe {
                 return TestResult.FALSE;
             }
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -331,6 +337,7 @@ public class CommonBugProbe extends TlsProbe {
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
             return receivedShd == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -349,6 +356,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -366,6 +374,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -383,6 +392,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -404,6 +414,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -421,6 +432,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -439,21 +451,28 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
 
     private TestResult hasClientHelloLengthIntolerance() {
         try {
-            Config config = getWorkingConfig();
+            Config config = ConfigSelector.getNiceConfig(scannerConfig);
+
             config.setAddAlpnExtension(true);
             config.setAddPaddingExtension(true);
 
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            int newLength = 384 - getClientHelloLength(message, config) - config.getPaddingLength();
-            config.setPaddingLength(newLength);
+
+            int newLength = 512 - 4 - getClientHelloLength(message, config);
+            if (newLength > 0) {
+                config.setDefaultPaddingExtensionBytes(new byte[newLength]);
+            } else {
+                //TODO this is currently not working as intended
+            }
             message = new ClientHelloMessage(config);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
@@ -461,6 +480,7 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
+            LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }

@@ -38,7 +38,6 @@ public class DrownProbe extends TlsProbe {
     private TestResult testForGeneralDrown() {
         try {
             GeneralDrownCommandConfig drownCommandConfig = new GeneralDrownCommandConfig(getScannerConfig().getGeneralDelegate());
-            drownCommandConfig.setCipherSuite(SSL2CipherSuite.SSL_CK_RC2_128_CBC_EXPORT40_WITH_MD5);
             ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());

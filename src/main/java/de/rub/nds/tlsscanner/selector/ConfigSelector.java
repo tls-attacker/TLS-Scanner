@@ -44,7 +44,7 @@ public class ConfigSelector {
         return config;
     }
 
-    public static Config cleanupConfig(Config config) {
+    public static void cleanupConfig(Config config) {
         boolean hasEcCipherSuite = false;
         for (CipherSuite suite : config.getDefaultClientSupportedCiphersuites()) {
             if (suite.name().toUpperCase().contains("_EC")) {
@@ -53,6 +53,5 @@ public class ConfigSelector {
         }
         config.setAddEllipticCurveExtension(hasEcCipherSuite);
         config.setAddECPointFormatExtension(hasEcCipherSuite);
-        return config;
     }
 }
