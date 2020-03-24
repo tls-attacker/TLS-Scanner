@@ -62,9 +62,9 @@ public class DirectRaccoonProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             List<DirectRaccoonCipherSuiteFingerprint> testResultList = new LinkedList<>();
-            loop:
-            for (VersionSuiteListPair pair : serverSupportedSuites) {
-                if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
+            loop: for (VersionSuiteListPair pair : serverSupportedSuites) {
+                if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
+                        || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCiphersuiteList()) {
                         if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
                             for (DirectRaccoonWorkflowType workflowType : DirectRaccoonWorkflowType.values()) {
@@ -72,7 +72,8 @@ public class DirectRaccoonProbe extends TlsProbe {
                                     continue;
                                 }
                                 boolean normalHandshakeWorking = isNormalHandshakeWorking(pair.getVersion(), suite);
-                                DirectRaccoonCipherSuiteFingerprint directRaccoonCipherSuiteFingerprint = getDirectRaccoonCipherSuiteFingerprint(pair.getVersion(), suite, workflowType);
+                                DirectRaccoonCipherSuiteFingerprint directRaccoonCipherSuiteFingerprint = getDirectRaccoonCipherSuiteFingerprint(
+                                        pair.getVersion(), suite, workflowType);
                                 directRaccoonCipherSuiteFingerprint.setHandshakeIsWorking(normalHandshakeWorking);
                                 testResultList.add(directRaccoonCipherSuiteFingerprint);
                             }
@@ -92,10 +93,13 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
     }
 
-    private DirectRaccoonCipherSuiteFingerprint getDirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
+    private DirectRaccoonCipherSuiteFingerprint getDirectRaccoonCipherSuiteFingerprint(ProtocolVersion version,
+            CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
 
-        List<VectorResponse> responseMap = createVectorResponseList(version, suite, workflowType, iterationsPerHandshake);        
-        DirectRaccoonCipherSuiteFingerprint cipherSuiteFingerprint = new DirectRaccoonCipherSuiteFingerprint(version, suite, workflowType, responseMap);
+        List<VectorResponse> responseMap = createVectorResponseList(version, suite, workflowType,
+                iterationsPerHandshake);
+        DirectRaccoonCipherSuiteFingerprint cipherSuiteFingerprint = new DirectRaccoonCipherSuiteFingerprint(version,
+                suite, workflowType, responseMap);
         if (cipherSuiteFingerprint.isPotentiallyVulnerable()) {
             LOGGER.debug("Found non identical answers, performing 20 additional tests");
             cipherSuiteFingerprint.appendToResponseMap(createVectorResponseList(version, suite, workflowType, 20));
@@ -103,7 +107,8 @@ public class DirectRaccoonProbe extends TlsProbe {
         return cipherSuiteFingerprint;
     }
 
-    private List<VectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType type, int numberOfExecutionsEach) {
+    private List<VectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite,
+            DirectRaccoonWorkflowType type, int numberOfExecutionsEach) {
         Random r = new Random();
         BigInteger initialDhSecret = new BigInteger("" + (r.nextInt()));
         List<Boolean> booleanList = new LinkedList<>();
@@ -126,7 +131,8 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setStopActionsAfterIOException(true);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
+                    WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
             State state = new State(config, trace);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned();
@@ -136,7 +142,8 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
     }
 
-    private List<VectorResponse> getVectorResponseList(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, BigInteger initialClientDhSecret, List<Boolean> withNullByteList) {
+    private List<VectorResponse> getVectorResponseList(ProtocolVersion version, CipherSuite suite,
+            DirectRaccoonWorkflowType workflowType, BigInteger initialClientDhSecret, List<Boolean> withNullByteList) {
         List<TlsTask> taskList = new LinkedList<>();
         for (Boolean nullByte : withNullByteList) {
             Config config = getScannerConfig().createConfig();
@@ -149,8 +156,9 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setStopActionsAfterIOException(true);
             config.setEarlyStop(true);
 
-            WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflow(config, workflowType, initialClientDhSecret, nullByte);
-            //Store 
+            WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflow(config, workflowType,
+                    initialClientDhSecret, nullByte);
+            // Store
             trace.setName("" + nullByte);
             State state = new State(config, trace);
 
@@ -163,18 +171,20 @@ public class DirectRaccoonProbe extends TlsProbe {
             FingerPrintTask fingerPrintTask = (FingerPrintTask) task;
             Boolean nullByte = Boolean.parseBoolean(fingerPrintTask.getState().getWorkflowTrace().getName());
 
-            VectorResponse vectorResponseF = evaluateFingerPrintTask(version, suite, workflowType, nullByte, fingerPrintTask);
+            VectorResponse vectorResponseF = evaluateFingerPrintTask(version, suite, workflowType, nullByte,
+                    fingerPrintTask);
             responseList.add(vectorResponseF);
         }
         // Generate result
         return responseList;
     }
 
-    private VectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
+    private VectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite,
+            DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
         DirectRaccoonVector raccoonVector = new DirectRaccoonVector(workflowType, version, suite, withNullByte);
         if (fingerPrintTask.isHasError()) {
-            LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version="
-                    + version + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
+            LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version=" + version + ", suite="
+                    + suite + ", pmsWithNullByte=" + withNullByte + ";");
             return null;
         } else {
             return new VectorResponse(raccoonVector, fingerPrintTask.getFingerprint());
@@ -183,7 +193,10 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SSL_3), TestResult.TRUE)) && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE)) && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE)) && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
+        if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SSL_3), TestResult.TRUE))
+                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
+                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
+                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
             return false;
         }
         if (report.getCipherSuites() == null) {

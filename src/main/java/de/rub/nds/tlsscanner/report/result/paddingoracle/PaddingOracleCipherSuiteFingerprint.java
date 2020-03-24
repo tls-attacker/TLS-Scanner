@@ -34,7 +34,9 @@ public class PaddingOracleCipherSuiteFingerprint {
     private EqualityError equalityError;
     private double pValue;
 
-    public PaddingOracleCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType, List<VectorResponse> responseMap) {
+    public PaddingOracleCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite,
+            PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType,
+            List<VectorResponse> responseMap) {
         this.version = version;
         this.suite = suite;
         this.vectorGeneratorType = vectorGeneratorType;
@@ -84,7 +86,8 @@ public class PaddingOracleCipherSuiteFingerprint {
                 if (vectorResponseOne == vectorResponseTwo) {
                     continue;
                 }
-                EqualityError equality = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(), vectorResponseTwo.getFingerprint(), true);
+                EqualityError equality = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(),
+                        vectorResponseTwo.getFingerprint(), true);
                 if (equality != EqualityError.NONE) {
                     return equality;
                 }
@@ -94,19 +97,22 @@ public class PaddingOracleCipherSuiteFingerprint {
     }
 
     private double computePValue() {
-//        Map<Vector, VectorContainer> vectorContainerMap = new HashMap<>();
-//        for (VectorResponse vectorResponse : responseMap) {
-//            VectorContainer container = vectorContainerMap.get(vectorResponse.getVector());
-//            if (container == null) {
-//                List<ResponseFingerprint> responseFingerprintList = new LinkedList<>();
-//                responseFingerprintList.add(vectorResponse.getFingerprint());
-//                container = new VectorContainer(vectorResponse.getVector(), responseFingerprintList);
-//                vectorContainerMap.put(vectorResponse.getVector(), container);
-//            } else {
-//                container.addResponseFingerprint(vectorResponse.getFingerprint());
-//            }
-//        }
-//        
+        // Map<Vector, VectorContainer> vectorContainerMap = new HashMap<>();
+        // for (VectorResponse vectorResponse : responseMap) {
+        // VectorContainer container =
+        // vectorContainerMap.get(vectorResponse.getVector());
+        // if (container == null) {
+        // List<ResponseFingerprint> responseFingerprintList = new
+        // LinkedList<>();
+        // responseFingerprintList.add(vectorResponse.getFingerprint());
+        // container = new VectorContainer(vectorResponse.getVector(),
+        // responseFingerprintList);
+        // vectorContainerMap.put(vectorResponse.getVector(), container);
+        // } else {
+        // container.addResponseFingerprint(vectorResponse.getFingerprint());
+        // }
+        // }
+        //
         NondeterministicVectorContainerHolder holder = new NondeterministicVectorContainerHolder(responseMap);
         return holder.computePValue();
     }

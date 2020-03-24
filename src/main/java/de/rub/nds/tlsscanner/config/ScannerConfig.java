@@ -143,7 +143,8 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Override
     public Config createConfig() {
         Config config = super.createConfig(Config.createConfig());
-        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname()) || clientDelegate.getSniHostname() != null) {
+        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
+                || clientDelegate.getSniHostname() != null) {
             config.setAddServerNameIndicationExtension(true);
         } else {
             config.setAddServerNameIndicationExtension(false);

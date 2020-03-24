@@ -81,8 +81,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
             LOGGER.warn("" + getProbeName() + " - is null result");
         }
 
-        LOGGER.debug(
-                "Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
+        LOGGER.debug("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
         return result;
     }
 
@@ -107,7 +106,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     public abstract boolean canBeExecuted(SiteReport report);
-    
+
     public abstract ProbeResult getCouldNotExecuteResult();
 
     public abstract void adjustConfig(SiteReport report);

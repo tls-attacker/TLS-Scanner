@@ -16,9 +16,9 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 public class DrownResult extends ProbeResult {
 
     private final TestResult generalDrown;
-    
+
     private final TestResult extraClear;
-    
+
     public DrownResult(TestResult generalDrown, TestResult extraClear) {
         super(ProbeType.DROWN);
         this.generalDrown = generalDrown;
@@ -27,8 +27,8 @@ public class DrownResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN,extraClear);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN,generalDrown);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN, extraClear);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, generalDrown);
     }
 
 }

@@ -86,7 +86,7 @@ public class VectorContainer {
         if (!added) {
             ResponseCounter responseCounter = new ResponseCounter(fingerprint, 1, responseList.size());
             distinctResponsesCounterList.add(responseCounter);
-            //We did not had this response yet 
+            // We did not had this response yet
         }
     }
 

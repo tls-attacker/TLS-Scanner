@@ -27,8 +27,10 @@ import java.math.BigInteger;
  */
 public class DirectRaccoontWorkflowGenerator {
 
-    public static WorkflowTrace generateWorkflow (Config tlsConfig, DirectRaccoonWorkflowType type, BigInteger initialDhSecret, boolean withNullByte) {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
+    public static WorkflowTrace generateWorkflow(Config tlsConfig, DirectRaccoonWorkflowType type,
+            BigInteger initialDhSecret, boolean withNullByte) {
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig
+                .getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
         trace.addTlsAction(new SendRaccoonCkeAction(withNullByte, initialDhSecret));
@@ -49,10 +51,10 @@ public class DirectRaccoontWorkflowGenerator {
         }
         trace.addTlsAction(new GenericReceiveAction());
         return trace;
-    } 
-    
+    }
+
     private DirectRaccoontWorkflowGenerator() {
 
     }
-    
+
 }

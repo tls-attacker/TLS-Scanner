@@ -48,22 +48,49 @@ import java.util.List;
  */
 public class CommonBugProbe extends TlsProbe {
 
-    private TestResult extensionIntolerance; //does it handle unknown extenstions correctly?
-    private TestResult cipherSuiteIntolerance; //does it handle unknown ciphersuites correctly?
-    private TestResult cipherSuiteLengthIntolerance512; //does it handle long ciphersuite length values correctly?
-    private TestResult compressionIntolerance; //does it handle unknown compression algorithms correctly
-    private TestResult versionIntolerance; //does it handle unknown versions correctly?
-    private TestResult alpnIntolerance; //does it handle unknown alpn strings correctly?
-    private TestResult clientHelloLengthIntolerance; // 256 - 511 <-- ch should be bigger than this
-    private TestResult emptyLastExtensionIntolerance; //does it break on empty last extension
-    private TestResult onlySecondCiphersuiteByteEvaluated; //is only the second byte of the ciphersuite evaluated
-    private TestResult namedGroupIntolerant; // does it handle unknown groups correctly
-    private TestResult namedSignatureAndHashAlgorithmIntolerance; // does it handle signature and hash algorithms correctly
-    private TestResult ignoresCipherSuiteOffering; //does it ignore the offered ciphersuites
-    private TestResult reflectsCipherSuiteOffering; //does it ignore the offered ciphersuites
-    private TestResult ignoresOfferedNamedGroups; //does it ignore the offered named groups
-    private TestResult ignoresOfferedSignatureAndHashAlgorithms; //does it ignore the sig hash algorithms
-    private TestResult maxLengthClientHelloIntolerant; // server does not like really big client hello messages
+    private TestResult extensionIntolerance; // does it handle unknown
+                                             // extenstions correctly?
+    private TestResult cipherSuiteIntolerance; // does it handle unknown
+                                               // ciphersuites correctly?
+    private TestResult cipherSuiteLengthIntolerance512; // does it handle long
+                                                        // ciphersuite length
+                                                        // values correctly?
+    private TestResult compressionIntolerance; // does it handle unknown
+                                               // compression algorithms
+                                               // correctly
+    private TestResult versionIntolerance; // does it handle unknown versions
+                                           // correctly?
+    private TestResult alpnIntolerance; // does it handle unknown alpn strings
+                                        // correctly?
+    private TestResult clientHelloLengthIntolerance; // 256 - 511 <-- ch should
+                                                     // be bigger than this
+    private TestResult emptyLastExtensionIntolerance; // does it break on empty
+                                                      // last extension
+    private TestResult onlySecondCiphersuiteByteEvaluated; // is only the second
+                                                           // byte of the
+                                                           // ciphersuite
+                                                           // evaluated
+    private TestResult namedGroupIntolerant; // does it handle unknown groups
+                                             // correctly
+    private TestResult namedSignatureAndHashAlgorithmIntolerance; // does it
+                                                                  // handle
+                                                                  // signature
+                                                                  // and hash
+                                                                  // algorithms
+                                                                  // correctly
+    private TestResult ignoresCipherSuiteOffering; // does it ignore the offered
+                                                   // ciphersuites
+    private TestResult reflectsCipherSuiteOffering; // does it ignore the
+                                                    // offered ciphersuites
+    private TestResult ignoresOfferedNamedGroups; // does it ignore the offered
+                                                  // named groups
+    private TestResult ignoresOfferedSignatureAndHashAlgorithms; // does it
+                                                                 // ignore the
+                                                                 // sig hash
+                                                                 // algorithms
+    private TestResult maxLengthClientHelloIntolerant; // server does not like
+                                                       // really big client
+                                                       // hello messages
 
     public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.COMMON_BUGS, config, 1);
@@ -86,7 +113,11 @@ public class CommonBugProbe extends TlsProbe {
         ignoresOfferedNamedGroups = hasIgnoresNamedGroupsOfferingBug();
         ignoresOfferedSignatureAndHashAlgorithms = hasIgnoresSigHashAlgoOfferingBug();
         maxLengthClientHelloIntolerant = hasBigClientHelloIntolerance();
-        return new CommonBugProbeResult(extensionIntolerance, cipherSuiteIntolerance, cipherSuiteLengthIntolerance512, compressionIntolerance, versionIntolerance, alpnIntolerance, clientHelloLengthIntolerance, emptyLastExtensionIntolerance, onlySecondCiphersuiteByteEvaluated, namedGroupIntolerant, namedSignatureAndHashAlgorithmIntolerance, ignoresCipherSuiteOffering, reflectsCipherSuiteOffering, ignoresOfferedNamedGroups, ignoresOfferedSignatureAndHashAlgorithms, maxLengthClientHelloIntolerant);
+        return new CommonBugProbeResult(extensionIntolerance, cipherSuiteIntolerance, cipherSuiteLengthIntolerance512,
+                compressionIntolerance, versionIntolerance, alpnIntolerance, clientHelloLengthIntolerance,
+                emptyLastExtensionIntolerance, onlySecondCiphersuiteByteEvaluated, namedGroupIntolerant,
+                namedSignatureAndHashAlgorithmIntolerance, ignoresCipherSuiteOffering, reflectsCipherSuiteOffering,
+                ignoresOfferedNamedGroups, ignoresOfferedSignatureAndHashAlgorithms, maxLengthClientHelloIntolerant);
 
     }
 
@@ -109,7 +140,8 @@ public class CommonBugProbe extends TlsProbe {
         TlsContext context = new TlsContext(config);
         ClientHelloPreparator preparator = new ClientHelloPreparator(context.getChooser(), message);
         preparator.prepare();
-        ClientHelloSerializer serializer = new ClientHelloSerializer(message, config.getDefaultHighestClientProtocolVersion());
+        ClientHelloSerializer serializer = new ClientHelloSerializer(message,
+                config.getDefaultHighestClientProtocolVersion());
         return serializer.serialize().length;
     }
 
@@ -121,14 +153,15 @@ public class CommonBugProbe extends TlsProbe {
 
             ClientHelloMessage message = new ClientHelloMessage(config);
             UnknownExtensionMessage extension = new UnknownExtensionMessage();
-            extension.setTypeConfig(new byte[]{(byte) 3F, (byte) 3F});
-            extension.setDataConfig(new byte[]{00, 11, 22, 33});
+            extension.setTypeConfig(new byte[] { (byte) 3F, (byte) 3F });
+            extension.setDataConfig(new byte[] { 00, 11, 22, 33 });
             message.getExtensions().add(extension);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -147,7 +180,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -171,13 +205,14 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(true);
             ClientHelloMessage message = new ClientHelloMessage(config);
             SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[]{(byte) 0xED, (byte) 0xED}));
+            extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -201,7 +236,7 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(false);
             ClientHelloMessage message = new ClientHelloMessage(config);
             EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
-            extension.setSupportedGroups(Modifiable.explicit(new byte[]{(byte) 0xED, (byte) 0xED}));
+            extension.setSupportedGroups(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
@@ -209,7 +244,8 @@ public class CommonBugProbe extends TlsProbe {
             executeState(state);
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
             if (receivedShd) {
-                LOGGER.debug("Received a SH for invalid NamedGroup, server selected: " + state.getTlsContext().getSelectedGroup().name());
+                LOGGER.debug("Received a SH for invalid NamedGroup, server selected: "
+                        + state.getTlsContext().getSelectedGroup().name());
             }
             return receivedShd == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
@@ -223,15 +259,17 @@ public class CommonBugProbe extends TlsProbe {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
         ClientHelloMessage message = new ClientHelloMessage(config);
-        message.setCipherSuites(Modifiable.explicit(new byte[]{(byte) 0xEE, (byte) 0xCC}));
+        message.setCipherSuites(Modifiable.explicit(new byte[] { (byte) 0xEE, (byte) 0xCC }));
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
         executeState(state);
         boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-        ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
+        ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(
+                HandshakeMessageType.SERVER_HELLO, trace);
         if (receivedShd) {
-            if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(), new byte[]{(byte) 0xEE, (byte) 0xCC})) {
+            if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(), new byte[] { (byte) 0xEE,
+                    (byte) 0xCC })) {
                 reflectsCipherSuiteOffering = TestResult.TRUE;
                 ignoresCipherSuiteOffering = TestResult.FALSE;
             } else {
@@ -261,13 +299,14 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(true);
             ClientHelloMessage message = new ClientHelloMessage(config);
             SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[]{(byte) 0xED, (byte) 0xED}, 0));
+            extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -299,7 +338,7 @@ public class CommonBugProbe extends TlsProbe {
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
             if (receivedShd) {
                 trace.reset();
-                extension.setSupportedGroups(Modifiable.insert(new byte[]{(byte) 0xED, (byte) 0xED}, 0));
+                extension.setSupportedGroups(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
                 state = new State(config, trace);
                 executeState(state);
                 receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
@@ -323,7 +362,7 @@ public class CommonBugProbe extends TlsProbe {
             for (CipherSuite suite : CipherSuite.values()) {
                 if (suite.getByteValue()[0] == 0x00) {
                     try {
-                        stream.write(new byte[]{(byte) 0xDF, suite.getByteValue()[1]});
+                        stream.write(new byte[] { (byte) 0xDF, suite.getByteValue()[1] });
                     } catch (IOException ex) {
                         LOGGER.debug(ex);
                     }
@@ -354,7 +393,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -367,12 +407,13 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setProtocolVersion(Modifiable.explicit(new byte[]{0x03, 0x05}));
+            message.setProtocolVersion(Modifiable.explicit(new byte[] { 0x03, 0x05 }));
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -385,12 +426,13 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCompressions(new byte[]{(byte) 0xFF, (byte) 0x00});
+            message.setCompressions(new byte[] { (byte) 0xFF, (byte) 0x00 });
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -412,7 +454,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -425,12 +468,13 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCipherSuites(Modifiable.insert(new byte[]{(byte) 0xCF, (byte) 0xAA}, 1));
+            message.setCipherSuites(Modifiable.insert(new byte[] { (byte) 0xCF, (byte) 0xAA }, 1));
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -441,7 +485,7 @@ public class CommonBugProbe extends TlsProbe {
         try {
             Config config = getWorkingConfig();
             config.setAddAlpnExtension(true);
-            config.setAlpnAnnouncedProtocols(new String[]{"This is not an ALPN Protocol"});
+            config.setAlpnAnnouncedProtocols(new String[] { "This is not an ALPN Protocol" });
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
@@ -449,7 +493,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -471,14 +516,15 @@ public class CommonBugProbe extends TlsProbe {
             if (newLength > 0) {
                 config.setDefaultPaddingExtensionBytes(new byte[newLength]);
             } else {
-                //TODO this is currently not working as intended
+                // TODO this is currently not working as intended
             }
             message = new ClientHelloMessage(config);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE : TestResult.FALSE;
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true ? TestResult.TRUE
+                    : TestResult.FALSE;
         } catch (Exception e) {
             LOGGER.warn("Error", e);
             return TestResult.ERROR_DURING_TEST;
@@ -487,6 +533,11 @@ public class CommonBugProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 }

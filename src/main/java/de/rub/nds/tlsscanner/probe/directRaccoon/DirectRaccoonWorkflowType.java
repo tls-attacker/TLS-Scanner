@@ -13,7 +13,7 @@ package de.rub.nds.tlsscanner.probe.directRaccoon;
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
 public enum DirectRaccoonWorkflowType {
-    
+
     /**
      *
      */
@@ -43,5 +43,5 @@ public enum DirectRaccoonWorkflowType {
      */
     public String getDescription() {
         return description;
-    }   
+    }
 }

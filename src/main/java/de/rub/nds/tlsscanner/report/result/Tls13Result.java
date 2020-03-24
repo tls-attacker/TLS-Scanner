@@ -27,7 +27,9 @@ public class Tls13Result extends ProbeResult {
 
     private final List<CipherSuite> supportedCipherSuites;
 
-    public Tls13Result(List<ProtocolVersion> supportedProtocolVersion, List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups, List<CipherSuite> supportedCipherSuites) {
+    public Tls13Result(List<ProtocolVersion> supportedProtocolVersion,
+            List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups,
+            List<CipherSuite> supportedCipherSuites) {
         super(ProbeType.TLS13);
         this.supportedProtocolVersion = supportedProtocolVersion;
         this.unsupportedProtocolVersion = unsupportedProtocolVersion;
@@ -157,17 +159,14 @@ public class Tls13Result extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28, TestResult.COULD_NOT_TEST);
         }
-        if (supportedNamedGroups
-                != null) {
+        if (supportedNamedGroups != null) {
             report.setSupportedTls13Groups(supportedNamedGroups);
         }
-        if (supportedCipherSuites
-                != null) {
+        if (supportedCipherSuites != null) {
             report.setSupportedTls13CipherSuites(supportedCipherSuites);
         }
 
-        if (report.getVersions()
-                != null) {
+        if (report.getVersions() != null) {
             report.getVersions().addAll(supportedProtocolVersion);
         } else {
             report.setVersions(supportedProtocolVersion);

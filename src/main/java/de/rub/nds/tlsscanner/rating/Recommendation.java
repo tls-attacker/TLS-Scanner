@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder = {"analyzedProperty", "shortName", "shortDescription", "detailedDescription", "testDocumentation", "links", "propertyRecommendations"})
+@XmlType(propOrder = { "analyzedProperty", "shortName", "shortDescription", "detailedDescription", "testDocumentation",
+        "links", "propertyRecommendations" })
 public class Recommendation {
 
     static final String NO_INFORMATION_FOUND = "No detailed information available";
@@ -52,8 +53,8 @@ public class Recommendation {
         this.shortName = shortName;
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription, String detailedDescription,
-            String... links) {
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+            String detailedDescription, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
@@ -72,8 +73,8 @@ public class Recommendation {
         this.links.addAll(Arrays.asList(links));
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription, String detailedDescription,
-            PropertyResultRecommendation propertyRecommendation, String... links) {
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+            String detailedDescription, PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
@@ -83,7 +84,8 @@ public class Recommendation {
         this.links.addAll(Arrays.asList(links));
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription, String detailedDescription, String testDocumentation, List<String> links,
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+            String detailedDescription, String testDocumentation, List<String> links,
             List<PropertyResultRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;

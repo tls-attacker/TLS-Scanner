@@ -25,7 +25,9 @@ public class LogjamAfterprobe extends AfterProbe {
         try {
             if (report.getCipherSuites() != null) {
                 for (CipherSuite suite : report.getCipherSuites()) {
-                    if (suite.name().contains("DH_anon_EXPORT") || suite.name().contains("DH_DSS_EXPORT") || suite.name().contains("DH_RSA_EXPORT") || suite.name().contains("DHE_DSS_EXPORT") || suite.name().contains("DHE_RSA_EXPORT")) {
+                    if (suite.name().contains("DH_anon_EXPORT") || suite.name().contains("DH_DSS_EXPORT")
+                            || suite.name().contains("DH_RSA_EXPORT") || suite.name().contains("DHE_DSS_EXPORT")
+                            || suite.name().contains("DHE_RSA_EXPORT")) {
                         vulnerable = TestResult.TRUE;
                     }
                 }

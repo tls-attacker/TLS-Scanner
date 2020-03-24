@@ -101,7 +101,8 @@ public class HttpHeaderResult extends ProbeResult {
                         }
                         if (value.trim().startsWith("pin-")) {
                             String[] pinString = value.split("=");
-                            HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(pinString[1].replace("\"", "")));
+                            HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(
+                                    pinString[1].replace("\"", "")));
                             pinList.add(pin);
                         }
                     }
@@ -128,14 +129,16 @@ public class HttpHeaderResult extends ProbeResult {
                         }
                         if (value.trim().startsWith("pin-")) {
                             String[] pinString = value.split("=");
-                            HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(pinString[1].replace("\"", "")));
+                            HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(
+                                    pinString[1].replace("\"", "")));
                             reportOnlyPinList.add(pin);
                         }
                     }
                 }
                 if (header.getHeaderName().getValue().equals("Content-Encoding")) {
                     String compressionHeaderValue = header.getHeaderValue().getValue();
-                    String[] compressionAlgorithms = {"compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma", "xz"};
+                    String[] compressionAlgorithms = { "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma",
+                            "xz" };
                     for (String compression : compressionAlgorithms) {
                         if (compressionHeaderValue.contains(compression)) {
                             vulnerableBreach = TestResult.TRUE;

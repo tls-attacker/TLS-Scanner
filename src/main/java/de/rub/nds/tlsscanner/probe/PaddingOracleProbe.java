@@ -51,10 +51,12 @@ public class PaddingOracleProbe extends TlsProbe {
             List<PaddingOracleCipherSuiteFingerprint> testResultList = new LinkedList<>();
             for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
                 for (VersionSuiteListPair pair : serverSupportedSuites) {
-                    if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
+                    if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
+                            || pair.getVersion() == ProtocolVersion.TLS12) {
                         for (CipherSuite suite : pair.getCiphersuiteList()) {
                             if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
-                                PaddingOracleCommandConfig paddingOracleConfig = createPaddingOracleCommandConfig(pair.getVersion(), suite);
+                                PaddingOracleCommandConfig paddingOracleConfig = createPaddingOracleCommandConfig(
+                                        pair.getVersion(), suite);
                                 paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
                                 testResultList.add(getPaddingOracleCipherSuiteFingerprint(paddingOracleConfig));
                             }
@@ -62,13 +64,16 @@ public class PaddingOracleProbe extends TlsProbe {
                     }
                 }
             }
-            //If we found some difference in the server behavior we need to 
-            if (isPotentiallyVulnerable(testResultList) || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            // If we found some difference in the server behavior we need to
+            if (isPotentiallyVulnerable(testResultList)
+                    || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
                 LOGGER.debug("We found non-determinism during the padding oracle scan");
                 LOGGER.debug("Starting non-determinism evaluation");
                 for (PaddingOracleCipherSuiteFingerprint fingerprint : testResultList) {
-                    if (isPotentiallyVulnerable(fingerprint) || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        LOGGER.debug("Found a candidate for the non-determinism eval:" + fingerprint.getSuite() + " - " + fingerprint.getVersion());
+                    if (isPotentiallyVulnerable(fingerprint)
+                            || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        LOGGER.debug("Found a candidate for the non-determinism eval:" + fingerprint.getSuite() + " - "
+                                + fingerprint.getVersion());
                         extendFingerPrint(fingerprint, 7);
                     }
                 }
@@ -93,7 +98,8 @@ public class PaddingOracleProbe extends TlsProbe {
     }
 
     private PaddingOracleCommandConfig createPaddingOracleCommandConfig(ProtocolVersion version, CipherSuite cipherSuite) {
-        PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
+        PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(getScannerConfig()
+                .getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
         delegate.setHost(getScannerConfig().getClientDelegate().getHost());
         delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
@@ -114,9 +120,11 @@ public class PaddingOracleProbe extends TlsProbe {
         return paddingOracleConfig;
     }
 
-    private PaddingOracleCipherSuiteFingerprint getPaddingOracleCipherSuiteFingerprint(PaddingOracleCommandConfig paddingOracleConfig) {
+    private PaddingOracleCipherSuiteFingerprint getPaddingOracleCipherSuiteFingerprint(
+            PaddingOracleCommandConfig paddingOracleConfig) {
 
-        PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, scannerConfig.createConfig(), getParallelExecutor());
+        PaddingOracleAttacker attacker = new PaddingOracleAttacker(paddingOracleConfig, scannerConfig.createConfig(),
+                getParallelExecutor());
         if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
             attacker.setAdditionalTimeout(1000);
             attacker.setIncreasingTimeout(true);
@@ -128,12 +136,17 @@ public class PaddingOracleProbe extends TlsProbe {
         } catch (Exception E) {
             LOGGER.error("Encountered an exception while testing for PaddingOracles", E);
         }
-        return new PaddingOracleCipherSuiteFingerprint(paddingOracleConfig.getProtocolVersionDelegate().getProtocolVersion(), paddingOracleConfig.getCiphersuiteDelegate().getCipherSuites().get(0), paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(), attacker.getResponseMapList());
+        return new PaddingOracleCipherSuiteFingerprint(paddingOracleConfig.getProtocolVersionDelegate()
+                .getProtocolVersion(), paddingOracleConfig.getCiphersuiteDelegate().getCipherSuites().get(0),
+                paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(),
+                attacker.getResponseMapList());
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE)) && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE)) && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
+        if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
+                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
+                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
             return false;
         }
         if (report.getCipherSuites() == null) {
@@ -153,7 +166,8 @@ public class PaddingOracleProbe extends TlsProbe {
     }
 
     private void extendFingerPrint(PaddingOracleCipherSuiteFingerprint fingerprint, int numberOfAdditionalIterations) {
-        PaddingOracleCommandConfig paddingOracleCommandConfig = createPaddingOracleCommandConfig(fingerprint.getVersion(), fingerprint.getSuite());
+        PaddingOracleCommandConfig paddingOracleCommandConfig = createPaddingOracleCommandConfig(
+                fingerprint.getVersion(), fingerprint.getSuite());
         paddingOracleCommandConfig.setRecordGeneratorType(fingerprint.getRecordGeneratorType());
         paddingOracleCommandConfig.setVectorGeneratorType(fingerprint.getVectorGeneratorType());
         paddingOracleCommandConfig.setNumberOfIterations(numberOfAdditionalIterations);

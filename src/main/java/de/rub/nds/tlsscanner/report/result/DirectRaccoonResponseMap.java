@@ -20,11 +20,10 @@ import java.util.List;
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
 public class DirectRaccoonResponseMap extends ProbeResult {
-    
-    private List<DirectRaccoonCipherSuiteFingerprint> resultList;
-    
-    private TestResult vulnerable;
 
+    private List<DirectRaccoonCipherSuiteFingerprint> resultList;
+
+    private TestResult vulnerable;
 
     public DirectRaccoonResponseMap(List<DirectRaccoonCipherSuiteFingerprint> resultList, TestResult vulnerable) {
         super(ProbeType.DIRECT_RACCOON);
@@ -32,7 +31,7 @@ public class DirectRaccoonResponseMap extends ProbeResult {
         this.vulnerable = vulnerable;
     }
 
-    @Override  
+    @Override
     public void mergeData(SiteReport report) {
         if (resultList != null && resultList.isEmpty() && vulnerable == null) {
             vulnerable = TestResult.FALSE;
@@ -43,7 +42,7 @@ public class DirectRaccoonResponseMap extends ProbeResult {
         report.setDirectRaccoonTestResultList(resultList);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
     }
-    
+
     public List<DirectRaccoonCipherSuiteFingerprint> getResultList() {
         return resultList;
     }

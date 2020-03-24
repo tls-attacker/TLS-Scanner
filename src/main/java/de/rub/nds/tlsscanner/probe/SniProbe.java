@@ -50,21 +50,23 @@ public class SniProbe extends TlsProbe {
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
             toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             config.setDefaultClientSupportedCiphersuites(toTestList);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
+            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
+                    WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
             State state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
                 return new SniResult(TestResult.FALSE);
             }
-            //Test if we can get a hello with SNI
+            // Test if we can get a hello with SNI
             config.setAddServerNameIndicationExtension(true);
-            trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
+            trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
+                    RunningModeType.CLIENT);
             state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
                 return new SniResult(TestResult.TRUE);
             }
-            //We cannot get a ServerHello from this Server...
+            // We cannot get a ServerHello from this Server...
             LOGGER.warn("SNI Test could not get a ServerHello message from the Server!");
             return new SniResult(TestResult.ERROR_DURING_TEST);
         } catch (Exception e) {

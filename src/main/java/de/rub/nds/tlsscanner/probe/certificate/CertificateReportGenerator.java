@@ -89,8 +89,7 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setCommonNames(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setCommonNames(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         StringBuilder commonNames = new StringBuilder();
         X500Name x500name = cert.getSubject();
         if (x500name != null) {
@@ -105,8 +104,7 @@ public class CertificateReportGenerator {
         report.setCommonNames(commonNames.toString());
     }
 
-    private static void setAlternativeNames(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setAlternativeNames(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
 
     }
 
@@ -133,8 +131,7 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setWeakDebianKey(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setWeakDebianKey(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
     private static void setIssuer(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
@@ -166,7 +163,8 @@ public class CertificateReportGenerator {
                     LOGGER.warn("Parsed an unknown SignatureAlgorithm");
                     return;
                 }
-                SignatureAndHashAlgorithm sigHashAlgo = SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
+                SignatureAndHashAlgorithm sigHashAlgo = SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(
+                        signatureAlgorithm, hashAlgorithm);
                 report.setSignatureAndHashAlgorithm(sigHashAlgo);
             }
         } catch (Exception E) {
@@ -174,25 +172,20 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setExtendedValidation(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setExtendedValidation(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
 
     }
 
-    private static void setCeritifcateTransparency(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setCeritifcateTransparency(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setOcspMustStaple(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setOcspMustStaple(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setCRLSupported(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setCRLSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
-    private static void setOcspSupported(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setOcspSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
     private static void setRevoked(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {

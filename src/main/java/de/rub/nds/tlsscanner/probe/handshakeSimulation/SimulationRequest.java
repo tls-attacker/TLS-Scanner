@@ -49,7 +49,8 @@ public class SimulationRequest {
             trace.addTlsAction(sendAction);
         } else {
             ClientHelloMessage msg = new ClientHelloMessage(config);
-            List<ExtensionMessage> extensions = WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.CLIENT_HELLO, tlsClientConfig.getTrace()).getExtensions();
+            List<ExtensionMessage> extensions = WorkflowTraceUtil.getLastReceivedMessage(
+                    HandshakeMessageType.CLIENT_HELLO, tlsClientConfig.getTrace()).getExtensions();
             msg.setExtensions(extensions);
             trace.addTlsAction(new SendAction(msg));
         }

@@ -141,7 +141,8 @@ public class TlsClientConfig implements Serializable {
 
     public ClientHelloMessage createClientHello() {
         ClientHelloMessage hello = new ClientHelloMessage(config);
-        hello.setExtensions(((ClientHelloMessage) trace.getLastReceivingAction().getReceivedMessages().get(0)).getExtensions());
+        hello.setExtensions(((ClientHelloMessage) trace.getLastReceivingAction().getReceivedMessages().get(0))
+                .getExtensions());
         State s = new State(config);
         s.getTlsContext().setRecordLayer(new TlsRecordLayer(s.getTlsContext()));
         ClientHelloHandler handler = new ClientHelloHandler(s.getTlsContext());

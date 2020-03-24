@@ -78,7 +78,8 @@ public class CiphersuiteProbe extends TlsProbe {
         return getSupportedCipherSuitesWithIntolerance(new ArrayList<>(CipherSuite.getImplemented()), version);
     }
 
-    public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(List<CipherSuite> toTestList, ProtocolVersion version) {
+    public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(List<CipherSuite> toTestList,
+            ProtocolVersion version) {
         List<CipherSuite> listWeSupport = new LinkedList<>(toTestList);
         List<CipherSuite> supported = new LinkedList<>();
 
@@ -132,7 +133,8 @@ public class CiphersuiteProbe extends TlsProbe {
                 LOGGER.debug(state.getWorkflowTrace().toString());
                 if (state.getTlsContext().isReceivedFatalAlert()) {
                     LOGGER.debug("Received Fatal Alert");
-                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace());
+                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(
+                            ProtocolMessageType.ALERT, state.getWorkflowTrace());
                     LOGGER.debug("Type:" + alert.toString());
 
                 }

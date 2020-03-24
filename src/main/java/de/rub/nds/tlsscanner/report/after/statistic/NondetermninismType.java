@@ -13,5 +13,7 @@ package de.rub.nds.tlsscanner.report.after.statistic;
  * @author ic0ns
  */
 public enum NondetermninismType {
-    CONNECTION, HETEROGEN, MIXED
+    CONNECTION,
+    HETEROGEN,
+    MIXED
 }

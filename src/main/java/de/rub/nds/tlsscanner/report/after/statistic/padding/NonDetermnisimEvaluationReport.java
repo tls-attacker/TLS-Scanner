@@ -21,7 +21,8 @@ public class NonDetermnisimEvaluationReport {
 
     private final List<NondeterministicVectorContainerHolder> vectorHolderList;
 
-    public NonDetermnisimEvaluationReport(Boolean consideredVulnerable, NondetermninismType shakyType, Boolean consistentAcrossCvPairs, List<NondeterministicVectorContainerHolder> vectorHolderList) {
+    public NonDetermnisimEvaluationReport(Boolean consideredVulnerable, NondetermninismType shakyType,
+            Boolean consistentAcrossCvPairs, List<NondeterministicVectorContainerHolder> vectorHolderList) {
         this.consideredVulnerable = consideredVulnerable;
         this.shakyType = shakyType;
         this.consistentAcrossCvPairs = consistentAcrossCvPairs;

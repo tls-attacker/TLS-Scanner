@@ -28,7 +28,9 @@ public class BleichenbacherTestResult {
 
     private final EqualityError equalityError;
 
-    public BleichenbacherTestResult(Boolean vulnerable, BleichenbacherCommandConfig.Type scanDetail, BleichenbacherWorkflowType workflowType, List<VectorFingerprintPair> vectorFingerPrintPairList, EqualityError equalityError) {
+    public BleichenbacherTestResult(Boolean vulnerable, BleichenbacherCommandConfig.Type scanDetail,
+            BleichenbacherWorkflowType workflowType, List<VectorFingerprintPair> vectorFingerPrintPairList,
+            EqualityError equalityError) {
         this.vulnerable = vulnerable;
         this.scanDetail = scanDetail;
         this.workflowType = workflowType;

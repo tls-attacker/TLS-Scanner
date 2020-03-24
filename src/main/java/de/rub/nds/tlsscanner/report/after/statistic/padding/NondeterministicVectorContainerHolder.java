@@ -136,7 +136,7 @@ public class NondeterministicVectorContainerHolder {
             responseA = container2.getDistinctResponsesCounterList().get(0).getFingerprint();
             responseB = container2.getDistinctResponsesCounterList().get(1).getFingerprint();
         } else {
-            //We only have 1 response - this is p=1
+            // We only have 1 response - this is p=1
             return 1;
         }
         int input1ResponseA = 0;
@@ -172,7 +172,8 @@ public class NondeterministicVectorContainerHolder {
         long[] measured = new long[statisticList.size()];
         for (int i = 0; i < statisticList.size(); i++) {
             expected[i] = probability * statisticList.get(i).getResponseFingerprintList().size();
-            measured[i] = statisticList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint()).getCounter();
+            measured[i] = statisticList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
+                    .getCounter();
         }
         double chiSquare = test.chiSquare(expected, measured);
         ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);

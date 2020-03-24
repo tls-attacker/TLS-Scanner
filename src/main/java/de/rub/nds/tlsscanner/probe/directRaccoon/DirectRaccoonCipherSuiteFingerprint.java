@@ -36,7 +36,8 @@ public class DirectRaccoonCipherSuiteFingerprint {
 
     private final EqualityError equalityError;
 
-    public DirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType, List<VectorResponse> responseMapList) {
+    public DirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite,
+            DirectRaccoonWorkflowType workflowType, List<VectorResponse> responseMapList) {
 
         this.version = version;
         this.suite = suite;
@@ -52,7 +53,8 @@ public class DirectRaccoonCipherSuiteFingerprint {
                 if (vectorResponseOne == vectorResponseTwo) {
                     continue;
                 }
-                EqualityError equality = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(), vectorResponseTwo.getFingerprint(), true);
+                EqualityError equality = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(),
+                        vectorResponseTwo.getFingerprint(), true);
                 if (equality != EqualityError.NONE) {
                     return equality;
                 }
@@ -60,7 +62,7 @@ public class DirectRaccoonCipherSuiteFingerprint {
         }
         return EqualityError.NONE;
     }
-    
+
     public void appendToResponseMap(List<VectorResponse> responseMap) {
         this.responseMapList.addAll(responseMap);
     }
