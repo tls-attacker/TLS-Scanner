@@ -111,7 +111,8 @@ public class RenegotiationProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return (report.getCipherSuites() != null && report.getCipherSuites().size() > 0);
+        return (report.getCipherSuites() != null && (report.getCipherSuites().size() > 0 || supportsOnlyTls13(report)) && report
+                .getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION) != TestResult.NOT_TESTED_YET);
     }
 
     @Override
@@ -123,5 +124,16 @@ public class RenegotiationProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new RenegotiationResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+    }
+
+    /**
+     * Used to run the probe with empty CS list if we already know versions
+     * before TLS 1.3 are not supported, to avoid stalling of probes that depend
+     * on this one
+     */
+    private boolean supportsOnlyTls13(SiteReport report) {
+        return report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.FALSE
+                && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.FALSE
+                && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.FALSE;
     }
 }

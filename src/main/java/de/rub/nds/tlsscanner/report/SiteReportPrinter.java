@@ -42,6 +42,8 @@ import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
+import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
+import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
@@ -118,11 +120,13 @@ public class SiteReportPrinter {
         appendCipherSuites(builder);
         appendExtensions(builder);
         appendCompressions(builder);
+        appendEcPointFormats(builder);
         appendIntolerances(builder);
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
         appendDirectRaccoonResults(builder);
+        appendInvalidCurveResults(builder);
         // appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
@@ -549,6 +553,7 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "Session");
         prettyAppend(builder, "Supports Session resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
         prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+        prettyAppend(builder, "Issues TLS 1.3 Session Tickets", AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
         // prettyAppend(builder, "Session Ticket Hint",
         // report.getSessionTicketLengthHint());
         // prettyAppendYellowOnFailure(builder, "Session Ticket Rotation",
@@ -619,6 +624,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Breach", AnalyzedProperty.VULNERABLE_TO_BREACH);
         prettyAppend(builder, "Invalid Curve", AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE);
         prettyAppend(builder, "Invalid Curve (ephemeral)", AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL);
+        prettyAppend(builder, "Invalid Curve (twist)", AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST);
         prettyAppend(builder, "SSL Poodle", AnalyzedProperty.VULNERABLE_TO_POODLE);
         prettyAppend(builder, "TLS Poodle", AnalyzedProperty.VULNERABLE_TO_TLS_POODLE);
         prettyAppend(builder, "Logjam", AnalyzedProperty.VULNERABLE_TO_LOGJAM);
@@ -813,6 +819,86 @@ public class SiteReportPrinter {
         return builder;
     }
 
+    private StringBuilder appendEcPointFormats(StringBuilder builder) {
+        prettyAppendHeading(builder, "Elliptic Curve Point Formats");
+        prettyAppend(builder, "Uncompressed", AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT);
+        prettyAppend(builder, "ANSIX962 Prime", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME);
+        prettyAppend(builder, "ANSIX962 Char2", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2);
+        prettyAppend(builder, "TLS 1.3 ANSIX962  SECP", AnalyzedProperty.SUPPORTS_SECP_COMPRESSION_TLS13);
+        return builder;
+    }
+
+    private StringBuilder appendInvalidCurveResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "Invalid Curve Details");
+        boolean foundCouldNotTest = false;
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResult.NOT_TESTED_YET
+                && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResult.NOT_TESTED_YET
+                && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResult.NOT_TESTED_YET) {
+            prettyAppend(builder, "Not Tested");
+        } else if (report.getInvalidCurveResultList() == null) {
+            prettyAppend(builder, "No Testresults");
+        } else if (report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResult.FALSE
+                && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResult.FALSE
+                && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResult.FALSE
+                && detail != ScannerDetail.ALL) {
+            prettyAppend(builder, "No Vulnerabilities Found");
+        } else {
+            for (InvalidCurveResponse response : report.getInvalidCurveResultList()) {
+                if (response.getChosenGroupReusesKey() == TestResult.COULD_NOT_TEST
+                        || response.getShowsVulnerability() == TestResult.COULD_NOT_TEST
+                        || response.getShowsVulnerability() == TestResult.COULD_NOT_TEST) {
+                    foundCouldNotTest = true;
+                }
+                if ((response.getShowsVulnerability() == TestResult.TRUE && detail
+                        .isGreaterEqualTo(ScannerDetail.NORMAL))
+                        || (response.getShowsPointsAreNotValidated() == TestResult.TRUE && detail
+                                .isGreaterEqualTo(ScannerDetail.DETAILED)) || detail == ScannerDetail.ALL) {
+                    prettyAppend(builder, response.getParameterSet().toString());
+                    switch (response.getShowsPointsAreNotValidated()) {
+                        case TRUE:
+                            prettyAppend(builder, "Server did not validate points", AnsiColor.YELLOW);
+                            break;
+                        case FALSE:
+                            prettyAppend(builder, "Server did validate points / uses invulnerable algorithm",
+                                    AnsiColor.GREEN);
+                            break;
+                        default:
+                            prettyAppend(builder, "Could not test point validation", AnsiColor.YELLOW);
+                            break;
+                    }
+                    switch (response.getChosenGroupReusesKey()) {
+                        case TRUE:
+                            prettyAppend(builder, "Server did reuse key", AnsiColor.YELLOW);
+                            break;
+                        case FALSE:
+                            prettyAppend(builder, "Server did not reuse key", AnsiColor.GREEN);
+                            break;
+                        default:
+                            prettyAppend(builder, "Could not test key reuse", AnsiColor.YELLOW);
+                            break;
+                    }
+                    switch (response.getShowsVulnerability()) {
+                        case TRUE:
+                            prettyAppend(builder, "Server is vulnerable", AnsiColor.RED);
+                            break;
+                        case FALSE:
+                            prettyAppend(builder, "Server is not vulnerable", AnsiColor.GREEN);
+                            break;
+                        default:
+                            prettyAppend(builder, "Could not test for vulnerability", AnsiColor.YELLOW);
+                            break;
+                    }
+
+                }
+            }
+
+            if (foundCouldNotTest && detail.isGreaterEqualTo(ScannerDetail.NORMAL)) {
+                prettyAppend(builder, "Some tests did not finish", AnsiColor.YELLOW);
+            }
+        }
+        return builder;
+    }
+
     private String toHumanReadable(ProtocolVersion version) {
         switch (version) {
             case DTLS10:
@@ -929,6 +1015,7 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "Fortezza", AnalyzedProperty.SUPPORTS_FORTEZZA);
                 prettyAppend(builder, "New Hope", AnalyzedProperty.SUPPORTS_NEWHOPE);
                 prettyAppend(builder, "ECMQV", AnalyzedProperty.SUPPORTS_ECMQV);
+                prettyAppend(builder, "TLS 1.3 PSK_DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
                 prettyAppendHeading(builder, "Cipher Types Supports");
                 prettyAppend(builder, "Stream", AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);

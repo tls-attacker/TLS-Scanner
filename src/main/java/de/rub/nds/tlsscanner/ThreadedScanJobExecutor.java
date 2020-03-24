@@ -106,7 +106,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                         }
 
                     } catch (InterruptedException | ExecutionException ex) {
-                        LOGGER.error("Encountered an exceptiuon before we could merge the result", ex);
+                        LOGGER.error("Encountered an exception before we could merge the result", ex);
                     }
                 }
 

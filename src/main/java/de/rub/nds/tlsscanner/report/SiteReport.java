@@ -25,6 +25,7 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
@@ -65,6 +66,10 @@ public class SiteReport extends Observable {
     private KnownPaddingOracleVulnerability knownVulnerability = null;
     private NonDetermnisimEvaluationReport paddingOracleShakyReport = null;
     private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList;
+    private List<InvalidCurveResponse> invalidCurveResultList;
+    private int parameterCombinations = -2;
+    private int executedCombinations = -2;
+    private String debugString = "noneGiven";
 
     // Version
     private List<ProtocolVersion> versions = null;
@@ -559,5 +564,13 @@ public class SiteReport extends Observable {
     public synchronized void setPaddingOracleShakyEvalResultList(
             List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
+    }
+
+    public synchronized List<InvalidCurveResponse> getInvalidCurveResultList() {
+        return invalidCurveResultList;
+    }
+
+    public synchronized void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
+        this.invalidCurveResultList = invalidCurveResultList;
     }
 }
