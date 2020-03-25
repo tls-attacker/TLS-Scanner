@@ -30,7 +30,8 @@ public class DhModulusExtractor extends StatExtractor<BigInteger> {
     @Override
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
-        List<ProtocolMessage> allReceivedMessages = WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
+        List<ProtocolMessage> allReceivedMessages = WorkflowTraceUtil.getAllReceivedMessages(trace,
+                ProtocolMessageType.HANDSHAKE);
         for (ProtocolMessage message : allReceivedMessages) {
             if (message instanceof DHEServerKeyExchangeMessage) {
                 put(new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getModulus().getValue()));

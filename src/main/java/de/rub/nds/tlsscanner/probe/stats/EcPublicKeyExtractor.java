@@ -25,7 +25,8 @@ public class EcPublicKeyExtractor extends StatExtractor<ComparableByteArray> {
     @Override
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
-        List<ProtocolMessage> allReceivedMessages = WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
+        List<ProtocolMessage> allReceivedMessages = WorkflowTraceUtil.getAllReceivedMessages(trace,
+                ProtocolMessageType.HANDSHAKE);
         for (ProtocolMessage message : allReceivedMessages) {
             if (message instanceof ECDHEServerKeyExchangeMessage) {
                 put(new ComparableByteArray(((ECDHEServerKeyExchangeMessage) message).getPublicKey().getValue()));

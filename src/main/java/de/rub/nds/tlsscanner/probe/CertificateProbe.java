@@ -51,7 +51,7 @@ public class CertificateProbe extends TlsProbe {
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
         List<SignatureAndHashAlgorithm> sigHashAlgos = Arrays.asList(SignatureAndHashAlgorithm.values());
-        tlsConfig.setSupportedSignatureAndHashAlgorithms(sigHashAlgos);
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashAlgos);
         toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
         toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);

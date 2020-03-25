@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -27,12 +28,24 @@ public class Tls13Result extends ProbeResult {
 
     private final List<CipherSuite> supportedCipherSuites;
 
-    public Tls13Result(List<ProtocolVersion> supportedProtocolVersion, List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups, List<CipherSuite> supportedCipherSuites) {
+    private final TestResult supportsSECPCompression;
+
+    private final TestResult issuesSessionTicket;
+
+    private final TestResult supportsPskDhe;
+
+    public Tls13Result(List<ProtocolVersion> supportedProtocolVersion,
+            List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups,
+            List<CipherSuite> supportedCipherSuites, TestResult supportsSECPCompression,
+            TestResult issuesSessionTicket, TestResult supportsPskDhe) {
         super(ProbeType.TLS13);
         this.supportedProtocolVersion = supportedProtocolVersion;
         this.unsupportedProtocolVersion = unsupportedProtocolVersion;
         this.supportedNamedGroups = supportedNamedGroups;
         this.supportedCipherSuites = supportedCipherSuites;
+        this.supportsSECPCompression = supportsSECPCompression;
+        this.issuesSessionTicket = issuesSessionTicket;
+        this.supportsPskDhe = supportsPskDhe;
     }
 
     @Override
@@ -157,20 +170,35 @@ public class Tls13Result extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28, TestResult.COULD_NOT_TEST);
         }
-        if (supportedNamedGroups
-                != null) {
+        if (supportedNamedGroups != null) {
             report.setSupportedTls13Groups(supportedNamedGroups);
         }
-        if (supportedCipherSuites
-                != null) {
+        if (supportedCipherSuites != null) {
             report.setSupportedTls13CipherSuites(supportedCipherSuites);
         }
 
-        if (report.getVersions()
-                != null) {
+        if (report.getVersions() != null) {
             report.getVersions().addAll(supportedProtocolVersion);
         } else {
             report.setVersions(supportedProtocolVersion);
+        }
+
+        if (supportsSECPCompression != null) {
+            report.putResult(AnalyzedProperty.SUPPORTS_SECP_COMPRESSION_TLS13, supportsSECPCompression);
+        } else {
+            report.putResult(AnalyzedProperty.SUPPORTS_SECP_COMPRESSION_TLS13, TestResult.COULD_NOT_TEST);
+        }
+
+        if (issuesSessionTicket != null) {
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, issuesSessionTicket);
+        } else {
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, TestResult.COULD_NOT_TEST);
+        }
+
+        if (supportsPskDhe != null) {
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsPskDhe);
+        } else {
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TestResult.COULD_NOT_TEST);
         }
     }
 }

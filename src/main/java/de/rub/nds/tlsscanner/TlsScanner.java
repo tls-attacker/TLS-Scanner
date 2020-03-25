@@ -22,6 +22,7 @@ import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.CommonBugProbe;
 import de.rub.nds.tlsscanner.probe.CompressionsProbe;
 import de.rub.nds.tlsscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.probe.ECPointFormatProbe;
 import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
 import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
@@ -74,7 +75,8 @@ public class TlsScanner {
         this.config = config;
         closeAfterFinish = true;
         closeAfterFinishParallel = true;
-        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
+        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config
+                .getClientDelegate().getHost() + "-Worker"));
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         fillDefaultProbeLists();
@@ -84,7 +86,8 @@ public class TlsScanner {
         this.config = config;
         closeAfterFinish = false;
         closeAfterFinishParallel = true;
-        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
+        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config
+                .getClientDelegate().getHost() + "-Worker"));
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         fillDefaultProbeLists();
@@ -100,7 +103,8 @@ public class TlsScanner {
         fillDefaultProbeLists();
     }
 
-    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor, List<TlsProbe> probeList, List<AfterProbe> afterList) {
+    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor,
+            List<TlsProbe> probeList, List<AfterProbe> afterList) {
         this.parallelExecutor = parallelExecutor;
         this.config = config;
         this.probeList = probeList;
@@ -122,6 +126,7 @@ public class TlsScanner {
         probeList.add(new Tls13Probe(config, parallelExecutor));
         probeList.add(new TokenbindingProbe(config, parallelExecutor));
         probeList.add(new HttpHeaderProbe(config, parallelExecutor));
+        probeList.add(new ECPointFormatProbe(config, parallelExecutor));
         probeList.add(new ResumptionProbe(config, parallelExecutor));
         probeList.add(new RenegotiationProbe(config, parallelExecutor));
         probeList.add(new HeartbleedProbe(config, parallelExecutor));
@@ -152,10 +157,12 @@ public class TlsScanner {
         try {
             if (isConnectable()) {
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-                if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls()) || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
+                if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls())
+                        || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(probeList, afterList);
-                    executor = new ThreadedScanJobExecutor(config, job, config.getOverallThreads(), config.getClientDelegate().getHost());
+                    executor = new ThreadedScanJobExecutor(config, job, config.getOverallThreads(), config
+                            .getClientDelegate().getHost());
                     SiteReport report = executor.execute();
                     return report;
                 } else {

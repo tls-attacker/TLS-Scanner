@@ -25,6 +25,7 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
@@ -48,7 +49,7 @@ public class SiteReport extends Observable {
 
     private final HashMap<String, TestResult> resultMap;
 
-    //General
+    // General
     private List<PerformanceData> performanceList;
 
     private final String host;
@@ -56,16 +57,20 @@ public class SiteReport extends Observable {
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
 
-    //Attacks
+    // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
+    private List<InvalidCurveResponse> invalidCurveResultList;
+    private int parameterCombinations = -2;
+    private int executedCombinations = -2;
+    private String debugString = "noneGiven";
 
-    //Version
+    // Version
     private List<ProtocolVersion> versions = null;
 
-    //Extensions
+    // Extensions
     private List<ExtensionType> supportedExtensions = null;
     private List<NamedGroup> supportedNamedGroups = null;
     private List<NamedGroup> supportedTls13Groups = null;
@@ -73,46 +78,46 @@ public class SiteReport extends Observable {
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
 
-    //Compression
+    // Compression
     private List<CompressionMethod> supportedCompressionMethods = null;
 
-    //RFC
+    // RFC
     private CheckPattern macCheckPatterAppData = null;
     private CheckPattern macCheckPatternFinished = null;
     private CheckPattern verifyCheckPattern = null;
 
-    //Certificate
+    // Certificate
     private Certificate certificate = null;
     private CertificateChain certificateChain;
 
-    //Ciphers
+    // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
     private Set<CipherSuite> cipherSuites = null;
     private List<CipherSuite> supportedTls13CipherSuites = null;
 
-    //Session
+    // Session
     private Long sessionTicketLengthHint = null;
 
-    //Renegotiation + SCSV
-    //GCM Nonces
+    // Renegotiation + SCSV
+    // GCM Nonces
     private GcmPattern gcmPattern = null;
 
-    //HTTPS Header
+    // HTTPS Header
     private List<HttpsHeader> headerList = null;
     private Long hstsMaxAge = null;
     private Integer hpkpMaxAge = null;
     private List<HpkpPin> normalHpkpPins;
     private List<HpkpPin> reportOnlyHpkpPins;
 
-    //Randomness
+    // Randomness
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
     private RandomEvaluationResult randomEvaluationResult;
 
-    //PublicKey Params
+    // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
     private Integer weakestDhStrength = null;
 
-    //Handshake Simulation
+    // Handshake Simulation
     private Integer handshakeSuccessfulCounter = null;
     private Integer handshakeFailedCounter = null;
     private Integer connectionRfc7918SecureCounter = null;
@@ -165,7 +170,9 @@ public class SiteReport extends Observable {
     }
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
-        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
+        this.putResult(property,
+                Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
+                        : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
     public synchronized void putResult(DrownVulnerabilityType result) {
@@ -236,7 +243,8 @@ public class SiteReport extends Observable {
         return supportedTokenBindingKeyParameters;
     }
 
-    public synchronized void setSupportedTokenBindingKeyParameters(List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
+    public synchronized void setSupportedTokenBindingKeyParameters(
+            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
@@ -300,7 +308,8 @@ public class SiteReport extends Observable {
         return supportedSignatureAndHashAlgorithms;
     }
 
-    public synchronized void setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+    public synchronized void setSupportedSignatureAndHashAlgorithms(
+            List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
     }
 
@@ -429,7 +438,8 @@ public class SiteReport extends Observable {
         return paddingOracleTestResultList;
     }
 
-    public synchronized void setPaddingOracleTestResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
+    public synchronized void setPaddingOracleTestResultList(
+            List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 
@@ -477,7 +487,8 @@ public class SiteReport extends Observable {
         return extractedValueContainerMap;
     }
 
-    public synchronized void setExtractedValueContainerList(Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
+    public synchronized void setExtractedValueContainerList(
+            Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
@@ -525,7 +536,16 @@ public class SiteReport extends Observable {
         return paddingOracleShakyEvalResultList;
     }
 
-    public synchronized void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
+    public synchronized void setPaddingOracleShakyEvalResultList(
+            List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
+    }
+
+    public synchronized List<InvalidCurveResponse> getInvalidCurveResultList() {
+        return invalidCurveResultList;
+    }
+
+    public synchronized void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
+        this.invalidCurveResultList = invalidCurveResultList;
     }
 }

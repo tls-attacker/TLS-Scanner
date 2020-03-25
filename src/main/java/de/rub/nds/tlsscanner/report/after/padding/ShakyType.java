@@ -13,5 +13,7 @@ package de.rub.nds.tlsscanner.report.after.padding;
  * @author ic0ns
  */
 public enum ShakyType {
-    CONNECTION, HETEROGEN, MIXED
+    CONNECTION,
+    HETEROGEN,
+    MIXED
 }

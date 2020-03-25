@@ -27,7 +27,8 @@ public class TokenbindingResult extends ProbeResult {
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
 
-    public TokenbindingResult(List<TokenBindingVersion> supportedTokenBindingVersion, List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
+    public TokenbindingResult(List<TokenBindingVersion> supportedTokenBindingVersion,
+            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         super(ProbeType.TOKENBINDING);
         this.supportedTokenBindingVersion = supportedTokenBindingVersion;
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;

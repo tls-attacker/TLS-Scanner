@@ -26,7 +26,8 @@ public class PaddingOracleResponseMap extends ProbeResult {
 
     private TestResult vulnerable;
 
-    public PaddingOracleResponseMap(List<PaddingOracleCipherSuiteFingerprint> resultList, List<PaddingOracleCipherSuiteFingerprint> shakyEvalList, TestResult vulnerable) {
+    public PaddingOracleResponseMap(List<PaddingOracleCipherSuiteFingerprint> resultList,
+            List<PaddingOracleCipherSuiteFingerprint> shakyEvalList, TestResult vulnerable) {
         super(ProbeType.PADDING_ORACLE);
         this.resultList = resultList;
         this.shakyEvalList = shakyEvalList;

@@ -21,7 +21,8 @@ public class ProtocolVersionResult extends ProbeResult {
 
     private final List<ProtocolVersion> unsupportedProtocolVersions;
 
-    public ProtocolVersionResult(List<ProtocolVersion> supportedProtocolVersions, List<ProtocolVersion> unsupportedProtocolVersions) {
+    public ProtocolVersionResult(List<ProtocolVersion> supportedProtocolVersions,
+            List<ProtocolVersion> unsupportedProtocolVersions) {
         super(ProbeType.PROTOCOL_VERSION);
         this.supportedProtocolVersions = supportedProtocolVersions;
         this.unsupportedProtocolVersions = unsupportedProtocolVersions;
