@@ -5,6 +5,11 @@ openssl genrsa -out rootv3.pem 2048;
 openssl ecparam -out ecrootv3_param.pem -name secp384r1;
 openssl genpkey -paramfile ecrootv3_param.pem -out ecrootv3.pem;
 openssl pkey -in ecrootv3.pem -pubout -out ecrootv3_pub.pem;
+openssl dsaparam -out dsaparam_rootv3.pem 1024;
+openssl gendsa -out dsarootv3.pem dsaparam_rootv3.pem;
+
+
+openssl genrsa -3 -out rsakey_weak512.pem 512;
 
 for i in `seq 1 10`; do
   openssl genrsa -out rsakey_${i}.pem 2048;
@@ -17,7 +22,7 @@ for i in `seq 1 10`; do
 done;
 
 for i in `seq 1 10`; do
-  openssl dsaparam -out dsaparam_${i}.pem 2048;
+  openssl dsaparam -out dsaparam_${i}.pem 1024;
   openssl gendsa -out dsakey_${i}.pem dsaparam_${i}.pem;
 done;
 
