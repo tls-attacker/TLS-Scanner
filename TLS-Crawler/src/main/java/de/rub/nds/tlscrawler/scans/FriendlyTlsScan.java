@@ -33,7 +33,7 @@ public class FriendlyTlsScan extends TlsScan {
     }
 
     @Override
-    public IScanResult scan(String slaveInstanceId, IScanTarget target) {
+    public IScanResult scan(IScanTarget target) {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
@@ -51,7 +51,6 @@ public class FriendlyTlsScan extends TlsScan {
         SiteReport report = scanner.scan();
 
         IScanResult result = new ScanResult(SCAN_NAME);
-        result.addString(SLAVE_INSTANCE_ID, slaveInstanceId);
 
         populateScanResultFromSiteReport(result, report);
 

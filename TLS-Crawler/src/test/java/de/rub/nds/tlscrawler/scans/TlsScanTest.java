@@ -23,16 +23,12 @@ public class TlsScanTest {
     @Test
     public void ParserTest() {
         SiteReport sr = new SiteReport("local", new LinkedList<>());
-        List<List<VectorResponse>> fullList = new LinkedList<>();
         List<VectorResponse> porm = new LinkedList<>();
-        LinkedList<ResponseFingerprint> rfl = new LinkedList<>();
-        rfl.add(new ResponseFingerprint(false, false, 0, 0,
-                new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), SocketState.SOCKET_EXCEPTION));
         porm.add(new VectorResponse(new TrippleVector(",", "test", null, null, null), new ResponseFingerprint(false, false, 0, 0,
-                new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), SocketState.SOCKET_EXCEPTION), ProtocolVersion.SSL2, CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA, 0));
+                new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), SocketState.SOCKET_EXCEPTION)));
 
-        PaddingOracleCipherSuiteFingerprint potr = new PaddingOracleCipherSuiteFingerprint(true, ProtocolVersion.SSL2, CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                PaddingVectorGeneratorType.CLASSIC, PaddingRecordGeneratorType.LONG, fullList, EqualityError.ALERT_COUNT, false, false);
+        PaddingOracleCipherSuiteFingerprint potr = new PaddingOracleCipherSuiteFingerprint(ProtocolVersion.SSL2, CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
+                PaddingVectorGeneratorType.CLASSIC, PaddingRecordGeneratorType.LONG, porm);
 
         List<PaddingOracleCipherSuiteFingerprint> trl = new LinkedList<>();
 

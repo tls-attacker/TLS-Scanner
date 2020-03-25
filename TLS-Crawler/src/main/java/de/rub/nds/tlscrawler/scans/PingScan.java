@@ -40,12 +40,10 @@ public class PingScan implements IScan {
     }
 
     @Override
-    public IScanResult scan(String slaveInstanceId, IScanTarget target) {
+    public IScanResult scan(IScanTarget target) {
         LOG.trace("scan()");
 
         IScanResult result = new ScanResult(this.getName());
-        result.addString(SLAVE_INSTANCE_ID, slaveInstanceId);
-
         result.addTimestamp("timestamp", Instant.now());
         result.addInteger("timeout", this.timeOutMs);
 

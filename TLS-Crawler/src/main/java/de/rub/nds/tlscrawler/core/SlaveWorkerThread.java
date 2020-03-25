@@ -62,7 +62,7 @@ public class SlaveWorkerThread extends Thread {
 
                     try {
                         IScan scanInstance = this.scanProvider.getScanByName(scan);
-                        result = scanInstance.scan(this.slaveInstanceId, todo.getScanTarget());
+                        result = scanInstance.scan(todo.getScanTarget());
                     } catch (Exception e) {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         e.printStackTrace(new PrintStream(out));

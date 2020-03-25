@@ -27,10 +27,8 @@ import de.rub.nds.tlsscanner.probe.ECPointFormatProbe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
 import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
 import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
-import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
 import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
-import de.rub.nds.tlsscanner.probe.ResumptionProbe;
 import de.rub.nds.tlsscanner.probe.Tls13Probe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
@@ -79,14 +77,13 @@ public class TlsScan implements IScan {
     }
 
     @Override
-    public IScanResult scan(String slaveInstanceId, IScanTarget target) {
+    public IScanResult scan(IScanTarget target) {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
         generalDelegate.setQuiet(true);
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
-        config.setNoProgressbar(true);
         config.setScanDetail(ScannerDetail.NORMAL);
         config.setTimeout(1000);
 
@@ -115,7 +112,6 @@ public class TlsScan implements IScan {
         SiteReport report = scanner.scan();
 
         IScanResult result = new ScanResult(SCAN_NAME);
-        result.addString(SLAVE_INSTANCE_ID, slaveInstanceId);
         populateScanResultFromSiteReport(result, report);
 
         return result;
@@ -183,17 +179,13 @@ public class TlsScan implements IScan {
             tmp.addString("vectorGeneratorType", potr.getVectorGeneratorType().name());
             tmp.addString("suite", potr.getSuite().name());
             tmp.addString("version", potr.getVersion().name());
-            tmp.addBoolean("vulnerable", potr.getVulnerable());
-            tmp.addBoolean("scanningError", potr.isHasScanningError());
 
-            List<VectorResponse> fp = potr.getResponseMapList().size() > 0 ? potr.getResponseMapList().get(0) : new LinkedList<>();
+            List<VectorResponse> fp = potr.getResponseMap().size() > 0 ? potr.getResponseMap() : new LinkedList<>();
             List<String> fp_toString = fp.stream()
                     .map(VectorResponse::toString)
                     .collect(Collectors.toList());
 
             tmp.addStringArray("responseMap", fp_toString);
-            tmp.addBoolean("shaky", potr.isShakyScans());
-            tmp.addBoolean("scanError", potr.isHasScanningError());
             paddingOracleResults.add(tmp);
         }
 
@@ -260,7 +252,6 @@ public class TlsScan implements IScan {
                     {
                         resultPair.addString("responseFingerprint", "noneExtracted");
                     }
-                    resultPair.addString("trace", fpsPair.getTrace().toString());
                     pairResultList.add(resultPair);
                 }
                 tmp.addSubResultArray("fingerprintSecretPairs", pairResultList);

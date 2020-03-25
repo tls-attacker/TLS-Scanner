@@ -28,5 +28,5 @@ public interface IScan {
      * @param target Target of the scan.
      * @return The scan's result in an IScanResult structure.
      */
-    IScanResult scan(String slaveInstanceId, IScanTarget target);
+    IScanResult scan(IScanTarget target);
 }
