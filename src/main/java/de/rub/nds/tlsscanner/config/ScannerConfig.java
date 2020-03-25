@@ -51,8 +51,6 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
 
-    private boolean noProgressbar = false;
-
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
 
@@ -74,14 +72,6 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(clientDelegate);
         addDelegate(generalDelegate);
         addDelegate(starttlsDelegate);
-    }
-
-    public boolean isNoProgressbar() {
-        return noProgressbar;
-    }
-
-    public void setNoProgressbar(boolean noProgressbar) {
-        this.noProgressbar = noProgressbar;
     }
 
     public int getOverallThreads() {
