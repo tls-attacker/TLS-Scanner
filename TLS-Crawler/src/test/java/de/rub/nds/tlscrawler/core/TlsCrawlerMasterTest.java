@@ -84,6 +84,6 @@ public class TlsCrawlerMasterTest {
         Instant stop = Instant.now();
 
         long ms = Duration.between(start, stop).toMillis();
-        assertTrue(ms <= 12000);
+        assertTrue(ms <= 120000);
     }
 }

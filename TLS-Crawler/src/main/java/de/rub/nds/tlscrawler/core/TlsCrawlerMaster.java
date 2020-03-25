@@ -16,10 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -32,46 +35,83 @@ import static java.util.stream.Collectors.joining;
  */
 public class TlsCrawlerMaster extends TlsCrawler {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerMaster.class);
+    private static long TIME_TO_WAIT = 1;
 
     private Map<String, Thread> taskGeneratorThreadList;
 
     /**
      * TLS-Crawler master constructor.
      *
+     * @param instanceId The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TlsCrawlerMaster(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
-        super(orchestrationProvider, persistenceProvider, scans);
+    public TlsCrawlerMaster(String instanceId,
+                            IOrchestrationProvider orchestrationProvider,
+                            IPersistenceProvider persistenceProvider,
+                            List<IScan> scans) {
+        super(instanceId, orchestrationProvider, persistenceProvider, scans);
 
         this.taskGeneratorThreadList = new HashMap<>();
     }
 
     public void crawl(List<String> scans, IAddressIterator targets, List<Integer> ports, String scanId) {
+        LOG.info("Crawling started");
         if (areNotValidArgs(scans, targets, ports)) {
             LOG.error("Crawling task has not been established due to invalid arguments.");
         }
 
         // TODO: This should be parallelized.
 
-        for (String target : targets) {
+        int ctr = 0;
+        Collection<IScanTask> bulk = new ArrayList<>(1000);
+
+        while (targets.iterator().hasNext()) {
+            String target = targets.iterator().next();
             String taskId = UUID.randomUUID().toString();
 
-            IScanTask newTask = new ScanTask(
+            bulk.add(new ScanTask(
                     taskId,
                     scanId,
+                    this.getInstanceId(),
                     Instant.now(),
                     null,
                     null,
                     null,
                     target,
                     ports,
-                    scans);
+                    scans)
+            );
 
-            this.getPersistenceProvider().setUpScanTask(newTask);
-            this.getOrchestrationProvider().addScanTask(newTask.getId());
+            if (++ctr >= 1000 || targets.iterator().hasNext() == false) {
+                setUp(this, bulk);
+                ctr = 0;
+                bulk = new ArrayList<>(1000);
+            }
         }
+
+        try {
+            while (this.getOrchestrationProvider().getNumberOfTasks() != 0) {
+                TimeUnit.SECONDS.sleep(TIME_TO_WAIT);
+            }
+        } catch (Exception e) {
+            LOG.debug("Oops! Exception");
+            e.printStackTrace();
+        } finally {
+            targets.remove();
+        }
+        LOG.info("All ScanTasks have been scheduled");
+    }
+    
+    private static void setUp(IOrganizer org, Collection<IScanTask> tasks) {
+            org.getPersistenceProvider().setUpScanTasks(tasks);
+
+            Collection<String> tids = tasks.stream()
+                    .map(x -> x.getId())
+                    .collect(Collectors.toList());
+
+            org.getOrchestrationProvider().addScanTasks(tids);
     }
 
     public IMasterStats getStats() {

@@ -9,24 +9,35 @@ package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTask;
+import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.scans.IScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.time.Instant;
 
 /**
  * Worker Thread for a more sophisticated TLS crawler slave implementation.
+ *
+ * // TODO: Graceful exit
+ *
+ * @author janis.fliegenschmidt@rub.de
  */
 public class SlaveWorkerThread extends Thread {
     private static Logger LOG = LoggerFactory.getLogger(SlaveWorkerThread.class);
 
     private final SynchronizedTaskRouter synchronizedTaskRouter;
+    private final String slaveInstanceId;
 
     private IScanProvider scanProvider;
 
-    public SlaveWorkerThread(SynchronizedTaskRouter synchronizedTaskRouter, IScanProvider scanProvider) {
+    public SlaveWorkerThread(String slaveInstanceId,
+                             SynchronizedTaskRouter synchronizedTaskRouter,
+                             IScanProvider scanProvider) {
+        this.slaveInstanceId = slaveInstanceId;
         this.synchronizedTaskRouter = synchronizedTaskRouter;
         this.scanProvider = scanProvider;
     }
@@ -40,14 +51,27 @@ public class SlaveWorkerThread extends Thread {
 
             if (raw != null) {
                 LOG.trace(String.format("Started work on %s.", raw.getId()));
+                this.setName("Thread - " + raw.getTargetIp());
 
                 ScanTask todo = ScanTask.copyFrom(raw);
 
                 todo.setStartedTimestamp(Instant.now());
 
                 for (String scan : todo.getScans()) {
-                    IScan scanInstance = this.scanProvider.getScanByName(scan);
-                    IScanResult result = scanInstance.scan(todo.getScanTarget());
+                    IScanResult result;
+
+                    try {
+                        IScan scanInstance = this.scanProvider.getScanByName(scan);
+                        result = scanInstance.scan(todo.getScanTarget());
+                    } catch (Exception e) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        e.printStackTrace(new PrintStream(out));
+                        String str = new String(out.toByteArray());
+
+                        result = new ScanResult(scan);
+                        result.addString("failedWithException", str);
+                    }
+
                     todo.addResult(result);
                 }
 

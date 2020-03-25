@@ -26,4 +26,9 @@ interface IOrganizer {
      * @return A persistence provider.
      */
     IPersistenceProvider getPersistenceProvider();
+
+    /**
+     * @return The id of this instance.
+     */
+    String getInstanceId();
 }

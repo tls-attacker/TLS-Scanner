@@ -5,8 +5,9 @@
  *
  * Copyright 2017 Ruhr-University Bochum
  */
-package de.rub.nds.tlscrawler;
+package de.rub.nds.tlscrawler.options;
 
+import de.rub.nds.tlscrawler.options.NewScanOptions;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

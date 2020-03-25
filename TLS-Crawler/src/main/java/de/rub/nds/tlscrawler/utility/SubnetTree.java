@@ -95,11 +95,13 @@ public class SubnetTree {
 
     private int addressToInt(String ip) {
         String[] address = ip.split(Pattern.quote("."));
-        byte[] ipBytes = new byte[4];
+        int[] ipBytes = new int[4];
 
         for (int i = 0; i < 4; i++) {
-            ipBytes[i] = (byte)Integer.parseInt(address[i]);
+            ipBytes[i] = Integer.parseInt(address[i]);
         }
+
+
 
         return ipBytes[0] << 24 | ipBytes[1] << 16 | ipBytes[2] << 8 | ipBytes[3];
     }

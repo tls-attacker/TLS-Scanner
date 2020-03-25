@@ -5,9 +5,10 @@
  *
  * Copyright 2017 Ruhr-University Bochum
  */
-package de.rub.nds.tlscrawler;
+package de.rub.nds.tlscrawler.options;
 
 import com.google.devtools.common.options.OptionsParsingException;
+import de.rub.nds.tlscrawler.options.StartupOptions;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -39,8 +40,8 @@ public class StartupOptionsTest {
 
         assertEquals(true, parsed.isMaster);
         assertEquals("myinstance", parsed.instanceId);
-        assertEquals("mymongo", parsed.mongoDbConnectionString);
-        assertEquals("myredis", parsed.redisConnectionString);
+        assertEquals("mymongo", parsed.mongoDbHost);
+        assertEquals("myredis", parsed.redisHost);
     }
 
     @Test
@@ -95,5 +96,29 @@ public class StartupOptionsTest {
         assertNotNull(parsed);
         assertNotNull(parsed.workspace);
         assertNotEquals("", parsed.workspace);
+    }
+
+    @Test
+    public void cliParsingConnectionDefaults() {
+        String[] opts = { };
+
+        StartupOptions parsed = null;
+        try {
+            parsed = StartupOptions.parseOptions(opts);
+        } catch (OptionsParsingException ex) {
+            fail("Must not throw.");
+        }
+
+        assertEquals("localhost", parsed.mongoDbHost);
+        assertEquals("localhost", parsed.redisHost);
+
+        assertEquals(6379, parsed.redisPort);
+        assertEquals(27017, parsed.mongoDbPort);
+
+        assertEquals("", parsed.mongoDbAuthSource);
+        assertEquals("", parsed.mongoDbPass);
+        assertEquals("", parsed.mongoDbUser);
+
+        assertEquals("", parsed.redisPass);
     }
 }

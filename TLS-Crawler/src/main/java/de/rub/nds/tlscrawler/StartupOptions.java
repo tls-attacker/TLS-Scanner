@@ -99,6 +99,14 @@ public class StartupOptions extends OptionsBase {
     )
     public String workspace;
 
+    @Option(
+            name = "multipleTestsMode",
+            abbrev = 'q',
+            help = "Performs multiple scans in a row",
+            defaultValue = "false"
+    )
+    public boolean multipleTestsMode;
+
     private static String DEFAULT_WORKSPACE = "default";
 
     /**

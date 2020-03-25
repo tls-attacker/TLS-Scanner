@@ -8,10 +8,12 @@
 package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.OptionsParsingException;
-import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
+import de.rub.nds.tlscrawler.options.StartupOptions;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
@@ -55,15 +57,27 @@ public class Main {
 
         Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
 
-        ITlsCrawlerSlave slave = new TlsCrawlerSlave(providers.getFirst(), providers.getSecond(), scans);
-        slave.start();
+        ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(), scans);
 
-        TlsCrawlerMaster master = new TlsCrawlerMaster(providers.getFirst(), providers.getSecond(), scans);
+        if (!options.masterOnly) {
+            slave.start();
+        }
+
+        TlsCrawlerMaster master = new TlsCrawlerMaster(options.instanceId, providers.getFirst(), providers.getSecond(), scans);
 
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
-                + options.instanceId + ".");
-
-        CommandLineInterface.handleInput(master, slave);
+                + options.instanceId + " in " +
+                (options.multipleTestsMode ? "multiple tests - " : "classic ") + "mode.");
+        if (options.multipleTestsMode) {
+            try {
+                MultipleScansCommandLineInterface.handleInput(master, slave);
+            } catch(InterruptedException e) {
+                e.printStackTrace();
+                LOG.info("Program interrupted");
+            }
+        } else {
+            CommandLineInterface.handleInput(master, slave);
+        }
     }
 
     static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(StartupOptions options) {
@@ -77,16 +91,29 @@ public class Main {
         IPersistenceProvider persistenceProvider;
 
         String workspace = options.workspace;
-        String workspaceWithPrefix = String.format("TLSC-%s", workspace);
+        String workspaceWithPrefix = String.format("TLSC-dev-%s", workspace);
 
         if (!options.testMode) {
-            MongoPersistenceProvider mpp = new MongoPersistenceProvider(new MongoClientURI(options.mongoDbConnectionString));
+            ServerAddress address = new ServerAddress(options.mongoDbHost, options.mongoDbPort);
+            MongoCredential credential = null;
+
+            if (!options.mongoDbUser.equals("")) {
+                credential = MongoCredential.createCredential(
+                        options.mongoDbUser,
+                        options.mongoDbAuthSource,
+                        options.mongoDbPass.toCharArray());
+            }
+
+            MongoPersistenceProvider mpp = new MongoPersistenceProvider(address, credential);
             mpp.init(workspaceWithPrefix);
 
             persistenceProvider = mpp;
 
             if (!options.inMemoryOrchestration) {
-                RedisOrchestrationProvider rop = new RedisOrchestrationProvider(options.redisConnectionString);
+                RedisOrchestrationProvider rop = new RedisOrchestrationProvider(
+                        options.redisHost,
+                        options.redisPort,
+                        options.redisPass);
 
                 try {
                     rop.init(workspaceWithPrefix);
@@ -108,23 +135,14 @@ public class Main {
     }
 
     /**
-     * Set up for known scans // TODO and plugin-provided scans.
+     * Set up for known scans.
      *
      * @return A list of scans.
      */
     static List<IScan> setUpScans() {
         LOG.trace("setUpScans()");
 
-        List<IScan> result = new LinkedList<>();
-
-        // Set up known scans.
-        result.add(new PingScan());
-        result.add(new TestScan());
-        result.add(new NullScan());
-        result.add(new TlsScan());
-        result.add(new FriendlyTlsScan());
-
-        // TODO: Set up plugins
+        List<IScan> result = new LinkedList<>(ScanFactory.getInstance().getBuiltInScans());
 
         return result;
     }

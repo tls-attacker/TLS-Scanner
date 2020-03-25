@@ -7,10 +7,12 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.net.ConnectException;
 import java.util.ArrayList;
@@ -25,24 +27,41 @@ import java.util.Collection;
 public class RedisOrchestrationProvider implements IOrchestrationProvider {
     private static Logger LOG = LoggerFactory.getLogger(RedisOrchestrationProvider.class);
 
+    private static int REDIS_TIMEOUT = 30000; // in ms
+
     private boolean initialized = false;
-    private String redisConnectionString;
+
+    private String redisHost;
+    private int redisPort;
+    private String redisPass;
+
     private JedisPool jedisPool;
 
-    private String taskListName = "myList";
+    private String taskListName = "invalCurveTasks";
 
-    public RedisOrchestrationProvider(String redisConnString) {
-        this.redisConnectionString = redisConnString;
+    public RedisOrchestrationProvider(String redisHost, int redisPort, String redisPass) {
+        this.redisHost = redisHost;
+        this.redisPort = redisPort;
+        this.redisPass = redisPass;
     }
 
     public void init(String taskListName) throws ConnectException {
         LOG.trace("init() - Enter");
-        this.jedisPool = new JedisPool(this.redisConnectionString);
+
+        JedisPoolConfig cfg = new JedisPoolConfig();
+        cfg.setMaxIdle(GenericObjectPoolConfig.DEFAULT_MAX_IDLE);
+        cfg.setMinIdle(GenericObjectPoolConfig.DEFAULT_MIN_IDLE);
+        cfg.setTestOnBorrow(true);
+
+        if (!this.redisPass.equals("")) {
+            this.jedisPool = new JedisPool(cfg, this.redisHost, this.redisPort, REDIS_TIMEOUT, this.redisPass);
+        } else {
+            this.jedisPool = new JedisPool(cfg, this.redisHost, this.redisPort, REDIS_TIMEOUT);
+        }
 
         try (Jedis jedis = this.jedisPool.getResource()) {
             if (jedis.isConnected()) {
-                LOG.info("Connected to Redis at " +
-                        (this.redisConnectionString.equals("") ? "localhost" : this.redisConnectionString));
+                LOG.info("Connected to Redis at " + this.redisHost + ":" + this.redisPort);
             } else {
                 LOG.error("Connecting to Redis failed.");
                 throw new ConnectException("Could not connect to Redis endpoint.");
@@ -83,6 +102,15 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
+    public long getNumberOfTasks() {
+        long listLength;
+        try (Jedis redis = this.jedisPool.getResource()) {
+            listLength = redis.llen(this.taskListName);
+        }
+        return listLength;
+    }
+
+    @Override
     public Collection<String> getScanTasks(int quantity) {
         this.checkInit();
 
@@ -108,13 +136,26 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
-    public void addScanTask(String task) {
+    public void addScanTask(String taskId) {
         this.checkInit();
 
         LOG.trace("addScanTask()");
 
         try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.lpush(this.taskListName, task);
+            jedis.lpush(this.taskListName, taskId);
+        }
+    }
+
+    @Override
+    public void addScanTasks(Collection<String> taskIds) {
+        this.checkInit();
+
+        LOG.trace("addScanTasks()");
+
+        String[] tids = taskIds.toArray(new String[taskIds.size()]);
+
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            jedis.lpush(this.taskListName, tids);
         }
     }
 }

@@ -23,4 +23,9 @@ public interface ISlaveStats {
      * @return The number of completed tasks.
      */
     long getCompletedTasksCount();
+
+    /**
+     * @return A printable synopsis of the stats.ä
+     */
+    String toString();
 }

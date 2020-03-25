@@ -22,9 +22,9 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class NewScanOptions extends OptionsBase {
-    private static Logger LOG = LoggerFactory.getLogger(NewScanOptions.class);
+    protected static Logger LOG = LoggerFactory.getLogger(NewScanOptions.class);
 
-    private static OptionsParser parser = OptionsParser.newOptionsParser(NewScanOptions.class);
+    protected static OptionsParser parser = OptionsParser.newOptionsParser(NewScanOptions.class);
 
     @Option(
             name = "help",

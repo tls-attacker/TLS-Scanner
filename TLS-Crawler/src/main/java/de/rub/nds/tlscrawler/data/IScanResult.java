@@ -7,6 +7,8 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
+import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlscrawler.utility.ITuple;
 
 import java.time.Instant;
@@ -41,7 +43,26 @@ public interface IScanResult {
      * @param key The value's key.
      * @param value The value.
      */
+
     void addString(String key, String value);
+
+    /**
+     * Adds a Drown Vulnerability Type to the result structure.
+     *
+     * @param key The array's key.
+     * @param value The array.
+     */
+
+    void addDrownVulnerabilityType(String key, DrownVulnerabilityType value);
+
+    /**
+     * Adds an Early Ccs Vulnerability Type to the result structure.
+     *
+     * @param key The array's key.
+     * @param value The array.
+     */
+
+    void addEarlyCcsVulnerabilityType(String key, EarlyCcsVulnerabilityType value);
 
     /**
      * Adds a string array to the result structure.
@@ -132,9 +153,17 @@ public interface IScanResult {
     void addSubResult(String key, IScanResult substructure);
 
     /**
+     * Adds an array of documents to a document.
+     *
+     * @param key The arrays' key.
+     * @param substructures The sub-result array.
+     */
+    void addSubResultArray(String key, List<IScanResult> substructures);
+
+    /**
      * Returns the result data.
      *
      * @return A list of result data tuples.
      */
-    List<ITuple<String, Object>> getContents();
+    public List<ITuple<String, Object>> getContents();
 }

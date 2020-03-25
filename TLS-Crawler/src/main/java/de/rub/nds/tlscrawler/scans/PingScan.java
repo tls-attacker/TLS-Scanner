@@ -44,7 +44,6 @@ public class PingScan implements IScan {
         LOG.trace("scan()");
 
         IScanResult result = new ScanResult(this.getName());
-
         result.addTimestamp("timestamp", Instant.now());
         result.addInteger("timeout", this.timeOutMs);
 

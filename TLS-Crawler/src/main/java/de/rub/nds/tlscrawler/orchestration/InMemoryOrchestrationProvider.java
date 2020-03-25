@@ -37,6 +37,11 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
+    public long getNumberOfTasks() throws Exception {
+        throw new Exception("Option is not available");
+    }
+
+    @Override
     public Collection<String> getScanTasks(int quantity) {
         LOG.trace("getScanTasks()");
 
@@ -59,5 +64,10 @@ public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
         synchronized (syncRoot) {
             this.tasks.add(task);
         }
+    }
+
+    @Override
+    public void addScanTasks(Collection<String> taskIds) {
+        throw new RuntimeException("Not yet implemented.");
     }
 }

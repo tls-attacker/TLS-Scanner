@@ -13,6 +13,7 @@ import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -26,19 +27,26 @@ import java.util.stream.Collectors;
 class TlsCrawler implements IScanProvider, IOrganizer {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawler.class);
 
+    private String instanceId;
     private IOrchestrationProvider orchestrationProvider;
     private IPersistenceProvider persistenceProvider;
-    private List<IScan> scans;
+    private Collection<IScan> scans;
 
     /**
      * TLS-Crawler constructor.
      *
+     * @param instanceId The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
      */
-    public TlsCrawler(IOrchestrationProvider orchestrationProvider, IPersistenceProvider persistenceProvider, List<IScan> scans) {
+    public TlsCrawler(String instanceId,
+                      IOrchestrationProvider orchestrationProvider,
+                      IPersistenceProvider persistenceProvider,
+                      Collection<IScan> scans) {
         boolean argumentsInvalid = false;
+
+        this.instanceId = instanceId;
 
         this.orchestrationProvider = orchestrationProvider;
         if (this.orchestrationProvider == null) {
@@ -64,8 +72,17 @@ class TlsCrawler implements IScanProvider, IOrganizer {
     }
 
     /**
+     * @return The identifier of this instance.
+     */
+    @Override
+    public String getInstanceId() {
+        return this.instanceId;
+    }
+
+    /**
      * @return The orchestration provider.
      */
+    @Override
     public IOrchestrationProvider getOrchestrationProvider() {
         return this.orchestrationProvider;
     }
@@ -73,6 +90,7 @@ class TlsCrawler implements IScanProvider, IOrganizer {
     /**
      * @return The persistence provider.
      */
+    @Override
     public IPersistenceProvider getPersistenceProvider() {
         return this.persistenceProvider;
     }
@@ -81,7 +99,7 @@ class TlsCrawler implements IScanProvider, IOrganizer {
      * @return The list of available scans.
      */
     @Override
-    public List<IScan> getScans() {
+    public Collection<IScan> getScans() {
         return this.scans;
     }
 

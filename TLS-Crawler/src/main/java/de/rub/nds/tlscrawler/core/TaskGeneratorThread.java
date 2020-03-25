@@ -25,6 +25,7 @@ import java.util.UUID;
 class TaskGeneratorThread extends Thread {
     private static Logger LOG = LoggerFactory.getLogger(TaskGeneratorThread.class);
 
+    private String instanceId;
     private List<String> scans;
     private IAddressIterator targets;
     private List<Integer> ports;
@@ -34,11 +35,13 @@ class TaskGeneratorThread extends Thread {
     private boolean interrupted = false;
 
     public TaskGeneratorThread(
+            String instanceId,
             List<String> scans,
             IAddressIterator targets,
             List<Integer> ports,
             String scanId,
             IOrganizer organizer) {
+        this.instanceId = instanceId;
         this.scans = scans;
         this.targets = targets;
         this.ports = ports;
@@ -58,6 +61,7 @@ class TaskGeneratorThread extends Thread {
             IScanTask newTask = new ScanTask(
                     taskId,
                     this.scanId,
+                    this.instanceId,
                     Instant.now(),
                     null,
                     null,
