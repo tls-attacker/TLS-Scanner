@@ -195,7 +195,7 @@ public class NondeterministicVectorContainerHolder {
     }
 
     private boolean isFisherExactUsable() {
-        if (statisticList.size() > 2) {
+        if (statisticList.size() != 2) {
             return false;
         }
         List<ResponseCounter> counterList1 = statisticList.get(0).getDistinctResponsesCounterList();
