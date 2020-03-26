@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * An orchestration provider implementation using Redis
- * as an external source.
+ * An orchestration provider implementation using Redis as an external source.
  *
  * @author janis.fliegenschmidt@rub.de
  */
 public class RedisOrchestrationProvider implements IOrchestrationProvider {
+
     private static Logger LOG = LoggerFactory.getLogger(RedisOrchestrationProvider.class);
 
     private static int REDIS_TIMEOUT = 30000; // in ms
@@ -37,7 +37,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
     private JedisPool jedisPool;
 
-    private String taskListName = "invalCurveTasks";
+    private String taskListName = null;
 
     public RedisOrchestrationProvider(String redisHost, int redisPort, String redisPass) {
         this.redisHost = redisHost;
@@ -75,7 +75,8 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     }
 
     /**
-     * Convenience method to block method entry in situations where the orchestration provider is not initialized.
+     * Convenience method to block method entry in situations where the
+     * orchestration provider is not initialized.
      */
     private void checkInit() {
         if (!this.initialized) {
@@ -103,6 +104,8 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
     @Override
     public long getNumberOfTasks() {
+        this.checkInit();
+
         long listLength;
         try (Jedis redis = this.jedisPool.getResource()) {
             listLength = redis.llen(this.taskListName);

@@ -7,13 +7,12 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
-import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
-import de.rub.nds.tlscrawler.data.ScanResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
+import org.bson.Document;
 
 /**
  * A null scan that only costs some (IO/processor) time.
@@ -35,24 +34,24 @@ public class NullScan implements IScan {
     }
 
     @Override
-    public IScanResult scan(IScanTarget target) {
+    public Document scan(IScanTarget target) {
         LOG.trace("scan()");
 
-        IScanResult result = new ScanResult(this.getName());
+        Document document = new Document();
 
-        result.addString("target_ip", target.getIp());
-        result.addString("target_ports", target.getPorts().stream()
+        document.put("target_ip", target.getIp());
+        document.put("target_ports", target.getPorts().stream()
                 .map(x -> x.toString())
                 .collect(Collectors.joining(", ")));
 
         try {
             LOG.trace("Going to sleep.");
             Thread.sleep(NullScan.WAIT_MS);
-            result.addInteger("wait_time", NullScan.WAIT_MS);
+            document.put("wait_time", NullScan.WAIT_MS);
         } catch (InterruptedException e) {
-            result.addString("exception", e.toString());
+            document.put("exception", e.toString());
         }
 
-        return result;
+        return document;
     }
 }

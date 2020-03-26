@@ -7,9 +7,7 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTask;
-import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.scans.IScan;
 import org.slf4j.Logger;
@@ -18,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.Instant;
+import org.bson.Document;
 
 /**
  * Worker Thread for a more sophisticated TLS crawler slave implementation.
@@ -58,7 +57,7 @@ public class SlaveWorkerThread extends Thread {
                 todo.setStartedTimestamp(Instant.now());
 
                 for (String scan : todo.getScans()) {
-                    IScanResult result;
+                    Document result;
 
                     try {
                         IScan scanInstance = this.scanProvider.getScanByName(scan);
@@ -67,12 +66,10 @@ public class SlaveWorkerThread extends Thread {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         e.printStackTrace(new PrintStream(out));
                         String str = new String(out.toByteArray());
-
-                        result = new ScanResult(scan);
-                        result.addString("failedWithException", str);
+                        result = new Document("failedWithException", str);
                     }
 
-                    todo.addResult(result);
+                    todo.setResult(result);
                 }
 
                 todo.setCompletedTimestamp(Instant.now());

@@ -13,10 +13,16 @@ package de.rub.nds.tlscrawler.data;
  * @author janis.fliegenschmidt@rub.de
  */
 public class SlaveStats implements ISlaveStats {
+
     private final Object _syncroot = new Object();
 
     private long acceptedTaskCount;
     private long completedTaskCount;
+
+    public SlaveStats() {
+        this.acceptedTaskCount = 0;
+        this.completedTaskCount = 0;
+    }
 
     public SlaveStats(long acceptedTaskCount, long completedTaskCount) {
         this.acceptedTaskCount = acceptedTaskCount;

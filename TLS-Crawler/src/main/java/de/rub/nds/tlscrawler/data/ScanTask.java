@@ -7,12 +7,14 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.tlsscanner.report.SiteReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
+import org.bson.Document;
 
 /**
  * Scan task implementation.
@@ -20,6 +22,7 @@ import java.util.LinkedList;
  * @author janis.fliegenschmidt@rub.de
  */
 public class ScanTask implements IScanTask {
+
     private static Logger LOG = LoggerFactory.getLogger(ScanTask.class);
 
     private String id;
@@ -32,18 +35,18 @@ public class ScanTask implements IScanTask {
     private String targetIp;
     private Collection<Integer> ports;
     private Collection<String> scans;
-    private Collection<IScanResult> results;
+    private Document result;
 
     public ScanTask(String id,
-                    String scanId,
-                    String instanceId,
-                    Instant createdTimestamp,
-                    Instant acceptedTimestamp,
-                    Instant startedTimestamp,
-                    Instant completedTimestamp,
-                    String targetIp,
-                    Collection<Integer> ports,
-                    Collection<String> scans) {
+            String scanId,
+            String instanceId,
+            Instant createdTimestamp,
+            Instant acceptedTimestamp,
+            Instant startedTimestamp,
+            Instant completedTimestamp,
+            String targetIp,
+            Collection<Integer> ports,
+            Collection<String> scans) {
         this.id = id;
         this.scanId = scanId;
         this.instanceId = instanceId;
@@ -54,8 +57,7 @@ public class ScanTask implements IScanTask {
         this.targetIp = targetIp;
         this.ports = ports;
         this.scans = scans;
-
-        this.results = new LinkedList<>();
+        this.result = null;
     }
 
     @Override
@@ -69,7 +71,9 @@ public class ScanTask implements IScanTask {
     }
 
     @Override
-    public String getInstanceId() { return this.instanceId; }
+    public String getInstanceId() {
+        return this.instanceId;
+    }
 
     @Override
     public Instant getCreatedTimestamp() {
@@ -132,12 +136,12 @@ public class ScanTask implements IScanTask {
     }
 
     @Override
-    public Collection<IScanResult> getResults() {
-        return this.results;
+    public Document getResult() {
+        return result;
     }
 
-    public void addResult(IScanResult result) {
-        this.results.add(result);
+    public void setResult(Document result) {
+        this.result = result;
     }
 
     public static ScanTask copyFrom(IScanTask scan) {

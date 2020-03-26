@@ -7,15 +7,10 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
-import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
+import com.mongodb.MongoClient;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.constants.*;
-import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
-import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlsscanner.ScanJob;
 import de.rub.nds.tlsscanner.ThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.TlsScanner;
@@ -31,28 +26,18 @@ import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
 import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
 import de.rub.nds.tlsscanner.probe.Tls13Probe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.probe.certificate.CertificateIssue;
-import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveParameterSet;
-import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.report.AnalyzedPropertyCategory;
-import de.rub.nds.tlsscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
-import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.bson.Document;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 
 /**
  * Scan using TLS Scanner, i. e. TLS Attacker.
@@ -77,7 +62,7 @@ public class TlsScan implements IScan {
     }
 
     @Override
-    public IScanResult scan(IScanTarget target) {
+    public Document scan(IScanTarget target) {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
@@ -111,350 +96,16 @@ public class TlsScan implements IScan {
         TlsScanner scanner = new TlsScanner(config, executor, parallelExecutor, probeList, afterList);
         SiteReport report = scanner.scan();
 
-        IScanResult result = new ScanResult(SCAN_NAME);
-        populateScanResultFromSiteReport(result, report);
+        Document document = createDocumentFromSiteReport(report);
 
-        return result;
+        return document;
     }
 
-    IScanResult populateScanResultFromSiteReport(IScanResult result, SiteReport report) {
-
-        result.addString("host", report.getHost());
-        result.addBoolean("serverIsAlive", report.getServerIsAlive());
-        result.addBoolean("supportsSslTls", report.getSupportsSslTls());
-
-        HashMap<AnalyzedPropertyCategory,ScanResult> categoryMap = new HashMap();
-        for(AnalyzedPropertyCategory category : AnalyzedPropertyCategory.values()){
-            categoryMap.put(category, new ScanResult(category.name()));
-        }
-        
-        //add AnalyzedProperties
-        for(String propertyKey : report.getResultMap().keySet()){
-            AnalyzedProperty property = AnalyzedProperty.valueOf(propertyKey);
-            categoryMap.get(property.getCategory()).addString(propertyKey, report.getResult(property).name());
-        }
-        
-        for(AnalyzedPropertyCategory category : categoryMap.keySet()){
-            result.addSubResult(category.name(), categoryMap.get(category));
-        }
-
-        List<String> _supportedCompressionMethods = new LinkedList<>();
-        List<CompressionMethod> _rawSupportedCompressionMethods = report.getSupportedCompressionMethods();
-        if (_rawSupportedCompressionMethods != null) {
-            for (CompressionMethod x : _rawSupportedCompressionMethods) {
-                _supportedCompressionMethods.add(x == null ? null : x.toString());
-            }
-        }
-
-        result.addStringArray("supportedCompressionMethods", _supportedCompressionMethods);
-
-        result.addSubResult("rfc", getRfcPage(report));
-        result.addSubResult("performance", getPerformancePage(report));
-        result.addSubResult("certificate", getCertificatePage(report));
-        result.addSubResult("ciphersuites", getCiphersPage(report));
-        result.addSubResult("namedGroups", getNamedGroupsPage(report));
-        result.addSubResult("gcm", getGcmPage(report));
-        result.addSubResult("paddingOracle", getPaddingOraclePage(report));
-        result.addSubResult("invalidCurve", getInvalidCurvePage(report));
-        
-        return result;
-    }
-  
-    static IScanResult getPaddingOraclePage(SiteReport report) {
-        IScanResult paddingOracle = new ScanResult("paddingOracle");
-
-        List<PaddingOracleCipherSuiteFingerprint> _rawPaddingOracleresult = report.getPaddingOracleTestResultList();
-
-        if (_rawPaddingOracleresult == null) {
-            return null;
-        }
-
-        List<IScanResult> paddingOracleResults = new LinkedList<>();
-        paddingOracle.addString("CVE", report.getKnownVulnerability() == null ? "none" : report.getKnownVulnerability().getCve());
-        for (PaddingOracleCipherSuiteFingerprint potr : _rawPaddingOracleresult) {
-            IScanResult tmp = new ScanResult("_paddingOracleResult");
-
-            tmp.addString("getEqualityError", potr.getEqualityError().name());
-            tmp.addString("recordGeneratorType", potr.getRecordGeneratorType().name());
-            tmp.addString("vectorGeneratorType", potr.getVectorGeneratorType().name());
-            tmp.addString("suite", potr.getSuite().name());
-            tmp.addString("version", potr.getVersion().name());
-
-            List<VectorResponse> fp = potr.getResponseMap().size() > 0 ? potr.getResponseMap() : new LinkedList<>();
-            List<String> fp_toString = fp.stream()
-                    .map(VectorResponse::toString)
-                    .collect(Collectors.toList());
-
-            tmp.addStringArray("responseMap", fp_toString);
-            paddingOracleResults.add(tmp);
-        }
-
-        paddingOracle.addSubResultArray("paddingOracleResults", paddingOracleResults);
-
-        return paddingOracle;
-    }
-    
-    static IScanResult getNamedGroupsPage(SiteReport report) {
-        IScanResult namedGroupPage = new ScanResult("namedGroups");
-        List<String> preTls13Groups = new LinkedList<>();
-        List<String> tls13Groups = new LinkedList<>();
-        if(report.getSupportedNamedGroups() != null) {
-            for(NamedGroup group : report.getSupportedNamedGroups()) {
-                preTls13Groups.add(group.toString());
-            }
-        }
-        if(report.getSupportedTls13Groups() != null) {
-            for(NamedGroup group : report.getSupportedTls13Groups()) {
-                tls13Groups.add(group.toString());
-            }
-        }
-        namedGroupPage.addStringArray("preTLS13", preTls13Groups);
-        namedGroupPage.addStringArray("TLS13", tls13Groups);
-        return namedGroupPage;
-    }
-     
-    static IScanResult getInvalidCurvePage(SiteReport report) {
-        IScanResult invalidCurve = new ScanResult("invalidCurve");
-        if(report.getInvalidCurveResultList() != null)
-        {
-            List<IScanResult> scanResultList = new LinkedList<>();
-            for(InvalidCurveResponse response : report.getInvalidCurveResultList())
-            {
-                IScanResult tmp = new ScanResult("_invalidCurveResult");
-                
-                //parameterSet
-                InvalidCurveParameterSet paramSet = response.getParameterSet();
-                
-                List<String> cipherSuites = new LinkedList<>();
-                for(CipherSuite cipherSuite : paramSet.getCipherSuites())
-                {
-                    cipherSuites.add(cipherSuite.name());
-                }
-                
-                tmp.addStringArray("cipherSuites", cipherSuites);
-                tmp.addString("pointFormat", paramSet.getPointFormat().name());
-                tmp.addString("namedGroup", paramSet.getNamedGroup().name());
-                tmp.addString("protocolVersion", paramSet.getProtocolVersion().name());
-                tmp.addBoolean("twistAttack", paramSet.isTwistAttack());
-                tmp.addBoolean("attackInRenegotiation", paramSet.isAttackInRenegotiation());
-                
-                //responses
-                List<IScanResult> pairResultList = new LinkedList<>();
-                for(FingerprintSecretPair fpsPair : response.getFingerprintSecretPairs())
-                {
-                    IScanResult resultPair = new ScanResult("_fingerprintSecretPair"); 
-                    resultPair.addInteger("appliedSecret", fpsPair.getAppliedSecret());
-                    if(fpsPair.getFingerprint() != null)
-                    {
-                        resultPair.addString("responseFingerprint", fpsPair.getFingerprint().toString());
-                    }
-                    else
-                    {
-                        resultPair.addString("responseFingerprint", "noneExtracted");
-                    }
-                    pairResultList.add(resultPair);
-                }
-                tmp.addSubResultArray("fingerprintSecretPairs", pairResultList);
-                
-                List<IScanResult> receivedPublicResultList = new LinkedList<>();
-                for(Point point : response.getReceivedEcPublicKeys())
-                {
-                    IScanResult receivedPublic = new ScanResult("_receivedPublicKey");
-                    receivedPublic.addString("x" , point.getX().getData().toString());
-                    receivedPublic.addString("y" , point.getY().getData().toString());
-                    receivedPublicResultList.add(receivedPublic);
-                }
-                tmp.addSubResultArray("receivedPublicKeys", receivedPublicResultList);
-                
-                List<IScanResult> finishedPublicResultList = new LinkedList<>();
-                for(Point point : response.getReceivedFinishedEcKeys())
-                {
-                    IScanResult finishedPublic = new ScanResult("_receivedFinishedKey");
-                    finishedPublic.addString("x" , point.getX().getData().toString());
-                    finishedPublic.addString("y" , point.getY().getData().toString());
-                    finishedPublicResultList.add(finishedPublic);
-                }
-                tmp.addSubResultArray("receivedFinishedKeys", finishedPublicResultList);
-                
-                //results
-                tmp.addString("showsPointsAreNotValidated", response.getShowsPointsAreNotValidated().toString());
-                tmp.addString("chosenGroupReusesKey", response.getChosenGroupReusesKey().toString());
-                tmp.addString("dirtyKeysWarning", response.getDirtyKeysWarning().toString());
-                tmp.addString("finishedReusedKey", response.getFinishedHandshakeHadReusedKey().toString());
-                tmp.addString("showsVulnerability", response.getShowsVulnerability().toString());
-                
-                scanResultList.add(tmp);
-            }
-            invalidCurve.addSubResultArray("invalidCurveResults", scanResultList);    
-        }
-        return invalidCurve;
-    }
-    
-    IScanResult getExtensionsPage(SiteReport report) {
-        IScanResult extensions = new ScanResult("extensions");
-
-        List<String> _supportedExtensions = new LinkedList<>();
-        List<ExtensionType> _rawSupportedExtensions = report.getSupportedExtensions();
-        if (_rawSupportedExtensions != null) {
-            for (ExtensionType x : _rawSupportedExtensions) {
-                _supportedExtensions.add(x == null ? null : x.toString());
-            }
-        }
-
-        extensions.addStringArray("supportedExtensions", _supportedExtensions);
-
-        List<String> _supportedNamedCurves = new LinkedList<>();
-        List<NamedGroup> _rawSupportedNamedCurves = report.getSupportedNamedGroups();
-        if (_rawSupportedNamedCurves != null) {
-            for (NamedGroup x : _rawSupportedNamedCurves) {
-                _supportedNamedCurves.add(x == null ? null : x.toString());
-            }
-        }
-
-        extensions.addStringArray("supportedNamedCurves", _supportedNamedCurves);
-        
-        List<String> _supportedTls13NamedCurves = new LinkedList<>();
-        List<NamedGroup> _rawSupportedTls13NamedCurves = report.getSupportedTls13Groups();
-        if (_rawSupportedTls13NamedCurves != null) {
-            for (NamedGroup x : _rawSupportedTls13NamedCurves) {
-                _supportedTls13NamedCurves.add(x == null ? null : x.toString());
-            }
-        }
-
-        extensions.addStringArray("supportedTls13NamedCurves", _supportedTls13NamedCurves);
-
-        List<String> _supportedSignatureAndHashAlgorithms = new LinkedList<>();
-        List<SignatureAndHashAlgorithm> _rawSupportedSignatureAndHashAlgorithms = report.getSupportedSignatureAndHashAlgorithms();
-        if (_rawSupportedSignatureAndHashAlgorithms != null) {
-            for (SignatureAndHashAlgorithm x : _rawSupportedSignatureAndHashAlgorithms) {
-                _supportedSignatureAndHashAlgorithms.add(x == null ? null : x.toString());
-            }
-        }
-
-        extensions.addStringArray("supportedSignatureAndHashAlgorithms", _supportedSignatureAndHashAlgorithms);
-
-        List<String> _supportedTokenBindingVersion = new LinkedList<>();
-        List<TokenBindingVersion> _rawSupportedTokenBindingVersion = report.getSupportedTokenBindingVersion();
-        if (_rawSupportedTokenBindingVersion != null) {
-            for (TokenBindingVersion x : _rawSupportedTokenBindingVersion) {
-                _supportedTokenBindingVersion.add(x == null ? null : x.toString());
-            }
-        }
-
-        extensions.addStringArray("supportedTokenBindingVersion", _supportedTokenBindingVersion);
-
-        List<String> _supportedTokenBindingKeyParameters = new LinkedList<>();
-        List<TokenBindingKeyParameters> _rawSupportedTokenBindingKeyParameters = report.getSupportedTokenBindingKeyParameters();
-        if (_rawSupportedTokenBindingKeyParameters != null) {
-            for (TokenBindingKeyParameters x : _rawSupportedTokenBindingKeyParameters) {
-                _supportedTokenBindingKeyParameters.add(x == null ? null : x.toString());
-            }
-        }
-
-        extensions.addStringArray("supportedTokenBindingKeyParameters", _supportedTokenBindingKeyParameters);
-
-        return extensions;
-    }
-
-    IScanResult getRfcPage(SiteReport report) {
-        IScanResult rfc = new ScanResult("rfc");
-        
-        rfc.addString("checksMac", report.getMacCheckPatternAppData() == null? "null" : report.getMacCheckPatternAppData().toString());
-        rfc.addString("checksFinished", report.getVerifyCheckPattern() == null? "null" : report.getMacCheckPatternAppData().toString());
-
-        return rfc;
-    }
-
-    IScanResult getCertificatePage(SiteReport report) {
-        IScanResult certificate = new ScanResult("certificate");
-        if(report.getCertificateChain() != null)
-        {
-            CertificateChain chain = report.getCertificateChain();
-        
-            List<String> _certificateReports = new LinkedList<>();
-            List<String> _certificateFingerprints = new LinkedList<>();
-            List<CertificateReport> _rawCertificateReports = chain.getCertificateReportList();
-            if (_rawCertificateReports != null) {
-                for (CertificateReport x : _rawCertificateReports) {
-                    _certificateReports.add(x == null ? null : x.toString());
-                    _certificateFingerprints.add(x == null ? "" : x.getSHA256Fingerprint());
-                }
-            }
-
-            certificate.addStringArray("certificateFingerprints", _certificateFingerprints);
-            certificate.addStringArray("certificateReports", _certificateReports);
-            certificate.addString("certificate", report.getCertificate() == null ? null : report.getCertificate().toString());
-            certificate.addBoolean("certificateIsTrusted", chain.getGenerallyTrusted());
-            
-            List<String> issueList = new LinkedList<>();
-            for(CertificateIssue issue : chain.getCertificateIssues())
-            {
-                issueList.add(issue.name());
-            }
-            certificate.addStringArray("certificateIssues", issueList);
-
-        }
-        return certificate;
-    }
-
-    IScanResult getCiphersPage(SiteReport report) {
-        IScanResult ciphers = new ScanResult("_ciphers");
-
-        List<VersionSuiteListPair> _rawVersionSuitePairs = report.getVersionSuitePairs();
-        if (_rawVersionSuitePairs != null) {
-            List<IScanResult> cipherList = new LinkedList<>();
-            for (VersionSuiteListPair x : _rawVersionSuitePairs) {
-                IScanResult versionResult = new ScanResult(x.getVersion().name()); 
-                List<String> cipherNames = new LinkedList<>(); 
-                if(x != null) {
-                    for(CipherSuite versionCipher : x.getCiphersuiteList()) {
-                        cipherNames.add(versionCipher.name());
-                    }
-                }
-                versionResult.addStringArray("ciphers", cipherNames);
-                cipherList.add(versionResult);
-            }
-            ciphers.addSubResultArray("byVersion", cipherList);
-        }
-
-        List<String> _cipherSuites = new LinkedList<>();
-        Set<CipherSuite> _rawCipherSuites = report.getCipherSuites();
-        if (_rawCipherSuites != null) {
-            for (CipherSuite x : _rawCipherSuites) {
-                _cipherSuites.add(x == null ? null : x.toString());
-            }
-        }
-
-        ciphers.addStringArray("all", _cipherSuites);
-        return ciphers;
-    }
-
-
-
-    IScanResult getGcmPage(SiteReport report) {
-        IScanResult gcm = new ScanResult("gcm");
-
-        /*
-        gcm.addBoolean("gcmReuse", report.getGcmReuse());
-        gcm.addString("gcmPattern", report.getGcmPattern() == null ? null : report.getGcmPattern().name());
-        gcm.addBoolean("gcmCheck", report.getGcmCheck());
-        */
-        return gcm;
-    }
-
-    static IScanResult getPerformancePage(SiteReport report) {
-        IScanResult performance = new ScanResult("performance");
-        performance.addInteger("tcpConnections", report.getPerformedTcpConnections());
-        
-        Collection<PerformanceData> _perfData = report.getPerformanceList();
-        for (PerformanceData data : _perfData) {
-            IScanResult perfDataPoint = new ScanResult(data.getType().name());
-            perfDataPoint.addTimestamp("starttime", Instant.ofEpochMilli(data.getStarttime()));
-            perfDataPoint.addTimestamp("stoptime", Instant.ofEpochMilli(data.getStoptime()));
-            perfDataPoint.addLong("total", (data.getStoptime() - data.getStarttime()));
-            performance.addSubResult(data.getType().name(), perfDataPoint);
-        }
-
-        return performance;
+    Document createDocumentFromSiteReport(SiteReport report) {
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        Document document = new Document();
+        document.put("report", report);
+        return document;
     }
 }

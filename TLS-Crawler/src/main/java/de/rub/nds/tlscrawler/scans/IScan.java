@@ -7,8 +7,8 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
-import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
+import org.bson.Document;
 
 /**
  * Interface to be implemented by scans.
@@ -26,7 +26,7 @@ public interface IScan {
 
     /**
      * @param target Target of the scan.
-     * @return The scan's result in an IScanResult structure.
+     * @return The scan's result in a Bson Document.
      */
-    IScanResult scan(IScanTarget target);
+    Document scan(IScanTarget target);
 }

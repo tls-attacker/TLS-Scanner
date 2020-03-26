@@ -7,8 +7,10 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.tlsscanner.report.SiteReport;
 import java.time.Instant;
 import java.util.Collection;
+import org.bson.Document;
 
 /**
  * Scan task interface.
@@ -81,5 +83,5 @@ public interface IScanTask {
     /**
      * @return Returns the scan results.
      */
-    Collection<IScanResult> getResults();
+    Document getResult();
 }

@@ -96,8 +96,7 @@ public class TlsCrawlerMaster extends TlsCrawler {
                 TimeUnit.SECONDS.sleep(TIME_TO_WAIT);
             }
         } catch (Exception e) {
-            LOG.debug("Oops! Exception");
-            e.printStackTrace();
+            LOG.debug("Oops! Exception",e);
         } finally {
             targets.remove();
         }

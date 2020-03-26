@@ -35,7 +35,6 @@ public class ScanFactory {
     public Collection<IScan> getBuiltInScans() {
         Collection<IScan> result = new LinkedList<>();
 
-        result.add(new FriendlyTlsScan());
         result.add(new NullScan());
         result.add(new PingScan());
         result.add(new TlsScan());

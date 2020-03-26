@@ -14,7 +14,6 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import de.rub.nds.tlscrawler.data.*;
-import de.rub.nds.tlscrawler.utility.ITuple;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +88,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
         LOG.trace("setUpScanTask()");
 
-        if (newTask.getResults() != null && !newTask.getResults().isEmpty()) {
+        if (newTask.getResult() != null) {
             throw new IllegalArgumentException("'results' must be null or empty.");
         }
 
@@ -107,7 +106,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         List<Document> bsonDocs = new LinkedList<>();
 
         for (IScanTask task : newTasks) {
-            if (task.getResults() != null && !task.getResults().isEmpty()) {
+            if (task.getResult() != null) {
                 throw new IllegalArgumentException("'results' must be null or empty.");
             }
 
@@ -136,7 +135,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
                 .append(DBKeys.ACCEPTED_TIMESTAMP, accTs)
                 .append(DBKeys.STARTED_TIMESTAMP, staTs)
                 .append(DBKeys.COMPLETED_TIMESTAMP, comTs)
-                .append(DBKeys.RESULTS, resultStructureToBsonDoc(task.getResults()));
+                .append(DBKeys.RESULTS, task.getResult());
 
         Document update = new Document(DBOperations.SET, updateDetails);
 
@@ -203,74 +202,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
                 earliestCreatedTimestamp);
     }
 
-    static Document resultStructureToBsonDoc(Collection<IScanResult> results) {
-        LOG.trace("resultStructureToBsonDoc()");
-
-        if (results == null) {
-            return null;
-        }
-
-        Document result = new Document();
-
-        List<Document> convertedResults = new LinkedList<>();
-        for (IScanResult scanResult : results) {
-            convertedResults.add(iScanResultToBson(scanResult));
-        }
-
-        for (Document doc : convertedResults) {
-            String id = (String) doc.get(IScanResult.ID_KEY);
-
-            assert id != null;
-
-            result.append(id, doc);
-        }
-
-        return result;
-    }
-
-    static Document iScanResultToBson(IScanResult result) {
-        LOG.trace("iScanResultToBson()");
-
-        if (result == null) {
-            return null;
-        }
-
-        Document bson = new Document();
-
-        for (ITuple<String, Object> x : result.getContents()) {
-            String key = x.getFirst();
-            Object val = x.getSecond();
-
-            assert key != null;
-
-            if (val instanceof IScanResult) {
-                bson.append(key, iScanResultToBson((IScanResult) val));
-            } else if (val instanceof Instant) {
-                bson.append(key, Date.from((Instant) val));
-            } else if (val instanceof List) {
-                List list = (List) val;
-                Object typecheck = list.isEmpty() ? null : list.get(0);
-
-                if (typecheck instanceof IScanResult) {
-                    List<Document> subResultArray = new LinkedList<>();
-
-                    for (Object item : list) {
-                        IScanResult subresult = (IScanResult) item;
-                        subResultArray.add(iScanResultToBson(subresult));
-                    }
-
-                    bson.append(key, subResultArray);
-                } else {
-                    bson.append(key, val);
-                }
-            } else {
-                bson.append(key, val);
-            }
-        }
-
-        return bson;
-    }
-
     static Document bsonDocFromScanTask(IScanTask scanTask) {
         LOG.trace("bsonDocFromScanTask()");
 
@@ -286,8 +217,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         result.append(DBKeys.CREATED_TIMESTAMP, Date.from(scanTask.getCreatedTimestamp()));
         result.append(DBKeys.TARGET_IP, scanTask.getTargetIp());
         result.append(DBKeys.PORTS, new LinkedList(scanTask.getPorts()));
-        result.append(DBKeys.SCANS, new LinkedList(scanTask.getScans()));
-        result.append(DBKeys.RESULTS, resultStructureToBsonDoc(scanTask.getResults()));
+        result.append(DBKeys.RESULTS, scanTask.getResult());
 
         // These might be null and would throw if they were, so they have to be handled.
         result.append(DBKeys.ACCEPTED_TIMESTAMP,
@@ -298,120 +228,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
         result.append(DBKeys.COMPLETED_TIMESTAMP,
                 scanTask.getCompletedTimestamp() == null ? null : Date.from(scanTask.getCompletedTimestamp()));
-
-        return result;
-    }
-
-    static IScanTask scanTaskFromBsonDoc(Document scanTask) {
-        LOG.trace("scanTaskFromBsonDoc()");
-
-        if (scanTask == null) {
-            return null;
-        }
-
-        Collection<Integer> ports = (List<Integer>) scanTask.get(DBKeys.PORTS);
-        Collection<String> scans = (List<String>) scanTask.get(DBKeys.SCANS);
-
-        Date created = scanTask.getDate(DBKeys.CREATED_TIMESTAMP);
-        Date accepted = scanTask.getDate(DBKeys.ACCEPTED_TIMESTAMP);
-        Date started = scanTask.getDate(DBKeys.STARTED_TIMESTAMP);
-        Date completed = scanTask.getDate(DBKeys.COMPLETED_TIMESTAMP);
-
-        String instanceId = scanTask.getString(DBKeys.MASTER_INSTANCE_ID);
-        String taskId = scanTask.getString(DBKeys.ID);
-        String scanId = scanTask.getString(DBKeys.SCAN_ID);
-        String targetIp = scanTask.getString(DBKeys.TARGET_IP);
-
-        ScanTask result = new ScanTask(taskId,
-                scanId,
-                instanceId,
-                created == null ? null : created.toInstant(),
-                accepted == null ? null : accepted.toInstant(),
-                started == null ? null : started.toInstant(),
-                completed == null ? null : completed.toInstant(),
-                targetIp,
-                ports,
-                scans);
-
-        Document results = (Document) scanTask.get(DBKeys.RESULTS);
-        if (results != null) {
-            results.entrySet().stream()
-                    .map(x -> (Document) x.getValue())
-                    .map(x -> scanResultFromBsonDoc(x))
-                    .forEach(result::addResult);
-        }
-
-        return result;
-    }
-
-    static IScanResult scanResultFromBsonDoc(Document scanResult) {
-        LOG.trace("scanResultFromBsonDoc()");
-
-        if (scanResult == null) {
-            return null;
-        }
-
-        ScanResult result = new ScanResult();
-
-        String identifier = scanResult.getString(IScanResult.ID_KEY);
-        scanResult.remove(IScanResult.ID_KEY);
-        result.setResultIdentifier(identifier);
-
-        for (Map.Entry<String, Object> e : scanResult.entrySet()) {
-            String key = e.getKey();
-            Object value = e.getValue();
-
-            if (value instanceof Date) {
-                value = ((Date) value).toInstant();
-            }
-
-            if (value == null) {
-                result.addString(key, null);
-            } else if (value instanceof String) {
-                result.addString(key, (String) value);
-            } else if (value instanceof Long) {
-                result.addLong(key, (Long) value);
-            } else if (value instanceof Integer) {
-                result.addInteger(key, (Integer) value);
-            } else if (value instanceof Double) {
-                result.addDouble(key, (Double) value);
-            } else if (value instanceof Instant) {
-                result.addTimestamp(key, (Instant) value);
-            } else if (value instanceof Boolean) {
-                result.addBoolean(key, (Boolean) value);
-            } else if (value instanceof List) {
-                List list = (List) value;
-                Object typecheck = list.isEmpty() ? null : list.get(0);
-
-                if (typecheck == null) {
-                    result.addSubResultArray(key, new LinkedList<>());
-                } else if (typecheck instanceof String) {
-                    result.addStringArray(key, list);
-                } else if (typecheck instanceof Long) {
-                    result.addLongArray(key, list);
-                } else if (typecheck instanceof Integer) {
-                    result.addIntegerArray(key, list);
-                } else if (typecheck instanceof Double) {
-                    result.addDoubleArray(key, list);
-                } else if (typecheck instanceof Byte) {
-                    result.addBinaryData(key, list);
-                } else if (typecheck instanceof Document) {
-                    List<IScanResult> subresults = new LinkedList<>();
-
-                    for (Object obj : list) {
-                        subresults.add(scanResultFromBsonDoc((Document) obj));
-                    }
-
-                    result.addSubResultArray(key, subresults);
-                } else {
-                    throw new RuntimeException("Unexpected Type.");
-                }
-            } else if (value instanceof Document) {
-                result.addSubResult(key, scanResultFromBsonDoc((Document) value));
-            } else {
-                throw new RuntimeException("Unexpected Type.");
-            }
-        }
 
         return result;
     }
@@ -430,7 +246,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         static String COMPLETED_TIMESTAMP = "completedTimestamp";
         static String TARGET_IP = "targetIp";
         static String PORTS = "ports";
-        static String SCANS = "invalCurveScans";
         static String RESULTS = "results";
     }
 

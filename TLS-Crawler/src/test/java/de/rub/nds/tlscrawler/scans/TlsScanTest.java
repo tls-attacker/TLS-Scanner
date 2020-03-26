@@ -41,7 +41,7 @@ public class TlsScanTest {
         
         TlsScan scan = new TlsScan();
 
-        scan.populateScanResultFromSiteReport(result, sr);
+        scan.populateDocumentFromSiteReport(result, sr);
 
         new Object();
     }
