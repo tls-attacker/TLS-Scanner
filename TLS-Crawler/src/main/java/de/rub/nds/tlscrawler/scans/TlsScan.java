@@ -358,9 +358,9 @@ public class TlsScan implements IScan {
 
     IScanResult getRfcPage(SiteReport report) {
         IScanResult rfc = new ScanResult("rfc");
-
-        rfc.addString("checksMac", report.getMacCheckPatternAppData().toString());
-        rfc.addString("checksFinished", report.getVerifyCheckPattern().toString());
+        
+        rfc.addString("checksMac", report.getMacCheckPatternAppData() == null? "null" : report.getMacCheckPatternAppData().toString());
+        rfc.addString("checksFinished", report.getVerifyCheckPattern() == null? "null" : report.getMacCheckPatternAppData().toString());
 
         return rfc;
     }
