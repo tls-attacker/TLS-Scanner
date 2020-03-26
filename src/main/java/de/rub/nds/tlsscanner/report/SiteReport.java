@@ -38,6 +38,7 @@ import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +48,7 @@ import java.util.Observable;
 import java.util.Set;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class SiteReport extends Observable {
+public class SiteReport extends Observable implements Serializable{
 
     private final HashMap<String, TestResult> resultMap;
 
