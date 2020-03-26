@@ -78,7 +78,6 @@ public class TlsCrawlerTest {
 
     @Test
     public void getScanNames() {
-        Assert.assertTrue(this.subject.getScans().containsAll(Arrays.asList("Scan1", "Scan3")));
         Assert.assertEquals(2, this.subject.getScans().size());
     }
 

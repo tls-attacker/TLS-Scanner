@@ -159,7 +159,7 @@ public class StartupOptions extends OptionsBase {
 
     @Option(
             name = "scansToBeExecuted",
-            abbrev = 'v',
+            abbrev = 'S',
             help = "The names of the scans that should be exeucted as a comma seperated list.",
             defaultValue = ""
     )
@@ -168,7 +168,7 @@ public class StartupOptions extends OptionsBase {
     
     @Option(
             name = "portsToBeScanned",
-            abbrev = 'p',
+            abbrev = 'P',
             help = "The port that should be scanned.",
             defaultValue = "443"
     )

@@ -78,7 +78,6 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             IPersistenceProvider persistenceProvider,
             Collection<IScan> scans, int port, int noThreads) {
         super(instanceId, orchestrationProvider, persistenceProvider, scans, port);
-        this.port = port;
         this.noThreads = noThreads;
         this.newFetchLimit = 3 * noThreads;
         this.fetchAmount = 2 * noThreads;
