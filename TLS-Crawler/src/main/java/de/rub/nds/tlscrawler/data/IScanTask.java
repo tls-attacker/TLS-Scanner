@@ -7,14 +7,13 @@
  */
 package de.rub.nds.tlscrawler.data;
 
-import de.rub.nds.tlsscanner.report.SiteReport;
 import java.time.Instant;
 import java.util.Collection;
 import org.bson.Document;
 
 /**
- * Scan task interface.
- * Interface to the document that will eventually be persisted.
+ * Scan task interface. Interface to the document that will eventually be
+ * persisted.
  *
  * @author janis.fliegenschmidt@rub.de
  */
@@ -26,14 +25,6 @@ public interface IScanTask {
     String getId();
 
     /**
-     * Returns the name/id of the entire scan, i. e. all individual
-     * scan tasks that were scheduled due to a single command share this id.
-     *
-     * @return The id of the scan.
-     */
-    String getScanId();
-
-    /**
      * Returns the ID of the master which created the scan task.
      *
      * @return The id of the master instance.
@@ -41,9 +32,9 @@ public interface IScanTask {
     String getInstanceId();
 
     /**
-     * @return The point in time at which the scan was scheduled.
+     * @return The point in time a slave started this task.
      */
-    Instant getCreatedTimestamp();
+    Instant getStartedTimestamp();
 
     /**
      * @return The point in time a slave accepted this task.
@@ -51,24 +42,9 @@ public interface IScanTask {
     Instant getAcceptedTimestamp();
 
     /**
-     * @return The point in time a slave started working on the task.
-     */
-    Instant getStartedTimestamp();
-
-    /**
      * @return The point in time the slave finished working on the task.
      */
     Instant getCompletedTimestamp();
-
-    /**
-     * @return The target that should be scanned.
-     */
-    String getTargetIp();
-
-    /**
-     * @return A list of Ports to be scanned.
-     */
-    Collection<Integer> getPorts();
 
     /**
      * @return A list of scans to be performed.
@@ -84,4 +60,18 @@ public interface IScanTask {
      * @return Returns the scan results.
      */
     Document getResult();
+
+    /**
+     * Sets the result of the ScanTask
+     *
+     * @param result the result to set
+     */
+    void setResult(Document result);
+
+    /**
+     * Sets the instant when the ScanTask was completed
+     *
+     * @param instant the instant the ScanTask was completed
+     */
+    void setCompletedTimestamp(Instant instant);
 }

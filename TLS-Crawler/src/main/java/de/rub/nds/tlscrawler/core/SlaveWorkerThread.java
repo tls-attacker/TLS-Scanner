@@ -8,6 +8,7 @@
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.IScanTask;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.scans.IScan;
 import org.slf4j.Logger;
@@ -46,15 +47,11 @@ public class SlaveWorkerThread extends Thread {
         LOG.info("run() started");
 
         for (;;) {
-            IScanTask raw = this.synchronizedTaskRouter.getTodo();
+            IScanTask todo = this.synchronizedTaskRouter.getTodo();
 
-            if (raw != null) {
-                LOG.trace(String.format("Started work on %s.", raw.getId()));
-                this.setName("Thread - " + raw.getTargetIp());
-
-                ScanTask todo = ScanTask.copyFrom(raw);
-
-                todo.setStartedTimestamp(Instant.now());
+            if (todo != null) {
+                LOG.trace(String.format("Started work on %s.", todo.getId()));
+                this.setName("Thread - " + todo.getScanTarget());
 
                 for (String scan : todo.getScans()) {
                     Document result;

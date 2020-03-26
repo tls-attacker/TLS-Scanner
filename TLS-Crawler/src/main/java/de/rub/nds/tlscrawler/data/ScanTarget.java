@@ -7,20 +7,21 @@
  */
 package de.rub.nds.tlscrawler.data;
 
-import java.util.Collection;
+import java.io.Serializable;
 
 /**
  * Scan target implementation.
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class ScanTarget implements IScanTarget {
-    private String ip;
-    private Collection<Integer> ports;
+public class ScanTarget implements IScanTarget, Serializable {
 
-    public ScanTarget(String ip, Collection<Integer> ports) {
+    private final String ip;
+    private final int port;
+
+    public ScanTarget(String ip, int port) {
         this.ip = ip;
-        this.ports = ports;
+        this.port = port;
     }
 
     @Override
@@ -29,7 +30,7 @@ public class ScanTarget implements IScanTarget {
     }
 
     @Override
-    public Collection<Integer> getPorts() {
-        return this.ports;
+    public int getPort() {
+        return this.port;
     }
 }

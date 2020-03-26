@@ -13,9 +13,12 @@ import com.mongodb.ServerAddress;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
 import de.rub.nds.tlscrawler.options.SlaveOptions;
+import de.rub.nds.tlscrawler.options.StartupOptions;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
+import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
+import de.rub.nds.tlscrawler.persistence.InMemoryPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.ScanFactory;
@@ -35,10 +38,10 @@ public class Slave {
     private static Logger LOG = LoggerFactory.getLogger(Slave.class);
 
     public static void main(String[] args) {
-        SlaveOptions options;
+        StartupOptions options;
 
         try {
-            options = SlaveOptions.parseOptions(args);
+            options = StartupOptions.parseOptions(args);
         } catch (OptionsParsingException ex) {
             LOG.error("Command Line Options could not be parsed.");
             options = null;
@@ -51,7 +54,7 @@ public class Slave {
         }
 
         Collection<IScan> scans = ScanFactory.getInstance().getBuiltInScans();
-        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
+        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options, "defaultScan");
 
         ITlsCrawlerSlave slave = new TlsCrawlerSlave(
                 options.instanceId,
@@ -76,8 +79,8 @@ public class Slave {
         }).start();
     }
 
-    static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(SlaveOptions options) {
-
+    
+    static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(StartupOptions options, String scanName) {
         LOG.trace("setUpProviders()");
 
         if (options == null) {
@@ -88,36 +91,45 @@ public class Slave {
         IPersistenceProvider persistenceProvider;
 
         String workspace = options.workspace;
-        String workspaceWithPrefix = String.format("TLSC-%s", workspace);
+        String workspaceWithPrefix = String.format("TLSC-dev-%s", workspace);
 
-        ServerAddress address = new ServerAddress(options.mongoDbHost, options.mongoDbPort);
-        MongoCredential credential = null;
+        if (!options.testMode) {
+            ServerAddress address = new ServerAddress(options.mongoDbHost, options.mongoDbPort);
+            MongoCredential credential = null;
 
-        if (!options.mongoDbUser.equals("")) {
-            credential = MongoCredential.createCredential(
-                    options.mongoDbUser,
-                    options.mongoDbAuthSource,
-                    options.mongoDbPass.toCharArray());
+            if (!options.mongoDbUser.equals("")) {
+                credential = MongoCredential.createCredential(
+                        options.mongoDbUser,
+                        options.mongoDbAuthSource,
+                        options.mongoDbPass.toCharArray());
+            }
+
+            MongoPersistenceProvider mpp = new MongoPersistenceProvider(address, credential);
+            mpp.init(workspaceWithPrefix, scanName);
+
+            persistenceProvider = mpp;
+
+            if (!options.inMemoryOrchestration) {
+                RedisOrchestrationProvider rop = new RedisOrchestrationProvider(
+                        options.redisHost,
+                        options.redisPort,
+                        options.redisPass);
+
+                try {
+                    rop.init(workspaceWithPrefix);
+                } catch (ConnectException e) {
+                    LOG.error("Could not connect to redis.", e);
+                    System.exit(0);
+                }
+
+                orchestrationProvider = rop;
+            } else { // in-memory-orchestration:
+                orchestrationProvider = new InMemoryOrchestrationProvider();
+            }
+        } else { // TLS Crawler is in test mode:
+            orchestrationProvider = new InMemoryOrchestrationProvider();
+            persistenceProvider = new InMemoryPersistenceProvider();
         }
-
-        MongoPersistenceProvider mpp = new MongoPersistenceProvider(address, credential);
-        mpp.init(workspaceWithPrefix);
-
-        persistenceProvider = mpp;
-
-        RedisOrchestrationProvider rop = new RedisOrchestrationProvider(
-                options.redisHost,
-                options.redisPort,
-                options.redisPass);
-
-        try {
-            rop.init(workspaceWithPrefix);
-        } catch (ConnectException e) {
-            LOG.error("Could not connect to redis.");
-            System.exit(0);
-        }
-
-        orchestrationProvider = rop;
 
         return Tuple.create(orchestrationProvider, persistenceProvider);
     }

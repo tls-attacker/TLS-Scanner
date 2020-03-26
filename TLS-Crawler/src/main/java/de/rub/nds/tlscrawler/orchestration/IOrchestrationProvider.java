@@ -33,13 +33,8 @@ public interface IOrchestrationProvider {
      */
     Collection<String> getScanTasks(int quantity);
 
-    /**
-     * Adds a scan task to be distributed to a node.
-     *
-     * @param taskId The scan task to add.
-     */
-
     long getNumberOfTasks() throws Exception;
+
     void addScanTask(String taskId);
 
     /**

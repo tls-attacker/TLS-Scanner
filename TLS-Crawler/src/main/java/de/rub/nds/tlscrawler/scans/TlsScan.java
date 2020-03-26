@@ -7,7 +7,6 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
-import com.mongodb.MongoClient;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlscrawler.data.IScanTarget;
@@ -34,10 +33,6 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.List;
 import org.bson.Document;
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
 
 /**
  * Scan using TLS Scanner, i. e. TLS Attacker.
@@ -72,7 +67,6 @@ public class TlsScan implements IScan {
         config.setScanDetail(ScannerDetail.NORMAL);
         config.setTimeout(1000);
 
-        // TODO: Make port not hardcoded.
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
         List<TlsProbe> probeList = new LinkedList<>();
@@ -102,8 +96,6 @@ public class TlsScan implements IScan {
     }
 
     Document createDocumentFromSiteReport(SiteReport report) {
-        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build()));
         Document document = new Document();
         document.put("report", report);
         return document;

@@ -7,7 +7,8 @@
  */
 package de.rub.nds.tlscrawler.data;
 
-import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlscrawler.scans.IScan;
+import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,43 +22,35 @@ import org.bson.Document;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class ScanTask implements IScanTask {
+public class ScanTask implements IScanTask, Serializable {
 
     private static Logger LOG = LoggerFactory.getLogger(ScanTask.class);
 
-    private String id;
-    private String scanId;
-    private String instanceId;
-    private Instant createdTimestamp;
-    private Instant acceptedTimestamp;
-    private Instant startedTimestamp;
+    private final String id;
+    private final String instanceId;
+    private final Instant acceptedTimestamp;
+    private final Instant startedTimestamp;
     private Instant completedTimestamp;
-    private String targetIp;
-    private Collection<Integer> ports;
-    private Collection<String> scans;
+    private final IScanTarget scanTarget;
+    private final Collection<String> scans;
     private Document result;
 
     public ScanTask(String id,
-            String scanId,
             String instanceId,
-            Instant createdTimestamp,
             Instant acceptedTimestamp,
-            Instant startedTimestamp,
-            Instant completedTimestamp,
-            String targetIp,
-            Collection<Integer> ports,
-            Collection<String> scans) {
+            IScanTarget scanTarget,
+            Collection<IScan> scans) {
         this.id = id;
-        this.scanId = scanId;
         this.instanceId = instanceId;
-        this.createdTimestamp = createdTimestamp;
         this.acceptedTimestamp = acceptedTimestamp;
-        this.startedTimestamp = startedTimestamp;
-        this.completedTimestamp = completedTimestamp;
-        this.targetIp = targetIp;
-        this.ports = ports;
-        this.scans = scans;
+        this.scanTarget = scanTarget;
+        this.scans = new LinkedList<>();
+        for (IScan tempScan : scans) {
+            this.scans.add(tempScan.getName());
+        }
         this.result = null;
+        this.startedTimestamp = null;
+        this.completedTimestamp = null;
     }
 
     @Override
@@ -66,22 +59,13 @@ public class ScanTask implements IScanTask {
     }
 
     @Override
-    public String getScanId() {
-        return this.scanId;
-    }
-
-    @Override
     public String getInstanceId() {
         return this.instanceId;
     }
 
     @Override
-    public Instant getCreatedTimestamp() {
-        return this.createdTimestamp;
-    }
-
-    public void setCreatedTimestamp(Instant timestamp) {
-        this.createdTimestamp = timestamp;
+    public Instant getStartedTimestamp() {
+        return startedTimestamp;
     }
 
     @Override
@@ -89,40 +73,13 @@ public class ScanTask implements IScanTask {
         return this.acceptedTimestamp;
     }
 
-    public void setAcceptedTimestamp(Instant timestamp) {
-        this.acceptedTimestamp = timestamp;
-    }
-
-    @Override
-    public Instant getStartedTimestamp() {
-        return this.startedTimestamp;
-    }
-
-    public void setStartedTimestamp(Instant timestamp) {
-        this.startedTimestamp = timestamp;
+    public void setCompletedTimestamp(Instant completedTimestamp) {
+        this.completedTimestamp = completedTimestamp;
     }
 
     @Override
     public Instant getCompletedTimestamp() {
-        return this.completedTimestamp;
-    }
-
-    public void setCompletedTimestamp(Instant timestamp) {
-        this.completedTimestamp = timestamp;
-    }
-
-    @Override
-    public String getTargetIp() {
-        return this.targetIp;
-    }
-
-    public void setTargetIp(String ip) {
-        this.targetIp = ip;
-    }
-
-    @Override
-    public Collection<Integer> getPorts() {
-        return this.ports;
+        return completedTimestamp;
     }
 
     @Override
@@ -131,36 +88,18 @@ public class ScanTask implements IScanTask {
     }
 
     @Override
-    public IScanTarget getScanTarget() {
-        return new ScanTarget(this.targetIp, this.ports);
-    }
-
-    @Override
     public Document getResult() {
         return result;
     }
 
+    @Override
     public void setResult(Document result) {
         this.result = result;
     }
 
-    public static ScanTask copyFrom(IScanTask scan) {
-        if (scan == null) {
-            LOG.error("copyFrom() - 'scan' must not be null.");
-            throw new IllegalArgumentException("'scan' must not be null.");
-        }
-
-        return new ScanTask(
-                scan.getId(),
-                scan.getScanId(),
-                scan.getInstanceId(),
-                scan.getCreatedTimestamp(),
-                scan.getAcceptedTimestamp(),
-                scan.getStartedTimestamp(),
-                scan.getCompletedTimestamp(),
-                scan.getTargetIp(),
-                new LinkedList(scan.getPorts()),
-                new LinkedList(scan.getScans())
-        );
+    @Override
+    public IScanTarget getScanTarget() {
+        return scanTarget;
     }
+
 }

@@ -48,9 +48,7 @@ public class PingScan implements IScan {
         document.put("timeout", this.timeOutMs);
 
         Collection<Tuple> portwiseScanResult = new LinkedList<>();
-        for (Integer port : target.getPorts()) {
-            portwiseScanResult.add(Tuple.create(port, isReachable(target.getIp(), port)));
-        }
+        portwiseScanResult.add(Tuple.create(target.getPort(), isReachable(target.getIp(), target.getPort())));
 
         List<Integer> reachablePorts = portwiseScanResult.stream()
                 .filter(x -> (boolean) x.getSecond())

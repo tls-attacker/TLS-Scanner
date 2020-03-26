@@ -39,28 +39,6 @@ public interface IPersistenceProvider {
     void setUpScanTasks(Collection<IScanTask> newTasks);
 
     /**
-     *  Updates the database with the scan result.
-     *
-     * @param task The scan task with all fields present.
-     */
-    void updateScanTask(IScanTask task);
-
-    /**
-     * Returns a scan task by ID.
-     *
-     * @param id The ID of the requested task.
-     * @return The scan task requested by ID.
-     */
-    IScanTask getScanTask(String id);
-
-    /**
-     * Bulk-returns scan tasks by ID.
-     * @param ids The ids of the requested scans.
-     * @return The requested scan tasks by ID.
-     */
-    Map<String, IScanTask> getScanTasks(Collection<String> ids);
-
-    /**
      * Provides information about created tasks.
      *
      * @return The stats of this persistence provider.

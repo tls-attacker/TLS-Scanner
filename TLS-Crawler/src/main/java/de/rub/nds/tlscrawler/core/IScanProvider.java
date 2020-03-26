@@ -20,24 +20,19 @@ import java.util.Collection;
 interface IScanProvider {
 
     /**
-     * @return A list of all available scans.
-     */
-    Collection<IScan> getScans();
-
-    /**
-     * @return A list of the names of all the available scans.
-     */
-    Collection<String> getScanNames();
-
-    /**
-     * @param name The name of the scan to check.
-     * @return A boolean indicating whether a scan with the given name is available.
-     */
-    boolean isScanAvailable(String name);
-
-    /**
      * @param name The name of the scan to be retrieved.
      * @return The requested scan.
      */
     IScan getScanByName(String name);
+
+    /**
+     * @return A collection of scans that should be executed.
+     */
+    Collection<IScan> getScans();
+
+    /**
+     * @return A collection of ports that should be scanned on.
+     */
+    int getPort();
+
 }

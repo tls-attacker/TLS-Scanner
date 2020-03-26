@@ -10,6 +10,7 @@ package de.rub.nds.tlscrawler;
 import com.google.devtools.common.options.OptionsParsingException;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import static de.rub.nds.tlscrawler.Slave.setUpProviders;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
@@ -35,6 +36,7 @@ import java.util.List;
  * @author janis.fliegenschmidt@rub.de
  */
 public class Main {
+
     private static Logger LOG = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
@@ -55,23 +57,23 @@ public class Main {
 
         List<IScan> scans = setUpScans();
 
-        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
+        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options, "defaultScan");
 
-        ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(), scans);
+        ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(),scans, options.port);
 
         if (!options.masterOnly) {
             slave.start();
         }
 
-        TlsCrawlerMaster master = new TlsCrawlerMaster(options.instanceId, providers.getFirst(), providers.getSecond(), scans);
+        TlsCrawlerMaster master = new TlsCrawlerMaster(options.instanceId, providers.getFirst(), providers.getSecond(), scans, options.port);
 
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
-                + options.instanceId + " in " +
-                (options.multipleTestsMode ? "multiple tests - " : "classic ") + "mode.");
+                + options.instanceId + " in "
+                + (options.multipleTestsMode ? "multiple tests - " : "classic ") + "mode.");
         if (options.multipleTestsMode) {
             try {
                 MultipleScansCommandLineInterface.handleInput(master, slave);
-            } catch(InterruptedException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
                 LOG.info("Program interrupted");
             }
@@ -80,59 +82,6 @@ public class Main {
         }
     }
 
-    static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(StartupOptions options) {
-        LOG.trace("setUpProviders()");
-
-        if (options == null) {
-            throw new IllegalArgumentException("'options' must not be null.");
-        }
-
-        IOrchestrationProvider orchestrationProvider;
-        IPersistenceProvider persistenceProvider;
-
-        String workspace = options.workspace;
-        String workspaceWithPrefix = String.format("TLSC-dev-%s", workspace);
-
-        if (!options.testMode) {
-            ServerAddress address = new ServerAddress(options.mongoDbHost, options.mongoDbPort);
-            MongoCredential credential = null;
-
-            if (!options.mongoDbUser.equals("")) {
-                credential = MongoCredential.createCredential(
-                        options.mongoDbUser,
-                        options.mongoDbAuthSource,
-                        options.mongoDbPass.toCharArray());
-            }
-
-            MongoPersistenceProvider mpp = new MongoPersistenceProvider(address, credential);
-            mpp.init(workspaceWithPrefix);
-
-            persistenceProvider = mpp;
-
-            if (!options.inMemoryOrchestration) {
-                RedisOrchestrationProvider rop = new RedisOrchestrationProvider(
-                        options.redisHost,
-                        options.redisPort,
-                        options.redisPass);
-
-                try {
-                    rop.init(workspaceWithPrefix);
-                } catch (ConnectException e) {
-                    LOG.error("Could not connect to redis.");
-                    System.exit(0);
-                }
-
-                orchestrationProvider = rop;
-            } else { // in-memory-orchestration:
-                orchestrationProvider = new InMemoryOrchestrationProvider();
-            }
-        } else { // TLS Crawler is in test mode:
-            orchestrationProvider = new InMemoryOrchestrationProvider();
-            persistenceProvider = new InMemoryPersistenceProvider();
-        }
-
-        return Tuple.create(orchestrationProvider, persistenceProvider);
-    }
 
     /**
      * Set up for known scans.

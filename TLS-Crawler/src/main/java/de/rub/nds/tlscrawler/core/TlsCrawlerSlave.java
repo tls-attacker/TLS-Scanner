@@ -7,8 +7,10 @@
  */
 package de.rub.nds.tlscrawler.core;
 
+import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ISlaveStats;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.data.SlaveStats;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
@@ -21,7 +23,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -30,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author janis.fliegenschmidt@rub.de
  */
 public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
+
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
 
     private static int STANDARD_NO_THREADS = 1000;
@@ -52,12 +55,13 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
      * @param scans A neither null nor empty list of available scans.
+     * @param port
      */
     public TlsCrawlerSlave(String instanceId,
-                           IOrchestrationProvider orchestrationProvider,
-                           IPersistenceProvider persistenceProvider,
-                           Collection<IScan> scans) {
-        this(instanceId, orchestrationProvider, persistenceProvider, scans, STANDARD_NO_THREADS);
+            IOrchestrationProvider orchestrationProvider,
+            IPersistenceProvider persistenceProvider,
+            Collection<IScan> scans, int port) {
+        this(instanceId, orchestrationProvider, persistenceProvider, scans, port, STANDARD_NO_THREADS);
     }
 
     /**
@@ -70,12 +74,11 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
      * @param noThreads Number of worker threads the crawler slave should use.
      */
     public TlsCrawlerSlave(String instanceId,
-                           IOrchestrationProvider orchestrationProvider,
-                           IPersistenceProvider persistenceProvider,
-                           Collection<IScan> scans,
-                           int noThreads) {
-        super(instanceId, orchestrationProvider, persistenceProvider, scans);
-
+            IOrchestrationProvider orchestrationProvider,
+            IPersistenceProvider persistenceProvider,
+            Collection<IScan> scans, int port, int noThreads) {
+        super(instanceId, orchestrationProvider, persistenceProvider, scans, port);
+        this.port = port;
         this.noThreads = noThreads;
         this.newFetchLimit = 3 * noThreads;
         this.fetchAmount = 2 * noThreads;
@@ -112,7 +115,18 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         return SlaveStats.copyFrom(this.slaveStats);
     }
 
+    @Override
+    public Collection<IScan> getScans() {
+        return scans;
+    }
+
+    @Override
+    public int getPort() {
+        return port;
+    }
+
     private class TlsCrawlerSlaveOrgThread extends Thread {
+
         private AtomicBoolean isRunning = new AtomicBoolean(false);
         private int iterations = 0;
 
@@ -124,11 +138,11 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         private SlaveStats stats;
 
         public TlsCrawlerSlaveOrgThread(SlaveStats stats,
-                                        IOrganizer organizer,
-                                        IScanProvider scanProvider,
-                                        SynchronizedTaskRouter synchronizedTaskRouter,
-                                        int newFetchLimit,
-                                        int fetchAmount) {
+                IOrganizer organizer,
+                IScanProvider scanProvider,
+                SynchronizedTaskRouter synchronizedTaskRouter,
+                int newFetchLimit,
+                int fetchAmount) {
             super(TlsCrawlerSlaveOrgThread.class.getSimpleName());
 
             this.stats = stats;
@@ -153,18 +167,15 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                 if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
                     LOG.trace("Fetching tasks.", this.getName());
 
-                    Collection<String> taskIds = this.organizer.getOrchestrationProvider().getScanTasks(this.fetchAmount);
-                    Map<String, IScanTask> tasks =  this.organizer.getPersistenceProvider().getScanTasks(taskIds);
+                    Collection<String> targetString = this.organizer.getOrchestrationProvider().getScanTasks(this.fetchAmount);
 
-                    for (Map.Entry<String, IScanTask> e : tasks.entrySet()) {
-                        ScanTask t = (ScanTask)e.getValue();
-                        t.setAcceptedTimestamp(Instant.now());
-                        e.setValue(t);
+                    for (String tempString : targetString) {
+                        String taskId = UUID.randomUUID().toString();
+                        IScanTarget realTarget = new ScanTarget(tempString, getPort());
+                        ScanTask task = new ScanTask(taskId, organizer.getInstanceId(), Instant.now(), realTarget, scanProvider.getScans());
+                        this.synchronizedTaskRouter.addTodo(task);
+                        this.stats.incrementAcceptedTaskCount(1);
                     }
-
-                    this.synchronizedTaskRouter.addTodo(tasks.values());
-
-                    this.stats.incrementAcceptedTaskCount(tasks.size());
                 }
 
                 // Persist task results:
@@ -174,8 +185,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     Collection<IScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
 
                     // TODO: Implement bulk operation @IPersistenceProvider
-                    for (IScanTask t : finishedTasks) {
-                        this.organizer.getPersistenceProvider().updateScanTask(t);
+                    for (IScanTask task : finishedTasks) {
+                        this.organizer.getPersistenceProvider().setUpScanTask(task);
                         this.stats.incrementCompletedTaskCount(1);
                     }
 

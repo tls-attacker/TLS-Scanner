@@ -41,34 +41,9 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
     }
 
     @Override
-    public void updateScanTask(IScanTask task) {
-        LOG.trace("updateScanTask()");
-        this.tasks.put(task.getId(), task);
-    }
-
-    @Override
     public void setUpScanTask(IScanTask task) {
         LOG.trace("setUpScanTask()");
         this.tasks.put(task.getId(), task);
-    }
-
-    @Override
-    public IScanTask getScanTask(String id) {
-        LOG.trace("getScanTask()");
-        return this.tasks.get(id);
-    }
-
-    @Override
-    public Map<String, IScanTask> getScanTasks(Collection<String> ids) {
-        LOG.trace("getScanTasks()");
-
-        Map<String, IScanTask> result = new HashMap<>();
-
-        for (String id : ids) {
-            result.put(id, this.tasks.get(id));
-        }
-
-        return result;
     }
 
     @Override

@@ -26,13 +26,6 @@ public class SlaveOptions extends MasterSlaveOptions {
 
     private static OptionsParser parser = OptionsParser.newOptionsParser(SlaveOptions.class);
 
-    @Option(
-            name = "numberOfThreads",
-            help = "Number of worker threads the crawler slave should use.",
-            defaultValue = "1000"
-    )
-    public int numberOfThreads;
-
     /**
      * @return Command Line Argument description.
      */

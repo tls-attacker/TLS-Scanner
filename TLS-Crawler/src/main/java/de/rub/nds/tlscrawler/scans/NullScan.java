@@ -40,10 +40,7 @@ public class NullScan implements IScan {
         Document document = new Document();
 
         document.put("target_ip", target.getIp());
-        document.put("target_ports", target.getPorts().stream()
-                .map(x -> x.toString())
-                .collect(Collectors.joining(", ")));
-
+        document.put("target_ports", target.getPort());
         try {
             LOG.trace("Going to sleep.");
             Thread.sleep(NullScan.WAIT_MS);

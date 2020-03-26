@@ -20,6 +20,7 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class StartupOptions extends OptionsBase {
+
     private static Logger LOG = LoggerFactory.getLogger(StartupOptions.class);
 
     private static OptionsParser parser = OptionsParser.newOptionsParser(StartupOptions.class);
@@ -140,7 +141,7 @@ public class StartupOptions extends OptionsBase {
             defaultValue = "false"
     )
     public boolean multipleTestsMode;
-    
+
     @Option(
             name = "workspace",
             abbrev = 'w',
@@ -149,6 +150,30 @@ public class StartupOptions extends OptionsBase {
     )
     public String workspace;
 
+    @Option(
+            name = "numberOfThreads",
+            help = "Number of worker threads the crawler slave should use.",
+            defaultValue = "1000"
+    )
+    public int numberOfThreads;
+
+    @Option(
+            name = "scansToBeExecuted",
+            abbrev = 'v',
+            help = "The names of the scans that should be exeucted as a comma seperated list.",
+            defaultValue = ""
+    )
+    
+    public String scansToBeExecuted;
+    
+    @Option(
+            name = "portsToBeScanned",
+            abbrev = 'p',
+            help = "The port that should be scanned.",
+            defaultValue = "443"
+    )
+    public int port;
+    
     private static String DEFAULT_WORKSPACE = "default";
 
     /**
@@ -165,8 +190,8 @@ public class StartupOptions extends OptionsBase {
         result = Options.parse(StartupOptions.class, args).getOptions();
 
         if (result != null && result.workspace.equals("")) {
-            LOG.warn("No workspace name set. This might cause trouble when using " +
-                    "more than a single instance of TLS-Crawler.");
+            LOG.warn("No workspace name set. This might cause trouble when using "
+                    + "more than a single instance of TLS-Crawler.");
             result.workspace = DEFAULT_WORKSPACE;
         }
 
