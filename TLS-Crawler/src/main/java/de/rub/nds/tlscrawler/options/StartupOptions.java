@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -173,6 +174,17 @@ public class StartupOptions extends OptionsBase {
             defaultValue = "443"
     )
     public int port;
+    
+    
+    @Option(
+            name = "blacklist",
+            abbrev = 'b',
+            help = "A list of IPs/CIDR-Blocks.",
+            allowMultiple = true,
+            converter = Converters.CommaSeparatedOptionListConverter.class,
+            defaultValue = ""
+    )
+    public List<String> blacklist;
     
     private static String DEFAULT_WORKSPACE = "default";
 

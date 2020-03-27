@@ -59,7 +59,7 @@ public class Main {
 
         Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options, "defaultScan");
 
-        ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(),scans, options.port);
+        ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(), scans, options.port);
 
         if (!options.masterOnly) {
             slave.start();
@@ -70,18 +70,8 @@ public class Main {
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
                 + options.instanceId + " in "
                 + (options.multipleTestsMode ? "multiple tests - " : "classic ") + "mode.");
-        if (options.multipleTestsMode) {
-            try {
-                MultipleScansCommandLineInterface.handleInput(master, slave);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                LOG.info("Program interrupted");
-            }
-        } else {
-            CommandLineInterface.handleInput(master, slave);
-        }
-    }
 
+    }
 
     /**
      * Set up for known scans.
