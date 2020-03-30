@@ -83,7 +83,7 @@
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1PrimitiveBitString identifier="keyUsage" type="KeyUsage">
                                 <unusedBits>7</unusedBits>
-                                <value>0400</value>
+                                <value>0c00</value>
                             </asn1PrimitiveBitString>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>
