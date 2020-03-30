@@ -36,7 +36,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
 
     private static int STANDARD_NO_THREADS = 1000;
-    private static int MIN_NO_TO_PERSIST = 64;
+    private static int MIN_NO_TO_PERSIST = 10;
     private static int ITERATIONS_TO_IGNORE_BULK_LIMITS = 10;
     private static int ORG_THREAD_SLEEP_MILLIS = 6000;
 
@@ -79,8 +79,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             Collection<IScan> scans, int port, int noThreads) {
         super(instanceId, orchestrationProvider, persistenceProvider, scans, port);
         this.noThreads = noThreads;
-        this.newFetchLimit = 3 * noThreads;
-        this.fetchAmount = 2 * noThreads;
+        this.newFetchLimit = 1000;
+        this.fetchAmount = 20000;
 
         LOG.trace("Constructor()");
 
@@ -164,9 +164,9 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             while (this.isRunning.get()) {
                 // Fetch new tasks:
                 if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
-                    LOG.trace("Fetching tasks.", this.getName());
-
+                    LOG.info("Fetching tasks.", this.getName());
                     Collection<String> targetString = this.organizer.getOrchestrationProvider().getScanTasks(this.fetchAmount);
+                    LOG.debug("#Fetched: %s", targetString.size());
 
                     for (String tempString : targetString) {
                         String taskId = UUID.randomUUID().toString();
