@@ -60,9 +60,10 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
         this.database = this.mongoClient.getDatabase(dbName);
         this.currentCollection = this.database.getCollection(collectionName);
-
         this.initialized = true;
         LOG.info(String.format("MongoDB persistence provider initialized, connected to %s.", address.toString()));
+        LOG.info(String.format("Database: %s.", database.getName()));
+        LOG.info(String.format("CurrentCollection: %s.", currentCollection.getNamespace().getFullName()));
     }
 
     /**
