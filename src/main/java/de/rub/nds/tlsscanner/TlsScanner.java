@@ -66,15 +66,13 @@ public class TlsScanner {
 
     private final ParallelExecutor parallelExecutor;
     private final ScannerConfig config;
-    private final boolean closeAfterFinish;
-    private final boolean closeAfterFinishParallel;
+    private boolean closeAfterFinishParallel;
     private final List<TlsProbe> probeList;
     private final List<AfterProbe> afterList;
 
     public TlsScanner(ScannerConfig config) {
 
         this.config = config;
-        closeAfterFinish = true;
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config
                 .getClientDelegate().getHost() + "-Worker"));
@@ -85,7 +83,6 @@ public class TlsScanner {
 
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
         this.config = config;
-        closeAfterFinish = true;
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config
                 .getClientDelegate().getHost() + "-Worker"));
@@ -97,7 +94,6 @@ public class TlsScanner {
     public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor) {
         this.config = config;
         this.parallelExecutor = parallelExecutor;
-        closeAfterFinish = true;
         closeAfterFinishParallel = true;
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
@@ -110,7 +106,6 @@ public class TlsScanner {
         this.config = config;
         this.probeList = probeList;
         this.afterList = afterList;
-        closeAfterFinish = true;
         closeAfterFinishParallel = true;
     }
 
@@ -216,5 +211,13 @@ public class TlsScanner {
         Config tlsConfig = config.createConfig();
         ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
         return checker.speaksStartTls(tlsConfig);
+    }
+
+    public void setCloseAfterFinishParallel(boolean closeAfterFinishParallel) {
+        this.closeAfterFinishParallel = closeAfterFinishParallel;
+    }
+
+    public boolean isCloseAfterFinishParallel() {
+        return closeAfterFinishParallel;
     }
 }
