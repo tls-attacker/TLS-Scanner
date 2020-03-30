@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.*;
 
-
 /**
  * A persistence provider implementation using MongoDB as the persistence layer.
  *
@@ -35,7 +34,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     private final MongoCredential credentials;
     private MongoClient mongoClient;
     private MongoDatabase database;
-    
+
     private MongoCollection currentCollection;
 
     public MongoPersistenceProvider(ServerAddress address, MongoCredential credentials) {
