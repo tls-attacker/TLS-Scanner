@@ -171,9 +171,9 @@ public class DirectRaccoonProbe extends TlsProbe {
             FingerPrintTask fingerPrintTask = (FingerPrintTask) task;
             Boolean nullByte = Boolean.parseBoolean(fingerPrintTask.getState().getWorkflowTrace().getName());
 
-            VectorResponse vectorResponseF = evaluateFingerPrintTask(version, suite, workflowType, nullByte,
+            VectorResponse vectorResponse = evaluateFingerPrintTask(version, suite, workflowType, nullByte,
                     fingerPrintTask);
-            responseList.add(vectorResponseF);
+            responseList.add(vectorResponse);
         }
         // Generate result
         return responseList;
