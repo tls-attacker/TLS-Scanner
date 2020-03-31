@@ -7,6 +7,10 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +21,10 @@ import redis.clients.jedis.JedisPoolConfig;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * An orchestration provider implementation using Redis as an external source.
@@ -69,7 +77,6 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         }
         LOG.info("Redis Tasks are listed in:" + taskListName);
         this.taskListName = taskListName;
-
         this.initialized = true;
         LOG.trace("init() - Leave");
     }
@@ -116,36 +123,22 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     @Override
     public Collection<String> getScanTasks(int quantity) {
         this.checkInit();
-
-        LOG.trace("getScanTasks() - Enter");
-
         Collection<String> result = new ArrayList<>(quantity);
         try (Jedis jedis = this.jedisPool.getResource()) {
-            for (int i = 0; i < quantity; i++) {
-                // TODO: Bulk operation possible?
-                String scanTaskId = jedis.rpop(this.taskListName);
-
-                if (scanTaskId != null) {
-                    result.add(scanTaskId);
-                } else {
-                    break;
-                }
-            }
+            Set<String> scanTaskIds = jedis.spop(this.taskListName, quantity);
+            return scanTaskIds;
         }
-
-        LOG.trace("getScanTasks() - Leave");
-
-        return result;
     }
 
     @Override
-    public void addScanTask(String taskId) {
+    public void addScanTask(String taskId
+    ) {
         this.checkInit();
 
         LOG.trace("addScanTask()");
 
         try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.lpush(this.taskListName, taskId);
+            jedis.sadd(this.taskListName, taskId);
         }
     }
 
@@ -156,9 +149,9 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         LOG.trace("addScanTasks()");
 
         String[] tids = taskIds.toArray(new String[taskIds.size()]);
-
+        
         try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.lpush(this.taskListName, tids);
+            jedis.sadd(this.taskListName, tids);
         }
     }
 }
