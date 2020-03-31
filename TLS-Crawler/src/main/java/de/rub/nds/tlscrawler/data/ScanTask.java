@@ -26,7 +26,7 @@ public class ScanTask implements IScanTask, Serializable {
 
     private static Logger LOG = LoggerFactory.getLogger(ScanTask.class);
 
-    private final String id;
+    private final String _id;
     private final String instanceId;
     private final Instant acceptedTimestamp;
     private final Instant startedTimestamp;
@@ -40,7 +40,7 @@ public class ScanTask implements IScanTask, Serializable {
             Instant acceptedTimestamp,
             IScanTarget scanTarget,
             Collection<IScan> scans) {
-        this.id = id;
+        this._id = id;
         this.instanceId = instanceId;
         this.acceptedTimestamp = acceptedTimestamp;
         this.scanTarget = scanTarget;
@@ -55,7 +55,7 @@ public class ScanTask implements IScanTask, Serializable {
 
     @Override
     public String getId() {
-        return this.id;
+        return this._id;
     }
 
     @Override

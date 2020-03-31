@@ -7,18 +7,30 @@
  */
 package de.rub.nds.tlscrawler.persistence;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import de.rub.nds.tlscrawler.data.*;
+import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateSerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.ByteArraySerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.CertificateSerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.CustomDhPublicKeySerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.CustomDsaPublicKeySerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.CustomEcPublicKeySerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.CustomRsaPublicKeySerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.PointSerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.VectorSerialisationConverter;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.util.*;
+import org.mongojack.JacksonMongoCollection;
 
 /**
  * A persistence provider implementation using MongoDB as the persistence layer.
@@ -34,8 +46,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     private final MongoCredential credentials;
     private MongoClient mongoClient;
     private MongoDatabase database;
-
-    private MongoCollection currentCollection;
+    private JacksonMongoCollection<ScanTask> collection;
 
     public MongoPersistenceProvider(ServerAddress address, MongoCredential credentials) {
         LOG.trace("Constructor()");
@@ -47,6 +58,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      * Initializes the MongoDB persistence provider.
      *
      * @param dbName Name of the database to use.
+     * @param collectionName
      */
     public void init(String dbName, String collectionName) {
         LOG.trace(String.format("init() with name '%s'", dbName));
@@ -56,13 +68,26 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         } else {
             this.mongoClient = new MongoClient(this.address);
         }
-
+        
         this.database = this.mongoClient.getDatabase(dbName);
-        this.currentCollection = this.database.getCollection(collectionName);
+        ObjectMapper mapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(new ByteArraySerialisationConverter());
+        module.addSerializer(new ResponseFingerprintSerialisationConverter());
+        module.addSerializer(new CertificateSerialisationConverter());
+        module.addSerializer(new Asn1CertificateSerialisationConverter());
+        module.addSerializer(new CustomDhPublicKeySerialisationConverter());
+        module.addSerializer(new CustomEcPublicKeySerialisationConverter());
+        module.addSerializer(new CustomRsaPublicKeySerialisationConverter());
+        module.addSerializer(new CustomDsaPublicKeySerialisationConverter());
+        module.addSerializer(new VectorSerialisationConverter());
+        module.addSerializer(new PointSerialisationConverter());
+        mapper.registerModule(module);
+        collection = JacksonMongoCollection.builder().withObjectMapper(mapper).<ScanTask>build(database, collectionName, ScanTask.class);
         this.initialized = true;
         LOG.info(String.format("MongoDB persistence provider initialized, connected to %s.", address.toString()));
         LOG.info(String.format("Database: %s.", database.getName()));
-        LOG.info(String.format("CurrentCollection: %s.", currentCollection.getNamespace().getFullName()));
+        LOG.info(String.format("CurrentCollection: %s.", collectionName));
     }
 
     /**
@@ -80,85 +105,25 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     @Override
-    public void setUpScanTask(IScanTask newTask) {
+    public void insertScanTask(ScanTask newTask) {
         this.checkInit();
         LOG.trace("setUpScanTask()");
-        if (newTask.getResult() != null) {
-            throw new IllegalArgumentException("'results' must be null or empty.");
-        }
-        Document doc = bsonDocFromScanTask(newTask);
-        this.currentCollection.insertOne(doc);
+        this.collection.insertOne(newTask);
     }
 
     @Override
-    public void setUpScanTasks(Collection<IScanTask> newTasks) {
+    public void insertScanTasks(List<ScanTask> newTasks) {
         this.checkInit();
         LOG.trace("setUpScanTasks()");
-        List<Document> bsonDocs = new LinkedList<>();
-
-        for (IScanTask task : newTasks) {
-            if (task.getResult() != null) {
-                throw new IllegalArgumentException("'results' must be null or empty.");
-            }
-            bsonDocs.add(bsonDocFromScanTask(task));
-        }
-        this.currentCollection.insertMany(bsonDocs);
+        
+        this.collection.insertMany(newTasks);
     }
 
     @Override
     public IPersistenceProviderStats getStats() {
-        this.checkInit();
-
-        LOG.trace("getStats()");
-
-        long totalTasks = this.currentCollection.count();
-
-        Document query = new Document(DBKeys.COMPLETED_TIMESTAMP,
-                new Document(DBOperations.NOT_EQUAL, null));
-        long completedTasks = this.currentCollection.count(query);
-
-        Document minCompCreated = new Document(DBKeys.ID, null)
-                .append("minCompleted", new Document(DBOperations.MIN, String.format("$%s", DBKeys.COMPLETED_TIMESTAMP)))
-                .append("minAccpeted", new Document(DBOperations.MIN, String.format("$%s", DBKeys.ACCEPTED_TIMESTAMP)));
-        Document group = new Document(DBOperations.GROUP, minCompCreated);
-        Document result = (Document) this.currentCollection.aggregate(Arrays.asList(group)).first();
-
-        Date minCompDate = (Date) result.get("minCompleted");
-        Instant earliestCompletionTimestamp = minCompDate == null ? null : minCompDate.toInstant();
-        Date minCreaDate = (Date) result.get("minCreated");
-        Instant earliestCreatedTimestamp = minCreaDate == null ? null : minCreaDate.toInstant();
-
-        return new PersistenceProviderStats(
-                totalTasks,
-                completedTasks,
-                earliestCompletionTimestamp,
-                earliestCreatedTimestamp);
+        return null;
     }
-
-    static Document bsonDocFromScanTask(IScanTask scanTask) {
-        LOG.trace("bsonDocFromScanTask()");
-
-        if (scanTask == null) {
-            return null;
-        }
-
-        Document result = new Document(DBKeys.ID, scanTask.getId());
-
-        // These must be available:
-        result.append(DBKeys.MASTER_INSTANCE_ID, scanTask.getInstanceId());
-        result.append(DBKeys.SCAN_TARGET, scanTask.getScanTarget());
-        result.append(DBKeys.RESULTS, scanTask.getResult());
-
-        // These might be null and would throw if they were, so they have to be handled.
-        result.append(DBKeys.ACCEPTED_TIMESTAMP,
-                scanTask.getAcceptedTimestamp() == null ? null : Date.from(scanTask.getAcceptedTimestamp()));
-
-        result.append(DBKeys.COMPLETED_TIMESTAMP,
-                scanTask.getCompletedTimestamp() == null ? null : Date.from(scanTask.getCompletedTimestamp()));
-
-        return result;
-    }
-
+    
     /**
      * Constants of the keys in the result documents used in MongoDB.
      */

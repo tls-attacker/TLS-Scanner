@@ -38,7 +38,7 @@ public class NullScan implements IScan {
         LOG.trace("scan()");
 
         Document document = new Document();
-
+        LOG.info("testing: " +target.getIp());
         document.put("target_ip", target.getIp());
         document.put("target_ports", target.getPort());
         try {

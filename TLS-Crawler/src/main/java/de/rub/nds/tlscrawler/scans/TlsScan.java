@@ -15,8 +15,11 @@ import de.rub.nds.tlsscanner.ThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.probe.CertificateProbe;
+import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
 import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
 import de.rub.nds.tlsscanner.probe.CommonBugProbe;
+import de.rub.nds.tlsscanner.probe.DirectRaccoonProbe;
 import de.rub.nds.tlsscanner.probe.ECPointFormatProbe;
 import de.rub.nds.tlsscanner.probe.ExtensionProbe;
 import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
@@ -48,7 +51,7 @@ public class TlsScan implements IScan {
     private final ParallelExecutor parallelExecutor;
 
     public TlsScan() {
-        parallelExecutor = new ParallelExecutor(900, 4);
+        parallelExecutor = new ParallelExecutor(100, 3);
     }
 
     @Override
@@ -70,26 +73,32 @@ public class TlsScan implements IScan {
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
         List<TlsProbe> probeList = new LinkedList<>();
-        probeList.add(new CommonBugProbe(config, parallelExecutor));
-        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
+        //probeList.add(new CommonBugProbe(config, parallelExecutor));
+        //probeList.add(new NamedCurvesProbe(config, parallelExecutor));
+        probeList.add(new CertificateProbe(config, parallelExecutor));
         probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
         probeList.add(new CiphersuiteProbe(config, parallelExecutor));
-        probeList.add(new ExtensionProbe(config, parallelExecutor));
-        probeList.add(new Tls13Probe(config, parallelExecutor));
-        probeList.add(new ECPointFormatProbe(config, parallelExecutor));
-        probeList.add(new RenegotiationProbe(config, parallelExecutor));
-        probeList.add(new InvalidCurveProbe(config, parallelExecutor));
-        
+        //probeList.add(new ExtensionProbe(config, parallelExecutor));
+        //probeList.add(new Tls13Probe(config, parallelExecutor));
+        //probeList.add(new ECPointFormatProbe(config, parallelExecutor));
+        //probeList.add(new RenegotiationProbe(config, parallelExecutor));
+        //probeList.add(new InvalidCurveProbe(config, parallelExecutor));
+        probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
+        probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
+
         List<AfterProbe> afterList = new LinkedList<>();
-        
+
         ScanJob scanJob = new ScanJob(probeList, afterList);
         ThreadedScanJobExecutor executor = new ThreadedScanJobExecutor(config, scanJob, parallelExecutor.getSize(), config
-                            .getClientDelegate().getHost());
-        
-        
+                .getClientDelegate().getHost());
+
         TlsScanner scanner = new TlsScanner(config, executor, parallelExecutor, probeList, afterList);
+        scanner.setCloseAfterFinishParallel(false);
+
+        LOG.info("Started scanning: " + target.getIp());
         SiteReport report = scanner.scan();
 
+        LOG.info("Finished scanning: " + target.getIp());
         Document document = createDocumentFromSiteReport(report);
 
         return document;

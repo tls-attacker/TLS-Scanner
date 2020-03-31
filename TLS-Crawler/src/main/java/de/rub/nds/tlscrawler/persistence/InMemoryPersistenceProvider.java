@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,6 +23,7 @@ import java.util.Objects;
  * @author janis.fliegenschmidt@rub.de
  */
 public class InMemoryPersistenceProvider implements IPersistenceProvider {
+
     private static Logger LOG = LoggerFactory.getLogger(InMemoryPersistenceProvider.class);
 
     private Map<String, IScanTask> tasks;
@@ -32,16 +34,16 @@ public class InMemoryPersistenceProvider implements IPersistenceProvider {
     }
 
     @Override
-    public void setUpScanTasks(Collection<IScanTask> newTasks) {
+    public void insertScanTasks(List<ScanTask> newTasks) {
         LOG.trace("setUpScanTasks()");
 
-        for (IScanTask task : newTasks) {
-            this.setUpScanTask(task);
+        for (ScanTask task : newTasks) {
+            this.insertScanTask(task);
         }
     }
 
     @Override
-    public void setUpScanTask(IScanTask task) {
+    public void insertScanTask(ScanTask task) {
         LOG.trace("setUpScanTask()");
         this.tasks.put(task.getId(), task);
     }

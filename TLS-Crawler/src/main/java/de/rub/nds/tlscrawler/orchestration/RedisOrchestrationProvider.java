@@ -67,7 +67,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
                 throw new ConnectException("Could not connect to Redis endpoint.");
             }
         }
-
+        LOG.info("Redis Tasks are listed in:" + taskListName);
         this.taskListName = taskListName;
 
         this.initialized = true;

@@ -62,8 +62,8 @@ public class TlsCrawlerMaster extends TlsCrawler {
         LOG.info("All ScanTasks have been scheduled");
     }
 
-    private static void setUp(IOrganizer org, Collection<IScanTask> tasks) {
-        org.getPersistenceProvider().setUpScanTasks(tasks);
+    private static void setUp(IOrganizer org, List<ScanTask> tasks) {
+        org.getPersistenceProvider().insertScanTasks(tasks);
 
         Collection<String> tids = tasks.stream()
                 .map(x -> x.getId())

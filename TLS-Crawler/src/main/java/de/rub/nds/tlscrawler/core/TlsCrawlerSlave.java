@@ -35,7 +35,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
 
-    private static int STANDARD_NO_THREADS = 1000;
+    private static int STANDARD_NO_THREADS = 10;
     private static int MIN_NO_TO_PERSIST = 10;
     private static int ITERATIONS_TO_IGNORE_BULK_LIMITS = 10;
     private static int ORG_THREAD_SLEEP_MILLIS = 6000;
@@ -80,7 +80,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         super(instanceId, orchestrationProvider, persistenceProvider, scans, port);
         this.noThreads = noThreads;
         this.newFetchLimit = 1000;
-        this.fetchAmount = 20000;
+        this.fetchAmount = 5000;
 
         LOG.trace("Constructor()");
 
@@ -164,9 +164,9 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             while (this.isRunning.get()) {
                 // Fetch new tasks:
                 if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
-                    LOG.info("Fetching tasks.", this.getName());
+                    LOG.info("Fetching tasks: %s", this.getName());
                     Collection<String> targetString = this.organizer.getOrchestrationProvider().getScanTasks(this.fetchAmount);
-                    LOG.debug("#Fetched: %s", targetString.size());
+                    LOG.info("#Fetched: %s", targetString.size());
 
                     for (String tempString : targetString) {
                         String taskId = UUID.randomUUID().toString();
@@ -176,16 +176,15 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                         this.stats.incrementAcceptedTaskCount(1);
                     }
                 }
-
                 // Persist task results:
                 if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
                         || ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) {
                     LOG.trace("Persisting results.");
-                    Collection<IScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
+                    Collection<ScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
 
                     // TODO: Implement bulk operation @IPersistenceProvider
-                    for (IScanTask task : finishedTasks) {
-                        this.organizer.getPersistenceProvider().setUpScanTask(task);
+                    for (ScanTask task : finishedTasks) {
+                        this.organizer.getPersistenceProvider().insertScanTask(task);
                         this.stats.incrementCompletedTaskCount(1);
                     }
 

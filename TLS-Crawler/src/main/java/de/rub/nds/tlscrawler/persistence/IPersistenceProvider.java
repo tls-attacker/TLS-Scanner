@@ -8,10 +8,9 @@
 package de.rub.nds.tlscrawler.persistence;
 
 import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
-import de.rub.nds.tlscrawler.data.IScanTask;
 
-import java.util.Collection;
-import java.util.Map;
+import de.rub.nds.tlscrawler.data.ScanTask;
+import java.util.List;
 
 /**
  * Persistence provider interface.
@@ -28,7 +27,7 @@ public interface IPersistenceProvider {
      *
      * @param newTask The new scan task.
      */
-    void setUpScanTask(IScanTask newTask);
+    void insertScanTask(ScanTask newTask);
 
     /**
      * Accepts new scan tasks.
@@ -36,7 +35,7 @@ public interface IPersistenceProvider {
      *
      * @param newTasks The new scan tasks.
      */
-    void setUpScanTasks(Collection<IScanTask> newTasks);
+    void insertScanTasks(List<ScanTask> newTasks);
 
     /**
      * Provides information about created tasks.

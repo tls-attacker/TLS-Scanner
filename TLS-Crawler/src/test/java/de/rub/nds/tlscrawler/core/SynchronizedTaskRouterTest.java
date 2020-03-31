@@ -8,6 +8,7 @@
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.IScanTask;
+import de.rub.nds.tlscrawler.data.ScanTask;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,41 +28,41 @@ import static org.mockito.Mockito.when;
 public class SynchronizedTaskRouterTest {
     private SynchronizedTaskRouter subject;
 
-    private IScanTask t0;
-    private IScanTask t1;
-    private IScanTask t2;
-    private IScanTask t3;
-    private IScanTask t4;
+    private ScanTask t0;
+    private ScanTask t1;
+    private ScanTask t2;
+    private ScanTask t3;
+    private ScanTask t4;
 
-    private IScanTask t5;
-    private IScanTask t6;
-    private IScanTask t7;
-    private IScanTask t8;
-    private IScanTask t9;
+    private ScanTask t5;
+    private ScanTask t6;
+    private ScanTask t7;
+    private ScanTask t8;
+    private ScanTask t9;
 
     @Before
     public void setUp() {
         subject = new SynchronizedTaskRouter();
 
-        t0 = mock(IScanTask.class);
+        t0 = mock(ScanTask.class);
         when(t0.getId()).thenReturn("0");
-        t1 = mock(IScanTask.class);
+        t1 = mock(ScanTask.class);
         when(t1.getId()).thenReturn("1");
-        t2 = mock(IScanTask.class);
+        t2 = mock(ScanTask.class);
         when(t2.getId()).thenReturn("2");
-        t3 = mock(IScanTask.class);
+        t3 = mock(ScanTask.class);
         when(t3.getId()).thenReturn("3");
-        t4 = mock(IScanTask.class);
+        t4 = mock(ScanTask.class);
         when(t4.getId()).thenReturn("4");
-        t5 = mock(IScanTask.class);
+        t5 = mock(ScanTask.class);
         when(t5.getId()).thenReturn("5");
-        t6 = mock(IScanTask.class);
+        t6 = mock(ScanTask.class);
         when(t6.getId()).thenReturn("6");
-        t7 = mock(IScanTask.class);
+        t7 = mock(ScanTask.class);
         when(t7.getId()).thenReturn("7");
-        t8 = mock(IScanTask.class);
+        t8 = mock(ScanTask.class);
         when(t8.getId()).thenReturn("8");
-        t9 = mock(IScanTask.class);
+        t9 = mock(ScanTask.class);
         when(t9.getId()).thenReturn("9");
 
         subject.addTodo(t0);

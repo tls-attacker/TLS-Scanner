@@ -8,25 +8,18 @@
 package de.rub.nds.tlscrawler;
 
 import com.google.devtools.common.options.OptionsParsingException;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 import static de.rub.nds.tlscrawler.Slave.setUpProviders;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
 import de.rub.nds.tlscrawler.options.StartupOptions;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
-import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
-import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import de.rub.nds.tlscrawler.persistence.InMemoryPersistenceProvider;
-import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.*;
 import de.rub.nds.tlscrawler.utility.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.ConnectException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,7 +38,7 @@ public class Main {
         try {
             options = StartupOptions.parseOptions(args);
         } catch (OptionsParsingException ex) {
-            LOG.error("Command Line Options could not be parsed.");
+            LOG.error("Command Line Options could not be parsed.", ex);
             options = null;
         }
 
@@ -66,7 +59,6 @@ public class Main {
         }
 
         TlsCrawlerMaster master = new TlsCrawlerMaster(options.instanceId, providers.getFirst(), providers.getSecond(), scans, options.port);
-
         LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
                 + options.instanceId + " in "
                 + (options.multipleTestsMode ? "multiple tests - " : "classic ") + "mode.");
@@ -81,8 +73,8 @@ public class Main {
     static List<IScan> setUpScans() {
         LOG.trace("setUpScans()");
 
-        List<IScan> result = new LinkedList<>(ScanFactory.getInstance().getBuiltInScans());
-
+        List<IScan> result = new LinkedList<>();
+        result.add(new TlsScan());
         return result;
     }
 }
