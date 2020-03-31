@@ -50,7 +50,7 @@ public class SlaveWorkerThread extends Thread {
             ScanTask todo = this.synchronizedTaskRouter.getTodo();
 
             if (todo != null) {
-                LOG.trace(String.format("Started work on %s.", todo.getId()));
+                LOG.trace("Started work on {}.", todo.getId());
                 this.setName("Thread - " + todo.getScanTarget());
 
                 for (String scan : todo.getScans()) {

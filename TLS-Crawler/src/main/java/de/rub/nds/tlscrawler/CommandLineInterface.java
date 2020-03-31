@@ -38,7 +38,7 @@ public class CommandLineInterface {
             LOG.info("Starting command reception. Try \"help\" or \"newscan -h\".");
             String input = scanner.nextLine();
 
-            LOG.debug(String.format("Received input: \"%s\"", input));
+            LOG.debug("Received input: {}", input);
 
             String[] in_arr = input.split(Pattern.quote(" "));
             String[] args = in_arr.length <= 1 ? new String[] { } : Arrays.copyOfRange(in_arr, 1, in_arr.length);

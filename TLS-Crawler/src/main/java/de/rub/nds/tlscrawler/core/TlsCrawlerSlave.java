@@ -164,9 +164,9 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             while (this.isRunning.get()) {
                 // Fetch new tasks:
                 if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
-                    LOG.info("Fetching tasks: %s", this.getName());
+                    LOG.info("Fetching tasks: {}", this.getName());
                     Collection<String> targetString = this.organizer.getOrchestrationProvider().getScanTasks(this.fetchAmount);
-                    LOG.info("#Fetched: %s", targetString.size());
+                    LOG.info("#Fetched: {}", targetString.size());
 
                     for (String tempString : targetString) {
                         String taskId = UUID.randomUUID().toString();

@@ -69,7 +69,7 @@ abstract class TlsCrawler implements IScanProvider, IOrganizer {
             throw new IllegalArgumentException("Arguments to TlsCrawler may not be null or empty.");
         }
     }
-    
+
     @Override
     public Collection<IScan> getScans() {
         return scans;
@@ -114,7 +114,7 @@ abstract class TlsCrawler implements IScanProvider, IOrganizer {
                 return scan;
             }
         }
-        LOG.warn(String.format("Scan '%s' could not be found.", name));
+        LOG.warn("Scan '{}' could not be found.", name);
         return null;
     }
 }

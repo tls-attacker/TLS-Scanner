@@ -61,14 +61,14 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      * @param collectionName
      */
     public void init(String dbName, String collectionName) {
-        LOG.trace(String.format("init() with name '%s'", dbName));
+        LOG.trace("init() with name '{}'", dbName);
 
         if (this.credentials != null) {
             this.mongoClient = new MongoClient(this.address, Arrays.asList(this.credentials));
         } else {
             this.mongoClient = new MongoClient(this.address);
         }
-        
+
         this.database = this.mongoClient.getDatabase(dbName);
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
@@ -85,9 +85,9 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         mapper.registerModule(module);
         collection = JacksonMongoCollection.builder().withObjectMapper(mapper).<ScanTask>build(database, collectionName, ScanTask.class);
         this.initialized = true;
-        LOG.info(String.format("MongoDB persistence provider initialized, connected to %s.", address.toString()));
-        LOG.info(String.format("Database: %s.", database.getName()));
-        LOG.info(String.format("CurrentCollection: %s.", collectionName));
+        LOG.info("MongoDB persistence provider initialized, connected to {}.", address.toString());
+        LOG.info("Database: {}.", database.getName());
+        LOG.info("CurrentCollection: {}.", collectionName);
     }
 
     /**
@@ -115,7 +115,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     public void insertScanTasks(List<ScanTask> newTasks) {
         this.checkInit();
         LOG.trace("setUpScanTasks()");
-        
+
         this.collection.insertMany(newTasks);
     }
 
@@ -123,7 +123,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     public IPersistenceProviderStats getStats() {
         return null;
     }
-    
+
     /**
      * Constants of the keys in the result documents used in MongoDB.
      */
