@@ -81,17 +81,7 @@ public class TlsScanner {
         fillDefaultProbeLists();
     }
 
-    public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
-        this.config = config;
-        closeAfterFinishParallel = true;
-        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config
-                .getClientDelegate().getHost() + "-Worker"));
-        this.probeList = new LinkedList<>();
-        this.afterList = new LinkedList<>();
-        fillDefaultProbeLists();
-    }
-
-    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor) {
+    public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor) {
         this.config = config;
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = true;
@@ -100,7 +90,7 @@ public class TlsScanner {
         fillDefaultProbeLists();
     }
 
-    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor,
+    public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor,
             List<TlsProbe> probeList, List<AfterProbe> afterList) {
         this.parallelExecutor = parallelExecutor;
         this.config = config;
