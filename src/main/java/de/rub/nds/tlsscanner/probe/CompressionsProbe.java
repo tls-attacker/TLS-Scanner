@@ -40,8 +40,12 @@ public class CompressionsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<CompressionMethod> compressions = getSupportedCompressionMethods();
-        return new CompressionsResult(compressions);
+        try {
+            List<CompressionMethod> compressions = getSupportedCompressionMethods();
+            return new CompressionsResult(compressions);
+        } catch (Exception E) {
+            return new CompressionsResult(null);
+        }
     }
 
     private List<CompressionMethod> getSupportedCompressionMethods() {

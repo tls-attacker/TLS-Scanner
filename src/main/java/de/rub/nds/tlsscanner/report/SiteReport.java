@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Observable;
 import java.util.Set;
-import org.bouncycastle.crypto.tls.Certificate;
 
 public class SiteReport extends Observable implements Serializable {
 
@@ -93,7 +92,6 @@ public class SiteReport extends Observable implements Serializable {
     private CheckPattern verifyCheckPattern = null;
 
     // Certificate
-    private Certificate certificate = null;
     private CertificateChain certificateChain;
 
     // Ciphers
@@ -296,14 +294,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setSupportedTls13CipherSuites(List<CipherSuite> supportedTls13CipherSuites) {
         this.supportedTls13CipherSuites = supportedTls13CipherSuites;
-    }
-
-    public synchronized Certificate getCertificate() {
-        return certificate;
-    }
-
-    public synchronized void setCertificate(Certificate certificate) {
-        this.certificate = certificate;
     }
 
     public synchronized List<NamedGroup> getSupportedNamedGroups() {

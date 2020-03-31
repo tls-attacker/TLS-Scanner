@@ -261,20 +261,24 @@ public class MacProbe extends TlsProbe {
         executeState(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
-            if (receivedOnlyFinAndCcs(trace)) {
-                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
-            } else if (receivedFinAndCcs(trace)) {
-                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
-            } else {
-                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
-            }
-            try {
-                TlsContext tlsContext = stateIndexPair.getState().getTlsContext();
-                if (tlsContext.getTransportHandler() != null) {
-                    tlsContext.getTransportHandler().closeConnection();
+            if (trace.executedAsPlanned()) {
+                if (receivedOnlyFinAndCcs(trace)) {
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
+                } else if (receivedFinAndCcs(trace)) {
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
+                } else {
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
                 }
-            } catch (IOException ex) {
-                LOGGER.warn("Could not close TransportHandler", ex);
+                try {
+                    TlsContext tlsContext = stateIndexPair.getState().getTlsContext();
+                    if (tlsContext.getTransportHandler() != null) {
+                        tlsContext.getTransportHandler().closeConnection();
+                    }
+                } catch (IOException ex) {
+                    LOGGER.warn("Could not close TransportHandler", ex);
+                }
+            } else {
+                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.ERROR_DURING_TEST;
             }
         }
         return byteCheckArray;
@@ -310,23 +314,28 @@ public class MacProbe extends TlsProbe {
         executeState(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
-            if (check == Check.APPDATA) {
-                ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
-                EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint, true);
-                LOGGER.debug("Fingerprint: " + fingerprint.toString());
-                if (equalityError != EqualityError.NONE) {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
+            if (trace.executedAsPlanned()) {
+                if (check == Check.APPDATA) {
+                    ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
+                    EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint,
+                            true);
+                    LOGGER.debug("Fingerprint: " + fingerprint.toString());
+                    if (equalityError != EqualityError.NONE) {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
+                    } else {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
+                    }
                 } else {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
+                    if (receivedOnlyFinAndCcs(trace)) {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
+                    } else if (receivedFinAndCcs(trace)) {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
+                    } else {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
+                    }
                 }
             } else {
-                if (receivedOnlyFinAndCcs(trace)) {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
-                } else if (receivedFinAndCcs(trace)) {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
-                } else {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
-                }
+                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.ERROR_DURING_TEST;
             }
             try {
                 TlsContext tlsContext = stateIndexPair.getState().getTlsContext();

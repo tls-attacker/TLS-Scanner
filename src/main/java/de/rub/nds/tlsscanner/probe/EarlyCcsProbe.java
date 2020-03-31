@@ -28,16 +28,22 @@ public class EarlyCcsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        EarlyCCSCommandConfig earlyCcsCommandConfig = new EarlyCCSCommandConfig(getScannerConfig().getGeneralDelegate());
-        ClientDelegate delegate = (ClientDelegate) earlyCcsCommandConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) earlyCcsCommandConfig
-                .getDelegate(StarttlsDelegate.class);
-        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-        EarlyCCSAttacker attacker = new EarlyCCSAttacker(earlyCcsCommandConfig, earlyCcsCommandConfig.createConfig());
-        EarlyCcsVulnerabilityType earlyCcsVulnerabilityType = attacker.getEarlyCcsVulnerabilityType();
-        return new EarlyCcsResult(earlyCcsVulnerabilityType);
+        try {
+            EarlyCCSCommandConfig earlyCcsCommandConfig = new EarlyCCSCommandConfig(getScannerConfig()
+                    .getGeneralDelegate());
+            ClientDelegate delegate = (ClientDelegate) earlyCcsCommandConfig.getDelegate(ClientDelegate.class);
+            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) earlyCcsCommandConfig
+                    .getDelegate(StarttlsDelegate.class);
+            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+            EarlyCCSAttacker attacker = new EarlyCCSAttacker(earlyCcsCommandConfig,
+                    earlyCcsCommandConfig.createConfig());
+            EarlyCcsVulnerabilityType earlyCcsVulnerabilityType = attacker.getEarlyCcsVulnerabilityType();
+            return new EarlyCcsResult(earlyCcsVulnerabilityType);
+        } catch (Exception E) {
+            return new EarlyCcsResult(null);
+        }
     }
 
     @Override

@@ -44,18 +44,4 @@ public class FisherExactTestTest {
     @After
     public void tearDown() {
     }
-
-    /**
-     * Test of getLog2PValue method, of class FisherExactTest.
-     */
-    @Test
-    public void testGetLog2PValue() {
-        System.out.println("getLog2PValue");
-        int inputAOutput1 = 2000;
-        int inputBOutput1 = 3100;
-        int inputAoutput2 = 3000;
-        int inputBOutput2 = 1009;
-        double result = FisherExactTest.getPValue(inputAOutput1, inputBOutput1, inputAoutput2, inputBOutput2);
-        System.out.println(result);
-    }
 }

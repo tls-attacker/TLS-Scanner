@@ -108,7 +108,6 @@ public class NondeterministicVectorContainerHolder {
 
             LOGGER.debug("Computing P value based on fisher's exact test");
             double fisher = computePValueFisherExact();
-            System.out.println("Chi:" + chi + " Fisher: " + fisher);
             return fisher;
         } else {
             LOGGER.debug("Computing P value based on Chi² test");

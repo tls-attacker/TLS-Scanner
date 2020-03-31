@@ -14,7 +14,6 @@ import de.rub.nds.tlsattacker.attacks.impl.drown.GeneralDrownAttacker;
 import de.rub.nds.tlsattacker.attacks.impl.drown.SpecialDrownAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
-import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;

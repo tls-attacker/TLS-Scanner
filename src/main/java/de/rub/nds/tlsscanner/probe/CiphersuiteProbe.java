@@ -47,31 +47,34 @@ public class CiphersuiteProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<VersionSuiteListPair> pairLists = new LinkedList<>();
-        for (ProtocolVersion version : protocolVersions) {
-            LOGGER.debug("Testing:" + version.name());
-            List<CipherSuite> toTestList = new LinkedList<>();
-            List<CipherSuite> versionSupportedSuites = new LinkedList<>();
-            if (version == ProtocolVersion.SSL3) {
-                toTestList.addAll(CipherSuite.SSL3_SUPPORTED_CIPHERSUITES);
-                versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-            } else {
-                toTestList.addAll(Arrays.asList(CipherSuite.values()));
-                toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-                toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-                versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-                if (versionSupportedSuites.isEmpty()) {
-                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
+        try {
+            List<VersionSuiteListPair> pairLists = new LinkedList<>();
+            for (ProtocolVersion version : protocolVersions) {
+                LOGGER.debug("Testing:" + version.name());
+                List<CipherSuite> toTestList = new LinkedList<>();
+                List<CipherSuite> versionSupportedSuites = new LinkedList<>();
+                if (version == ProtocolVersion.SSL3) {
+                    toTestList.addAll(CipherSuite.SSL3_SUPPORTED_CIPHERSUITES);
+                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
+                } else {
+                    toTestList.addAll(Arrays.asList(CipherSuite.values()));
+                    toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+                    toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
+                    if (versionSupportedSuites.isEmpty()) {
+                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
+                    }
                 }
-            }
-            if (versionSupportedSuites.size() > 0) {
-                pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
+                if (versionSupportedSuites.size() > 0) {
+                    pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
+                }
+
             }
 
+            return new CiphersuiteProbeResult(pairLists);
+        } catch (Exception E) {
+            return new CiphersuiteProbeResult(null);
         }
-
-        return new CiphersuiteProbeResult(pairLists);
-
     }
 
     public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(ProtocolVersion version) {
