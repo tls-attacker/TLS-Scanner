@@ -166,12 +166,12 @@ public class NondeterministicVectorContainerHolder {
     private double computePValueChiSquared() {
         ChiSquareTest test = new ChiSquareTest();
         ResponseCounter defaultAnswer = getDefaultAnswer();
+        if (statisticList.size() < 2) {
+            return 1;
+        }
         double probability = defaultAnswer.getProbability();
         double[] expected = new double[statisticList.size()];
         long[] measured = new long[statisticList.size()];
-        if (statisticList.size() == 1) {
-            return 1;
-        }
         for (int i = 0; i < statisticList.size(); i++) {
             expected[i] = probability * statisticList.get(i).getResponseFingerprintList().size();
             measured[i] = statisticList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
