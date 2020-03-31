@@ -38,7 +38,6 @@ public class DirectRaccoonCipherSuiteFingerprint {
 
     public DirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite,
             DirectRaccoonWorkflowType workflowType, List<VectorResponse> responseMapList) {
-
         this.version = version;
         this.suite = suite;
         this.workflowType = workflowType;
