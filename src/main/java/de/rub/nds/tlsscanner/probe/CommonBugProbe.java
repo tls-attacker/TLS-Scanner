@@ -92,7 +92,6 @@ public class CommonBugProbe extends TlsProbe {
 
     // really big client
     // hello messages
-
     public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.COMMON_BUGS, config, 1);
     }
@@ -154,8 +153,8 @@ public class CommonBugProbe extends TlsProbe {
 
             ClientHelloMessage message = new ClientHelloMessage(config);
             UnknownExtensionMessage extension = new UnknownExtensionMessage();
-            extension.setTypeConfig(new byte[] { (byte) 3F, (byte) 3F });
-            extension.setDataConfig(new byte[] { 00, 11, 22, 33 });
+            extension.setTypeConfig(new byte[]{(byte) 3F, (byte) 3F});
+            extension.setDataConfig(new byte[]{00, 11, 22, 33});
             message.getExtensions().add(extension);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
@@ -206,7 +205,7 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(true);
             ClientHelloMessage message = new ClientHelloMessage(config);
             SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
+            extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[]{(byte) 0xED, (byte) 0xED}));
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
@@ -237,7 +236,7 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(false);
             ClientHelloMessage message = new ClientHelloMessage(config);
             EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
-            extension.setSupportedGroups(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
+            extension.setSupportedGroups(Modifiable.explicit(new byte[]{(byte) 0xED, (byte) 0xED}));
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
@@ -260,7 +259,7 @@ public class CommonBugProbe extends TlsProbe {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
         ClientHelloMessage message = new ClientHelloMessage(config);
-        message.setCipherSuites(Modifiable.explicit(new byte[] { (byte) 0xEE, (byte) 0xCC }));
+        message.setCipherSuites(Modifiable.explicit(new byte[]{(byte) 0xEE, (byte) 0xCC}));
         trace.addTlsAction(new SendAction(message));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
@@ -269,8 +268,8 @@ public class CommonBugProbe extends TlsProbe {
         ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(
                 HandshakeMessageType.SERVER_HELLO, trace);
         if (receivedShd) {
-            if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(), new byte[] { (byte) 0xEE,
-                    (byte) 0xCC })) {
+            if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(), new byte[]{(byte) 0xEE,
+                (byte) 0xCC})) {
                 reflectsCipherSuiteOffering = TestResult.TRUE;
                 ignoresCipherSuiteOffering = TestResult.FALSE;
             } else {
@@ -300,7 +299,7 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(true);
             ClientHelloMessage message = new ClientHelloMessage(config);
             SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
+            extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[]{(byte) 0xED, (byte) 0xED}, 0));
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
@@ -339,7 +338,7 @@ public class CommonBugProbe extends TlsProbe {
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
             if (receivedShd) {
                 trace.reset();
-                extension.setSupportedGroups(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
+                extension.setSupportedGroups(Modifiable.insert(new byte[]{(byte) 0xED, (byte) 0xED}, 0));
                 state = new State(config, trace);
                 executeState(state);
                 receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
@@ -363,7 +362,7 @@ public class CommonBugProbe extends TlsProbe {
             for (CipherSuite suite : CipherSuite.values()) {
                 if (suite.getByteValue()[0] == 0x00) {
                     try {
-                        stream.write(new byte[] { (byte) 0xDF, suite.getByteValue()[1] });
+                        stream.write(new byte[]{(byte) 0xDF, suite.getByteValue()[1]});
                     } catch (IOException ex) {
                         LOGGER.debug(ex);
                     }
@@ -408,7 +407,7 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setProtocolVersion(Modifiable.explicit(new byte[] { 0x03, 0x05 }));
+            message.setProtocolVersion(Modifiable.explicit(new byte[]{0x03, 0x05}));
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
@@ -427,7 +426,7 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCompressions(new byte[] { (byte) 0xFF, (byte) 0x00 });
+            message.setCompressions(new byte[]{(byte) 0xFF, (byte) 0x00});
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
@@ -469,7 +468,7 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCipherSuites(Modifiable.insert(new byte[] { (byte) 0xCF, (byte) 0xAA }, 1));
+            message.setCipherSuites(Modifiable.insert(new byte[]{(byte) 0xCF, (byte) 0xAA}, 1));
             trace.addTlsAction(new SendAction(message));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
@@ -486,7 +485,7 @@ public class CommonBugProbe extends TlsProbe {
         try {
             Config config = getWorkingConfig();
             config.setAddAlpnExtension(true);
-            config.setAlpnAnnouncedProtocols(new String[] { "This is not an ALPN Protocol" });
+            config.setAlpnAnnouncedProtocols(new String[]{"This is not an ALPN Protocol"});
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
