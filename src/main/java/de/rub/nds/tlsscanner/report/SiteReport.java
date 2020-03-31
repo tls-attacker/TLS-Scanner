@@ -48,7 +48,7 @@ import java.util.Observable;
 import java.util.Set;
 import org.bouncycastle.crypto.tls.Certificate;
 
-public class SiteReport extends Observable implements Serializable{
+public class SiteReport extends Observable implements Serializable {
 
     private final HashMap<String, TestResult> resultMap;
 
@@ -68,6 +68,7 @@ public class SiteReport extends Observable implements Serializable{
     private NonDetermnisimEvaluationReport paddingOracleShakyReport = null;
     private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList;
     private List<InvalidCurveResponse> invalidCurveResultList;
+
     private int parameterCombinations = -2;
     private int executedCombinations = -2;
     private String debugString = "noneGiven";

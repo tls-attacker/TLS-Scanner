@@ -49,48 +49,49 @@ import java.util.List;
 public class CommonBugProbe extends TlsProbe {
 
     private TestResult extensionIntolerance; // does it handle unknown
-                                             // extenstions correctly?
+    // extenstions correctly?
     private TestResult cipherSuiteIntolerance; // does it handle unknown
-                                               // ciphersuites correctly?
+    // ciphersuites correctly?
     private TestResult cipherSuiteLengthIntolerance512; // does it handle long
-                                                        // ciphersuite length
-                                                        // values correctly?
+    // ciphersuite length
+    // values correctly?
     private TestResult compressionIntolerance; // does it handle unknown
-                                               // compression algorithms
-                                               // correctly
+    // compression algorithms
+    // correctly
     private TestResult versionIntolerance; // does it handle unknown versions
-                                           // correctly?
+    // correctly?
     private TestResult alpnIntolerance; // does it handle unknown alpn strings
-                                        // correctly?
+    // correctly?
     private TestResult clientHelloLengthIntolerance; // 256 - 511 <-- ch should
-                                                     // be bigger than this
+    // be bigger than this
     private TestResult emptyLastExtensionIntolerance; // does it break on empty
-                                                      // last extension
+    // last extension
     private TestResult onlySecondCiphersuiteByteEvaluated; // is only the second
-                                                           // byte of the
-                                                           // ciphersuite
-                                                           // evaluated
+    // byte of the
+    // ciphersuite
+    // evaluated
     private TestResult namedGroupIntolerant; // does it handle unknown groups
-                                             // correctly
+    // correctly
     private TestResult namedSignatureAndHashAlgorithmIntolerance; // does it
-                                                                  // handle
-                                                                  // signature
-                                                                  // and hash
-                                                                  // algorithms
-                                                                  // correctly
+    // handle
+    // signature
+    // and hash
+    // algorithms
+    // correctly
     private TestResult ignoresCipherSuiteOffering; // does it ignore the offered
-                                                   // ciphersuites
+    // ciphersuites
     private TestResult reflectsCipherSuiteOffering; // does it ignore the
-                                                    // offered ciphersuites
+    // offered ciphersuites
     private TestResult ignoresOfferedNamedGroups; // does it ignore the offered
-                                                  // named groups
+    // named groups
     private TestResult ignoresOfferedSignatureAndHashAlgorithms; // does it
-                                                                 // ignore the
-                                                                 // sig hash
-                                                                 // algorithms
+    // ignore the
+    // sig hash
+    // algorithms
     private TestResult maxLengthClientHelloIntolerant; // server does not like
-                                                       // really big client
-                                                       // hello messages
+
+    // really big client
+    // hello messages
 
     public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.COMMON_BUGS, config, 1);

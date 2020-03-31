@@ -540,7 +540,6 @@ public class InvalidCurveProbe extends TlsProbe {
      * Groups ciphersuites per Version in a hopefully sensible way that reduces
      * the probe count but still provides enough accuracy
      */
-
     private HashMap<ProtocolVersion, List<CipherSuite>> filterCipherSuites() {
         HashMap<ProtocolVersion, List<CipherSuite>> groupedMap = new HashMap<>();
         for (ProtocolVersion protocolVersion : supportedProtocolVersions) {

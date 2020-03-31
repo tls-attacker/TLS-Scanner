@@ -19,6 +19,7 @@ import java.util.List;
  *
  */
 public class InvalidCurveParameterSet {
+
     private ProtocolVersion protocolVersion;
     private List<CipherSuite> cipherSuites;
     private NamedGroup namedGroup;

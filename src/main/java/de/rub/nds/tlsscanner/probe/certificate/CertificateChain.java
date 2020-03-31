@@ -163,7 +163,7 @@ public class CertificateChain {
             }
         } else {
             chainIsOrdered = true; // there is no leaf certificate - so i guess
-                                   // this is ordered?
+            // this is ordered?
             containsValidLeaf = false;
         }
         containsNotYetValid = false;
@@ -341,7 +341,7 @@ public class CertificateChain {
     private CertPathValidationResult evaluateGeneralTrust(List<CertificateReport> orderedCertificateChain) {
         if (orderedCertificateChain.size() < 2) {
             return null;// Emtpy chains & only root ca's are considered not
-                        // generally trusted i guess
+            // generally trusted i guess
         }
         X509CertificateHolder[] certPath = new X509CertificateHolder[orderedCertificateChain.size()];
         for (int i = 0; i < orderedCertificateChain.size(); i++) {
