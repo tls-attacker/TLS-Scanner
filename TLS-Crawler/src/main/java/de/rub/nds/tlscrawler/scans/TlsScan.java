@@ -55,7 +55,7 @@ public class TlsScan implements IScan {
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
         config.getClientDelegate().setSniHostname(target.getHostname());
-
+        config.setScanDetail(ScannerDetail.QUICK);
         TlsScanner scanner = new TlsScanner(config, parallelExecutor);
         scanner.setCloseAfterFinishParallel(false);
         if (target.getHostname() != null) {
