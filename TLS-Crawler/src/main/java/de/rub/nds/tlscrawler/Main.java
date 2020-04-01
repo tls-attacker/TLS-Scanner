@@ -10,7 +10,6 @@ package de.rub.nds.tlscrawler;
 import com.google.devtools.common.options.OptionsParsingException;
 import static de.rub.nds.tlscrawler.Slave.setUpProviders;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
-import de.rub.nds.tlscrawler.core.TlsCrawlerMaster;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
 import de.rub.nds.tlscrawler.options.StartupOptions;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
@@ -53,16 +52,7 @@ public class Main {
         Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options, "defaultScan");
 
         ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(), scans, options.port);
-
-        if (!options.masterOnly) {
-            slave.start();
-        }
-
-        TlsCrawlerMaster master = new TlsCrawlerMaster(options.instanceId, providers.getFirst(), providers.getSecond(), scans, options.port);
-        LOG.info("TLS-Crawler is running as a " + (options.isMaster ? "master" : "slave") + " node with id "
-                + options.instanceId + " in "
-                + (options.multipleTestsMode ? "multiple tests - " : "classic ") + "mode.");
-
+        slave.start();
     }
 
     /**
