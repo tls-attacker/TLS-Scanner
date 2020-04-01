@@ -53,26 +53,31 @@ public class ProtocolVersionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<ProtocolVersion> supportedVersionList = new LinkedList<>();
-        List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
-        for (ProtocolVersion version : toTestList) {
-            if (isProtocolVersionSupported(version, false)) {
-                supportedVersionList.add(version);
-            } else {
-                unsupportedVersionList.add(version);
-            }
-        }
-        if (supportedVersionList.isEmpty()) {
-            unsupportedVersionList = new LinkedList<>();
+        try {
+            List<ProtocolVersion> supportedVersionList = new LinkedList<>();
+            List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
             for (ProtocolVersion version : toTestList) {
-                if (isProtocolVersionSupported(version, true)) {
+                if (isProtocolVersionSupported(version, false)) {
                     supportedVersionList.add(version);
                 } else {
                     unsupportedVersionList.add(version);
                 }
             }
+            if (supportedVersionList.isEmpty()) {
+                unsupportedVersionList = new LinkedList<>();
+                for (ProtocolVersion version : toTestList) {
+                    if (isProtocolVersionSupported(version, true)) {
+                        supportedVersionList.add(version);
+                    } else {
+                        unsupportedVersionList.add(version);
+                    }
+                }
+            }
+            return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new ProtocolVersionResult(null, null);
         }
-        return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
     }
 
     public boolean isProtocolVersionSupported(ProtocolVersion toTest, boolean intolerance) {

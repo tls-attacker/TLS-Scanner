@@ -53,7 +53,7 @@ public class DrownProbe extends TlsProbe {
                 return TestResult.FALSE;
             }
         } catch (Exception E) {
-            LOGGER.warn("Error during DROWN test", E);
+            LOGGER.error("Could not scan for testForGeneralDrown():" + getProbeName(), E);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -78,7 +78,7 @@ public class DrownProbe extends TlsProbe {
                 return TestResult.FALSE;
             }
         } catch (Exception E) {
-            LOGGER.warn("Error during DROWN test", E);
+            LOGGER.error("Could not scan for testForExtraClearDrown():" + getProbeName(), E);
             return TestResult.ERROR_DURING_TEST;
         }
     }

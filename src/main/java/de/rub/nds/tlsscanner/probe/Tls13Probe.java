@@ -298,31 +298,36 @@ public class Tls13Probe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<ProtocolVersion> tls13VersionList = new LinkedList<>();
-        for (ProtocolVersion version : ProtocolVersion.values()) {
-            if (version.isTLS13()) {
-                tls13VersionList.add(version);
+        try {
+            List<ProtocolVersion> tls13VersionList = new LinkedList<>();
+            for (ProtocolVersion version : ProtocolVersion.values()) {
+                if (version.isTLS13()) {
+                    tls13VersionList.add(version);
+                }
             }
-        }
-        List<ProtocolVersion> supportedProtocolVersions = new LinkedList<>();
-        List<ProtocolVersion> unsupportedProtocolVersions = new LinkedList<>();
-        for (ProtocolVersion version : tls13VersionList) {
-            if (isTls13Supported(version)) {
-                supportedProtocolVersions.add(version);
-            } else {
-                unsupportedProtocolVersions.add(version);
+            List<ProtocolVersion> supportedProtocolVersions = new LinkedList<>();
+            List<ProtocolVersion> unsupportedProtocolVersions = new LinkedList<>();
+            for (ProtocolVersion version : tls13VersionList) {
+                if (isTls13Supported(version)) {
+                    supportedProtocolVersions.add(version);
+                } else {
+                    unsupportedProtocolVersions.add(version);
+                }
             }
+            List<NamedGroup> supportedNamedGroups = getSupportedGroups();
+            List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
+            TestResult supportsSECPCompression = null;
+            if (containsSECPGroup(supportedNamedGroups)) {
+                supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);
+            }
+            TestResult issuesSessionTicket = getIssuesSessionTicket(supportedProtocolVersions);
+            TestResult supportsPskDhe = getSupportsPskDhe(supportedProtocolVersions);
+            return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups,
+                    supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new Tls13Result(null, null, null, null, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
-        List<NamedGroup> supportedNamedGroups = getSupportedGroups();
-        List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
-        TestResult supportsSECPCompression = null;
-        if (containsSECPGroup(supportedNamedGroups)) {
-            supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);
-        }
-        TestResult issuesSessionTicket = getIssuesSessionTicket(supportedProtocolVersions);
-        TestResult supportsPskDhe = getSupportsPskDhe(supportedProtocolVersions);
-        return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups,
-                supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe);
     }
 
     @Override

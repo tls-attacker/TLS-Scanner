@@ -44,6 +44,7 @@ public class CompressionsProbe extends TlsProbe {
             List<CompressionMethod> compressions = getSupportedCompressionMethods();
             return new CompressionsResult(compressions);
         } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new CompressionsResult(null);
         }
     }

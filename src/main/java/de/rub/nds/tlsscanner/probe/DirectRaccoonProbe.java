@@ -87,8 +87,8 @@ public class DirectRaccoonProbe extends TlsProbe {
                 }
             }
             return new DirectRaccoonResponseMap(testResultList, TestResult.FALSE);
-        } catch (Exception e) {
-            LOGGER.error("Error", e);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new DirectRaccoonResponseMap(null, TestResult.ERROR_DURING_TEST);
         }
     }

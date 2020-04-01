@@ -13,7 +13,6 @@ import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.ec.InvalidCurvePoint;
 import de.rub.nds.tlsattacker.attacks.ec.TwistedCurvePoint;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -36,7 +35,6 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.InvalidCurveResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -81,13 +79,18 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<InvalidCurveParameterSet> parameterSets = prepareParameterCombinations();
-        List<InvalidCurveResponse> responses = new LinkedList<>();
-        for (InvalidCurveParameterSet parameterSet : parameterSets) {
-            InvalidCurveResponse scanResponse = executeSingleScan(parameterSet);
-            responses.add(scanResponse);
+        try {
+            List<InvalidCurveParameterSet> parameterSets = prepareParameterCombinations();
+            List<InvalidCurveResponse> responses = new LinkedList<>();
+            for (InvalidCurveParameterSet parameterSet : parameterSets) {
+                InvalidCurveResponse scanResponse = executeSingleScan(parameterSet);
+                responses.add(scanResponse);
+            }
+            return evaluateResponses(responses);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, null);
         }
-        return evaluateResponses(responses);
     }
 
     @Override

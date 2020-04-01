@@ -67,6 +67,7 @@ public class CertificateProbe extends TlsProbe {
                 return getCouldNotExecuteResult();
             }
         } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new CertificateResult(null);
         }
     }

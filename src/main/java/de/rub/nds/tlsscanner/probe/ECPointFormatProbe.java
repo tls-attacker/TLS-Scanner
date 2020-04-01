@@ -74,6 +74,7 @@ public class ECPointFormatProbe extends TlsProbe {
             LOGGER.debug("Unable to determine supported point formats");
             return (new ECPointFormatResult(null));
         } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new ECPointFormatResult(null);
         }
     }

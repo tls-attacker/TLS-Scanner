@@ -48,7 +48,8 @@ public class CiphersuiteOrderProbe extends TlsProbe {
             CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
             return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE
                     : TestResult.FALSE);
-        } catch (Exception e) {
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);
         }
     }

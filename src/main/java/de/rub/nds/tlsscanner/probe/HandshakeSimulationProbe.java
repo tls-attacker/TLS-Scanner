@@ -65,19 +65,24 @@ public class HandshakeSimulationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<State> clientStateList = new LinkedList<>();
-        List<SimulatedClientResult> resultList = new LinkedList<>();
-        for (SimulationRequest request : simmulationRequestList) {
-            State state = request.getExecutableState(scannerConfig);
-            clientStateList.add(state);
-            resultList.add(new SimulatedClientResult(request.getTlsClientConfig(), state));
+        try {
+            List<State> clientStateList = new LinkedList<>();
+            List<SimulatedClientResult> resultList = new LinkedList<>();
+            for (SimulationRequest request : simmulationRequestList) {
+                State state = request.getExecutableState(scannerConfig);
+                clientStateList.add(state);
+                resultList.add(new SimulatedClientResult(request.getTlsClientConfig(), state));
+            }
+            executeState(clientStateList);
+            for (SimulatedClientResult result : resultList) {
+                evaluateClientConfig(result);
+                evaluateReceivedMessages(result);
+            }
+            return new HandshakeSimulationResult(resultList);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new HandshakeSimulationResult(null);
         }
-        executeState(clientStateList);
-        for (SimulatedClientResult result : resultList) {
-            evaluateClientConfig(result);
-            evaluateReceivedMessages(result);
-        }
-        return new HandshakeSimulationResult(resultList);
     }
 
     private void evaluateClientConfig(SimulatedClientResult simulatedClient) {

@@ -80,8 +80,8 @@ public class PaddingOracleProbe extends TlsProbe {
                 LOGGER.debug("Finished non-determinism evaluation");
             }
             return new PaddingOracleResponseMap(testResultList);
-        } catch (Exception e) {
-            LOGGER.error(e);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new PaddingOracleResponseMap(new LinkedList<>());
         }
     }
