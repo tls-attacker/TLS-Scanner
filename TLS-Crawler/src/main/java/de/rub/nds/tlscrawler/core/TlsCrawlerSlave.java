@@ -35,7 +35,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
     private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
 
-    private static int STANDARD_NO_THREADS = 10;
+    private static int STANDARD_NO_THREADS = 500;
     private static int MIN_NO_TO_PERSIST = 10;
     private static int ITERATIONS_TO_IGNORE_BULK_LIMITS = 10;
     private static int ORG_THREAD_SLEEP_MILLIS = 6000;
