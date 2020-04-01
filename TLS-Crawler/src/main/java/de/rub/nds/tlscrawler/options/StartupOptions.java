@@ -208,21 +208,7 @@ public class StartupOptions extends OptionsBase {
 
         if (result != null && result.instanceId.equals("")) {
             result.instanceId = UUID.randomUUID().toString();
-        }
-
-        if (result != null && result.masterOnly && !result.isMaster) {
-            LOG.warn("Overwrote 'isMaster' to true due to 'masterOnly'.");
-            result.isMaster = true;
-        }
-
-        if (result != null && result.testMode && !result.isMaster) {
-            LOG.warn("Overwrote 'isMaster' to true due to 'testMode' option.");
-            result.isMaster = true;
-        }
-
-        if (result != null && result.testMode && !result.inMemoryOrchestration) {
-            LOG.warn("Overwrote 'inMemoryOrchestration' to true due to 'testMode' option.");
-            result.inMemoryOrchestration = true;
+            LOG.info("InstanceID: {}", result.instanceId);
         }
 
         boolean saneMongoLogin = saneMongoLogin(result.mongoDbUser, result.mongoDbPass, result.mongoDbAuthSource);
