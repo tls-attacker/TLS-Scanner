@@ -55,7 +55,7 @@ public class HeartbleedProbe extends TlsProbe {
             }
             HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
             Boolean vulnerable = attacker.isVulnerable();
-            return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE)? TestResult.TRUE : TestResult.FALSE);
+            return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResult.TRUE : TestResult.FALSE);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new HeartbleedResult(TestResult.ERROR_DURING_TEST);
