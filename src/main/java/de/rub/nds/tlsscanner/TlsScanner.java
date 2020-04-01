@@ -90,8 +90,8 @@ public class TlsScanner {
         fillDefaultProbeLists();
     }
 
-    public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor,
-            List<TlsProbe> probeList, List<AfterProbe> afterList) {
+    public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor, List<TlsProbe> probeList,
+            List<AfterProbe> afterList) {
         this.parallelExecutor = parallelExecutor;
         this.config = config;
         this.probeList = probeList;
