@@ -89,7 +89,8 @@ public class InvalidCurveProbe extends TlsProbe {
             return evaluateResponses(responses);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, null);
+            return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                    TestResult.ERROR_DURING_TEST, null);
         }
     }
 

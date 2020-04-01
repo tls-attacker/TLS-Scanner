@@ -326,7 +326,8 @@ public class Tls13Probe extends TlsProbe {
                     supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new Tls13Result(null, null, null, null, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+            return new Tls13Result(null, null, null, null, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                    TestResult.ERROR_DURING_TEST);
         }
     }
 
