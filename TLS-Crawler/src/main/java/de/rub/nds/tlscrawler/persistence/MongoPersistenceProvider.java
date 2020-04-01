@@ -22,6 +22,7 @@ import de.rub.nds.tlscrawler.persistence.converter.CustomDhPublicKeySerialisatio
 import de.rub.nds.tlscrawler.persistence.converter.CustomDsaPublicKeySerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.CustomEcPublicKeySerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.CustomRsaPublicKeySerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.HttpsHeaderSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.PointSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.VectorSerialisationConverter;
@@ -82,6 +83,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         module.addSerializer(new CustomDsaPublicKeySerialisationConverter());
         module.addSerializer(new VectorSerialisationConverter());
         module.addSerializer(new PointSerialisationConverter());
+        module.addSerializer(new HttpsHeaderSerialisationConverter());
         mapper.registerModule(module);
         collection = JacksonMongoCollection.builder().withObjectMapper(mapper).<ScanTask>build(database, collectionName, ScanTask.class);
         this.initialized = true;
