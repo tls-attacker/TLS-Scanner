@@ -19,8 +19,9 @@ import de.rub.nds.tlscrawler.utility.Tuple;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * TLS-Crawler's main class.
@@ -29,9 +30,14 @@ import org.apache.logging.log4j.Logger;
  */
 public class Main {
 
-    private static Logger LOG = LogManager.getLogger();
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) {
+
+        Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
+        mongoLogger.setLevel(Level.SEVERE);
+        mongoLogger = Logger.getLogger("org.mongodb.driver.cluster");
+        mongoLogger.setLevel(Level.SEVERE);
         StartupOptions options;
 
         try {
