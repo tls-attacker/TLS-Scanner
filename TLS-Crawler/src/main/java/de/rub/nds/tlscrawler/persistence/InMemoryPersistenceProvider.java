@@ -8,14 +8,12 @@
 package de.rub.nds.tlscrawler.persistence;
 
 import de.rub.nds.tlscrawler.data.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * In-Memory implementation of a persistence provider.
@@ -24,7 +22,7 @@ import java.util.Objects;
  */
 public class InMemoryPersistenceProvider implements IPersistenceProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger(InMemoryPersistenceProvider.class);
+    private static Logger LOG = LogManager.getLogger();
 
     private Map<String, IScanTask> tasks;
 

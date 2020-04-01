@@ -7,13 +7,12 @@
  */
 package de.rub.nds.tlscrawler;
 
-import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Implements the command line interface.
@@ -21,7 +20,8 @@ import java.util.regex.Pattern;
  * @author janis.fliegenschmidt@rub.de
  */
 public class CommandLineInterface {
-    private static Logger LOG = LoggerFactory.getLogger(CommandLineInterface.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     public static void handleInput() {
         LOG.trace("handleInput()");

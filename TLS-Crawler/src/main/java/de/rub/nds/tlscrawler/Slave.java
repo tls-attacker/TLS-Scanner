@@ -21,11 +21,11 @@ import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.ScanFactory;
 import de.rub.nds.tlscrawler.utility.Tuple;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.ConnectException;
 import java.util.Collection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Slave instance main class.
@@ -34,7 +34,7 @@ import java.util.Collection;
  */
 public class Slave {
 
-    private static Logger LOG = LoggerFactory.getLogger(Slave.class);
+    private static Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) {
         StartupOptions options;

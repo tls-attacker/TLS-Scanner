@@ -8,12 +8,11 @@
 package de.rub.nds.tlscrawler.options;
 
 import com.google.devtools.common.options.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Command Line Options at startup.
@@ -22,7 +21,7 @@ import java.util.UUID;
  */
 public class StartupOptions extends OptionsBase {
 
-    private static Logger LOG = LoggerFactory.getLogger(StartupOptions.class);
+    private static Logger LOG = LogManager.getLogger();
 
     private static OptionsParser parser = OptionsParser.newOptionsParser(StartupOptions.class);
 
@@ -124,9 +123,9 @@ public class StartupOptions extends OptionsBase {
             help = "The names of the scans that should be exeucted as a comma seperated list.",
             defaultValue = ""
     )
-    
+
     public String scansToBeExecuted;
-    
+
     @Option(
             name = "portsToBeScanned",
             abbrev = 'P',
@@ -134,8 +133,7 @@ public class StartupOptions extends OptionsBase {
             defaultValue = "443"
     )
     public int port;
-    
-    
+
     @Option(
             name = "blacklist",
             abbrev = 'b',
@@ -143,7 +141,7 @@ public class StartupOptions extends OptionsBase {
             defaultValue = "TLSC-blacklist"
     )
     public String blacklist;
-    
+
     private static String DEFAULT_WORKSPACE = "default";
 
     /**

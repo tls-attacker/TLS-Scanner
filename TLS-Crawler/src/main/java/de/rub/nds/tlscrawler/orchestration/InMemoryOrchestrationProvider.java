@@ -8,12 +8,12 @@
 package de.rub.nds.tlscrawler.orchestration;
 
 import de.rub.nds.tlscrawler.data.IScanTarget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Simplest implementation of an orchestration provider. Stores scan tasks in
@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class InMemoryOrchestrationProvider implements IOrchestrationProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger(InMemoryOrchestrationProvider.class);
+    private static Logger LOG = LogManager.getLogger();
 
     private Object syncRoot = new Object();
     private List<String> tasks = new LinkedList<>();

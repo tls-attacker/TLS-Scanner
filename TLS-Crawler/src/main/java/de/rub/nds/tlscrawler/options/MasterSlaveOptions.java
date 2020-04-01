@@ -8,11 +8,11 @@
 package de.rub.nds.tlscrawler.options;
 
 import com.google.devtools.common.options.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.UUID;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Command Line Options for the slave main method.
@@ -20,7 +20,8 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class MasterSlaveOptions extends OptionsBase {
-    private static Logger LOG = LoggerFactory.getLogger(MasterSlaveOptions.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private static OptionsParser parser = OptionsParser.newOptionsParser(MasterSlaveOptions.class);
 
@@ -137,8 +138,8 @@ public class MasterSlaveOptions extends OptionsBase {
 
     protected static void checkResult(MasterSlaveOptions result) {
         if (result != null && result.workspace.equals("")) {
-            LOG.warn("No workspace name set. This might cause trouble when using " +
-                    "more than a single instance of TLS-Crawler.");
+            LOG.warn("No workspace name set. This might cause trouble when using "
+                    + "more than a single instance of TLS-Crawler.");
             result.workspace = DEFAULT_WORKSPACE;
         }
 

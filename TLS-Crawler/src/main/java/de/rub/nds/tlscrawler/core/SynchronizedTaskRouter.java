@@ -8,12 +8,12 @@
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.ScanTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class implements the synchronization logic to distribute tasks between
@@ -22,7 +22,8 @@ import java.util.List;
  * @author janis.fliegenschmidt@rub.de
  */
 public class SynchronizedTaskRouter {
-    private static Logger LOG = LoggerFactory.getLogger(SynchronizedTaskRouter.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private final Object _syncrootTodo = new Object();
     private final Object _syncrootFinished = new Object();

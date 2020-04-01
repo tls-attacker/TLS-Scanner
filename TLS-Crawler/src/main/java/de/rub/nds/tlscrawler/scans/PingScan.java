@@ -9,8 +9,6 @@ package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.utility.Tuple;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -20,6 +18,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 /**
@@ -29,7 +29,7 @@ import org.bson.Document;
  */
 public class PingScan implements IScan {
 
-    private static Logger LOG = LoggerFactory.getLogger(PingScan.class);
+    private static Logger LOG = LogManager.getLogger();
 
     private static final String name = "ping_scan";
     private static final int timeOutMs = 5000;

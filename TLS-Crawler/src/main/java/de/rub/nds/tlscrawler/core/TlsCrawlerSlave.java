@@ -8,7 +8,6 @@
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.IScanTarget;
-import de.rub.nds.tlscrawler.data.IScanTask;
 import de.rub.nds.tlscrawler.data.ISlaveStats;
 import de.rub.nds.tlscrawler.data.ScanTarget;
 import de.rub.nds.tlscrawler.data.ScanTask;
@@ -18,8 +17,6 @@ import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -27,7 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Take #2 - a more sophisticated slave implementation.
@@ -36,7 +34,7 @@ import java.util.logging.Level;
  */
 public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
-    private static Logger LOG = LoggerFactory.getLogger(TlsCrawlerSlave.class);
+    private static Logger LOG = LogManager.getLogger();
 
     private static int STANDARD_NO_THREADS = 500;
     private static int MIN_NO_TO_PERSIST = 10;

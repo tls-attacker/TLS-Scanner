@@ -10,11 +10,11 @@ package de.rub.nds.tlscrawler.core;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Base class for the crawler modules.
@@ -23,7 +23,7 @@ import java.util.LinkedList;
  */
 abstract class TlsCrawler implements IScanProvider, IOrganizer {
 
-    private static Logger LOG = LoggerFactory.getLogger(TlsCrawler.class);
+    private static Logger LOG = LogManager.getLogger();
 
     private final String instanceId;
     private final IOrchestrationProvider orchestrationProvider;

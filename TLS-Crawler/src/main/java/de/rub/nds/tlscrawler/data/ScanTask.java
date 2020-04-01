@@ -9,12 +9,12 @@ package de.rub.nds.tlscrawler.data;
 
 import de.rub.nds.tlscrawler.scans.IScan;
 import java.io.Serializable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 /**
@@ -24,7 +24,7 @@ import org.bson.Document;
  */
 public class ScanTask implements IScanTask, Serializable {
 
-    private static Logger LOG = LoggerFactory.getLogger(ScanTask.class);
+    private static Logger LOG = LogManager.getLogger();
 
     private final String _id;
     private final String instanceId;

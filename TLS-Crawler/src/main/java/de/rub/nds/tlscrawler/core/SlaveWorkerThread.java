@@ -9,12 +9,11 @@ package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.scans.IScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.Instant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 /**
@@ -25,7 +24,8 @@ import org.bson.Document;
  * @author janis.fliegenschmidt@rub.de
  */
 public class SlaveWorkerThread extends Thread {
-    private static Logger LOG = LoggerFactory.getLogger(SlaveWorkerThread.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private final SynchronizedTaskRouter synchronizedTaskRouter;
     private final String slaveInstanceId;
@@ -33,8 +33,8 @@ public class SlaveWorkerThread extends Thread {
     private IScanProvider scanProvider;
 
     public SlaveWorkerThread(String slaveInstanceId,
-                             SynchronizedTaskRouter synchronizedTaskRouter,
-                             IScanProvider scanProvider) {
+            SynchronizedTaskRouter synchronizedTaskRouter,
+            IScanProvider scanProvider) {
         this.slaveInstanceId = slaveInstanceId;
         this.synchronizedTaskRouter = synchronizedTaskRouter;
         this.scanProvider = scanProvider;

@@ -8,26 +8,24 @@
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlscrawler.data.IScanTarget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 /**
- * A null scan that only costs some (IO/processor) time.
- * Does not require network.
+ * A null scan that only costs some (IO/processor) time. Does not require
+ * network.
  *
  * @author janis.fliegenschmidt@rub.de
  */
 public class NullScan implements IScan {
-    private static Logger LOG = LoggerFactory.getLogger(NullScan.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private static String NAME = "null_scan";
     private static Integer WAIT_MS = 5000;
 
     // TODO This scan should also use the fully qualified class name. TBI with aliases.
-
     @Override
     public String getName() {
         return NullScan.NAME;
@@ -38,7 +36,7 @@ public class NullScan implements IScan {
         LOG.trace("scan()");
 
         Document document = new Document();
-        LOG.info("testing: " +target.getIp());
+        LOG.info("testing: " + target.getIp());
         document.put("target_ip", target.getIp());
         document.put("target_ports", target.getPort());
         try {

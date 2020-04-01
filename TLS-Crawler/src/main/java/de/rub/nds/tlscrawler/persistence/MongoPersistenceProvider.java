@@ -8,7 +8,6 @@
 package de.rub.nds.tlscrawler.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
@@ -26,11 +25,10 @@ import de.rub.nds.tlscrawler.persistence.converter.HttpsHeaderSerialisationConve
 import de.rub.nds.tlscrawler.persistence.converter.PointSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.VectorSerialisationConverter;
-import org.bson.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mongojack.JacksonMongoCollection;
 
 /**
@@ -40,7 +38,7 @@ import org.mongojack.JacksonMongoCollection;
  */
 public class MongoPersistenceProvider implements IPersistenceProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger(MongoPersistenceProvider.class);
+    private static Logger LOG = LogManager.getLogger();
 
     private boolean initialized = false;
     private final ServerAddress address;

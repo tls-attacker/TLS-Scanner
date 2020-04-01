@@ -8,10 +8,7 @@
 package de.rub.nds.tlscrawler.orchestration;
 
 import de.rub.nds.tlscrawler.data.IScanTarget;
-import de.rub.nds.tlscrawler.utility.SubnetTree;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -25,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * An orchestration provider implementation using Redis as an external source.
@@ -33,7 +32,7 @@ import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
  */
 public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
-    private static Logger LOG = LoggerFactory.getLogger(RedisOrchestrationProvider.class);
+    private static Logger LOG = LogManager.getLogger();
 
     private static int REDIS_TIMEOUT = 30000; // in ms
 

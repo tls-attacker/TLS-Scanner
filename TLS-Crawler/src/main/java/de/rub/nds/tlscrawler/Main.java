@@ -16,11 +16,11 @@ import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.*;
 import de.rub.nds.tlscrawler.utility.Tuple;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * TLS-Crawler's main class.
@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class Main {
 
-    private static Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) {
         StartupOptions options;
