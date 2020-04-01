@@ -70,6 +70,10 @@ public class MacProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         correctFingerprint = getCorrectAppDataFingerprint();
+        if(correctFingerprint == null)
+        {
+            return new MacResult(null, null, null);
+        }
         LOGGER.debug("Correct fingerprint: " + correctFingerprint.toString());
         CheckPattern appPattern;
         if (receivedAppdata(correctFingerprint)) {
@@ -127,21 +131,25 @@ public class MacProbe extends TlsProbe {
 
         State state = new State(config, trace);
         executeState(state);
-
-        ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
-        try {
-            TlsContext tlsContext = state.getTlsContext();
-            if (tlsContext.getTransportHandler() != null) {
-                tlsContext.getTransportHandler().closeConnection();
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
+            try {
+                TlsContext tlsContext = state.getTlsContext();
+                if (tlsContext.getTransportHandler() != null) {
+                    tlsContext.getTransportHandler().closeConnection();
+                }
+            } catch (IOException ex) {
+                LOGGER.warn("Could not close TransportHandler correctly", ex);
             }
-        } catch (IOException ex) {
-            LOGGER.warn("Could not close TransportHandler correctly", ex);
+            return fingerprint;
+        } else {
+            LOGGER.warn("Could not extract getCorrectAppDataFingerprint()");
+            return null;
         }
-        return fingerprint;
     }
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
-        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
+        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[]{1}, xorPosition);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
                 RunningModeType.CLIENT);
         HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
@@ -180,12 +188,12 @@ public class MacProbe extends TlsProbe {
                 RunningModeType.CLIENT);
         FinishedMessage lastSendMessage = (FinishedMessage) WorkflowTraceUtil.getLastSendMessage(
                 HandshakeMessageType.FINISHED, trace);
-        lastSendMessage.setVerifyData(Modifiable.xor(new byte[] { 01 }, xorPosition));
+        lastSendMessage.setVerifyData(Modifiable.xor(new byte[]{01}, xorPosition));
         return trace;
     }
 
     private WorkflowTrace getFinishedTrace(Config config, int xorPosition) {
-        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
+        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[]{1}, xorPosition);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
                 RunningModeType.CLIENT);
         SendAction lastSendingAction = (SendAction) trace.getLastSendingAction();
