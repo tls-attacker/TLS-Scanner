@@ -42,8 +42,6 @@ public class SlaveWorkerThread extends Thread {
 
     @Override
     public void run() {
-        LOG.info("run() started");
-
         for (;;) {
             ScanTask todo = this.synchronizedTaskRouter.getTodo();
 
