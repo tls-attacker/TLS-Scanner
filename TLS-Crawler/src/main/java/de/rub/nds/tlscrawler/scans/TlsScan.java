@@ -88,11 +88,7 @@ public class TlsScan implements IScan {
 
         List<AfterProbe> afterList = new LinkedList<>();
 
-        ScanJob scanJob = new ScanJob(probeList, afterList);
-        ThreadedScanJobExecutor executor = new ThreadedScanJobExecutor(config, scanJob, parallelExecutor.getSize(), config
-                .getClientDelegate().getHost());
-
-        TlsScanner scanner = new TlsScanner(config, executor, parallelExecutor, probeList, afterList);
+        TlsScanner scanner = new TlsScanner(config, parallelExecutor);
         scanner.setCloseAfterFinishParallel(false);
 
         LOG.info("Started scanning: " + target.getIp());
