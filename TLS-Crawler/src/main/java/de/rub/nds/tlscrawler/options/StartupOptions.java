@@ -35,14 +35,6 @@ public class StartupOptions extends OptionsBase {
     public boolean help;
 
     @Option(
-            name = "isMaster",
-            abbrev = 'm',
-            help = "Runs TLS-Crawler in Master or Slave mode.",
-            defaultValue = "false"
-    )
-    public boolean isMaster;
-
-    @Option(
             name = "instanceId",
             abbrev = 'i',
             help = "The ID of this TLS-Crawler instance.",
@@ -110,38 +102,6 @@ public class StartupOptions extends OptionsBase {
             defaultValue = ""
     )
     public String redisPass;
-
-    @Option(
-            name = "masterOnly",
-            abbrev = 'y',
-            help = "Spawns a master-only instance, isMaster is implicit.",
-            defaultValue = "false"
-    )
-    public boolean masterOnly;
-
-    @Option(
-            name = "inMemoryOrchestration",
-            abbrev = 'x',
-            help = "Uses an in-memory orchestration provider. Can not be combined with masterOnly.",
-            defaultValue = "false"
-    )
-    public boolean inMemoryOrchestration;
-
-    @Option(
-            name = "testMode",
-            abbrev = 't',
-            help = "Starts TLS Crawler in test mode, using in-memory orchestration and persistence.",
-            defaultValue = "false"
-    )
-    public boolean testMode;
-
-    @Option(
-            name = "multipleTestsMode",
-            abbrev = 'n',
-            help = "Performs multiple scans in a row",
-            defaultValue = "false"
-    )
-    public boolean multipleTestsMode;
 
     @Option(
             name = "workspace",

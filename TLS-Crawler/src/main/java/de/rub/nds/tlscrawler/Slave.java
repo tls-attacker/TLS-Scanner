@@ -15,10 +15,8 @@ import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
 import de.rub.nds.tlscrawler.options.SlaveOptions;
 import de.rub.nds.tlscrawler.options.StartupOptions;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
-import de.rub.nds.tlscrawler.orchestration.InMemoryOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import de.rub.nds.tlscrawler.persistence.InMemoryPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.ScanFactory;
@@ -35,6 +33,7 @@ import java.util.Collection;
  * @author janis.fliegenschmidt@rub.de
  */
 public class Slave {
+
     private static Logger LOG = LoggerFactory.getLogger(Slave.class);
 
     public static void main(String[] args) {
@@ -79,7 +78,6 @@ public class Slave {
         }).start();
     }
 
-    
     static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(StartupOptions options, String scanName) {
         LOG.trace("setUpProviders()");
 
@@ -93,43 +91,34 @@ public class Slave {
         String workspace = options.workspace;
         String workspaceWithPrefix = String.format("TLSC-dev-%s", workspace);
 
-        if (!options.testMode) {
-            ServerAddress address = new ServerAddress(options.mongoDbHost, options.mongoDbPort);
-            MongoCredential credential = null;
+        ServerAddress address = new ServerAddress(options.mongoDbHost, options.mongoDbPort);
+        MongoCredential credential = null;
 
-            if (!options.mongoDbUser.equals("")) {
-                credential = MongoCredential.createCredential(
-                        options.mongoDbUser,
-                        options.mongoDbAuthSource,
-                        options.mongoDbPass.toCharArray());
-            }
-
-            MongoPersistenceProvider mpp = new MongoPersistenceProvider(address, credential);
-            mpp.init(workspaceWithPrefix, scanName);
-
-            persistenceProvider = mpp;
-
-            if (!options.inMemoryOrchestration) {
-                RedisOrchestrationProvider rop = new RedisOrchestrationProvider(
-                        options.redisHost,
-                        options.redisPort,
-                        options.redisPass);
-
-                try {
-                    rop.init(workspaceWithPrefix);
-                } catch (ConnectException e) {
-                    LOG.error("Could not connect to redis.", e);
-                    System.exit(0);
-                }
-
-                orchestrationProvider = rop;
-            } else { // in-memory-orchestration:
-                orchestrationProvider = new InMemoryOrchestrationProvider();
-            }
-        } else { // TLS Crawler is in test mode:
-            orchestrationProvider = new InMemoryOrchestrationProvider();
-            persistenceProvider = new InMemoryPersistenceProvider();
+        if (!options.mongoDbUser.equals("")) {
+            credential = MongoCredential.createCredential(
+                    options.mongoDbUser,
+                    options.mongoDbAuthSource,
+                    options.mongoDbPass.toCharArray());
         }
+
+        MongoPersistenceProvider mpp = new MongoPersistenceProvider(address, credential);
+        mpp.init(workspaceWithPrefix, scanName);
+
+        persistenceProvider = mpp;
+
+        RedisOrchestrationProvider rop = new RedisOrchestrationProvider(
+                options.redisHost,
+                options.redisPort,
+                options.redisPass);
+
+        try {
+            rop.init(workspaceWithPrefix);
+        } catch (ConnectException e) {
+            LOG.error("Could not connect to redis.", e);
+            System.exit(0);
+        }
+
+        orchestrationProvider = rop;
 
         return Tuple.create(orchestrationProvider, persistenceProvider);
     }
