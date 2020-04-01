@@ -202,8 +202,7 @@ public class StartupOptions extends OptionsBase {
         result = Options.parse(StartupOptions.class, args).getOptions();
 
         if (result != null && result.workspace.equals("")) {
-            LOG.warn("No workspace name set. This might cause trouble when using "
-                    + "more than a single instance of TLS-Crawler.");
+            LOG.warn("No workspace name set. Using default workspace: {}", DEFAULT_WORKSPACE);
             result.workspace = DEFAULT_WORKSPACE;
         }
 
