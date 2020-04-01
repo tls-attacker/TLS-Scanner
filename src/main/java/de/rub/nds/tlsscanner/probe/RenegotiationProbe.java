@@ -12,8 +12,19 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -78,7 +89,15 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
-        State state = new State(tlsConfig);
+        WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
+        WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                RunningModeType.CLIENT);
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
+        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        State state = new State(tlsConfig, trace);
         executeState(state);
         return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
     }
@@ -88,15 +107,13 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setQuickReceive(true);
         List<CipherSuite> ciphersuites = new LinkedList<>();
         ciphersuites.addAll(supportedSuites);
-        // TODO this can fail in some rare occasions
-        tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites.get(0));
-        tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
+        tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setStopActionsAfterIOException(true);
@@ -105,7 +122,15 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
-        State state = new State(tlsConfig);
+        WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
+        WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                RunningModeType.CLIENT);
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
+        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        State state = new State(tlsConfig, trace);
         executeState(state);
         return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
     }
