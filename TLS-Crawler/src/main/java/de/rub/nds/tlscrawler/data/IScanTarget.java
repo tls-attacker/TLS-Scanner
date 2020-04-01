@@ -23,4 +23,9 @@ public interface IScanTarget {
      * @return The port of the target service.
      */
     int getPort();
+
+    /**
+     * @return The hostname of the target, may be null
+     */
+    String getHostname();
 }

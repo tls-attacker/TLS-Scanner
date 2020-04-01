@@ -17,10 +17,12 @@ import java.io.Serializable;
 public class ScanTarget implements IScanTarget, Serializable {
 
     private final String ip;
+    private final String hostname;
     private final int port;
 
-    public ScanTarget(String ip, int port) {
+    public ScanTarget(String ip, String hostname, int port) {
         this.ip = ip;
+        this.hostname = hostname;
         this.port = port;
     }
 
@@ -32,5 +34,10 @@ public class ScanTarget implements IScanTarget, Serializable {
     @Override
     public int getPort() {
         return this.port;
+    }
+
+    @Override
+    public String getHostname() {
+        return hostname;
     }
 }

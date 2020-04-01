@@ -112,7 +112,7 @@ public class Slave {
                 options.redisPass);
 
         try {
-            rop.init(workspaceWithPrefix);
+            rop.init(workspaceWithPrefix, options.blacklist);
         } catch (ConnectException e) {
             LOG.error("Could not connect to redis.", e);
             System.exit(0);

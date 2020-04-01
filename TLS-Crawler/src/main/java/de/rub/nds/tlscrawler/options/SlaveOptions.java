@@ -7,7 +7,6 @@
  */
 package de.rub.nds.tlscrawler.options;
 
-import com.google.devtools.common.options.Option;
 import com.google.devtools.common.options.Options;
 import com.google.devtools.common.options.OptionsParser;
 import com.google.devtools.common.options.OptionsParsingException;

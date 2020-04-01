@@ -139,12 +139,10 @@ public class StartupOptions extends OptionsBase {
     @Option(
             name = "blacklist",
             abbrev = 'b',
-            help = "A list of IPs/CIDR-Blocks.",
-            allowMultiple = true,
-            converter = Converters.CommaSeparatedOptionListConverter.class,
-            defaultValue = ""
+            help = "The redis key in which the blacklist of IPs/CIDR-Blocks is placed.",
+            defaultValue = "TLSC-blacklist"
     )
-    public List<String> blacklist;
+    public String blacklist;
     
     private static String DEFAULT_WORKSPACE = "default";
 

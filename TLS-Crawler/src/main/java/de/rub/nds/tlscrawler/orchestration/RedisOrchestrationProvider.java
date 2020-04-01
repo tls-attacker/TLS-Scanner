@@ -7,10 +7,8 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import de.rub.nds.tlscrawler.data.IScanTarget;
+import de.rub.nds.tlscrawler.utility.SubnetTree;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +19,12 @@ import redis.clients.jedis.JedisPoolConfig;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
+import org.apache.commons.net.util.SubnetUtils;
+import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 
 /**
  * An orchestration provider implementation using Redis as an external source.
@@ -46,6 +46,10 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     private JedisPool jedisPool;
 
     private String taskListName = null;
+    private String blackListName = null;
+
+    private Set<String> ipBlackListSet = null;
+    private List<SubnetInfo> cidrBlackList = null;
 
     public RedisOrchestrationProvider(String redisHost, int redisPort, String redisPass) {
         this.redisHost = redisHost;
@@ -53,7 +57,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         this.redisPass = redisPass;
     }
 
-    public void init(String taskListName) throws ConnectException {
+    public void init(String taskListName, String blackListName) throws ConnectException {
         LOG.trace("init() - Enter");
 
         JedisPoolConfig cfg = new JedisPoolConfig();
@@ -77,7 +81,10 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         }
         LOG.info("Redis Tasks are listed in:" + taskListName);
         this.taskListName = taskListName;
+        this.blackListName = blackListName;
         this.initialized = true;
+        LOG.info("Initializing Blacklist");
+        updateBlacklist();
         LOG.trace("init() - Leave");
     }
 
@@ -149,9 +156,40 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         LOG.trace("addScanTasks()");
 
         String[] tids = taskIds.toArray(new String[taskIds.size()]);
-        
+
         try (Jedis jedis = this.jedisPool.getResource()) {
             jedis.sadd(this.taskListName, tids);
+        }
+    }
+
+    @Override
+    public synchronized boolean isBlacklisted(IScanTarget target) {
+        if (ipBlackListSet.contains(target.getIp())) {
+            return true;
+        }
+        for (SubnetInfo subnetInfo : cidrBlackList) {
+            if (subnetInfo.isInRange(target.getIp())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public synchronized void updateBlacklist() {
+        ipBlackListSet = new HashSet<>();
+        cidrBlackList = new LinkedList<>();
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            List<String> tempBlacklistStrings = jedis.lrange(blackListName, 0, -1);
+            for (String blackListEntry : tempBlacklistStrings) {
+                if (tempBlacklistStrings.contains("/")) {
+                    SubnetUtils utils = new SubnetUtils(blackListEntry);
+                    cidrBlackList.add(utils.getInfo());
+                } else {
+                    ipBlackListSet.add(blackListEntry);
+                }
+            }
+            LOG.info("Blacklist now contains: {}", tempBlacklistStrings.size());
         }
     }
 }

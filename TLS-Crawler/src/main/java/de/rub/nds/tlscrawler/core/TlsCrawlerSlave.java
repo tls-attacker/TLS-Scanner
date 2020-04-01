@@ -16,6 +16,8 @@ import de.rub.nds.tlscrawler.data.SlaveStats;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 
 /**
  * Take #2 - a more sophisticated slave implementation.
@@ -128,7 +131,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
         private AtomicBoolean isRunning = new AtomicBoolean(false);
         private int iterations = 0;
-
+        private long lastBlacklistUpdate = System.currentTimeMillis();
         private int newFetchLimit;
         private int fetchAmount;
         private SynchronizedTaskRouter synchronizedTaskRouter;
@@ -170,10 +173,20 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
                     for (String tempString : targetString) {
                         String taskId = UUID.randomUUID().toString();
-                        IScanTarget realTarget = new ScanTarget(tempString, getPort());
-                        ScanTask task = new ScanTask(taskId, organizer.getInstanceId(), Instant.now(), realTarget, scanProvider.getScans());
-                        this.synchronizedTaskRouter.addTodo(task);
-                        this.stats.incrementAcceptedTaskCount(1);
+                        try {
+                            InetAddress address = InetAddress.getByName(tempString);
+                            IScanTarget realTarget = new ScanTarget(address.getHostAddress(), tempString, getPort());
+                            if (organizer.getOrchestrationProvider().isBlacklisted(realTarget)) {
+                                String name = realTarget.getHostname() != null ? realTarget.getHostname() : realTarget.getIp();
+                                LOG.info("Not scanning: {}", name);
+                            } else {
+                                ScanTask task = new ScanTask(taskId, organizer.getInstanceId(), Instant.now(), realTarget, scanProvider.getScans());
+                                this.synchronizedTaskRouter.addTodo(task);
+                                this.stats.incrementAcceptedTaskCount(1);
+                            }
+                        } catch (UnknownHostException ex) {
+                            LOG.warn("Could not resolve host address for: " + tempString);
+                        }
                     }
                 }
                 // Persist task results:
@@ -207,6 +220,10 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     threads.add(newThread);
                 }
 
+                if (lastBlacklistUpdate + 120000 > System.currentTimeMillis()) {
+                    LOG.info("Updating Blacklist");
+                    organizer.getOrchestrationProvider().updateBlacklist();
+                }
                 // (Procreate, eat,) sleep, repeat.
                 try {
                     Thread.sleep(ORG_THREAD_SLEEP_MILLIS);
