@@ -182,7 +182,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     }
                     // Persist task results:
                     if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
-                            || ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) {
+                            || ((ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) && this.synchronizedTaskRouter.getFinishedCount() != 0)) {
                         LOG.trace("Persisting results.");
                         List<ScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
                         LOG.info("Storing results");
