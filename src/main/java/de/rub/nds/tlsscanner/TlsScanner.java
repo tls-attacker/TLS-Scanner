@@ -148,7 +148,7 @@ public class TlsScanner {
                         || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(probeList, afterList);
-                    executor = new ThreadedScanJobExecutor(config, job, config.getOverallThreads(), config
+                    executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(), config
                             .getClientDelegate().getHost());
                     SiteReport report = executor.execute();
                     return report;
