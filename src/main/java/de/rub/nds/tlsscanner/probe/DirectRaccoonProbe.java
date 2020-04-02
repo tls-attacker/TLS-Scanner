@@ -62,7 +62,8 @@ public class DirectRaccoonProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             List<DirectRaccoonCipherSuiteFingerprint> testResultList = new LinkedList<>();
-            loop: for (VersionSuiteListPair pair : serverSupportedSuites) {
+            loop:
+            for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
                         || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCiphersuiteList()) {
@@ -126,6 +127,12 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
             config.setDefaultClientSupportedCiphersuites(suite);
+            config.setDefaultSelectedCipherSuite(suite);
+            config.setAddECPointFormatExtension(false);
+            config.setAddEllipticCurveExtension(false);
+            config.setAddRenegotiationInfoExtension(true);
+            config.setAddServerNameIndicationExtension(true);
+            config.setAddSignatureAndHashAlgorithmsExtension(true);
             config.setStopActionsAfterFatal(true);
             config.setStopReceivingAfterFatal(true);
             config.setStopActionsAfterIOException(true);
@@ -150,6 +157,13 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
             config.setDefaultClientSupportedCiphersuites(suite);
+            config.setDefaultSelectedCipherSuite(suite);
+            config.setAddECPointFormatExtension(false);
+            config.setAddEllipticCurveExtension(false);
+            config.setAddRenegotiationInfoExtension(true);
+            config.setAddServerNameIndicationExtension(true);
+            config.setAddSignatureAndHashAlgorithmsExtension(true);
+            
             config.setWorkflowExecutorShouldClose(false);
             config.setStopActionsAfterFatal(false);
             config.setStopReceivingAfterFatal(false);
