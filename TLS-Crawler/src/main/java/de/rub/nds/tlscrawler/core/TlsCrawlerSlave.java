@@ -23,6 +23,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -92,7 +95,6 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         for (int i = 0; i < this.noThreads; i++) {
             Thread t = new SlaveWorkerThread(this.getInstanceId(), this.synchronizedTaskRouter, this);
             t.start();
-            this.threads.add(t);
         }
 
         this.orgThread = new TlsCrawlerSlaveOrgThread(
@@ -136,6 +138,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         private IOrganizer organizer;
         private IScanProvider scanProvider;
         private SlaveStats stats;
+        private ExecutorService dnsPool;
+        private List<Future<ScanTarget>> futureDnsResults;
 
         public TlsCrawlerSlaveOrgThread(SlaveStats stats,
                 IOrganizer organizer,
@@ -151,6 +155,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             this.synchronizedTaskRouter = synchronizedTaskRouter;
             this.newFetchLimit = newFetchLimit;
             this.fetchAmount = fetchAmount;
+            dnsPool = new ScheduledThreadPoolExecutor(100);
+            futureDnsResults = new LinkedList<>();
         }
 
         public void stopExecution() {
@@ -163,70 +169,50 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             LOG.trace("run()");
 
             while (this.isRunning.get()) {
-                // Fetch new tasks:
-                if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
-                    LOG.info("Fetching tasks: {}", this.getName());
-                    Collection<String> targetString = this.organizer.getOrchestrationProvider().getScanTasks(this.fetchAmount);
-                    LOG.info("#Fetched: {}", targetString.size());
+                try {
+                    // Fetch new tasks:
+                    if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
+                        LOG.info("Fetching tasks: {}", this.getName());
+                        Collection<String> targetString = this.organizer.getOrchestrationProvider().getScanTasks(this.fetchAmount);
+                        LOG.info("#Fetched: {}", targetString.size());
 
-                    for (String tempString : targetString) {
-                        String taskId = UUID.randomUUID().toString();
-                        try {
-                            InetAddress address = InetAddress.getByName(tempString);
-                            IScanTarget realTarget = new ScanTarget(address.getHostAddress(), tempString, getPort());
-                            if (organizer.getOrchestrationProvider().isBlacklisted(realTarget)) {
-                                String name = realTarget.getHostname() != null ? realTarget.getHostname() : realTarget.getIp();
-                                LOG.info("Not scanning: {}", name);
-                            } else {
-                                ScanTask task = new ScanTask(taskId, organizer.getInstanceId(), Instant.now(), realTarget, scanProvider.getScans());
-                                this.synchronizedTaskRouter.addTodo(task);
-                                this.stats.incrementAcceptedTaskCount(1);
-                            }
-                        } catch (UnknownHostException ex) {
-                            LOG.warn("Could not resolve host address for: " + tempString);
+                        for (String tempString : targetString) {
+                            futureDnsResults.add(dnsPool.submit(new DnsThread(tempString, port)));
                         }
                     }
-                }
-                // Persist task results:
-                if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
-                        || ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) {
-                    LOG.trace("Persisting results.");
-                    Collection<ScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
-
-                    // TODO: Implement bulk operation @IPersistenceProvider
-                    for (ScanTask task : finishedTasks) {
-                        this.organizer.getPersistenceProvider().insertScanTask(task);
-                        this.stats.incrementCompletedTaskCount(1);
+                    // Persist task results:
+                    if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
+                            || ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) {
+                        LOG.trace("Persisting results.");
+                        List<ScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
+                        LOG.info("Storing results");
+                        this.organizer.getPersistenceProvider().insertScanTasks(finishedTasks);
+                        this.stats.incrementCompletedTaskCount(finishedTasks.size());
+                        this.iterations = 0;
                     }
 
-                    this.iterations = 0;
-                }
-
-                // Check for dead worker threads and replenish:
-                List<Thread> deadThreads = new LinkedList<>();
-                for (Thread t : threads) {
-                    if (!t.isAlive()) {
-                        deadThreads.add(t);
+                    for (Future<ScanTarget> future : futureDnsResults) {
+                        String taskId = UUID.randomUUID().toString();
+                        ScanTarget target = future.get();
+                        if (organizer.getOrchestrationProvider().isBlacklisted(target)) {
+                            String name = target.getHostname() != null ? target.getHostname() : target.getIp();
+                            LOG.info("Not scanning: {}", name);
+                        } else {
+                            ScanTask task = new ScanTask(taskId, organizer.getInstanceId(), Instant.now(), target, scanProvider.getScans());
+                            this.synchronizedTaskRouter.addTodo(task);
+                            this.stats.incrementAcceptedTaskCount(1);
+                        }
                     }
-                }
-
-                threads.removeAll(deadThreads);
-
-                for (int i = 0; i < deadThreads.size(); i++) {
-                    Thread newThread = new SlaveWorkerThread(organizer.getInstanceId(), synchronizedTaskRouter, scanProvider);
-                    newThread.start();
-                    threads.add(newThread);
-                }
-
-                if (lastBlacklistUpdate + 120000 > System.currentTimeMillis()) {
-                    LOG.info("Updating Blacklist");
-                    organizer.getOrchestrationProvider().updateBlacklist();
-                }
-                // (Procreate, eat,) sleep, repeat.
-                try {
-                    Thread.sleep(ORG_THREAD_SLEEP_MILLIS);
-                } catch (InterruptedException e) {
-                    // Suffer quietly.
+                    futureDnsResults = new LinkedList<>();
+                    // (Procreate, eat,) sleep, repeat.
+                    try {
+                        LOG.info("Sleeping");
+                        Thread.sleep(ORG_THREAD_SLEEP_MILLIS);
+                    } catch (InterruptedException e) {
+                        // Suffer quietly.
+                    }
+                } catch (Exception E) {
+                    E.printStackTrace();
                 }
             }
         }

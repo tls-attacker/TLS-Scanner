@@ -71,7 +71,6 @@ public class TlsScan implements IScan {
             LOG.info("Finished scanning: " + target.getIp());
         }
         Document document = createDocumentFromSiteReport(report);
-
         return document;
     }
 
