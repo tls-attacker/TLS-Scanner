@@ -209,8 +209,10 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setPSKKeyExchangeModes(pskKex);
         tlsConfig.setAddPSKKeyExchangeModesExtension(true);
         State state = new State(tlsConfig);
-        state.getWorkflowTrace().addTlsAction(
-                new ReceiveAction(ReceiveAction.ReceiveOption.CHECK_ONLY_EXPECTED, new NewSessionTicketMessage(false)));
+        state.getWorkflowTrace()
+                .addTlsAction(
+                        new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
+                                new NewSessionTicketMessage(false)));
 
         executeState(state);
         if (state.getWorkflowTrace().getLastMessageAction().executedAsPlanned()) {
@@ -230,9 +232,9 @@ public class Tls13Probe extends TlsProbe {
         State state = new State(tlsConfig);
         WorkflowTrace trace = state.getWorkflowTrace();
 
-        trace.addTlsAction(new ReceiveAction(ReceiveAction.ReceiveOption.CHECK_ONLY_EXPECTED,
+        trace.addTlsAction(new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
                 new NewSessionTicketMessage(false)));
-        trace.addTlsAction(new ResetConnectionAction());
+        trace.addTlsAction(new ResetConnectionAction(tlsConfig.getDefaultClientConnection().getAlias()));
 
         tlsConfig.setAddPreSharedKeyExtension(Boolean.TRUE);
         WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
