@@ -65,8 +65,6 @@ public class CcaProbe extends TlsProbe {
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
-//        CcaCertificateManager ccaCertificateManager = CcaCertificateManager.getReference(ccaDelegate);
-//        ccaCertificateManager.init(ccaDelegate);
 
         /**
          * Add any protocol version (1.0-1.2) to the versions we iterate
@@ -138,15 +136,6 @@ public class CcaProbe extends TlsProbe {
             LOGGER.error("No common ciphersuites found. Can't continue scan.");
             return new CcaResult(TestResult.COULD_NOT_TEST, null);
         }
-
-        // Debugging (limit ciphersuites/version)
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        List<VersionSuiteListPair> _versionSuiteListPairs = new LinkedList<>();
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
-        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS12, cipherSuites));
-
-        versionSuiteListPairs = _versionSuiteListPairs;
-
 
         Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
         Boolean gotDirectoryParameters = ccaDelegate.directoriesSupplied();
