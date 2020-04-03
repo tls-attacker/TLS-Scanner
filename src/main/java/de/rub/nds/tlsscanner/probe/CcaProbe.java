@@ -154,8 +154,7 @@ public class CcaProbe extends TlsProbe {
         List<TlsTask> taskList = new LinkedList<>();
         List<CcaTaskVectorPair> taskVectorPairList = new LinkedList<>();
 
-//        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
-        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
+        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
                 /**
                  * Skip certificate types for which we are lacking the corresponding CLI parameters
@@ -179,7 +178,7 @@ public class CcaProbe extends TlsProbe {
                     }
                 }
             }
-//        }
+        }
 
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
