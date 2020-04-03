@@ -650,7 +650,8 @@ public class SiteReportPrinter {
                     pValue = "<0.001";
                 }
                 String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | "
-                        + testResult.getVersion() + " | " + padToLength(testResult.getWorkflowType().name(), 15);
+                        + testResult.getVersion() + " | " + padToLength(testResult.getWorkflowType().name(), 15)
+                        + " Functional:" + testResult.getHandshakeIsWorking();
                 if (testResult.getpValue() < 0.01) {
                     prettyAppend(builder, resultString + "\t | "
                             + padToLength(testResult.getEqualityError().name(), 25) + padToLength("| VULNERABLE", 25)

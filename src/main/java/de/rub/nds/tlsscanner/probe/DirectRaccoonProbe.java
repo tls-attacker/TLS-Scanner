@@ -62,7 +62,7 @@ public class DirectRaccoonProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             List<DirectRaccoonCipherSuiteFingerprint> testResultList = new LinkedList<>();
-            loop:
+            loop: 
             for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
                         || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
@@ -102,8 +102,9 @@ public class DirectRaccoonProbe extends TlsProbe {
         DirectRaccoonCipherSuiteFingerprint cipherSuiteFingerprint = new DirectRaccoonCipherSuiteFingerprint(version,
                 suite, workflowType, responseMap);
         if (cipherSuiteFingerprint.isPotentiallyVulnerable()) {
-            LOGGER.debug("Found non identical answers, performing 20 additional tests");
-            cipherSuiteFingerprint.appendToResponseMap(createVectorResponseList(version, suite, workflowType, 40));
+            LOGGER.debug("Found non identical answers, performing 40 additional tests");
+            responseMap = createVectorResponseList(version, suite, workflowType, 40);
+            cipherSuiteFingerprint.appendToResponseMap(responseMap);
         }
         return cipherSuiteFingerprint;
     }
@@ -163,7 +164,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setAddRenegotiationInfoExtension(true);
             config.setAddServerNameIndicationExtension(true);
             config.setAddSignatureAndHashAlgorithmsExtension(true);
-            
+
             config.setWorkflowExecutorShouldClose(false);
             config.setStopActionsAfterFatal(false);
             config.setStopReceivingAfterFatal(false);
@@ -177,6 +178,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             State state = new State(config, trace);
 
             FingerPrintTask fingerPrintTask = new FingerPrintTask(state, 1);
+            initialClientDhSecret = initialClientDhSecret.add(new BigInteger("" + 20000));
             taskList.add(fingerPrintTask);
         }
         this.getParallelExecutor().bulkExecuteTasks(taskList);
