@@ -24,6 +24,9 @@
         <Logger name="DirectLogger" level="OFF" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
+        <Logger name="de.rub.nds.tlsattacker.core.workflow.task" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
         <Root level="INFO">
             <AppenderRef ref="Console"/>
         </Root>
