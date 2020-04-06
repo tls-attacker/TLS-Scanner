@@ -32,8 +32,11 @@ public class TlsScan implements IScan {
 
     private final ParallelExecutor parallelExecutor;
 
-    public TlsScan() {
-        parallelExecutor = new ParallelExecutor(100, 3);
+    private final int timeout;
+
+    public TlsScan(int timeout, int parallelExecutorThreads, int reexecutions) {
+        parallelExecutor = new ParallelExecutor(parallelExecutorThreads, reexecutions);
+        this.timeout = timeout;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class TlsScan implements IScan {
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setScanDetail(ScannerDetail.NORMAL);
-        config.setTimeout(2000);
+        config.setTimeout(timeout);
 
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);

@@ -20,10 +20,12 @@ import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.ScanFactory;
+import de.rub.nds.tlscrawler.scans.TlsScan;
 import de.rub.nds.tlscrawler.utility.Tuple;
 
 import java.net.ConnectException;
 import java.util.Collection;
+import java.util.LinkedList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,7 +54,8 @@ public class Slave {
             System.exit(0);
         }
 
-        Collection<IScan> scans = ScanFactory.getInstance().getBuiltInScans();
+        Collection<IScan> scans = new LinkedList<>();
+        scans.add(new TlsScan(options.scannerTimeout, options.parallelProbeThreads, options.reexecutions));
         Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options, "defaultScan");
 
         ITlsCrawlerSlave slave = new TlsCrawlerSlave(
@@ -101,24 +104,24 @@ public class Slave {
                     options.mongoDbPass.toCharArray());
         }
 
-        MongoPersistenceProvider mpp = new MongoPersistenceProvider(address, credential);
-        mpp.init(workspaceWithPrefix, scanName);
+        MongoPersistenceProvider mongoPersistenceProvider = new MongoPersistenceProvider(address, credential);
+        mongoPersistenceProvider.init(workspaceWithPrefix, scanName);
 
-        persistenceProvider = mpp;
+        persistenceProvider = mongoPersistenceProvider;
 
-        RedisOrchestrationProvider rop = new RedisOrchestrationProvider(
+        RedisOrchestrationProvider redisOrchestrationProvider = new RedisOrchestrationProvider(
                 options.redisHost,
                 options.redisPort,
                 options.redisPass);
 
         try {
-            rop.init(workspaceWithPrefix, options.blacklist);
+            redisOrchestrationProvider.init(workspaceWithPrefix, options.blacklist);
         } catch (ConnectException e) {
             LOG.error("Could not connect to redis.", e);
             System.exit(0);
         }
 
-        orchestrationProvider = rop;
+        orchestrationProvider = redisOrchestrationProvider;
 
         return Tuple.create(orchestrationProvider, persistenceProvider);
     }

@@ -118,6 +118,29 @@ public class StartupOptions extends OptionsBase {
     public int numberOfThreads;
 
     @Option(
+            name = "parallelProbeThreads",
+            abbrev = 'T',
+            help = "Number of worker threads the crawler slave should use.",
+            defaultValue = "1000"
+    )
+    public int parallelProbeThreads;
+    
+    @Option(
+            name = "timeout",
+            abbrev = 't',
+            help = "The timeout to use inside the TLS-Scanner.",
+            defaultValue = "2000"
+    )
+    public int scannerTimeout;
+    
+    @Option(
+            name = "reexecutions",
+            help = "Number of threads to use inside the TLS-Scanner.",
+            defaultValue = "1000"
+    )
+    public int reexecutions;
+    
+    @Option(
             name = "scansToBeExecuted",
             abbrev = 'S',
             help = "The names of the scans that should be exeucted as a comma seperated list.",

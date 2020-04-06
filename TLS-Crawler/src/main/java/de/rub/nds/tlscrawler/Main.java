@@ -70,7 +70,7 @@ public class Main {
         LOG.trace("setUpScans()");
 
         List<IScan> result = new LinkedList<>();
-        result.add(new TlsScan());
+        result.add(new TlsScan(5000, 400, 3));
         return result;
     }
 }

@@ -37,7 +37,7 @@ public class ScanFactory {
 
         result.add(new NullScan());
         result.add(new PingScan());
-        result.add(new TlsScan());
+        result.add(new TlsScan(5000, 400, 3));
 
         return result;
     }
