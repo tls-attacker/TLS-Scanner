@@ -192,7 +192,8 @@ public class TlsScanner {
             ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
             return checker.speaksTls(tlsConfig);
         } catch (Exception E) {
-            LOGGER.warn("Could not test if the server speaks TLS", E);
+            LOGGER.warn("Could not test if the server speaks TLS. Probably could not connect.");
+            LOGGER.debug(E);
             return false;
         }
     }
