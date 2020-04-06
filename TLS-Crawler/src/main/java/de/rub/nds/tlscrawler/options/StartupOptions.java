@@ -136,7 +136,7 @@ public class StartupOptions extends OptionsBase {
     @Option(
             name = "reexecutions",
             help = "Number of threads to use inside the TLS-Scanner.",
-            defaultValue = "1000"
+            defaultValue = "3"
     )
     public int reexecutions;
     
