@@ -50,7 +50,7 @@ public class TlsScan implements IScan {
 
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setScanDetail(ScannerDetail.NORMAL);
-        config.setTimeout(1000);
+        config.setTimeout(2000);
 
         int port = 443;
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
