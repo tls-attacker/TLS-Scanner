@@ -88,14 +88,14 @@ public class TlsScanner {
 
     private void fillDefaultProbeLists() {
 //        probeList.add(new CommonBugProbe(config, parallelExecutor));
-        probeList.add(new SniProbe(config, parallelExecutor));
+//        probeList.add(new SniProbe(config, parallelExecutor));
 //        probeList.add(new CompressionsProbe(config, parallelExecutor));
-        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
-        probeList.add(new CertificateProbe(config, parallelExecutor));
-        probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
-        probeList.add(new CiphersuiteProbe(config, parallelExecutor));
-        probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
-        probeList.add(new ExtensionProbe(config, parallelExecutor));
+//        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
+//        probeList.add(new CertificateProbe(config, parallelExecutor));
+//        probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
+//        probeList.add(new CiphersuiteProbe(config, parallelExecutor));
+//        probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
+//        probeList.add(new ExtensionProbe(config, parallelExecutor));
 //        probeList.add(new Tls13Probe(config, parallelExecutor));
 //        probeList.add(new TokenbindingProbe(config, parallelExecutor));
 //        probeList.add(new HttpHeaderProbe(config, parallelExecutor));
@@ -111,8 +111,8 @@ public class TlsScanner {
 //        probeList.add(new EarlyCcsProbe(config, parallelExecutor));
 //        probeList.add(new MacProbe(config, parallelExecutor));
 //        probeList.add(new DebugProbe(config, parallelExecutor));
-        probeList.add(new CcaSupportProbe(config, parallelExecutor));
-        probeList.add(new CcaRequiredProbe(config, parallelExecutor));
+//        probeList.add(new CcaSupportProbe(config, parallelExecutor));
+//        probeList.add(new CcaRequiredProbe(config, parallelExecutor));
         probeList.add(new CcaProbe(config, parallelExecutor));
 //        afterList.add(new Sweet32AfterProbe());
 //        afterList.add(new FreakAfterProbe());
@@ -134,7 +134,7 @@ public class TlsScanner {
         try {
             if (isConnectable()) {
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-                if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls()) || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
+                if (true || (config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls()) || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getOverallThreads(), config.getClientDelegate().getHost());
