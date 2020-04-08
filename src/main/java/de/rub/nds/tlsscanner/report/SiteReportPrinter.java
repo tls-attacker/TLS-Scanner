@@ -57,6 +57,8 @@ import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
+import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -127,6 +129,8 @@ public class SiteReportPrinter {
         appendPaddingOracleResults(builder);
         appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
+        // appendGcm(builder);
+        appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
@@ -619,6 +623,7 @@ public class SiteReportPrinter {
                     AnsiColor.RED);
         }
         prettyAppend(builder, "Bleichenbacher", AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER);
+        prettyAppend(builder, "Raccoon", AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK);
         prettyAppend(builder, "Direct Raccoon", AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON);
         prettyAppend(builder, "CRIME", AnalyzedProperty.VULNERABLE_TO_CRIME);
         prettyAppend(builder, "Breach", AnalyzedProperty.VULNERABLE_TO_BREACH);
@@ -633,6 +638,40 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Extra Clear DROWN", AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
+        return builder;
+    }
+
+    private StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
+        if (report.getRaccoonAttackProbabilities() != null) {
+            prettyAppendHeading(builder, "Raccoon Attacks Details");
+            prettyAppend(builder, "Available Injection points:", (long) report.getRaccoonAttackProbabilities().size());
+            if (report.getRaccoonAttackProbabilities().size() > 0) {
+                prettyAppendSubheading(builder, "Probabilties");
+                for (RaccoonAttackProbabilities probabilbities : report.getRaccoonAttackProbabilities()) {
+                    builder.append(addIndentations(probabilbities.getPosition().name()) + "\t BitsReq:"
+                            + probabilbities.getZeroBitsRequiredToNextBlockBorder() + "\t"
+                            + probabilbities.getChanceForEquation().toEngineeringString() + "\n");
+                }
+                if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
+                        || report.getResult(AnalyzedProperty.SUPPORTS_PSK_DHE) == TestResult.TRUE) {
+                    prettyAppendSubheading(builder, "PSK Length Probabilties");
+                    prettyAppendSubheading(builder, addIndentations("PSK Length") + addIndentations("BitsReq")
+                            + "Probability");
+
+                    for (RaccoonAttackProbabilities probabilbities : report.getRaccoonAttackProbabilities()) {
+
+                        prettyAppendSubheading(builder, "-------" + probabilbities.getPosition().name() + "-------");
+
+                        for (RaccoonAttackPskProbabilities pskProbability : probabilbities.getPskProbabilityList()) {
+                            prettyAppend(builder, addIndentations("" + pskProbability.getPskLength())
+                                    + addIndentations("" + pskProbability.getZeroBitsRequiredToNextBlockBorder())
+                                    + pskProbability.getChanceForEquation().toEngineeringString());
+                        }
+                    }
+                }
+
+            }
+        }
         return builder;
     }
 

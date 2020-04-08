@@ -34,6 +34,7 @@ import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
 import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.probe.RaccoonAttackProbe;
 import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
 import de.rub.nds.tlsscanner.probe.ResumptionProbe;
 import de.rub.nds.tlsscanner.probe.SniProbe;
@@ -108,6 +109,7 @@ public class TlsScanner {
         probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
         probeList.add(new CiphersuiteProbe(config, parallelExecutor));
         probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
+        probeList.add(new RaccoonAttackProbe(config, parallelExecutor));
         // probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
         // probeList.add(new ExtensionProbe(config, parallelExecutor));
         // probeList.add(new Tls13Probe(config, parallelExecutor));

@@ -40,4 +40,5 @@ public enum ProbeType {
     MAC,
     DIRECT_RACCOON,
     EC_POINT_FORMAT,
+    RACCOON_ATTACK
 }

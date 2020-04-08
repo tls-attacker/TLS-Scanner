@@ -37,6 +37,7 @@ import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResu
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -67,6 +68,7 @@ public class SiteReport extends Observable implements Serializable {
     private NonDetermnisimEvaluationReport paddingOracleShakyReport = null;
     private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList;
     private List<InvalidCurveResponse> invalidCurveResultList;
+    private List<RaccoonAttackProbabilities> raccoonAttackProbabilities;
 
     private int parameterCombinations = -2;
     private int executedCombinations = -2;
@@ -565,4 +567,13 @@ public class SiteReport extends Observable implements Serializable {
     public synchronized void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
         this.invalidCurveResultList = invalidCurveResultList;
     }
+
+    public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
+        return raccoonAttackProbabilities;
+    }
+
+    public synchronized void setRaccoonAttackProbabilities(List<RaccoonAttackProbabilities> raccoonAttackProbabilities) {
+        this.raccoonAttackProbabilities = raccoonAttackProbabilities;
+    }
+
 }
