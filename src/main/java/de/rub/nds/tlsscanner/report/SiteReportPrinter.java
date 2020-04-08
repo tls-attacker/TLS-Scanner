@@ -43,7 +43,6 @@ import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
-import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
@@ -60,6 +59,7 @@ import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuit
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -642,30 +642,34 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
+        DecimalFormat decimalFormat = new DecimalFormat();
+        decimalFormat.setMaximumFractionDigits(24);
         if (report.getRaccoonAttackProbabilities() != null) {
-            prettyAppendHeading(builder, "Raccoon Attacks Details");
+            prettyAppendHeading(builder, "Raccoon Attack Details");
             prettyAppend(builder, "Available Injection points:", (long) report.getRaccoonAttackProbabilities().size());
             if (report.getRaccoonAttackProbabilities().size() > 0) {
                 prettyAppendSubheading(builder, "Probabilties");
+                prettyAppend(builder, addIndentations("InjectionPoint") + addIndentations("\t Leak") + "Probability",
+                        AnsiColor.BOLD);
                 for (RaccoonAttackProbabilities probabilbities : report.getRaccoonAttackProbabilities()) {
                     builder.append(addIndentations(probabilbities.getPosition().name()) + "\t BitsReq:"
-                            + probabilbities.getZeroBitsRequiredToNextBlockBorder() + "\t"
-                            + probabilbities.getChanceForEquation().toEngineeringString() + "\n");
+                            + probabilbities.getBitsLeaked() + "\t"
+                            + decimalFormat.format(probabilbities.getChanceForEquation()) + "\n");
                 }
                 if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
                         || report.getResult(AnalyzedProperty.SUPPORTS_PSK_DHE) == TestResult.TRUE) {
                     prettyAppendSubheading(builder, "PSK Length Probabilties");
-                    prettyAppendSubheading(builder, addIndentations("PSK Length") + addIndentations("BitsReq")
-                            + "Probability");
+                    prettyAppend(builder, addIndentations("PSK Length") + addIndentations("Bitleak") + "Probability",
+                            AnsiColor.BOLD);
 
                     for (RaccoonAttackProbabilities probabilbities : report.getRaccoonAttackProbabilities()) {
 
-                        prettyAppendSubheading(builder, "-------" + probabilbities.getPosition().name() + "-------");
+                        prettyAppendSubheading(builder, probabilbities.getPosition().name());
 
                         for (RaccoonAttackPskProbabilities pskProbability : probabilbities.getPskProbabilityList()) {
                             prettyAppend(builder, addIndentations("" + pskProbability.getPskLength())
                                     + addIndentations("" + pskProbability.getZeroBitsRequiredToNextBlockBorder())
-                                    + pskProbability.getChanceForEquation().toEngineeringString());
+                                    + decimalFormat.format(pskProbability.getChanceForEquation()));
                         }
                     }
                 }

@@ -14,25 +14,29 @@
 package de.rub.nds.tlsscanner.report.result.raccoonattack;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 public class RaccoonAttackProbabilities {
 
     private RaccoonAttackVulnerabilityPosition position;
 
-    private int zeroBitsRequiredToNextBlockBorder;
+    private int bitsLeaked;
 
     private BigDecimal chanceForEquation;
 
     private List<RaccoonAttackPskProbabilities> pskProbabilityList;
 
+    private BigInteger modulus;
+
     public RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition position,
             int zeroBitsRequiredToNextBlockBorder, BigDecimal chanceForEquation,
-            List<RaccoonAttackPskProbabilities> pskProbabilityList) {
+            List<RaccoonAttackPskProbabilities> pskProbabilityList, BigInteger modulus) {
         this.position = position;
-        this.zeroBitsRequiredToNextBlockBorder = zeroBitsRequiredToNextBlockBorder;
+        this.bitsLeaked = zeroBitsRequiredToNextBlockBorder;
         this.chanceForEquation = chanceForEquation;
         this.pskProbabilityList = pskProbabilityList;
+        this.modulus = modulus;
     }
 
     public RaccoonAttackVulnerabilityPosition getPosition() {
@@ -43,12 +47,12 @@ public class RaccoonAttackProbabilities {
         this.position = position;
     }
 
-    public int getZeroBitsRequiredToNextBlockBorder() {
-        return zeroBitsRequiredToNextBlockBorder;
+    public int getBitsLeaked() {
+        return bitsLeaked;
     }
 
-    public void setZeroBitsRequiredToNextBlockBorder(int zeroBitsRequiredToNextBlockBorder) {
-        this.zeroBitsRequiredToNextBlockBorder = zeroBitsRequiredToNextBlockBorder;
+    public void setBitsLeaked(int bitsLeaked) {
+        this.bitsLeaked = bitsLeaked;
     }
 
     public BigDecimal getChanceForEquation() {
@@ -65,6 +69,14 @@ public class RaccoonAttackProbabilities {
 
     public void setPskProbabilityList(List<RaccoonAttackPskProbabilities> pskProbabilityList) {
         this.pskProbabilityList = pskProbabilityList;
+    }
+
+    public BigInteger getModulus() {
+        return modulus;
+    }
+
+    public void setModulus(BigInteger modulus) {
+        this.modulus = modulus;
     }
 
 }
