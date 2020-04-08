@@ -147,7 +147,6 @@ public class RaccoonAttackProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         if (report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE
-                && report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) != TestResult.NOT_TESTED_YET
                 && report.getVersionSuitePairs() != null) {
             return true;
         } else {
