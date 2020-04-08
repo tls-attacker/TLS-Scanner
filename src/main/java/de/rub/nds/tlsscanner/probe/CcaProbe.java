@@ -131,7 +131,7 @@ public class CcaProbe extends TlsProbe {
          * support for TLS1.0-1.2 or at most a single DH ciphersuite per version. If it's empty we can't continue.
          */
         versionSuiteListPairs = versionSuiteListPairList;
-
+/*
         // Changes for Wolfssl
         List<CipherSuite> cipherSuites = new LinkedList<>();
         List<VersionSuiteListPair> _versionSuiteListPairs = new LinkedList<>();
@@ -173,7 +173,8 @@ public class CcaProbe extends TlsProbe {
 //        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS11, cipherSuites));
 //        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS10, cipherSuites));
         versionSuiteListPairs = _versionSuiteListPairs;
-
+        // EOF Wolfssl changes
+        */
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.error("No common ciphersuites found. Can't continue scan.");
             return new CcaResult(TestResult.COULD_NOT_TEST, null);
@@ -241,12 +242,12 @@ public class CcaProbe extends TlsProbe {
                 && (report.getVersionSuitePairs() != null)) {
             return true;
         };
-        return true;
+        return false;
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
-//        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
+        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 
     @Override
