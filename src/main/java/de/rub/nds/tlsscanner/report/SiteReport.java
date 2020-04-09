@@ -70,10 +70,6 @@ public class SiteReport extends Observable implements Serializable {
     private List<InvalidCurveResponse> invalidCurveResultList;
     private List<RaccoonAttackProbabilities> raccoonAttackProbabilities;
 
-    private int parameterCombinations = -2;
-    private int executedCombinations = -2;
-    private String debugString = "noneGiven";
-
     // Version
     private List<ProtocolVersion> versions = null;
 
