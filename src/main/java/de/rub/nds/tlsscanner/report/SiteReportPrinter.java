@@ -652,7 +652,7 @@ public class SiteReportPrinter {
                 prettyAppend(builder, addIndentations("InjectionPoint") + addIndentations("\t Leak") + "Probability",
                         AnsiColor.BOLD);
                 for (RaccoonAttackProbabilities probabilbities : report.getRaccoonAttackProbabilities()) {
-                    builder.append(addIndentations(probabilbities.getPosition().name()) + "\t BitsReq:"
+                    builder.append(addIndentations(probabilbities.getPosition().name()) + "\t "
                             + probabilbities.getBitsLeaked() + "\t"
                             + decimalFormat.format(probabilbities.getChanceForEquation()) + "\n");
                 }
