@@ -15,6 +15,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import de.rub.nds.tlscrawler.data.*;
 import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateSerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.BigDecimalSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.ByteArraySerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.CertificateSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.CustomDhPublicKeySerialisationConverter;
@@ -82,6 +83,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         module.addSerializer(new VectorSerialisationConverter());
         module.addSerializer(new PointSerialisationConverter());
         module.addSerializer(new HttpsHeaderSerialisationConverter());
+        module.addSerializer(new BigDecimalSerialisationConverter());
         mapper.registerModule(module);
         collection = JacksonMongoCollection.builder().withObjectMapper(mapper).<ScanTask>build(database, collectionName, ScanTask.class);
         this.initialized = true;
