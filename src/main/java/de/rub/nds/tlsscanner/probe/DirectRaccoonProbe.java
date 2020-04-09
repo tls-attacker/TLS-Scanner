@@ -50,7 +50,7 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final int iterationsPerHandshake = 1;
+    private final int iterationsPerHandshake = 3;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
@@ -101,8 +101,8 @@ public class DirectRaccoonProbe extends TlsProbe {
         DirectRaccoonCipherSuiteFingerprint cipherSuiteFingerprint = new DirectRaccoonCipherSuiteFingerprint(version,
                 suite, workflowType, responseMap);
         if (cipherSuiteFingerprint.isPotentiallyVulnerable()) {
-            LOGGER.debug("Found non identical answers, performing 40 additional tests");
-            responseMap = createVectorResponseList(version, suite, workflowType, 49);
+            LOGGER.debug("Found non identical answers, performing 47 additional tests");
+            responseMap = createVectorResponseList(version, suite, workflowType, 47);
             cipherSuiteFingerprint.appendToResponseMap(responseMap);
         }
         return cipherSuiteFingerprint;
