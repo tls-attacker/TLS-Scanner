@@ -649,8 +649,7 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Available Injection points:", (long) report.getRaccoonAttackProbabilities().size());
             if (report.getRaccoonAttackProbabilities().size() > 0) {
                 prettyAppendSubheading(builder, "Probabilties");
-                prettyAppend(builder, addIndentations("InjectionPoint") + addIndentations("\t Leak") + "Probability",
-                        AnsiColor.BOLD);
+                prettyAppend(builder, addIndentations("InjectionPoint") + "\t Leak" + "\tProbability", AnsiColor.BOLD);
                 for (RaccoonAttackProbabilities probabilbities : report.getRaccoonAttackProbabilities()) {
                     builder.append(addIndentations(probabilbities.getPosition().name()) + "\t "
                             + probabilbities.getBitsLeaked() + "\t"

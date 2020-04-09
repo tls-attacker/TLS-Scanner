@@ -20,6 +20,7 @@ import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackPskProbabi
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackVulnerabilityPosition;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -74,7 +75,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
             TestResult vulnerable = TestResult.FALSE;
             for (RaccoonAttackProbabilities probability : attackProbabilityList) {
                 if (probability.getChanceForEquation()
-                        .multiply(new BigDecimal(MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION)).intValue() > 0) {
+                        .multiply(new BigDecimal(MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION, new MathContext(256, RoundingMode.DOWN))).intValue() > 0) {
                     vulnerable = TestResult.TRUE;
                     break;
                 }
@@ -168,7 +169,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
             int bitsToNextSmallerBlockPsk = bitsToNextSmallerBlock(blockLänge, inputLength + 2 * 8 + 2 * 8 + i * 8,
                     fixedLength, minPadding, hashLengthField);
             BigDecimal attackSuccessChance = attackSuccessChance(bitsToNextSmallerBlockPsk, modulus);
-            if (attackSuccessChance.multiply(new BigDecimal("" + MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION))
+            if (attackSuccessChance.multiply(new BigDecimal("" + MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION, new MathContext(256, RoundingMode.DOWN)))
                     .compareTo(BigDecimal.ONE) > 0) {
                 pskProbabilityList.add(new RaccoonAttackPskProbabilities(i, bitsToNextSmallerBlockPsk,
                         attackSuccessChance));
