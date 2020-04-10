@@ -73,7 +73,7 @@
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>
                     <!--SubjectKeyIdentifierExtension-->
-                    <asn1Sequence identifier="extension1" type="Extension">
+                    <asn1Sequence identifier="extension7" type="Extension">
                         <asn1ObjectIdentifier identifier="extnID">
                             <value>2.5.29.14</value>
                         </asn1ObjectIdentifier>
@@ -187,7 +187,7 @@
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>
                     <!--SubjectKeyIdentifierExtension-->
-                    <asn1Sequence identifier="extension1" type="Extension">
+                    <asn1Sequence identifier="extension7" type="Extension">
                         <asn1ObjectIdentifier identifier="extnID">
                             <value>2.5.29.14</value>
                         </asn1ObjectIdentifier>
@@ -288,7 +288,7 @@
                 <offset>3</offset>
                 <asn1Sequence identifier="extensions" type="Extensions">
                     <!--SubjectKeyIdentifierExtension-->
-                    <asn1Sequence identifier="extension1" type="Extension">
+                    <asn1Sequence identifier="extension7" type="Extension">
                         <asn1ObjectIdentifier identifier="extnID">
                             <value>2.5.29.14</value>
                         </asn1ObjectIdentifier>
