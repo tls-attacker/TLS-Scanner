@@ -131,20 +131,14 @@ public class CcaProbe extends TlsProbe {
          * support for TLS1.0-1.2 or at most a single DH ciphersuite per version. If it's empty we can't continue.
          */
         versionSuiteListPairs = versionSuiteListPairList;
-/*
+
         // Changes for Wolfssl
         List<CipherSuite> cipherSuites = new LinkedList<>();
         List<VersionSuiteListPair> _versionSuiteListPairs = new LinkedList<>();
 
-        cipherSuites.add(CipherSuite.TLS_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_CHACHA20_POLY1305_SHA256);
-        cipherSuites.add(CipherSuite.TLS_AES_128_GCM_SHA256);
         cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384);
         cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
         cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256);
         cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256);
         cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
         cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256);
@@ -159,22 +153,20 @@ public class CcaProbe extends TlsProbe {
         cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA);
         cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA);
         cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA);
         cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384);
         cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256);
         cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256);
         cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256);
         cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA);
         cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
 
 
         _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS12, cipherSuites));
-//        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS11, cipherSuites));
+        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS11, cipherSuites));
 //        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS10, cipherSuites));
         versionSuiteListPairs = _versionSuiteListPairs;
         // EOF Wolfssl changes
-        */
+
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.error("No common ciphersuites found. Can't continue scan.");
             return new CcaResult(TestResult.COULD_NOT_TEST, null);
@@ -242,12 +234,12 @@ public class CcaProbe extends TlsProbe {
                 && (report.getVersionSuitePairs() != null)) {
             return true;
         };
-        return false;
+        return true;
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
-        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
+//        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 
     @Override
@@ -264,8 +256,11 @@ public class CcaProbe extends TlsProbe {
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setStopTraceAfterUnexpected(true);
 
-        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
-        config.setDefaultClientNamedGroups(namedGroups);
+        config.setDefaultClientNamedGroups(NamedGroup.SECP256R1);
+
+//        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
+//        config.setDefaultClientNamedGroups(namedGroups);
+
 
         return config;
     }
