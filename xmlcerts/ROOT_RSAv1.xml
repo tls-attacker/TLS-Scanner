@@ -12,7 +12,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>2</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/rootv1/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/rootv1/tbsCertificate/subject"/>

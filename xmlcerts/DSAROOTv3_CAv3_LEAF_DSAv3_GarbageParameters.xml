@@ -12,7 +12,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>10</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/DSAROOTv3_CAv3_LEAF_DSAv3_GarbageParameters__leaf_certificate1/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/DSAROOTv3_CAv3_LEAF_DSAv3_GarbageParameters__ca_certificate1/tbsCertificate/subject"/>
@@ -139,7 +139,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>9</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/DSAROOTv3_CAv3_LEAF_DSAv3_GarbageParameters__ca_certificate1/signatureAlgorithm" />
             <asn1RawBytes identifier="issuer" type="RawBytes" placeholder="replace_me"><value></value></asn1RawBytes>

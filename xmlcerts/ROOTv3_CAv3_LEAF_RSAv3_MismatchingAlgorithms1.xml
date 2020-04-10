@@ -12,7 +12,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>91</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier">
                 <asn1ObjectIdentifier identifier="algorithm">
@@ -133,7 +133,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>92</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_LEAF_RSAv3_MismatchingAlgorithms1__ca_certificate1/signatureAlgorithm" />
             <asn1RawBytes identifier="issuer" type="RawBytes" placeholder="replace_me"><value></value></asn1RawBytes>

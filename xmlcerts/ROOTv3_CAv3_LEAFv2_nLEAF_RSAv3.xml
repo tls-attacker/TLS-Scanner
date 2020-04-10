@@ -12,7 +12,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>2</value>
+                <value>115</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_LEAFv2_nLEAF_RSAv3__leaf_certificate2/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ROOTv3_CAv3_LEAFv2_nLEAF_RSAv3__leaf_certificate1/tbsCertificate/subject"/>
@@ -127,7 +127,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>116</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_LEAFv2_nLEAF_RSAv3__leaf_certificate1/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ROOTv3_CAv3_LEAFv2_nLEAF_RSAv3__ca_certificate1/tbsCertificate/subject"/>
@@ -193,7 +193,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>117</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_LEAFv2_nLEAF_RSAv3__ca_certificate1/signatureAlgorithm" />
             <asn1RawBytes identifier="issuer" type="RawBytes" placeholder="replace_me"><value></value></asn1RawBytes>

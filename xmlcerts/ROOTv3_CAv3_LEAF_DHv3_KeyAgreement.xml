@@ -13,7 +13,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>41</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_LEAF_DHv3_KeyAgreement__leaf_certificate1/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ROOTv3_CAv3_LEAF_DHv3_KeyAgreement__ca_certificate1/tbsCertificate/subject"/>
@@ -145,7 +145,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>42</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_LEAF_DHv3_KeyAgreement__ca_certificate1/signatureAlgorithm" />
             <asn1RawBytes identifier="issuer" type="RawBytes" placeholder="replace_me"><value></value></asn1RawBytes>

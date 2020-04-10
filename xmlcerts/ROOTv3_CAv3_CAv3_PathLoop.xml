@@ -12,7 +12,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>2</value>
+                <value>34</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_CAv3_PathLoop__leaf_certificate1/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ROOTv3_CAv3_CAv3_PathLoop__ca_certificate2/tbsCertificate/subject"/>
@@ -126,7 +126,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>35</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_CAv3_PathLoop__ca_certificate2/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ROOTv3_CAv3_CAv3_PathLoop__ca_certificate1/tbsCertificate/subject"/>
@@ -243,7 +243,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>1</value>
+                <value>36</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_CAv3_PathLoop__ca_certificate1/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ROOTv3_CAv3_CAv3_PathLoop__ca_certificate2/tbsCertificate/subject"/>
