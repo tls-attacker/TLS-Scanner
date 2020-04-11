@@ -132,6 +132,7 @@ public class CcaProbe extends TlsProbe {
          */
         versionSuiteListPairs = versionSuiteListPairList;
 
+
         // Changes for Wolfssl
         List<CipherSuite> cipherSuites = new LinkedList<>();
         List<VersionSuiteListPair> _versionSuiteListPairs = new LinkedList<>();
@@ -162,10 +163,11 @@ public class CcaProbe extends TlsProbe {
 
 
         _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS12, cipherSuites));
-        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS11, cipherSuites));
+//        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS11, cipherSuites));
 //        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS10, cipherSuites));
         versionSuiteListPairs = _versionSuiteListPairs;
         // EOF Wolfssl changes
+
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.error("No common ciphersuites found. Can't continue scan.");
@@ -253,14 +255,9 @@ public class CcaProbe extends TlsProbe {
         config.setAddServerNameIndicationExtension(true);
         config.setStopActionsAfterFatal(true);
         config.setStopReceivingAfterFatal(true);
+        config.setDefaultHighestClientProtocolVersion(ProtocolVersion.TLS10);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setStopTraceAfterUnexpected(true);
-
-        config.setDefaultClientNamedGroups(NamedGroup.SECP256R1);
-
-//        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
-//        config.setDefaultClientNamedGroups(namedGroups);
-
 
         return config;
     }
