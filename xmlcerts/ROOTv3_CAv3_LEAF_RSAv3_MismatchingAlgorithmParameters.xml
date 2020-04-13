@@ -42,6 +42,8 @@
                             <value>DE</value>
                         </asn1PrimitivePrintableString>
                     </asn1Sequence>
+                    </asn1Set>
+                    <asn1Set>
                     <asn1Sequence identifier="attributeTypeAndValue1" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.10</value>
@@ -50,6 +52,8 @@
                             <value>RUB</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
+                    </asn1Set>
+                    <asn1Set>
                     <asn1Sequence identifier="attributeTypeAndValue2" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.11</value>
@@ -163,6 +167,8 @@
                             <value>DE</value>
                         </asn1PrimitivePrintableString>
                     </asn1Sequence>
+                    </asn1Set>
+                    <asn1Set>
                     <asn1Sequence identifier="attributeTypeAndValue1" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.10</value>
@@ -171,6 +177,8 @@
                             <value>RUB</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
+                    </asn1Set>
+                    <asn1Set>
                     <asn1Sequence identifier="attributeTypeAndValue2" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
                             <value>2.5.4.11</value>
