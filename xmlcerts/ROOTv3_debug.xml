@@ -127,7 +127,7 @@
         </asn1Sequence>
         <asn1Sequence identifier="signatureAlgorithm" type="AlgorithmIdentifier">c
             <asn1ObjectIdentifier identifier="algorithm">
-                <value>1.2.840.113549.1.1.13</value>
+                <value>1.2.840.113549.1.1.11</value>
             </asn1ObjectIdentifier>
             <asn1Null />
         </asn1Sequence>
@@ -266,7 +266,7 @@
         </asn1Sequence>
         <asn1Sequence identifier="signatureAlgorithm" type="AlgorithmIdentifier">
             <asn1ObjectIdentifier identifier="algorithm">
-                <value>1.2.840.113549.1.1.13</value>
+                <value>1.2.840.113549.1.1.11</value>
             </asn1ObjectIdentifier>
             <asn1Null />
         </asn1Sequence>
