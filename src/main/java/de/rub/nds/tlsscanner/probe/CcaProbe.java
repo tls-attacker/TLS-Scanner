@@ -50,8 +50,7 @@ public class CcaProbe extends TlsProbe {
         versionSuiteListPairsList = new LinkedList<>();
     }
 
-    /**
-     * TODO: idea empty CKE message (see post robert slack)
+    /*
      * @return
      */
 
@@ -82,7 +81,9 @@ public class CcaProbe extends TlsProbe {
         List<VersionSuiteListPair> versionSuiteListPairs = new LinkedList<>();
         for(VersionSuiteListPair versionSuiteListPair: this.versionSuiteListPairsList) {
             if (desiredVersions.contains(versionSuiteListPair.getVersion())) {
-                versionSuiteListPairs.add(versionSuiteListPair);
+                versionSuiteListPairs.add
+
+                        (versionSuiteListPair);
             }
         }
 
@@ -132,7 +133,7 @@ public class CcaProbe extends TlsProbe {
          */
         versionSuiteListPairs = versionSuiteListPairList;
 
-
+/*
         // Changes for Wolfssl
         List<CipherSuite> cipherSuites = new LinkedList<>();
         List<VersionSuiteListPair> _versionSuiteListPairs = new LinkedList<>();
@@ -167,7 +168,7 @@ public class CcaProbe extends TlsProbe {
 //        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS10, cipherSuites));
         versionSuiteListPairs = _versionSuiteListPairs;
         // EOF Wolfssl changes
-
+    */
 
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.error("No common ciphersuites found. Can't continue scan.");
@@ -236,12 +237,12 @@ public class CcaProbe extends TlsProbe {
                 && (report.getVersionSuitePairs() != null)) {
             return true;
         };
-        return true;
+        return false;
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
-//        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
+        this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 
     @Override
@@ -258,7 +259,7 @@ public class CcaProbe extends TlsProbe {
         config.setDefaultHighestClientProtocolVersion(ProtocolVersion.TLS10);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setStopTraceAfterUnexpected(true);
-
+        config.setAddServerNameIndicationExtension(false);
         return config;
     }
 

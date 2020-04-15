@@ -94,23 +94,23 @@ public class DebugProbe extends TlsProbe {
 
         List<CipherSuite> cipherSuites = new LinkedList<>();
 
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA);
         cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384);
         cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256);
         cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256);
@@ -122,7 +122,7 @@ public class DebugProbe extends TlsProbe {
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3_SelfSigned;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
         for (ProtocolVersion protocolVersion : desiredVersions) {
             // Dummy for output since I do not iterate Ciphersuites
@@ -178,7 +178,7 @@ public class DebugProbe extends TlsProbe {
         config.setStopReceivingAfterFatal(true);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setStopTraceAfterUnexpected(true);
-
+        config.setAddServerNameIndicationExtension(false);
 //        config.setDefaultClientNamedGroups(NamedGroup.SECP256R1);
 
 //        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
