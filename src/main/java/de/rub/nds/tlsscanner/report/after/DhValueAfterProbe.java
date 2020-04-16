@@ -22,6 +22,11 @@ import java.util.Set;
 
 public class DhValueAfterProbe extends AfterProbe {
 
+    private TestResult onlyPrime;
+    private TestResult onlySafePrime;
+    private TestResult usesCommonDhPrimes;
+    private TestResult reuse;
+    
     @Override
     public void analyze(SiteReport report) {
         ExtractedValueContainer publicKeyContainer = report.getExtractedValueContainerMap().get(
@@ -30,10 +35,9 @@ public class DhValueAfterProbe extends AfterProbe {
                 TrackableValueType.DH_MODULUS);
         List<CommonDhValues> loadedCommonDhValues = CommonDhLoader.loadCommonDhValues();
         Set<CommonDhValues> usedCommonValues = new HashSet<>();
-        TestResult onlyPrime = TestResult.TRUE;
-        TestResult onlySafePrime = TestResult.TRUE;
-        TestResult usesCommonDhPrimes = TestResult.NOT_TESTED_YET;
-        TestResult reuse;
+        onlyPrime = TestResult.TRUE;
+        onlySafePrime = TestResult.TRUE;
+        usesCommonDhPrimes = TestResult.NOT_TESTED_YET;
 
         Integer shortestBitLength = Integer.MAX_VALUE;
         if (publicKeyContainer != null && publicKeyContainer.getExtractedValueList().size() > 2) {
@@ -99,6 +103,22 @@ public class DhValueAfterProbe extends AfterProbe {
 
     private boolean isSafePrime(BigInteger bigInteger) {
         return bigInteger.shiftRight(1).isProbablePrime(30);
+    }
+    
+    public TestResult getOnlyPrime() {
+        return this.onlyPrime;
+    }
+
+    public TestResult getOnlySafePrime() {
+        return this.onlySafePrime;
+    }
+
+    public TestResult getUsesCommonDhPrimes() {
+        return this.usesCommonDhPrimes;
+    }
+
+    public TestResult getReuse() {
+        return this.reuse;
     }
 
 }
