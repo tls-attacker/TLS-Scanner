@@ -14,8 +14,6 @@ import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.after.DhValueAfterProbe;
 
-import static org.junit.Assert.assertSame;
-
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,16 +22,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.assertSame;
 
-/*
- * Testset should check if  DhValueAfterProbe detects insecure DH-Parameters
+/**
+ *  Testset should check if  DhValueAfterProbe detects insecure DH-Parameters
  *  as insecure ones and secure parameters as secure ones
  *  
  *  Shortly: Checks If it correctly identifies the DH-Params
  */
 
 public class DhValueAfterProbeTest {
-
     private static final Logger LOGGER = (Logger) LogManager.getLogger();
 
     private SiteReport report;
@@ -52,13 +50,12 @@ public class DhValueAfterProbeTest {
 
     }
 
-    /*
+    /**
      * test if method analyze of class DhValueAfterProbe 
      * recognizes a secure public key as such
      */
     @Test
     public void secureDhParamTestAnalyze() {
-
         BigInteger securePubkey, secureMod;
         securePubkey = new BigInteger("65537");
         // openssl command for dhparams: openssl dhparam -text -noout 1024
@@ -76,7 +73,6 @@ public class DhValueAfterProbeTest {
 
         analyseDhParams();
 
-        // needs get-parameter from DhVAlueAfterPr
         assertSame(test.getOnlyPrime(), TestResult.TRUE);
         assertSame(test.getOnlySafePrime(), TestResult.TRUE);
         assertSame(test.getUsesCommonDhPrimes(), TestResult.FALSE);
@@ -84,7 +80,7 @@ public class DhValueAfterProbeTest {
 
     }
 
-    /*
+    /**
      * Tests if method analyze recognizes an insecure parametes as such
      */
     @Test
@@ -105,7 +101,7 @@ public class DhValueAfterProbeTest {
 
     }
 
-    /*
+    /**
      * Test if method anaylize detects reused public
      * key
      */
@@ -113,7 +109,6 @@ public class DhValueAfterProbeTest {
     public void secureReusedDhPubkeyTestAnalyze() {
         BigInteger secureKey, secureMod;
 
-        // examples for insecure values
         secureKey = new BigInteger("65537");
         secureMod = new BigInteger(
             "00e8a678364bb6f7d85d4b29ecfedab6d6caa88eb90c4ca1"
@@ -138,12 +133,11 @@ public class DhValueAfterProbeTest {
 
     }
 
-    /*
+    /**
      * Executes the analysis: determies how secure the Diffie-Hellmann
      * parameters are
      */
-    public void analyseDhParams() {
-
+    private void analyseDhParams() {
         cipherMap.put(TrackableValueType.DH_PUBKEY, pubkeyContainer);
         cipherMap.put(TrackableValueType.DH_MODULUS, modulusContainer);
 
