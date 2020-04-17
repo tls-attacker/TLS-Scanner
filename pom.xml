@@ -17,6 +17,11 @@
             <version>3.3.1</version>
         </dependency>
         <dependency>
+            <groupId>de.rub.nds</groupId>
+            <artifactId>Asn1Tool</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
