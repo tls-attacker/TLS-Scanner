@@ -145,6 +145,8 @@ public class OcspProbe extends TlsProbe {
                 if (enc instanceof Asn1Sequence) {
                     Asn1ObjectIdentifier objectIdentifier = (Asn1ObjectIdentifier) (((Asn1Sequence) enc).getChildren()
                             .get(0));
+                    // This is the objectIdentifier value for
+                    // authorityInfoAccess
                     if (objectIdentifier.getValue().equals("1.3.6.1.5.5.7.1.1")) {
                         authorityInfoAccess = (Asn1Sequence) enc;
                         break;
@@ -169,6 +171,7 @@ public class OcspProbe extends TlsProbe {
                 if (enc instanceof Asn1Sequence) {
                     Asn1ObjectIdentifier objectIdentifier = (Asn1ObjectIdentifier) ((Asn1Sequence) enc).getChildren()
                             .get(0);
+                    // This is the objectIdentifier value for OCSP
                     if (objectIdentifier.getValue().equals("1.3.6.1.5.5.7.48.1")) {
                         ocspInformation = ((Asn1Sequence) enc).getChildren();
                         break;
