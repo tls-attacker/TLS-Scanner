@@ -196,6 +196,8 @@ public class PrintingScheme {
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_TOKENBINDING,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
+                getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_TICKETS,

@@ -82,6 +82,7 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSessionTicketTLSExtension(true);
         tlsConfig.setAddTruncatedHmacExtension(true);
+        tlsConfig.setAddCertificateStatusRequestExtension(true);
 
         List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(nameGroups);
