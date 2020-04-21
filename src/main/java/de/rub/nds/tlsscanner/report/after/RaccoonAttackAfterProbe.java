@@ -74,8 +74,11 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         } else {
             TestResult vulnerable = TestResult.FALSE;
             for (RaccoonAttackProbabilities probability : attackProbabilityList) {
-                if (probability.getChanceForEquation()
-                        .multiply(new BigDecimal(MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION, new MathContext(256, RoundingMode.DOWN))).intValue() > 0) {
+                if (probability
+                        .getChanceForEquation()
+                        .multiply(
+                                new BigDecimal(MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION, new MathContext(256,
+                                        RoundingMode.DOWN))).intValue() > 0) {
                     vulnerable = TestResult.TRUE;
                     break;
                 }
@@ -169,8 +172,9 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
             int bitsToNextSmallerBlockPsk = bitsToNextSmallerBlock(blockLänge, inputLength + 2 * 8 + 2 * 8 + i * 8,
                     fixedLength, minPadding, hashLengthField);
             BigDecimal attackSuccessChance = attackSuccessChance(bitsToNextSmallerBlockPsk, modulus);
-            if (attackSuccessChance.multiply(new BigDecimal("" + MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION, new MathContext(256, RoundingMode.DOWN)))
-                    .compareTo(BigDecimal.ONE) > 0) {
+            if (attackSuccessChance.multiply(
+                    new BigDecimal("" + MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION, new MathContext(256,
+                            RoundingMode.DOWN))).compareTo(BigDecimal.ONE) > 0) {
                 pskProbabilityList.add(new RaccoonAttackPskProbabilities(i, bitsToNextSmallerBlockPsk,
                         attackSuccessChance));
             } else {
