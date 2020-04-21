@@ -29,7 +29,7 @@ public class NonDetermnisimEvaluationReport {
         this.vectorHolderList = vectorHolderList;
         if (consideredVulnerable == null || consideredVulnerable == false) {
             for (NondeterministicVectorContainerHolder holder : vectorHolderList) {
-                if (holder.computePValue() < 0.01) {
+                if (holder.computePValue() < 0.0001) {
                     this.consideredVulnerable = true;
                     break;
                 }
