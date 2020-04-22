@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
+import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -43,11 +44,16 @@ public class OcspProbe extends TlsProbe {
         Config tlsConfig = initTlsConfig();
         Certificate serverCertChain = CertificateFetcher.fetchServerCertificate(tlsConfig);
 
-        try {
-            OCSPRequest ocspRequest = new OCSPRequest(serverCertChain);
-            byte[] response = ocspRequest.makeRequest();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (serverCertChain != null) {
+            try {
+                OCSPRequest ocspRequest = new OCSPRequest(serverCertChain);
+                OCSPResponse ocspResponse = ocspRequest.makeRequest();
+                LOGGER.debug("Breakpoint for debugging.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            LOGGER.error("Couldn't fetch certificate chain from server!");
         }
 
         return new OcspResult();
