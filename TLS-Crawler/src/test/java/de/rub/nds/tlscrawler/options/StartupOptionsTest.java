@@ -23,7 +23,6 @@ public class StartupOptionsTest {
     @Test
     public void CLIParsingSmokeTest() {
         String[] options = {
-                "-m",
                 "-i", "myinstance",
                 "-o", "mymongo",
                 "-r", "myredis"
@@ -38,7 +37,6 @@ public class StartupOptionsTest {
 
         assertNotNull(parsed);
 
-        assertEquals(true, parsed.isMaster);
         assertEquals("myinstance", parsed.instanceId);
         assertEquals("mymongo", parsed.mongoDbHost);
         assertEquals("myredis", parsed.redisHost);

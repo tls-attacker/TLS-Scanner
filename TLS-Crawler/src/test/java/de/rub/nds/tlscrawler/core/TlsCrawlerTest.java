@@ -47,7 +47,7 @@ public class TlsCrawlerTest {
 
         List<IScan> scans = Arrays.asList(scan1, scan3);
 
-        this.subject = new TlsCrawler("slaveId", op, pp, scans);
+        this.subject = new TlsCrawlerSlave("slaveId", op, pp, scans,123456);
     }
 
     @Test
@@ -78,8 +78,7 @@ public class TlsCrawlerTest {
 
     @Test
     public void getScanNames() {
-        Assert.assertTrue(this.subject.getScanNames().containsAll(Arrays.asList("Scan1", "Scan3")));
-        Assert.assertEquals(2, this.subject.getScanNames().size());
+        Assert.assertEquals(2, this.subject.getScans().size());
     }
 
     @Test

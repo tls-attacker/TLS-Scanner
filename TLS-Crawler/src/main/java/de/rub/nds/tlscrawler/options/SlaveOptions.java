@@ -7,14 +7,13 @@
  */
 package de.rub.nds.tlscrawler.options;
 
-import com.google.devtools.common.options.Option;
 import com.google.devtools.common.options.Options;
 import com.google.devtools.common.options.OptionsParser;
 import com.google.devtools.common.options.OptionsParsingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Options for the dedicated Slave class.
@@ -22,16 +21,10 @@ import java.util.Collections;
  * @author janis.fliegenschmidt@rub.de
  */
 public class SlaveOptions extends MasterSlaveOptions {
-    private static Logger LOG = LoggerFactory.getLogger(SlaveOptions.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private static OptionsParser parser = OptionsParser.newOptionsParser(SlaveOptions.class);
-
-    @Option(
-            name = "numberOfThreads",
-            help = "Number of worker threads the crawler slave should use.",
-            defaultValue = "1000"
-    )
-    public int numberOfThreads;
 
     /**
      * @return Command Line Argument description.

@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
+import de.rub.nds.tlscrawler.data.IScanTarget;
 import java.util.Collection;
 
 /**
@@ -33,13 +34,8 @@ public interface IOrchestrationProvider {
      */
     Collection<String> getScanTasks(int quantity);
 
-    /**
-     * Adds a scan task to be distributed to a node.
-     *
-     * @param taskId The scan task to add.
-     */
-
     long getNumberOfTasks() throws Exception;
+
     void addScanTask(String taskId);
 
     /**
@@ -48,4 +44,8 @@ public interface IOrchestrationProvider {
      * @param taskIds
      */
     void addScanTasks(Collection<String> taskIds);
+    
+    boolean isBlacklisted(IScanTarget target);
+    
+    public void updateBlacklist();
 }

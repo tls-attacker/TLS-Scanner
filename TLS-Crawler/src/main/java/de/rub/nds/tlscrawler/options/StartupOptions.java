@@ -8,11 +8,11 @@
 package de.rub.nds.tlscrawler.options;
 
 import com.google.devtools.common.options.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.UUID;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Command Line Options at startup.
@@ -20,7 +20,8 @@ import java.util.UUID;
  * @author janis.fliegenschmidt@rub.de
  */
 public class StartupOptions extends OptionsBase {
-    private static Logger LOG = LoggerFactory.getLogger(StartupOptions.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private static OptionsParser parser = OptionsParser.newOptionsParser(StartupOptions.class);
 
@@ -31,14 +32,6 @@ public class StartupOptions extends OptionsBase {
             defaultValue = "false"
     )
     public boolean help;
-
-    @Option(
-            name = "isMaster",
-            abbrev = 'm',
-            help = "Runs TLS-Crawler in Master or Slave mode.",
-            defaultValue = "false"
-    )
-    public boolean isMaster;
 
     @Option(
             name = "instanceId",
@@ -110,44 +103,67 @@ public class StartupOptions extends OptionsBase {
     public String redisPass;
 
     @Option(
-            name = "masterOnly",
-            abbrev = 'y',
-            help = "Spawns a master-only instance, isMaster is implicit.",
-            defaultValue = "false"
-    )
-    public boolean masterOnly;
-
-    @Option(
-            name = "inMemoryOrchestration",
-            abbrev = 'x',
-            help = "Uses an in-memory orchestration provider. Can not be combined with masterOnly.",
-            defaultValue = "false"
-    )
-    public boolean inMemoryOrchestration;
-
-    @Option(
-            name = "testMode",
-            abbrev = 't',
-            help = "Starts TLS Crawler in test mode, using in-memory orchestration and persistence.",
-            defaultValue = "false"
-    )
-    public boolean testMode;
-
-    @Option(
-            name = "multipleTestsMode",
-            abbrev = 'n',
-            help = "Performs multiple scans in a row",
-            defaultValue = "false"
-    )
-    public boolean multipleTestsMode;
-    
-    @Option(
             name = "workspace",
             abbrev = 'w',
             help = "Instances in the same workspace share the same databases.",
             defaultValue = ""
     )
     public String workspace;
+
+    @Option(
+            name = "numberOfThreads",
+            help = "Number of worker threads the crawler slave should use.",
+            defaultValue = "1000"
+    )
+    public int numberOfThreads;
+
+    @Option(
+            name = "parallelProbeThreads",
+            abbrev = 'T',
+            help = "Number of worker threads the crawler slave should use.",
+            defaultValue = "1000"
+    )
+    public int parallelProbeThreads;
+    
+    @Option(
+            name = "timeout",
+            abbrev = 't',
+            help = "The timeout to use inside the TLS-Scanner.",
+            defaultValue = "2000"
+    )
+    public int scannerTimeout;
+    
+    @Option(
+            name = "reexecutions",
+            help = "Number of threads to use inside the TLS-Scanner.",
+            defaultValue = "3"
+    )
+    public int reexecutions;
+    
+    @Option(
+            name = "scansToBeExecuted",
+            abbrev = 'S',
+            help = "The names of the scans that should be exeucted as a comma seperated list.",
+            defaultValue = ""
+    )
+
+    public String scansToBeExecuted;
+
+    @Option(
+            name = "portsToBeScanned",
+            abbrev = 'P',
+            help = "The port that should be scanned.",
+            defaultValue = "443"
+    )
+    public int port;
+
+    @Option(
+            name = "blacklist",
+            abbrev = 'b',
+            help = "The redis key in which the blacklist of IPs/CIDR-Blocks is placed.",
+            defaultValue = "TLSC-blacklist"
+    )
+    public String blacklist;
 
     private static String DEFAULT_WORKSPACE = "default";
 
@@ -165,28 +181,13 @@ public class StartupOptions extends OptionsBase {
         result = Options.parse(StartupOptions.class, args).getOptions();
 
         if (result != null && result.workspace.equals("")) {
-            LOG.warn("No workspace name set. This might cause trouble when using " +
-                    "more than a single instance of TLS-Crawler.");
+            LOG.warn("No workspace name set. Using default workspace: {}", DEFAULT_WORKSPACE);
             result.workspace = DEFAULT_WORKSPACE;
         }
 
         if (result != null && result.instanceId.equals("")) {
             result.instanceId = UUID.randomUUID().toString();
-        }
-
-        if (result != null && result.masterOnly && !result.isMaster) {
-            LOG.warn("Overwrote 'isMaster' to true due to 'masterOnly'.");
-            result.isMaster = true;
-        }
-
-        if (result != null && result.testMode && !result.isMaster) {
-            LOG.warn("Overwrote 'isMaster' to true due to 'testMode' option.");
-            result.isMaster = true;
-        }
-
-        if (result != null && result.testMode && !result.inMemoryOrchestration) {
-            LOG.warn("Overwrote 'inMemoryOrchestration' to true due to 'testMode' option.");
-            result.inMemoryOrchestration = true;
+            LOG.info("InstanceID: {}", result.instanceId);
         }
 
         boolean saneMongoLogin = saneMongoLogin(result.mongoDbUser, result.mongoDbPass, result.mongoDbAuthSource);

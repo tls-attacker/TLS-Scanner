@@ -7,9 +7,8 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
+import de.rub.nds.tlscrawler.data.IScanTarget;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -17,15 +16,23 @@ import redis.clients.jedis.JedisPoolConfig;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import org.apache.commons.net.util.SubnetUtils;
+import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * An orchestration provider implementation using Redis
- * as an external source.
+ * An orchestration provider implementation using Redis as an external source.
  *
  * @author janis.fliegenschmidt@rub.de
  */
 public class RedisOrchestrationProvider implements IOrchestrationProvider {
-    private static Logger LOG = LoggerFactory.getLogger(RedisOrchestrationProvider.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private static int REDIS_TIMEOUT = 30000; // in ms
 
@@ -37,7 +44,11 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
     private JedisPool jedisPool;
 
-    private String taskListName = "invalCurveTasks";
+    private String taskListName = null;
+    private String blackListName = null;
+
+    private Set<String> ipBlackListSet = null;
+    private List<SubnetInfo> cidrBlackList = null;
 
     public RedisOrchestrationProvider(String redisHost, int redisPort, String redisPass) {
         this.redisHost = redisHost;
@@ -45,7 +56,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         this.redisPass = redisPass;
     }
 
-    public void init(String taskListName) throws ConnectException {
+    public void init(String taskListName, String blackListName) throws ConnectException {
         LOG.trace("init() - Enter");
 
         JedisPoolConfig cfg = new JedisPoolConfig();
@@ -67,15 +78,18 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
                 throw new ConnectException("Could not connect to Redis endpoint.");
             }
         }
-
+        LOG.info("Redis Tasks are listed in:" + taskListName);
         this.taskListName = taskListName;
-
+        this.blackListName = blackListName;
         this.initialized = true;
+        LOG.info("Initializing Blacklist");
+        updateBlacklist();
         LOG.trace("init() - Leave");
     }
 
     /**
-     * Convenience method to block method entry in situations where the orchestration provider is not initialized.
+     * Convenience method to block method entry in situations where the
+     * orchestration provider is not initialized.
      */
     private void checkInit() {
         if (!this.initialized) {
@@ -103,6 +117,8 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
     @Override
     public long getNumberOfTasks() {
+        this.checkInit();
+
         long listLength;
         try (Jedis redis = this.jedisPool.getResource()) {
             listLength = redis.llen(this.taskListName);
@@ -113,36 +129,22 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     @Override
     public Collection<String> getScanTasks(int quantity) {
         this.checkInit();
-
-        LOG.trace("getScanTasks() - Enter");
-
         Collection<String> result = new ArrayList<>(quantity);
         try (Jedis jedis = this.jedisPool.getResource()) {
-            for (int i = 0; i < quantity; i++) {
-                // TODO: Bulk operation possible?
-                String scanTaskId = jedis.rpop(this.taskListName);
-
-                if (scanTaskId != null) {
-                    result.add(scanTaskId);
-                } else {
-                    break;
-                }
-            }
+            Set<String> scanTaskIds = jedis.spop(this.taskListName, quantity);
+            return scanTaskIds;
         }
-
-        LOG.trace("getScanTasks() - Leave");
-
-        return result;
     }
 
     @Override
-    public void addScanTask(String taskId) {
+    public void addScanTask(String taskId
+    ) {
         this.checkInit();
 
         LOG.trace("addScanTask()");
 
         try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.lpush(this.taskListName, taskId);
+            jedis.sadd(this.taskListName, taskId);
         }
     }
 
@@ -155,7 +157,38 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         String[] tids = taskIds.toArray(new String[taskIds.size()]);
 
         try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.lpush(this.taskListName, tids);
+            jedis.sadd(this.taskListName, tids);
+        }
+    }
+
+    @Override
+    public synchronized boolean isBlacklisted(IScanTarget target) {
+        if (ipBlackListSet.contains(target.getIp())) {
+            return true;
+        }
+        for (SubnetInfo subnetInfo : cidrBlackList) {
+            if (subnetInfo.isInRange(target.getIp())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public synchronized void updateBlacklist() {
+        ipBlackListSet = new HashSet<>();
+        cidrBlackList = new LinkedList<>();
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            List<String> tempBlacklistStrings = jedis.lrange(blackListName, 0, -1);
+            for (String blackListEntry : tempBlacklistStrings) {
+                if (tempBlacklistStrings.contains("/")) {
+                    SubnetUtils utils = new SubnetUtils(blackListEntry);
+                    cidrBlackList.add(utils.getInfo());
+                } else {
+                    ipBlackListSet.add(blackListEntry);
+                }
+            }
+            LOG.info("Blacklist now contains: {}", tempBlacklistStrings.size());
         }
     }
 }

@@ -7,13 +7,13 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.IScanTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.rub.nds.tlscrawler.data.ScanTask;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class implements the synchronization logic to distribute tasks between
@@ -22,20 +22,21 @@ import java.util.List;
  * @author janis.fliegenschmidt@rub.de
  */
 public class SynchronizedTaskRouter {
-    private static Logger LOG = LoggerFactory.getLogger(SynchronizedTaskRouter.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private final Object _syncrootTodo = new Object();
     private final Object _syncrootFinished = new Object();
 
-    private List<IScanTask> todo;
-    private List<IScanTask> finished;
+    private List<ScanTask> todo;
+    private List<ScanTask> finished;
 
     public SynchronizedTaskRouter() {
         this.todo = new LinkedList<>();
         this.finished = new LinkedList<>();
     }
 
-    public void addTodo(IScanTask todo) {
+    public void addTodo(ScanTask todo) {
         LOG.trace("addTodo()");
 
         synchronized (_syncrootTodo) {
@@ -43,7 +44,7 @@ public class SynchronizedTaskRouter {
         }
     }
 
-    public void addTodo(Collection<IScanTask> todo) {
+    public void addTodo(Collection<ScanTask> todo) {
         LOG.trace("addTodo()");
 
         synchronized (_syncrootTodo) {
@@ -51,10 +52,10 @@ public class SynchronizedTaskRouter {
         }
     }
 
-    public IScanTask getTodo() {
+    public ScanTask getTodo() {
         LOG.trace("getTodo()");
 
-        IScanTask result = null;
+        ScanTask result = null;
         synchronized (_syncrootTodo) {
             if (this.todo.size() > 0) {
                 result = this.todo.remove(0);
@@ -75,7 +76,7 @@ public class SynchronizedTaskRouter {
         return result;
     }
 
-    public void addFinished(IScanTask finished) {
+    public void addFinished(ScanTask finished) {
         LOG.trace("addFinished()");
 
         synchronized (_syncrootFinished) {
@@ -83,10 +84,10 @@ public class SynchronizedTaskRouter {
         }
     }
 
-    public List<IScanTask> getFinished() {
+    public List<ScanTask> getFinished() {
         LOG.trace("getFinished()");
 
-        List<IScanTask> result = new LinkedList<>();
+        List<ScanTask> result = new LinkedList<>();
         synchronized (_syncrootFinished) {
             while (!this.finished.isEmpty()) {
                 result.add(this.finished.remove(0));

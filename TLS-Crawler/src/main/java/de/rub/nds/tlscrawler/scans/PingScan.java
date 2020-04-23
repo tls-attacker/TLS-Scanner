@@ -7,12 +7,8 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
-import de.rub.nds.tlscrawler.data.IScanResult;
 import de.rub.nds.tlscrawler.data.IScanTarget;
-import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.utility.Tuple;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -22,6 +18,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 
 /**
  * A simple scan testing whether a host is available at a given IP address.
@@ -29,7 +28,8 @@ import java.util.stream.Collectors;
  * @author janis.fliegenschmidt@rub.de
  */
 public class PingScan implements IScan {
-    private static Logger LOG = LoggerFactory.getLogger(PingScan.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private static final String name = "ping_scan";
     private static final int timeOutMs = 5000;
@@ -40,32 +40,30 @@ public class PingScan implements IScan {
     }
 
     @Override
-    public IScanResult scan(IScanTarget target) {
+    public Document scan(IScanTarget target) {
         LOG.trace("scan()");
 
-        IScanResult result = new ScanResult(this.getName());
-        result.addTimestamp("timestamp", Instant.now());
-        result.addInteger("timeout", this.timeOutMs);
+        Document document = new Document();
+        document.put("timestamp", Instant.now());
+        document.put("timeout", this.timeOutMs);
 
         Collection<Tuple> portwiseScanResult = new LinkedList<>();
-        for (Integer port : target.getPorts()) {
-            portwiseScanResult.add(Tuple.create(port, isReachable(target.getIp(), port)));
-        }
+        portwiseScanResult.add(Tuple.create(target.getPort(), isReachable(target.getIp(), target.getPort())));
 
         List<Integer> reachablePorts = portwiseScanResult.stream()
-                .filter(x -> (boolean)x.getSecond())
-                .map(x -> (int)x.getFirst())
+                .filter(x -> (boolean) x.getSecond())
+                .map(x -> (int) x.getFirst())
                 .collect(Collectors.toList());
 
         List<Integer> unreachablePorts = portwiseScanResult.stream()
-                .filter(x -> !(boolean)x.getSecond())
-                .map(x -> (int)x.getFirst())
+                .filter(x -> !(boolean) x.getSecond())
+                .map(x -> (int) x.getFirst())
                 .collect(Collectors.toList());
 
-        result.addIntegerArray("reachablePorts", reachablePorts);
-        result.addIntegerArray("unreachablePorts", unreachablePorts);
+        document.put("reachablePorts", reachablePorts);
+        document.put("unreachablePorts", unreachablePorts);
 
-        return result;
+        return document;
     }
 
     // Ping, Java style. I. e., 1 of approx. 10^10 possible implementations with unique advantages and disadvantages to

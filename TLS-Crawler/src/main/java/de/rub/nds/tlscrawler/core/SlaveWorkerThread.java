@@ -7,17 +7,14 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.IScanResult;
-import de.rub.nds.tlscrawler.data.IScanTask;
-import de.rub.nds.tlscrawler.data.ScanResult;
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.scans.IScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.Instant;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 
 /**
  * Worker Thread for a more sophisticated TLS crawler slave implementation.
@@ -27,7 +24,8 @@ import java.time.Instant;
  * @author janis.fliegenschmidt@rub.de
  */
 public class SlaveWorkerThread extends Thread {
-    private static Logger LOG = LoggerFactory.getLogger(SlaveWorkerThread.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     private final SynchronizedTaskRouter synchronizedTaskRouter;
     private final String slaveInstanceId;
@@ -35,8 +33,8 @@ public class SlaveWorkerThread extends Thread {
     private IScanProvider scanProvider;
 
     public SlaveWorkerThread(String slaveInstanceId,
-                             SynchronizedTaskRouter synchronizedTaskRouter,
-                             IScanProvider scanProvider) {
+            SynchronizedTaskRouter synchronizedTaskRouter,
+            IScanProvider scanProvider) {
         this.slaveInstanceId = slaveInstanceId;
         this.synchronizedTaskRouter = synchronizedTaskRouter;
         this.scanProvider = scanProvider;
@@ -44,21 +42,15 @@ public class SlaveWorkerThread extends Thread {
 
     @Override
     public void run() {
-        LOG.info("run() started");
-
         for (;;) {
-            IScanTask raw = this.synchronizedTaskRouter.getTodo();
+            ScanTask todo = this.synchronizedTaskRouter.getTodo();
 
-            if (raw != null) {
-                LOG.trace(String.format("Started work on %s.", raw.getId()));
-                this.setName("Thread - " + raw.getTargetIp());
-
-                ScanTask todo = ScanTask.copyFrom(raw);
-
-                todo.setStartedTimestamp(Instant.now());
+            if (todo != null) {
+                LOG.trace("Started work on {}.", todo.getId());
+                this.setName("Thread - " + todo.getScanTarget());
 
                 for (String scan : todo.getScans()) {
-                    IScanResult result;
+                    Document result;
 
                     try {
                         IScan scanInstance = this.scanProvider.getScanByName(scan);
@@ -67,12 +59,10 @@ public class SlaveWorkerThread extends Thread {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         e.printStackTrace(new PrintStream(out));
                         String str = new String(out.toByteArray());
-
-                        result = new ScanResult(scan);
-                        result.addString("failedWithException", str);
+                        result = new Document("failedWithException", str);
                     }
 
-                    todo.addResult(result);
+                    todo.setResult(result);
                 }
 
                 todo.setCompletedTimestamp(Instant.now());

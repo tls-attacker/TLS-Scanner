@@ -13,18 +13,21 @@ import com.mongodb.ServerAddress;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
 import de.rub.nds.tlscrawler.options.SlaveOptions;
+import de.rub.nds.tlscrawler.options.StartupOptions;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.ScanFactory;
+import de.rub.nds.tlscrawler.scans.TlsScan;
 import de.rub.nds.tlscrawler.utility.Tuple;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.ConnectException;
 import java.util.Collection;
+import java.util.LinkedList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Slave instance main class.
@@ -32,13 +35,14 @@ import java.util.Collection;
  * @author janis.fliegenschmidt@rub.de
  */
 public class Slave {
-    private static Logger LOG = LoggerFactory.getLogger(Slave.class);
+
+    private static Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) {
-        SlaveOptions options;
+        StartupOptions options;
 
         try {
-            options = SlaveOptions.parseOptions(args);
+            options = StartupOptions.parseOptions(args);
         } catch (OptionsParsingException ex) {
             LOG.error("Command Line Options could not be parsed.");
             options = null;
@@ -50,8 +54,9 @@ public class Slave {
             System.exit(0);
         }
 
-        Collection<IScan> scans = ScanFactory.getInstance().getBuiltInScans();
-        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options);
+        Collection<IScan> scans = new LinkedList<>();
+        scans.add(new TlsScan(options.scannerTimeout, options.parallelProbeThreads, options.reexecutions));
+        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options, "defaultScan");
 
         ITlsCrawlerSlave slave = new TlsCrawlerSlave(
                 options.instanceId,
@@ -76,8 +81,7 @@ public class Slave {
         }).start();
     }
 
-    static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(SlaveOptions options) {
-
+    static Tuple<IOrchestrationProvider, IPersistenceProvider> setUpProviders(StartupOptions options, String scanName) {
         LOG.trace("setUpProviders()");
 
         if (options == null) {
@@ -88,7 +92,7 @@ public class Slave {
         IPersistenceProvider persistenceProvider;
 
         String workspace = options.workspace;
-        String workspaceWithPrefix = String.format("TLSC-%s", workspace);
+        String workspaceWithPrefix = String.format("TLSC-dev-%s", workspace);
 
         ServerAddress address = new ServerAddress(options.mongoDbHost, options.mongoDbPort);
         MongoCredential credential = null;
@@ -100,24 +104,24 @@ public class Slave {
                     options.mongoDbPass.toCharArray());
         }
 
-        MongoPersistenceProvider mpp = new MongoPersistenceProvider(address, credential);
-        mpp.init(workspaceWithPrefix);
+        MongoPersistenceProvider mongoPersistenceProvider = new MongoPersistenceProvider(address, credential);
+        mongoPersistenceProvider.init(workspaceWithPrefix, scanName);
 
-        persistenceProvider = mpp;
+        persistenceProvider = mongoPersistenceProvider;
 
-        RedisOrchestrationProvider rop = new RedisOrchestrationProvider(
+        RedisOrchestrationProvider redisOrchestrationProvider = new RedisOrchestrationProvider(
                 options.redisHost,
                 options.redisPort,
                 options.redisPass);
 
         try {
-            rop.init(workspaceWithPrefix);
+            redisOrchestrationProvider.init(workspaceWithPrefix, options.blacklist);
         } catch (ConnectException e) {
-            LOG.error("Could not connect to redis.");
+            LOG.error("Could not connect to redis.", e);
             System.exit(0);
         }
 
-        orchestrationProvider = rop;
+        orchestrationProvider = redisOrchestrationProvider;
 
         return Tuple.create(orchestrationProvider, persistenceProvider);
     }
