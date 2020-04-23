@@ -14,7 +14,7 @@ import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.report.after.statistic.padding.NondeterministicVectorContainerHolder;
+import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NondeterministicVectorContainerHolder;
 import java.util.HashSet;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;

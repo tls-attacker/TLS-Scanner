@@ -30,7 +30,7 @@ import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.report.after.statistic.padding.NonDetermnisimEvaluationReport;
+import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NonDetermnisimEvaluationReport;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
