@@ -94,7 +94,8 @@ public class TrustPlatform {
      * Returns the trust anchor as a CertificateEntry for the Subject.If the
      * subject is not trusted or not found null is returned
      *
-     * @param subject The subject to search for
+     * @param subject
+     *            The subject to search for
      * @return The relevant CertificateEntry or null if not found
      */
     public CertificateEntry getTrustedCertificateEntry(String subject) {
@@ -110,7 +111,8 @@ public class TrustPlatform {
      * Returns the trust anchor as a CertificateEntry for the Subject.If the
      * subject is not trusted or not found null is returned
      *
-     * @param subject The subject to search for
+     * @param subject
+     *            The subject to search for
      * @return The relevant CertificateEntry or null if not found
      */
     public CertificateEntry getBlacklistedCertificateEntry(String subject) {

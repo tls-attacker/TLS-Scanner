@@ -43,9 +43,10 @@ public class SiteReportRater {
     /**
      * Returns a generic SiteReportRater
      *
-     * @param recommendationLanguage Language of the recommendations. If no
-     * language file can be found for selected language a default recommendation
-     * file in english is returned
+     * @param recommendationLanguage
+     *            Language of the recommendations. If no language file can be
+     *            found for selected language a default recommendation file in
+     *            english is returned
      * @return
      * @throws JAXBException
      */

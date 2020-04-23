@@ -178,7 +178,7 @@ public class SiteReport extends Observable implements Serializable {
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
         this.putResult(property,
                 Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
-                : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
+                        : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
     public synchronized void putResult(DrownVulnerabilityType result) {

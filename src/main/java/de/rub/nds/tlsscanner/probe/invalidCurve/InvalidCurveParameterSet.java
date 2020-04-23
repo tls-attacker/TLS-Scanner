@@ -106,7 +106,8 @@ public class InvalidCurveParameterSet {
     }
 
     /**
-     * @param attackInRenegotiation the attackInRenegotiation to set
+     * @param attackInRenegotiation
+     *            the attackInRenegotiation to set
      */
     public void setAttackInRenegotiation(boolean attackInRenegotiation) {
         this.attackInRenegotiation = attackInRenegotiation;
