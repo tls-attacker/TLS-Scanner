@@ -137,8 +137,8 @@ public class HttpHeaderResult extends ProbeResult {
                 }
                 if (header.getHeaderName().getValue().equals("Content-Encoding")) {
                     String compressionHeaderValue = header.getHeaderValue().getValue();
-                    String[] compressionAlgorithms = { "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma",
-                            "xz" };
+                    String[] compressionAlgorithms = {"compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma",
+                        "xz"};
                     for (String compression : compressionAlgorithms) {
                         if (compressionHeaderValue.contains(compression)) {
                             vulnerableBreach = TestResult.TRUE;

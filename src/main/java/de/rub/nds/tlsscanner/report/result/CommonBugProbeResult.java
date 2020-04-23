@@ -76,7 +76,6 @@ public class CommonBugProbeResult extends ProbeResult {
     // like really big
     // client hello
     // messages
-
     public CommonBugProbeResult(TestResult extensionIntolerance, TestResult cipherSuiteIntolerance,
             TestResult cipherSuiteLengthIntolerance512, TestResult compressionIntolerance,
             TestResult versionIntolerance, TestResult alpnIntolerance, TestResult clientHelloLengthIntolerance,

@@ -16,8 +16,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder = { "analyzedProperty", "shortName", "shortDescription", "detailedDescription", "testDocumentation",
-        "links", "propertyRecommendations" })
+@XmlType(propOrder = {"analyzedProperty", "shortName", "shortDescription", "detailedDescription", "testDocumentation",
+    "links", "propertyRecommendations"})
 public class Recommendation {
 
     static final String NO_INFORMATION_FOUND = "No detailed information available";

@@ -149,7 +149,7 @@ public class MacProbe extends TlsProbe {
     }
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
-        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
+        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[]{1}, xorPosition);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
                 RunningModeType.CLIENT);
         HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
@@ -188,12 +188,12 @@ public class MacProbe extends TlsProbe {
                 RunningModeType.CLIENT);
         FinishedMessage lastSendMessage = (FinishedMessage) WorkflowTraceUtil.getLastSendMessage(
                 HandshakeMessageType.FINISHED, trace);
-        lastSendMessage.setVerifyData(Modifiable.xor(new byte[] { 01 }, xorPosition));
+        lastSendMessage.setVerifyData(Modifiable.xor(new byte[]{01}, xorPosition));
         return trace;
     }
 
     private WorkflowTrace getFinishedTrace(Config config, int xorPosition) {
-        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
+        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[]{1}, xorPosition);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
                 RunningModeType.CLIENT);
         SendAction lastSendingAction = (SendAction) trace.getLastSendingAction();
