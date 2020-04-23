@@ -97,22 +97,6 @@ public class PaddingOracleCipherSuiteFingerprint {
     }
 
     private double computePValue() {
-        // Map<Vector, VectorContainer> vectorContainerMap = new HashMap<>();
-        // for (VectorResponse vectorResponse : responseMap) {
-        // VectorContainer container =
-        // vectorContainerMap.get(vectorResponse.getVector());
-        // if (container == null) {
-        // List<ResponseFingerprint> responseFingerprintList = new
-        // LinkedList<>();
-        // responseFingerprintList.add(vectorResponse.getFingerprint());
-        // container = new VectorContainer(vectorResponse.getVector(),
-        // responseFingerprintList);
-        // vectorContainerMap.put(vectorResponse.getVector(), container);
-        // } else {
-        // container.addResponseFingerprint(vectorResponse.getFingerprint());
-        // }
-        // }
-        //
         NondeterministicVectorContainerHolder holder = new NondeterministicVectorContainerHolder(responseMap);
         return holder.computePValue();
     }
