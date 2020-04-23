@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import javax.security.auth.x500.X500Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +65,7 @@ public class TrustAnchorManager {
             trustPlatformList.add(readPlatform("openjdk.yaml"));
             trustPlatformList.add(readPlatform("oracle_java.yaml"));
             trustPlatformList.add(readPlatform("apple.yaml"));
-        } catch (IOException ex) {
+        } catch (IOException | IllegalArgumentException ex) {
             LOGGER.error("Could not load trusted platforms", ex);
         }
         trustAnchors = new HashMap<>();

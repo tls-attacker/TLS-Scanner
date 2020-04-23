@@ -56,11 +56,11 @@ public class CertificateReport {
         return certificate;
     }
 
-    public X509CertificateHolder getCertificateHolder() {
+    public X509CertificateHolder convertToCertificateHolder() {
         return new X509CertificateHolder(certificate);
     }
 
-    public X509Certificate getX509Certificate() {
+    public X509Certificate convertToX509Certificate() {
         try {
             return new X509CertificateObject(certificate);
         } catch (CertificateParsingException ex) {

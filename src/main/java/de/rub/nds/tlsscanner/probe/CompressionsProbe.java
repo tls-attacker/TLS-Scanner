@@ -40,8 +40,13 @@ public class CompressionsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<CompressionMethod> compressions = getSupportedCompressionMethods();
-        return new CompressionsResult(compressions);
+        try {
+            List<CompressionMethod> compressions = getSupportedCompressionMethods();
+            return new CompressionsResult(compressions);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new CompressionsResult(null);
+        }
     }
 
     private List<CompressionMethod> getSupportedCompressionMethods() {
@@ -57,6 +62,7 @@ public class CompressionsProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);

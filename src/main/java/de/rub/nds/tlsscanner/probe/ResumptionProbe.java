@@ -50,6 +50,7 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setEnforceSettings(false);
             tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopActionsAfterIOException(true);
             tlsConfig.setStopReceivingAfterFatal(true);
             tlsConfig.setStopActionsAfterFatal(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_RESUMPTION);
@@ -63,7 +64,8 @@ public class ResumptionProbe extends TlsProbe {
             executeState(state);
             return new ResumptionResult(state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE
                     : TestResult.FALSE);
-        } catch (Exception e) {
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST);
         }
     }

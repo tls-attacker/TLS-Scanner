@@ -99,7 +99,7 @@ public class CertificateChain {
         // find leaf certificate
         CertificateReport leafReport = null;
         for (CertificateReport report : certificateReportList) {
-            if (isCertificateSuiteableForHost(report.getX509Certificate(), uri)) {
+            if (isCertificateSuiteableForHost(report.convertToX509Certificate(), uri)) {
                 report.setLeafCertificate(true);
                 if (leafReport == null) {
                     leafReport = report;
@@ -140,13 +140,13 @@ public class CertificateChain {
                     // Could not find issuer for certificate - check if its in
                     // the trust store
                     if (TrustAnchorManager.getInstance().isTrustAnchor(
-                            tempCertificate.getX509Certificate().getIssuerX500Principal())) {
+                            tempCertificate.convertToX509Certificate().getIssuerX500Principal())) {
                         // Certificate is issued by trust anchor
                         LOGGER.debug("Could find issuer");
                         chainIsComplete = true;
                         org.bouncycastle.asn1.x509.Certificate trustAnchorCertificate = TrustAnchorManager
                                 .getInstance().getTrustAnchorCertificate(
-                                        tempCertificate.getX509Certificate().getIssuerX500Principal());
+                                        tempCertificate.convertToX509Certificate().getIssuerX500Principal());
                         if (trustAnchorCertificate != null) {
                             CertificateReport trustAnchorReport = CertificateReportGenerator
                                     .generateReport(trustAnchorCertificate);
@@ -163,7 +163,7 @@ public class CertificateChain {
             }
         } else {
             chainIsOrdered = true; // there is no leaf certificate - so i guess
-                                   // this is ordered?
+            // this is ordered?
             containsValidLeaf = false;
         }
         containsNotYetValid = false;
@@ -341,11 +341,11 @@ public class CertificateChain {
     private CertPathValidationResult evaluateGeneralTrust(List<CertificateReport> orderedCertificateChain) {
         if (orderedCertificateChain.size() < 2) {
             return null;// Emtpy chains & only root ca's are considered not
-                        // generally trusted i guess
+            // generally trusted i guess
         }
         X509CertificateHolder[] certPath = new X509CertificateHolder[orderedCertificateChain.size()];
         for (int i = 0; i < orderedCertificateChain.size(); i++) {
-            certPath[i] = orderedCertificateChain.get(i).getCertificateHolder();
+            certPath[i] = new X509CertificateHolder(orderedCertificateChain.get(i).getCertificate());
         }
         CertPath path = new CertPath(certPath);
         X509ContentVerifierProviderBuilder verifier = new JcaX509ContentVerifierProviderBuilder()

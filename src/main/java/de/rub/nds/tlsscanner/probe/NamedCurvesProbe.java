@@ -39,13 +39,19 @@ public class NamedCurvesProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<NamedGroup> groups = getSupportedNamedGroups();
-        return new NamedGroupResult(groups);
+        try {
+            List<NamedGroup> groups = getSupportedNamedGroups();
+            return new NamedGroupResult(groups);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new NamedGroupResult(null);
+        }
     }
 
     private List<NamedGroup> getSupportedNamedGroups() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);

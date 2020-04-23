@@ -40,8 +40,14 @@ public class ExtensionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
-        return new ExtensionResult(allSupportedExtensions);
+        try {
+            List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
+            return new ExtensionResult(allSupportedExtensions);
+
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+        }
+        return new ExtensionResult(null);
     }
 
     public List<ExtensionType> getSupportedExtensions() {
@@ -82,7 +88,7 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSessionTicketTLSExtension(true);
         tlsConfig.setAddTruncatedHmacExtension(true);
-
+        tlsConfig.setStopActionsAfterIOException(true);
         List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(nameGroups);
         State state = new State(tlsConfig);

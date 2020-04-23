@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -29,9 +28,7 @@ public class Tls13Result extends ProbeResult {
     private final List<CipherSuite> supportedCipherSuites;
 
     private final TestResult supportsSECPCompression;
-
     private final TestResult issuesSessionTicket;
-
     private final TestResult supportsPskDhe;
 
     public Tls13Result(List<ProtocolVersion> supportedProtocolVersion,

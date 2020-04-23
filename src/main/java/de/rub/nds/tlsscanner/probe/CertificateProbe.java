@@ -38,27 +38,38 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddECPointFormatExtension(true);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        List<CipherSuite> toTestList = new LinkedList<>();
-        toTestList.addAll(Arrays.asList(CipherSuite.values()));
-        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(namedGroups);
-        List<SignatureAndHashAlgorithm> sigHashAlgos = Arrays.asList(SignatureAndHashAlgorithm.values());
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashAlgos);
-        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
-        tlsConfig.setStopActionsAfterFatal(true);
-        Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
-        CertificateChain chain = new CertificateChain(serverCert, tlsConfig.getDefaultClientConnection().getHostname());
-        return new CertificateResult(chain, serverCert);
+        try {
+            Config tlsConfig = getScannerConfig().createConfig();
+            tlsConfig.setQuickReceive(true);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopActionsAfterIOException(true);
+            tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+            tlsConfig.setAddServerNameIndicationExtension(true);
+            tlsConfig.setAddECPointFormatExtension(true);
+            tlsConfig.setAddEllipticCurveExtension(true);
+            List<CipherSuite> toTestList = new LinkedList<>();
+            toTestList.addAll(Arrays.asList(CipherSuite.values()));
+            List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
+            tlsConfig.setDefaultClientNamedGroups(namedGroups);
+            List<SignatureAndHashAlgorithm> sigHashAlgos = Arrays.asList(SignatureAndHashAlgorithm.values());
+            tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashAlgos);
+            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+            tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
+            tlsConfig.setStopActionsAfterFatal(true);
+            Certificate serverCert = CertificateFetcher.fetchServerCertificate(tlsConfig);
+            if (serverCert != null) {
+                CertificateChain chain = new CertificateChain(serverCert, tlsConfig.getDefaultClientConnection()
+                        .getHostname());
+                return new CertificateResult(chain);
+            } else {
+                return getCouldNotExecuteResult();
+            }
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new CertificateResult(null);
+        }
     }
 
     @Override
@@ -72,6 +83,6 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CertificateResult(null, null);
+        return new CertificateResult(null);
     }
 }

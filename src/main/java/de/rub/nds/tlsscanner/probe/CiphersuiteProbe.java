@@ -39,6 +39,7 @@ public class CiphersuiteProbe extends TlsProbe {
     public CiphersuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CIPHERSUITE, config, 0);
         protocolVersions = new LinkedList<>();
+        protocolVersions.add(ProtocolVersion.SSL3);
         protocolVersions.add(ProtocolVersion.TLS10);
         protocolVersions.add(ProtocolVersion.TLS11);
         protocolVersions.add(ProtocolVersion.TLS12);
@@ -46,25 +47,35 @@ public class CiphersuiteProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<VersionSuiteListPair> pairLists = new LinkedList<>();
-        for (ProtocolVersion version : protocolVersions) {
-            LOGGER.debug("Testing:" + version.name());
-            List<CipherSuite> toTestList = new LinkedList<>();
-            toTestList.addAll(Arrays.asList(CipherSuite.values()));
-            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            List<CipherSuite> versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-            if (versionSupportedSuites.isEmpty()) {
-                versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
-            }
-            if (versionSupportedSuites.size() > 0) {
-                pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
+        try {
+            List<VersionSuiteListPair> pairLists = new LinkedList<>();
+            for (ProtocolVersion version : protocolVersions) {
+                LOGGER.debug("Testing:" + version.name());
+                List<CipherSuite> toTestList = new LinkedList<>();
+                List<CipherSuite> versionSupportedSuites = new LinkedList<>();
+                if (version == ProtocolVersion.SSL3) {
+                    toTestList.addAll(CipherSuite.SSL3_SUPPORTED_CIPHERSUITES);
+                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
+                } else {
+                    toTestList.addAll(Arrays.asList(CipherSuite.values()));
+                    toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+                    toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
+                    if (versionSupportedSuites.isEmpty()) {
+                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
+                    }
+                }
+                if (versionSupportedSuites.size() > 0) {
+                    pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
+                }
+
             }
 
+            return new CiphersuiteProbeResult(pairLists);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new CiphersuiteProbeResult(null);
         }
-
-        return new CiphersuiteProbeResult(pairLists);
-
     }
 
     public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(ProtocolVersion version) {
@@ -80,6 +91,7 @@ public class CiphersuiteProbe extends TlsProbe {
         do {
             Config config = getScannerConfig().createConfig();
             config.setDefaultClientSupportedCiphersuites(listWeSupport);
+            config.setDefaultSelectedProtocolVersion(version);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
             config.setAddServerNameIndicationExtension(true);
@@ -98,6 +110,7 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
+            config.setStopActionsAfterIOException(true);
             config.setStopActionsAfterFatal(true);
             List<NamedGroup> namedGroup = new LinkedList<>();
             namedGroup.addAll(Arrays.asList(NamedGroup.values()));

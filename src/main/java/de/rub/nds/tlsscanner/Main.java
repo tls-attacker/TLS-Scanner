@@ -45,11 +45,6 @@ public class Main {
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
                 LOGGER.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n");
-                if (!config.getGeneralDelegate().isDebug() && !config.isNoProgressbar()) {
-                    // ANSI escape sequences to erase the progressbar
-                    ConsoleLogger.CONSOLE
-                            .info(AnsiEscapeSequence.ANSI_ONE_LINE_UP + AnsiEscapeSequence.ANSI_ERASE_LINE);
-                }
                 ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: "
                         + ((System.currentTimeMillis() - time) / 1000) + "s\n"
                         + report.getFullReport(config.getReportDetail(), !config.isNoColor()));

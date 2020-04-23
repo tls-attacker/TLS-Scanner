@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.report.after;
 
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.TestResult;
@@ -25,9 +26,8 @@ public class DhValueAfterProbe extends AfterProbe {
     @Override
     public void analyze(SiteReport report) {
         ExtractedValueContainer publicKeyContainer = report.getExtractedValueContainerMap().get(
-                TrackableValueType.DH_PUBKEY);
-        ExtractedValueContainer modulusContainer = report.getExtractedValueContainerMap().get(
-                TrackableValueType.DH_MODULUS);
+                TrackableValueType.DHE_PUBLICKEY);
+
         List<CommonDhValues> loadedCommonDhValues = CommonDhLoader.loadCommonDhValues();
         Set<CommonDhValues> usedCommonValues = new HashSet<>();
         TestResult onlyPrime = TestResult.TRUE;
@@ -50,24 +50,25 @@ public class DhValueAfterProbe extends AfterProbe {
             }
         }
 
-        if (modulusContainer != null && !modulusContainer.getExtractedValueList().isEmpty()) {
-            for (Object o : modulusContainer.getExtractedValueList()) {
-                if (onlyPrime == TestResult.TRUE && !((BigInteger) o).isProbablePrime(30)) {
+        if (publicKeyContainer != null && !publicKeyContainer.getExtractedValueList().isEmpty()) {
+            for (Object o : publicKeyContainer.getExtractedValueList()) {
+                CustomDhPublicKey publicKey = (CustomDhPublicKey) o;
+                if (onlyPrime == TestResult.TRUE && !publicKey.getModulus().isProbablePrime(30)) {
                     onlyPrime = TestResult.FALSE;
                 }
-                if (onlySafePrime == TestResult.TRUE && !isSafePrime((BigInteger) o)) {
+                if (onlySafePrime == TestResult.TRUE && !isSafePrime(publicKey.getModulus())) {
                     onlySafePrime = TestResult.FALSE;
                 }
 
                 for (CommonDhValues value : loadedCommonDhValues) {
-                    if (value.getModulus().equals(o)) {
+                    if (value.getModulus().equals(publicKey.getModulus())) {
                         usedCommonValues.add(value);
                         break;
                     }
                 }
 
-                if (shortestBitLength > ((BigInteger) o).bitLength()) {
-                    shortestBitLength = ((BigInteger) o).bitLength();
+                if (shortestBitLength > ((BigInteger) publicKey.getModulus()).bitLength()) {
+                    shortestBitLength = ((BigInteger) publicKey.getModulus()).bitLength();
                 }
             }
             if (usedCommonValues.size() > 0) {

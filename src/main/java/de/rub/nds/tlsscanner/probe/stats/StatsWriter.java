@@ -25,7 +25,6 @@ public class StatsWriter {
     public StatsWriter() {
         extractorList = new LinkedList<>();
         extractorList.add(new RandomExtractor());
-        extractorList.add(new DhModulusExtractor());
         extractorList.add(new DhPublicKeyExtractor());
         extractorList.add(new EcPublicKeyExtractor());
     }

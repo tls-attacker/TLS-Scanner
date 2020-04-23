@@ -20,8 +20,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ECPointFormatResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -37,44 +35,48 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
-        ;
-        for (CipherSuite cipherSuite : CipherSuite.values()) {
-            if (cipherSuite.name().contains("TLS_ECDH")) {
-                ourECDHCipherSuites.add(cipherSuite);
+        try {
+            List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
+            for (CipherSuite cipherSuite : CipherSuite.values()) {
+                if (cipherSuite.name().contains("TLS_ECDH")) {
+                    ourECDHCipherSuites.add(cipherSuite);
+                }
             }
-        }
 
-        List<NamedGroup> groups = new LinkedList<>();
-        groups.addAll(Arrays.asList(NamedGroup.values()));
-        Config config = getScannerConfig().createConfig();
-        config.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
-        config.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        config.setEnforceSettings(true);
-        config.setAddServerNameIndicationExtension(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
-        config.setAddRenegotiationInfoExtension(true);
-        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        config.setQuickReceive(true);
-        config.setEarlyStop(true);
-        config.setStopActionsAfterFatal(true);
-        config.setDefaultClientNamedGroups(groups);
-        State state = new State(config);
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            if (state.getTlsContext().getServerPointFormatsList() != null) {
-                return (new ECPointFormatResult(state.getTlsContext().getServerPointFormatsList()));
-            } else {
-                // no extension means only uncompressed
-                List<ECPointFormat> format = new LinkedList<>();
-                format.add(ECPointFormat.UNCOMPRESSED);
-                return (new ECPointFormatResult(format));
+            List<NamedGroup> groups = new LinkedList<>();
+            groups.addAll(Arrays.asList(NamedGroup.values()));
+            Config config = getScannerConfig().createConfig();
+            config.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
+            config.setHighestProtocolVersion(ProtocolVersion.TLS12);
+            config.setEnforceSettings(true);
+            config.setAddServerNameIndicationExtension(true);
+            config.setAddEllipticCurveExtension(true);
+            config.setAddECPointFormatExtension(true);
+            config.setAddSignatureAndHashAlgorithmsExtension(true);
+            config.setAddRenegotiationInfoExtension(true);
+            config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+            config.setQuickReceive(true);
+            config.setEarlyStop(true);
+            config.setStopActionsAfterFatal(true);
+            config.setDefaultClientNamedGroups(groups);
+            State state = new State(config);
+            executeState(state);
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+                if (state.getTlsContext().getServerPointFormatsList() != null) {
+                    return (new ECPointFormatResult(state.getTlsContext().getServerPointFormatsList()));
+                } else {
+                    // no extension means only uncompressed
+                    List<ECPointFormat> format = new LinkedList<>();
+                    format.add(ECPointFormat.UNCOMPRESSED);
+                    return (new ECPointFormatResult(format));
+                }
             }
+            LOGGER.debug("Unable to determine supported point formats");
+            return (new ECPointFormatResult(null));
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new ECPointFormatResult(null);
         }
-        LOGGER.debug("Unable to determine supported point formats");
-        return (new ECPointFormatResult(null));
     }
 
     @Override

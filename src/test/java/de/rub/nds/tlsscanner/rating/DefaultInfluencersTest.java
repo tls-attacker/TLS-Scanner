@@ -244,8 +244,9 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER,
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500), new PropertyResultRatingInfluencer(
                         TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_DROWN, new PropertyResultRatingInfluencer(
-                TestResult.TRUE, -800, 500), new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN,
+                new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500), new PropertyResultRatingInfluencer(
+                        TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
                 new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000), new PropertyResultRatingInfluencer(
                         TestResult.FALSE, 0)));
