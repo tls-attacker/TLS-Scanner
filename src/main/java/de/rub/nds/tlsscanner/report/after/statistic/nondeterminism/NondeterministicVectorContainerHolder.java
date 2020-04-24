@@ -103,8 +103,6 @@ public class NondeterministicVectorContainerHolder {
     public double computePValue() {
 
         if (isFisherExactUsable()) {
-            double chi = computePValueChiSquared();
-
             LOGGER.debug("Computing P value based on fisher's exact test");
             double fisher = computePValueFisherExact();
             return fisher;
@@ -134,8 +132,8 @@ public class NondeterministicVectorContainerHolder {
             responseA = container2.getDistinctResponsesCounterList().get(0).getFingerprint();
             responseB = container2.getDistinctResponsesCounterList().get(1).getFingerprint();
         } else {
-            // We only have 1 response - this is p=1
-            return 1;
+            responseA = container1.getDistinctResponsesCounterList().get(0).getFingerprint();
+            responseB = container2.getDistinctResponsesCounterList().get(0).getFingerprint();
         }
         int input1ResponseA = 0;
         int input1ResponseB = 0;
