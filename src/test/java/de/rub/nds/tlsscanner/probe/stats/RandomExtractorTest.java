@@ -41,7 +41,7 @@ public class RandomExtractorTest {
     private RandomExtractor extractor;
     private final Logger LOGGER = LogManager.getLogger();
     private final byte[] GENERATED_RANDOM;
-    private final static byte[] STATIC_RANDOM = new byte[] { 0, 1, 2, 3, 4, 5, };
+    private final static byte[] STATIC_RANDOM = new byte[] { 0, 1, 2, 3, 4, 5 };
     private final SendAction TEST_CLIENT_HELLO;
 
     /**
@@ -242,8 +242,9 @@ public class RandomExtractorTest {
             assertEquals(2, extractor.getContainer().getNumberOfExtractedValues());
         } catch (NullPointerException ex) {
             LOGGER.warn("RandomExtractor encountered Problems handling ServerHello without random-bytes.");
-            // fail(); Commented out - may be expected behaviour. If not, remove
-            // this comment.
+            // fail(); Commented out - Remove this comment when the
+            // RandomExtractor or StatExtractor correctly handles
+            // missing expected values.
         }
 
     }
@@ -268,8 +269,9 @@ public class RandomExtractorTest {
             assertEquals(0, extractor.getContainer().getExtractedValueList().size());
         } catch (NullPointerException ex) {
             LOGGER.warn("RandomExtractor encountered Problems handling ServerHello without random-bytes.");
-            // fail(); Commented out - may be expected behaviour. If not, remove
-            // this comment.
+            // fail(); Commented out - Remove this comment when the
+            // RandomExtractor or StatExtractor correctly handles
+            // missing expected values.
         }
 
     }
