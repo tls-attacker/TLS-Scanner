@@ -106,7 +106,7 @@ public class RandomExtractorTest {
     /**
      * Testing handshake-message without ServerHello
      */
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testNoServerHelloExtract() {
         testTrace.addTlsAction(testClientHello);
 
@@ -122,18 +122,13 @@ public class RandomExtractorTest {
 
         assertEquals(0, extractor.getContainer().getExtractedValueList().size());
         assertEquals(0, extractor.getContainer().getNumberOfExtractedValues());
-        extractor.getContainer().getExtractedValueList().get(0);
-        // If there is no exception thrown here, then there is a value saved in
-        // the value-list. This should fail
-        // the test.
-        fail();
+        assertTrue(extractor.getContainer().getExtractedValueList().isEmpty());
     }
 
     /**
-     * Testing empty WorkflowTrace. Expecting an out of bound exception when
-     * trying to access the first element of the empty value-container
+     * Testing empty WorkflowTrace.
      */
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testEmptyWorkflowTraceExtract() {
         State state = new State(testTrace);
 
@@ -141,11 +136,7 @@ public class RandomExtractorTest {
 
         assertEquals(0, extractor.getContainer().getNumberOfExtractedValues());
         assertEquals(0, extractor.getContainer().getExtractedValueList().size());
-        extractor.getContainer().getExtractedValueList().get(0);
-        // If there is no exception thrown here, then there is a value saved in
-        // the value-list. This should fail
-        // the test.
-        fail();
+        assertTrue(extractor.getContainer().getExtractedValueList().isEmpty());
     }
 
     @Test

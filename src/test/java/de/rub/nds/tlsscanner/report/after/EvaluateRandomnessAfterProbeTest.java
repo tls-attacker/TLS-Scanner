@@ -157,11 +157,6 @@ public class EvaluateRandomnessAfterProbeTest {
             LOGGER.warn("EvaluateRandomnessAfterProbe encountered Problems "
                     + "handling an empty extractedValueContainerMap");
             fail();
-            // SiteReports with an empty
-            // ExtractedValueContainerMap. Remove this comment when appropriate
-            // checks are implemented.
-            // NOTE: This may be out-of-scope for EvaluateRandomnessAfterProbe
-            // and more of a task for SiteReport.
         }
 
     }
@@ -181,12 +176,7 @@ public class EvaluateRandomnessAfterProbeTest {
             evaluator.analyze(report);
         } catch (NullPointerException | IndexOutOfBoundsException ex) {
             LOGGER.warn("EvaluateRandomnessAfterProbe encountered Problems handling an empty SiteReport");
-            // fail(); EvaluateRandomnessAfterProbe currently can not handle
-            // SiteReports with no ExtractedValueContainer
-            // Remove this comment when appropriate checks are implemented.
-            // NOTE: This may be out-of-scope for EvaluateRandomnessAfterProbe
-            // and more of a task for SiteReport.
-
+            fail();
         }
     }
 
