@@ -225,14 +225,9 @@ public class RandomExtractorTest {
 
         State state = new State(testTrace);
 
-        try {
-            extractor.extract(state);
-            assertEquals(2, extractor.getContainer().getNumberOfExtractedValues());
-        } catch (NullPointerException ex) {
-            LOGGER.warn("RandomExtractor encountered Problems handling ServerHello without random-bytes.");
-            fail();
-        }
-
+        extractor.extract(state);
+        assertEquals(3, state.getWorkflowTrace().getTlsActions().size());
+        assertEquals(2, extractor.getContainer().getNumberOfExtractedValues());
     }
 
     /**
@@ -250,14 +245,9 @@ public class RandomExtractorTest {
         testTrace.addTlsAction(testServerHello);
         State state = new State(testTrace);
 
-        try {
-            extractor.extract(state);
-            assertEquals(0, extractor.getContainer().getExtractedValueList().size());
-        } catch (NullPointerException ex) {
-            LOGGER.warn("RandomExtractor encountered Problems handling ServerHello without random-bytes.");
-            fail();
-        }
-
+        extractor.extract(state);
+        assertEquals(0, extractor.getContainer().getExtractedValueList().size());
+        assertTrue(extractor.getContainer().getExtractedValueList().isEmpty());
     }
 
 }

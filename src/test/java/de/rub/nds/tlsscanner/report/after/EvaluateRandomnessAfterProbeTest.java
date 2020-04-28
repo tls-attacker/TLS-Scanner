@@ -125,16 +125,14 @@ public class EvaluateRandomnessAfterProbeTest {
         SiteReport report = generateSiteReport();
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
+        assertTrue(report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM).getExtractedValueList()
+                .isEmpty());
 
-        try {
-            evaluator.analyze(report);
-            // There are no values, so there are consequently no duplicate
-            // values
-            assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
-        } catch (NullPointerException | IndexOutOfBoundsException ex) {
-            LOGGER.warn("EvaluateRandomnessAfterProbe encountered Problems analyzing an empty ValueContainer");
-            fail();
-        }
+        evaluator.analyze(report);
+
+        // If there are no extracted values, there are consecutively no
+        // duplicates
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
     }
 
     /**
@@ -149,16 +147,10 @@ public class EvaluateRandomnessAfterProbeTest {
         report.setExtractedValueContainerList(extractedValueContainerMap);
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
+        assertTrue(report.getExtractedValueContainerMap().isEmpty());
 
-        try {
-            evaluator.analyze(report);
-            assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
-        } catch (NullPointerException | IndexOutOfBoundsException ex) {
-            LOGGER.warn("EvaluateRandomnessAfterProbe encountered Problems "
-                    + "handling an empty extractedValueContainerMap");
-            fail();
-        }
-
+        evaluator.analyze(report);
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
     }
 
     /**
@@ -171,13 +163,10 @@ public class EvaluateRandomnessAfterProbeTest {
         SiteReport report = new SiteReport("test", probeTypeList);
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
+        assertTrue(report.getExtractedValueContainerMap().isEmpty());
 
-        try {
-            evaluator.analyze(report);
-        } catch (NullPointerException | IndexOutOfBoundsException ex) {
-            LOGGER.warn("EvaluateRandomnessAfterProbe encountered Problems handling an empty SiteReport");
-            fail();
-        }
+        evaluator.analyze(report);
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
     }
 
     /**
@@ -197,7 +186,6 @@ public class EvaluateRandomnessAfterProbeTest {
         evaluator.analyze(report);
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.DUPLICATES);
-
     }
 
 }
