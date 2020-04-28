@@ -28,6 +28,12 @@ public class EvaluateRandomnessAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
+
+        if (report.getExtractedValueContainerMap().isEmpty()) {
+            report.setRandomEvaluationResult(RandomEvaluationResult.NO_DUPLICATES);
+            return;
+        }
+
         ExtractedValueContainer container = report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
         ExtractedValueContainer tempContainter = new ExtractedValueContainer(TrackableValueType.RANDOM);
         for (Object o : container.getExtractedValueList()) {

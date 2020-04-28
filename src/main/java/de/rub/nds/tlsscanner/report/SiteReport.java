@@ -113,7 +113,7 @@ public class SiteReport extends Observable implements Serializable {
 
     // Randomness
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
-    private RandomEvaluationResult randomEvaluationResult;
+    private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
