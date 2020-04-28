@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe.stats;
 
+import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -18,7 +19,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import java.util.Random;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -31,36 +32,20 @@ import static org.junit.Assert.*;
  */
 public class RandomExtractorTest {
 
-    /**
-     * Note: For each test-method, junit will create a new instance of
-     * "RandomExtractorTest". This means that there are no potential
-     * race-conditions when defining class-variables, which are modified in
-     * separate methods, even when running tests in parallel.
-     */
     private WorkflowTrace testTrace;
     private RandomExtractor extractor;
     private final Logger LOGGER = LogManager.getLogger();
-    private final byte[] GENERATED_RANDOM;
-    private final static byte[] STATIC_RANDOM = new byte[] { 0, 1, 2, 3, 4, 5 };
-    private final SendAction TEST_CLIENT_HELLO;
+    private final static byte[] STATIC_RANDOM1 = ArrayConverter
+            .hexStringToByteArray("4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
+    private final static byte[] STATIC_RANDOM2 = ArrayConverter
+            .hexStringToByteArray("CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
+    private final static byte[] LONG_STATIC_RANDOM3 = ArrayConverter.hexStringToByteArray("19C26C4DD15B39"
+            + "C49DFF3EAFB83130E8FAA462F252C2E0ED7F389ECC349A38DA1DB5D3E8D04BA6D77E6B05E81B04CF41CF737CC44E"
+            + "F614E2B05672A18BE97E94345A112186A15529B05918CE3662D4DD18B909C161AA76AF7192CA6D20E074788E0059"
+            + "42DD3C46FBCB6C7C2D620B2AF65E98A8C06BEBA0FF");
+    private SendAction testClientHello;
 
-    /**
-     * We use the constructor instead of Junit @Before to initialize final
-     * variables.
-     */
     public RandomExtractorTest() {
-        // Generic ClientHello to populate WorkflowTrace
-        TEST_CLIENT_HELLO = new SendAction();
-        ClientHelloMessage msgClient = new ClientHelloMessage();
-        msgClient.setRandom(STATIC_RANDOM.clone());
-        TEST_CLIENT_HELLO.setMessages(msgClient);
-
-        testTrace = new WorkflowTrace();
-        extractor = new RandomExtractor();
-
-        GENERATED_RANDOM = new byte[32];
-        new Random().nextBytes(GENERATED_RANDOM);
-
     }
 
     /**
@@ -79,22 +64,38 @@ public class RandomExtractorTest {
     }
 
     /**
+     * Setting up a test ClientHello-message for filtering and an empty
+     * WorkflowTrace for filling it with the generated ServerHello-messages and
+     * an fresh extractor.
+     */
+    @Before
+    public void setUp() {
+        testClientHello = new SendAction();
+        ClientHelloMessage msgClient = new ClientHelloMessage();
+        msgClient.setRandom(STATIC_RANDOM1.clone());
+        testClientHello.setMessages(msgClient);
+
+        testTrace = new WorkflowTrace();
+        extractor = new RandomExtractor();
+    }
+
+    /**
      * Testing extraction of a "valid" ServerHello-Message
      */
     @Test
     public void testValidExtract() {
-        testTrace.addTlsAction(TEST_CLIENT_HELLO);
+        testTrace.addTlsAction(testClientHello);
 
         // Use clone to set new object as message-random instead of the
         // reference to random_bytes
-        ReceiveAction testServerHello = generateServerHello(GENERATED_RANDOM.clone());
+        ReceiveAction testServerHello = generateServerHello(STATIC_RANDOM1.clone());
 
         testTrace.addTlsAction(testServerHello);
 
         State state = new State(testTrace);
         extractor.extract(state);
 
-        ComparableByteArray generatedRandom = new ComparableByteArray(GENERATED_RANDOM);
+        ComparableByteArray generatedRandom = new ComparableByteArray(STATIC_RANDOM1);
         ComparableByteArray extractedRandom = extractor.getContainer().getExtractedValueList().get(0);
 
         // Make sure that only ServerHello random-bytes are extracted
@@ -107,13 +108,13 @@ public class RandomExtractorTest {
      */
     @Test(expected = IndexOutOfBoundsException.class)
     public void testNoServerHelloExtract() {
-        testTrace.addTlsAction(TEST_CLIENT_HELLO);
+        testTrace.addTlsAction(testClientHello);
 
         // Additionally check if a serverHello as a Send-Action is
         // ignored by RandomExtractor
         SendAction testServerHello = new SendAction();
         ServerHelloMessage msg = new ServerHelloMessage();
-        msg.setRandom(GENERATED_RANDOM.clone());
+        msg.setRandom(STATIC_RANDOM1.clone());
         testTrace.addTlsAction(testServerHello);
 
         State state = new State(testTrace);
@@ -149,16 +150,12 @@ public class RandomExtractorTest {
 
     @Test
     public void testBigRandomBytesExtract() {
-        // 120 random-bytes should be much more than you would see in the wild
-        byte[] b = new byte[120];
-        new Random().nextBytes(b);
-
-        ReceiveAction testServerHello = generateServerHello(b.clone());
+        ReceiveAction testServerHello = generateServerHello(LONG_STATIC_RANDOM3.clone());
 
         testTrace.addTlsAction(testServerHello);
         State state = new State(testTrace);
 
-        ComparableByteArray generatedRandom = new ComparableByteArray(b);
+        ComparableByteArray generatedRandom = new ComparableByteArray(LONG_STATIC_RANDOM3);
 
         extractor.extract(state);
         assertEquals(1, extractor.getContainer().getNumberOfExtractedValues());
@@ -167,14 +164,14 @@ public class RandomExtractorTest {
 
     @Test
     public void testMultipleServerHelloExtract() {
-        testTrace.addTlsAction(TEST_CLIENT_HELLO);
+        testTrace.addTlsAction(testClientHello);
 
-        ComparableByteArray generatedRandom1 = new ComparableByteArray(GENERATED_RANDOM);
-        ComparableByteArray generatedRandom2 = new ComparableByteArray(STATIC_RANDOM);
+        ComparableByteArray generatedRandom1 = new ComparableByteArray(STATIC_RANDOM1);
+        ComparableByteArray generatedRandom2 = new ComparableByteArray(STATIC_RANDOM2);
 
-        ReceiveAction testServerHello1 = generateServerHello(GENERATED_RANDOM.clone());
-        ReceiveAction testServerHello2 = generateServerHello(STATIC_RANDOM.clone());
-        ReceiveAction testServerHello3 = generateServerHello(GENERATED_RANDOM.clone());
+        ReceiveAction testServerHello1 = generateServerHello(STATIC_RANDOM1.clone());
+        ReceiveAction testServerHello2 = generateServerHello(STATIC_RANDOM2.clone());
+        ReceiveAction testServerHello3 = generateServerHello(STATIC_RANDOM1.clone());
 
         testTrace.addTlsAction(testServerHello1);
         testTrace.addTlsAction(testServerHello2);
@@ -200,10 +197,10 @@ public class RandomExtractorTest {
      */
     @Test
     public void testEqualRandomNumbers() {
-        testTrace.addTlsAction(TEST_CLIENT_HELLO);
+        testTrace.addTlsAction(testClientHello);
 
-        ReceiveAction testServerHello1 = generateServerHello(GENERATED_RANDOM.clone());
-        ReceiveAction testServerHello2 = generateServerHello(GENERATED_RANDOM.clone());
+        ReceiveAction testServerHello1 = generateServerHello(STATIC_RANDOM1.clone());
+        ReceiveAction testServerHello2 = generateServerHello(STATIC_RANDOM1.clone());
 
         testTrace.addTlsAction(testServerHello1);
         testTrace.addTlsAction(testServerHello2);
@@ -221,10 +218,10 @@ public class RandomExtractorTest {
      */
     @Test
     public void testValidEmptyMixExtract() {
-        testTrace.addTlsAction(TEST_CLIENT_HELLO);
+        testTrace.addTlsAction(testClientHello);
 
-        ReceiveAction testServerHello1 = generateServerHello(GENERATED_RANDOM.clone());
-        ReceiveAction testServerHello3 = generateServerHello(GENERATED_RANDOM.clone());
+        ReceiveAction testServerHello1 = generateServerHello(STATIC_RANDOM1.clone());
+        ReceiveAction testServerHello3 = generateServerHello(STATIC_RANDOM1.clone());
 
         // ServerHello without random-bytes
         ReceiveAction testServerHello2 = new ReceiveAction();
@@ -242,9 +239,7 @@ public class RandomExtractorTest {
             assertEquals(2, extractor.getContainer().getNumberOfExtractedValues());
         } catch (NullPointerException ex) {
             LOGGER.warn("RandomExtractor encountered Problems handling ServerHello without random-bytes.");
-            // fail(); Commented out - Remove this comment when the
-            // RandomExtractor or StatExtractor correctly handles
-            // missing expected values.
+            fail();
         }
 
     }
@@ -254,7 +249,7 @@ public class RandomExtractorTest {
      */
     @Test
     public void testNoRandomExtract() {
-        testTrace.addTlsAction(TEST_CLIENT_HELLO);
+        testTrace.addTlsAction(testClientHello);
 
         // ServerHello without random-bytes
         ReceiveAction testServerHello = new ReceiveAction();
@@ -269,9 +264,7 @@ public class RandomExtractorTest {
             assertEquals(0, extractor.getContainer().getExtractedValueList().size());
         } catch (NullPointerException ex) {
             LOGGER.warn("RandomExtractor encountered Problems handling ServerHello without random-bytes.");
-            // fail(); Commented out - Remove this comment when the
-            // RandomExtractor or StatExtractor correctly handles
-            // missing expected values.
+            fail();
         }
 
     }

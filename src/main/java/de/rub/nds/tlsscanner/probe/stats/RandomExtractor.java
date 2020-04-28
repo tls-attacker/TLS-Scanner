@@ -28,7 +28,7 @@ public class RandomExtractor extends StatExtractor<ComparableByteArray> {
         List<ProtocolMessage> allReceivedMessages = WorkflowTraceUtil.getAllReceivedMessages(trace,
                 ProtocolMessageType.HANDSHAKE);
         for (ProtocolMessage message : allReceivedMessages) {
-            if (message instanceof ServerHelloMessage) {
+            if (message instanceof ServerHelloMessage && ((ServerHelloMessage) message).getRandom() != null) {
                 put(new ComparableByteArray(((ServerHelloMessage) message).getRandom().getValue()));
             }
         }

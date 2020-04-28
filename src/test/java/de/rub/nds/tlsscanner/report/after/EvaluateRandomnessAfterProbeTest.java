@@ -36,6 +36,13 @@ import static org.junit.Assert.*;
 public class EvaluateRandomnessAfterProbeTest {
 
     private EvaluateRandomnessAfterProbe evaluator;
+
+    private final static byte[] STATIC_RANDOM1 = ArrayConverter
+            .hexStringToByteArray("4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
+    private final static byte[] STATIC_RANDOM2 = ArrayConverter
+            .hexStringToByteArray("CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
+    private final static byte[] STATIC_RANDOM3 = ArrayConverter
+            .hexStringToByteArray("B1BA2D91193EF3448F33B5BEB0D5D31C78A3E5242896B9E539FDE578D2AAB2BC");
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
             .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
     private final Logger LOGGER = LogManager.getLogger();
@@ -87,23 +94,9 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testNoDuplicatesAnalyze() {
-        // prepare random Bytes
-        byte[] randomBytes1 = new byte[32];
-        new Random().nextBytes(randomBytes1);
+        SiteReport report = generateSiteReport(STATIC_RANDOM1, STATIC_RANDOM2, STATIC_RANDOM3);
 
-        byte[] randomBytes2 = new byte[32];
-        new Random().nextBytes(randomBytes2);
-
-        byte[] randomBytes3 = new byte[32];
-        new Random().nextBytes(randomBytes3);
-
-        SiteReport report = generateSiteReport(randomBytes1, randomBytes2, randomBytes3);
-
-        // Initial-Value for randomEvaluationResult of SiteReport is null
-        // instead of NOT_ANALYZED
-        // When initial-value is correctly set, remove this comment.
-        // assertEquals(report.getRandomEvaluationResult(),
-        // RandomEvaluationResult.NOT_ANALYZED);
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
 
         evaluator.analyze(report);
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
@@ -115,18 +108,9 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testDuplicatesAnalyze() {
-        // prepare random Bytes
-        byte[] randomBytes1 = new byte[32];
-        new Random().nextBytes(randomBytes1);
+        SiteReport report = generateSiteReport(STATIC_RANDOM1, STATIC_RANDOM1.clone(), STATIC_RANDOM2);
 
-        byte[] randomBytes2 = new byte[32];
-        new Random().nextBytes(randomBytes2);
-
-        SiteReport report = generateSiteReport(randomBytes1.clone(), randomBytes1.clone(), randomBytes2);
-
-        // See comment in testNoDuplicatesAnalyze
-        // assertEquals(report.getRandomEvaluationResult(),
-        // RandomEvaluationResult.NOT_ANALYZED);
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
 
         evaluator.analyze(report);
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.DUPLICATES);
@@ -140,9 +124,7 @@ public class EvaluateRandomnessAfterProbeTest {
     public void testEmptyValueContainerAnalyze() {
         SiteReport report = generateSiteReport();
 
-        // See comment in testNoDuplicatesAnalyze
-        // assertEquals(report.getRandomEvaluationResult(),
-        // RandomEvaluationResult.NOT_ANALYZED);
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
 
         try {
             evaluator.analyze(report);
@@ -166,9 +148,7 @@ public class EvaluateRandomnessAfterProbeTest {
         Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap = new HashMap<>();
         report.setExtractedValueContainerList(extractedValueContainerMap);
 
-        // See comment in testNoDuplicatesAnalyze
-        // assertEquals(report.getRandomEvaluationResult(),
-        // RandomEvaluationResult.NOT_ANALYZED);
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
 
         try {
             evaluator.analyze(report);
@@ -176,7 +156,7 @@ public class EvaluateRandomnessAfterProbeTest {
         } catch (NullPointerException | IndexOutOfBoundsException ex) {
             LOGGER.warn("EvaluateRandomnessAfterProbe encountered Problems "
                     + "handling an empty extractedValueContainerMap");
-            // fail(); EvaluateRandomnessAfterProbe currently can not handle
+            fail();
             // SiteReports with an empty
             // ExtractedValueContainerMap. Remove this comment when appropriate
             // checks are implemented.
@@ -195,9 +175,7 @@ public class EvaluateRandomnessAfterProbeTest {
         List<ProbeType> probeTypeList = new ArrayList<ProbeType>();
         SiteReport report = new SiteReport("test", probeTypeList);
 
-        // See comment in testNoDuplicatesAnalyze
-        // assertEquals(report.getRandomEvaluationResult(),
-        // RandomEvaluationResult.NOT_ANALYZED);
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
 
         try {
             evaluator.analyze(report);
@@ -218,19 +196,14 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testHelloRetryRequestAnalyze() {
-        byte[] randomBytes1 = new byte[32];
-        new Random().nextBytes(randomBytes1);
+        SiteReport report = generateSiteReport(HELLO_RETRY_REQUEST_CONST, HELLO_RETRY_REQUEST_CONST, STATIC_RANDOM1);
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
 
-        // See comment in testNoDuplicatesAnalyze
-        // assertEquals(report.getRandomEvaluationResult(),
-        // RandomEvaluationResult.NOT_ANALYZED);
-
-        SiteReport report = generateSiteReport(HELLO_RETRY_REQUEST_CONST, HELLO_RETRY_REQUEST_CONST, randomBytes1);
         evaluator.analyze(report);
-
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
 
-        report = generateSiteReport(HELLO_RETRY_REQUEST_CONST, randomBytes1, randomBytes1.clone());
+        report = generateSiteReport(HELLO_RETRY_REQUEST_CONST, STATIC_RANDOM1, STATIC_RANDOM1.clone());
+        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
         evaluator.analyze(report);
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.DUPLICATES);
