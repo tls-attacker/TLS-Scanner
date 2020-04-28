@@ -226,7 +226,7 @@ public class RandomExtractorTest {
         State state = new State(testTrace);
 
         extractor.extract(state);
-        assertEquals(3, state.getWorkflowTrace().getTlsActions().size());
+        assertEquals(4, state.getWorkflowTrace().getTlsActions().size());
         assertEquals(2, extractor.getContainer().getNumberOfExtractedValues());
     }
 
