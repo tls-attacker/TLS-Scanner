@@ -15,7 +15,6 @@ import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
  */
 public class MasterCommandConfig {
 
-
     @Parameter(names = "-portToBeScanned", description = "The port that should be scanned.")
     private int port = 443;
 
@@ -30,6 +29,12 @@ public class MasterCommandConfig {
 
     @Parameter(names = "-waitAfterScan", description = "The number of minutes to wait after a scan has completed. 0 = back to back")
     private int waitTimeAfterScan = 0;
+
+    @Parameter(names = "-scanName", description = "The name of the scan")
+    private String scanName;
+
+    @Parameter(names = "-hostFile", description = "A file of a list of servers which should be scanned.")
+    private String hostFile;
 
     @ParametersDelegate
     private RedisDelegate redisDelegate;
@@ -78,6 +83,23 @@ public class MasterCommandConfig {
         this.waitTimeAfterScan = waitTimeAfterScan;
     }
 
-    
-    
+    public String getScanName() {
+        return scanName;
+    }
+
+    public void setScanName(String scanName) {
+        this.scanName = scanName;
+    }
+
+    public String getHostFile() {
+        return hostFile;
+    }
+
+    public void setHostFile(String hostFile) {
+        this.hostFile = hostFile;
+    }
+
+    public RedisDelegate getRedisDelegate() {
+        return redisDelegate;
+    }
 }

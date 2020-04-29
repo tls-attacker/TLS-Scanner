@@ -11,9 +11,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ScanJob;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -26,7 +23,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 import org.apache.logging.log4j.LogManager;
@@ -39,15 +35,15 @@ import org.apache.logging.log4j.Logger;
  */
 public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
-    private static Logger LOG = LogManager.getLogger();
+    private final static Logger LOG = LogManager.getLogger();
 
-    private static int REDIS_TIMEOUT = 30000; // in ms
+    private final static int REDIS_TIMEOUT = 30000; // in ms
 
     private boolean initialized = false;
 
-    private String redisHost;
-    private int redisPort;
-    private String redisPass;
+    private final String redisHost;
+    private final int redisPort;
+    private final String redisPass;
 
     private JedisPool jedisPool;
 
@@ -215,5 +211,27 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
             }
         }
         return scanJobList;
+    }
+
+    @Override
+    public void putScanJob(ScanJob job) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            jedis.lpush("crawling-jobs", mapper.writeValueAsString(job));
+        } catch (JsonProcessingException ex) {
+            LOG.warn("Could not add ScanJob to Redis");
+        }
+    }
+
+    @Override
+    public void deleteScanJob(ScanJob job) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            jedis.lrem("crawling-jobs", 1, mapper.writeValueAsString(job));
+        } catch (JsonProcessingException ex) {
+            LOG.warn("Could not remove ScanJob from Redis");
+        }
     }
 }

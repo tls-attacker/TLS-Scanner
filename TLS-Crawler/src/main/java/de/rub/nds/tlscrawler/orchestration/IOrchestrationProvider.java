@@ -22,19 +22,26 @@ public interface IOrchestrationProvider {
  
     /**
      * Returns all active scan jobs
+     * @return 
      */
-    Collection<ScanJob> getScanJobs();
+    public Collection<ScanJob> getScanJobs();
+    
+    public void putScanJob(ScanJob job);
+    
+    public void deleteScanJob(ScanJob job);
     
     /**
      * Retrieves a scan task.
      *
+     * @param job
      * @return The scan task.
      */
-    String getScanTask(ScanJob job);
+    public String getScanTask(ScanJob job);
 
     /**
      * Retrieves a number of scan tasks.
      *
+     * @param job
      * @param quantity Number of tasks to be retrieved.
      * @return A list of scan task IDs.
      */
@@ -47,6 +54,7 @@ public interface IOrchestrationProvider {
     /**
      * Adds scan tasks to be distributed.
      *
+     * @param job
      * @param taskIds
      */
     public void addScanTasks(ScanJob job, Collection<String> taskIds);
