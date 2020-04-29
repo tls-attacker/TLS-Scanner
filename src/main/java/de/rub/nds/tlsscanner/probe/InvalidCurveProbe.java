@@ -182,9 +182,13 @@ public class InvalidCurveProbe extends TlsProbe {
             }
 
             List<CipherSuite> tls13CipherSuites = new LinkedList<>();
-            for (CipherSuite cipherSuite : report.getSupportedTls13CipherSuites()) {
-                if (cipherSuite.isImplemented()) {
-                    tls13CipherSuites.add(cipherSuite);
+            for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
+                if (pair.getVersion().isTLS13()) {
+                    for (CipherSuite cipherSuite : pair.getCiphersuiteList()) {
+                        if (cipherSuite.isImplemented()) {
+                            tls13CipherSuites.add(cipherSuite);
+                        }
+                    }
                 }
             }
 
