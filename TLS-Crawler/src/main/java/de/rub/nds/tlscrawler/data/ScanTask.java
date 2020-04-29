@@ -32,25 +32,22 @@ public class ScanTask implements IScanTask, Serializable {
     private final Instant startedTimestamp;
     private Instant completedTimestamp;
     private final IScanTarget scanTarget;
-    private final Collection<String> scans;
+    private final IScan scan;
     private Document result;
 
     public ScanTask(String id,
             String instanceId,
             Instant acceptedTimestamp,
             IScanTarget scanTarget,
-            Collection<IScan> scans) {
+            IScan scan) {
         this._id = id;
         this.instanceId = instanceId;
         this.acceptedTimestamp = acceptedTimestamp;
         this.scanTarget = scanTarget;
-        this.scans = new LinkedList<>();
-        for (IScan tempScan : scans) {
-            this.scans.add(tempScan.getName());
-        }
         this.result = null;
         this.startedTimestamp = null;
         this.completedTimestamp = null;
+        this.scan = scan;
     }
 
     @Override
@@ -83,8 +80,8 @@ public class ScanTask implements IScanTask, Serializable {
     }
 
     @Override
-    public Collection<String> getScans() {
-        return this.scans;
+    public IScan getScan() {
+        return scan;
     }
 
     @Override

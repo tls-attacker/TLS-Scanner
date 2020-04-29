@@ -49,21 +49,20 @@ public class SlaveWorkerThread extends Thread {
                 LOG.trace("Started work on {}.", todo.getId());
                 this.setName("Thread - " + todo.getScanTarget());
 
-                for (String scan : todo.getScans()) {
-                    Document result;
+                Document result;
 
-                    try {
-                        IScan scanInstance = this.scanProvider.getScanByName(scan);
-                        result = scanInstance.scan(todo.getScanTarget());
-                    } catch (Exception e) {
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        e.printStackTrace(new PrintStream(out));
-                        String str = new String(out.toByteArray());
-                        result = new Document("failedWithException", str);
-                    }
-
-                    todo.setResult(result);
+                try {
+                    IScan scanInstance = this.scanProvider.getCurrentScan();
+                    
+                    result = scanInstance.scan(todo.getScanTarget());
+                } catch (Exception e) {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    e.printStackTrace(new PrintStream(out));
+                    String str = new String(out.toByteArray());
+                    result = new Document("failedWithException", str);
                 }
+
+                todo.setResult(result);
 
                 todo.setCompletedTimestamp(Instant.now());
 

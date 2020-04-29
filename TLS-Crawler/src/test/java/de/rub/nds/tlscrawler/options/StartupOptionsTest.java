@@ -8,7 +8,7 @@
 package de.rub.nds.tlscrawler.options;
 
 import com.google.devtools.common.options.OptionsParsingException;
-import de.rub.nds.tlscrawler.options.StartupOptions;
+import de.rub.nds.tlscrawler.config.StartupOptions;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

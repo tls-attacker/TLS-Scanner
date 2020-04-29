@@ -7,18 +7,22 @@
  */
 package de.rub.nds.tlscrawler;
 
-import com.google.devtools.common.options.OptionsParsingException;
-import static de.rub.nds.tlscrawler.Slave.setUpProviders;
+import de.rub.nds.tlscrawler.config.MasterCommandConfig;
+import com.beust.jcommander.JCommander;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
+import de.rub.nds.tlscrawler.config.AnalysisCommandConfig;
+import de.rub.nds.tlscrawler.config.SlaveCommandConfig;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
-import de.rub.nds.tlscrawler.options.StartupOptions;
+import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
+import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
+import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import de.rub.nds.tlscrawler.scans.*;
-import de.rub.nds.tlscrawler.utility.Tuple;
+import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
+import java.net.ConnectException;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -32,45 +36,67 @@ public class Main {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ConnectException {
 
         Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
         mongoLogger.setLevel(Level.SEVERE);
         mongoLogger = Logger.getLogger("org.mongodb.driver.cluster");
         mongoLogger.setLevel(Level.SEVERE);
-        StartupOptions options;
 
-        try {
-            options = StartupOptions.parseOptions(args);
-        } catch (OptionsParsingException ex) {
-            LOG.error("Command Line Options could not be parsed.", ex);
-            options = null;
+        JCommander jc = new JCommander();
+        MasterCommandConfig masterCommandConfig = new MasterCommandConfig();
+        jc.addCommand("master", masterCommandConfig);
+
+        SlaveCommandConfig slaveCommandConfig = new SlaveCommandConfig();
+        jc.addCommand("slave", slaveCommandConfig);
+
+        AnalysisCommandConfig analysisCommandConfig = new AnalysisCommandConfig();
+        jc.addCommand("analysis", analysisCommandConfig);
+
+        jc.parse(args);
+        if (jc.getParsedCommand() == null) {
+            if (jc.getParsedCommand() == null) {
+                jc.usage();
+            } else {
+                jc.usage(jc.getParsedCommand());
+            }
+            return;
         }
+        switch (jc.getParsedCommand().toLowerCase()) {
+            case "slave":
 
-        if (options == null || options.help) {
-            System.out.println("Could not parse Command Line Options. Try again:");
-            System.out.println(StartupOptions.getHelpString());
-            System.exit(0);
+                ITlsCrawlerSlave slave = new TlsCrawlerSlave(slaveCommandConfig.getInstanceId(), setUpOrchestrationProvider(slaveCommandConfig.getRedisDelegate()), setUpPersistenceProvider(slaveCommandConfig.getMongoDbDelegate()), slaveCommandConfig.getNumberOfThreads());
+                slave.start();
+                break;
+            case "master":
+                break;
+            case "analysis":
+                break;
+            default:
+                jc.usage(jc.getParsedCommand());
         }
-
-        List<IScan> scans = setUpScans();
-
-        Tuple<IOrchestrationProvider, IPersistenceProvider> providers = setUpProviders(options, "defaultScan");
-
-        ITlsCrawlerSlave slave = new TlsCrawlerSlave(options.instanceId, providers.getFirst(), providers.getSecond(), scans, options.port, options.numberOfThreads);
-        slave.start();
     }
 
-    /**
-     * Set up for known scans.
-     *
-     * @return A list of scans.
-     */
-    static List<IScan> setUpScans() {
-        LOG.trace("setUpScans()");
+    static IPersistenceProvider setUpPersistenceProvider(MongoDbDelegate delegate) {
+        ServerAddress address = new ServerAddress(delegate.getMongoDbHost(), delegate.getMongoDbPort());
+        MongoCredential credential = null;
 
-        List<IScan> result = new LinkedList<>();
-        result.add(new TlsScan(5000, 400, 3));
-        return result;
+        credential = MongoCredential.createCredential(
+                delegate.getMongoDbUser(),
+                delegate.getMongoDbAuthSource(),
+                delegate.getMongoDbPass().toCharArray());
+
+        return new MongoPersistenceProvider(address, credential);
+    }
+
+    static IOrchestrationProvider setUpOrchestrationProvider(RedisDelegate delegate) throws ConnectException {
+        RedisOrchestrationProvider redisOrchestrationProvider = new RedisOrchestrationProvider(
+                delegate.getRedisHost(),
+                delegate.getRedisPort(),
+                delegate.getRedisPass());
+
+        redisOrchestrationProvider.init("TLSC-blacklist");
+
+        return redisOrchestrationProvider;
     }
 }

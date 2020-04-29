@@ -30,11 +30,6 @@
             <version>3.0.3</version>
         </dependency>
         <dependency>
-            <groupId>com.github.pcj</groupId>
-            <artifactId>google-options</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver</artifactId>
             <version>3.12.2</version>
@@ -64,7 +59,11 @@
             <artifactId>gson</artifactId>
             <version>2.8.6</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+            <version>1.69</version>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>

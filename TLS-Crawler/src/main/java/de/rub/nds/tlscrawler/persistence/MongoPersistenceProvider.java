@@ -7,15 +7,16 @@
  */
 package de.rub.nds.tlscrawler.persistence;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import de.rub.nds.tlscrawler.data.*;
 import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateSerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.BigDecimalSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.ByteArraySerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.CertificateSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.CustomDhPublicKeySerialisationConverter;
@@ -26,10 +27,14 @@ import de.rub.nds.tlscrawler.persistence.converter.HttpsHeaderSerialisationConve
 import de.rub.nds.tlscrawler.persistence.converter.PointSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerialisationConverter;
 import de.rub.nds.tlscrawler.persistence.converter.VectorSerialisationConverter;
+import de.rub.nds.tlsscanner.report.SiteReport;
 
 import java.util.*;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.mongojack.JacksonMongoCollection;
 
 /**
@@ -38,17 +43,20 @@ import org.mongojack.JacksonMongoCollection;
  * @author janis.fliegenschmidt@rub.de
  */
 public class MongoPersistenceProvider implements IPersistenceProvider {
-
+    
     private static Logger LOG = LogManager.getLogger();
-
+    
     private boolean initialized = false;
     private final ServerAddress address;
     private final MongoCredential credentials;
     private MongoClient mongoClient;
     private MongoDatabase database;
     private JacksonMongoCollection<ScanTask> collection;
-
+    
+    private final ObjectMapper mapper;
+    
     public MongoPersistenceProvider(ServerAddress address, MongoCredential credentials) {
+        this.mapper = new ObjectMapper();
         LOG.trace("Constructor()");
         this.address = address;
         this.credentials = credentials;
@@ -62,15 +70,15 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      */
     public void init(String dbName, String collectionName) {
         LOG.trace("init() with name '{}'", dbName);
-
+        
         if (this.credentials != null) {
             this.mongoClient = new MongoClient(this.address, Arrays.asList(this.credentials));
         } else {
             this.mongoClient = new MongoClient(this.address);
         }
-
+        
         this.database = this.mongoClient.getDatabase(dbName);
-        ObjectMapper mapper = new ObjectMapper();
+        
         SimpleModule module = new SimpleModule();
         module.addSerializer(new ByteArraySerialisationConverter());
         module.addSerializer(new ResponseFingerprintSerialisationConverter());
@@ -83,9 +91,9 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         module.addSerializer(new VectorSerialisationConverter());
         module.addSerializer(new PointSerialisationConverter());
         module.addSerializer(new HttpsHeaderSerialisationConverter());
-        module.addSerializer(new BigDecimalSerialisationConverter());
         mapper.registerModule(module);
         collection = JacksonMongoCollection.builder().withObjectMapper(mapper).<ScanTask>build(database, collectionName, ScanTask.class);
+        
         this.initialized = true;
         LOG.info("MongoDB persistence provider initialized, connected to {}.", address.toString());
         LOG.info("Database: {}.", database.getName());
@@ -100,27 +108,45 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         if (!this.initialized) {
             String error = String.format("%s has not been initialized.",
                     MongoPersistenceProvider.class.getName());
-
             LOG.error(error);
             throw new RuntimeException(error);
         }
     }
-
+    
     @Override
     public void insertScanTask(ScanTask newTask) {
         this.checkInit();
         LOG.trace("setUpScanTask()");
         this.collection.insertOne(newTask);
     }
-
+    
     @Override
     public void insertScanTasks(List<ScanTask> newTasks) {
         this.checkInit();
         LOG.trace("setUpScanTasks()");
-
+        
         this.collection.insertMany(newTasks);
     }
-
+    
+    public FindIterable<ScanTask> findDocuments(Bson findQuery) {
+        return collection.find(findQuery);
+    }
+    
+    public Collection<SiteReport> findSiteReport(Bson findQuery) {
+        List<SiteReport> reportList = new LinkedList<>();
+        FindIterable<ScanTask> findIterable = collection.find(findQuery);
+        for (ScanTask scanTask : findIterable) {
+            Document document = scanTask.getResult();
+            try {
+                SiteReport report = mapper.readValue(document.toJson(), SiteReport.class);
+                reportList.add(report);
+            } catch (JsonProcessingException ex) {
+                LOG.error("Could not deserialize SiteReport", ex);
+            }
+        }
+        return reportList;
+    }
+    
     @Override
     public IPersistenceProviderStats getStats() {
         return null;
@@ -130,7 +156,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      * Constants of the keys in the result documents used in MongoDB.
      */
     static class DBKeys {
-
+        
         static String ID = "taskId";
         static String MASTER_INSTANCE_ID = "masterInstanceId";
         static String ACCEPTED_TIMESTAMP = "acceptedTimestamp";
@@ -144,7 +170,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      * Constants to use in update-queries.
      */
     static class DBOperations {
-
+        
         static String EQUALS = "$eq";
         static String EXISTS = "$exists";
         static String GROUP = "$group";
