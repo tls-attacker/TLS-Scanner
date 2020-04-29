@@ -17,6 +17,7 @@ import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
 import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
 import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
 import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
+import de.rub.nds.tlscrawler.core.Master;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
@@ -69,6 +70,8 @@ public class Main {
                 slave.start();
                 break;
             case "master":
+                Master master = new Master(masterCommandConfig, setUpOrchestrationProvider(masterCommandConfig.getRedisDelegate()));
+                master.start();
                 break;
             case "analysis":
                 break;
