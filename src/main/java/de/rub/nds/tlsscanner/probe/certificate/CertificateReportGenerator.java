@@ -215,7 +215,7 @@ public class CertificateReportGenerator {
     }
 
     private static void setRevoked(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
-        // Revocation check via OCSP. Does not work with root CA as issuer yet.
+        // Revocation check via OCSP
         if (report.getOcspSupported()) {
             OCSPRequest ocspRequest;
             try {
