@@ -11,6 +11,7 @@ import de.rub.nds.tlscrawler.config.MasterCommandConfig;
 import com.beust.jcommander.JCommander;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import de.rub.nds.tlscrawler.analysis.DataAnalyser;
 import de.rub.nds.tlscrawler.config.AnalysisCommandConfig;
 import de.rub.nds.tlscrawler.config.SlaveCommandConfig;
 import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
@@ -74,6 +75,8 @@ public class Main {
                 master.start();
                 break;
             case "analysis":
+                DataAnalyser analyser = new DataAnalyser(analysisCommandConfig, setUpPersistenceProvider(analysisCommandConfig.getMongoDbDelegate()));
+                analyser.analyze();
                 break;
             default:
                 jc.usage(jc.getParsedCommand());

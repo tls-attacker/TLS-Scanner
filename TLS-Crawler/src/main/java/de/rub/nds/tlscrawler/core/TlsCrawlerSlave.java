@@ -167,6 +167,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
                         findWork();
                     }
+                    this.organizer.getPersistenceProvider().init(currentScanJob.getScanName(), currentScanJob.getWorkspace());
                     // Persist task results:
                     if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
                             || ((ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) && this.synchronizedTaskRouter.getFinishedCount() != 0)) {

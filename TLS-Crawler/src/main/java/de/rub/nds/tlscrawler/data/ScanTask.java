@@ -7,12 +7,11 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.rub.nds.tlscrawler.scans.IScan;
 import java.io.Serializable;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.LinkedList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -26,14 +25,18 @@ public class ScanTask implements IScanTask, Serializable {
 
     private static Logger LOG = LogManager.getLogger();
 
-    private final String _id;
-    private final String instanceId;
-    private final Instant acceptedTimestamp;
-    private final Instant startedTimestamp;
+    @JsonProperty("_id")
+    private String _id;
+    private String instanceId;
+    private Instant acceptedTimestamp;
+    private Instant startedTimestamp;
     private Instant completedTimestamp;
-    private final IScanTarget scanTarget;
-    private final IScan scan;
+    private IScanTarget scanTarget;
+    private IScan scan;
     private Document result;
+
+    private ScanTask() {
+    }
 
     public ScanTask(String id,
             String instanceId,

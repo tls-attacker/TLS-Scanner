@@ -10,9 +10,11 @@ package de.rub.nds.tlscrawler.persistence;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import de.rub.nds.tlscrawler.data.*;
@@ -43,18 +45,21 @@ import org.mongojack.JacksonMongoCollection;
  * @author janis.fliegenschmidt@rub.de
  */
 public class MongoPersistenceProvider implements IPersistenceProvider {
-    
+
     private static Logger LOG = LogManager.getLogger();
-    
+
     private boolean initialized = false;
     private final ServerAddress address;
     private final MongoCredential credentials;
     private MongoClient mongoClient;
     private MongoDatabase database;
     private JacksonMongoCollection<ScanTask> collection;
-    
+
     private final ObjectMapper mapper;
-    
+
+    private String intializedDb = null;
+    private String initalizedWorkspace = null;
+
     public MongoPersistenceProvider(ServerAddress address, MongoCredential credentials) {
         this.mapper = new ObjectMapper();
         LOG.trace("Constructor()");
@@ -69,16 +74,20 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      * @param collectionName
      */
     public void init(String dbName, String collectionName) {
+        if (dbName.equals(intializedDb) && collectionName.equals(initalizedWorkspace)) {
+            //Connection already initialized
+            return;
+        }
         LOG.trace("init() with name '{}'", dbName);
-        
+
         if (this.credentials != null) {
             this.mongoClient = new MongoClient(this.address, Arrays.asList(this.credentials));
         } else {
             this.mongoClient = new MongoClient(this.address);
         }
-        
+
         this.database = this.mongoClient.getDatabase(dbName);
-        
+
         SimpleModule module = new SimpleModule();
         module.addSerializer(new ByteArraySerialisationConverter());
         module.addSerializer(new ResponseFingerprintSerialisationConverter());
@@ -92,9 +101,12 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         module.addSerializer(new PointSerialisationConverter());
         module.addSerializer(new HttpsHeaderSerialisationConverter());
         mapper.registerModule(module);
+        mapper.registerModule(new JavaTimeModule());
         collection = JacksonMongoCollection.builder().withObjectMapper(mapper).<ScanTask>build(database, collectionName, ScanTask.class);
-        
+
         this.initialized = true;
+        this.intializedDb = dbName;
+        this.initalizedWorkspace = collectionName;
         LOG.info("MongoDB persistence provider initialized, connected to {}.", address.toString());
         LOG.info("Database: {}.", database.getName());
         LOG.info("CurrentCollection: {}.", collectionName);
@@ -112,27 +124,27 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             throw new RuntimeException(error);
         }
     }
-    
+
     @Override
     public void insertScanTask(ScanTask newTask) {
         this.checkInit();
         LOG.trace("setUpScanTask()");
         this.collection.insertOne(newTask);
     }
-    
+
     @Override
     public void insertScanTasks(List<ScanTask> newTasks) {
         this.checkInit();
         LOG.trace("setUpScanTasks()");
-        
+
         this.collection.insertMany(newTasks);
     }
-    
+
     public FindIterable<ScanTask> findDocuments(Bson findQuery) {
         return collection.find(findQuery);
     }
-    
-    public Collection<SiteReport> findSiteReport(Bson findQuery) {
+
+    public Collection<SiteReport> findSiteReports(Bson findQuery) {
         List<SiteReport> reportList = new LinkedList<>();
         FindIterable<ScanTask> findIterable = collection.find(findQuery);
         for (ScanTask scanTask : findIterable) {
@@ -146,17 +158,27 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         }
         return reportList;
     }
-    
+
     @Override
     public IPersistenceProviderStats getStats() {
         return null;
+    }
+
+    @Override
+    public long countDocuments(Bson query) {
+        return collection.countDocuments(query);
+    }
+
+    @Override
+    public DistinctIterable findDistinctValues(String fieldName, Class resultClass) {
+        return collection.distinct(fieldName, resultClass);
     }
 
     /**
      * Constants of the keys in the result documents used in MongoDB.
      */
     static class DBKeys {
-        
+
         static String ID = "taskId";
         static String MASTER_INSTANCE_ID = "masterInstanceId";
         static String ACCEPTED_TIMESTAMP = "acceptedTimestamp";
@@ -170,7 +192,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
      * Constants to use in update-queries.
      */
     static class DBOperations {
-        
+
         static String EQUALS = "$eq";
         static String EXISTS = "$exists";
         static String GROUP = "$group";
