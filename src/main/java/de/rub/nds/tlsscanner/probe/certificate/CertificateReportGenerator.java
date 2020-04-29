@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
@@ -216,8 +217,24 @@ public class CertificateReportGenerator {
     private static void setRevoked(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         // Revocation check via OCSP. Does not work with root CA as issuer yet.
         if (report.getOcspSupported()) {
+            OCSPRequest ocspRequest;
             try {
-                OCSPRequest ocspRequest = new OCSPRequest(cert);
+                ocspRequest = new OCSPRequest(cert);
+            } catch (Exception e) {
+                LOGGER.debug("Didn't find issuer entry in certificate, trying TrustAnchor.");
+                TrustAnchorManager trustAnchorManager = TrustAnchorManager.getInstance();
+                X509Certificate x509cert = null;
+                try {
+                    x509cert = new X509CertificateObject(cert);
+                } catch (CertificateParsingException exp) {
+                    LOGGER.error("Certificate conversion to X509CertificateObject failed. Aborting OCSP revocation check.");
+                    return;
+                }
+                org.bouncycastle.asn1.x509.Certificate caCert = trustAnchorManager.getTrustAnchorCertificate(x509cert
+                        .getIssuerX500Principal());
+                ocspRequest = new OCSPRequest(cert, caCert);
+            }
+            try {
                 OCSPResponse ocspResponse = ocspRequest.makeRequest();
                 CertificateStatus certificateStatus = ocspResponse.getCertificateStatusList().get(0);
                 int revocationStatus = certificateStatus.getCertificateStatus();
@@ -227,7 +244,7 @@ public class CertificateReportGenerator {
                     report.setRevoked(true);
                 }
             } catch (Exception e) {
-                LOGGER.debug("Couldn't get revocation status via OCSP. Note that checks with the root CA issuer are not supported yet, due to lack of the issuer key.");
+                LOGGER.error("Failed to get certificate revocation status via OCSP.");
             }
         }
     }
