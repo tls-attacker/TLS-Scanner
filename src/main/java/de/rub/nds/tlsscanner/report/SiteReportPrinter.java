@@ -1001,11 +1001,6 @@ public class SiteReportPrinter {
             for (CipherSuite suite : report.getCipherSuites()) {
                 builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
             }
-            if (report.getSupportedTls13CipherSuites() != null) {
-                for (CipherSuite suite : report.getSupportedTls13CipherSuites()) {
-                    builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
-                }
-            }
 
             for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
                 prettyAppendHeading(
@@ -1018,16 +1013,7 @@ public class SiteReportPrinter {
                     builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
                 }
             }
-            if (report.getSupportedTls13CipherSuites() != null && report.getSupportedTls13CipherSuites().size() > 0) {
-                prettyAppendHeading(
-                        builder,
-                        "Supported in TLS 1.3"
-                                + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
-                                        : ""));
-                for (CipherSuite suite : report.getSupportedTls13CipherSuites()) {
-                    builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
-                }
-            }
+
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                 prettyAppendHeading(builder, "Symmetric Supported");
                 prettyAppend(builder, "Null", AnalyzedProperty.SUPPORTS_NULL_CIPHERS);

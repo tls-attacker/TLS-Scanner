@@ -65,7 +65,6 @@ public class SiteReport extends Observable implements Serializable {
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
-    private NonDetermnisimEvaluationReport paddingOracleShakyReport = null;
     private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList;
     private List<InvalidCurveResponse> invalidCurveResultList;
     private List<RaccoonAttackProbabilities> raccoonAttackProbabilities;
@@ -95,7 +94,6 @@ public class SiteReport extends Observable implements Serializable {
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
     private Set<CipherSuite> cipherSuites = null;
-    private List<CipherSuite> supportedTls13CipherSuites = null;
 
     // Session
     private Long sessionTicketLengthHint = null;
@@ -221,14 +219,6 @@ public class SiteReport extends Observable implements Serializable {
         this.notifyObservers();
     }
 
-    public NonDetermnisimEvaluationReport getPaddingOracleShakyReport() {
-        return paddingOracleShakyReport;
-    }
-
-    public void setPaddingOracleShakyReport(NonDetermnisimEvaluationReport paddingOracleShakyReport) {
-        this.paddingOracleShakyReport = paddingOracleShakyReport;
-    }
-
     public synchronized String getHost() {
         return host;
     }
@@ -284,14 +274,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setCipherSuites(Set<CipherSuite> cipherSuites) {
         this.cipherSuites = cipherSuites;
-    }
-
-    public synchronized List<CipherSuite> getSupportedTls13CipherSuites() {
-        return supportedTls13CipherSuites;
-    }
-
-    public synchronized void setSupportedTls13CipherSuites(List<CipherSuite> supportedTls13CipherSuites) {
-        this.supportedTls13CipherSuites = supportedTls13CipherSuites;
     }
 
     public synchronized List<NamedGroup> getSupportedNamedGroups() {
