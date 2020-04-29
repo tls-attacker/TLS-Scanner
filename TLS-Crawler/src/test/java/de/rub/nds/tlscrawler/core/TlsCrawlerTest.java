@@ -8,17 +8,15 @@
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.PersistenceProviderStats;
+import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import de.rub.nds.tlscrawler.scans.IScan;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,25 +27,24 @@ import static org.mockito.Mockito.when;
  * @author janis.fliegenschmidt@rub.de
  */
 public class TlsCrawlerTest {
+
     private TlsCrawler subject;
+
+    private ScanJob testJob;
 
     @Before
     public void setUp() {
+        testJob = new ScanJob("name", "workspace", "scan", 0, 0, 0);
+        List<ScanJob> scanJobList = new LinkedList<>();
+        scanJobList.add(testJob);
         IPersistenceProvider pp = mock(IPersistenceProvider.class);
         when(pp.getStats()).thenReturn(new PersistenceProviderStats(15, 10, null, null));
 
         IOrchestrationProvider op = mock(IOrchestrationProvider.class);
-        when(op.getScanTask()).thenReturn("scanTaskId");
-
-        IScan scan1 = mock(IScan.class);
-        when(scan1.getName()).thenReturn("Scan1");
-
-        IScan scan3 = mock(IScan.class);
-        when(scan3.getName()).thenReturn("Scan3");
-
-        List<IScan> scans = Arrays.asList(scan1, scan3);
-
-        this.subject = new TlsCrawlerSlave("slaveId", op, pp, scans,123456);
+        when(op.getScanTask(testJob)).thenReturn("scanTaskId");
+        when(op.getScanJobs()).thenReturn(scanJobList);
+        when(op.getScanJobs()).thenReturn(scanJobList);
+        this.subject = new TlsCrawlerSlave("slaveId", op, pp, 123456);
     }
 
     @Test
@@ -55,7 +52,7 @@ public class TlsCrawlerTest {
         IOrchestrationProvider op = this.subject.getOrchestrationProvider();
 
         Assert.assertNotNull(op);
-        Assert.assertEquals("scanTaskId", op.getScanTask());
+        Assert.assertEquals("scanTaskId", op.getScanTask(testJob));
     }
 
     @Test
@@ -66,24 +63,4 @@ public class TlsCrawlerTest {
         Assert.assertEquals(15, pp.getStats().getTotalTasks());
     }
 
-    @Test
-    public void getScans() {
-        Collection<IScan> scans = this.subject.getScans();
-
-        Assert.assertEquals(2, scans.size());
-
-        List<String> scanNames = scans.stream().map(IScan::getName).collect(Collectors.toList());
-        Assert.assertTrue(scanNames.containsAll(Arrays.asList("Scan1", "Scan3")));
-    }
-
-    @Test
-    public void getScanNames() {
-        Assert.assertEquals(2, this.subject.getScans().size());
-    }
-
-    @Test
-    public void getScanByName() {
-        Assert.assertNotNull(this.subject.getScanByName("Scan3"));
-        Assert.assertNull(this.subject.getScanByName("Scan2"));
-    }
 }
