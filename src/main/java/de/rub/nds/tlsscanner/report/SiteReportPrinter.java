@@ -549,7 +549,7 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "OCSP");
         if (Boolean.FALSE.equals(report.getMustStaple())) {
             prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
-            prettyAppend(builder, "Enforces OCSP Stapling (must-staple)", AnalyzedProperty.MUST_STAPLE);
+            prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
         } else if (Boolean.TRUE.equals(report.getMustStaple())) {
             prettyAppend(builder, "Supports OCSP Stapling", report.getSupportsStapling(),
                     report.getMustStaple() ? AnsiColor.GREEN : AnsiColor.RED);
@@ -1160,7 +1160,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Extended Master Secret", AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET);
         prettyAppend(builder, "Encrypt Then Mac", AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC);
         prettyAppend(builder, "Tokenbinding", AnalyzedProperty.SUPPORTS_TOKENBINDING);
-        prettyAppend(builder, "Certificate Status Request (OCSP Stapling)",
+        prettyAppend(builder, "Certificate Status Request",
                 AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
 
         if (report.getResult(AnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResult.TRUE) {
