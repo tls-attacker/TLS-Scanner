@@ -19,6 +19,7 @@ public enum AnalyzedPropertyCategory {
     ATTACKS,
     COMPARISON_FAILURE,
     CERTIFICATE,
+    OCSP,
     FRESHNESS,
     SNI,
     COMPRESSION,

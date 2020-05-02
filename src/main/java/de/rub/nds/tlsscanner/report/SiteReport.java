@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.report;
 
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
+import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -89,6 +90,13 @@ public class SiteReport extends Observable {
     // Certificate
     private Certificate certificate = null;
     private CertificateChain certificateChain;
+
+    // OCSP
+    private Boolean supportsStapling = null;
+    private Boolean supportsNonce = null;
+    private OCSPResponse stapledOcspResponse = null;
+    private OCSPResponse firstOcspResponse = null;
+    private OCSPResponse secondOcspResponse = null;
 
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -547,5 +555,45 @@ public class SiteReport extends Observable {
 
     public synchronized void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
         this.invalidCurveResultList = invalidCurveResultList;
+    }
+
+    public synchronized Boolean getSupportsStapling() {
+        return supportsStapling;
+    }
+
+    public synchronized void setSupportsStapling(Boolean supportsStapling) {
+        this.supportsStapling = supportsStapling;
+    }
+
+    public synchronized OCSPResponse getStapledOcspResponse() {
+        return stapledOcspResponse;
+    }
+
+    public synchronized void setStapledOcspResponse(OCSPResponse stapledOcspResponse) {
+        this.stapledOcspResponse = stapledOcspResponse;
+    }
+
+    public synchronized OCSPResponse getFirstOcspResponse() {
+        return firstOcspResponse;
+    }
+
+    public synchronized void setFirstOcspResponse(OCSPResponse firstOcspResponse) {
+        this.firstOcspResponse = firstOcspResponse;
+    }
+
+    public synchronized OCSPResponse getSecondOcspResponse() {
+        return secondOcspResponse;
+    }
+
+    public synchronized void setSecondOcspResponse(OCSPResponse secondOcspResponse) {
+        this.secondOcspResponse = secondOcspResponse;
+    }
+
+    public synchronized Boolean getSupportsNonce() {
+        return supportsNonce;
+    }
+
+    public synchronized void setSupportsNonce(Boolean supportsNonce) {
+        this.supportsNonce = supportsNonce;
     }
 }

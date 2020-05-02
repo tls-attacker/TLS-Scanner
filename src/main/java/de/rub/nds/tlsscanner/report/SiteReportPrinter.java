@@ -123,6 +123,7 @@ public class SiteReportPrinter {
         // appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
+        appendOcsp(builder);
         appendSession(builder);
         appendRenegotiation(builder);
         appendHandshakeSimulation(builder);
@@ -538,6 +539,30 @@ public class SiteReportPrinter {
 
                 }
             }
+        }
+        return builder;
+    }
+
+    private StringBuilder appendOcsp(StringBuilder builder) {
+        prettyAppendHeading(builder, "OCSP");
+        prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+        if (Boolean.TRUE.equals(report.getSupportsStapling())) {
+            prettyAppend(builder, "Includes OCSP Certificate Status",
+                    AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT);
+            prettyAppend(builder, "Stapled Response Outdated", AnalyzedProperty.STAPLED_RESPONSE_OUTDATED);
+        }
+        prettyAppend(builder, "Supports Nonce", AnalyzedProperty.SUPPORTS_NONCE);
+        if (Boolean.TRUE.equals(report.getSupportsNonce())) {
+            prettyAppend(builder, "Nonce Mismatch / Cached Nonce", AnalyzedProperty.NONCE_MISMATCH);
+        }
+
+        if (report.getStapledOcspResponse() != null) {
+            prettyAppendSubheading(builder, "Stapled OCSP Response");
+            prettyAppend(builder, report.getStapledOcspResponse().toString(false));
+        }
+        if (report.getFirstOcspResponse() != null) {
+            prettyAppendSubheading(builder, "Requested OCSP Response");
+            prettyAppend(builder, report.getFirstOcspResponse().toString(false));
         }
         return builder;
     }
