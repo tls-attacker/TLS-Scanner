@@ -93,6 +93,7 @@ public class SiteReport extends Observable {
 
     // OCSP
     private Boolean supportsStapling = null;
+    private Boolean mustStaple = null;
     private Boolean supportsNonce = null;
     private OCSPResponse stapledOcspResponse = null;
     private OCSPResponse firstOcspResponse = null;
@@ -595,5 +596,13 @@ public class SiteReport extends Observable {
 
     public synchronized void setSupportsNonce(Boolean supportsNonce) {
         this.supportsNonce = supportsNonce;
+    }
+
+    public synchronized Boolean getMustStaple() {
+        return mustStaple;
+    }
+
+    public synchronized void setMustStaple(Boolean mustStaple) {
+        this.mustStaple = mustStaple;
     }
 }

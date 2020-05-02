@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import com.sun.deploy.uitoolkit.impl.fx.ui.CertificateDialog;
+import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
@@ -44,8 +46,9 @@ import java.util.List;
  */
 public class OcspProbe extends TlsProbe {
 
-    private Boolean supportsStapling;
-    private Boolean supportsNonce;
+    private boolean supportsStapling;
+    private boolean mustStaple;
+    private boolean supportsNonce;
     private OCSPResponse stapledResponse;
     private OCSPResponse firstResponse;
     private OCSPResponse secondResponse;
@@ -59,12 +62,13 @@ public class OcspProbe extends TlsProbe {
         Config tlsConfig = initTlsConfig();
         Certificate serverCertChain = CertificateFetcher.fetchServerCertificate(tlsConfig);
 
-        getStapledResponse(tlsConfig);
-
         if (serverCertChain == null) {
             LOGGER.error("Couldn't fetch certificate chain from server!");
-            return new OcspResult(false, false, null, null, null);
+            return getCouldNotExecuteResult();
         }
+
+        getMustStaple(serverCertChain);
+        getStapledResponse(tlsConfig);
 
         try {
             OCSPRequest ocspRequest = new OCSPRequest(serverCertChain);
@@ -91,7 +95,18 @@ public class OcspProbe extends TlsProbe {
             LOGGER.error("OCSP Request/Response failed.");
         }
 
-        return new OcspResult(supportsStapling, supportsNonce, stapledResponse, firstResponse, secondResponse);
+        return new OcspResult(supportsStapling, mustStaple, supportsNonce, stapledResponse, firstResponse,
+                secondResponse);
+    }
+
+    private void getMustStaple(Certificate certChain) {
+        org.bouncycastle.asn1.x509.Certificate singleCert = certChain.getCertificateAt(0);
+        CertificateInformationExtractor certInformationExtractor = new CertificateInformationExtractor(singleCert);
+        try {
+            mustStaple = certInformationExtractor.getMustStaple();
+        } catch (Exception e) {
+            LOGGER.warn("Couldn't determine OCSP must staple flag in certificate.");
+        }
     }
 
     private void getStapledResponse(Config tlsConfig) {
@@ -155,6 +170,6 @@ public class OcspProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new OcspResult(false, false, null, null, null);
+        return new OcspResult(false, false, false, null, null, null);
     }
 }

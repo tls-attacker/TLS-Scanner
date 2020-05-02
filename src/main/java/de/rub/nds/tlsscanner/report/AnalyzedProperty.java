@@ -189,6 +189,7 @@ public enum AnalyzedProperty {
     MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_GCM_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     HAS_CERTIFICATE_ISSUES(AnalyzedPropertyCategory.CERTIFICATE),
+    MUST_STAPLE(AnalyzedPropertyCategory.OCSP),
     HAS_STAPLED_RESPONSE_DESPITE_SUPPORT(AnalyzedPropertyCategory.OCSP),
     STAPLED_RESPONSE_OUTDATED(AnalyzedPropertyCategory.OCSP),
     SUPPORTS_NONCE(AnalyzedPropertyCategory.OCSP),

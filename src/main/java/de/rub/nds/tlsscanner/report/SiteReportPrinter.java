@@ -57,6 +57,8 @@ import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuit
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
+
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -545,10 +547,17 @@ public class SiteReportPrinter {
 
     private StringBuilder appendOcsp(StringBuilder builder) {
         prettyAppendHeading(builder, "OCSP");
-        prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+        if (Boolean.FALSE.equals(report.getMustStaple())) {
+            prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+            prettyAppend(builder, "Enforces OCSP Stapling (must-staple)", AnalyzedProperty.MUST_STAPLE);
+        } else if (Boolean.TRUE.equals(report.getMustStaple())) {
+            prettyAppend(builder, "Supports OCSP Stapling", report.getSupportsStapling(),
+                    report.getMustStaple() ? AnsiColor.GREEN : AnsiColor.RED);
+            prettyAppend(builder, "Enforces OCSP Stapling", report.getMustStaple(),
+                    report.getMustStaple() ? AnsiColor.GREEN : AnsiColor.RED);
+        }
         if (Boolean.TRUE.equals(report.getSupportsStapling())) {
-            prettyAppend(builder, "Includes OCSP Certificate Status",
-                    AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT);
+            prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT);
             prettyAppend(builder, "Stapled Response Outdated", AnalyzedProperty.STAPLED_RESPONSE_OUTDATED);
         }
         prettyAppend(builder, "Supports Nonce", AnalyzedProperty.SUPPORTS_NONCE);

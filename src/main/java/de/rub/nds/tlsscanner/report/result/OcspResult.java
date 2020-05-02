@@ -25,15 +25,17 @@ import java.util.Locale;
 public class OcspResult extends ProbeResult {
 
     private final boolean supportsStapling;
+    private final boolean mustStaple;
     private final boolean supportsNonce;
     private final OCSPResponse stapledResponse;
     private final OCSPResponse firstResponse;
     private final OCSPResponse secondResponse;
 
-    public OcspResult(boolean supportsStapling, boolean supportsNonce, OCSPResponse stapledResponse,
-            OCSPResponse firstResponse, OCSPResponse secondResponse) {
+    public OcspResult(boolean supportsStapling, boolean mustStaple, boolean supportsNonce,
+            OCSPResponse stapledResponse, OCSPResponse firstResponse, OCSPResponse secondResponse) {
         super(ProbeType.OCSP);
         this.supportsStapling = supportsStapling;
+        this.mustStaple = mustStaple;
         this.supportsNonce = supportsNonce;
         this.stapledResponse = stapledResponse;
         this.firstResponse = firstResponse;
@@ -43,6 +45,7 @@ public class OcspResult extends ProbeResult {
     @Override
     public void mergeData(SiteReport report) {
         report.setSupportsStapling(supportsStapling);
+        report.setMustStaple(mustStaple);
         report.setSupportsNonce(supportsNonce);
         report.setStapledOcspResponse(stapledResponse);
         report.setFirstOcspResponse(firstResponse);
@@ -54,6 +57,12 @@ public class OcspResult extends ProbeResult {
             report.putResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT, TestResult.FALSE);
         } else {
             report.putResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT, TestResult.TRUE);
+        }
+
+        if (mustStaple) {
+            report.putResult(AnalyzedProperty.MUST_STAPLE, TestResult.TRUE);
+        } else {
+            report.putResult(AnalyzedProperty.MUST_STAPLE, TestResult.FALSE);
         }
 
         if (firstResponse != null) {
