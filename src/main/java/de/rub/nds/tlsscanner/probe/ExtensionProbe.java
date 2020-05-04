@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.core.protocol.message.extension.statusrequestv2.RequestItemV2;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -83,6 +84,13 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setAddSessionTicketTLSExtension(true);
         tlsConfig.setAddTruncatedHmacExtension(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
+
+        // Certificate Status v2 shenanigans
+        RequestItemV2 emptyRequest = new RequestItemV2(2, 0, 0, 0, new byte[0]);
+        List<RequestItemV2> requestV2List = new LinkedList<>();
+        requestV2List.add(emptyRequest);
+        tlsConfig.setStatusRequestV2RequestList(requestV2List);
+        tlsConfig.setAddCertificateStatusRequestV2Extension(true);
 
         List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(nameGroups);

@@ -27,6 +27,7 @@ public class ExtensionResult extends ProbeResult {
     private TestResult secureRenegotiation = TestResult.FALSE;
     private TestResult sessionTickets = TestResult.FALSE;
     private TestResult certStatusRequest = TestResult.FALSE;
+    private TestResult certStatusRequestv2 = TestResult.FALSE;
 
     public ExtensionResult(List<ExtensionType> allSupportedExtensions) {
         super(ProbeType.EXTENSIONS);
@@ -57,6 +58,9 @@ public class ExtensionResult extends ProbeResult {
                 if (type == ExtensionType.STATUS_REQUEST) {
                     certStatusRequest = TestResult.TRUE;
                 }
+                if (type == ExtensionType.STATUS_REQUEST_V2) {
+                    certStatusRequest = TestResult.TRUE;
+                }
             }
         } else {
             encryptThenMac = TestResult.COULD_NOT_TEST;
@@ -64,12 +68,14 @@ public class ExtensionResult extends ProbeResult {
             secureRenegotiation = TestResult.COULD_NOT_TEST;
             sessionTickets = TestResult.COULD_NOT_TEST;
             certStatusRequest = TestResult.COULD_NOT_TEST;
+            certStatusRequestv2 = TestResult.COULD_NOT_TEST;
         }
         report.putResult(AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
         report.putResult(AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
         report.putResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
         report.putResult(AnalyzedProperty.SUPPORTS_SESSION_TICKETS, sessionTickets);
         report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
+        report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestv2);
     }
 
 }
