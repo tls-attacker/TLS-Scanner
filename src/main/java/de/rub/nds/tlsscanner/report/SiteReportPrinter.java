@@ -542,14 +542,14 @@ public class SiteReportPrinter {
 
     private StringBuilder appendOcsp(StringBuilder builder) {
         prettyAppendHeading(builder, "OCSP");
-        if (Boolean.FALSE.equals(report.getMustStaple())) {
-            prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
-            prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
-        } else if (Boolean.TRUE.equals(report.getMustStaple())) {
+        if (Boolean.TRUE.equals(report.getMustStaple())) {
             prettyAppend(builder, "Supports OCSP Stapling", report.getSupportsStapling(),
                     report.getMustStaple() ? AnsiColor.GREEN : AnsiColor.RED);
             prettyAppend(builder, "Enforces OCSP Stapling", report.getMustStaple(),
                     report.getMustStaple() ? AnsiColor.GREEN : AnsiColor.RED);
+        } else {
+            prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+            prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
         }
         if (Boolean.TRUE.equals(report.getSupportsStapling())) {
             prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT);
