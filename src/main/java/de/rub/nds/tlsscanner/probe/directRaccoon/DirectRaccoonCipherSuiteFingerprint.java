@@ -53,7 +53,7 @@ public class DirectRaccoonCipherSuiteFingerprint {
                     continue;
                 }
                 EqualityError equality = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(),
-                        vectorResponseTwo.getFingerprint(), true);
+                        vectorResponseTwo.getFingerprint());
                 if (equality != EqualityError.NONE) {
                     return equality;
                 }

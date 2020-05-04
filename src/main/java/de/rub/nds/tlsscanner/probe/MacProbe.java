@@ -325,8 +325,7 @@ public class MacProbe extends TlsProbe {
             if (trace.executedAsPlanned()) {
                 if (check == Check.APPDATA) {
                     ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
-                    EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint,
-                            true);
+                    EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint);
                     LOGGER.debug("Fingerprint: " + fingerprint.toString());
                     if (equalityError != EqualityError.NONE) {
                         byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
