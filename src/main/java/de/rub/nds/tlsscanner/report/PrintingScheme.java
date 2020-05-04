@@ -286,8 +286,8 @@ public class PrintingScheme {
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.SUPPORTS_NONCE, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.NONCE_MISMATCH, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.STAPLED_RESPONSE_OUTDATED,
-                getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.MUST_STAPLE, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
 
         HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();

@@ -8,12 +8,14 @@
  */
 package de.rub.nds.tlsscanner.report.result;
 
+import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -74,10 +76,22 @@ public class OcspResult extends ProbeResult {
                         .parse(stapledResponse.getResponseTime(), inputFormatter);
                 LocalDateTime secondResponseTime = LocalDateTime.parse(firstResponse.getResponseTime(), inputFormatter);
 
-                if (firstResponseTime.isBefore(secondResponseTime)) {
-                    report.putResult(AnalyzedProperty.STAPLED_RESPONSE_OUTDATED, TestResult.TRUE);
+                // Check how long the stapled response has been cached for, in
+                // hours
+                Duration difference = Duration.between(firstResponseTime, secondResponseTime);
+                long differenceInHours = difference.toHours();
+                report.setDifferenceHoursStapled(differenceInHours);
+
+                // Check if status is actually outdated and not valid anymore
+                CertificateStatus certificateStatus = stapledResponse.getCertificateStatusList().get(0);
+                LocalDateTime certificateStatusUpdateValidTill = LocalDateTime.parse(
+                        certificateStatus.getTimeOfNextUpdate(), inputFormatter);
+                LocalDateTime currentTime = LocalDateTime.now();
+
+                if (certificateStatusUpdateValidTill.isBefore(currentTime)) {
+                    report.putResult(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED, TestResult.TRUE);
                 } else {
-                    report.putResult(AnalyzedProperty.STAPLED_RESPONSE_OUTDATED, TestResult.FALSE);
+                    report.putResult(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED, TestResult.FALSE);
                 }
             }
             // Check if the use of a nonce is supported

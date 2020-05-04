@@ -98,6 +98,7 @@ public class SiteReport extends Observable {
     private OCSPResponse stapledOcspResponse = null;
     private OCSPResponse firstOcspResponse = null;
     private OCSPResponse secondOcspResponse = null;
+    private Long differenceHoursStapled = null;
 
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -604,5 +605,13 @@ public class SiteReport extends Observable {
 
     public synchronized void setMustStaple(Boolean mustStaple) {
         this.mustStaple = mustStaple;
+    }
+
+    public synchronized Long getDifferenceHoursStapled() {
+        return differenceHoursStapled;
+    }
+
+    public synchronized void setDifferenceHoursStapled(Long differenceHoursStapled) {
+        this.differenceHoursStapled = differenceHoursStapled;
     }
 }

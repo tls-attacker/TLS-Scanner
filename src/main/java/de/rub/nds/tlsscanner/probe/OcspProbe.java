@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import com.sun.deploy.uitoolkit.impl.fx.ui.CertificateDialog;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;

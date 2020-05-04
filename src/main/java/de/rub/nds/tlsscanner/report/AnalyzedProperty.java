@@ -191,7 +191,7 @@ public enum AnalyzedProperty {
     HAS_CERTIFICATE_ISSUES(AnalyzedPropertyCategory.CERTIFICATE),
     MUST_STAPLE(AnalyzedPropertyCategory.OCSP),
     HAS_STAPLED_RESPONSE_DESPITE_SUPPORT(AnalyzedPropertyCategory.OCSP),
-    STAPLED_RESPONSE_OUTDATED(AnalyzedPropertyCategory.OCSP),
+    STAPLED_RESPONSE_EXPIRED(AnalyzedPropertyCategory.OCSP),
     SUPPORTS_NONCE(AnalyzedPropertyCategory.OCSP),
     NONCE_MISMATCH(AnalyzedPropertyCategory.OCSP),
     HAS_WEAK_RANDOMNESS(AnalyzedPropertyCategory.FRESHNESS),

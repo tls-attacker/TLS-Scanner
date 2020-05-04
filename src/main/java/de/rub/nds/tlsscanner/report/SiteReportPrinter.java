@@ -10,9 +10,6 @@ package de.rub.nds.tlsscanner.report;
 
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
-import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
-import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
-import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
@@ -43,7 +40,6 @@ import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
-import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
@@ -57,7 +53,6 @@ import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuit
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -558,7 +553,14 @@ public class SiteReportPrinter {
         }
         if (Boolean.TRUE.equals(report.getSupportsStapling())) {
             prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT);
-            prettyAppend(builder, "Stapled Response Outdated", AnalyzedProperty.STAPLED_RESPONSE_OUTDATED);
+            long differenceHoursStapled = report.getDifferenceHoursStapled();
+            if (differenceHoursStapled < 24) {
+                prettyAppend(builder, "Stapled Response Cached", differenceHoursStapled + " hours", AnsiColor.GREEN);
+            } else {
+                prettyAppend(builder, "Stapled Response Cached", differenceHoursStapled / 24 + " days",
+                        AnsiColor.YELLOW);
+            }
+            prettyAppend(builder, "Stapled Response Expired", AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
         }
         prettyAppend(builder, "Supports Nonce", AnalyzedProperty.SUPPORTS_NONCE);
         if (Boolean.TRUE.equals(report.getSupportsNonce())) {
@@ -1160,8 +1162,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Extended Master Secret", AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET);
         prettyAppend(builder, "Encrypt Then Mac", AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC);
         prettyAppend(builder, "Tokenbinding", AnalyzedProperty.SUPPORTS_TOKENBINDING);
-        prettyAppend(builder, "Certificate Status Request",
-                AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+        prettyAppend(builder, "Certificate Status Request", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
 
         if (report.getResult(AnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResult.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");
