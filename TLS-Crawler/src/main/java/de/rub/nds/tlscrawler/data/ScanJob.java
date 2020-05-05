@@ -10,8 +10,9 @@ import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.NullScan;
 import de.rub.nds.tlscrawler.scans.PingScan;
 import de.rub.nds.tlscrawler.scans.TlsScan;
+import java.io.Serializable;
 
-public class ScanJob {
+public class ScanJob implements Serializable {
 
     private String scanName;
 
