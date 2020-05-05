@@ -82,4 +82,10 @@ public class TlsScan implements IScan {
         document.put("report", report);
         return document;
     }
+
+    @Override
+    public void close() {
+        parallelExecutor.shutdown();
+    }
+
 }

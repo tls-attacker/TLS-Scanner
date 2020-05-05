@@ -20,7 +20,7 @@ public class ScanHolder {
     private ScanHolder() {
     }
 
-    public IScan createScan(String name, int timeout, int parallelThreads, int reexecutions) {
+    public static IScan createScan(String name, int timeout, int parallelThreads, int reexecutions) {
         switch (name) {
             case "tls":
                 return new TlsScan(timeout, parallelThreads, reexecutions);

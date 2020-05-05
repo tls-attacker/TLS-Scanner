@@ -29,4 +29,6 @@ public interface IScan {
      * @return The scan's result in a Bson Document.
      */
     Document scan(ScanTarget target);
+
+    void close();
 }

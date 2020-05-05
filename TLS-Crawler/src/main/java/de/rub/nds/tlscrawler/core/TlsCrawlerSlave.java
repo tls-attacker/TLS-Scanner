@@ -15,6 +15,7 @@ import de.rub.nds.tlscrawler.data.SlaveStats;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
+import de.rub.nds.tlscrawler.scans.ScanHolder;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -119,7 +120,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
     @Override
     public IScan getCurrentScan() {
-        return getCurrentScan();
+        return currentScan;
     }
 
     private class TlsCrawlerSlaveOrgThread extends Thread {
@@ -226,9 +227,13 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                 LOG.info("Fetching tasks: {}", this.getName());
                 Collection<String> targetString = this.organizer.getOrchestrationProvider().getScanTasks(currentScanJob, this.fetchAmount);
                 LOG.info("#Fetched: {}", targetString.size());
-
-                for (String tempString : targetString) {
-                    futureDnsResults.add(dnsPool.submit(new DnsThread(tempString, currentScanJob.getPort())));
+                if (targetString.isEmpty()) {
+                    currentScanJob = null;
+                    currentScan.close();
+                } else {
+                    for (String tempString : targetString) {
+                        futureDnsResults.add(dnsPool.submit(new DnsThread(tempString, currentScanJob.getPort())));
+                    }
                 }
             }
         }
@@ -238,6 +243,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             Collection<ScanJob> scanJobs = orchestrationProvider.getScanJobs();
             for (ScanJob job : scanJobs) {
                 if (orchestrationProvider.getNumberOfTasks(job) > 0) {
+                    currentScan = ScanHolder.createScan(job.getScanName(), job.getTimeout(), noThreads, job.getReexecutions());
                     return job;
                 }
             }
