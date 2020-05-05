@@ -208,6 +208,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
                 ScanJob readJob = mapper.readValue(job, ScanJob.class);
                 scanJobList.add(readJob);
             } catch (JsonProcessingException ex) {
+                ex.printStackTrace();
                 LOG.warn("Invalid active job:\n" + job);
             }
         }
