@@ -25,7 +25,7 @@ import org.bson.Document;
 public class ScanTask implements IScanTask, Serializable {
 
     private static Logger LOG = LogManager.getLogger();
-    
+
     private String _id;
     private String instanceId;
     @JsonIgnore
@@ -37,6 +37,8 @@ public class ScanTask implements IScanTask, Serializable {
     private ScanTarget scanTarget;
     @JsonIgnore
     private IScan scan;
+    @JsonIgnore
+    private ScanJob scanJob;
     private Document result;
 
     private ScanTask() {
@@ -46,7 +48,7 @@ public class ScanTask implements IScanTask, Serializable {
             String instanceId,
             Instant acceptedTimestamp,
             ScanTarget scanTarget,
-            IScan scan) {
+            IScan scan, ScanJob scanJob) {
         this._id = id;
         this.instanceId = instanceId;
         this.acceptedTimestamp = acceptedTimestamp;
@@ -55,6 +57,15 @@ public class ScanTask implements IScanTask, Serializable {
         this.startedTimestamp = null;
         this.completedTimestamp = null;
         this.scan = scan;
+        this.scanJob = scanJob;
+    }
+
+    public ScanJob getScanJob() {
+        return scanJob;
+    }
+
+    public void setScanJob(ScanJob scanJob) {
+        this.scanJob = scanJob;
     }
 
     @JsonProperty("_id")

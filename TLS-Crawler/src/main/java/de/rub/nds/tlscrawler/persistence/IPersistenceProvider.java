@@ -25,11 +25,7 @@ import org.bson.conversions.Bson;
  */
 public interface IPersistenceProvider {
 
-    public void clean();
-    /*
-     * Comment: Its not so nice to have this method here. But I think other solutions will be harder to implement, and in the end noone probably cares
-     */
-    public void init(String databaseName, String workspaceName);
+    public void clean(String database, String workspace);
 
     /**
      * Accepts new scan task. ID may or may not be set.
@@ -52,11 +48,11 @@ public interface IPersistenceProvider {
      */
     public IPersistenceProviderStats getStats();
     
-    public long countDocuments(Bson query);
+    public long countDocuments(String database, String workspace, Bson query);
 
-    public DistinctIterable findDistinctValues(String fieldName, Class resultClass);
+    public DistinctIterable findDistinctValues(String database, String workspace, String fieldName, Class resultClass);
     
-    public FindIterable<ScanTask> findDocuments(Bson findQuery);
+    public FindIterable<ScanTask> findDocuments(String database, String workspace, Bson findQuery);
 
-    public Collection<SiteReport> findSiteReports(Bson findQuery);
+    public Collection<SiteReport> findSiteReports(String database, String workspace, Bson findQuery);
 }

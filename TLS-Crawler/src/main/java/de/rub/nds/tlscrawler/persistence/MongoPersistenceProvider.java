@@ -66,28 +66,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         LOG.trace("Constructor()");
         this.address = address;
         this.credentials = credentials;
-    }
-
-    /**
-     * Initializes the MongoDB persistence provider.
-     *
-     * @param dbName Name of the database to use.
-     * @param collectionName
-     */
-    public void init(String dbName, String collectionName) {
-        if (dbName.equals(intializedDb) && collectionName.equals(initalizedWorkspace)) {
-            //Connection already initialized
-            return;
-        }
-        LOG.trace("init() with name '{}'", dbName);
-
-        if (this.credentials != null) {
-            this.mongoClient = new MongoClient(this.address, Arrays.asList(this.credentials));
-        } else {
-            this.mongoClient = new MongoClient(this.address);
-        }
-
-        this.database = this.mongoClient.getDatabase(dbName);
 
         SimpleModule module = new SimpleModule();
         module.addSerializer(new ByteArraySerialisationConverter());
@@ -103,6 +81,29 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         module.addSerializer(new HttpsHeaderSerialisationConverter());
         mapper.registerModule(module);
         mapper.registerModule(new JavaTimeModule());
+    }
+
+    /**
+     * Initializes the MongoDB persistence provider.
+     *
+     * @param dbName Name of the database to use.
+     * @param collectionName
+     */
+    private void init(String dbName, String collectionName) {
+        if (dbName.equals(intializedDb) && collectionName.equals(initalizedWorkspace)) {
+            //Connection already initialized
+            return;
+        }
+        LOG.trace("init() with name '{}'", dbName);
+
+        if (this.credentials != null) {
+            this.mongoClient = new MongoClient(this.address, Arrays.asList(this.credentials));
+        } else {
+            this.mongoClient = new MongoClient(this.address);
+        }
+
+        this.database = this.mongoClient.getDatabase(dbName);
+
         collection = JacksonMongoCollection.builder().withObjectMapper(mapper).<ScanTask>build(database, collectionName, ScanTask.class);
 
         this.initialized = true;
@@ -128,7 +129,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     @Override
     public void insertScanTask(ScanTask newTask) {
-        this.checkInit();
+        this.init(newTask.getScanJob().getScanName(), newTask.getScanJob().getWorkspace());
         LOG.trace("setUpScanTask()");
         this.collection.insertOne(newTask);
     }
@@ -137,15 +138,35 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     public void insertScanTasks(List<ScanTask> newTasks) {
         this.checkInit();
         LOG.trace("setUpScanTasks()");
-
+        ScanJob job = null;
+        List<ScanTask> tempTaskList = new LinkedList<>();
+        for (ScanTask task : newTasks) {
+            if (job == null) {
+                job = task.getScanJob();
+                this.init(job.getScanName(), job.getWorkspace());
+            }
+            if (task.getScanJob().equals(job)) {
+                tempTaskList.add(task);
+            } else {
+                this.collection.insertMany(tempTaskList);
+                tempTaskList = new LinkedList<>();
+                job = task.getScanJob();
+                this.init(job.getScanName(), job.getWorkspace());
+            }
+        }
+        if (!tempTaskList.isEmpty()) {
+            this.collection.insertMany(tempTaskList);
+        }
         this.collection.insertMany(newTasks);
     }
 
-    public FindIterable<ScanTask> findDocuments(Bson findQuery) {
+    public FindIterable<ScanTask> findDocuments(String database, String workspace, Bson findQuery) {
+        this.init(database, workspace);
         return collection.find(findQuery);
     }
 
-    public Collection<SiteReport> findSiteReports(Bson findQuery) {
+    public Collection<SiteReport> findSiteReports(String database, String workspace, Bson findQuery) {
+        this.init(database, workspace);
         List<SiteReport> reportList = new LinkedList<>();
         FindIterable<ScanTask> findIterable = collection.find(findQuery);
         for (ScanTask scanTask : findIterable) {
@@ -166,18 +187,21 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     }
 
     @Override
-    public long countDocuments(Bson query) {
+    public long countDocuments(String database, String workspace, Bson query) {
+        this.init(database, workspace);
         return collection.countDocuments(query);
     }
 
     @Override
-    public DistinctIterable findDistinctValues(String fieldName, Class resultClass) {
+    public DistinctIterable findDistinctValues(String database, String workspace, String fieldName, Class resultClass) {
+        this.init(database, workspace);
         return collection.distinct(fieldName, resultClass);
     }
 
     @Override
-    public void clean() {
-        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("id",  new BsonDocument()));
+    public void clean(String database, String workspace) {
+        this.init(database, workspace);
+        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("id", new BsonDocument()));
         collection.updateMany(new BsonDocument(), updateDocument);
     }
 

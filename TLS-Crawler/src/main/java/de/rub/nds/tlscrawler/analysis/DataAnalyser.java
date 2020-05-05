@@ -38,13 +38,12 @@ public class DataAnalyser {
     }
 
     public void analyze() {
-        persistenceProvider.init(config.getDatabaseName(), config.getWorkspaceName());
-        persistenceProvider.clean();
-        long totalAnswers = persistenceProvider.countDocuments(new BsonDocument());
+        persistenceProvider.clean(config.getDatabaseName(), config.getWorkspaceName());
+        long totalAnswers = persistenceProvider.countDocuments(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument());
         System.out.println("Total servers scanned: " + totalAnswers);
         for (CipherSuite suite : CipherSuite.values()) {
             System.out.println(suite.name());
-            System.out.println("Total:" + persistenceProvider.countDocuments(new BsonDocument("result.report.cipherSuites", new BsonString(suite.name()))));
+            System.out.println("Total:" + persistenceProvider.countDocuments(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.cipherSuites", new BsonString(suite.name()))));
 //            for (ProtocolVersion version : ProtocolVersion.values()) {
 //                BsonDocument document = new BsonDocument();
 //                document.put("result.report.versionSuitePairs.version", new BsonString(version.name()));
@@ -69,7 +68,7 @@ public class DataAnalyser {
 //            }
 //        }
 //
-        Collection<SiteReport> siteReports = persistenceProvider.findSiteReports(new BsonDocument("result.report.resultMap.VULNERABLE_TO_DIRECT_RACCOON", new BsonString("TRUE")));
+        Collection<SiteReport> siteReports = persistenceProvider.findSiteReports(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.resultMap.VULNERABLE_TO_DIRECT_RACCOON", new BsonString("TRUE")));
         for (SiteReport report : siteReports) {
             SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.DETAILED, false);
             System.out.println(printer.getFullReport());
