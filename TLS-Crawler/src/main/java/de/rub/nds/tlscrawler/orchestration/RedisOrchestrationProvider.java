@@ -122,7 +122,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
         long listLength;
         try (Jedis redis = this.jedisPool.getResource()) {
-            listLength = redis.llen(job.getWorkspace());
+            listLength = redis.scard(job.getWorkspace());
         }
         return listLength;
     }
