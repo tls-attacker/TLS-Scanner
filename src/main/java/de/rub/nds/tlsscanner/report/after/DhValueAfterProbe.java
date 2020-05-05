@@ -26,7 +26,7 @@ public class DhValueAfterProbe extends AfterProbe {
     private TestResult onlySafePrime;
     private TestResult usesCommonDhPrimes;
     private TestResult reuse;
-    
+
     @Override
     public void analyze(SiteReport report) {
         ExtractedValueContainer publicKeyContainer = report.getExtractedValueContainerMap().get(
@@ -104,7 +104,7 @@ public class DhValueAfterProbe extends AfterProbe {
     private boolean isSafePrime(BigInteger bigInteger) {
         return bigInteger.shiftRight(1).isProbablePrime(30);
     }
-    
+
     public TestResult getOnlyPrime() {
         return this.onlyPrime;
     }
