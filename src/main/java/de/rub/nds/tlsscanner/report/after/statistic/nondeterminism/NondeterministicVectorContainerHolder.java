@@ -135,6 +135,10 @@ public class NondeterministicVectorContainerHolder {
             responseA = container1.getDistinctResponsesCounterList().get(0).getFingerprint();
             responseB = container2.getDistinctResponsesCounterList().get(0).getFingerprint();
         }
+        if (responseA.equals(responseB)) {
+            // Both answers are identical
+            return 1;
+        }
         int input1ResponseA = 0;
         int input1ResponseB = 0;
         int input2ResponseA = 0;
