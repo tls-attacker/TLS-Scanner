@@ -542,15 +542,45 @@ public class SiteReportPrinter {
 
     private StringBuilder appendOcsp(StringBuilder builder) {
         prettyAppendHeading(builder, "OCSP");
-        if (Boolean.TRUE.equals(report.getMustStaple())) {
-            prettyAppend(builder, "Supports OCSP Stapling", report.getSupportsStapling(),
-                    report.getMustStaple() ? AnsiColor.GREEN : AnsiColor.RED);
-            prettyAppend(builder, "Enforces OCSP Stapling", report.getMustStaple(),
-                    report.getMustStaple() ? AnsiColor.GREEN : AnsiColor.RED);
-        } else {
-            prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
-            prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
+
+        // TODO: Find a better place to merge the data of these two probes?
+        // In case extension probe & OCSP probe differ, report stapling as
+        // unreliable.
+        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.TRUE
+                && Boolean.FALSE.equals(report.getSupportsStapling())) {
+            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.RED);
+            prettyAppend(builder, "Extension scan reported OCSP Stapling support, but OCSP scan does not.",
+                    AnsiColor.RED);
+            prettyAppend(builder, "The results are likely incomplete. Maybe rescan for more information? \n",
+                    AnsiColor.RED);
+            report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
+        } else if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.FALSE
+                && Boolean.TRUE.equals(report.getSupportsStapling())) {
+            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.RED);
+            prettyAppend(builder, "Extension scan reported no OCSP support, but OCSP scan does. \n", AnsiColor.RED);
+            report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
         }
+
+        // Print stapling support & 'must-staple'
+        if (report.getResult(AnalyzedProperty.STAPLING_UNRELIABLE) == TestResult.TRUE) {
+            prettyAppend(builder, "Supports OCSP Stapling", "true, but unreliable", AnsiColor.RED);
+            if (report.getMustStaple() != null) {
+                prettyAppend(builder, "Enforces OCSP Stapling", report.getMustStaple(),
+                        report.getMustStaple() ? AnsiColor.RED : AnsiColor.DEFAULT_COLOR);
+            }
+        } else {
+            if (Boolean.TRUE.equals(report.getMustStaple())) {
+                prettyAppend(builder, "Supports OCSP Stapling", report.getSupportsStapling(),
+                        report.getSupportsStapling() ? AnsiColor.GREEN : AnsiColor.RED);
+                prettyAppend(builder, "Enforces OCSP Stapling", report.getMustStaple(),
+                        report.getMustStaple() ? AnsiColor.GREEN : AnsiColor.RED);
+            } else {
+                prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+                prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
+            }
+        }
+
+        // Is stapling supported, but a CertificateStatus message is missing?
         if (Boolean.TRUE.equals(report.getSupportsStapling())) {
             prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT);
             long differenceHoursStapled = report.getDifferenceHoursStapled();
@@ -562,6 +592,8 @@ public class SiteReportPrinter {
             }
             prettyAppend(builder, "Stapled Response Expired", AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
         }
+
+        // Are nonces used? If so, do they match?
         prettyAppend(builder, "Supports Nonce", AnalyzedProperty.SUPPORTS_NONCE);
         if (Boolean.TRUE.equals(report.getSupportsNonce())) {
             prettyAppend(builder, "Nonce Mismatch / Cached Nonce", AnalyzedProperty.NONCE_MISMATCH);
