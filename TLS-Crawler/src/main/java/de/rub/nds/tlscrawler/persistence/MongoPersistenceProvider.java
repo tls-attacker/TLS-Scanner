@@ -138,6 +138,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
             } else {
                 this.collection.insertMany(tempTaskList);
                 tempTaskList = new LinkedList<>();
+                tempTaskList.add(task);
                 job = task.getScanJob();
                 this.init(job.getScanName(), job.getWorkspace());
             }
