@@ -38,9 +38,12 @@ public class Master {
         cleanUpFinishedScanTasks();
         int counter = 0;
         do {
+            LOGGER.info("Initializing ScanJob");
             ScanJob job = new ScanJob(config.getScanName(), config.getScanName() + "-" + counter, "tls", config.getPort(), config.getReexecutions(), config.getScannerTimeout());
             addFreshScanTasks(job);
+            LOGGER.info("Pushing ScanJob");
             orchestrationProvider.putScanJob(job);
+            LOGGER.info("ScanJob pushed");
             counter++;
             if (checkForEarlyAbortion(counter)) {
                 break;
@@ -53,6 +56,7 @@ public class Master {
     }
 
     private void addFreshScanTasks(ScanJob job) throws RuntimeException {
+        LOGGER.info("Reading hostName list");
         List<String> hostNameList = new LinkedList<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(new File(config.getHostFile())));
@@ -63,7 +67,9 @@ public class Master {
         } catch (IOException ex) {
             throw new RuntimeException("Could not load " + config.getHostFile(), ex);
         }
+        LOGGER.info("Read " + hostNameList.size() + " hosts");
         orchestrationProvider.addScanTasks(job, hostNameList);
+        LOGGER.info("Pushed scans tasks");
     }
 
     private boolean checkForEarlyAbortion(int counter) {
