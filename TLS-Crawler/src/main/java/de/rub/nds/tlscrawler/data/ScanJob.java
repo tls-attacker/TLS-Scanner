@@ -26,6 +26,9 @@ public class ScanJob implements Serializable {
 
     private int timeout;
 
+    private ScanJob() {
+    }
+
     public ScanJob(String scanName, String workspace, String scan, int port, int reexecutions, int timeout) {
         this.scanName = scanName;
         this.workspace = workspace;
