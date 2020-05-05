@@ -243,7 +243,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             Collection<ScanJob> scanJobs = orchestrationProvider.getScanJobs();
             for (ScanJob job : scanJobs) {
                 if (orchestrationProvider.getNumberOfTasks(job) > 0) {
-                    currentScan = ScanHolder.createScan(job.getScanName(), job.getTimeout(), noThreads, job.getReexecutions());
+                    currentScan = ScanHolder.createScan(job.getScan(), job.getTimeout(), noThreads, job.getReexecutions());
                     return job;
                 }
             }
