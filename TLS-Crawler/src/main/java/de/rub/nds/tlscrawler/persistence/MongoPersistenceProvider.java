@@ -145,7 +145,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         if (!tempTaskList.isEmpty()) {
             this.collection.insertMany(tempTaskList);
         }
-        this.collection.insertMany(newTasks);
     }
 
     public FindIterable<ScanTask> findDocuments(String database, String workspace, Bson findQuery) {

@@ -61,8 +61,6 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
      * @param instanceId The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
-     * @param scans A neither null nor empty list of available scans.
-     * @param port
      */
     public TlsCrawlerSlave(String instanceId,
             IOrchestrationProvider orchestrationProvider,
