@@ -152,7 +152,7 @@ public class PaddingOracleProbe extends TlsProbe {
         // TODO TLS13 probe is only a dependency to prevent an
         // java.util.ConcurrentModificationException. Not good
         // needs to be fixed before merging!
-        if (!report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE) || report.isProbeAlreadyExecuted(ProbeType.TLS13)) {
+        if (!report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE) || !report.isProbeAlreadyExecuted(ProbeType.TLS13)) {
             return false;
         }
         return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
