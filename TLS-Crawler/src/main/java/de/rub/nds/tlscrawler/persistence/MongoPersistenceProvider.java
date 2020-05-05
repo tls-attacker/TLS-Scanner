@@ -114,18 +114,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         LOG.info("CurrentCollection: {}.", collectionName);
     }
 
-    /**
-     * Convenience method to block method entry in situations where the
-     * persistence provider is not initialized.
-     */
-    private void checkInit() {
-        if (!this.initialized) {
-            String error = String.format("%s has not been initialized.",
-                    MongoPersistenceProvider.class.getName());
-            LOG.error(error);
-            throw new RuntimeException(error);
-        }
-    }
+
 
     @Override
     public void insertScanTask(ScanTask newTask) {
@@ -136,7 +125,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     @Override
     public void insertScanTasks(List<ScanTask> newTasks) {
-        this.checkInit();
         LOG.trace("setUpScanTasks()");
         ScanJob job = null;
         List<ScanTask> tempTaskList = new LinkedList<>();
