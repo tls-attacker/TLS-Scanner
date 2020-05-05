@@ -7,8 +7,8 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
-import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ScanJob;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import java.util.Collection;
 
 /**
@@ -59,7 +59,7 @@ public interface IOrchestrationProvider {
      */
     public void addScanTasks(ScanJob job, Collection<String> taskIds);
     
-    public boolean isBlacklisted(IScanTarget target);
+    public boolean isBlacklisted(ScanTarget target);
     
     public void updateBlacklist();
 }

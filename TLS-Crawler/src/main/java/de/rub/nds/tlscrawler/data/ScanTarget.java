@@ -14,29 +14,33 @@ import java.io.Serializable;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class ScanTarget implements IScanTarget, Serializable {
+public class ScanTarget implements Serializable {
 
     private final String ip;
     private final String hostname;
     private final int port;
 
+    private ScanTarget()
+    {
+        ip = null;
+        hostname = null;
+        port = 0;
+    }
+    
     public ScanTarget(String ip, String hostname, int port) {
         this.ip = ip;
         this.hostname = hostname;
         this.port = port;
     }
 
-    @Override
     public String getIp() {
         return this.ip;
     }
 
-    @Override
     public int getPort() {
         return this.port;
     }
 
-    @Override
     public String getHostname() {
         return hostname;
     }

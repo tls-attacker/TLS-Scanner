@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.rub.nds.tlscrawler.scans.IScan;
 import java.io.Serializable;
@@ -24,14 +25,17 @@ import org.bson.Document;
 public class ScanTask implements IScanTask, Serializable {
 
     private static Logger LOG = LogManager.getLogger();
-
-    @JsonProperty("_id")
+    
     private String _id;
     private String instanceId;
+    @JsonIgnore
     private Instant acceptedTimestamp;
+    @JsonIgnore
     private Instant startedTimestamp;
+    @JsonIgnore
     private Instant completedTimestamp;
-    private IScanTarget scanTarget;
+    private ScanTarget scanTarget;
+    @JsonIgnore
     private IScan scan;
     private Document result;
 
@@ -41,7 +45,7 @@ public class ScanTask implements IScanTask, Serializable {
     public ScanTask(String id,
             String instanceId,
             Instant acceptedTimestamp,
-            IScanTarget scanTarget,
+            ScanTarget scanTarget,
             IScan scan) {
         this._id = id;
         this.instanceId = instanceId;
@@ -53,6 +57,7 @@ public class ScanTask implements IScanTask, Serializable {
         this.scan = scan;
     }
 
+    @JsonProperty("_id")
     @Override
     public String getId() {
         return this._id;
@@ -98,8 +103,33 @@ public class ScanTask implements IScanTask, Serializable {
     }
 
     @Override
-    public IScanTarget getScanTarget() {
+    public ScanTarget getScanTarget() {
         return scanTarget;
+    }
+
+    @JsonProperty("_id")
+    public void setId(String _id) {
+        this._id = _id;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+    public void setAcceptedTimestamp(Instant acceptedTimestamp) {
+        this.acceptedTimestamp = acceptedTimestamp;
+    }
+
+    public void setStartedTimestamp(Instant startedTimestamp) {
+        this.startedTimestamp = startedTimestamp;
+    }
+
+    public void setScanTarget(ScanTarget scanTarget) {
+        this.scanTarget = scanTarget;
+    }
+
+    public void setScan(IScan scan) {
+        this.scan = scan;
     }
 
 }

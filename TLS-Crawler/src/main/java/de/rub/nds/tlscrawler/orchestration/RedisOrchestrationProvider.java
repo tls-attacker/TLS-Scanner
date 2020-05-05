@@ -9,8 +9,9 @@ package de.rub.nds.tlscrawler.orchestration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.rub.nds.tlscrawler.data.IScanTarget;
+
 import de.rub.nds.tlscrawler.data.ScanJob;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -161,7 +162,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
-    public synchronized boolean isBlacklisted(IScanTarget target) {
+    public synchronized boolean isBlacklisted(ScanTarget target) {
         if (ipBlackListSet.contains(target.getIp())) {
             return true;
         }

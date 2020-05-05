@@ -25,6 +25,7 @@ import org.bson.conversions.Bson;
  */
 public interface IPersistenceProvider {
 
+    public void clean();
     /*
      * Comment: Its not so nice to have this method here. But I think other solutions will be harder to implement, and in the end noone probably cares
      */

@@ -7,7 +7,7 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
-import de.rub.nds.tlscrawler.data.IScanTarget;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import de.rub.nds.tlscrawler.utility.Tuple;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class PingScan implements IScan {
     }
 
     @Override
-    public Document scan(IScanTarget target) {
+    public Document scan(ScanTarget target) {
         LOG.trace("scan()");
 
         Document document = new Document();

@@ -32,9 +32,10 @@ import de.rub.nds.tlscrawler.persistence.converter.VectorSerialisationConverter;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
 import java.util.*;
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.BsonDocument;
+import org.bson.BsonString;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.mongojack.JacksonMongoCollection;
@@ -172,6 +173,12 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     @Override
     public DistinctIterable findDistinctValues(String fieldName, Class resultClass) {
         return collection.distinct(fieldName, resultClass);
+    }
+
+    @Override
+    public void clean() {
+        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("id",  new BsonDocument()));
+        collection.updateMany(new BsonDocument(), updateDocument);
     }
 
     /**

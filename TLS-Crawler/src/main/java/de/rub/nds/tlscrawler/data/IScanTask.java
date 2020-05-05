@@ -54,7 +54,7 @@ public interface IScanTask {
     /**
      * @return Returns the scan target.
      */
-    IScanTarget getScanTarget();
+    ScanTarget getScanTarget();
 
     /**
      * @return Returns the scan results.

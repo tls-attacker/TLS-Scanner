@@ -39,6 +39,7 @@ public class DataAnalyser {
 
     public void analyze() {
         persistenceProvider.init(config.getDatabaseName(), config.getWorkspaceName());
+        persistenceProvider.clean();
         long totalAnswers = persistenceProvider.countDocuments(new BsonDocument());
         System.out.println("Total servers scanned: " + totalAnswers);
         for (CipherSuite suite : CipherSuite.values()) {
@@ -67,7 +68,7 @@ public class DataAnalyser {
 ////          
 //            }
 //        }
-
+//
         Collection<SiteReport> siteReports = persistenceProvider.findSiteReports(new BsonDocument("result.report.resultMap.VULNERABLE_TO_DIRECT_RACCOON", new BsonString("TRUE")));
         for (SiteReport report : siteReports) {
             SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.DETAILED, false);

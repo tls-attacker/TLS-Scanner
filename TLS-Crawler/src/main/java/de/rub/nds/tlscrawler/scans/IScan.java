@@ -7,7 +7,7 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
-import de.rub.nds.tlscrawler.data.IScanTarget;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import org.bson.Document;
 
 /**
@@ -28,5 +28,5 @@ public interface IScan {
      * @param target Target of the scan.
      * @return The scan's result in a Bson Document.
      */
-    Document scan(IScanTarget target);
+    Document scan(ScanTarget target);
 }

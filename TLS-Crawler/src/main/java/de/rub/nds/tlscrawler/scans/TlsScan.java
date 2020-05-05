@@ -9,7 +9,7 @@ package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlscrawler.data.IScanTarget;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import de.rub.nds.tlsscanner.TlsScanner;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
@@ -45,7 +45,7 @@ public class TlsScan implements IScan {
     }
 
     @Override
-    public Document scan(IScanTarget target) {
+    public Document scan(ScanTarget target) {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
