@@ -84,8 +84,4 @@ public class PingScan implements IScan {
         }
     }
 
-    @Override
-    public void close() {
-    }
-
 }

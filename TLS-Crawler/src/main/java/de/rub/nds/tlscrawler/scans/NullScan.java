@@ -50,8 +50,4 @@ public class NullScan implements IScan {
         return document;
     }
 
-    @Override
-    public void close() {
-    }
-
 }

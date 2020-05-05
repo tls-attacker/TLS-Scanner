@@ -30,5 +30,4 @@ public interface IScan {
      */
     Document scan(ScanTarget target);
 
-    void close();
 }

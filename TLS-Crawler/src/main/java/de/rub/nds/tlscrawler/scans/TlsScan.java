@@ -83,9 +83,4 @@ public class TlsScan implements IScan {
         return document;
     }
 
-    @Override
-    public void close() {
-        parallelExecutor.shutdown();
-    }
-
 }

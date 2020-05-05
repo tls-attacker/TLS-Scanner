@@ -229,7 +229,6 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                 LOG.info("#Fetched: {}", targetString.size());
                 if (targetString.isEmpty()) {
                     currentScanJob = null;
-                    currentScan.close();
                 } else {
                     for (String tempString : targetString) {
                         futureDnsResults.add(dnsPool.submit(new DnsThread(tempString, currentScanJob.getPort())));
