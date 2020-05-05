@@ -16,7 +16,6 @@ public class ScanHolder {
 
     private static ScanHolder _instance = new ScanHolder();
 
-    
     private ScanHolder() {
     }
 
@@ -29,7 +28,7 @@ public class ScanHolder {
             case "null":
                 return new NullScan();
             default:
-                throw new UnsupportedOperationException("Unknown scan");
+                throw new UnsupportedOperationException("Unknown scan: " + name);
         }
     }
 }
