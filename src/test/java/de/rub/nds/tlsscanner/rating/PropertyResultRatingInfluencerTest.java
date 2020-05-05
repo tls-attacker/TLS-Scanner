@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.rating;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class PropertyResultRatingInfluencerTest {
 

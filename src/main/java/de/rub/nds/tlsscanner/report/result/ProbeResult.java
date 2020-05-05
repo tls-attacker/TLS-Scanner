@@ -26,6 +26,10 @@ public abstract class ProbeResult {
         this.type = type;
     }
 
+    public ProbeType getType() {
+        return type;
+    }
+
     public String getProbeName() {
         return type.name();
     }
