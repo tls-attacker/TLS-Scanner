@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.TestResult;
@@ -28,13 +29,13 @@ import static org.junit.Assert.assertEquals;
  * Testset should check if DhValueAfterProbe detects insecure DH-Parameters as
  * insecure ones and secure parameters as secure ones
  */
-
 public class DhValueAfterProbeTest {
+
     private static final Logger LOGGER = (Logger) LogManager.getLogger();
 
     private SiteReport report;
     private HashMap<TrackableValueType, ExtractedValueContainer> cipherMap;
-    private ExtractedValueContainer<BigInteger> pubkeyContainer, modulusContainer;
+    private ExtractedValueContainer<CustomDhPublicKey> pubkeyContainer;
     private DhValueAfterProbe test;
 
     // intitilizes attributes
@@ -42,8 +43,7 @@ public class DhValueAfterProbeTest {
     public void setup() {
         report = new SiteReport("sample", new LinkedList<>());
         cipherMap = new HashMap<>();
-        pubkeyContainer = new ExtractedValueContainer<BigInteger>(TrackableValueType.DH_PUBKEY);
-        modulusContainer = new ExtractedValueContainer<BigInteger>(TrackableValueType.DH_MODULUS);
+        pubkeyContainer = new ExtractedValueContainer<CustomDhPublicKey>(TrackableValueType.DHE_PUBLICKEY);
         test = new DhValueAfterProbe();
 
     }
@@ -63,38 +63,40 @@ public class DhValueAfterProbeTest {
                 + "1013f71167cbf78aa65f3", 16);
 
         // store pubKey into list
-        pubkeyContainer.put(securePubkey);
-        modulusContainer.put(secureMod);
+        pubkeyContainer.put(new CustomDhPublicKey(secureMod, new BigInteger("2"), securePubkey));
 
         analyseDhParams();
 
-        assertEquals(test.getOnlyPrime(), TestResult.TRUE);
-        assertEquals(test.getOnlySafePrime(), TestResult.TRUE);
-        assertEquals(test.getUsesCommonDhPrimes(), TestResult.FALSE);
-        assertEquals(test.getReuse(), TestResult.COULD_NOT_TEST);
+        assertEquals(TestResult.TRUE, test.getOnlyPrime());
+        assertEquals(TestResult.TRUE, test.getOnlySafePrime());
+        assertEquals(TestResult.FALSE, test.getUsesCommonDhPrimes());
+        assertEquals(TestResult.COULD_NOT_TEST, test.getReuse());
 
     }
 
-    /** Tests if method analyze recognizes an insecure parametes as such */
+    /**
+     * Tests if method analyze recognizes an insecure parametes as such
+     */
     @Test
     public void insecureDhParamTestAnalyze() {
         // examples for insecure values
         BigInteger insecureKey = new BigInteger("12");
         BigInteger insecureMod = new BigInteger("18");
 
-        pubkeyContainer.put(insecureKey);
-        modulusContainer.put(insecureMod);
+        pubkeyContainer.put(new CustomDhPublicKey(insecureMod, new BigInteger("2"), insecureKey));
 
         analyseDhParams();
 
-        assertEquals(test.getOnlyPrime(), TestResult.FALSE);
-        assertEquals(test.getOnlySafePrime(), TestResult.FALSE);
-        assertEquals(test.getUsesCommonDhPrimes(), TestResult.FALSE);
-        assertEquals(test.getReuse(), TestResult.COULD_NOT_TEST);
+        assertEquals(TestResult.FALSE, test.getOnlyPrime());
+        assertEquals(TestResult.FALSE, test.getOnlySafePrime());
+        assertEquals(TestResult.FALSE, test.getUsesCommonDhPrimes());
+        assertEquals(TestResult.COULD_NOT_TEST, test.getReuse());
 
     }
 
-    /** Test if method anaylize detects reused publickey */
+    /**
+     * Test if method anaylize detects reused publickey
+     */
     @Test
     public void secureReusedDhPubkeyTestAnalyze() {
         BigInteger secureKey, secureMod;
@@ -106,17 +108,16 @@ public class DhValueAfterProbeTest {
                 + "81c4bf8032259bc1a3d7ee4d03", 16);
 
         // reuse pubKey
-        pubkeyContainer.put(secureKey);
-        pubkeyContainer.put(secureKey);
-        pubkeyContainer.put(secureKey);
-        modulusContainer.put(secureMod);
+        pubkeyContainer.put(new CustomDhPublicKey(secureMod, new BigInteger("2"), secureKey));
+        pubkeyContainer.put(new CustomDhPublicKey(secureMod, new BigInteger("2"), secureKey));
+        pubkeyContainer.put(new CustomDhPublicKey(secureMod, new BigInteger("2"), secureKey));
 
         analyseDhParams();
 
-        assertEquals(test.getOnlyPrime(), TestResult.TRUE);
-        assertEquals(test.getOnlySafePrime(), TestResult.TRUE);
-        assertEquals(test.getUsesCommonDhPrimes(), TestResult.FALSE);
-        assertEquals(test.getReuse(), TestResult.TRUE);
+        assertEquals(TestResult.TRUE, test.getOnlyPrime());
+        assertEquals(TestResult.TRUE, test.getOnlySafePrime());
+        assertEquals(TestResult.FALSE, test.getUsesCommonDhPrimes());
+        assertEquals(TestResult.TRUE, test.getReuse());
 
     }
 
@@ -125,8 +126,7 @@ public class DhValueAfterProbeTest {
      * parameters are
      */
     private void analyseDhParams() {
-        cipherMap.put(TrackableValueType.DH_PUBKEY, pubkeyContainer);
-        cipherMap.put(TrackableValueType.DH_MODULUS, modulusContainer);
+        cipherMap.put(TrackableValueType.DHE_PUBLICKEY, pubkeyContainer);
 
         report.setExtractedValueContainerList(cipherMap);
         test.analyze(report);
