@@ -14,12 +14,10 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.AnsiColor;
-import de.rub.nds.tlsscanner.constants.AnsiEscapeSequence;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
 
 /**
  *

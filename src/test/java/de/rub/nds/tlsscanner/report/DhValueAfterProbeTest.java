@@ -41,7 +41,7 @@ public class DhValueAfterProbeTest {
     // intitilizes attributes
     @Before
     public void setup() {
-        report = new SiteReport("sample", new LinkedList<>());
+        report = new SiteReport("sample");
         cipherMap = new HashMap<>();
         pubkeyContainer = new ExtractedValueContainer<CustomDhPublicKey>(TrackableValueType.DHE_PUBLICKEY);
         test = new DhValueAfterProbe();

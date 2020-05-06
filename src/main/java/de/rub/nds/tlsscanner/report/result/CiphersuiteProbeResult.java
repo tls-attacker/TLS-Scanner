@@ -102,7 +102,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
                 adjustKeyExchange(suite);
                 adjustCipherType(suite);
             }
-            report.setCipherSuites(allSupported);
+            report.addCipherSuites(allSupported);
         } else {
             supportsAeadCiphers = TestResult.COULD_NOT_TEST;
             prefersPfsCiphers = TestResult.COULD_NOT_TEST;

@@ -8,8 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -21,7 +19,9 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;

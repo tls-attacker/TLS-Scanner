@@ -21,25 +21,26 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,8 @@ import java.util.Set;
 public class SiteReport extends Observable implements Serializable {
 
     private final HashMap<String, TestResult> resultMap;
+
+    private Set<ProbeType> executedProbes;
 
     // General
     private List<PerformanceData> performanceList;
@@ -122,8 +125,6 @@ public class SiteReport extends Observable implements Serializable {
     private Integer connectionInsecureCounter = null;
     private List<SimulatedClientResult> simulatedClientList = null;
 
-    private List<ProbeType> probeTypeList;
-
     private int performedTcpConnections = 0;
 
     private SiteReport() {
@@ -131,12 +132,22 @@ public class SiteReport extends Observable implements Serializable {
         host = null;
     }
 
-    public SiteReport(String host, List<ProbeType> probeTypeList) {
+    public SiteReport(String host) {
         this.host = host;
-        this.probeTypeList = probeTypeList;
         performanceList = new LinkedList<>();
         extractedValueContainerMap = new HashMap<>();
         resultMap = new HashMap<>();
+        cipherSuites = new HashSet<>();
+        versionSuitePairs = new LinkedList<>();
+        executedProbes = new HashSet<>();
+    }
+
+    public synchronized boolean isProbeAlreadyExecuted(ProbeType type) {
+        return (executedProbes.contains(type));
+    }
+
+    public synchronized void markProbeAsExecuted(ProbeType type) {
+        executedProbes.add(type);
     }
 
     public synchronized Long getSessionTicketLengthHint() {
@@ -179,7 +190,7 @@ public class SiteReport extends Observable implements Serializable {
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
         this.putResult(property,
                 Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
-                        : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
+                : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
     public synchronized void putResult(DrownVulnerabilityType result) {
@@ -224,10 +235,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized String getHost() {
         return host;
-    }
-
-    public synchronized List<ProbeType> getProbeTypeList() {
-        return probeTypeList;
     }
 
     public synchronized Boolean getServerIsAlive() {
@@ -275,8 +282,8 @@ public class SiteReport extends Observable implements Serializable {
         return cipherSuites;
     }
 
-    public synchronized void setCipherSuites(Set<CipherSuite> cipherSuites) {
-        this.cipherSuites = cipherSuites;
+    public synchronized void addCipherSuites(Set<CipherSuite> cipherSuites) {
+        this.cipherSuites.addAll(cipherSuites);
     }
 
     public synchronized List<NamedGroup> getSupportedNamedGroups() {

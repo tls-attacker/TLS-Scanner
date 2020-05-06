@@ -9,9 +9,9 @@
 package de.rub.nds.tlsscanner.report.after.statistic.nondeterminism;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
-import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
 import de.rub.nds.tlsscanner.util.FisherExactTest;
 import java.util.Collections;
 import java.util.HashMap;

@@ -30,25 +30,25 @@ import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 import de.rub.nds.tlsscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateIssue;
-import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
-import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
-import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
-import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
+import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
+import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
+import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
 import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NondeterministicVectorContainerHolder;
 import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.VectorContainer;
@@ -63,11 +63,11 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
@@ -1018,19 +1018,25 @@ public class SiteReportPrinter {
     private StringBuilder appendCipherSuites(StringBuilder builder) {
         if (report.getCipherSuites() != null) {
             prettyAppendHeading(builder, "Supported Ciphersuites");
-            for (CipherSuite suite : report.getCipherSuites()) {
-                builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
+            if (!report.getCipherSuites().isEmpty()) {
+                for (CipherSuite suite : report.getCipherSuites()) {
+                    builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
+                }
+            } else {
+                prettyAppend(builder, "-empty-", AnsiColor.RED);
             }
 
-            for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
-                prettyAppendHeading(
-                        builder,
-                        "Supported in "
-                                + toHumanReadable(versionSuitePair.getVersion())
-                                + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
-                                        : ""));
-                for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
-                    builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
+            if (report.getVersionSuitePairs() != null && !report.getVersionSuitePairs().isEmpty()) {
+                for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
+                    prettyAppendHeading(
+                            builder,
+                            "Supported in "
+                                    + toHumanReadable(versionSuitePair.getVersion())
+                                    + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
+                                            : ""));
+                    for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
+                        builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
+                    }
                 }
             }
 

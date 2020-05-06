@@ -57,10 +57,8 @@ public class PaddingOracleAttributor {
         affectedProducts
                 .add("BIG-IP (LTM, AAM, AFM, Analytics, APM, ASM, DNS, Edge Gateway, FPS, GTM, Link Controller, PEM, WebAccelerator)");
         List<ProtocolMessage> messageList = new LinkedList<>();
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, false, 0, 0, null, null, messageList, null,
-                SocketState.CLOSED);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, false, 0, 0, null, null, messageList, null,
-                SocketState.TIMEOUT);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.TIMEOUT);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -142,15 +140,13 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.INTERNAL_ERROR.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -210,15 +206,13 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.CLOSE_NOTIFY.getValue());
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.TIMEOUT);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.TIMEOUT);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -279,8 +273,7 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.CLOSE_NOTIFY.getValue());
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.DECODE_ERROR.getValue());
@@ -290,8 +283,7 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.CLOSE_NOTIFY.getValue());
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -351,13 +343,10 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.SOCKET_EXCEPTION);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.SOCKET_EXCEPTION);
         messageList = new LinkedList<>();
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, false, 0, 0, null, null, messageList, null,
-                SocketState.SOCKET_EXCEPTION);
-        ResponseFingerprint responseThree = new ResponseFingerprint(false, false, 0, 0, null, null, messageList, null,
-                SocketState.TIMEOUT);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.SOCKET_EXCEPTION);
+        ResponseFingerprint responseThree = new ResponseFingerprint(messageList, null, SocketState.TIMEOUT);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseTwo));
@@ -422,8 +411,7 @@ public class PaddingOracleAttributor {
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
 
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
@@ -435,8 +423,7 @@ public class PaddingOracleAttributor {
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
 
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.TIMEOUT);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.TIMEOUT);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -545,15 +532,13 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.RECORD_OVERFLOW.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -598,7 +583,7 @@ public class PaddingOracleAttributor {
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
 
-        responseOne = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null, SocketState.CLOSED);
+        responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.RECORD_OVERFLOW.getValue());
@@ -610,7 +595,7 @@ public class PaddingOracleAttributor {
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
 
-        responseTwo = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null, SocketState.CLOSED);
+        responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
 
         List<IdentifierResponse> responseListB = new LinkedList<>();
         responseListB.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -722,8 +707,7 @@ public class PaddingOracleAttributor {
                 PaddingVector paddingVector = (PaddingVector) vulnResponse.getVector();
                 if (response.getIdentifier().equals(paddingVector.getIdentifier())) {
                     found = true;
-                    if (FingerPrintChecker.checkSimpleEquality(response.getFingerprint(),
-                            vulnResponse.getFingerprint(), true) != EqualityError.NONE) {
+                    if (FingerPrintChecker.checkEquality(response.getFingerprint(), vulnResponse.getFingerprint()) != EqualityError.NONE) {
                         return false;
                     }
                     break;

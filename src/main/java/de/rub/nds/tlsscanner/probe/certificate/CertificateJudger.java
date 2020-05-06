@@ -13,8 +13,8 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
 import java.security.SignatureException;
-import java.util.Date;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import org.bouncycastle.asn1.x509.Certificate;
 import sun.security.x509.X509CertImpl;
 

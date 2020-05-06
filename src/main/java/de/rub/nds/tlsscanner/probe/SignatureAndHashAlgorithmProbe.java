@@ -9,8 +9,8 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.SignatureAndHashAlgorithmResult;

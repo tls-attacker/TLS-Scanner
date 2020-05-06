@@ -10,8 +10,8 @@ package de.rub.nds.tlsscanner.rating;
 
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.util.HashMap;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class SiteReportRaterTest {
 

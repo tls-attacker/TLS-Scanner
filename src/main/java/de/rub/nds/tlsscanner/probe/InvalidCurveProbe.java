@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.ec.InvalidCurvePoint;
 import de.rub.nds.tlsattacker.attacks.ec.TwistedCurvePoint;
@@ -26,6 +25,7 @@ import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurveOverFp;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveParameterSet;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
