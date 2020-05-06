@@ -145,7 +145,7 @@ public class SiteReportPrinter {
         return builder.toString();
     }
 
-    private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
+    public StringBuilder appendHandshakeSimulation(StringBuilder builder) {
         if (report.getSimulatedClientList() != null) {
             appendHsNormal(builder);
             if (detail == ScannerDetail.DETAILED) {
@@ -158,7 +158,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHsNormal(StringBuilder builder) {
+    public StringBuilder appendHsNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Overview");
         prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
         builder.append("\n");
@@ -179,7 +179,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHandshakeSimulationTable(StringBuilder builder) {
+    public StringBuilder appendHandshakeSimulationTable(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation");
         int counter = 0;
         appendHandshakeSimulationTableRowHeading(builder, "Client", "Version", "Ciphersuite", "Forward Secrecy",
@@ -204,7 +204,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHandshakeSimulationTableRowHeading(StringBuilder builder, String tlsClient,
+    public StringBuilder appendHandshakeSimulationTableRowHeading(StringBuilder builder, String tlsClient,
             String tlsVersion, String ciphersuite, String forwardSecrecy, String keyLength) {
         builder.append(String.format(hsClientFormat, tlsClient));
         builder.append(String.format("| " + hsVersionFormat, tlsVersion));
@@ -215,7 +215,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHandshakeTableRowSuccessful(StringBuilder builder, SimulatedClientResult simulatedClient) {
+    public StringBuilder appendHandshakeTableRowSuccessful(StringBuilder builder, SimulatedClientResult simulatedClient) {
         String clientName = simulatedClient.getTlsClientConfig().getType() + ":"
                 + simulatedClient.getTlsClientConfig().getVersion();
         builder.append(getClientColor(clientName, simulatedClient.getConnectionInsecure(),
@@ -229,7 +229,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHandshakeTableRowFailed(StringBuilder builder, SimulatedClientResult simulatedClient) {
+    public StringBuilder appendHandshakeTableRowFailed(StringBuilder builder, SimulatedClientResult simulatedClient) {
         // String clientName = simulatedClient.getTlsClientConfig().getType() +
         // ":"
         // + simulatedClient.getTlsClientConfig().getVersion();
@@ -353,7 +353,7 @@ public class SiteReportPrinter {
         return null;
     }
 
-    private StringBuilder appendHandshakeSimulationDetails(StringBuilder builder) {
+    public StringBuilder appendHandshakeSimulationDetails(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Details");
         for (SimulatedClientResult simulatedClient : report.getSimulatedClientList()) {
             prettyAppendHeading(builder, simulatedClient.getTlsClientConfig().getType() + ":"
@@ -405,7 +405,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendRfc(StringBuilder builder) {
+    public StringBuilder appendRfc(StringBuilder builder) {
         prettyAppendHeading(builder, "RFC");
         prettyAppendCheckPattern(builder, "Checks MAC (AppData)", report.getMacCheckPatternAppData());
         prettyAppendCheckPattern(builder, "Checks MAC (Finished)", report.getMacCheckPatternFinished());
@@ -413,14 +413,14 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendRenegotiation(StringBuilder builder) {
+    public StringBuilder appendRenegotiation(StringBuilder builder) {
         prettyAppendHeading(builder, "Renegotioation");
         prettyAppend(builder, "Clientside Secure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION);
         prettyAppend(builder, "Clientside Insecure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION);
         return builder;
     }
 
-    private StringBuilder appendCertificate(StringBuilder builder) {
+    public StringBuilder appendCertificate(StringBuilder builder) {
         if (report.getCertificateChain() != null) {
             CertificateChain chain = report.getCertificateChain();
             prettyAppendHeading(builder, "Certificate Chain");
@@ -558,7 +558,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendSession(StringBuilder builder) {
+    public StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
         prettyAppend(builder, "Supports Session resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
         prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
@@ -572,7 +572,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendGcm(StringBuilder builder) {
+    public StringBuilder appendGcm(StringBuilder builder) {
         prettyAppendHeading(builder, "GCM");
         prettyAppend(builder, "GCM Nonce reuse", AnalyzedProperty.REUSES_GCM_NONCES);
         if (null == report.getGcmPattern()) {
@@ -598,7 +598,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendIntolerances(StringBuilder builder) {
+    public StringBuilder appendIntolerances(StringBuilder builder) {
         prettyAppendHeading(builder, "Common Bugs [EXPERIMENTAL]");
         prettyAppend(builder, "Version Intolerant", AnalyzedProperty.HAS_VERSION_INTOLERANCE);
         prettyAppend(builder, "Ciphersuite Intolerant", AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE);
@@ -619,7 +619,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
+    public StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
         prettyAppendHeading(builder, "Attack Vulnerabilities");
         if (report.getKnownVulnerability() == null) {
             prettyAppend(builder, "Padding Oracle", AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE);
@@ -646,7 +646,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
+    public StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMaximumFractionDigits(24);
         if (report.getRaccoonAttackProbabilities() != null) {
@@ -683,7 +683,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendDirectRaccoonResults(StringBuilder builder) {
+    public StringBuilder appendDirectRaccoonResults(StringBuilder builder) {
 
         prettyAppendHeading(builder, "DirectRaccoon Responsemap");
         if (report.getDirectRaccoonResultList() == null || report.getDirectRaccoonResultList().isEmpty()) {
@@ -729,7 +729,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendPaddingOracleResults(StringBuilder builder) {
+    public StringBuilder appendPaddingOracleResults(StringBuilder builder) {
         try {
             if (Objects.equals(report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResult.TRUE)) {
                 prettyAppendHeading(builder, "PaddingOracle Details");
@@ -813,7 +813,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder,
+    public StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder,
             NondeterministicVectorContainerHolder vectorContainerHolder) {
         try {
             ResponseFingerprint defaultAnswer = vectorContainerHolder.getDefaultAnswer().getFingerprint();
@@ -839,7 +839,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendBleichenbacherResults(StringBuilder builder) {
+    public StringBuilder appendBleichenbacherResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Bleichenbacher Details");
         try {
             if (report.getBleichenbacherTestResultList() == null || report.getBleichenbacherTestResultList().isEmpty()) {
@@ -879,7 +879,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendEcPointFormats(StringBuilder builder) {
+    public StringBuilder appendEcPointFormats(StringBuilder builder) {
         prettyAppendHeading(builder, "Elliptic Curve Point Formats");
         prettyAppend(builder, "Uncompressed", AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT);
         prettyAppend(builder, "ANSIX962 Prime", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME);
@@ -888,7 +888,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendInvalidCurveResults(StringBuilder builder) {
+    public StringBuilder appendInvalidCurveResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Invalid Curve Details");
         boolean foundCouldNotTest = false;
         if (report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResult.NOT_TESTED_YET
@@ -959,7 +959,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private String toHumanReadable(ProtocolVersion version) {
+    public String toHumanReadable(ProtocolVersion version) {
         switch (version) {
             case DTLS10:
                 return "DTLS 1.0";
@@ -1012,7 +1012,7 @@ public class SiteReportPrinter {
         }
     }
 
-    private StringBuilder appendCipherSuites(StringBuilder builder) {
+    public StringBuilder appendCipherSuites(StringBuilder builder) {
         if (report.getCipherSuites() != null) {
             prettyAppendHeading(builder, "Supported Ciphersuites");
             if (!report.getCipherSuites().isEmpty()) {
@@ -1085,7 +1085,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendProtocolVersions(StringBuilder builder) {
+    public StringBuilder appendProtocolVersions(StringBuilder builder) {
         if (report.getVersions() != null) {
             prettyAppendHeading(builder, "Versions");
             prettyAppend(builder, "SSL 2.0", AnalyzedProperty.SUPPORTS_SSL_2);
@@ -1158,7 +1158,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHttps(StringBuilder builder) {
+    public StringBuilder appendHttps(StringBuilder builder) {
         if (report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE) {
             prettyAppendHeading(builder, "HSTS");
             try {
@@ -1206,7 +1206,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendExtensions(StringBuilder builder) {
+    public StringBuilder appendExtensions(StringBuilder builder) {
         if (report.getSupportedExtensions() != null) {
             prettyAppendHeading(builder, "Supported Extensions");
             for (ExtensionType type : report.getSupportedExtensions()) {
@@ -1236,12 +1236,12 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private void appendRandom(StringBuilder builder) {
+    public void appendRandom(StringBuilder builder) {
         prettyAppendHeading(builder, "Nonce");
         prettyAppendRandom(builder, "Random", report.getRandomEvaluationResult());
     }
 
-    private void appendPublicKeyIssues(StringBuilder builder) {
+    public void appendPublicKeyIssues(StringBuilder builder) {
         prettyAppendHeading(builder, "PublicKey Parameter");
         prettyAppend(builder, "EC PublicKey reuse", AnalyzedProperty.REUSES_EC_PUBLICKEY);
         prettyAppend(builder, "DH PublicKey reuse", AnalyzedProperty.REUSES_DH_PUBLICKEY);
@@ -1266,7 +1266,7 @@ public class SiteReportPrinter {
         }
     }
 
-    private void appendScoringResults(StringBuilder builder) {
+    public void appendScoringResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Scoring results");
 
         SiteReportRater rater;
@@ -1309,7 +1309,7 @@ public class SiteReportPrinter {
         }
     }
 
-    private void appendRecommendations(StringBuilder builder) {
+    public void appendRecommendations(StringBuilder builder) {
         prettyAppendHeading(builder, "Recommedations");
 
         SiteReportRater rater;
@@ -1401,7 +1401,7 @@ public class SiteReportPrinter {
         }
     }
 
-    private StringBuilder appendCurves(StringBuilder builder) {
+    public StringBuilder appendCurves(StringBuilder builder) {
         if (report.getSupportedNamedGroups() != null) {
             prettyAppendHeading(builder, "Supported Named Groups");
             if (report.getSupportedNamedGroups().size() > 0) {
@@ -1415,7 +1415,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendSignatureAndHashAlgorithms(StringBuilder builder) {
+    public StringBuilder appendSignatureAndHashAlgorithms(StringBuilder builder) {
         if (report.getSupportedSignatureAndHashAlgorithms() != null) {
             prettyAppendHeading(builder, "Supported Signature and Hash Algorithms");
             if (report.getSupportedSignatureAndHashAlgorithms().size() > 0) {
@@ -1429,7 +1429,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendCompressions(StringBuilder builder) {
+    public StringBuilder appendCompressions(StringBuilder builder) {
         if (report.getSupportedCompressionMethods() != null) {
             prettyAppendHeading(builder, "Supported Compressions");
             for (CompressionMethod compression : report.getSupportedCompressionMethods()) {
@@ -1632,7 +1632,7 @@ public class SiteReportPrinter {
         return builder.toString();
     }
 
-    private StringBuilder appendTls13Groups(StringBuilder builder) {
+    public StringBuilder appendTls13Groups(StringBuilder builder) {
         if (report.getSupportedTls13Groups() != null) {
             prettyAppendHeading(builder, "TLS 1.3 Named Groups");
             if (report.getSupportedTls13Groups().size() > 0) {
@@ -1675,7 +1675,7 @@ public class SiteReportPrinter {
         this.depth = depth;
     }
 
-    private void appendPerformanceData(StringBuilder builder) {
+    public void appendPerformanceData(StringBuilder builder) {
         if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
             prettyAppendHeading(builder, "Scanner Performance");
             try {
