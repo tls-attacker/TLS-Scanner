@@ -12,7 +12,7 @@ import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
-import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -26,8 +26,6 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 import de.rub.nds.tlsscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
@@ -863,10 +861,9 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
                             if (testResult.getVectorFingerPrintPairList() != null
                                     && !testResult.getVectorFingerPrintPairList().isEmpty()) {
-                                for (VectorFingerprintPair vectorFingerPrintPair : testResult
-                                        .getVectorFingerPrintPairList()) {
+                                for (VectorResponse vectorFingerPrintPair : testResult.getVectorFingerPrintPairList()) {
                                     prettyAppend(builder,
-                                            padToLength("\t" + vectorFingerPrintPair.getVector().getDescription(), 60)
+                                            padToLength("\t" + vectorFingerPrintPair.getVector().getName(), 60)
                                                     + vectorFingerPrintPair.getFingerprint().toHumanReadable());
                                 }
                             } else {

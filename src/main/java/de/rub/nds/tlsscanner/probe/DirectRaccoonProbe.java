@@ -111,6 +111,10 @@ public class DirectRaccoonProbe extends TlsProbe {
                 iterationsPerHandshake);
         DirectRaccoonCipherSuiteFingerprint cipherSuiteFingerprint = new DirectRaccoonCipherSuiteFingerprint(version,
                 suite, workflowType, responseMap);
+        cipherSuiteFingerprint.setPotentiallyVulnerable(responseMap.size() > 1);
+        cipherSuiteFingerprint.setpValue(new NondeterministicVectorContainerHolder(responseMap).computePValue());
+        cipherSuiteFingerprint.setConsideredVulnerable(cipherSuiteFingerprint.getpValue() < 0.0001);
+
         if (cipherSuiteFingerprint.getPotentiallyVulnerable()) {
             LOGGER.debug("Found non identical answers, performing " + iterationsPerHandshake + " additional tests");
             responseMap = createVectorResponseList(version, suite, workflowType, additionalIterationsPerHandshake);
