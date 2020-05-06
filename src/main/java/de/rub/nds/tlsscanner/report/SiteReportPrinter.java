@@ -548,22 +548,22 @@ public class SiteReportPrinter {
         // unreliable.
         if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.TRUE
                 && Boolean.FALSE.equals(report.getSupportsStapling())) {
-            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.RED);
+            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
             prettyAppend(builder, "Extension scan reported OCSP Stapling support, but OCSP scan does not.",
-                    AnsiColor.RED);
+                    AnsiColor.YELLOW);
             prettyAppend(builder, "The results are likely incomplete. Maybe rescan for more information? \n",
                     AnsiColor.RED);
             report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
         } else if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.FALSE
                 && Boolean.TRUE.equals(report.getSupportsStapling())) {
-            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.RED);
-            prettyAppend(builder, "Extension scan reported no OCSP support, but OCSP scan does. \n", AnsiColor.RED);
+            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
+            prettyAppend(builder, "Extension scan reported no OCSP support, but OCSP scan does. \n", AnsiColor.YELLOW);
             report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
         }
 
         // Print stapling support & 'must-staple'
         if (report.getResult(AnalyzedProperty.STAPLING_UNRELIABLE) == TestResult.TRUE) {
-            prettyAppend(builder, "Supports OCSP Stapling", "true, but unreliable", AnsiColor.RED);
+            prettyAppend(builder, "Supports OCSP Stapling", "true, but unreliable", AnsiColor.YELLOW);
             if (report.getMustStaple() != null) {
                 prettyAppend(builder, "Enforces OCSP Stapling", report.getMustStaple(),
                         report.getMustStaple() ? AnsiColor.RED : AnsiColor.DEFAULT_COLOR);
@@ -601,10 +601,16 @@ public class SiteReportPrinter {
 
         if (report.getStapledOcspResponse() != null) {
             prettyAppendSubheading(builder, "Stapled OCSP Response");
+            if (report.getStapledOcspResponse().getResponseStatus() > 0) {
+                prettyAppend(builder, "Server stapled an erroneous OCSP response. \n", AnsiColor.RED);
+            }
             prettyAppend(builder, report.getStapledOcspResponse().toString(false));
         }
         if (report.getFirstOcspResponse() != null) {
             prettyAppendSubheading(builder, "Requested OCSP Response");
+            if (report.getFirstOcspResponse().getResponseStatus() > 0) {
+                prettyAppend(builder, "OCSP Request was not accepted by the OCSP Responder. \n", AnsiColor.RED);
+            }
             prettyAppend(builder, report.getFirstOcspResponse().toString(false));
         }
         return builder;
