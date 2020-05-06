@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -33,8 +34,10 @@ import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonVector;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoontWorkflowGenerator;
 import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonWorkflowType;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NondeterministicVectorContainerHolder;
 import java.math.BigInteger;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -83,7 +86,15 @@ public class DirectRaccoonProbe extends TlsProbe {
                 }
             }
             for (DirectRaccoonCipherSuiteFingerprint fingerprint : testResultList) {
-                if (fingerprint.isConsideredVulnerable()) {
+                HashSet<ResponseFingerprint> set = new HashSet<>();
+                for (VectorResponse vectorResponse : fingerprint.getResponseMapList()) {
+                    set.add(vectorResponse.getFingerprint());
+                }
+                fingerprint.setPotentiallyVulnerable(set.size() > 1);
+                fingerprint.setpValue(new NondeterministicVectorContainerHolder(fingerprint.getResponseMapList())
+                        .computePValue());
+                fingerprint.setConsideredVulnerable(fingerprint.getpValue() < 0.0001);
+                if (fingerprint.getConsideredVulnerable()) {
                     return new DirectRaccoonResponseMap(testResultList, TestResult.TRUE);
                 }
             }
@@ -101,7 +112,7 @@ public class DirectRaccoonProbe extends TlsProbe {
                 iterationsPerHandshake);
         DirectRaccoonCipherSuiteFingerprint cipherSuiteFingerprint = new DirectRaccoonCipherSuiteFingerprint(version,
                 suite, workflowType, responseMap);
-        if (cipherSuiteFingerprint.isPotentiallyVulnerable()) {
+        if (cipherSuiteFingerprint.getPotentiallyVulnerable()) {
             LOGGER.debug("Found non identical answers, performing " + iterationsPerHandshake + " additional tests");
             responseMap = createVectorResponseList(version, suite, workflowType, additionalIterationsPerHandshake);
             cipherSuiteFingerprint.appendToResponseMap(responseMap);

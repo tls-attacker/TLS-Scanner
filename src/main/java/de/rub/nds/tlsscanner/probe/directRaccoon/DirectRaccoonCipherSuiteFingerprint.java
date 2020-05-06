@@ -34,7 +34,19 @@ public class DirectRaccoonCipherSuiteFingerprint {
     private final List<VectorResponse> responseMapList;
     private Boolean handshakeIsWorking;
 
+    private Double pValue = null;
+    private Boolean consideredVulnerable;
+    private Boolean potentiallyVulnerable;
+
     private final EqualityError equalityError;
+
+    private DirectRaccoonCipherSuiteFingerprint() {
+        version = null;
+        suite = null;
+        workflowType = null;
+        responseMapList = null;
+        equalityError = null;
+    }
 
     public DirectRaccoonCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite,
             DirectRaccoonWorkflowType workflowType, List<VectorResponse> responseMapList) {
@@ -90,23 +102,32 @@ public class DirectRaccoonCipherSuiteFingerprint {
         return equalityError;
     }
 
-    public double getpValue() {
-        return new NondeterministicVectorContainerHolder(responseMapList).computePValue();
+    public Boolean getConsideredVulnerable() {
+        return consideredVulnerable;
     }
 
-    public Boolean isConsideredVulnerable() {
-        return this.getpValue() <= 0.05;
+    public void setConsideredVulnerable(Boolean consideredVulnerable) {
+        this.consideredVulnerable = consideredVulnerable;
     }
 
     public DirectRaccoonWorkflowType getWorkflowType() {
         return workflowType;
     }
 
-    public boolean isPotentiallyVulnerable() {
-        HashSet<ResponseFingerprint> set = new HashSet<>();
-        for (VectorResponse vectorResponse : responseMapList) {
-            set.add(vectorResponse.getFingerprint());
-        }
-        return set.size() > 1;
+    public Boolean getPotentiallyVulnerable() {
+        return potentiallyVulnerable;
     }
+
+    public void setPotentiallyVulnerable(Boolean potentiallyVulnerable) {
+        this.potentiallyVulnerable = potentiallyVulnerable;
+    }
+
+    public Double getpValue() {
+        return pValue;
+    }
+
+    public void setpValue(Double pValue) {
+        this.pValue = pValue;
+    }
+
 }

@@ -79,6 +79,10 @@ public class CertificateChain {
 
     private List<CertificateIssue> certificateIssues;
 
+    private CertificateChain() {
+        certificate = null;
+    }
+
     public CertificateChain(Certificate certificate, String uri) {
         certificateIssues = new LinkedList<>();
         List<CertificateReport> orderedCertificateChain = new LinkedList<>();

@@ -28,6 +28,14 @@ public class BleichenbacherTestResult {
 
     private final EqualityError equalityError;
 
+    private BleichenbacherTestResult() {
+        vulnerable = null;
+        scanDetail = null;
+        workflowType = null;
+        vectorFingerPrintPairList = null;
+        equalityError = null;
+    }
+
     public BleichenbacherTestResult(Boolean vulnerable, BleichenbacherCommandConfig.Type scanDetail,
             BleichenbacherWorkflowType workflowType, List<VectorFingerprintPair> vectorFingerPrintPairList,
             EqualityError equalityError) {

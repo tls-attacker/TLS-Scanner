@@ -30,7 +30,6 @@ import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NonDetermnisimEvaluationReport;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -63,9 +62,8 @@ public class SiteReport extends Observable implements Serializable {
     // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
-    private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
-    private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList;
+    private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonResultList;
     private List<InvalidCurveResponse> invalidCurveResultList;
     private List<RaccoonAttackProbabilities> raccoonAttackProbabilities;
 
@@ -84,7 +82,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<CompressionMethod> supportedCompressionMethods = null;
 
     // RFC
-    private CheckPattern macCheckPatterAppData = null;
+    private CheckPattern macCheckPatternAppData = null;
     private CheckPattern macCheckPatternFinished = null;
     private CheckPattern verifyCheckPattern = null;
 
@@ -127,6 +125,11 @@ public class SiteReport extends Observable implements Serializable {
     private List<ProbeType> probeTypeList;
 
     private int performedTcpConnections = 0;
+
+    private SiteReport() {
+        resultMap = new HashMap<>();
+        host = null;
+    }
 
     public SiteReport(String host, List<ProbeType> probeTypeList) {
         this.host = host;
@@ -318,11 +321,11 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized CheckPattern getMacCheckPatternAppData() {
-        return macCheckPatterAppData;
+        return macCheckPatternAppData;
     }
 
-    public synchronized void setMacCheckPatterAppData(CheckPattern macCheckPatterAppData) {
-        this.macCheckPatterAppData = macCheckPatterAppData;
+    public synchronized void setMacCheckPatternAppData(CheckPattern macCheckPatternAppData) {
+        this.macCheckPatternAppData = macCheckPatternAppData;
     }
 
     public synchronized CheckPattern getVerifyCheckPattern() {
@@ -432,12 +435,12 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized List<DirectRaccoonCipherSuiteFingerprint> getDirectRaccoonResultList() {
-        return directRaccoonTestResultList;
+        return directRaccoonResultList;
     }
 
-    public synchronized void setDirectRaccoonTestResultList(
-            List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList) {
-        this.directRaccoonTestResultList = directRaccoonTestResultList;
+    public synchronized void setDirectRaccoonResultList(
+            List<DirectRaccoonCipherSuiteFingerprint> directRaccoonResultList) {
+        this.directRaccoonResultList = directRaccoonResultList;
     }
 
     public synchronized List<HttpsHeader> getHeaderList() {
@@ -527,15 +530,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setKnownVulnerability(KnownPaddingOracleVulnerability knownVulnerability) {
         this.knownVulnerability = knownVulnerability;
-    }
-
-    public synchronized List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleShakyEvalResultList() {
-        return paddingOracleShakyEvalResultList;
-    }
-
-    public synchronized void setPaddingOracleShakyEvalResultList(
-            List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
-        this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
     }
 
     public synchronized List<InvalidCurveResponse> getInvalidCurveResultList() {

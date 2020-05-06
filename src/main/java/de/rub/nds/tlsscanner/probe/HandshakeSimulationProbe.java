@@ -71,12 +71,11 @@ public class HandshakeSimulationProbe extends TlsProbe {
             for (SimulationRequest request : simmulationRequestList) {
                 State state = request.getExecutableState(scannerConfig);
                 clientStateList.add(state);
-                resultList.add(new SimulatedClientResult(request.getTlsClientConfig(), state));
             }
             executeState(clientStateList);
             for (SimulatedClientResult result : resultList) {
-                evaluateClientConfig(result);
-                evaluateReceivedMessages(result);
+                // evaluateClientConfig(result);
+                // evaluateReceivedMessages(result);
             }
             return new HandshakeSimulationResult(resultList);
         } catch (Exception E) {
@@ -85,8 +84,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
     }
 
-    private void evaluateClientConfig(SimulatedClientResult simulatedClient) {
-        Config config = simulatedClient.getState().getConfig();
+    private void evaluateClientConfig(SimulatedClientResult simulatedClient, State state) {
+        Config config = state.getConfig();
         config.setStopActionsAfterIOException(true);
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
         simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
@@ -102,8 +101,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
         simulatedClient.setSupportedDheKeySizeList(simulatedClient.getTlsClientConfig().getSupportedDheKeySizeList());
     }
 
-    private void evaluateReceivedMessages(SimulatedClientResult simulatedClient) {
-        WorkflowTrace trace = simulatedClient.getState().getWorkflowTrace();
+    private void evaluateReceivedMessages(SimulatedClientResult simulatedClient, State state) {
+        WorkflowTrace trace = state.getWorkflowTrace();
         simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO,
                 trace));
         simulatedClient.setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE,
@@ -145,7 +144,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
             }
             simulatedClient.setReceivedAllMandatoryMessages(receivedAllMandatoryMessages);
             if (receivedAllMandatoryMessages) {
-                TlsContext context = simulatedClient.getState().getTlsContext();
+                TlsContext context = state.getTlsContext();
                 evaluateServerHello(context, simulatedClient);
                 evaluateCertificate(context, simulatedClient);
                 if (simulatedClient.getReceivedServerKeyExchange()) {

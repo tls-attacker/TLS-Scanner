@@ -33,27 +33,43 @@ public class PaddingOracleCipherSuiteFingerprint {
 
     private EqualityError equalityError;
     private double pValue;
+    private Boolean consideredVulnerable;
+
+    private PaddingOracleCipherSuiteFingerprint() {
+        version = null;
+        suite = null;
+        vectorGeneratorType = null;
+        recordGeneratorType = null;
+        responseMap = null;
+    }
 
     public PaddingOracleCipherSuiteFingerprint(ProtocolVersion version, CipherSuite suite,
             PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType,
-            List<VectorResponse> responseMap) {
+            List<VectorResponse> responseMap, EqualityError equalityError, double pValue, Boolean consideredVulnerable) {
         this.version = version;
         this.suite = suite;
         this.vectorGeneratorType = vectorGeneratorType;
         this.recordGeneratorType = recordGeneratorType;
         this.responseMap = responseMap;
-        pValue = computePValue();
-        equalityError = evaluateEqualityError();
+        this.pValue = pValue;
+        this.consideredVulnerable = consideredVulnerable;
+        this.equalityError = equalityError;
     }
 
     public List<VectorResponse> getResponseMap() {
         return Collections.unmodifiableList(responseMap);
     }
 
+    public Boolean getConsideredVulnerable() {
+        return consideredVulnerable;
+    }
+
+    public void setConsideredVulnerable(Boolean consideredVulnerable) {
+        this.consideredVulnerable = consideredVulnerable;
+    }
+
     public void appendToResponseMap(List<VectorResponse> responseMap) {
         this.responseMap.addAll(responseMap);
-        pValue = computePValue();
-        equalityError = evaluateEqualityError();
     }
 
     public ProtocolVersion getVersion() {
@@ -80,33 +96,11 @@ public class PaddingOracleCipherSuiteFingerprint {
         return pValue;
     }
 
-    private EqualityError evaluateEqualityError() {
-        for (VectorResponse vectorResponseOne : responseMap) {
-            for (VectorResponse vectorResponseTwo : responseMap) {
-                if (vectorResponseOne == vectorResponseTwo) {
-                    continue;
-                }
-                EqualityError equality = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(),
-                        vectorResponseTwo.getFingerprint(), true);
-                if (equality != EqualityError.NONE) {
-                    return equality;
-                }
-            }
-        }
-        return EqualityError.NONE;
+    public void setEqualityError(EqualityError equalityError) {
+        this.equalityError = equalityError;
     }
 
-    private double computePValue() {
-        NondeterministicVectorContainerHolder holder = new NondeterministicVectorContainerHolder(responseMap);
-        return holder.computePValue();
+    public void setpValue(double pValue) {
+        this.pValue = pValue;
     }
-
-    public boolean isConsideredVulnerable(double pValueThreshhold) {
-        return (pValueThreshhold > this.pValue);
-    }
-
-    public boolean isConsideredVulnerable() {
-        return this.pValue < 0.01d;
-    }
-
 }

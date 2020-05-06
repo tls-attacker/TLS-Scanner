@@ -39,7 +39,7 @@ public class DirectRaccoonResponseMap extends ProbeResult {
         if (resultList == null) {
             vulnerable = TestResult.COULD_NOT_TEST;
         }
-        report.setDirectRaccoonTestResultList(resultList);
+        report.setDirectRaccoonResultList(resultList);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
     }
 

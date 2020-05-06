@@ -42,7 +42,7 @@ public class PaddingOracleResponseMap extends ProbeResult {
         } else {
             vulnerable = TestResult.FALSE;
             for (PaddingOracleCipherSuiteFingerprint fingerprint : resultList) {
-                if (fingerprint.isConsideredVulnerable()) {
+                if (fingerprint.getConsideredVulnerable()) {
                     vulnerable = TestResult.TRUE;
                 }
             }

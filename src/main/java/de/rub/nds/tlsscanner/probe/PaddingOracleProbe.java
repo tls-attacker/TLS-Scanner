@@ -15,6 +15,8 @@ import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsattacker.attacks.impl.PaddingOracleAttacker;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
+import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -25,6 +27,7 @@ import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NondeterministicVectorContainerHolder;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
@@ -136,10 +139,38 @@ public class PaddingOracleProbe extends TlsProbe {
         } catch (Exception E) {
             LOGGER.error("Encountered an exception while testing for PaddingOracles", E);
         }
+        double pValue = computePValue(attacker.getResponseMapList());
+        boolean consideredVulnerable = isConsideredVulnerable(pValue);
+        EqualityError equalityError = retrieveEqualityError(attacker.getResponseMapList());
         return new PaddingOracleCipherSuiteFingerprint(paddingOracleConfig.getProtocolVersionDelegate()
                 .getProtocolVersion(), paddingOracleConfig.getCiphersuiteDelegate().getCipherSuites().get(0),
                 paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType(),
-                attacker.getResponseMapList());
+                attacker.getResponseMapList(), equalityError, pValue, consideredVulnerable);
+    }
+
+    private double computePValue(List<VectorResponse> responseList) {
+        NondeterministicVectorContainerHolder holder = new NondeterministicVectorContainerHolder(responseList);
+        return holder.computePValue();
+    }
+
+    public boolean isConsideredVulnerable(double pValue) {
+        return pValue < 0.0001d;
+    }
+
+    public EqualityError retrieveEqualityError(List<VectorResponse> responseList) {
+        for (VectorResponse vectorResponseOne : responseList) {
+            for (VectorResponse vectorResponseTwo : responseList) {
+                if (vectorResponseOne == vectorResponseTwo) {
+                    continue;
+                }
+                EqualityError equality = FingerPrintChecker.checkEquality(vectorResponseOne.getFingerprint(),
+                        vectorResponseTwo.getFingerprint(), true);
+                if (equality != EqualityError.NONE) {
+                    return equality;
+                }
+            }
+        }
+        return EqualityError.NONE;
     }
 
     @Override
@@ -173,6 +204,10 @@ public class PaddingOracleProbe extends TlsProbe {
         paddingOracleCommandConfig.setNumberOfIterations(numberOfAdditionalIterations);
         PaddingOracleCipherSuiteFingerprint tempFingerprint = getPaddingOracleCipherSuiteFingerprint(paddingOracleCommandConfig);
         fingerprint.appendToResponseMap(tempFingerprint.getResponseMap());
+        tempFingerprint.setpValue(computePValue(tempFingerprint.getResponseMap()));
+        tempFingerprint.setConsideredVulnerable(isConsideredVulnerable(tempFingerprint.getpValue()));
+        tempFingerprint.setEqualityError(retrieveEqualityError(tempFingerprint.getResponseMap()));
+
     }
 
     private boolean isPotentiallyVulnerable(List<PaddingOracleCipherSuiteFingerprint> testResultList) {

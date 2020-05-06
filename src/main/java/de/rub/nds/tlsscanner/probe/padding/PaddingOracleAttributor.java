@@ -689,7 +689,7 @@ public class PaddingOracleAttributor {
         for (CipherSuite suite : vulnerability.getKnownAffectedCiphersuites()) {
             for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
                 if (fingerprint.getSuite() == suite
-                        && !Objects.equals(fingerprint.isConsideredVulnerable(), Boolean.TRUE)) {
+                        && !Objects.equals(fingerprint.getConsideredVulnerable(), Boolean.TRUE)) {
                     return false;
                 }
             }
@@ -697,7 +697,7 @@ public class PaddingOracleAttributor {
         for (CipherSuite suite : vulnerability.getKnownNotAffectedCiphersuites()) {
             for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
                 if (fingerprint.getSuite() == suite
-                        && Objects.equals(fingerprint.isConsideredVulnerable(), Boolean.TRUE)) {
+                        && Objects.equals(fingerprint.getConsideredVulnerable(), Boolean.TRUE)) {
                     return false;
                 }
             }
@@ -709,7 +709,7 @@ public class PaddingOracleAttributor {
             List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
         List<VectorResponse> vulnerableVectorResponseList = null;
         for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-            if (fingerprint.isConsideredVulnerable() == Boolean.TRUE) {
+            if (fingerprint.getConsideredVulnerable() == Boolean.TRUE) {
                 vulnerableVectorResponseList = fingerprint.getResponseMap();
             }
         }

@@ -23,6 +23,9 @@ public class CheckPattern {
 
     private List<ResponseFingerprint> responseFingerprintList = null;
 
+    private CheckPattern() {
+    }
+
     public CheckPattern(CheckPatternType type, boolean foundFinishedAndAlert, ByteCheckStatus[] bytePattern) {
         this.type = type;
         this.foundFinishedAndAlert = foundFinishedAndAlert;

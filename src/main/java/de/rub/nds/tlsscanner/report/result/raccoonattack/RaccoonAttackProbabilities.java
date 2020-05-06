@@ -29,6 +29,9 @@ public class RaccoonAttackProbabilities {
 
     private BigInteger modulus;
 
+    private RaccoonAttackProbabilities() {
+    }
+
     public RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition position,
             int zeroBitsRequiredToNextBlockBorder, BigDecimal chanceForEquation,
             List<RaccoonAttackPskProbabilities> pskProbabilityList, BigInteger modulus) {

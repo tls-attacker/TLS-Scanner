@@ -18,6 +18,9 @@ public class RaccoonAttackPskProbabilities {
 
     private BigDecimal chanceForEquation;
 
+    private RaccoonAttackPskProbabilities() {
+    }
+
     public RaccoonAttackPskProbabilities(int pskLength, int zeroBitsRequiredToNextBlockBorder,
             BigDecimal chanceForEquation) {
         this.pskLength = pskLength;
