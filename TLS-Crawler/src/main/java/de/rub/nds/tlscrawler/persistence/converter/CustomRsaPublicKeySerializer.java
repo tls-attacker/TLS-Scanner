@@ -15,9 +15,9 @@ import java.io.IOException;
  *
  * @author robert
  */
-public class CustomRsaPublicKeySerialisationConverter extends StdSerializer<CustomRsaPublicKey> {
+public class CustomRsaPublicKeySerializer extends StdSerializer<CustomRsaPublicKey> {
 
-    public CustomRsaPublicKeySerialisationConverter() {
+    public CustomRsaPublicKeySerializer() {
         super(CustomRsaPublicKey.class);
     }
 

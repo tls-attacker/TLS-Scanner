@@ -15,9 +15,9 @@ import java.io.IOException;
  *
  * @author robert
  */
-public class CustomEcPublicKeySerialisationConverter extends StdSerializer<CustomEcPublicKey> {
+public class CustomEcPublicKeySerializer extends StdSerializer<CustomEcPublicKey> {
 
-    public CustomEcPublicKeySerialisationConverter() {
+    public CustomEcPublicKeySerializer() {
         super(CustomEcPublicKey.class);
     }
 

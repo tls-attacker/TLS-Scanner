@@ -16,29 +16,30 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  *
  * @author robert
  */
-public class ResponseFingerprintDeserialisationConverter extends StdDeserializer<ResponseFingerprint> {
-    
-    public ResponseFingerprintDeserialisationConverter() {
+public class ResponseFingerprintDeserializer extends StdDeserializer<ResponseFingerprint> {
+
+    public ResponseFingerprintDeserializer() {
         super(ResponseFingerprint.class);
     }
 
     @Override
     public ResponseFingerprint deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
-//        JsonNode node = jp.getCodec().readTree(jp);
-//        String socketState = node.get("socketState").asText();
-//        int messageReceiveds = node.get("numberOfMessagesReceived").asInt();
-//        int recordsReceiveds = node.get("numberOfRecordsReceived").asInt();
-//        boolean encryptedAlert = node.get("encryptedAlert").asBoolean();
-//        boolean receivedTransportHandlerException = node.get("false").asBoolean();
-//        
-//        List<String> answers = node.findValuesAsText("receivedMessages");
-//        
+        JsonNode node = jp.getCodec().readTree(jp);
+        String socketState = node.get("socketState").asText();
+        //System.out.println(socketState);
+        List<String> books = node.findValuesAsText("receivedMessages");
+        for (String book : books) {
+            //System.out.println(book);
+        }
+        
+
 //        
 //        jsonGenerator.writeStartObject();
 //        jsonGenerator.writeStringField("socketState", responseFingerprint.getSocketState().name());
@@ -52,6 +53,6 @@ public class ResponseFingerprintDeserialisationConverter extends StdDeserializer
 //        }
 //        jsonGenerator.writeEndArray();
 //        jsonGenerator.writeEndObject();
-return null;
+        return null;
     }
 }

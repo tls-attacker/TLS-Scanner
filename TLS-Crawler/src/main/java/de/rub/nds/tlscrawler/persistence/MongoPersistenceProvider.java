@@ -17,27 +17,50 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
+import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1Vector;
+import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsattacker.core.crypto.ec.FieldElement;
+import de.rub.nds.tlsattacker.core.crypto.ec.Point;
+import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlscrawler.data.*;
-import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateSerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.ByteArraySerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.CertificateSerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.CustomDhPublicKeySerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.CustomDsaPublicKeySerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.CustomEcPublicKeySerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.CustomRsaPublicKeySerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.HttpsHeaderSerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.PointSerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerialisationConverter;
-import de.rub.nds.tlscrawler.persistence.converter.VectorSerialisationConverter;
+import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateSerializer;
+import de.rub.nds.tlscrawler.persistence.converter.ByteArraySerializer;
+import de.rub.nds.tlscrawler.persistence.converter.CertificateDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.CertificateSerializer;
+import de.rub.nds.tlscrawler.persistence.converter.CustomDhPublicKeySerializer;
+import de.rub.nds.tlscrawler.persistence.converter.CustomDsaPublicKeySerializer;
+import de.rub.nds.tlscrawler.persistence.converter.CustomEcPublicKeySerializer;
+import de.rub.nds.tlscrawler.persistence.converter.CustomRsaPublicKeySerializer;
+import de.rub.nds.tlscrawler.persistence.converter.ExtractedValueContainerDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.FieldElementDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.HttpsHeaderDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.HttpsHeaderSerializer;
+import de.rub.nds.tlscrawler.persistence.converter.Pkcs1Deserializer;
+import de.rub.nds.tlscrawler.persistence.converter.PointDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.PointSerializer;
+import de.rub.nds.tlscrawler.persistence.converter.PublicKeyDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerializer;
+import de.rub.nds.tlscrawler.persistence.converter.VectorDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.VectorFingerPrintPairDeserializer;
+import de.rub.nds.tlscrawler.persistence.converter.VectorSerializer;
+import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.SiteReport;
-
+import java.security.PublicKey;
+import de.rub.nds.tlsattacker.attacks.general.Vector;
+import de.rub.nds.tlscrawler.persistence.converter.BleichenbacherTestResultDeserializer;
+import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.crypto.tls.Certificate;
 import org.bson.BsonDocument;
-import org.bson.BsonString;
+import org.bson.BsonNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.json.simple.JSONObject;
 import org.mongojack.JacksonMongoCollection;
 
 /**
@@ -68,17 +91,29 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         this.credentials = credentials;
 
         SimpleModule module = new SimpleModule();
-        module.addSerializer(new ByteArraySerialisationConverter());
-        module.addSerializer(new ResponseFingerprintSerialisationConverter());
-        module.addSerializer(new CertificateSerialisationConverter());
-        module.addSerializer(new Asn1CertificateSerialisationConverter());
-        module.addSerializer(new CustomDhPublicKeySerialisationConverter());
-        module.addSerializer(new CustomEcPublicKeySerialisationConverter());
-        module.addSerializer(new CustomRsaPublicKeySerialisationConverter());
-        module.addSerializer(new CustomDsaPublicKeySerialisationConverter());
-        module.addSerializer(new VectorSerialisationConverter());
-        module.addSerializer(new PointSerialisationConverter());
-        module.addSerializer(new HttpsHeaderSerialisationConverter());
+        module.addSerializer(new ByteArraySerializer());
+        module.addSerializer(new ResponseFingerprintSerializer());
+        module.addSerializer(new CertificateSerializer());
+        module.addSerializer(new Asn1CertificateSerializer());
+        module.addSerializer(new CustomDhPublicKeySerializer());
+        module.addSerializer(new CustomEcPublicKeySerializer());
+        module.addSerializer(new CustomRsaPublicKeySerializer());
+        module.addSerializer(new CustomDsaPublicKeySerializer());
+        module.addSerializer(new VectorSerializer());
+        module.addSerializer(new PointSerializer());
+        module.addSerializer(new HttpsHeaderSerializer());
+        module.addDeserializer(ResponseFingerprint.class, new ResponseFingerprintDeserializer());
+        module.addDeserializer(HttpsHeader.class, new HttpsHeaderDeserializer());
+        module.addDeserializer(FieldElement.class, new FieldElementDeserializer());
+        module.addDeserializer(ExtractedValueContainer.class, new ExtractedValueContainerDeserializer());
+        module.addDeserializer(Certificate.class, new CertificateDeserializer());
+        module.addDeserializer(PublicKey.class, new PublicKeyDeserializer());
+        module.addDeserializer(Pkcs1Vector.class, new Pkcs1Deserializer());
+        module.addDeserializer(org.bouncycastle.asn1.x509.Certificate.class, new Asn1CertificateDeserializer());
+        module.addDeserializer(VectorFingerprintPair.class, new VectorFingerPrintPairDeserializer());
+        module.addDeserializer(Point.class, new PointDeserializer());
+        module.addDeserializer(Vector.class, new VectorDeserializer());
+        module.addDeserializer(BleichenbacherTestResult.class, new BleichenbacherTestResultDeserializer());
         mapper.registerModule(module);
         mapper.registerModule(new JavaTimeModule());
     }
@@ -114,8 +149,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         LOG.info("CurrentCollection: {}.", collectionName);
     }
 
-
-
     @Override
     public void insertScanTask(ScanTask newTask) {
         this.init(newTask.getScanJob().getScanName(), newTask.getScanJob().getWorkspace());
@@ -148,22 +181,27 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         }
     }
 
+    @Override
     public FindIterable<ScanTask> findDocuments(String database, String workspace, Bson findQuery) {
         this.init(database, workspace);
         return collection.find(findQuery);
     }
 
+    @Override
     public Collection<SiteReport> findSiteReports(String database, String workspace, Bson findQuery) {
         this.init(database, workspace);
         List<SiteReport> reportList = new LinkedList<>();
         FindIterable<ScanTask> findIterable = collection.find(findQuery);
         for (ScanTask scanTask : findIterable) {
             Document document = scanTask.getResult();
+            LinkedHashMap map = (LinkedHashMap) document.get("report");
+            JSONObject obj = new JSONObject(map);
             try {
-                SiteReport report = mapper.readValue(document.toJson(), SiteReport.class);
+                SiteReport report = mapper.readValue(obj.toJSONString(), SiteReport.class);
                 reportList.add(report);
             } catch (JsonProcessingException ex) {
                 LOG.error("Could not deserialize SiteReport", ex);
+                ex.printStackTrace();
             }
         }
         return reportList;
@@ -189,7 +227,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     @Override
     public void clean(String database, String workspace) {
         this.init(database, workspace);
-        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("id", new BsonDocument()));
+        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("result.report.equalityError", new BsonNull()));
         collection.updateMany(new BsonDocument(), updateDocument);
     }
 

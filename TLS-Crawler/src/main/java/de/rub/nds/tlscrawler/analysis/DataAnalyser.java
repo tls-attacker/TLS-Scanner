@@ -16,6 +16,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.SiteReportPrinter;
 import java.util.Collection;
 import org.bson.BsonDocument;
+import org.bson.BsonNull;
 import org.bson.BsonString;
 
 /**
@@ -39,22 +40,22 @@ public class DataAnalyser {
 
     public void analyze() {
         persistenceProvider.clean(config.getDatabaseName(), config.getWorkspaceName());
-        long totalAnswers = persistenceProvider.countDocuments(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument());
-        System.out.println("Total servers scanned: " + totalAnswers);
-        for (CipherSuite suite : CipherSuite.values()) {
-            System.out.println(suite.name());
-            System.out.println("Total:" + persistenceProvider.countDocuments(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.cipherSuites", new BsonString(suite.name()))));
-//            for (ProtocolVersion version : ProtocolVersion.values()) {
-//                BsonDocument document = new BsonDocument();
-//                document.put("result.report.versionSuitePairs.version", new BsonString(version.name()));
-//                document.put("result.report.versionSuitePairs.cipherSuiteList", new BsonString(suite.name()));
-//                long value = persistenceProvider.countDocuments(document);
-//                if (value > 0) {
-//                    System.out.println(version.name() + ":" + value);
-//                }
-//
-//            }
-        }
+//        long totalAnswers = persistenceProvider.countDocuments(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("", new BsonNull()));
+//        System.out.println("Total servers scanned: " + totalAnswers);
+//        for (CipherSuite suite : CipherSuite.values()) {
+//            System.out.println(suite.name());
+//            System.out.println("Total:" + persistenceProvider.countDocuments(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.cipherSuites", new BsonString(suite.name()))));
+////            for (ProtocolVersion version : ProtocolVersion.values()) {
+////                BsonDocument document = new BsonDocument();
+////                document.put("result.report.versionSuitePairs.version", new BsonString(version.name()));
+////                document.put("result.report.versionSuitePairs.cipherSuiteList", new BsonString(suite.name()));
+////                long value = persistenceProvider.countDocuments(document);
+////                if (value > 0) {
+////                    System.out.println(version.name() + ":" + value);
+////                }
+////
+////            }
+//        }
 
 //        for (AnalyzedProperty property : AnalyzedProperty.values()) {
 //            System.out.println("#############");
@@ -70,7 +71,7 @@ public class DataAnalyser {
 //
         Collection<SiteReport> siteReports = persistenceProvider.findSiteReports(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.resultMap.VULNERABLE_TO_DIRECT_RACCOON", new BsonString("TRUE")));
         for (SiteReport report : siteReports) {
-            SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.DETAILED, false);
+            SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.ALL, true);
             System.out.println(printer.getFullReport());
         }
     }

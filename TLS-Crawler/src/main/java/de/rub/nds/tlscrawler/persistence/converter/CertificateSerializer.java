@@ -16,9 +16,9 @@ import org.bouncycastle.crypto.tls.Certificate;
  *
  * @author robert
  */
-public class CertificateSerialisationConverter extends StdSerializer<Certificate> {
+public class CertificateSerializer extends StdSerializer<Certificate> {
 
-    public CertificateSerialisationConverter() {
+    public CertificateSerializer() {
         super(Certificate.class);
     }
 
@@ -27,7 +27,7 @@ public class CertificateSerialisationConverter extends StdSerializer<Certificate
         jsonGenerator.writeStartObject();
         jsonGenerator.writeArrayFieldStart("certificates");
         for (org.bouncycastle.asn1.x509.Certificate cert : certificate.getCertificateList()) {
-            jsonGenerator.writeString(ArrayConverter.bytesToHexString(cert.getEncoded()).replace(" ", ""));
+            jsonGenerator.writeString(ArrayConverter.bytesToHexString(cert.getEncoded(),false, false).replace(" ", ""));
         }
         jsonGenerator.writeEndArray();
         jsonGenerator.writeEndObject();

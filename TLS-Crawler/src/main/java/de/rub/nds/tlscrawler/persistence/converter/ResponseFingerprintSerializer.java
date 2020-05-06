@@ -16,9 +16,9 @@ import java.io.IOException;
  *
  * @author robert
  */
-public class ResponseFingerprintSerialisationConverter extends StdSerializer<ResponseFingerprint> {
+public class ResponseFingerprintSerializer extends StdSerializer<ResponseFingerprint> {
     
-    public ResponseFingerprintSerialisationConverter() {
+    public ResponseFingerprintSerializer() {
         super(ResponseFingerprint.class);
     }
 
