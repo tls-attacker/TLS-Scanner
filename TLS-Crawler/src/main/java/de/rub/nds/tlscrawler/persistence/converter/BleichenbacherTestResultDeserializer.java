@@ -9,8 +9,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1Vector;
-import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import java.io.IOException;
 

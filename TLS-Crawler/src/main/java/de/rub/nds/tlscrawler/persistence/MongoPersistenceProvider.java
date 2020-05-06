@@ -18,7 +18,6 @@ import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1Vector;
-import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.crypto.ec.FieldElement;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
@@ -44,7 +43,6 @@ import de.rub.nds.tlscrawler.persistence.converter.PublicKeyDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerializer;
 import de.rub.nds.tlscrawler.persistence.converter.VectorDeserializer;
-import de.rub.nds.tlscrawler.persistence.converter.VectorFingerPrintPairDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.VectorSerializer;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -110,10 +108,9 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         module.addDeserializer(PublicKey.class, new PublicKeyDeserializer());
         module.addDeserializer(Pkcs1Vector.class, new Pkcs1Deserializer());
         module.addDeserializer(org.bouncycastle.asn1.x509.Certificate.class, new Asn1CertificateDeserializer());
-        module.addDeserializer(VectorFingerprintPair.class, new VectorFingerPrintPairDeserializer());
         module.addDeserializer(Point.class, new PointDeserializer());
         module.addDeserializer(Vector.class, new VectorDeserializer());
-        module.addDeserializer(BleichenbacherTestResult.class, new BleichenbacherTestResultDeserializer());
+        //module.addDeserializer(BleichenbacherTestResult.class, new BleichenbacherTestResultDeserializer());
         mapper.registerModule(module);
         mapper.registerModule(new JavaTimeModule());
     }
@@ -227,7 +224,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     @Override
     public void clean(String database, String workspace) {
         this.init(database, workspace);
-        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("result.report.equalityError", new BsonNull()));
+        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("result.report.probeTypeList", new BsonNull()));
         collection.updateMany(new BsonDocument(), updateDocument);
     }
 
