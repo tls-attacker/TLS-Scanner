@@ -26,8 +26,8 @@ for i in `seq 1 10`; do
   openssl gendsa -out dsakey_${i}.pem dsaparam_${i}.pem;
 done;
 
-for named_curve in secp160k1 secp160r1 secp160r2 secp192k1 secp224k1 secp224r1 secp256k1 secp256r1 secp384r1 secp521r1 sect163k1 sect163r1 sect163r2 sect193r1 sect193r2 sect233k1 sect233r1 sect239k1 sect283k1 sect283r1 sect409k1 sect409r1 sect571k1 sect571r1; do
-  openssl ecparam -out ecparam_${named_curve}.pem -name ${named_curve};
-  openssl genpkey -paramfile ecparam_${named_curve}.pem -out eckey_${named_curve}.pem;
-  openssl pkey -in eckey_${named_curve}.pem -pubout -out ecpubkey_${named_curve}.pem;
+for i in `seq 1 5`; do
+  openssl ecparam -out ecparam_secp256r1_${i}.pem -name secp256r1;
+  openssl genpkey -paramfile ecparam_secp256r1_${i}.pem -out eckey_secp256r1_${i}.pem;
+  openssl pkey -in eckey_secp256r1_${i}.pem -pubout -out ecpubkey_secp256r1_${i}.pem;
 done;

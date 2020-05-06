@@ -2,8 +2,8 @@
 
     <asn1Sequence identifier="ECROOTv3_CAv3CustomCurve_LEAF_ECv3__leaf_certificate1" type="Certificate">
         <keyInfo identifier="key" keyType="ECDSA">
-            <keyFile>eckey_secp256r1.pem</keyFile>
-            <pubKeyFile>ecpubkey_secp256r1.pem</pubKeyFile>
+            <keyFile>eckey_secp256r1_3.pem</keyFile>
+            <pubKeyFile>ecpubkey_secp256r1_3.pem</pubKeyFile>
         </keyInfo>
         <asn1Sequence identifier="tbsCertificate" type="TBSCertificate">
             <asn1Explicit identifier="version">
