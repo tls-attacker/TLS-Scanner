@@ -142,12 +142,18 @@ public class SiteReportPrinter {
         appendPerformanceData(builder);
 
         // TODO: Remove me later, only here for evaluation!
-        addOcspResultsToCsv();
+        try {
+            PrintWriter pw = new PrintWriter(new FileOutputStream(new File("results.csv"), true));
+            pw.println(createCsvResults());
+            pw.close();
+        } catch (Exception e) {
+            LOGGER.error("CSV creation failed for host " + report.getHost());
+        }
 
         return builder.toString();
     }
 
-    private void addOcspResultsToCsv() {
+    private String createCsvResults() {
         StringBuilder csvBuilder = new StringBuilder();
         csvBuilder.append(report.getHost()).append(",");
         if (report.getServerIsAlive() == null) {
@@ -160,6 +166,16 @@ public class SiteReportPrinter {
         } else if (Boolean.FALSE.equals(report.getServerIsAlive())) {
             csvBuilder.append("0,");
         }
+
+        if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP) == TestResult.TRUE) {
+            csvBuilder.append("1,");
+        } else if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP) == TestResult.FALSE) {
+            csvBuilder.append("0,");
+        } else if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP) == TestResult.ERROR_DURING_TEST) {
+            csvBuilder.append("-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
+            return csvBuilder.toString();
+        }
+
         if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.TRUE) {
             csvBuilder.append("1,");
         } else {
@@ -232,13 +248,7 @@ public class SiteReportPrinter {
             csvBuilder.append("-1");
         }
 
-        try {
-            PrintWriter pw = new PrintWriter(new FileOutputStream(new File("results.csv"), true));
-            pw.println(csvBuilder.toString());
-            pw.close();
-        } catch (Exception e) {
-            LOGGER.error("CSV creation failed for host " + report.getHost());
-        }
+        return csvBuilder.toString();
     }
 
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
