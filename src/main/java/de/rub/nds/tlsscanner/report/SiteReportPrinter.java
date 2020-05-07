@@ -544,6 +544,7 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "OCSP");
 
         // TODO: Find a better place to merge the data of these two probes?
+
         // In case extension probe & OCSP probe differ, report stapling as
         // unreliable.
         if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.TRUE
@@ -583,14 +584,16 @@ public class SiteReportPrinter {
         // Is stapling supported, but a CertificateStatus message is missing?
         if (Boolean.TRUE.equals(report.getSupportsStapling())) {
             prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT);
-            long differenceHoursStapled = report.getDifferenceHoursStapled();
-            if (differenceHoursStapled < 24) {
-                prettyAppend(builder, "Stapled Response Cached", differenceHoursStapled + " hours", AnsiColor.GREEN);
-            } else {
-                prettyAppend(builder, "Stapled Response Cached", differenceHoursStapled / 24 + " days",
-                        AnsiColor.YELLOW);
+            if (report.getFirstOcspResponse() != null && report.getFirstOcspResponse().getResponseStatus() == 0) {
+                long differenceHoursStapled = report.getDifferenceHoursStapled();
+                if (differenceHoursStapled < 24) {
+                    prettyAppend(builder, "Stapled Response Cached", differenceHoursStapled + " hours", AnsiColor.GREEN);
+                } else {
+                    prettyAppend(builder, "Stapled Response Cached", differenceHoursStapled / 24 + " days",
+                            AnsiColor.YELLOW);
+                }
+                prettyAppend(builder, "Stapled Response Expired", AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
             }
-            prettyAppend(builder, "Stapled Response Expired", AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
         }
 
         // Are nonces used? If so, do they match?
@@ -599,6 +602,7 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Nonce Mismatch / Cached Nonce", AnalyzedProperty.NONCE_MISMATCH);
         }
 
+        // Print stapled response
         if (report.getStapledOcspResponse() != null) {
             prettyAppendSubheading(builder, "Stapled OCSP Response");
             if (report.getStapledOcspResponse().getResponseStatus() > 0) {
@@ -606,10 +610,22 @@ public class SiteReportPrinter {
             }
             prettyAppend(builder, report.getStapledOcspResponse().toString(false));
         }
+
+        // Print requested response
         if (report.getFirstOcspResponse() != null) {
             prettyAppendSubheading(builder, "Requested OCSP Response");
             if (report.getFirstOcspResponse().getResponseStatus() > 0) {
-                prettyAppend(builder, "OCSP Request was not accepted by the OCSP Responder. \n", AnsiColor.RED);
+                prettyAppend(builder, "OCSP Request was not accepted by the OCSP Responder.", AnsiColor.RED);
+
+                // Check if certificate chain was unordered. This will make the
+                // request fail very likely.
+                CertificateChain chain = report.getCertificateChain();
+                if (Boolean.FALSE.equals(chain.getChainIsOrdered())) {
+                    prettyAppend(
+                            builder,
+                            "This likely happened due the certificate chain being unordered. This is not supported yet by this scan.",
+                            AnsiColor.RED);
+                }
             }
             prettyAppend(builder, report.getFirstOcspResponse().toString(false));
         }
