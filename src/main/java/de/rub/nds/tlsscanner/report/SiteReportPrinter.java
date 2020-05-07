@@ -227,9 +227,9 @@ public class SiteReportPrinter {
             // hours
             Duration difference = Duration.between(firstResponseTime, secondResponseTime);
             long differenceInDays = difference.toDays();
-            csvBuilder.append(differenceInDays + ",");
+            csvBuilder.append(differenceInDays);
         } else {
-            csvBuilder.append("-1,");
+            csvBuilder.append("-1");
         }
 
         try {
