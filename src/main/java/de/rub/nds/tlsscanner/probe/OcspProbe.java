@@ -91,8 +91,10 @@ public class OcspProbe extends TlsProbe {
             } else {
                 supportsNonce = false;
             }
+        } catch (UnsupportedOperationException e) {
+            LOGGER.warn("OCSP is not supported by the leaf certificate.");
         } catch (Exception e) {
-            LOGGER.error("OCSP Request/Response failed.");
+            LOGGER.error("OCSP probe failed.");
         }
 
         return new OcspResult(supportsStapling, mustStaple, supportsNonce, stapledResponse, firstResponse,
