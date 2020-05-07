@@ -67,8 +67,8 @@ public class OcspResult extends ProbeResult {
             report.putResult(AnalyzedProperty.MUST_STAPLE, TestResult.FALSE);
         }
 
-        if (firstResponse != null) {
-            if (stapledResponse != null) {
+        if (firstResponse != null && firstResponse.getResponseStatus() == 0) {
+            if (stapledResponse != null && stapledResponse.getResponseStatus() == 0) {
                 // Check if stapled response is older than a freshly requested
                 // one
                 DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'", Locale.ENGLISH);
