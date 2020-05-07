@@ -46,6 +46,7 @@ import java.util.List;
  */
 public class OcspProbe extends TlsProbe {
 
+    private Boolean supportsOcsp;
     private boolean supportsStapling;
     private boolean mustStaple;
     private boolean supportsNonce;
@@ -72,6 +73,9 @@ public class OcspProbe extends TlsProbe {
 
         try {
             OCSPRequest ocspRequest = new OCSPRequest(serverCertChain);
+            // If the request hasn't thrown an exception due to a missing
+            // responder URL, the certificate seems to support OCSP
+            supportsOcsp = true;
 
             // First Request Message with '42' as nonce
             OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
@@ -93,12 +97,13 @@ public class OcspProbe extends TlsProbe {
             }
         } catch (UnsupportedOperationException e) {
             LOGGER.warn("OCSP is not supported by the leaf certificate.");
+            supportsOcsp = false;
         } catch (Exception e) {
             LOGGER.error("OCSP probe failed.");
         }
 
-        return new OcspResult(supportsStapling, mustStaple, supportsNonce, stapledResponse, firstResponse,
-                secondResponse);
+        return new OcspResult(supportsOcsp, supportsStapling, mustStaple, supportsNonce, stapledResponse,
+                firstResponse, secondResponse);
     }
 
     private void getMustStaple(Certificate certChain) {
@@ -167,6 +172,6 @@ public class OcspProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new OcspResult(false, false, false, null, null, null);
+        return new OcspResult(null, false, false, false, null, null, null);
     }
 }

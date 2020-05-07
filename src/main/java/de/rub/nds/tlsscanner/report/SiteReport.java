@@ -92,6 +92,7 @@ public class SiteReport extends Observable {
     private CertificateChain certificateChain;
 
     // OCSP
+    private Boolean supportsOcsp = null;
     private Boolean supportsStapling = null;
     private Boolean mustStaple = null;
     private Boolean supportsNonce = null;
@@ -613,5 +614,13 @@ public class SiteReport extends Observable {
 
     public synchronized void setDifferenceHoursStapled(Long differenceHoursStapled) {
         this.differenceHoursStapled = differenceHoursStapled;
+    }
+
+    public synchronized Boolean getSupportsOcsp() {
+        return supportsOcsp;
+    }
+
+    public synchronized void setSupportsOcsp(Boolean supportsOcsp) {
+        this.supportsOcsp = supportsOcsp;
     }
 }

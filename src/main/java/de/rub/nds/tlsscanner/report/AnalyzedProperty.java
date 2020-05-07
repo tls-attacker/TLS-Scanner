@@ -100,6 +100,7 @@ public enum AnalyzedProperty {
     SUPPORTS_ANSIX962_COMPRESSED_PRIME(AnalyzedPropertyCategory.EC),
     SUPPORTS_ANSIX962_COMPRESSED_CHAR2(AnalyzedPropertyCategory.EC),
     SUPPORTS_SECP_COMPRESSION_TLS13(AnalyzedPropertyCategory.EC),
+    SUPPORTS_OCSP(AnalyzedPropertyCategory.OCSP),
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFOCRES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),

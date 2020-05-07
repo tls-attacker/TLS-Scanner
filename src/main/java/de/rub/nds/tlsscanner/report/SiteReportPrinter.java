@@ -649,6 +649,7 @@ public class SiteReportPrinter {
 
     private StringBuilder appendOcsp(StringBuilder builder) {
         prettyAppendHeading(builder, "OCSP");
+        prettyAppend(builder, "Supports OCSP ", AnalyzedProperty.SUPPORTS_OCSP);
 
         // TODO: Find a better place to merge the data of these two probes?
 

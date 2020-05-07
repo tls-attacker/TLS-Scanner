@@ -26,6 +26,7 @@ import java.util.Locale;
  */
 public class OcspResult extends ProbeResult {
 
+    private final Boolean supportsOcsp;
     private final boolean supportsStapling;
     private final boolean mustStaple;
     private final boolean supportsNonce;
@@ -33,9 +34,10 @@ public class OcspResult extends ProbeResult {
     private final OCSPResponse firstResponse;
     private final OCSPResponse secondResponse;
 
-    public OcspResult(boolean supportsStapling, boolean mustStaple, boolean supportsNonce,
+    public OcspResult(Boolean supportsOcsp, boolean supportsStapling, boolean mustStaple, boolean supportsNonce,
             OCSPResponse stapledResponse, OCSPResponse firstResponse, OCSPResponse secondResponse) {
         super(ProbeType.OCSP);
+        this.supportsOcsp = supportsOcsp;
         this.supportsStapling = supportsStapling;
         this.mustStaple = mustStaple;
         this.supportsNonce = supportsNonce;
@@ -46,6 +48,7 @@ public class OcspResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
+        report.setSupportsOcsp(supportsOcsp);
         report.setSupportsStapling(supportsStapling);
         report.setMustStaple(mustStaple);
         report.setSupportsNonce(supportsNonce);
@@ -55,6 +58,15 @@ public class OcspResult extends ProbeResult {
 
         // Check if status_request is supported, but no certificate status
         // request message was given
+
+        if (Boolean.TRUE.equals(supportsOcsp)) {
+            report.putResult(AnalyzedProperty.SUPPORTS_OCSP, TestResult.TRUE);
+        } else if (Boolean.FALSE.equals(supportsOcsp)) {
+            report.putResult(AnalyzedProperty.SUPPORTS_OCSP, TestResult.FALSE);
+        } else if (supportsOcsp == null) {
+            report.putResult(AnalyzedProperty.SUPPORTS_OCSP, TestResult.ERROR_DURING_TEST);
+        }
+
         if (supportsStapling && stapledResponse == null) {
             report.putResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT, TestResult.FALSE);
         } else {
