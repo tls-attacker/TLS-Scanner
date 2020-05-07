@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
@@ -153,11 +154,22 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         this.checkInit();
 
         LOG.trace("addScanTasks()");
+        if (hosts.size() > 500000) {
+            //Redis does not allow really really big inserstions - we need to split this up : /
+            final Collection<String> subList = new LinkedList<>();
+            hosts.forEach(next -> {
+                subList.add(next);
+                if (subList.size() == 500000) {
+                    addScanTasks(job, subList);
+                    subList.clear();
+                }
+            });
+        } else {
+            String[] tids = hosts.toArray(new String[hosts.size()]);
 
-        String[] tids = hosts.toArray(new String[hosts.size()]);
-
-        try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.sadd(job.getWorkspace(), tids);
+            try (Jedis jedis = this.jedisPool.getResource()) {
+                jedis.sadd(job.getWorkspace(), tids);
+            }
         }
     }
 
