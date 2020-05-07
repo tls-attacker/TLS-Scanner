@@ -13,6 +13,8 @@ import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
+import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -54,9 +56,17 @@ import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
@@ -131,7 +141,104 @@ public class SiteReportPrinter {
         appendRecommendations(builder);
         appendPerformanceData(builder);
 
+        // TODO: Remove me later, only here for evaluation!
+        addOcspResultsToCsv();
+
         return builder.toString();
+    }
+
+    private void addOcspResultsToCsv() {
+        StringBuilder csvBuilder = new StringBuilder();
+        csvBuilder.append(report.getHost()).append(",");
+        if (report.getServerIsAlive() == null) {
+            csvBuilder.append("1,");
+        } else if (Boolean.FALSE.equals(report.getServerIsAlive())) {
+            csvBuilder.append("0,");
+        }
+        if (report.getSupportsSslTls() == null) {
+            csvBuilder.append("1,");
+        } else if (Boolean.FALSE.equals(report.getServerIsAlive())) {
+            csvBuilder.append("0,");
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.TRUE) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2) == TestResult.TRUE) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
+        if (Boolean.TRUE.equals(report.getSupportsStapling())) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
+        if (Boolean.TRUE.equals(report.getMustStaple())) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
+        if (report.getResult(AnalyzedProperty.STAPLING_UNRELIABLE) == TestResult.TRUE) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
+        if (report.getResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT) == TestResult.TRUE) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
+        if (report.getDifferenceHoursStapled() != null) {
+            csvBuilder.append(report.getDifferenceHoursStapled()).append(",");
+        } else {
+            csvBuilder.append("-1,");
+        }
+        if (report.getResult(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED) == TestResult.TRUE) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_NONCE) == TestResult.TRUE) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
+        if (report.getResult(AnalyzedProperty.NONCE_MISMATCH) == TestResult.TRUE) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
+
+        // Get longevity of OCSP response
+        OCSPResponse firstResponse = report.getFirstOcspResponse();
+        if (report.getFirstOcspResponse() != null && report.getFirstOcspResponse().getResponseStatus() == 0) {
+            // Check if stapled response is older than a freshly requested
+            // one
+            CertificateStatus certificateStatus = firstResponse.getCertificateStatusList().get(0);
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'", Locale.ENGLISH);
+            LocalDateTime firstResponseTime = LocalDateTime.parse(certificateStatus.getTimeOfLastUpdate(),
+                    inputFormatter);
+            LocalDateTime secondResponseTime = LocalDateTime.parse(certificateStatus.getTimeOfNextUpdate(),
+                    inputFormatter);
+
+            // Check how long the stapled response has been cached for, in
+            // hours
+            Duration difference = Duration.between(firstResponseTime, secondResponseTime);
+            long differenceInDays = difference.toDays();
+            csvBuilder.append(differenceInDays + ",");
+        } else {
+            csvBuilder.append("-1,");
+        }
+
+        try {
+            PrintWriter pw = new PrintWriter(new FileOutputStream(new File("results.csv"), true));
+            pw.println(csvBuilder.toString());
+            pw.close();
+        } catch (Exception e) {
+            LOGGER.error("CSV creation failed for host " + report.getHost());
+        }
     }
 
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
