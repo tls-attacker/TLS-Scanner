@@ -1,9 +1,9 @@
 <asn1XmlContent>
 
     <asn1Sequence identifier="ECROOTv3_CAv3_LEAF_ECv3_KeyAgreement2__leaf_certificate1" type="Certificate">
-        <keyInfo identifier="key" keyType="ECDSA">
-            <keyFile>eckey_secp256r1_3.pem</keyFile>
-            <pubKeyFile>ecpubkey_secp256r1_3.pem</pubKeyFile>
+        <keyInfo identifier="key" keyType="ECDH">
+            <keyFile>eckey_secp160r1.pem</keyFile>
+            <pubKeyFile>ecpubkey_secp160r1.pem</pubKeyFile>
         </keyInfo>
         <asn1Sequence identifier="tbsCertificate" type="TBSCertificate">
             <asn1Explicit identifier="version">
@@ -127,7 +127,7 @@
         </asn1Sequence>
         <asn1Sequence identifier="signatureAlgorithm" type="AlgorithmIdentifier">
             <asn1ObjectIdentifier identifier="algorithm">
-                <value>1.2.840.10045.4.1</value>
+                <value>1.2.840.10045.4.3.2</value>
             </asn1ObjectIdentifier>
             <asn1Null />
         </asn1Sequence>
@@ -267,7 +267,7 @@
         </asn1Sequence>
         <asn1Sequence identifier="signatureAlgorithm" type="AlgorithmIdentifier">
             <asn1ObjectIdentifier identifier="algorithm">
-                <value>1.2.840.10045.4.1</value>
+                <value>1.2.840.10045.4.3.2</value>
             </asn1ObjectIdentifier>
             <asn1Null />
         </asn1Sequence>

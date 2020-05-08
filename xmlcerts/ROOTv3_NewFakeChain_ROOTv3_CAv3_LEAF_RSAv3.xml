@@ -2,7 +2,7 @@
 
     <asn1Sequence identifier="ROOTv3_NewFakeChain_ROOTv3_CAv3_LEAF_RSAv3__leaf_certificate1" type="Certificate">
         <keyInfo identifier="key" keyType="RSA">
-            <keyFile>rsakey_2.pem</keyFile>
+            <keyFile>rsakey_5.pem</keyFile>
         </keyInfo>
         <asn1Sequence identifier="tbsCertificate" type="TBSCertificate">
             <asn1Explicit identifier="version">
@@ -123,7 +123,7 @@
 
     <asn1Sequence identifier="ROOTv3_NewFakeChain_ROOTv3_CAv3_LEAF_RSAv3__ca_certificate1" type="Certificate">
         <keyInfo identifier="key">
-            <keyFile>rsakey_1.pem</keyFile>
+            <keyFile>rsakey_4.pem</keyFile>
         </keyInfo>
         <asn1Sequence identifier="tbsCertificate" type="TBSCertificate">
             <asn1Explicit identifier="version">

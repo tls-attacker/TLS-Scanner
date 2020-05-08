@@ -250,7 +250,7 @@
         </asn1Sequence>
         <asn1Sequence identifier="signatureAlgorithm" type="AlgorithmIdentifier">
             <asn1ObjectIdentifier identifier="algorithm">
-                <value>1.2.840.10040.4.3</value>
+                <value>2.16.840.1.101.3.4.3.2</value>
             </asn1ObjectIdentifier>
             <asn1Null />
         </asn1Sequence>

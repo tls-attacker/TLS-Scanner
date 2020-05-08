@@ -112,7 +112,7 @@
         </asn1Sequence>
         <asn1Sequence identifier="signatureAlgorithm" type="AlgorithmIdentifier">
             <asn1ObjectIdentifier identifier="algorithm">
-                <value>1.2.840.10045.4.1</value>
+                <value>1.2.840.10045.4.3.2</value>
             </asn1ObjectIdentifier>
             <asn1Sequence identifier="ecParameters">
                 <asn1Integer identifier="version">
@@ -281,7 +281,7 @@
         </asn1Sequence>
         <asn1Sequence identifier="signatureAlgorithm" type="AlgorithmIdentifier">
             <asn1ObjectIdentifier identifier="algorithm">
-                <value>1.2.840.10045.4.1</value>
+                <value>1.2.840.10045.4.3.2</value>
             </asn1ObjectIdentifier>
             <asn1Null />
         </asn1Sequence>
