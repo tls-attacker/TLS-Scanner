@@ -98,7 +98,7 @@ public class DebugProbe extends TlsProbe {
 //        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
 //        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384);
 //        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
+        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
 //        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256);
 //        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384);
 //        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384);
@@ -111,18 +111,18 @@ public class DebugProbe extends TlsProbe {
 //        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA);
 //        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA);
 //        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256);
+//        cipherSuites.add(CipherSmasterSecretuite.TLS_RSA_WITH_AES_128_CBC_SHA256);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA);
+//        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
 
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
 //        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
-        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3;
+        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_ECKE_CCS_FIN;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_ECv3_KeyAgreement;
 //            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
         for (ProtocolVersion protocolVersion : desiredVersions) {
             // Dummy for output since I do not iterate Ciphersuites

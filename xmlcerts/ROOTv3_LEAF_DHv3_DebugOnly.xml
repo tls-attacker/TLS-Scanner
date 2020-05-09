@@ -1,6 +1,6 @@
 <asn1XmlContent>
 
-    <asn1Sequence identifier="ROOTv3_LEAF_DHv3__leaf_certificate1" type="Certificate">
+    <asn1Sequence identifier="ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1" type="Certificate">
         <keyInfo identifier="key" keyType="DH">
             <keyFile>dhkey_1.pem</keyFile>
             <pubKeyFile>dhpubkey_1.pem</pubKeyFile>
@@ -13,10 +13,41 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>999</value>
+                <value>10010</value>
             </asn1Integer>
-            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm" />
-            <asn1RawBytes identifier="issuer" type="RawBytes" placeholder="replace_me"><value></value></asn1RawBytes>
+            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm" />
+            <asn1Sequence identifier="issuer" type="Name">
+                <asn1Set identifier="relativeDistinguishedName0" type="RelativeDistinguishedName">
+                    <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
+                        <asn1ObjectIdentifier identifier="type" type="AttributeType">
+                            <value>2.5.4.6</value>
+                        </asn1ObjectIdentifier>
+                        <asn1PrimitivePrintableString identifier="value" type="AttributeValue">
+                            <value>DE</value>
+                        </asn1PrimitivePrintableString>
+                    </asn1Sequence>
+                </asn1Set>
+                <asn1Set identifier="relativeDistinguishedName1" type="RelativeDistinguishedName">
+                    <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
+                        <asn1ObjectIdentifier identifier="type" type="AttributeType">
+                            <value>2.5.4.10</value>
+                        </asn1ObjectIdentifier>
+                        <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
+                            <value>RUB</value>
+                        </asn1PrimitiveUtf8String>
+                    </asn1Sequence>
+                </asn1Set>
+                <asn1Set identifier="relativeDistinguishedName2" type="RelativeDistinguishedName">
+                    <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
+                        <asn1ObjectIdentifier identifier="type" type="AttributeType">
+                            <value>2.5.4.11</value>
+                        </asn1ObjectIdentifier>
+                        <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
+                            <value>TLS-Scanner CCA RSA ROOT-CA v3</value>
+                        </asn1PrimitiveUtf8String>
+                    </asn1Sequence>
+                </asn1Set>
+            </asn1Sequence>
             <asn1Sequence identifier="validity" type="Validity">
                 <asn1PrimitiveUtcTime identifier="notBefore" type="Time">
                     <value>191212000000Z</value>
@@ -25,7 +56,7 @@
                     <value>201219000000Z</value>
                 </asn1PrimitiveUtcTime>
             </asn1Sequence>
-            <asn1Sequence identifier="subject" type="Name">
+            <asn1Sequence identifier="subreplace_me_im_a_dummy_keyject" type="Name">
                 <asn1Set identifier="relativeDistinguishedName0" type="RelativeDistinguishedName">
                     <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
                         <asn1ObjectIdentifier identifier="type" type="AttributeType">
@@ -52,12 +83,12 @@
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>TLS-Scanner CCA Leaf Certificate (ROOTv3_LEAF_DHv3)</value>
+                            <value>TLS-Scanner CCA Leaf Certificate (ROOTv3_CAv3_LEAF_DHv3)</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
                 </asn1Set>
             </asn1Sequence>
-            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/ROOTv3_LEAF_DHv3__leaf_certificate1/key" />
+            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/key" />
             <asn1Explicit identifier="explicitExtensions">
                 <offset>3</offset>
                 <asn1Sequence identifier="extensions" type="Extensions">
@@ -84,7 +115,7 @@
                         </asn1ObjectIdentifier>
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1PrimitiveOctetString identifier="subjectKeyIdentifier" type="SubjectKeyIdentifier">
-                                <value>02</value>
+                                <value>03</value>
                             </asn1PrimitiveOctetString>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>
@@ -120,18 +151,17 @@
     </asn1Sequence>
 
 
-
-    <signatureInfo identifier="ROOTv3_LEAF_DHv3__leaf_certificate1SignatureInfo">
-        <toBeSignedIdentifier>/ROOTv3_LEAF_DHv3__leaf_certificate1/tbsCertificate</toBeSignedIdentifier>
-        <signatureValueTargetIdentifier>/ROOTv3_LEAF_DHv3__leaf_certificate1/signatureValue</signatureValueTargetIdentifier>
+    <signatureInfo identifier="ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1SignatureInfo">
+        <toBeSignedIdentifier>/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/tbsCertificate</toBeSignedIdentifier>
+        <signatureValueTargetIdentifier>/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/signatureValue</signatureValueTargetIdentifier>
         <keyInfoIdentifier>/root_ca_key</keyInfoIdentifier>
-        <signatureAlgorithmOidIdentifier>/ROOTv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
-        <parametersIdentifier>/ROOTv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm/parameters</parametersIdentifier>
+        <signatureAlgorithmOidIdentifier>/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
+        <parametersIdentifier>/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm/parameters</parametersIdentifier>
     </signatureInfo>
 
 
     <keyInfo identifier="root_ca_key">
-        <keyFile>replace_me_im_a_dummy_key</keyFile>
+        <keyFile>rootv3.pem</keyFile>
     </keyInfo>
 
 </asn1XmlContent>
