@@ -97,7 +97,7 @@
                                                 <value>1.3.6.1.5.5.7.2.1</value>
                                             </asn1ObjectIdentifier>
                                             <asn1PrimitiveIa5String identifier="CPSuri" type="CPSuri">
-                                                <value>http://localhost/</value>
+                                                <value>http://172.16.0.199/</value>
                                             </asn1PrimitiveIa5String>
                                         </asn1Sequence>
                                     </asn1Sequence>
@@ -265,7 +265,7 @@
                                                 <value>1.3.6.1.5.5.7.2.1</value>
                                             </asn1ObjectIdentifier>
                                             <asn1PrimitiveIa5String identifier="CPSuri" type="CPSuri">
-                                                <value>http://localhost/</value>
+                                                <value>http://172.16.0.199/</value>
                                             </asn1PrimitiveIa5String>
                                         </asn1Sequence>
                                     </asn1Sequence>

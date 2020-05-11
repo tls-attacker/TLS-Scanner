@@ -72,9 +72,6 @@ public class CcaSupportProbe extends TlsProbe {
         config.setStopReceivingAfterFatal(true);
         config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
-        List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
-        config.setDefaultClientNamedGroups(namedGroups);
-
         return config;
     }
 }
