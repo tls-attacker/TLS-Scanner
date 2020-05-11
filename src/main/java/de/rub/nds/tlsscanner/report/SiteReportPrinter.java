@@ -110,36 +110,33 @@ public class SiteReportPrinter {
         builder.append("\n");
         if (report.getServerIsAlive() == Boolean.FALSE) {
             builder.append("Cannot reach the Server. Is it online?");
-            return builder.toString();
-        }
-        if (report.getSupportsSslTls() == Boolean.FALSE) {
+        } else if (report.getSupportsSslTls() == Boolean.FALSE) {
             builder.append("Server does not seem to support SSL / TLS on the scanned port");
-            return builder.toString();
+        } else {
+            appendProtocolVersions(builder);
+            appendCipherSuites(builder);
+            appendExtensions(builder);
+            appendCompressions(builder);
+            appendEcPointFormats(builder);
+            appendIntolerances(builder);
+            appendAttackVulnerabilities(builder);
+            appendBleichenbacherResults(builder);
+            appendPaddingOracleResults(builder);
+            appendInvalidCurveResults(builder);
+            // appendGcm(builder);
+            appendRfc(builder);
+            appendCertificate(builder);
+            appendOcsp(builder);
+            appendSession(builder);
+            appendRenegotiation(builder);
+            appendHandshakeSimulation(builder);
+            appendHttps(builder);
+            appendRandom(builder);
+            appendPublicKeyIssues(builder);
+            appendScoringResults(builder);
+            appendRecommendations(builder);
+            appendPerformanceData(builder);
         }
-
-        appendProtocolVersions(builder);
-        appendCipherSuites(builder);
-        appendExtensions(builder);
-        appendCompressions(builder);
-        appendEcPointFormats(builder);
-        appendIntolerances(builder);
-        appendAttackVulnerabilities(builder);
-        appendBleichenbacherResults(builder);
-        appendPaddingOracleResults(builder);
-        appendInvalidCurveResults(builder);
-        // appendGcm(builder);
-        appendRfc(builder);
-        appendCertificate(builder);
-        appendOcsp(builder);
-        appendSession(builder);
-        appendRenegotiation(builder);
-        appendHandshakeSimulation(builder);
-        appendHttps(builder);
-        appendRandom(builder);
-        appendPublicKeyIssues(builder);
-        appendScoringResults(builder);
-        appendRecommendations(builder);
-        appendPerformanceData(builder);
 
         // TODO: Remove me later, only here for evaluation!
         try {
@@ -242,8 +239,8 @@ public class SiteReportPrinter {
             // Check how long the stapled response has been cached for, in
             // hours
             Duration difference = Duration.between(firstResponseTime, secondResponseTime);
-            long differenceInDays = difference.toDays();
-            csvBuilder.append(differenceInDays);
+            long differenceInHours = difference.toHours();
+            csvBuilder.append(differenceInHours);
         } else {
             csvBuilder.append("-1");
         }
