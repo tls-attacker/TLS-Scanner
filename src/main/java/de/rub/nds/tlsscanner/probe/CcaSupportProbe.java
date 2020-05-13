@@ -9,12 +9,17 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -23,21 +28,21 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.CcaSupportResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 public class CcaSupportProbe extends TlsProbe {
-    private List<CipherSuite> suiteList;
 
     public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA_SUPPORT, config, 1);
-        suiteList = new LinkedList<>();
     }
 
     @Override
     public ProbeResult executeTest() {
-        State state = new State(generateConfig());
+        Config tlsConfig = generateConfig();
+
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig
+                .getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        State state = new State(tlsConfig, trace);
         try {
             executeState(state);
         } catch (Exception E) {
@@ -68,9 +73,13 @@ public class CcaSupportProbe extends TlsProbe {
         Config config = getScannerConfig().createConfig();
         config.setAutoSelectCertificate(false);
         config.setAddServerNameIndicationExtension(true);
+        config.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
+
+        config.setQuickReceive(true);
+        config.setEarlyStop(true);
+        config.setStopActionsAfterIOException(true);
         config.setStopActionsAfterFatal(true);
-        config.setStopReceivingAfterFatal(true);
-        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
         return config;
     }

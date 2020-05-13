@@ -11,11 +11,8 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.tlsattacker.attacks.cca.*;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -27,37 +24,22 @@ import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.CcaRequiredResult;
-import de.rub.nds.tlsscanner.report.result.CcaSupportResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 public class CcaRequiredProbe extends TlsProbe {
-    private List<CipherSuite> suiteList;
 
     public CcaRequiredProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA_SUPPORT, config, 1);
-        suiteList = new LinkedList<>();
     }
 
     @Override
     public ProbeResult executeTest() {
-
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
-        /*try {
-            Thread.sleep(10000);
-        }
-        catch (Exception e) {
-
-        }*/
-
+        Config tlsConfig = generateConfig();
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_CCS_FIN;
         CcaCertificateType ccaCertificateType = CcaCertificateType.EMPTY;
-        Config tlsConfig = generateConfig();
-        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplemented());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+
         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaDelegate, ccaWorkflowType, ccaCertificateType);
         State state = new State(tlsConfig, trace);
         try {
@@ -74,9 +56,7 @@ public class CcaRequiredProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return (report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE); // && (report.getVersionSuitePairs() != null);
-        // Debugging: If in above line the versionSuitePair check is commented in (aka. execution serialized) the bug doesn't appear in the results of
-        // the protocol version. But the CcaProbe results (pretty sure independent of this) are still wrong
+        return (report.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE);
     }
 
     @Override
@@ -92,9 +72,13 @@ public class CcaRequiredProbe extends TlsProbe {
         Config config = getScannerConfig().createConfig();
         config.setAutoSelectCertificate(false);
         config.setAddServerNameIndicationExtension(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopReceivingAfterFatal(true);
         config.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
+
+        config.setQuickReceive(true);
+        config.setEarlyStop(true);
+        config.setStopActionsAfterIOException(true);
+        config.setStopActionsAfterFatal(true);
 
         return config;
     }

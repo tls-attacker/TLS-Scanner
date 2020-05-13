@@ -50,10 +50,6 @@ public class CcaProbe extends TlsProbe {
         versionSuiteListPairsList = new LinkedList<>();
     }
 
-    /*
-     * @return
-     */
-
     @Override
     public ProbeResult executeTest() {
 
@@ -217,12 +213,13 @@ public class CcaProbe extends TlsProbe {
         Config config = getScannerConfig().createConfig();
         config.setAutoSelectCertificate(false);
         config.setAddServerNameIndicationExtension(true);
-        config.setStopActionsAfterFatal(true);
-        config.setStopReceivingAfterFatal(true);
         config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        config.setStopTraceAfterUnexpected(true);
-        config.setAddServerNameIndicationExtension(false);
+
+        config.setQuickReceive(true);
+        config.setEarlyStop(true);
+        config.setStopActionsAfterIOException(true);
+        config.setStopActionsAfterFatal(true);
 
         return config;
     }
