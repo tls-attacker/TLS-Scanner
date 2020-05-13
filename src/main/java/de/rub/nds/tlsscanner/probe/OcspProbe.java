@@ -18,9 +18,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateStatusMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
@@ -70,37 +68,7 @@ public class OcspProbe extends TlsProbe {
 
         getMustStaple(serverCertChain);
         getStapledResponse(tlsConfig);
-
-        try {
-            OCSPRequest ocspRequest = new OCSPRequest(serverCertChain);
-            // If the request hasn't thrown an exception due to a missing
-            // responder URL, the certificate seems to support OCSP
-            supportsOcsp = true;
-
-            // First Request Message with '42' as nonce
-            OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
-            ocspFirstRequestMessage.setNonce(new BigInteger("42"));
-            ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
-            firstResponse = ocspRequest.makeRequest(ocspFirstRequestMessage);
-
-            // If nonce is supported used, check if server actually replies
-            // with a different one immediately after
-            if (firstResponse.getNonce() != null) {
-                supportsNonce = true;
-                OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
-                ocspSecondRequestMessage.setNonce(new BigInteger("1337"));
-                ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
-                secondResponse = ocspRequest.makeRequest(ocspSecondRequestMessage);
-                LOGGER.debug(secondResponse.toString());
-            } else {
-                supportsNonce = false;
-            }
-        } catch (UnsupportedOperationException e) {
-            LOGGER.warn("OCSP is not supported by the leaf certificate.");
-            supportsOcsp = false;
-        } catch (Exception e) {
-            LOGGER.error("OCSP probe failed.");
-        }
+        performRequest(serverCertChain);
 
         return new OcspResult(supportsOcsp, supportsStapling, mustStaple, supportsNonce, stapledResponse,
                 firstResponse, secondResponse);
@@ -139,6 +107,39 @@ public class OcspProbe extends TlsProbe {
             } catch (Exception e) {
                 LOGGER.error("Tried parsing stapled OCSP message, but failed. Will be empty.");
             }
+        }
+    }
+
+    private void performRequest(Certificate serverCertificateChain) {
+        try {
+            OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain);
+            // If the request hasn't thrown an exception due to a missing
+            // responder URL, the certificate seems to support OCSP
+            supportsOcsp = true;
+
+            // First Request Message with '42' as nonce
+            OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
+            ocspFirstRequestMessage.setNonce(new BigInteger("42"));
+            ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
+            firstResponse = ocspRequest.makeRequest(ocspFirstRequestMessage);
+
+            // If nonce is supported used, check if server actually replies
+            // with a different one immediately after
+            if (firstResponse.getNonce() != null) {
+                supportsNonce = true;
+                OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
+                ocspSecondRequestMessage.setNonce(new BigInteger("1337"));
+                ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
+                secondResponse = ocspRequest.makeRequest(ocspSecondRequestMessage);
+                LOGGER.debug(secondResponse.toString());
+            } else {
+                supportsNonce = false;
+            }
+        } catch (UnsupportedOperationException e) {
+            LOGGER.warn("OCSP is not supported by the leaf certificate.");
+            supportsOcsp = false;
+        } catch (Exception e) {
+            LOGGER.error("OCSP probe failed.");
         }
     }
 
