@@ -133,43 +133,6 @@ public class CcaProbe extends TlsProbe {
          */
         versionSuiteListPairs = versionSuiteListPairList;
 
-/*
-        // Changes for Wolfssl
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        List<VersionSuiteListPair> _versionSuiteListPairs = new LinkedList<>();
-
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
-//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
-//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384);
-//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256);
-//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA);
-//        cipherSuites.add(CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA);
-//        cipherSuites.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA);
-        cipherSuites.add(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
-
-
-        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS12, cipherSuites));
-//        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS11, cipherSuites));
-//        _versionSuiteListPairs.add(new VersionSuiteListPair(ProtocolVersion.TLS10, cipherSuites));
-        versionSuiteListPairs = _versionSuiteListPairs;
-        // EOF Wolfssl changes
-
-*/
         if (versionSuiteListPairs.isEmpty()) {
             LOGGER.error("No common ciphersuites found. Can't continue scan.");
             return new CcaResult(TestResult.COULD_NOT_TEST, null);
