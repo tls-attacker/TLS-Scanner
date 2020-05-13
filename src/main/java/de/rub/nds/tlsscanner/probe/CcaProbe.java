@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.cca.vector.CcaTaskVectorPair;
@@ -32,7 +31,6 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
