@@ -788,7 +788,8 @@ public class SiteReportPrinter {
     public StringBuilder appendInformationLeakTestResult(StringBuilder builder, InformationLeakTest informationLeakTest) {
         try {
             ResponseFingerprint defaultAnswer = informationLeakTest.retrieveMostCommonAnswer().getFingerprint();
-            for (VectorContainer vectorContainer : informationLeakTest.getVectorContainerList()) {
+            List<VectorContainer> vectorContainerList = informationLeakTest.getVectorContainerList();
+            for (VectorContainer vectorContainer : vectorContainerList) {
                 prettyAppend(builder, "\t" + padToLength(vectorContainer.getVector().getName(), 40));
                 for (ResponseCounter counter : vectorContainer.getDistinctResponsesCounterList()) {
                     AnsiColor color = AnsiColor.GREEN;
