@@ -19,7 +19,9 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.leak.VectorContainer;
+import de.rub.nds.tlsscanner.leak.info.PaddingOracleTestInfo;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -651,14 +653,14 @@ public class PaddingOracleAttributor {
     }
 
     public KnownPaddingOracleVulnerability getKnownVulnerability(
-            List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
+            List<InformationLeakTest<PaddingOracleTestInfo>> informationLeakTestList) {
         LOGGER.trace("Trying to attribute PaddingOracle to a Known Vulnerability");
         for (KnownPaddingOracleVulnerability vulnerability : knownVulnerabilityList) {
-            if (!checkCipherSuitesPlausible(vulnerability, fingerPrintList)) {
+            if (!checkCipherSuitesPlausible(vulnerability, informationLeakTestList)) {
                 LOGGER.trace("Ciphersuites are not plausible for " + vulnerability.getCve());
                 continue;
             }
-            if (!checkTestVectorResponseListPlausible(vulnerability, fingerPrintList)) {
+            if (!checkTestVectorResponseListPlausible(vulnerability, informationLeakTestList)) {
                 LOGGER.trace("Responses are not plausible for " + vulnerability.getCve());
                 continue;
             }
@@ -670,19 +672,19 @@ public class PaddingOracleAttributor {
     }
 
     private boolean checkCipherSuitesPlausible(KnownPaddingOracleVulnerability vulnerability,
-            List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
+            List<InformationLeakTest<PaddingOracleTestInfo>> informationLeakTestList) {
         for (CipherSuite suite : vulnerability.getKnownAffectedCiphersuites()) {
-            for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-                if (fingerprint.getSuite() == suite
-                        && !Objects.equals(fingerprint.getConsideredVulnerable(), Boolean.TRUE)) {
+            for (InformationLeakTest<PaddingOracleTestInfo> informationLeakTest : informationLeakTestList) {
+                if (informationLeakTest.getTestInfo().getCipherSuite() == suite
+                        && !Objects.equals(informationLeakTest.isSignificantDistinctAnswers(), Boolean.TRUE)) {
                     return false;
                 }
             }
         }
         for (CipherSuite suite : vulnerability.getKnownNotAffectedCiphersuites()) {
-            for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-                if (fingerprint.getSuite() == suite
-                        && Objects.equals(fingerprint.getConsideredVulnerable(), Boolean.TRUE)) {
+            for (InformationLeakTest<PaddingOracleTestInfo> informationLeakTest : informationLeakTestList) {
+                if (informationLeakTest.getTestInfo().getCipherSuite() == suite
+                        && Objects.equals(informationLeakTest.isSignificantDistinctAnswers(), Boolean.TRUE)) {
                     return false;
                 }
             }
@@ -691,23 +693,26 @@ public class PaddingOracleAttributor {
     }
 
     private boolean checkTestVectorResponseListPlausible(KnownPaddingOracleVulnerability vulnerability,
-            List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
-        List<VectorResponse> vulnerableVectorResponseList = null;
-        for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-            if (fingerprint.getConsideredVulnerable() == Boolean.TRUE) {
-                vulnerableVectorResponseList = fingerprint.getResponseMap();
+            List<InformationLeakTest<PaddingOracleTestInfo>> informationLeakTestList) {
+        List<VectorContainer> vectorContainerList = null;
+        for (InformationLeakTest<PaddingOracleTestInfo> informationLeakTest : informationLeakTestList) {
+            if (informationLeakTest.isSignificantDistinctAnswers() == Boolean.TRUE) {
+                vectorContainerList = informationLeakTest.getVectorContainerList();
             }
         }
-        if (vulnerableVectorResponseList == null) {
+        if (vectorContainerList == null) {
             return false;
         }
-        for (VectorResponse vulnResponse : vulnerableVectorResponseList) {
+        for (VectorContainer vectorContainer : vectorContainerList) {
             boolean found = false;
             for (IdentifierResponse response : vulnerability.getResponseIdentification()) {
-                PaddingVector paddingVector = (PaddingVector) vulnResponse.getVector();
+                PaddingVector paddingVector = (PaddingVector) vectorContainer.getVector();
                 if (response.getIdentifier().equals(paddingVector.getIdentifier())) {
                     found = true;
-                    if (FingerPrintChecker.checkEquality(response.getFingerprint(), vulnResponse.getFingerprint()) != EqualityError.NONE) {
+                    // TODO This need to be a coorect check - this currently
+                    // just checks the first message
+                    if (FingerPrintChecker.checkEquality(response.getFingerprint(), vectorContainer
+                            .getResponseFingerprintList().get(0)) != EqualityError.NONE) {
                         return false;
                     }
                     break;

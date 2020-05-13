@@ -9,7 +9,8 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -19,31 +20,34 @@ import java.util.List;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class DirectRaccoonResponseMap extends ProbeResult {
+public class DirectRaccoonResult extends ProbeResult {
 
-    private List<DirectRaccoonCipherSuiteFingerprint> resultList;
+    private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> resultList;
 
     private TestResult vulnerable;
 
-    public DirectRaccoonResponseMap(List<DirectRaccoonCipherSuiteFingerprint> resultList, TestResult vulnerable) {
+    public DirectRaccoonResult(List<InformationLeakTest<DirectRaccoonOracleTestInfo>> resultList) {
         super(ProbeType.DIRECT_RACCOON);
         this.resultList = resultList;
-        this.vulnerable = vulnerable;
+        if (resultList != null) {
+            vulnerable = TestResult.FALSE;
+            for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest : resultList) {
+                if (informationLeakTest.isSignificantDistinctAnswers()) {
+                    vulnerable = TestResult.TRUE;
+                }
+            }
+        } else {
+            vulnerable = TestResult.ERROR_DURING_TEST;
+        }
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        if (resultList != null && resultList.isEmpty() && vulnerable == null) {
-            vulnerable = TestResult.FALSE;
-        }
-        if (resultList == null) {
-            vulnerable = TestResult.COULD_NOT_TEST;
-        }
         report.setDirectRaccoonResultList(resultList);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON, vulnerable);
     }
 
-    public List<DirectRaccoonCipherSuiteFingerprint> getResultList() {
+    public List<InformationLeakTest<DirectRaccoonOracleTestInfo>> getResultList() {
         return resultList;
     }
 }

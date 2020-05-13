@@ -22,8 +22,10 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.leak.info.DirectRaccoonOracleTestInfo;
+import de.rub.nds.tlsscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
@@ -35,7 +37,6 @@ import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.io.Serializable;
@@ -64,9 +65,9 @@ public class SiteReport extends Observable implements Serializable {
 
     // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
-    private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
+    private List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
-    private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonResultList;
+    private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList;
     private List<InvalidCurveResponse> invalidCurveResultList;
     private List<RaccoonAttackProbabilities> raccoonAttackProbabilities;
 
@@ -432,21 +433,21 @@ public class SiteReport extends Observable implements Serializable {
         this.performanceList = performanceList;
     }
 
-    public synchronized List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleTestResultList() {
+    public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
         return paddingOracleTestResultList;
     }
 
     public synchronized void setPaddingOracleTestResultList(
-            List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
+            List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 
-    public synchronized List<DirectRaccoonCipherSuiteFingerprint> getDirectRaccoonResultList() {
+    public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>> getDirectRaccoonResultList() {
         return directRaccoonResultList;
     }
 
     public synchronized void setDirectRaccoonResultList(
-            List<DirectRaccoonCipherSuiteFingerprint> directRaccoonResultList) {
+            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
         this.directRaccoonResultList = directRaccoonResultList;
     }
 

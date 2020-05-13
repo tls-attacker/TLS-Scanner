@@ -6,16 +6,16 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report.after.statistic.nondeterminism;
+package de.rub.nds.tlsscanner.leak;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class VectorContainer {
 
@@ -68,10 +68,15 @@ public class VectorContainer {
         return totalProbability;
     }
 
+    public void addResponseFingerprint(List<ResponseFingerprint> fingerprintList) {
+        for (ResponseFingerprint fingerPrint : fingerprintList) {
+            addResponseFingerprint(fingerPrint);
+        }
+    }
+
     public void addResponseFingerprint(ResponseFingerprint fingerprint) {
         responseList.add(fingerprint);
-        boolean added = false;
-        updateResponseCounter(fingerprint, added);
+        updateResponseCounter(fingerprint, false);
     }
 
     private void updateResponseCounter(ResponseFingerprint fingerprint, boolean added) {
@@ -117,5 +122,14 @@ public class VectorContainer {
 
     public Vector getVector() {
         return vector;
+    }
+
+    public double distance(VectorContainer other) {
+        if (this.getVector().equals(other.getVector())) {
+            Set<ResponseFingerprint> fingerprint = new HashSet<>();
+        } else {
+            throw new RuntimeException("Trying to compute distance between different vectors. This makes no sense.");
+        }
+        return 0;
     }
 }

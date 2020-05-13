@@ -32,7 +32,6 @@ import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
@@ -47,13 +46,13 @@ import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
-import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
-import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NondeterministicVectorContainerHolder;
-import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.VectorContainer;
+import de.rub.nds.tlsscanner.leak.ResponseCounter;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.leak.VectorContainer;
+import de.rub.nds.tlsscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
@@ -61,6 +60,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
@@ -127,7 +128,6 @@ public class SiteReportPrinter {
         appendPaddingOracleResults(builder);
         appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
-        // appendGcm(builder);
         appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
         appendRfc(builder);
@@ -143,6 +143,13 @@ public class SiteReportPrinter {
         appendPerformanceData(builder);
 
         return builder.toString();
+    }
+
+    private void appendDirectRaccoonResults(StringBuilder builder) {
+        // TODO this recopying is weired
+        List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
+        informationLeakTestList.addAll(report.getDirectRaccoonResultList());
+        appendInformationLeakTestList(builder, informationLeakTestList, "Direct Raccoon Results");
     }
 
     public StringBuilder appendHandshakeSimulation(StringBuilder builder) {
@@ -683,22 +690,20 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    public StringBuilder appendDirectRaccoonResults(StringBuilder builder) {
-
-        prettyAppendHeading(builder, "DirectRaccoon Responsemap");
+    public StringBuilder appendInformationLeakTestList(StringBuilder builder,
+            List<InformationLeakTest> informationLeakTestList, String heading) {
+        prettyAppendHeading(builder, heading);
         if (report.getDirectRaccoonResultList() == null || report.getDirectRaccoonResultList().isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
-            for (DirectRaccoonCipherSuiteFingerprint testResult : report.getDirectRaccoonResultList()) {
+            for (InformationLeakTest testResult : informationLeakTestList) {
                 String pValue;
                 if (testResult.getpValue() >= 0.001) {
                     pValue = String.format("%.3f", testResult.getpValue());
                 } else {
                     pValue = "<0.001";
                 }
-                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | "
-                        + testResult.getVersion() + " | " + padToLength(testResult.getWorkflowType().name(), 15)
-                        + " Functional:" + testResult.getHandshakeIsWorking();
+                String resultString = testResult.getTestInfo().getPrintableName();
                 if (testResult.getpValue() < 0.01) {
                     prettyAppend(builder, resultString + "\t | "
                             + padToLength(testResult.getEqualityError().name(), 25) + padToLength("| VULNERABLE", 25)
@@ -715,12 +720,11 @@ public class SiteReportPrinter {
                             + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
                 }
 
-                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.getConsideredVulnerable(),
+                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isSignificantDistinctAnswers(),
                         Boolean.TRUE)) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                        appendPaddingOracleResponseMapList(builder, new NondeterministicVectorContainerHolder(
-                                testResult.getResponseMapList()));
+                        appendInformationLeakTestResult(builder, testResult);
                     }
                 }
             }
@@ -770,42 +774,10 @@ public class SiteReportPrinter {
             if (report.getPaddingOracleTestResultList() == null || report.getPaddingOracleTestResultList().isEmpty()) {
                 prettyAppend(builder, "No Testresults");
             } else {
-                for (PaddingOracleCipherSuiteFingerprint testResult : report.getPaddingOracleTestResultList()) {
-                    String pValue;
-                    if (testResult.getpValue() >= 0.001) {
-                        pValue = String.format("%.3f", testResult.getpValue());
-                    } else {
-                        pValue = "<0.001";
-                    }
-                    String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | "
-                            + testResult.getVersion() + " | "
-                            + padToLength(testResult.getVectorGeneratorType().name(), 15);
-                    if (testResult.getpValue() < 0.01) {
-                        prettyAppend(builder,
-                                resultString + "\t | " + padToLength(testResult.getEqualityError().name(), 25)
-                                        + padToLength("| VULNERABLE", 25) + "| P: " + pValue, AnsiColor.RED);
-                    } else if (testResult.getpValue() < 0.05) {
-                        prettyAppend(builder,
-                                resultString + "\t | " + padToLength(testResult.getEqualityError().name(), 25)
-                                        + padToLength("| PROBABLY VULNERABLE", 25) + "| P: " + pValue, AnsiColor.YELLOW);
-                    } else if (testResult.getpValue() < 1) {
-                        prettyAppend(builder, resultString + "\t | " + padToLength("No significant difference", 25)
-                                + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
-                    } else {
-                        prettyAppend(builder, resultString + "\t | " + padToLength("No behavior difference", 25)
-                                + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
-                    }
-
-                    if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.getConsideredVulnerable(),
-                            Boolean.TRUE)) || detail == ScannerDetail.ALL) {
-                        if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
-                            prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                            appendPaddingOracleResponseMapList(builder, new NondeterministicVectorContainerHolder(
-                                    testResult.getResponseMap()));
-                        }
-                    }
-                }
-
+                // TODO this recopying is weired
+                List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
+                informationLeakTestList.addAll(report.getPaddingOracleTestResultList());
+                appendInformationLeakTestList(builder, informationLeakTestList, "Padding Oracle Details");
             }
         } catch (Exception E) {
             prettyAppend(builder, "Error:" + E.getMessage());
@@ -813,11 +785,10 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    public StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder,
-            NondeterministicVectorContainerHolder vectorContainerHolder) {
+    public StringBuilder appendInformationLeakTestResult(StringBuilder builder, InformationLeakTest informationLeakTest) {
         try {
-            ResponseFingerprint defaultAnswer = vectorContainerHolder.getDefaultAnswer().getFingerprint();
-            for (VectorContainer vectorContainer : vectorContainerHolder.getStatisticList()) {
+            ResponseFingerprint defaultAnswer = informationLeakTest.retrieveMostCommonAnswer().getFingerprint();
+            for (VectorContainer vectorContainer : informationLeakTest.getVectorContainerList()) {
                 prettyAppend(builder, "\t" + padToLength(vectorContainer.getVector().getName(), 40));
                 for (ResponseCounter counter : vectorContainer.getDistinctResponsesCounterList()) {
                     AnsiColor color = AnsiColor.GREEN;

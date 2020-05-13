@@ -6,14 +6,16 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report.after.statistic.nondeterminism;
+package de.rub.nds.tlsscanner.leak;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
+import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
+import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
+import de.rub.nds.tlsscanner.leak.info.TestInfo;
 import de.rub.nds.tlsscanner.util.FisherExactTest;
-import java.util.Collections;
+import de.rub.nds.tlsscanner.leak.VectorContainer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -24,14 +26,25 @@ import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class NondeterministicVectorContainerHolder {
+public class InformationLeakTest<T extends TestInfo> {
+
+    private static final double P_VALUE_SIGNIFICANCE_BORDER = 0.00001;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final List<VectorContainer> statisticList;
+    private final List<VectorContainer> vectorContainerList;
 
-    public NondeterministicVectorContainerHolder(List<VectorResponse> responseList) {
-        this.statisticList = new LinkedList<>();
+    private final T testInfo;
+
+    private double pValue;
+
+    private boolean distinctAnswers;
+
+    private boolean significantDistinctAnswers;
+
+    public InformationLeakTest(T testInfo, List<VectorResponse> responseList) {
+        this.testInfo = testInfo;
+        this.vectorContainerList = new LinkedList<>();
         HashMap<Vector, List<ResponseFingerprint>> vectorMap = new HashMap<>();
         for (VectorResponse response : responseList) {
             if (vectorMap.containsKey(response.getVector())) {
@@ -44,55 +57,57 @@ public class NondeterministicVectorContainerHolder {
         }
         for (Vector vector : vectorMap.keySet()) {
             List<ResponseFingerprint> tempResponseList = vectorMap.get(vector);
-            statisticList.add(new VectorContainer(vector, tempResponseList));
+            vectorContainerList.add(new VectorContainer(vector, tempResponseList));
         }
+        updateInternals();
     }
 
-    public NondetermninismType getShakyType() {
-        boolean connectionBased = false;
-        boolean heterogen = false;
-        for (VectorContainer container : statisticList) {
-            if (container.areResponsesPlausibleConnectionBased()) {
-                connectionBased = true;
-            } else {
-                heterogen = true;
-            }
-        }
-        if (connectionBased && heterogen) {
-            return NondetermninismType.MIXED;
-        } else if (connectionBased) {
-            return NondetermninismType.CONNECTION;
-        } else {
-            return NondetermninismType.HETEROGEN;
-        }
+    private final void updateInternals() {
+        pValue = computePValue();
+        distinctAnswers = getAllResponseFingerprints().size() > 1;
+        this.significantDistinctAnswers = pValue < P_VALUE_SIGNIFICANCE_BORDER;
+
     }
 
-    public int getNumberOfShakyVectors() {
-        int counter = 0;
-        for (VectorContainer container : statisticList) {
-            if (container.getDistinctResponsesCounterList().size() != 1) {
-                counter++;
-            }
-        }
-        return counter;
+    public boolean isDistinctAnswers() {
+        return distinctAnswers;
     }
 
-    public List<VectorContainer> getStatisticList() {
-        return Collections.unmodifiableList(statisticList);
+    public boolean isSignificantDistinctAnswers() {
+        return significantDistinctAnswers;
     }
 
-    public boolean isAllVectorsShaky() {
-        for (VectorContainer container : statisticList) {
-            if (container.getDistinctResponsesCounterList().size() == 1) {
-                return false;
-            }
+    public double getpValue() {
+        return pValue;
+    }
+
+    public T getTestInfo() {
+        return testInfo;
+    }
+
+    public List<VectorContainer> getVectorContainerList() {
+        return vectorContainerList;
+    }
+
+    public Set<Vector> getAllVectors() {
+        Set<Vector> vectorSet = new HashSet<>();
+        for (VectorContainer vectorContainer : vectorContainerList) {
+            vectorSet.add(vectorContainer.getVector());
         }
-        return true;
+        return vectorSet;
+    }
+
+    public Set<ResponseFingerprint> getAllResponseFingerprints() {
+        Set<ResponseFingerprint> responseSet = new HashSet<>();
+        for (VectorContainer vectorContainer : vectorContainerList) {
+            responseSet.addAll(vectorContainer.getResponseFingerprintList());
+        }
+        return responseSet;
     }
 
     private List<ResponseCounter> getAllResponseCounters() {
         List<ResponseFingerprint> fingerprintList = new LinkedList<>();
-        for (VectorContainer container : statisticList) {
+        for (VectorContainer container : vectorContainerList) {
             fingerprintList.addAll(container.getResponseFingerprintList());
         }
 
@@ -100,8 +115,19 @@ public class NondeterministicVectorContainerHolder {
         return container.getDistinctResponsesCounterList();
     }
 
-    public double computePValue() {
+    public ResponseCounter retrieveMostCommonAnswer() {
+        ResponseCounter defaultAnswer = null;
+        for (ResponseCounter counter : getAllResponseCounters()) {
+            if (defaultAnswer == null) {
+                defaultAnswer = counter;
+            } else if (defaultAnswer.getCounter() < counter.getCounter()) {
+                defaultAnswer = counter;
+            }
+        }
+        return defaultAnswer;
+    }
 
+    private double computePValue() {
         if (isFisherExactUsable()) {
             LOGGER.debug("Computing P value based on fisher's exact test");
             double fisher = computePValueFisherExact();
@@ -120,8 +146,8 @@ public class NondeterministicVectorContainerHolder {
         if (!isFisherExactUsable()) {
             throw new RuntimeException("Trying to use fisher exact test when it it not possible");
         }
-        VectorContainer container1 = statisticList.get(0);
-        VectorContainer container2 = statisticList.get(1);
+        VectorContainer container1 = vectorContainerList.get(0);
+        VectorContainer container2 = vectorContainerList.get(1);
         ResponseFingerprint responseA = null;
         ResponseFingerprint responseB = null;
 
@@ -166,16 +192,16 @@ public class NondeterministicVectorContainerHolder {
 
     private double computePValueChiSquared() {
         ChiSquareTest test = new ChiSquareTest();
-        ResponseCounter defaultAnswer = getDefaultAnswer();
-        if (statisticList.size() < 2) {
+        ResponseCounter defaultAnswer = retrieveMostCommonAnswer();
+        if (vectorContainerList.size() < 2) {
             return 1;
         }
         double probability = defaultAnswer.getProbability();
-        double[] expected = new double[statisticList.size()];
-        long[] measured = new long[statisticList.size()];
-        for (int i = 0; i < statisticList.size(); i++) {
-            expected[i] = probability * statisticList.get(i).getResponseFingerprintList().size();
-            measured[i] = statisticList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
+        double[] expected = new double[vectorContainerList.size()];
+        long[] measured = new long[vectorContainerList.size()];
+        for (int i = 0; i < vectorContainerList.size(); i++) {
+            expected[i] = probability * vectorContainerList.get(i).getResponseFingerprintList().size();
+            measured[i] = vectorContainerList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
                     .getCounter();
         }
         double chiSquare = test.chiSquare(expected, measured);
@@ -185,24 +211,12 @@ public class NondeterministicVectorContainerHolder {
 
     }
 
-    public ResponseCounter getDefaultAnswer() {
-        ResponseCounter defaultAnswer = null;
-        for (ResponseCounter counter : getAllResponseCounters()) {
-            if (defaultAnswer == null) {
-                defaultAnswer = counter;
-            } else if (defaultAnswer.getCounter() < counter.getCounter()) {
-                defaultAnswer = counter;
-            }
-        }
-        return defaultAnswer;
-    }
-
     private boolean isFisherExactUsable() {
-        if (statisticList.size() != 2) {
+        if (vectorContainerList.size() != 2) {
             return false;
         }
-        List<ResponseCounter> counterList1 = statisticList.get(0).getDistinctResponsesCounterList();
-        List<ResponseCounter> counterList2 = statisticList.get(1).getDistinctResponsesCounterList();
+        List<ResponseCounter> counterList1 = vectorContainerList.get(0).getDistinctResponsesCounterList();
+        List<ResponseCounter> counterList2 = vectorContainerList.get(1).getDistinctResponsesCounterList();
         Set<ResponseFingerprint> responseFingerprintSet = new HashSet<>();
         for (ResponseCounter counter : counterList1) {
             responseFingerprintSet.add(counter.getFingerprint());
@@ -211,5 +225,37 @@ public class NondeterministicVectorContainerHolder {
             responseFingerprintSet.add(counter.getFingerprint());
         }
         return responseFingerprintSet.size() <= 2;
+    }
+
+    public void extendTest(List<VectorResponse> vectorResponseList) {
+        for (VectorResponse vectorResponse : vectorResponseList) {
+            VectorContainer correctContainer = null;
+            for (VectorContainer thisContainer : this.vectorContainerList) {
+                if (thisContainer.getVector().equals(vectorResponse.getVector())) {
+                    correctContainer = thisContainer;
+                }
+            }
+            if (correctContainer != null) {
+                correctContainer.addResponseFingerprint(vectorResponse.getFingerprint());
+            } else {
+                List<ResponseFingerprint> fingerprintList = new LinkedList<>();
+                fingerprintList.add(vectorResponse.getFingerprint());
+                vectorContainerList.add(new VectorContainer(vectorResponse.getVector(), fingerprintList));
+            }
+        }
+        updateInternals();
+    }
+
+    public EqualityError getEqualityError() {
+        Set<ResponseFingerprint> fingerPrintSet = getAllResponseFingerprints();
+        for (ResponseFingerprint fingerprint1 : fingerPrintSet) {
+            for (ResponseFingerprint fingerprint2 : fingerPrintSet) {
+                EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint1, fingerprint2);
+                if (equalityError != EqualityError.NONE) {
+                    return equalityError;
+                }
+            }
+        }
+        return EqualityError.NONE;
     }
 }
