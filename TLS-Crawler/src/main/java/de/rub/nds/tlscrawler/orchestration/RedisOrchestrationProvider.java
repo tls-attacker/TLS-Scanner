@@ -67,7 +67,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         cfg.setMinIdle(GenericObjectPoolConfig.DEFAULT_MIN_IDLE);
         cfg.setTestOnBorrow(true);
 
-        if (!this.redisPass.equals("")) {
+        if (this.redisPass != null && !this.redisPass.equals("")) {
             this.jedisPool = new JedisPool(cfg, this.redisHost, this.redisPort, REDIS_TIMEOUT, this.redisPass);
         } else {
             this.jedisPool = new JedisPool(cfg, this.redisHost, this.redisPort, REDIS_TIMEOUT);
