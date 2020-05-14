@@ -5,19 +5,14 @@
  */
 package de.rub.nds.tlscrawler.analysis;
 
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlscrawler.config.AnalysisCommandConfig;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.SiteReportPrinter;
 import java.util.Collection;
+import org.bson.BsonBoolean;
 import org.bson.BsonDocument;
-import org.bson.BsonNull;
-import org.bson.BsonString;
+import org.bson.BsonDouble;
 
 /**
  *
@@ -40,8 +35,8 @@ public class DataAnalyser {
 
     public void analyze() {
         persistenceProvider.clean(config.getDatabaseName(), config.getWorkspaceName());
-//        long totalAnswers = persistenceProvider.countDocuments(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("", new BsonNull()));
-//        System.out.println("Total servers scanned: " + totalAnswers);
+        long totalAnswers = persistenceProvider.countDocuments(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.ccaRequired", new BsonBoolean(true)));
+        System.out.println("Total servers scanned: " + totalAnswers);
 //        for (CipherSuite suite : CipherSuite.values()) {
 //            System.out.println(suite.name());
 //            System.out.println("Total:" + persistenceProvider.countDocuments(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.cipherSuites", new BsonString(suite.name()))));
@@ -69,10 +64,14 @@ public class DataAnalyser {
 //            }
 //        }
 //
-        Collection<SiteReport> siteReports = persistenceProvider.findSiteReports(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.resultMap.VULNERABLE_TO_DIRECT_RACCOON", new BsonString("TRUE")));
-        for (SiteReport report : siteReports) {
-            SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.ALL, true);
-            System.out.println(printer.getFullReport());
-        }
+        //Collection<SiteReport> siteReports = persistenceProvider.findSiteReports(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.resultMap.VULNERABLE_TO_DIRECT_RACCOON", new BsonString("TRUE")));
+//        Collection<SiteReport> siteReports = persistenceProvider.findSiteReports(config.getDatabaseName(), config.getWorkspaceName(), new BsonDocument("result.report.directRaccoonResultList.pValue", new BsonDocument("$lt", new BsonDouble(5.400433352483021e-60))));
+//        for (SiteReport report : siteReports) {
+//            SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.ALL, true);
+//            StringBuilder builder = new StringBuilder();
+//            printer.appendDirectRaccoonResults(builder);
+//            System.out.println(report.getHost());
+//            System.out.println(builder.toString());
+//        }
     }
 }

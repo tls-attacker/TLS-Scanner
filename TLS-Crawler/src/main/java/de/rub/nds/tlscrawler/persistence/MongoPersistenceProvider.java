@@ -48,8 +48,6 @@ import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.security.PublicKey;
 import de.rub.nds.tlsattacker.attacks.general.Vector;
-import de.rub.nds.tlscrawler.persistence.converter.BleichenbacherTestResultDeserializer;
-import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -224,7 +222,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     @Override
     public void clean(String database, String workspace) {
         this.init(database, workspace);
-        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("result.report.probeTypeList", new BsonNull()));
+        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("result.report.supportedTls13CipherSuites", new BsonNull()));
         collection.updateMany(new BsonDocument(), updateDocument);
     }
 
