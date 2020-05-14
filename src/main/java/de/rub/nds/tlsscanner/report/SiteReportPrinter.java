@@ -148,6 +148,9 @@ public class SiteReportPrinter {
     private void appendDirectRaccoonResults(StringBuilder builder) {
         // TODO this recopying is weired
         List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
+        if (report.getDirectRaccoonResultList() == null) {
+            return;
+        }
         informationLeakTestList.addAll(report.getDirectRaccoonResultList());
         appendInformationLeakTestList(builder, informationLeakTestList, "Direct Raccoon Results");
     }

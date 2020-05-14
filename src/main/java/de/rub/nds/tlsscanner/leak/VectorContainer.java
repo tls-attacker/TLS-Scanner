@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class VectorContainer {
 
@@ -122,14 +121,5 @@ public class VectorContainer {
 
     public Vector getVector() {
         return vector;
-    }
-
-    public double distance(VectorContainer other) {
-        if (this.getVector().equals(other.getVector())) {
-            Set<ResponseFingerprint> fingerprint = new HashSet<>();
-        } else {
-            throw new RuntimeException("Trying to compute distance between different vectors. This makes no sense.");
-        }
-        return 0;
     }
 }

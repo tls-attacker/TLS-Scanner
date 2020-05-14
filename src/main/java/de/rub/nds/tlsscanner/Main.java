@@ -14,8 +14,12 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.AnsiColor;
+import de.rub.nds.tlsscanner.leak.InformationLeakReport;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,7 +50,16 @@ public class Main {
                 ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: "
                         + ((System.currentTimeMillis() - time) / 1000) + "s\n"
                         + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
+                List<InformationLeakTest> list = new LinkedList<>();
+                list.addAll(report.getPaddingOracleTestResultList());
+                config.getClientDelegate().setHost("paypal.com");
+                scanner = new TlsScanner(config);
+                SiteReport report2 = scanner.scan();
+                List<InformationLeakTest> list2 = new LinkedList<>();
+                list2.addAll(report2.getPaddingOracleTestResultList());
 
+                InformationLeakReport lReport = new InformationLeakReport(list);
+                System.out.println(lReport.distance(list2));
             } catch (ConfigurationException E) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", E);
             }

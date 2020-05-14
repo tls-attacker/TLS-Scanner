@@ -33,7 +33,7 @@ public class PaddingOracleResult extends ProbeResult {
     public PaddingOracleResult(List<InformationLeakTest<PaddingOracleTestInfo>> resultList) {
         super(ProbeType.PADDING_ORACLE);
         this.resultList = resultList;
-        if (resultList != null) {
+        if (this.resultList != null) {
             vulnerable = TestResult.FALSE;
             for (InformationLeakTest informationLeakTest : resultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers()) {

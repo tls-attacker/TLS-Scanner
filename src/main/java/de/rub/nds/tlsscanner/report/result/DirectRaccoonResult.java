@@ -29,7 +29,7 @@ public class DirectRaccoonResult extends ProbeResult {
     public DirectRaccoonResult(List<InformationLeakTest<DirectRaccoonOracleTestInfo>> resultList) {
         super(ProbeType.DIRECT_RACCOON);
         this.resultList = resultList;
-        if (resultList != null) {
+        if (this.resultList != null) {
             vulnerable = TestResult.FALSE;
             for (InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest : resultList) {
                 if (informationLeakTest.isSignificantDistinctAnswers()) {

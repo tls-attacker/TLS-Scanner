@@ -63,7 +63,7 @@ public class DirectRaccoonProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
-            for (VersionSuiteListPair pair : serverSupportedSuites) {
+            loop: for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
                         || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCiphersuiteList()) {
@@ -75,6 +75,7 @@ public class DirectRaccoonProbe extends TlsProbe {
                                 InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest = createDirectRaccoonInformationLeakTest(
                                         pair.getVersion(), suite, workflowType);
                                 testResultList.add(informationLeakTest);
+                                break loop;
                             }
                         }
                     }
@@ -98,7 +99,7 @@ public class DirectRaccoonProbe extends TlsProbe {
         if (informationLeakTest.isDistinctAnswers()) {
             LOGGER.debug("Found non identical answers, performing " + iterationsPerHandshake + " additional tests");
             responseMap = createVectorResponseList(version, suite, workflowType, additionalIterationsPerHandshake);
-            informationLeakTest.extendTest(responseMap);
+            informationLeakTest.extendTestWithVectorResponses(responseMap);
         }
         return informationLeakTest;
     }
@@ -114,34 +115,6 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
         Collections.shuffle(booleanList);
         return getVectorResponseList(version, suite, type, initialDhSecret, booleanList);
-    }
-
-    private boolean isNormalHandshakeWorking(ProtocolVersion version, CipherSuite suite) {
-        try {
-            Config config = getScannerConfig().createConfig();
-            config.setHighestProtocolVersion(version);
-            config.setDefaultSelectedProtocolVersion(version);
-            config.setDefaultClientSupportedCiphersuites(suite);
-            config.setDefaultSelectedCipherSuite(suite);
-            config.setAddECPointFormatExtension(false);
-            config.setAddEllipticCurveExtension(false);
-            config.setAddRenegotiationInfoExtension(true);
-            config.setAddServerNameIndicationExtension(true);
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
-            config.setStopActionsAfterFatal(true);
-            config.setStopReceivingAfterFatal(true);
-            config.setStopActionsAfterIOException(true);
-            config.setQuickReceive(true);
-            config.setEarlyStop(true);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                    WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-            State state = new State(config, trace);
-            executeState(state);
-            return state.getWorkflowTrace().executedAsPlanned();
-        } catch (Exception E) {
-            LOGGER.warn("Could not perform initial handshake", E);
-            return false;
-        }
     }
 
     private List<VectorResponse> getVectorResponseList(ProtocolVersion version, CipherSuite suite,

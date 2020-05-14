@@ -86,6 +86,7 @@ public class PaddingOracleProbe extends TlsProbe {
             return new PaddingOracleResult(testResultList);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
+            E.printStackTrace();
             return new PaddingOracleResult(new LinkedList<>());
         }
     }
@@ -179,8 +180,8 @@ public class PaddingOracleProbe extends TlsProbe {
         paddingOracleCommandConfig.setRecordGeneratorType(informationLeakTest.getTestInfo().getRecordGeneratorType());
         paddingOracleCommandConfig.setVectorGeneratorType(informationLeakTest.getTestInfo().getVectorGeneratorType());
         paddingOracleCommandConfig.setNumberOfIterations(numberOfAdditionalIterations);
-        InformationLeakTest intermediateResponseMap = getPaddingOracleInformationLeakTest(paddingOracleCommandConfig);
-        informationLeakTest.extendTest(intermediateResponseMap.getVectorContainerList());
+        InformationLeakTest<PaddingOracleTestInfo> intermediateResponseMap = getPaddingOracleInformationLeakTest(paddingOracleCommandConfig);
+        informationLeakTest.extendTestWithVectorContainers(intermediateResponseMap.getVectorContainerList());
 
     }
 

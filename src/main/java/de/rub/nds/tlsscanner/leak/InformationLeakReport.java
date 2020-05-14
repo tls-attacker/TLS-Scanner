@@ -9,31 +9,69 @@
 package de.rub.nds.tlsscanner.leak;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
 public class InformationLeakReport {
 
-    private final List<InformationLeakTest> vectorHolderList;
+    private final List<InformationLeakTest> informationLeakList;
 
-    public InformationLeakReport(List<InformationLeakTest> vectorHolderList) {
-        this.vectorHolderList = vectorHolderList;
+    public InformationLeakReport(List<InformationLeakTest> informationLeakList) {
+        this.informationLeakList = informationLeakList;
     }
 
-    public List<InformationLeakTest> getVectorHolderList() {
-        return vectorHolderList;
+    public List<InformationLeakTest> getInformationLeakList() {
+        return informationLeakList;
     }
 
-    public double distance(List<InformationLeakTest> otherVectorHolderList) {
-        Set<Vector> vectorSet = new HashSet<>();
-        for (InformationLeakTest thisHolder : vectorHolderList) {
-            vectorSet.addAll(thisHolder.getAllVectors());
+    public double distance(List<InformationLeakTest> otherInformationLeakTestList) {
+        Set<Vector> commonVectors = new HashSet<>();
+        Set<ResponseFingerprint> commonFingerPrints = new HashSet<>();
+
+        for (InformationLeakTest informationLeakTest : informationLeakList) {
+            commonVectors.addAll(informationLeakTest.getAllVectors());
+            commonFingerPrints.addAll(informationLeakTest.getAllResponseFingerprints());
         }
         Set<Vector> otherVectorSet = new HashSet<>();
-        for (InformationLeakTest otherHolder : otherVectorHolderList) {
-            otherVectorSet.addAll(otherHolder.getAllVectors());
+        Set<ResponseFingerprint> otherFingerPrints = new HashSet<>();
+        for (InformationLeakTest informationLeakTest : otherInformationLeakTestList) {
+            otherVectorSet.addAll(informationLeakTest.getAllVectors());
+            otherFingerPrints.addAll(informationLeakTest.getAllResponseFingerprints());
         }
-        return 0;
+        commonVectors.retainAll(otherVectorSet);
+        commonFingerPrints.retainAll(otherFingerPrints);
+
+        List<Double> measuredList = new ArrayList<>();
+        List<Double> expectedList = new ArrayList<>();
+        for (InformationLeakTest leakTest1 : informationLeakList) {
+            for (InformationLeakTest leakTest2 : informationLeakList) {
+                if (leakTest1.getTestInfo().equals(leakTest2.getTestInfo())) {
+                    // we need to compare these
+                    for (Vector vector : commonVectors) {
+                        for (ResponseFingerprint responseFingerprint : commonFingerPrints) {
+                            VectorContainer vectorContainer1 = leakTest1.getVectorContainer(vector);
+                            measuredList.add(vectorContainer1.getResponseCounterForFingerprint(responseFingerprint)
+                                    .getProbability());
+                            VectorContainer vectorContainer2 = leakTest2.getVectorContainer(vector);
+                            expectedList.add(vectorContainer2.getResponseCounterForFingerprint(responseFingerprint)
+                                    .getProbability());
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        double total = 0;
+        for (int i = 0; i < measuredList.size(); i++) {
+            double value = measuredList.get(i) - expectedList.get(i);
+            value = value * value;
+            total += value;
+        }
+        return total / measuredList.size();
     }
 }

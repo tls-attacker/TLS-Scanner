@@ -15,7 +15,6 @@ import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.leak.info.TestInfo;
 import de.rub.nds.tlsscanner.util.FisherExactTest;
-import de.rub.nds.tlsscanner.leak.VectorContainer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -87,6 +86,15 @@ public class InformationLeakTest<T extends TestInfo> {
 
     public List<VectorContainer> getVectorContainerList() {
         return vectorContainerList;
+    }
+
+    public VectorContainer getVectorContainer(Vector vector) {
+        for (VectorContainer container : vectorContainerList) {
+            if (container.getVector().equals(vector)) {
+                return container;
+            }
+        }
+        return null;
     }
 
     public Set<Vector> getAllVectors() {
@@ -227,7 +235,7 @@ public class InformationLeakTest<T extends TestInfo> {
         return responseFingerprintSet.size() <= 2;
     }
 
-    public void extendTest(List<VectorResponse> vectorResponseList) {
+    public void extendTestWithVectorResponses(List<VectorResponse> vectorResponseList) {
         for (VectorResponse vectorResponse : vectorResponseList) {
             VectorContainer correctContainer = null;
             for (VectorContainer thisContainer : this.vectorContainerList) {
@@ -241,6 +249,24 @@ public class InformationLeakTest<T extends TestInfo> {
                 List<ResponseFingerprint> fingerprintList = new LinkedList<>();
                 fingerprintList.add(vectorResponse.getFingerprint());
                 vectorContainerList.add(new VectorContainer(vectorResponse.getVector(), fingerprintList));
+            }
+        }
+        updateInternals();
+    }
+
+    public void extendTestWithVectorContainers(List<VectorContainer> vectorContainerList) {
+        for (VectorContainer otherContainer : vectorContainerList) {
+            VectorContainer correctContainer = null;
+            for (VectorContainer thisContainer : this.vectorContainerList) {
+                if (thisContainer.getVector().equals(otherContainer.getVector())) {
+                    correctContainer = thisContainer;
+                }
+            }
+            if (correctContainer != null) {
+                correctContainer.addResponseFingerprint(otherContainer.getResponseFingerprintList());
+            } else {
+                vectorContainerList.add(new VectorContainer(otherContainer.getVector(), otherContainer
+                        .getResponseFingerprintList()));
             }
         }
         updateInternals();
