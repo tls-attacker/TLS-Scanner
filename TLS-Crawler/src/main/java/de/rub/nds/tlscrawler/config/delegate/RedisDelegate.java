@@ -22,6 +22,9 @@ public class RedisDelegate {
     @Parameter(names = "-redisPass", description = "Password of the Redis instance the crawler uses to coordinate.")
     private String redisPass;
 
+    @Parameter(names = "-jobQueue", description = "The name of the job queue")
+    private String jobQueue = "crawling-jobs";
+
 
     public RedisDelegate() {
     }
@@ -50,4 +53,11 @@ public class RedisDelegate {
         this.redisPass = redisPass;
     }
 
+    public String getJobQueue() {
+        return jobQueue;
+    }
+
+    public void setJobQueue(String jobQueue) {
+        this.jobQueue = jobQueue;
+    }
 }

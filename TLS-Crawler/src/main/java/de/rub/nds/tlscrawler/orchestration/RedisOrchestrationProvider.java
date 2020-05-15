@@ -50,6 +50,8 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
     private String blackListName = null;
 
+    private String jobListName = null;
+
     private Set<String> ipBlackListSet = null;
     private List<SubnetInfo> cidrBlackList = null;
 
@@ -59,7 +61,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         this.redisPass = redisPass;
     }
 
-    public void init(String blackListName) throws ConnectException {
+    public void init(String blackListName, String jobListName) throws ConnectException {
         LOG.trace("init() - Enter");
 
         JedisPoolConfig cfg = new JedisPoolConfig();
@@ -83,6 +85,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         }
 
         this.blackListName = blackListName;
+        this.jobListName = jobListName;
         this.initialized = true;
         LOG.info("Initializing Blacklist");
         updateBlacklist();
@@ -130,7 +133,6 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     @Override
     public Collection<String> getScanTasks(ScanJob job, int quantity) {
         this.checkInit();
-        Collection<String> result = new ArrayList<>(quantity);
         try (Jedis jedis = this.jedisPool.getResource()) {
             Set<String> scanTaskIds = jedis.spop(job.getWorkspace(), quantity);
             return scanTaskIds;
@@ -210,7 +212,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         LOG.trace("getScanJobs()");
         List<String> activeJobs;
         try (Jedis jedis = this.jedisPool.getResource()) {
-            activeJobs = jedis.lrange("crawling-jobs", 0l, -1l);
+            activeJobs = jedis.lrange(jobListName, 0l, -1l);
         }
         ObjectMapper mapper = new ObjectMapper();
         List<ScanJob> scanJobList = new LinkedList<>();
@@ -231,7 +233,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         ObjectMapper mapper = new ObjectMapper();
 
         try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.lpush("crawling-jobs", mapper.writeValueAsString(job));
+            jedis.lpush(jobListName, mapper.writeValueAsString(job));
         } catch (JsonProcessingException ex) {
             LOG.warn("Could not add ScanJob to Redis");
         }
@@ -242,7 +244,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         ObjectMapper mapper = new ObjectMapper();
 
         try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.lrem("crawling-jobs", 1, mapper.writeValueAsString(job));
+            jedis.lrem(jobListName, 1, mapper.writeValueAsString(job));
         } catch (JsonProcessingException ex) {
             LOG.warn("Could not remove ScanJob from Redis");
         }

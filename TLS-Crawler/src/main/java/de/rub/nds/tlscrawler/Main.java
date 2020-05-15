@@ -101,7 +101,7 @@ public class Main {
                 delegate.getRedisPort(),
                 delegate.getRedisPass());
 
-        redisOrchestrationProvider.init("TLSC-blacklist");
+        redisOrchestrationProvider.init("TLSC-blacklist", delegate.getJobQueue());
 
         return redisOrchestrationProvider;
     }
