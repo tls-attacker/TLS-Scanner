@@ -79,12 +79,12 @@ public class DebugProbe extends TlsProbe {
 
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
-        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_ECKE_CCS_FIN;
+        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
 
-        CipherSuite cipherSuite = CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256;
+        CipherSuite cipherSuite = CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256;
         cipherSuites.add(cipherSuite);
 
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_ECv3_KeyAgreement;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3_KeyUsageKeyAgreement;
 
         for (ProtocolVersion protocolVersion : desiredVersions) {
             Config tlsConfig = generateConfig();

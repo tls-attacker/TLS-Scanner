@@ -60,6 +60,36 @@
             <asn1Explicit identifier="explicitExtensions">
                 <offset>3</offset>
                 <asn1Sequence identifier="extensions" type="Extensions">
+                    <!--SubjectKeyIdentifierExtension-->
+                    <asn1Sequence identifier="extension7" type="Extension">
+                        <asn1ObjectIdentifier identifier="extnID">
+                            <value>2.5.29.14</value>
+                        </asn1ObjectIdentifier>
+                        <asn1EncapsulatingOctetString identifier="extnValue">
+                            <asn1PrimitiveOctetString identifier="subjectKeyIdentifier" type="SubjectKeyIdentifier">
+                                <value>03</value>
+                            </asn1PrimitiveOctetString>
+                        </asn1EncapsulatingOctetString>
+                    </asn1Sequence>
+                    <!-- AuthorityKeyIdentifierExtension -->
+                    <asn1Sequence identifier="extension6">
+                        <asn1ObjectIdentifier identifier="extnID">
+                            <value>2.5.29.35</value>
+                        </asn1ObjectIdentifier>
+                        <asn1Boolean identifier="critical">
+                            <value>false</value>
+                        </asn1Boolean>
+                        <asn1EncapsulatingOctetString identifier="extnValue">
+                            <asn1Sequence>
+                                <asn1Implicit>
+                                    <offset>0</offset>
+                                    <asn1PrimitiveOctetString>
+                                        <value>02</value>
+                                    </asn1PrimitiveOctetString>
+                                </asn1Implicit>
+                            </asn1Sequence>
+                        </asn1EncapsulatingOctetString>
+                    </asn1Sequence>
                     <!--BasicConstraintsExtension-->
                     <asn1Sequence identifier="extension1" type="Extension">
                         <asn1ObjectIdentifier identifier="extnID">
