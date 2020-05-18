@@ -73,6 +73,12 @@ public class OcspResult extends ProbeResult {
             report.putResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT, TestResult.TRUE);
         }
 
+        if (stapledResponse != null && stapledResponse.getNonce() != null) {
+            report.putResult(AnalyzedProperty.SUPPORTS_STAPLED_NONCE, TestResult.TRUE);
+        } else {
+            report.putResult(AnalyzedProperty.SUPPORTS_STAPLED_NONCE, TestResult.FALSE);
+        }
+
         if (mustStaple) {
             report.putResult(AnalyzedProperty.MUST_STAPLE, TestResult.TRUE);
         } else {

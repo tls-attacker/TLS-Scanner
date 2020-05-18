@@ -8,6 +8,12 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.asn1.Asn1Encodable;
+import de.rub.nds.asn1.encoder.Asn1Encoder;
+import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
+import de.rub.nds.asn1.model.Asn1ObjectIdentifier;
+import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
+import de.rub.nds.asn1.model.Asn1Sequence;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
@@ -20,6 +26,7 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateStatusMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.CertificateStatusRequestExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -33,10 +40,13 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import org.bouncycastle.crypto.tls.Certificate;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NONCE;
 
 /**
  *
@@ -143,6 +153,35 @@ public class OcspProbe extends TlsProbe {
         }
     }
 
+    private byte[] prepareNonceExtension() {
+        Asn1Sequence innerExtensionSequence = new Asn1Sequence();
+        Asn1ObjectIdentifier oid = new Asn1ObjectIdentifier();
+        oid.setValue(NONCE.getOID());
+
+        Asn1Sequence extensionSequence = new Asn1Sequence();
+        innerExtensionSequence.addChild(oid);
+
+        Asn1EncapsulatingOctetString encapsulatingOctetString = new Asn1EncapsulatingOctetString();
+
+        // Nonce
+        Asn1PrimitiveOctetString nonceOctetString = new Asn1PrimitiveOctetString();
+
+        SecureRandom rand = new SecureRandom();
+        BigInteger nonce = new BigInteger(128, rand);
+
+        nonceOctetString.setValue(nonce.toByteArray());
+        encapsulatingOctetString.addChild(nonceOctetString);
+
+        innerExtensionSequence.addChild(encapsulatingOctetString);
+        extensionSequence.addChild(innerExtensionSequence);
+
+        List<Asn1Encodable> asn1Encodables = new LinkedList<>();
+        asn1Encodables.add(extensionSequence);
+
+        Asn1Encoder asn1Encoder = new Asn1Encoder(asn1Encodables);
+        return asn1Encoder.encode();
+    }
+
     private Config initTlsConfig() {
         Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
@@ -157,6 +196,8 @@ public class OcspProbe extends TlsProbe {
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+
+        tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());
         tlsConfig.setAddCertificateStatusRequestExtension(true);
 
         return tlsConfig;

@@ -223,6 +223,11 @@ public class SiteReportPrinter {
         } else {
             csvBuilder.append("0,");
         }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_STAPLED_NONCE) == TestResult.TRUE) {
+            csvBuilder.append("1,");
+        } else {
+            csvBuilder.append("0,");
+        }
 
         // Get longevity of OCSP response
         OCSPResponse firstResponse = report.getFirstOcspResponse();
@@ -709,6 +714,7 @@ public class SiteReportPrinter {
                 }
                 prettyAppend(builder, "Stapled Response Expired", AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
             }
+            prettyAppend(builder, "Supports Stapled Nonce", AnalyzedProperty.SUPPORTS_STAPLED_NONCE);
         }
 
         // Are nonces used? If so, do they match?
