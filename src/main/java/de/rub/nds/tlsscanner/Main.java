@@ -50,16 +50,6 @@ public class Main {
                 ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: "
                         + ((System.currentTimeMillis() - time) / 1000) + "s\n"
                         + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
-                List<InformationLeakTest> list = new LinkedList<>();
-                list.addAll(report.getPaddingOracleTestResultList());
-                config.getClientDelegate().setHost("paypal.com");
-                scanner = new TlsScanner(config);
-                SiteReport report2 = scanner.scan();
-                List<InformationLeakTest> list2 = new LinkedList<>();
-                list2.addAll(report2.getPaddingOracleTestResultList());
-
-                InformationLeakReport lReport = new InformationLeakReport(list);
-                System.out.println(lReport.distance(list2));
             } catch (ConfigurationException E) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", E);
             }

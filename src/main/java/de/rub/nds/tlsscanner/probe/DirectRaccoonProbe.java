@@ -75,7 +75,7 @@ public class DirectRaccoonProbe extends TlsProbe {
                                 InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest = createDirectRaccoonInformationLeakTest(
                                         pair.getVersion(), suite, workflowType);
                                 testResultList.add(informationLeakTest);
-                                break loop;
+
                             }
                         }
                     }
