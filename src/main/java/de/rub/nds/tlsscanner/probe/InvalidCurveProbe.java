@@ -122,12 +122,12 @@ public class InvalidCurveProbe extends TlsProbe {
         issuesTls13SessionTickets = report.getResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
         supportsTls13PskDhe = report.getResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
-        List<NamedGroup> groups = new LinkedList<>();
+        supportedFpGroups = new LinkedList<>();
         if (report.getSupportedNamedGroups() != null) {
             for (NamedGroup group : report.getSupportedNamedGroups()) {
                 if (NamedGroup.getImplemented().contains(group)
                         && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
-                    groups.add(group);
+                    supportedFpGroups.add(group);
                 }
             }
         } else {
@@ -173,11 +173,11 @@ public class InvalidCurveProbe extends TlsProbe {
         }
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
-            List<NamedGroup> tls13groups = new LinkedList();
+            List<NamedGroup> supportedTls13FpGroups = new LinkedList();
             for (NamedGroup group : report.getSupportedTls13Groups()) {
                 if (NamedGroup.getImplemented().contains(group)
                         && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
-                    tls13groups.add(group);
+                    supportedTls13FpGroups.add(group);
                 }
             }
 
@@ -199,8 +199,9 @@ public class InvalidCurveProbe extends TlsProbe {
             }
 
             cipherSuitesMap.put(ProtocolVersion.TLS13, tls13CipherSuites);
-            supportedTls13FpGroups = tls13groups;
             tls13FpPointFormatsToTest = tls13FpPointFormats;
+        } else {
+            supportedTls13FpGroups = new LinkedList<>();
         }
 
         // sometimes we found more versions while testing ciphersuites
@@ -214,7 +215,6 @@ public class InvalidCurveProbe extends TlsProbe {
 
         fpPointFormatsToTest = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
-        supportedFpGroups = groups;
         supportedECDHCipherSuites = cipherSuitesMap;
 
     }
