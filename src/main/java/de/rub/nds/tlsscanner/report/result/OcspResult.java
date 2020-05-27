@@ -67,7 +67,7 @@ public class OcspResult extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_OCSP, TestResult.ERROR_DURING_TEST);
         }
 
-        if (supportsStapling && stapledResponse == null) {
+        if (!supportsStapling && stapledResponse == null) {
             report.putResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT, TestResult.FALSE);
         } else {
             report.putResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT, TestResult.TRUE);
