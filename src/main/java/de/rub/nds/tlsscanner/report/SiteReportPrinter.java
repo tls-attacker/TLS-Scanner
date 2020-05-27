@@ -116,32 +116,42 @@ public class SiteReportPrinter {
             builder.append("Server does not seem to support SSL / TLS on the scanned port");
             return builder.toString();
         }
-
+        //
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
-        appendExtensions(builder);
-        appendCompressions(builder);
-        appendEcPointFormats(builder);
-        appendIntolerances(builder);
-        appendAttackVulnerabilities(builder);
-        appendBleichenbacherResults(builder);
-        appendPaddingOracleResults(builder);
+        // appendExtensions(builder);
+        // appendCompressions(builder);
+        // appendEcPointFormats(builder);
+        // appendIntolerances(builder);
+        // appendAttackVulnerabilities(builder);
+        // appendBleichenbacherResults(builder);
+        // appendPaddingOracleResults(builder);
         appendDirectRaccoonResults(builder);
-        appendInvalidCurveResults(builder);
-        appendRaccoonAttackDetails(builder);
-        // appendGcm(builder);
-        appendRfc(builder);
-        appendCertificate(builder);
-        appendSession(builder);
-        appendRenegotiation(builder);
-        appendHandshakeSimulation(builder);
-        appendHttps(builder);
-        appendRandom(builder);
-        appendPublicKeyIssues(builder);
-        appendScoringResults(builder);
-        appendRecommendations(builder);
-        appendPerformanceData(builder);
+        // appendInvalidCurveResults(builder);
+        // appendRaccoonAttackDetails(builder);
+        // // appendGcm(builder);
+        // appendRfc(builder);
+        // appendCertificate(builder);
+        // appendSession(builder);
+        // appendRenegotiation(builder);
+        // appendHandshakeSimulation(builder);
+        // appendHttps(builder);
+        // appendRandom(builder);
+        // appendPublicKeyIssues(builder);
+        // appendScoringResults(builder);
+        // appendRecommendations(builder);
+        // appendPerformanceData(builder);
+        prettyAppendHeading(builder, "Result");
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON) == TestResult.TRUE) {
+            if (report.getResult(AnalyzedProperty.REUSES_DH_PUBLICKEY) == TestResult.TRUE) {
+                prettyAppend(builder, "VULNERABLE . FULLY EXPLOITABLE", AnsiColor.RED);
+            } else {
+                prettyAppend(builder, "VULNERABLE . NOT EXPLOITABLE", AnsiColor.RED);
+            }
+        } else {
+            prettyAppend(builder, "NOT VULNERABLE", AnsiColor.GREEN);
 
+        }
         return builder.toString();
     }
 
@@ -1011,51 +1021,69 @@ public class SiteReportPrinter {
                     }
                 }
             }
-
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                prettyAppendHeading(builder, "Symmetric Supported");
-                prettyAppend(builder, "Null", AnalyzedProperty.SUPPORTS_NULL_CIPHERS);
-                prettyAppend(builder, "Export", AnalyzedProperty.SUPPORTS_EXPORT);
-                prettyAppend(builder, "Anon", AnalyzedProperty.SUPPORTS_ANON);
-                prettyAppend(builder, "DES", AnalyzedProperty.SUPPORTS_DES);
-                prettyAppend(builder, "SEED", AnalyzedProperty.SUPPORTS_SEED);
-                prettyAppend(builder, "IDEA", AnalyzedProperty.SUPPORTS_IDEA);
-                prettyAppend(builder, "RC2", AnalyzedProperty.SUPPORTS_RC2);
-                prettyAppend(builder, "RC4", AnalyzedProperty.SUPPORTS_RC4);
-                prettyAppend(builder, "3DES", AnalyzedProperty.SUPPORTS_3DES);
-                prettyAppend(builder, "AES", AnalyzedProperty.SUPPORTS_AES);
-                prettyAppend(builder, "CAMELLIA", AnalyzedProperty.SUPPORTS_CAMELLIA);
-                prettyAppend(builder, "ARIA", AnalyzedProperty.SUPPORTS_ARIA);
-                prettyAppend(builder, "CHACHA20 POLY1305", AnalyzedProperty.SUPPORTS_CHACHA);
-
-                prettyAppendHeading(builder, "KeyExchange Supported");
-                prettyAppend(builder, "RSA", AnalyzedProperty.SUPPORTS_RSA);
-                prettyAppend(builder, "DH", AnalyzedProperty.SUPPORTS_DH);
-                prettyAppend(builder, "ECDH", AnalyzedProperty.SUPPORTS_ECDH);
-                prettyAppend(builder, "GOST", AnalyzedProperty.SUPPORTS_GOST);
-                // prettyAppend(builder, "SRP", report.getSupportsSrp());
-                prettyAppend(builder, "Kerberos", AnalyzedProperty.SUPPORTS_KERBEROS);
-                prettyAppend(builder, "Plain PSK", AnalyzedProperty.SUPPORTS_PSK_PLAIN);
-                prettyAppend(builder, "PSK RSA", AnalyzedProperty.SUPPORTS_PSK_RSA);
-                prettyAppend(builder, "PSK DHE", AnalyzedProperty.SUPPORTS_PSK_DHE);
-                prettyAppend(builder, "PSK ECDHE", AnalyzedProperty.SUPPORTS_PSK_ECDHE);
-                prettyAppend(builder, "Fortezza", AnalyzedProperty.SUPPORTS_FORTEZZA);
-                prettyAppend(builder, "New Hope", AnalyzedProperty.SUPPORTS_NEWHOPE);
-                prettyAppend(builder, "ECMQV", AnalyzedProperty.SUPPORTS_ECMQV);
-                prettyAppend(builder, "TLS 1.3 PSK_DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
-
-                prettyAppendHeading(builder, "Cipher Types Supports");
-                prettyAppend(builder, "Stream", AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
-                prettyAppend(builder, "Block", AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
-                prettyAppend(builder, "AEAD", AnalyzedProperty.SUPPORTS_AEAD);
-            }
-            prettyAppendHeading(builder, "Perfect Forward Secrecy");
-            prettyAppend(builder, "Supports PFS", AnalyzedProperty.SUPPORTS_PFS);
-            prettyAppend(builder, "Prefers PFS", AnalyzedProperty.PREFERS_PFS);
-            prettyAppend(builder, "Supports Only PFS", AnalyzedProperty.SUPPORTS_ONLY_PFS);
-
-            prettyAppendHeading(builder, "Ciphersuite General");
-            prettyAppend(builder, "Enforces Ciphersuite ordering", AnalyzedProperty.ENFOCRES_CS_ORDERING);
+            //
+            // if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            // prettyAppendHeading(builder, "Symmetric Supported");
+            // prettyAppend(builder, "Null",
+            // AnalyzedProperty.SUPPORTS_NULL_CIPHERS);
+            // prettyAppend(builder, "Export",
+            // AnalyzedProperty.SUPPORTS_EXPORT);
+            // prettyAppend(builder, "Anon", AnalyzedProperty.SUPPORTS_ANON);
+            // prettyAppend(builder, "DES", AnalyzedProperty.SUPPORTS_DES);
+            // prettyAppend(builder, "SEED", AnalyzedProperty.SUPPORTS_SEED);
+            // prettyAppend(builder, "IDEA", AnalyzedProperty.SUPPORTS_IDEA);
+            // prettyAppend(builder, "RC2", AnalyzedProperty.SUPPORTS_RC2);
+            // prettyAppend(builder, "RC4", AnalyzedProperty.SUPPORTS_RC4);
+            // prettyAppend(builder, "3DES", AnalyzedProperty.SUPPORTS_3DES);
+            // prettyAppend(builder, "AES", AnalyzedProperty.SUPPORTS_AES);
+            // prettyAppend(builder, "CAMELLIA",
+            // AnalyzedProperty.SUPPORTS_CAMELLIA);
+            // prettyAppend(builder, "ARIA", AnalyzedProperty.SUPPORTS_ARIA);
+            // prettyAppend(builder, "CHACHA20 POLY1305",
+            // AnalyzedProperty.SUPPORTS_CHACHA);
+            //
+            // prettyAppendHeading(builder, "KeyExchange Supported");
+            // prettyAppend(builder, "RSA", AnalyzedProperty.SUPPORTS_RSA);
+            // prettyAppend(builder, "DH", AnalyzedProperty.SUPPORTS_DH);
+            // prettyAppend(builder, "ECDH", AnalyzedProperty.SUPPORTS_ECDH);
+            // prettyAppend(builder, "GOST", AnalyzedProperty.SUPPORTS_GOST);
+            // // prettyAppend(builder, "SRP", report.getSupportsSrp());
+            // prettyAppend(builder, "Kerberos",
+            // AnalyzedProperty.SUPPORTS_KERBEROS);
+            // prettyAppend(builder, "Plain PSK",
+            // AnalyzedProperty.SUPPORTS_PSK_PLAIN);
+            // prettyAppend(builder, "PSK RSA",
+            // AnalyzedProperty.SUPPORTS_PSK_RSA);
+            // prettyAppend(builder, "PSK DHE",
+            // AnalyzedProperty.SUPPORTS_PSK_DHE);
+            // prettyAppend(builder, "PSK ECDHE",
+            // AnalyzedProperty.SUPPORTS_PSK_ECDHE);
+            // prettyAppend(builder, "Fortezza",
+            // AnalyzedProperty.SUPPORTS_FORTEZZA);
+            // prettyAppend(builder, "New Hope",
+            // AnalyzedProperty.SUPPORTS_NEWHOPE);
+            // prettyAppend(builder, "ECMQV", AnalyzedProperty.SUPPORTS_ECMQV);
+            // prettyAppend(builder, "TLS 1.3 PSK_DHE",
+            // AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+            //
+            // prettyAppendHeading(builder, "Cipher Types Supports");
+            // prettyAppend(builder, "Stream",
+            // AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
+            // prettyAppend(builder, "Block",
+            // AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
+            // prettyAppend(builder, "AEAD", AnalyzedProperty.SUPPORTS_AEAD);
+            // }
+            // prettyAppendHeading(builder, "Perfect Forward Secrecy");
+            // prettyAppend(builder, "Supports PFS",
+            // AnalyzedProperty.SUPPORTS_PFS);
+            // prettyAppend(builder, "Prefers PFS",
+            // AnalyzedProperty.PREFERS_PFS);
+            // prettyAppend(builder, "Supports Only PFS",
+            // AnalyzedProperty.SUPPORTS_ONLY_PFS);
+            //
+            // prettyAppendHeading(builder, "Ciphersuite General");
+            // prettyAppend(builder, "Enforces Ciphersuite ordering",
+            // AnalyzedProperty.ENFOCRES_CS_ORDERING);
         }
         return builder;
     }
@@ -1068,67 +1096,6 @@ public class SiteReportPrinter {
             prettyAppend(builder, "TLS 1.0", AnalyzedProperty.SUPPORTS_TLS_1_0);
             prettyAppend(builder, "TLS 1.1", AnalyzedProperty.SUPPORTS_TLS_1_1);
             prettyAppend(builder, "TLS 1.2", AnalyzedProperty.SUPPORTS_TLS_1_2);
-            prettyAppend(builder, "TLS 1.3", AnalyzedProperty.SUPPORTS_TLS_1_3);
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 14", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_14);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 15", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_15);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 16", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_16);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 17", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_17);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 18", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_18);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 19", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_19);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 20", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_20);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 21", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_21);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 22", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_22);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 23", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_23);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 24", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_24);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 25", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_25);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 26", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_26);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 27", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27);
-            }
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                    || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28) == TestResult.TRUE) {
-                prettyAppend(builder, "TLS 1.3 Draft 28", AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28);
-            }
         }
         return builder;
     }

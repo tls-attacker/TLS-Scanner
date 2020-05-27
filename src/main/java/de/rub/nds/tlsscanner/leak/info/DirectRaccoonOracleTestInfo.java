@@ -44,7 +44,7 @@ public class DirectRaccoonOracleTestInfo extends TestInfo {
 
     @Override
     public String getPrintableName() {
-        return "\t" + directWorkflowType.name() + "\t" + version.name() + "\t" + cipherSuite.name();
+        return "" + version.name() + "\t" + cipherSuite.name();
     }
 
     @Override

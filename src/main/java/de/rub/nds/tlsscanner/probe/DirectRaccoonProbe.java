@@ -51,7 +51,7 @@ public class DirectRaccoonProbe extends TlsProbe {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final int iterationsPerHandshake = 3;
-    private final int additionalIterationsPerHandshake = 100;
+    private final int additionalIterationsPerHandshake = 97;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
@@ -68,15 +68,10 @@ public class DirectRaccoonProbe extends TlsProbe {
                         || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCiphersuiteList()) {
                         if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
-                            for (DirectRaccoonWorkflowType workflowType : DirectRaccoonWorkflowType.values()) {
-                                if (workflowType == DirectRaccoonWorkflowType.INITIAL) {
-                                    continue;
-                                }
-                                InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest = createDirectRaccoonInformationLeakTest(
-                                        pair.getVersion(), suite, workflowType);
-                                testResultList.add(informationLeakTest);
+                            InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest = createDirectRaccoonInformationLeakTest(
+                                    pair.getVersion(), suite, DirectRaccoonWorkflowType.CKE_CCS_FIN);
+                            testResultList.add(informationLeakTest);
 
-                            }
                         }
                     }
                 }
@@ -137,6 +132,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setStopReceivingAfterFatal(false);
             config.setStopActionsAfterIOException(true);
             config.setEarlyStop(true);
+            config.setQuickReceive(true);
 
             WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflow(config, workflowType,
                     initialClientDhSecret, nullByte);
