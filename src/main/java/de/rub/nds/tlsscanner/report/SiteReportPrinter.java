@@ -169,7 +169,7 @@ public class SiteReportPrinter {
         } else if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP) == TestResult.FALSE) {
             csvBuilder.append("0,");
         } else if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP) == TestResult.ERROR_DURING_TEST) {
-            csvBuilder.append("-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
+            csvBuilder.append("-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
             return csvBuilder.toString();
         }
 
@@ -198,6 +198,19 @@ public class SiteReportPrinter {
         } else {
             csvBuilder.append("0,");
         }
+
+        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13) == TestResult.TRUE) {
+            if (report.getResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES) == TestResult.TRUE) {
+                csvBuilder.append("2,");
+            } else if (report.getResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES) == TestResult.FALSE) {
+                csvBuilder.append("1,");
+            }
+        } else if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13) == TestResult.FALSE) {
+            csvBuilder.append("0,");
+        } else {
+            csvBuilder.append("-1,");
+        }
+
         if (report.getResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT) == TestResult.TRUE) {
             csvBuilder.append("1,");
         } else {
@@ -699,6 +712,13 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
                 prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
             }
+        }
+
+        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13) != TestResult.COULD_NOT_TEST) {
+            prettyAppend(builder, "Supports OCSP Stapling (TLS 1.3)",
+                    AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
+            prettyAppend(builder, "Supports OCSP Stapling for Multiple Certificates (TLS 1.3)",
+                    AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
         }
 
         // Is stapling supported, but a CertificateStatus message is missing?

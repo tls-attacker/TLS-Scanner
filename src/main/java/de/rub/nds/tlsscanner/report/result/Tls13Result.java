@@ -9,9 +9,9 @@
 package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateStatusMessage;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
@@ -34,10 +34,12 @@ public class Tls13Result extends ProbeResult {
 
     private final TestResult supportsPskDhe;
 
+    private final List<CertificateStatusMessage> ocspStapling;
+
     public Tls13Result(List<ProtocolVersion> supportedProtocolVersion,
             List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups,
             List<CipherSuite> supportedCipherSuites, TestResult supportsSECPCompression,
-            TestResult issuesSessionTicket, TestResult supportsPskDhe) {
+            TestResult issuesSessionTicket, TestResult supportsPskDhe, List<CertificateStatusMessage> ocspStapling) {
         super(ProbeType.TLS13);
         this.supportedProtocolVersion = supportedProtocolVersion;
         this.unsupportedProtocolVersion = unsupportedProtocolVersion;
@@ -46,6 +48,7 @@ public class Tls13Result extends ProbeResult {
         this.supportsSECPCompression = supportsSECPCompression;
         this.issuesSessionTicket = issuesSessionTicket;
         this.supportsPskDhe = supportsPskDhe;
+        this.ocspStapling = ocspStapling;
     }
 
     @Override
@@ -199,6 +202,22 @@ public class Tls13Result extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsPskDhe);
         } else {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, TestResult.COULD_NOT_TEST);
+        }
+
+        if (ocspStapling != null) {
+            if (ocspStapling.size() == 1) {
+                report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResult.TRUE);
+                report.putResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResult.FALSE);
+            } else if (ocspStapling.size() > 1) {
+                report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResult.TRUE);
+                report.putResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResult.TRUE);
+            } else {
+                report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResult.FALSE);
+                report.putResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResult.FALSE);
+            }
+        } else {
+            report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResult.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResult.COULD_NOT_TEST);
         }
     }
 }

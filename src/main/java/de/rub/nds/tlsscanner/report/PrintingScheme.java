@@ -290,6 +290,10 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED,
                 getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.MUST_STAPLE, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13,
+                getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
+                getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
 
         HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));

@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -19,9 +20,12 @@ import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateStatusMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateVerifyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.cert.CertificateEntry;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.CertificateStatusRequestExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareEntry;
@@ -39,6 +43,7 @@ import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.Tls13Result;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -299,6 +304,34 @@ public class Tls13Probe extends TlsProbe {
         return tls13VersionList;
     }
 
+    private List<CertificateStatusMessage> getCertificateStatusFromCertificateEntryExtension(
+            List<ProtocolVersion> supportedProtocolVersions) {
+        List<CertificateStatusMessage> certificateStatuses = new LinkedList<>();
+        Config tlsConfig = getCommonConfig(WorkflowTraceType.HANDSHAKE, ProtocolVersion.TLS13, getTls13Suite(),
+                getImplementedTls13Groups());
+        State state = new State(tlsConfig);
+        List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+        pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+        pskKex.add(PskKeyExchangeMode.PSK_KE);
+        tlsConfig.setPSKKeyExchangeModes(pskKex);
+        tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
+            CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil.getFirstReceivedMessage(
+                    HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
+            List<CertificateEntry> certificateEntries = certificateMessage.getCertificatesListAsEntry();
+            for (CertificateEntry certificateEntry : certificateEntries) {
+                for (ExtensionMessage extensionMessage : certificateEntry.getExtensions()) {
+                    if (extensionMessage instanceof CertificateStatusRequestExtensionMessage) {
+                        certificateStatuses.add(((CertificateStatusRequestExtensionMessage) extensionMessage)
+                                .getCertificateStatus());
+                    }
+                }
+            }
+        }
+        return certificateStatuses;
+    }
+
     @Override
     public ProbeResult executeTest() {
         List<ProtocolVersion> tls13VersionList = new LinkedList<>();
@@ -318,6 +351,7 @@ public class Tls13Probe extends TlsProbe {
         }
         List<NamedGroup> supportedNamedGroups = getSupportedGroups();
         List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
+        List<CertificateStatusMessage> ocspStapling = getCertificateStatusFromCertificateEntryExtension(supportedProtocolVersions);
         TestResult supportsSECPCompression = null;
         if (containsSECPGroup(supportedNamedGroups)) {
             supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);
@@ -325,7 +359,7 @@ public class Tls13Probe extends TlsProbe {
         TestResult issuesSessionTicket = getIssuesSessionTicket(supportedProtocolVersions);
         TestResult supportsPskDhe = getSupportsPskDhe(supportedProtocolVersions);
         return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups,
-                supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe);
+                supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe, ocspStapling);
     }
 
     @Override
@@ -339,7 +373,7 @@ public class Tls13Probe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new Tls13Result(null, null, null, null, null, null, null);
+        return new Tls13Result(null, null, null, null, null, null, null, null);
     }
 
     private Config getCommonConfig(WorkflowTraceType traceType, ProtocolVersion highestProtocolVersion,
@@ -362,6 +396,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
 

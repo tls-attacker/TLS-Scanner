@@ -118,6 +118,7 @@ public class TlsScanner {
         probeList.add(new ExtensionProbe(config, parallelExecutor));
         probeList.add(new CertificateProbe(config, parallelExecutor));
         probeList.add(new OcspProbe(config, parallelExecutor));
+        probeList.add(new Tls13Probe(config, parallelExecutor));
     }
 
     public SiteReport scan() {
