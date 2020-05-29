@@ -304,8 +304,7 @@ public class Tls13Probe extends TlsProbe {
         return tls13VersionList;
     }
 
-    private List<CertificateStatusMessage> getCertificateStatusFromCertificateEntryExtension(
-            List<ProtocolVersion> supportedProtocolVersions) {
+    private List<CertificateStatusMessage> getCertificateStatusFromCertificateEntryExtension() {
         List<CertificateStatusMessage> certificateStatuses = new LinkedList<>();
         Config tlsConfig = getCommonConfig(WorkflowTraceType.HANDSHAKE, ProtocolVersion.TLS13, getTls13Suite(),
                 getImplementedTls13Groups());
@@ -351,7 +350,7 @@ public class Tls13Probe extends TlsProbe {
         }
         List<NamedGroup> supportedNamedGroups = getSupportedGroups();
         List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
-        List<CertificateStatusMessage> ocspStapling = getCertificateStatusFromCertificateEntryExtension(supportedProtocolVersions);
+        List<CertificateStatusMessage> ocspStapling = getCertificateStatusFromCertificateEntryExtension();
         TestResult supportsSECPCompression = null;
         if (containsSECPGroup(supportedNamedGroups)) {
             supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);
