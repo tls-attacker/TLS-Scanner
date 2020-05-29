@@ -47,9 +47,9 @@ public class DebugProbe extends TlsProbe {
          * Add any protocol version (1.0-1.2) to the versions we iterate
          */
         List<ProtocolVersion> desiredVersions = new LinkedList<>();
-//        desiredVersions.add(ProtocolVersion.TLS11);
 //        desiredVersions.add(ProtocolVersion.TLS10);
-        desiredVersions.add(ProtocolVersion.TLS12);
+          desiredVersions.add(ProtocolVersion.TLS11);
+//        desiredVersions.add(ProtocolVersion.TLS12);
 
         List<CipherSuite> cipherSuites = new LinkedList<>();
 
@@ -79,12 +79,12 @@ public class DebugProbe extends TlsProbe {
 
         List<CcaTestResult> resultList = new LinkedList<>();
         Boolean bypassable = false;
-        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_VRFY_CCS_FIN;
+        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CKE_CCS_FIN;
 
-        CipherSuite cipherSuite = CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256;
+        CipherSuite cipherSuite = CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA;
         cipherSuites.add(cipherSuite);
 
-        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3_KeyUsageKeyAgreement;
+        CcaCertificateType ccaCertificateType = CcaCertificateType.ROOTv3_CAv3_LEAF_RSAv3;
 
         for (ProtocolVersion protocolVersion : desiredVersions) {
             Config tlsConfig = generateConfig();
