@@ -168,8 +168,8 @@ public class SiteReportPrinter {
             csvBuilder.append("1,");
         } else if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP) == TestResult.FALSE) {
             csvBuilder.append("0,");
-        } else if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP) == TestResult.ERROR_DURING_TEST) {
-            csvBuilder.append("-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
+        } else {
+            csvBuilder.append("-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
             return csvBuilder.toString();
         }
 
