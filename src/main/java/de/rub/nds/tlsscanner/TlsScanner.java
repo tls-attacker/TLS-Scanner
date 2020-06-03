@@ -130,7 +130,7 @@ public class TlsScanner {
         // afterList.add(new LogjamAfterprobe());
         // afterList.add(new EvaluateRandomnessAfterProbe());
         // afterList.add(new EcPublicKeyAfterProbe());
-        // afterList.add(new DhValueAfterProbe());
+        afterList.add(new DhValueAfterProbe());
         // afterList.add(new PaddingOracleIdentificationAfterProbe());
         // afterList.add(new RaccoonAttackAfterProbe());
     }
