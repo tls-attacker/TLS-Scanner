@@ -283,7 +283,7 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.REUSES_GCM_NONCES, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.REQUIRES_SNI, getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_OCSP, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT,
+        colorMap.put(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.SUPPORTS_NONCE, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.NONCE_MISMATCH, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));

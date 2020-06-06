@@ -58,7 +58,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -211,7 +210,7 @@ public class SiteReportPrinter {
             csvBuilder.append("-1,");
         }
 
-        if (report.getResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT) == TestResult.TRUE) {
+        if (report.getResult(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE) == TestResult.TRUE) {
             csvBuilder.append("1,");
         } else {
             csvBuilder.append("0,");
@@ -723,7 +722,7 @@ public class SiteReportPrinter {
 
         // Is stapling supported, but a CertificateStatus message is missing?
         if (Boolean.TRUE.equals(report.getSupportsStapling())) {
-            prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT);
+            prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
             if (report.getFirstOcspResponse() != null && report.getFirstOcspResponse().getResponseStatus() == 0) {
                 long differenceHoursStapled = report.getDifferenceHoursStapled();
                 if (differenceHoursStapled < 24) {

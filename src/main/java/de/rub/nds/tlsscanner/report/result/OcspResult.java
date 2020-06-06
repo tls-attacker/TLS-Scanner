@@ -67,10 +67,10 @@ public class OcspResult extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_OCSP, TestResult.ERROR_DURING_TEST);
         }
 
-        if (!supportsStapling && stapledResponse == null) {
-            report.putResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT, TestResult.FALSE);
+        if (stapledResponse != null) {
+            report.putResult(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TestResult.TRUE);
         } else {
-            report.putResult(AnalyzedProperty.HAS_STAPLED_RESPONSE_DESPITE_SUPPORT, TestResult.TRUE);
+            report.putResult(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, TestResult.FALSE);
         }
 
         if (stapledResponse != null && stapledResponse.getNonce() != null) {
