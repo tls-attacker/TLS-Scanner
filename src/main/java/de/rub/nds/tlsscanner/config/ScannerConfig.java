@@ -36,6 +36,9 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
     private boolean noColor = false;
 
+    @Parameter(names = "-collectRNG", required = false, description = "Collect 1MB of random bytes through the TLS Connection.")
+    private boolean collectRNG = false;
+
     @ParametersDelegate
     private GeneralDelegate generalDelegate;
 
@@ -128,6 +131,14 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setReportDetail(ScannerDetail reportDetail) {
         this.reportDetail = reportDetail;
+    }
+
+    public boolean getCollectRNG() {
+        return collectRNG;
+    }
+
+    public void setCollectRNG(boolean collectRNG) {
+        this.collectRNG = collectRNG;
     }
 
     @Override
