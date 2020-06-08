@@ -193,7 +193,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LOGGER.warn("============================================================================================");
         LOGGER.warn("P-Value of Monobit : " + frequencyTest(test2, 1));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Frequency-Test with Block size 10 : " + frequencyTest(test2, 10));
+        LOGGER.warn("P-Value of Frequency-Test with Block size 10 : " + frequencyTest(test2, 128));
         LOGGER.warn("============================================================================================");
         LOGGER.warn("P-Value of RunsTest : " + runsTest(test2));
         LOGGER.warn("============================================================================================");
@@ -204,7 +204,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LOGGER.warn("Failed Tests-ratio of NonOverlappingTemplate Test : " + nonOverlappingTemplateTest(test2, 9));
         LOGGER.warn("Its hard to say what number of nonOverlappingTemplate Tests are concerning.");
         LOGGER.warn("============================================================================================");
-        serialTest(test2, 3);
+        LOGGER.warn("Average P-Value returned by Serial Test : " + serialTest(test2, 16));
 
     }
 
@@ -296,8 +296,16 @@ public class ExtractRandomnessProbe extends AfterProbe {
         double pValueOne = Gamma.regularizedGammaQ(pow(2, blockLength - 1) / 2.0, delta / 2.0);
         double pValueTwo = Gamma.regularizedGammaQ(pow(2, blockLength - 2) / 2.0, deltaSquared / 2.0);
 
-        LOGGER.warn("pValueOne is " + pValueOne);
-        LOGGER.warn("pValueTwo is " + pValueTwo);
+        LOGGER.warn("SERIAL TEST pValueOne : " + pValueOne);
+        LOGGER.warn("SERIAL TEST pValueTwo : " + pValueTwo);
+
+        if (pValueOne >= 0.01 & pValueTwo >= 0.01) {
+            LOGGER.warn("SERIAL TEST PASSED!");
+        } else {
+            LOGGER.warn("SERIAL TEST FAILED!");
+        }
+
+        pValue = (pValueOne + pValueTwo) / 2.0;
 
         return pValue;
     }
@@ -391,85 +399,69 @@ public class ExtractRandomnessProbe extends AfterProbe {
     /***
      * Test which uses the discrete Fourier Transformation to detect periodic
      * features of the sequence which would indicate a deviation from assumed
-     * randomness. Recommended input size is 1000 bits.
+     * randomness. Recommended input size is 1000 bits. Shamelessly stolen from
+     * https://github.com/stamfest/randomtests/blob/master/src/main/java/net/
+     * stamfest/randomtests/nist/DiscreteFourierTransform.java
+     * TODO: Even if its "stolen" --> refactor it!!
      * 
      * @param byteSequence
      *            The random byte sequence as a ComparableByteArray array
      * @return p values of the experiment
      */
     private Double discreteFourierTest(ComparableByteArray[] byteSequence) {
-        double pValue = 0.0;
         String fullSequence = "";
 
         for (ComparableByteArray randomString : byteSequence) {
             fullSequence = fullSequence + byteArrayToBitString(randomString);
         }
 
-        // TODO: DISCREPANCY BETWEEN NIST FFT AND THIS FFT!
-        // TODO: THEY REMOVED SOME BITS --> CHECK DOCUMENTATION
-        fullSequence = "1101000110001000101110010001001001000001110110111111101101011110101100010000000000010111111111000100101001001111011001101101000010001000010010011000100100010111011101000000000000010100011111111101110010010001010011000100100110000010111110010110100101101001100101011100000011011010011000001001101100101011000111011111011100111000111111010001101101100111001101110111111010101001101001000111100000110100110001010100111100110111000011000110001101001110000100011110000111100111110111001110100110001101111000111101101000000100000001111010110010101111011001110010100111111101100010110111011011101110011111000000101001110101001110110111100110101101001111111010101001110111011011101111000000100100101011011100101011000010110101110010001000101111110010010001000101010000110010101110101100010111111111011101010000111011000000000101011000100110010000110101101010010000101111101101010101001011011000111100101010111000101001011101001111110010111001001100110011100000011011111011110101101000101010111100011000001000010001100011010011111011011011111111001111011110101101010011101001100111111011011011001110111001";
+        LOGGER.warn(fullSequence);
 
-        // Convert bit-string to -1 / 1 vector
-        double inVector[] = new double[fullSequence.length()];
-        for (int i = 0; i < fullSequence.length(); i++) {
-            if (fullSequence.charAt(i) == '0') {
-                inVector[i] = -1.0;
-            } else {
-                inVector[i] = 1.0;
+        int n = fullSequence.length();
+
+        double N_l;
+        double N_o;
+        double d;
+
+        double upperBound;
+        double X[] = new double[n];
+        double m[] = new double[n / 2 + 1];
+
+        int i, count;
+
+        for (i = 0; i < n; i++) {
+            X[i] = 2 * Character.getNumericValue(fullSequence.charAt(i)) - 1;
+
+        }
+
+        DoubleFFT_1D fft = new DoubleFFT_1D(n);
+        fft.realForward(X);
+
+
+        m[0] = Math.sqrt(X[0] * X[0]);
+        /* COMPUTE MAGNITUDE */
+        m[n / 2] = Math.sqrt(X[1] * X[1]);
+
+        for (i = 0; i < n / 2 - 1; i++) {
+            m[i + 1] = Math.hypot(X[2 * i + 2], X[2 * i + 3]);
+        }
+
+        count = 0;
+        /* CONFIDENCE INTERVAL */
+        upperBound = Math.sqrt(2.995732274 * n);
+        for (i = 0; i < n / 2; i++) {
+            if (m[i] < upperBound) {
+                count++;
             }
         }
 
-        // Discrete Fourier Transform
-        // See
-        // https://www.nayuki.io/page/how-to-implement-the-discrete-fourier-transform
-        // double outVector[] = new double[fullSequence.length()];
-        // for (int i = 0; i < fullSequence.length(); i++) {
-        // double sumReal = 0;
-        // double sumImag = 0;
-        // for (int j = 0; j < fullSequence.length(); j++) {
-        // double angle = 2 * PI * j * i / fullSequence.length();
-        // sumReal += inVector[j] * Math.cos(angle) + 0 * Math.sin(angle);
-        // sumImag += inVector[j] * Math.sin(angle) + 0 * Math.cos(angle);
-        // }
-        // outVector[i] = sumReal;
-        // }
-
-        DoubleFFT_1D dft = new DoubleFFT_1D(inVector.length);
-        dft.realForward(inVector);
-
-        // Calculate Modulus of half of the vector
-        double[] m = Arrays.copyOfRange(inVector, 0, inVector.length / 2);
-        LOGGER.warn("LENGTH OF M : " + m.length);
-        // t = peak height threshold value
-        // double t = sqrt(log((1.0 / 0.05)) * fullSequence.length());
-        double t = sqrt(2.995732274 * fullSequence.length());
-        // nZero = expected theoretical number of peaks
-        double nZero = 0.95 * fullSequence.length() / 2.0;
-        // nOne = actual observed number of peaks
-        double nOne = 0;
-
-        // Computing magnitude
-        m[0] = sqrt(inVector[0] * inVector[0]);
-        for (int i = 0; i < m.length - 1; i++) {
-            // m[i] = abs((m[i]));
-            m[i + 1] = sqrt(pow(inVector[2 * i + 1], 2) + pow(inVector[2 * i + 2], 2));
-        }
-        // Checking for peaks violating threshold
-        for (int i = 0; i < m.length; i++) {
-            LOGGER.warn("Entry " + i + " : " + m[i]);
-            if (m[i] < t) {
-                nOne++;
-            }
-        }
-
-        double d = (nOne - nZero) / sqrt(((double) fullSequence.length() * 0.95 * 0.05) / 4);
-        pValue = erfc(abs(d) / sqrt(2));
-
-        LOGGER.warn("N_1 = " + nOne);
-        LOGGER.warn("N_0 = " + nZero);
-        LOGGER.warn("d = " + d);
-
-        return pValue;
+        N_l = (double) count;
+        /* number of peaks less than h = sqrt(3*n) */
+        N_o = (double) 0.95 * n / 2.0;
+        d = (N_l - N_o) / Math.sqrt(n / 4.0 * 0.95 * 0.05);
+        double p_value = erfc(Math.abs(d) / Math.sqrt(2.0));
+        
+        return p_value;
     }
 
     /***
