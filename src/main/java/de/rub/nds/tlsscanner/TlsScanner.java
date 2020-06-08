@@ -15,32 +15,8 @@ import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.probe.BleichenbacherProbe;
-import de.rub.nds.tlsscanner.probe.CertificateProbe;
-import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
-import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
-import de.rub.nds.tlsscanner.probe.CommonBugProbe;
-import de.rub.nds.tlsscanner.probe.CompressionsProbe;
-import de.rub.nds.tlsscanner.probe.DirectRaccoonProbe;
-import de.rub.nds.tlsscanner.probe.DrownProbe;
-import de.rub.nds.tlsscanner.probe.ECPointFormatProbe;
-import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
-import de.rub.nds.tlsscanner.probe.ExtensionProbe;
-import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
-import de.rub.nds.tlsscanner.probe.HttpHeaderProbe;
-import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
-import de.rub.nds.tlsscanner.probe.MacProbe;
-import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
-import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.probe.*;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
-import de.rub.nds.tlsscanner.probe.ResumptionProbe;
-import de.rub.nds.tlsscanner.probe.SniProbe;
-import de.rub.nds.tlsscanner.probe.Tls13Probe;
-import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
-import de.rub.nds.tlsscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.report.after.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.report.after.EcPublicKeyAfterProbe;
@@ -51,6 +27,7 @@ import de.rub.nds.tlsscanner.report.after.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.report.after.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.report.after.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.report.after.ExtractRandomnessProbe;
 import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,39 +78,50 @@ public class TlsScanner {
     }
 
     private void fillDefaultProbeLists() {
-        probeList.add(new CommonBugProbe(config, parallelExecutor));
-        probeList.add(new SniProbe(config, parallelExecutor));
-        probeList.add(new CompressionsProbe(config, parallelExecutor));
-        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
-        probeList.add(new CertificateProbe(config, parallelExecutor));
-        probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
-        probeList.add(new CiphersuiteProbe(config, parallelExecutor));
-        probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
-        probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
-        probeList.add(new ExtensionProbe(config, parallelExecutor));
-        probeList.add(new Tls13Probe(config, parallelExecutor));
-        probeList.add(new TokenbindingProbe(config, parallelExecutor));
-        probeList.add(new HttpHeaderProbe(config, parallelExecutor));
-        probeList.add(new ECPointFormatProbe(config, parallelExecutor));
-        probeList.add(new ResumptionProbe(config, parallelExecutor));
-        probeList.add(new RenegotiationProbe(config, parallelExecutor));
-        probeList.add(new HeartbleedProbe(config, parallelExecutor));
-        probeList.add(new PaddingOracleProbe(config, parallelExecutor));
-        probeList.add(new BleichenbacherProbe(config, parallelExecutor));
-        probeList.add(new TlsPoodleProbe(config, parallelExecutor));
-        probeList.add(new InvalidCurveProbe(config, parallelExecutor));
-        probeList.add(new DrownProbe(config, parallelExecutor));
-        probeList.add(new EarlyCcsProbe(config, parallelExecutor));
-        probeList.add(new MacProbe(config, parallelExecutor));
-        afterList.add(new Sweet32AfterProbe());
-        afterList.add(new PoodleAfterProbe());
-        afterList.add(new FreakAfterProbe());
-        afterList.add(new LogjamAfterprobe());
-        afterList.add(new EvaluateRandomnessAfterProbe());
-        afterList.add(new EcPublicKeyAfterProbe());
-        afterList.add(new DhValueAfterProbe());
-        afterList.add(new PaddingOracleIdentificationAfterProbe());
-        afterList.add(new RaccoonAttackAfterProbe());
+        if (config.getCollectRNG()) {
+            // for (int i = 0; i < 3907; i++) {
+            // probeList.add(new TlsRngProbe(config, parallelExecutor));
+            // }
+            probeList.add(new TlsRngProbe(config, parallelExecutor));
+            // probeList.add(new TlsRngProbe(config, parallelExecutor));
+            // probeList.add(new Tls13Probe(config, parallelExecutor));
+            // probeList.add(new ExtensionProbe(config, parallelExecutor));
+            afterList.add(new ExtractRandomnessProbe());
+        } else {
+            probeList.add(new CommonBugProbe(config, parallelExecutor));
+            probeList.add(new SniProbe(config, parallelExecutor));
+            probeList.add(new CompressionsProbe(config, parallelExecutor));
+            probeList.add(new NamedCurvesProbe(config, parallelExecutor));
+            probeList.add(new CertificateProbe(config, parallelExecutor));
+            probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
+            probeList.add(new CiphersuiteProbe(config, parallelExecutor));
+            probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
+            probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
+            probeList.add(new ExtensionProbe(config, parallelExecutor));
+            probeList.add(new Tls13Probe(config, parallelExecutor));
+            probeList.add(new TokenbindingProbe(config, parallelExecutor));
+            probeList.add(new HttpHeaderProbe(config, parallelExecutor));
+            probeList.add(new ECPointFormatProbe(config, parallelExecutor));
+            probeList.add(new ResumptionProbe(config, parallelExecutor));
+            probeList.add(new RenegotiationProbe(config, parallelExecutor));
+            probeList.add(new HeartbleedProbe(config, parallelExecutor));
+            probeList.add(new PaddingOracleProbe(config, parallelExecutor));
+            probeList.add(new BleichenbacherProbe(config, parallelExecutor));
+            probeList.add(new TlsPoodleProbe(config, parallelExecutor));
+            probeList.add(new InvalidCurveProbe(config, parallelExecutor));
+            probeList.add(new DrownProbe(config, parallelExecutor));
+            probeList.add(new EarlyCcsProbe(config, parallelExecutor));
+            probeList.add(new MacProbe(config, parallelExecutor));
+            afterList.add(new Sweet32AfterProbe());
+            afterList.add(new PoodleAfterProbe());
+            afterList.add(new FreakAfterProbe());
+            afterList.add(new LogjamAfterprobe());
+            afterList.add(new EvaluateRandomnessAfterProbe());
+            afterList.add(new EcPublicKeyAfterProbe());
+            afterList.add(new DhValueAfterProbe());
+            afterList.add(new PaddingOracleIdentificationAfterProbe());
+            afterList.add(new RaccoonAttackAfterProbe());
+        }
     }
 
     public SiteReport scan() {

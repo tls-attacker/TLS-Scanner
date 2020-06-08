@@ -14,7 +14,10 @@ package de.rub.nds.tlsscanner.probe.stats;
  */
 public enum TrackableValueType {
     RANDOM,
+    SESSION_ID,
     DHE_PUBLICKEY,
     ECDHE_PUBKEY,
     GCM_NONCE_EXPLICIT,
+    PUBKEY,
+    IV,
 }

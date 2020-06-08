@@ -16,10 +16,10 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.util.List;
 
-public class RandomExtractor extends StatExtractor<ComparableByteArray> {
+public class SessionIdExtractor extends StatExtractor<ComparableByteArray> {
 
-    public RandomExtractor() {
-        super(TrackableValueType.RANDOM);
+    public SessionIdExtractor() {
+        super(TrackableValueType.SESSION_ID);
     }
 
     @Override
@@ -30,8 +30,8 @@ public class RandomExtractor extends StatExtractor<ComparableByteArray> {
                 ProtocolMessageType.HANDSHAKE);
 
         for (ProtocolMessage message : allReceivedHandshakeMessages) {
-            if (message instanceof ServerHelloMessage && ((ServerHelloMessage) message).getRandom() != null) {
-                put(new ComparableByteArray(((ServerHelloMessage) message).getRandom().getValue()));
+            if (message instanceof ServerHelloMessage && ((ServerHelloMessage) message).getSessionId() != null) {
+                put(new ComparableByteArray(((ServerHelloMessage) message).getSessionId().getValue()));
             }
         }
     }
