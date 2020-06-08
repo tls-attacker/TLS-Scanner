@@ -205,6 +205,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LOGGER.warn("Its hard to say what number of nonOverlappingTemplate Tests are concerning.");
         LOGGER.warn("============================================================================================");
         LOGGER.warn("Average P-Value returned by Serial Test : " + serialTest(test2, 16));
+        LOGGER.warn("============================================================================================");
+        LOGGER.warn("P-Value of Approximate Entropy Test : " + approximateEntropyTest(test2, 10));
+        LOGGER.warn("============================================================================================");
+
 
     }
 
@@ -226,6 +230,71 @@ public class ExtractRandomnessProbe extends AfterProbe {
         return false;
     }
 
+    private Double approximateEntropyTest(ComparableByteArray[] byteSequence, int blockLength) {
+        // TODO: Select m and n such that m < log_2)(n) - 5
+        // TODO: ie. for 1096 recommend is blockLength of 5
+        double pValue = 0.0;
+        String fullSequence = "";
+
+        for (ComparableByteArray randomString : byteSequence) {
+            fullSequence = fullSequence + byteArrayToBitString(randomString);
+        }
+
+        String extendedSequence = fullSequence + fullSequence.substring(0, blockLength - 1);
+        String extendedSecondSequence = fullSequence + fullSequence.substring(0, blockLength);
+
+        // Round 1
+        String[] mBitSequence = generateAllBitStrings(blockLength);
+        int[] mBitSequenceCount = new int[mBitSequence.length];
+        double phi = 0.0;
+
+        for (int i = 0; i < fullSequence.length(); i++) {
+            int index = ArrayUtils.indexOf(mBitSequence, extendedSequence.substring(i, i + blockLength));
+            mBitSequenceCount[index]++;
+        }
+
+        for (int i = 0; i < mBitSequence.length; i++) {
+            if (mBitSequenceCount[i] > 0) {
+                double proportion = (double) mBitSequenceCount[i] / fullSequence.length();
+                phi = phi + (proportion) * log(proportion);
+            }
+        }
+
+        // Round 2
+        String[] mPlusOneBitSequence = generateAllBitStrings(blockLength + 1);
+        int[] mPlusOneBitCount = new int[mPlusOneBitSequence.length];
+        double phiTwo = 0.0;
+
+        for (int i = 0; i < fullSequence.length(); i++) {
+            int index = ArrayUtils.indexOf(mPlusOneBitSequence,
+                    extendedSecondSequence.substring(i, i + blockLength + 1));
+            mPlusOneBitCount[index]++;
+        }
+
+        for (int i = 0; i < mPlusOneBitSequence.length; i++) {
+            if (mPlusOneBitCount[i] > 0) {
+                double proportion = (double) mPlusOneBitCount[i] / fullSequence.length();
+                phiTwo = phiTwo + (proportion) * log(proportion);
+            }
+        }
+
+        double chiSquare = 2.0 * fullSequence.length() * (log(2) - (phi - phiTwo));
+        pValue = Gamma.regularizedGammaQ(pow(2, blockLength - 1), chiSquare / 2.0);
+
+        LOGGER.warn("phi = " + phi);
+        LOGGER.warn("phiTwo = " + phiTwo);
+        LOGGER.warn("ApEn = " + ((phi - phiTwo)));
+        LOGGER.warn("chiSquare = " + chiSquare);
+
+        return pValue;
+    }
+
+    /***
+     *
+     * @param byteSequence
+     * @param blockLength
+     * @return
+     */
     private Double serialTest(ComparableByteArray[] byteSequence, int blockLength) {
         double pValue = 0.0;
         String fullSequence = "";
@@ -401,8 +470,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
      * features of the sequence which would indicate a deviation from assumed
      * randomness. Recommended input size is 1000 bits. Shamelessly stolen from
      * https://github.com/stamfest/randomtests/blob/master/src/main/java/net/
-     * stamfest/randomtests/nist/DiscreteFourierTransform.java
-     * TODO: Even if its "stolen" --> refactor it!!
+     * stamfest/randomtests/nist/DiscreteFourierTransform.java TODO: Even if its
+     * "stolen" --> refactor it!!
      * 
      * @param byteSequence
      *            The random byte sequence as a ComparableByteArray array
@@ -414,8 +483,6 @@ public class ExtractRandomnessProbe extends AfterProbe {
         for (ComparableByteArray randomString : byteSequence) {
             fullSequence = fullSequence + byteArrayToBitString(randomString);
         }
-
-        LOGGER.warn(fullSequence);
 
         int n = fullSequence.length();
 
@@ -436,7 +503,6 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
         DoubleFFT_1D fft = new DoubleFFT_1D(n);
         fft.realForward(X);
-
 
         m[0] = Math.sqrt(X[0] * X[0]);
         /* COMPUTE MAGNITUDE */
@@ -460,7 +526,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         N_o = (double) 0.95 * n / 2.0;
         d = (N_l - N_o) / Math.sqrt(n / 4.0 * 0.95 * 0.05);
         double p_value = erfc(Math.abs(d) / Math.sqrt(2.0));
-        
+
         return p_value;
     }
 
