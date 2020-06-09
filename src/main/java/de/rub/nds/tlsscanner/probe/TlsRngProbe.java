@@ -11,23 +11,24 @@ package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
+import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
 import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
+import de.rub.nds.tlsattacker.core.state.Keylogfile;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.MessageAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
+import de.rub.nds.tlsattacker.core.workflow.action.*;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsattacker.transport.ConnectionEndType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -37,6 +38,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.RngResult;
 import de.rub.nds.tlsscanner.report.result.Tls13Result;
 import sun.net.www.http.HttpClient;
+import sun.net.www.http.KeepAliveCache;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -76,7 +78,9 @@ public class TlsRngProbe extends TlsProbe {
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
-        // tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
+        tlsConfig.setWriteKeylogFile(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        // tlsConfig.setWorkflowTraceType(WorkflowTraceType.CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
 
         // Heartbeat
         tlsConfig.setAddHeartbeatExtension(true);
@@ -91,26 +95,40 @@ public class TlsRngProbe extends TlsProbe {
 
         // State state = new State(tlsConfig);
         AlertMessage alert = new AlertMessage();
-
         byte[] conf = { (byte) 01, (byte) 42 };
 
         alert.setConfig(conf);
 
-        HttpsRequestMessage request = new HttpsRequestMessage(tlsConfig);
+        // HTTP Request
+        // HttpsRequestMessage request = new HttpsRequestMessage(tlsConfig);
+        HttpsRequestMessage request = new HttpsRequestMessage();
+        List<HttpsHeader> header = new LinkedList<>();
+        header.add(new HostHeader());
+        // header.add(new GenericHttpsHeader("Connection", "keep-alive"));
+        request.setHeader(header);
 
-        // WorkflowConfigurationFactory factory = new
-        // WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = new WorkflowTrace();
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
+        WorkflowTrace serverHelloTrace = new WorkflowTrace();
 
         ProtocolMessage[] flight1 = { new ChangeCipherSpecMessage(tlsConfig), new FinishedMessage(tlsConfig) };
         ProtocolMessage[] hello = { new ServerHelloMessage(tlsConfig), new CertificateMessage(tlsConfig),
                 new ECDHEServerKeyExchangeMessage(tlsConfig), new ServerHelloDoneMessage(tlsConfig) };
 
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveAction(hello));
-        trace.addTlsAction(new SendAction(new ECDHClientKeyExchangeMessage(tlsConfig)));
-        trace.addTlsAction(new SendAction(flight1));
-        trace.addTlsAction(new ReceiveAction(flight1));
+        // COLLECT SERVER RANDOMS (1KB) & SESSION-IDs (Best Case 1KB)
+        AliasedConnection connection = tlsConfig.getDefaultClientConnection();
+
+        serverHelloTrace.addTlsAction(MessageActionFactory.createAction(connection, ConnectionEndType.CLIENT,
+                new ClientHelloMessage(tlsConfig)));
+        serverHelloTrace.addTlsAction(MessageActionFactory.createAction(connection, ConnectionEndType.SERVER,
+                new ServerHelloMessage(tlsConfig)));
+
+        // trace.addTlsAction(new SendAction(new
+        // ClientHelloMessage(tlsConfig)));
+        // trace.addTlsAction(new ReceiveAction(hello));
+        // trace.addTlsAction(new SendAction(new
+        // ECDHClientKeyExchangeMessage(tlsConfig)));
+        // trace.addTlsAction(new SendAction(flight1));
+        // trace.addTlsAction(new ReceiveAction(flight1));
 
         // HeartbeatMessage heartbeatTest = new HeartbeatMessage(tlsConfig);
         // heartbeatTest.setHeartbeatMessageType((byte) 1);
@@ -134,13 +152,39 @@ public class TlsRngProbe extends TlsProbe {
         // trace.addTlsAction(new SendAction(alert));
         // trace.addTlsAction(new ReceiveAction());
 
-        State state = new State(tlsConfig, trace);
+        // State state = new State(tlsConfig, trace);
+
+        // Collect ServerHellos & ServerIDs
+        State state = new State(tlsConfig, serverHelloTrace);
         executeState(state);
+        LOGGER.warn(state.getWorkflowTrace());
+        executeState(state);
+        LOGGER.warn(state.getWorkflowTrace());
+        executeState(state);
+        LOGGER.warn(state.getWorkflowTrace());
+        executeState(state);
+        LOGGER.warn(state.getWorkflowTrace());
+
+        // Collect IV
+        WorkflowTrace ivCollectorTrace = new WorkflowTrace();
+        ivCollectorTrace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+        ivCollectorTrace.addTlsAction(new ReceiveAction(hello));
+        ivCollectorTrace.addTlsAction(new SendAction(new ECDHClientKeyExchangeMessage(tlsConfig)));
+        ivCollectorTrace.addTlsAction(new SendAction(flight1));
+        ivCollectorTrace.addTlsAction(new ReceiveAction(flight1));
+
+        for (int i = 0; i < 32; i++) {
+            ivCollectorTrace.addTlsAction(new SendAction(request));
+            ivCollectorTrace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
+        }
+
+        state = new State(tlsConfig, ivCollectorTrace);
+        executeState(state);
+        LOGGER.warn(state.getWorkflowTrace());
+
         boolean successfulHandshake = state.getWorkflowTrace().executedAsPlanned();
 
         RngResult rng_extract = new RngResult(successfulHandshake);
-
-        LOGGER.warn(state.getWorkflowTrace());
 
         LOGGER.warn(state.getTlsContext().getLastRecordVersion());
         LOGGER.warn(state.getTlsContext().getSelectedCipherSuite());
