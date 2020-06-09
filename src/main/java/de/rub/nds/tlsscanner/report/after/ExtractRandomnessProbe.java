@@ -17,6 +17,8 @@ import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 
 import java.util.*;
 import java.io.PrintStream;
+
+import org.apache.commons.math3.distribution.NormalDistribution;
 import org.jtransforms.fft.DoubleFFT_1D;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -208,8 +210,9 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LOGGER.warn("============================================================================================");
         LOGGER.warn("P-Value of Approximate Entropy Test : " + approximateEntropyTest(test2, 10));
         LOGGER.warn("============================================================================================");
-
-
+        LOGGER.warn("P-Value of Cumulative Sums Test : " + cusumTest(test2, true));
+        LOGGER.warn("P-Value of Cumulative Sums (REVERSE) Test :" + cusumTest(test, false));
+        LOGGER.warn("============================================================================================");
     }
 
     /**
@@ -230,6 +233,77 @@ public class ExtractRandomnessProbe extends AfterProbe {
         return false;
     }
 
+    private Double cusumTest(ComparableByteArray[] byteSequence, boolean forwardMode) {
+        double pValue = 0.0;
+        String fullSequence = "";
+
+        for (ComparableByteArray randomString : byteSequence) {
+            fullSequence = fullSequence + byteArrayToBitString(randomString);
+        }
+
+        int[] convertedSequence = new int[fullSequence.length()];
+
+        // Convert 0 to -1 and 1 to +1
+        for (int i = 0; i < fullSequence.length(); i++) {
+            convertedSequence[i] = 2 * Character.getNumericValue(fullSequence.charAt(i)) - 1;
+        }
+
+        if (!forwardMode) {
+            ArrayUtils.reverse(convertedSequence);
+        }
+
+        int cuSums[] = new int[fullSequence.length()];
+
+        for (int i = 0; i < fullSequence.length(); i++) {
+            for (int j = 0; j < i + 1; j++) {
+                cuSums[i] = cuSums[i] + convertedSequence[j];
+            }
+        }
+
+        IntSummaryStatistics stat = Arrays.stream(cuSums).summaryStatistics();
+        int min = stat.getMin();
+        int max = stat.getMax();
+
+        int z;
+
+        if (abs(min) > max) {
+            z = abs(min);
+        } else {
+            z = max;
+        }
+
+        NormalDistribution dst = new NormalDistribution();
+
+        double probSum1 = 0.0;
+        double probSum2 = 0.0;
+
+        int sumStart = ((-fullSequence.length() / z) + 1) / 4;
+        int sumEnd = ((fullSequence.length() / z) - 1) / 4;
+
+        for (int i = sumStart; i < sumEnd + 1; i++) {
+            probSum1 = probSum1 + dst.cumulativeProbability(((4 * i + 1) * z) / sqrt(fullSequence.length()));
+            probSum1 = probSum1 - dst.cumulativeProbability(((4 * i - 1) * z) / sqrt(fullSequence.length()));
+        }
+
+        sumStart = ((-fullSequence.length() / z) - 3) / 4;
+        sumEnd = ((fullSequence.length() / z) - 1) / 4;
+
+        for (int i = sumStart; i < sumEnd + 1; i++) {
+            probSum2 = probSum2 + dst.cumulativeProbability(((4 * i + 3) * z) / sqrt(fullSequence.length()));
+            probSum2 = probSum2 - dst.cumulativeProbability(((4 * i + 1) * z) / sqrt(fullSequence.length()));
+        }
+
+        pValue = 1 - probSum1 + probSum2;
+
+        return pValue;
+    }
+
+    /***
+     *
+     * @param byteSequence
+     * @param blockLength
+     * @return
+     */
     private Double approximateEntropyTest(ComparableByteArray[] byteSequence, int blockLength) {
         // TODO: Select m and n such that m < log_2)(n) - 5
         // TODO: ie. for 1096 recommend is blockLength of 5
@@ -281,11 +355,6 @@ public class ExtractRandomnessProbe extends AfterProbe {
         double chiSquare = 2.0 * fullSequence.length() * (log(2) - (phi - phiTwo));
         pValue = Gamma.regularizedGammaQ(pow(2, blockLength - 1), chiSquare / 2.0);
 
-        LOGGER.warn("phi = " + phi);
-        LOGGER.warn("phiTwo = " + phiTwo);
-        LOGGER.warn("ApEn = " + ((phi - phiTwo)));
-        LOGGER.warn("chiSquare = " + chiSquare);
-
         return pValue;
     }
 
@@ -324,6 +393,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         for (int currentIndex = 0; currentIndex < fullSequence.length(); currentIndex++) {
             // Find sequence in array and add to count of that particular bit
             // string
+            // TODO: ArrayUtils indexOf is very slow --> Maybe just iterate through blockLengthBlocks?
             int index = ArrayUtils.indexOf(blockLengthBlocks,
                     extendedFullSequence.substring(currentIndex, blockLength + currentIndex));
             blockOccurrence[index]++;
@@ -417,8 +487,6 @@ public class ExtractRandomnessProbe extends AfterProbe {
         double theoVar = blockSize
                 * ((1.0 / pow(2, templateSize)) - (2.0 * templateSize - 1.0) / pow(2, 2.0 * templateSize));
 
-        // TODO: Maybe replace full iteration through TEMPLATE_NINE with
-        // ArrayUtils.indexOf ( for better performance )
         for (int currentTemplate = 0; currentTemplate < TEMPLATE_NINE.length; currentTemplate++) {
             int[] templateCount = new int[NUMBER_OF_BLOCKS];
             Matcher m = Pattern.compile(".{1," + blockSize + "}").matcher(fullSequence);
