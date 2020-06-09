@@ -393,18 +393,42 @@ public class ExtractRandomnessProbe extends AfterProbe {
         for (int currentIndex = 0; currentIndex < fullSequence.length(); currentIndex++) {
             // Find sequence in array and add to count of that particular bit
             // string
-            // TODO: ArrayUtils indexOf is very slow --> Maybe just iterate through blockLengthBlocks?
-            int index = ArrayUtils.indexOf(blockLengthBlocks,
-                    extendedFullSequence.substring(currentIndex, blockLength + currentIndex));
-            blockOccurrence[index]++;
+            // through blockLengthBlocks?
+            String compareString = extendedFullSequence.substring(currentIndex, blockLength + currentIndex);
+            for (int i = 0; i < blockLengthBlocks.length; i++) {
+                if (compareString.equals(blockLengthBlocks[i])) {
+                    blockOccurrence[i]++;
+                    break;
+                }
+            }
+            // int index = ArrayUtils.indexOf(blockLengthBlocks,
+            // extendedFullSequence.substring(currentIndex, blockLength +
+            // currentIndex));
+            // blockOccurrence[index]++;
 
-            index = ArrayUtils.indexOf(blockLengthMinusOneBlocks,
-                    extendedFullSequenceMinusOne.substring(currentIndex, blockLength + currentIndex - 1));
-            blockOccurrenceMinusOne[index]++;
+            compareString = extendedFullSequenceMinusOne.substring(currentIndex, blockLength + currentIndex - 1);
+            for (int i = 0; i < blockLengthMinusOneBlocks.length; i++) {
+                if (compareString.equals(blockLengthMinusOneBlocks[i])) {
+                    blockOccurrenceMinusOne[i]++;
+                    break;
+                }
+            }
+            // index = ArrayUtils.indexOf(blockLengthMinusOneBlocks,
+            // extendedFullSequenceMinusOne.substring(currentIndex, blockLength
+            // + currentIndex - 1));
+            // blockOccurrenceMinusOne[index]++;
 
-            index = ArrayUtils.indexOf(blockLengthMinusTwoBlocks,
-                    extendedFullSequenceMinusTwo.substring(currentIndex, blockLength + currentIndex - 2));
-            blockOccurrenceMinusTwo[index]++;
+            compareString = extendedFullSequenceMinusTwo.substring(currentIndex, blockLength + currentIndex - 2);
+            for (int i = 0; i < blockLengthMinusTwoBlocks.length; i++) {
+                if (compareString.equals(blockLengthMinusTwoBlocks[i])) {
+                    blockOccurrenceMinusTwo[i]++;
+                    break;
+                }
+            }
+            // index = ArrayUtils.indexOf(blockLengthMinusTwoBlocks,
+            // extendedFullSequenceMinusTwo.substring(currentIndex, blockLength
+            // + currentIndex - 2));
+            // blockOccurrenceMinusTwo[index]++;
         }
 
         double psi = 0.0;
