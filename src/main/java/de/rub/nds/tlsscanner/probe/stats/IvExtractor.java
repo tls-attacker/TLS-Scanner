@@ -21,11 +21,17 @@ import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class IvExtractor extends StatExtractor<ComparableByteArray> {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public IvExtractor() {
         super(TrackableValueType.IV);
@@ -34,7 +40,21 @@ public class IvExtractor extends StatExtractor<ComparableByteArray> {
     @Override
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
-        List<AbstractRecord> allReceivedRecords = WorkflowTraceUtil.getAllReceivedRecords(trace);
+
+        // List<AbstractRecord> allReceivedRecords =
+        // WorkflowTraceUtil.getAllReceivedRecords(trace);
+        List<AbstractRecord> allReceivedRecords = new LinkedList<>();
+
+        for (ReceivingAction action : trace.getReceivingActions()) {
+            if (!(action.getReceivedMessages() == null)) {
+                allReceivedRecords.addAll(action.getReceivedRecords());
+            }
+        }
+
+        // No Ciphersuite selected == No Full Handshake
+        if (state.getTlsContext().getSelectedCipherSuite() == null) {
+            return;
+        }
 
         // Currently only support for CBC Mode
         if (!state.getTlsContext().getSelectedCipherSuite().name().contains("CBC")) {
