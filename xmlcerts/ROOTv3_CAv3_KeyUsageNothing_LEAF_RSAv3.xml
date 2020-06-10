@@ -12,7 +12,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>38</value>
+                <value>39</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_KeyUsageNothing_LEAF_RSAv3__leaf_certificate1/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ROOTv3_CAv3_KeyUsageNothing_LEAF_RSAv3__ca_certificate1/tbsCertificate/subject"/>
@@ -100,7 +100,7 @@
                                 <asn1Implicit>
                                     <offset>0</offset>
                                     <asn1PrimitiveOctetString>
-                                        <value>02</value>
+                                        <value>20</value>
                                     </asn1PrimitiveOctetString>
                                 </asn1Implicit>
                             </asn1Sequence>
@@ -188,7 +188,7 @@
                         </asn1ObjectIdentifier>
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1PrimitiveOctetString identifier="subjectKeyIdentifier" type="SubjectKeyIdentifier">
-                                <value>02</value>
+                                <value>20</value>
                             </asn1PrimitiveOctetString>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>

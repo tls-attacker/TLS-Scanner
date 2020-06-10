@@ -13,7 +13,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>13</value>
+                <value>1133</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ECROOTv3_CAv3_LEAF_ECv3_Sha1__leaf_certificate1/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name" fromIdentifier="/ECROOTv3_CAv3_LEAF_ECv3_Sha1__ca_certificate1/tbsCertificate/subject"/>
@@ -101,7 +101,7 @@
                                 <asn1Implicit>
                                     <offset>0</offset>
                                     <asn1PrimitiveOctetString>
-                                        <value>02</value>
+                                        <value>12</value>
                                     </asn1PrimitiveOctetString>
                                 </asn1Implicit>
                             </asn1Sequence>
@@ -135,7 +135,7 @@
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
-                <value>14</value>
+                <value>1144</value>
             </asn1Integer>
             <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ECROOTv3_CAv3_LEAF_ECv3_Sha1__ca_certificate1/signatureAlgorithm" />
             <asn1RawBytes identifier="issuer" type="RawBytes" placeholder="replace_me"><value></value></asn1RawBytes>
@@ -190,7 +190,7 @@
                         </asn1ObjectIdentifier>
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1PrimitiveOctetString identifier="subjectKeyIdentifier" type="SubjectKeyIdentifier">
-                                <value>02</value>
+                                <value>12</value>
                             </asn1PrimitiveOctetString>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>

@@ -137,7 +137,7 @@
                         </asn1ObjectIdentifier>
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1PrimitiveOctetString identifier="subjectKeyIdentifier" type="SubjectKeyIdentifier">
-                                <value>02</value>
+                                <value>56</value>
                             </asn1PrimitiveOctetString>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>

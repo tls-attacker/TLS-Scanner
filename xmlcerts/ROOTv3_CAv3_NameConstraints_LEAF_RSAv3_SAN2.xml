@@ -84,7 +84,7 @@
                                 <asn1Implicit>
                                     <offset>0</offset>
                                     <asn1PrimitiveOctetString>
-                                        <value>02</value>
+                                        <value>62</value>
                                     </asn1PrimitiveOctetString>
                                 </asn1Implicit>
                             </asn1Sequence>
@@ -235,7 +235,7 @@
                         </asn1ObjectIdentifier>
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1PrimitiveOctetString identifier="subjectKeyIdentifier" type="SubjectKeyIdentifier">
-                                <value>02</value>
+                                <value>62</value>
                             </asn1PrimitiveOctetString>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>

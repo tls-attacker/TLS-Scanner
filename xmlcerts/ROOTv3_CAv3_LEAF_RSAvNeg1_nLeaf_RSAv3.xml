@@ -8,7 +8,7 @@
             <asn1Explicit identifier="version">
                 <offset>0</offset>
                 <asn1Integer identifier="version" type="Version">
-                    <value>-1</value>
+                    <value>2</value>
                 </asn1Integer>
             </asn1Explicit>
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
@@ -206,7 +206,7 @@
                         </asn1ObjectIdentifier>
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1PrimitiveOctetString identifier="subjectKeyIdentifier" type="SubjectKeyIdentifier">
-                                <value>02</value>
+                                <value>55</value>
                             </asn1PrimitiveOctetString>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>

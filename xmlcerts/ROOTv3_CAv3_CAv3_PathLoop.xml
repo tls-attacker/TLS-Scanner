@@ -224,6 +224,21 @@
                             </asn1Sequence>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>
+                    <!--KeyUsageExtension-->
+                    <asn1Sequence identifier="extension2" type="Extension">
+                        <asn1ObjectIdentifier identifier="extnID">
+                            <value>2.5.29.15</value>
+                        </asn1ObjectIdentifier>
+                        <asn1Boolean identifier="critical">
+                            <value>true</value>
+                        </asn1Boolean>
+                        <asn1EncapsulatingOctetString identifier="extnValue">
+                            <asn1PrimitiveBitString identifier="keyUsage" type="KeyUsage">
+                                <unusedBits>7</unusedBits>
+                                <value>0400</value>
+                            </asn1PrimitiveBitString>
+                        </asn1EncapsulatingOctetString>
+                    </asn1Sequence>
                 </asn1Sequence>
             </asn1Explicit>
         </asn1Sequence>
