@@ -28,7 +28,6 @@ public class StatsWriter {
         extractorList.add(new RandomExtractor());
         extractorList.add(new DhPublicKeyExtractor());
         extractorList.add(new EcPublicKeyExtractor());
-        extractorList.add(new PublicKeyExtractor());
         extractorList.add(new IvExtractor());
     }
 

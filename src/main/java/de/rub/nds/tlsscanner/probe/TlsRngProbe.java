@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.RngResult;
@@ -51,6 +52,9 @@ import java.util.logging.Logger;
  */
 public class TlsRngProbe extends TlsProbe {
 
+    private ProtocolVersion highestVersion;
+    private SiteReport latestReport;
+
     public TlsRngProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RNG, config, 0);
     }
@@ -58,8 +62,21 @@ public class TlsRngProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
 
+        // Ensure we use the highest Protocol version possible to prevent the downgrade-attack mitigation to
+        // activate
+        if(latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE){
+            highestVersion = ProtocolVersion.TLS13;
+        } else if(latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE){
+            highestVersion = ProtocolVersion.TLS13;
+        } else if(latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE){
+            highestVersion = ProtocolVersion.TLS11;
+        } else if(latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE){
+            highestVersion = ProtocolVersion.TLS10;
+        }
+
         Config tlsConfig = getScannerConfig().createConfig();
 
+        // TODO: Select supported Ciphersuites dynamically to force the random-bytes to an order
         List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.name().contains("TLS_ECDH")) {
@@ -95,7 +112,7 @@ public class TlsRngProbe extends TlsProbe {
 
         // State state = new State(tlsConfig);
         AlertMessage alert = new AlertMessage();
-        byte[] conf = { (byte) 01, (byte) 42 };
+        byte[] conf = { (byte) 01, (byte) 51 };
 
         alert.setConfig(conf);
 
@@ -155,6 +172,9 @@ public class TlsRngProbe extends TlsProbe {
         // State state = new State(tlsConfig, trace);
 
         // Collect ServerHellos & ServerIDs
+
+        serverHelloTrace.addTlsActions();
+
         State state = new State(tlsConfig, serverHelloTrace);
         executeState(state);
         LOGGER.warn(state.getWorkflowTrace());
@@ -169,7 +189,7 @@ public class TlsRngProbe extends TlsProbe {
         WorkflowTrace ivCollectorTrace = new WorkflowTrace();
         ivCollectorTrace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         ivCollectorTrace.addTlsAction(new ReceiveAction(hello));
-        ivCollectorTrace.addTlsAction(new SendAction(new ECDHClientKeyExchangeMessage(tlsConfig)));
+        ivCollectorTrace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         ivCollectorTrace.addTlsAction(new SendAction(flight1));
         ivCollectorTrace.addTlsAction(new ReceiveAction(flight1));
 
@@ -197,7 +217,15 @@ public class TlsRngProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
+        if(report.getResult(AnalyzedProperty.SUPPORTS_CBC) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_SESSION_IDS) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.NOT_TESTED_YET
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.NOT_TESTED_YET){
+            return false;
+        } else{
+            // We will conduct the rng extraction based on the test-results, so we need those properties to be tested
+            // before we conduct the RNG-Probe
+            latestReport = report;
+            return true;
+        }
     }
 
     @Override
@@ -207,6 +235,5 @@ public class TlsRngProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-
     }
 }

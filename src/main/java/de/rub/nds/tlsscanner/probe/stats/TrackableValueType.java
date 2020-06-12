@@ -18,6 +18,5 @@ public enum TrackableValueType {
     DHE_PUBLICKEY,
     ECDHE_PUBKEY,
     GCM_NONCE_EXPLICIT,
-    PUBKEY,
     IV,
 }
