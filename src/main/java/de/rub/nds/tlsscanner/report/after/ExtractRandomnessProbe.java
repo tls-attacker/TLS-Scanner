@@ -97,14 +97,6 @@ public class ExtractRandomnessProbe extends AfterProbe {
             tempContainter2.put(o);
         }
 
-        container = report.getExtractedValueContainerMap().get(TrackableValueType.PUBKEY);
-        ExtractedValueContainer tempContainer3 = new ExtractedValueContainer(TrackableValueType.PUBKEY);
-        if (!container.getExtractedValueList().isEmpty()) {
-            for (Object o : container.getExtractedValueList()) {
-                tempContainer3.put(o);
-            }
-        }
-
         container = report.getExtractedValueContainerMap().get(TrackableValueType.IV);
         ExtractedValueContainer tempContainer4 = new ExtractedValueContainer(TrackableValueType.IV);
         if (!container.getExtractedValueList().isEmpty()) {
@@ -137,20 +129,6 @@ public class ExtractRandomnessProbe extends AfterProbe {
             // Extract Server Hello Session ID
             random_file.println("SESSION ID");
             for (Object o : tempContainter2.getExtractedValueList()) {
-                ComparableByteArray byteArrayRNG = (ComparableByteArray) o;
-                full_byte_sequences.add(byteArrayRNG);
-                String random_bytes = "";
-
-                for (byte b : byteArrayRNG.getArray()) {
-                    random_bytes = random_bytes + String.format("%02X", b);
-                }
-
-                random_file.println(random_bytes);
-            }
-
-            // Extract Server EC Public Key
-            random_file.println("EC PUBLIC KEY");
-            for (Object o : tempContainer3.getExtractedValueList()) {
                 ComparableByteArray byteArrayRNG = (ComparableByteArray) o;
                 full_byte_sequences.add(byteArrayRNG);
                 String random_bytes = "";

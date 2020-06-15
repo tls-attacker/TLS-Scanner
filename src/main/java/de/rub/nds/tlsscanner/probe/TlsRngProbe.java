@@ -8,7 +8,11 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.modifiablevariable.HoldsModifiableVariable;
+import de.rub.nds.modifiablevariable.ModifiableVariableFactory;
+import de.rub.nds.modifiablevariable.ModifiableVariableProperty;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
+import de.rub.nds.modifiablevariable.integer.ModifiableInteger;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
@@ -19,12 +23,15 @@ import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.*;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareEntry;
 import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.Keylogfile;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import java.lang.reflect.Field;
 import de.rub.nds.tlsattacker.core.workflow.action.*;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -32,6 +39,7 @@ import de.rub.nds.tlsattacker.transport.ConnectionEndType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -41,6 +49,9 @@ import de.rub.nds.tlsscanner.report.result.Tls13Result;
 import sun.net.www.http.HttpClient;
 import sun.net.www.http.KeepAliveCache;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,21 +73,24 @@ public class TlsRngProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
 
-        // Ensure we use the highest Protocol version possible to prevent the downgrade-attack mitigation to
+        // Ensure we use the highest Protocol version possible to prevent the
+        // downgrade-attack mitigation to
         // activate
-        if(latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE){
-            highestVersion = ProtocolVersion.TLS13;
-        } else if(latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE){
-            highestVersion = ProtocolVersion.TLS13;
-        } else if(latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE){
-            highestVersion = ProtocolVersion.TLS11;
-        } else if(latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE){
-            highestVersion = ProtocolVersion.TLS10;
-        }
+        /*
+         * if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) ==
+         * TestResult.TRUE) { highestVersion = ProtocolVersion.TLS13; } else if
+         * (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) ==
+         * TestResult.TRUE) { highestVersion = ProtocolVersion.TLS13; } else if
+         * (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) ==
+         * TestResult.TRUE) { highestVersion = ProtocolVersion.TLS11; } else if
+         * (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) ==
+         * TestResult.TRUE) { highestVersion = ProtocolVersion.TLS10; }
+         */
 
         Config tlsConfig = getScannerConfig().createConfig();
 
-        // TODO: Select supported Ciphersuites dynamically to force the random-bytes to an order
+        // TODO: Select supported Ciphersuites dynamically to force the
+        // random-bytes to an order
         List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.name().contains("TLS_ECDH")) {
@@ -84,12 +98,17 @@ public class TlsRngProbe extends TlsProbe {
             }
         }
 
+        // TODO: Check for
+        // TODO:
+        // https://tools.ietf.org/html/draft-rescorla-tls-extended-random-00
+        // TODO: Uses Extentions-Type 0x40
+
         List<NamedGroup> groups = new LinkedList<>();
         groups.addAll(Arrays.asList(NamedGroup.values()));
 
         tlsConfig.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(true);
+        tlsConfig.setEnforceSettings(false);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddECPointFormatExtension(true);
@@ -98,6 +117,7 @@ public class TlsRngProbe extends TlsProbe {
         tlsConfig.setWriteKeylogFile(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         // tlsConfig.setWorkflowTraceType(WorkflowTraceType.CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
+        tlsConfig.setUseFreshRandom(false);
 
         // Heartbeat
         tlsConfig.setAddHeartbeatExtension(true);
@@ -136,6 +156,10 @@ public class TlsRngProbe extends TlsProbe {
 
         serverHelloTrace.addTlsAction(MessageActionFactory.createAction(connection, ConnectionEndType.CLIENT,
                 new ClientHelloMessage(tlsConfig)));
+
+        List<Field> test = serverHelloTrace.getMessageActions().get(0).getMessages().get(0)
+                .getAllModifiableVariableFields();
+
         serverHelloTrace.addTlsAction(MessageActionFactory.createAction(connection, ConnectionEndType.SERVER,
                 new ServerHelloMessage(tlsConfig)));
 
@@ -176,14 +200,40 @@ public class TlsRngProbe extends TlsProbe {
         serverHelloTrace.addTlsActions();
 
         State state = new State(tlsConfig, serverHelloTrace);
-        executeState(state);
-        LOGGER.warn(state.getWorkflowTrace());
-        executeState(state);
-        LOGGER.warn(state.getWorkflowTrace());
-        executeState(state);
-        LOGGER.warn(state.getWorkflowTrace());
-        executeState(state);
-        LOGGER.warn(state.getWorkflowTrace());
+
+        // executeState(state);
+        // LOGGER.warn(state.getWorkflowTrace());
+
+        // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        for (int i = 0; i < 4; i++) {
+            WorkflowTrace randomnessTest = new WorkflowTrace();
+            Config testConfig = generateTestConfig(intToByteArray(i + 1));
+
+            ClientHelloMessage client_test = new ClientHelloMessage(testConfig);
+            // Does not work:
+            UnknownExtensionMessage keyShareTest = new UnknownExtensionMessage();
+            keyShareTest.setTypeConfig(new byte[] { (byte) 0, (byte) 40 });
+            keyShareTest.setLengthConfig(0);
+            // extendedRandomMessage keyShareTest = new extendedRandomMessage();
+            client_test.addExtension(keyShareTest);
+            randomnessTest.addTlsActions(new SendAction(client_test));
+            randomnessTest.addTlsActions(new ReceiveAction());
+
+            State test_state = new State(testConfig, randomnessTest);
+            LOGGER.warn("Starting test ClientHello");
+            executeState(test_state);
+            LOGGER.warn(test_state.getWorkflowTrace());
+        }
+
+        // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // executeState(state);
+        // LOGGER.warn(state.getWorkflowTrace());
+        // executeState(state);
+        // LOGGER.warn(state.getWorkflowTrace());
+        // executeState(state);
+        // LOGGER.warn(state.getWorkflowTrace());
 
         // Collect IV
         WorkflowTrace ivCollectorTrace = new WorkflowTrace();
@@ -216,16 +266,32 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     @Override
+    /*
+     * public boolean canBeExecuted(SiteReport report) { if
+     * (report.getResult(AnalyzedProperty.SUPPORTS_CBC) ==
+     * TestResult.NOT_TESTED_YET ||
+     * report.getResult(AnalyzedProperty.SUPPORTS_DH) ==
+     * TestResult.NOT_TESTED_YET ||
+     * report.getResult(AnalyzedProperty.SUPPORTS_RSA) ==
+     * TestResult.NOT_TESTED_YET ||
+     * report.getResult(AnalyzedProperty.SUPPORTS_SESSION_IDS) ==
+     * TestResult.NOT_TESTED_YET ||
+     * report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) ==
+     * TestResult.NOT_TESTED_YET ||
+     * report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) ==
+     * TestResult.NOT_TESTED_YET ||
+     * report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) ==
+     * TestResult.NOT_TESTED_YET ||
+     * report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) ==
+     * TestResult.NOT_TESTED_YET ||
+     * report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) ==
+     * TestResult.NOT_TESTED_YET) { return false; } else { // We will conduct
+     * the rng extraction based on the test-results, so // we need those
+     * properties to be tested // before we conduct the RNG-Probe latestReport =
+     * report; return true; } }
+     */
     public boolean canBeExecuted(SiteReport report) {
-        if(report.getResult(AnalyzedProperty.SUPPORTS_CBC) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_SESSION_IDS) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.NOT_TESTED_YET || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.NOT_TESTED_YET){
-            return false;
-        } else{
-            // We will conduct the rng extraction based on the test-results, so we need those properties to be tested
-            // before we conduct the RNG-Probe
-            latestReport = report;
-            return true;
-        }
+        return true;
     }
 
     @Override
@@ -236,4 +302,50 @@ public class TlsRngProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
     }
+
+    private Config generateTestConfig(byte[] clientRandom) {
+        Config testConf = getScannerConfig().createConfig();
+
+        List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
+            if (cipherSuite.name().contains("TLS_ECDH")) {
+                ourECDHCipherSuites.add(cipherSuite);
+            }
+        }
+
+        List<NamedGroup> groups = new LinkedList<>();
+        groups.addAll(Arrays.asList(NamedGroup.values()));
+
+        testConf.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
+        testConf.setHighestProtocolVersion(ProtocolVersion.TLS13);
+        testConf.setEnforceSettings(false);
+        testConf.setAddServerNameIndicationExtension(true);
+        testConf.setAddEllipticCurveExtension(true);
+        testConf.setAddECPointFormatExtension(true);
+        testConf.setAddSignatureAndHashAlgorithmsExtension(true);
+        testConf.setAddRenegotiationInfoExtension(false);
+        testConf.setWriteKeylogFile(true);
+        // tlsConfig.setWorkflowTraceType(WorkflowTraceType.CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
+        testConf.setUseFreshRandom(false);
+        testConf.setDefaultClientRandom(clientRandom);
+        testConf.setAddExtendedMasterSecretExtension(false);
+
+        // Receive more if you can
+        testConf.setQuickReceive(false);
+        testConf.setEarlyStop(false);
+
+        testConf.setStopActionsAfterFatal(true);
+        testConf.setDefaultClientNamedGroups(groups);
+
+        return testConf;
+    }
+
+    private byte[] intToByteArray(int number) {
+        BigInteger bigNum = BigInteger.valueOf(number);
+        byte[] bigNumArray = bigNum.toByteArray();
+        byte[] output = new byte[32];
+        System.arraycopy(bigNumArray, 0, output, 0, bigNumArray.length);
+        return output;
+    }
+
 }
