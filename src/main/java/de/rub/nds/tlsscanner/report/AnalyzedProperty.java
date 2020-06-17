@@ -10,8 +10,6 @@ package de.rub.nds.tlsscanner.report;
 
 public enum AnalyzedProperty {
 
-    VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.SESSION_TICKET_ZERO_KEY),
-
     SUPPORTS_SSL_2(AnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_SSL_3(AnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_TLS_1_0(AnalyzedPropertyCategory.VERSIONS),
@@ -170,6 +168,7 @@ public enum AnalyzedProperty {
      * does it ignore the sig hash algorithms
      */
     IGNORES_OFFERED_SIG_HASH_ALGOS(AnalyzedPropertyCategory.QUIRKS),
+    VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_DIRECT_RACCOON(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_PADDING_ORACLE(AnalyzedPropertyCategory.ATTACKS),
@@ -200,7 +199,10 @@ public enum AnalyzedProperty {
     REUSES_EC_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_DH_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_GCM_NONCES(AnalyzedPropertyCategory.FRESHNESS),
-    REQUIRES_SNI(AnalyzedPropertyCategory.SNI);
+    REQUIRES_SNI(AnalyzedPropertyCategory.SNI),
+
+    HAS_CORRECT_TICKET_PADDING(AnalyzedPropertyCategory.SESSION_TICKET),
+    HAS_GNU_TLS_MAGIC_BYTES(AnalyzedPropertyCategory.SESSION_TICKET);
 
     private AnalyzedPropertyCategory category;
 

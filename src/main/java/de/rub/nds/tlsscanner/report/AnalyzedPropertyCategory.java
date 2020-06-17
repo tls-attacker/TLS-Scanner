@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.report;
 
 public enum AnalyzedPropertyCategory {
-    SESSION_TICKET_ZERO_KEY,
+    SESSION_TICKET,
     VERSIONS,
     CIPHER_SUITES,
     EXTENSIONS,

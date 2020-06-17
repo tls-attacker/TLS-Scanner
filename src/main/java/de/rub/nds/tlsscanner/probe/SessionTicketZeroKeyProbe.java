@@ -40,6 +40,12 @@ import de.rub.nds.tlsscanner.report.result.SessionTicketZeroKeyResult;
 
 public class SessionTicketZeroKeyProbe extends TlsProbe {
 
+    public static final byte[] GNU_TLS_MAGIC_BYTES = ArrayConverter.hexStringToByteArray("FAE1C0EA");
+    public static final int IV_OFFSET = 16;
+    public static final int IV_LEN = 16;
+    public static final int SESSION_STATE_LENFIELD_OFFSET = 32;
+    public static final int SESSION_STATE_LENFIELD_LEN = 2;
+    public static final int SESSION_STATE__OFFSET = 34;
     private List<CipherSuite> supportedSuites;
 
     public SessionTicketZeroKeyProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
@@ -92,19 +98,21 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
 
         byte[] key = ArrayConverter
                 .hexStringToByteArray("0000000000000000000000000000000000000000000000000000000000000000");
-        byte[] iv, encryptedSsessionState;
-        byte[] decryptedSsessionState = null;
+        byte[] iv, encryptedSessionState;
+        byte[] decryptedSessionState = null;
 
         try {
-            iv = Arrays.copyOfRange(ticket, 16, 32);
-            byte[] encryptedSsessionStateLen = Arrays.copyOfRange(ticket, 32, 34);
-            int encryptedSsessionStateInt = ArrayConverter.bytesToInt(encryptedSsessionStateLen);
-            encryptedSsessionState = Arrays.copyOfRange(ticket, 34, 34 + encryptedSsessionStateInt);
+            iv = Arrays.copyOfRange(ticket, IV_OFFSET, IV_OFFSET + IV_LEN);
+            byte[] sessionStateLen = Arrays.copyOfRange(ticket, SESSION_STATE_LENFIELD_OFFSET,
+                    SESSION_STATE_LENFIELD_OFFSET + SESSION_STATE_LENFIELD_LEN);
+            int sessionStateLenInt = ArrayConverter.bytesToInt(sessionStateLen);
+            encryptedSessionState = Arrays.copyOfRange(ticket, SESSION_STATE__OFFSET, SESSION_STATE__OFFSET
+                    + sessionStateLenInt);
             Cipher cipher = Cipher.getInstance("AES/CBC/NOPADDING");
             SecretKey aesKey = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
-            decryptedSsessionState = cipher.doFinal(encryptedSsessionState);
-            LOGGER.info("decryptedSsessionState" + ArrayConverter.bytesToHexString(decryptedSsessionState));
+            decryptedSessionState = cipher.doFinal(encryptedSessionState);
+            LOGGER.debug("decryptedSsessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
         } catch (Exception e) {
             return new SessionTicketZeroKeyResult(TestResult.FALSE, TestResult.FALSE, TestResult.FALSE);
         }
@@ -112,17 +120,14 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         TestResult hasDecryptableMasterSecret;
         TestResult hasGnuTlsMagicBytes;
 
-        LOGGER.info("hasCorrectPadding");
-
-        if (checkForMasterSecret(decryptedSsessionState, state.getTlsContext())) {
+        if (checkForMasterSecret(decryptedSessionState, state.getTlsContext())) {
             hasDecryptableMasterSecret = TestResult.TRUE;
-            LOGGER.info("hasDecryptableMasterSecret");
         } else {
             hasDecryptableMasterSecret = TestResult.FALSE;
         }
-        if (checkForGnuTlsMagicBytes(decryptedSsessionState)) {
+        if (checkForGnuTlsMagicBytes(decryptedSessionState)) {
             hasGnuTlsMagicBytes = TestResult.TRUE;
-            LOGGER.info("hasGnuTlsMagicBytes");
+
         } else {
             hasGnuTlsMagicBytes = TestResult.FALSE;
         }
@@ -153,10 +158,9 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     }
 
     private boolean checkForGnuTlsMagicBytes(byte[] decState) {
-        byte[] magicBytes = ArrayConverter.hexStringToByteArray("FAE1C0EA");
         try {
-            for (int i = 0; i < magicBytes.length; i++)
-                if (decState[i] != magicBytes[i])
+            for (int i = 0; i < GNU_TLS_MAGIC_BYTES.length; i++)
+                if (decState[i] != GNU_TLS_MAGIC_BYTES[i])
                     return false;
         } catch (Exception e) {
             return false;

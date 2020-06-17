@@ -15,14 +15,14 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 
 public class SessionTicketZeroKeyResult extends ProbeResult {
 
-    private TestResult hasCorrectPadding;
+    private TestResult hasCorrectTicketPadding;
     private TestResult hasDecryptableMasterSecret;
     private TestResult hasGnuTlsMagicBytes;
 
-    public SessionTicketZeroKeyResult(TestResult hasCorrectPadding, TestResult hasDecryptableMasterSecret,
+    public SessionTicketZeroKeyResult(TestResult hasCorrectTicketPadding, TestResult hasDecryptableMasterSecret,
             TestResult hasGnuTlsMagicBytes) {
         super(ProbeType.SESSION_TICKET_ZERO_KEY);
-        this.hasCorrectPadding = hasCorrectPadding;
+        this.hasCorrectTicketPadding = hasCorrectTicketPadding;
         this.hasDecryptableMasterSecret = hasDecryptableMasterSecret;
         this.hasGnuTlsMagicBytes = hasGnuTlsMagicBytes;
 
@@ -30,8 +30,9 @@ public class SessionTicketZeroKeyResult extends ProbeResult {
 
     @Override
     protected void mergeData(SiteReport report) {
+        report.putResult(AnalyzedProperty.HAS_CORRECT_TICKET_PADDING, this.hasCorrectTicketPadding);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY, this.hasDecryptableMasterSecret);
-
+        report.putResult(AnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES, this.hasGnuTlsMagicBytes);
     }
 
 }
