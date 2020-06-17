@@ -10,6 +10,8 @@ package de.rub.nds.tlsscanner.report;
 
 public enum AnalyzedProperty {
 
+    VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.SESSION_TICKET_ZERO_KEY),
+
     SUPPORTS_SSL_2(AnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_SSL_3(AnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_TLS_1_0(AnalyzedPropertyCategory.VERSIONS),

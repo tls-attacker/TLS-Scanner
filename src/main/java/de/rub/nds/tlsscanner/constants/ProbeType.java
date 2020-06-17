@@ -13,6 +13,8 @@ package de.rub.nds.tlsscanner.constants;
  * @author Robert Merget - robert.merget@rub.de
  */
 public enum ProbeType {
+    SESSION_TICKET_ZERO_KEY,
+
     CERTIFICATE,
     CIPHERSUITE_ORDER,
     CIPHERSUITE,

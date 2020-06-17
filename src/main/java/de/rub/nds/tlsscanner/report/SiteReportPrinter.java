@@ -638,6 +638,8 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Extra Clear DROWN", AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
+        prettyAppend(builder, "SessionTicketZeroKey", AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
+
         return builder;
     }
 
