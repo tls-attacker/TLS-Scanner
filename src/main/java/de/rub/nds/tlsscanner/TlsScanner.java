@@ -35,6 +35,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
 import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
 import de.rub.nds.tlsscanner.probe.ResumptionProbe;
+import de.rub.nds.tlsscanner.probe.SessionTicketZeroKeyProbe;
 import de.rub.nds.tlsscanner.probe.SniProbe;
 import de.rub.nds.tlsscanner.probe.Tls13Probe;
 import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
@@ -133,6 +134,7 @@ public class TlsScanner {
         probeList.add(new DrownProbe(config, parallelExecutor));
         probeList.add(new EarlyCcsProbe(config, parallelExecutor));
         probeList.add(new MacProbe(config, parallelExecutor));
+        probeList.add(new SessionTicketZeroKeyProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterprobe());
@@ -140,6 +142,7 @@ public class TlsScanner {
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
+
     }
 
     public SiteReport scan() {

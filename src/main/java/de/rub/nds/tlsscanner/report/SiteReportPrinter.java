@@ -130,6 +130,7 @@ public class SiteReportPrinter {
         appendRecommendations(builder);
         appendPerformanceData(builder);
 
+
         return builder.toString();
     }
 
@@ -575,6 +576,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "DROWN", AnalyzedProperty.VULNERABLE_TO_DROWN);
         prettyAppend(builder, "Heartbleed", AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
+        prettyAppend(builder, "SessionTicketZeroKey", AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
         return builder;
     }
 
@@ -1416,3 +1418,4 @@ public class SiteReportPrinter {
         }
     }
 }
+
