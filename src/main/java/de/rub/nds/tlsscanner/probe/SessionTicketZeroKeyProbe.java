@@ -45,7 +45,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     public static final int IV_LEN = 16;
     public static final int SESSION_STATE_LENFIELD_OFFSET = 32;
     public static final int SESSION_STATE_LENFIELD_LEN = 2;
-    public static final int SESSION_STATE__OFFSET = 34;
+    public static final int SESSION_STATE_OFFSET = 34;
     private List<CipherSuite> supportedSuites;
 
     public SessionTicketZeroKeyProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
@@ -106,7 +106,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             byte[] sessionStateLen = Arrays.copyOfRange(ticket, SESSION_STATE_LENFIELD_OFFSET,
                     SESSION_STATE_LENFIELD_OFFSET + SESSION_STATE_LENFIELD_LEN);
             int sessionStateLenInt = ArrayConverter.bytesToInt(sessionStateLen);
-            encryptedSessionState = Arrays.copyOfRange(ticket, SESSION_STATE__OFFSET, SESSION_STATE__OFFSET
+            encryptedSessionState = Arrays.copyOfRange(ticket, SESSION_STATE_OFFSET, SESSION_STATE_OFFSET
                     + sessionStateLenInt);
             Cipher cipher = Cipher.getInstance("AES/CBC/NOPADDING");
             SecretKey aesKey = new SecretKeySpec(key, "AES");
@@ -176,12 +176,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        if (report.getCipherSuites() != null && !report.getCipherSuites().isEmpty()) {
-            supportedSuites = new ArrayList<>(report.getCipherSuites());
-
-        } else {
-            supportedSuites = CipherSuite.getImplemented();
-        }
+        supportedSuites = new ArrayList<>(report.getCipherSuites());
     }
 
 }
