@@ -1,6 +1,6 @@
 <asn1XmlContent>
 
-    <asn1Sequence identifier="ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1" type="Certificate">
+    <asn1Sequence identifier="ROOTv3_LEAF_DHv3__leaf_certificate1" type="Certificate">
         <keyInfo identifier="key" keyType="DH">
             <keyFile>dhkey_1.pem</keyFile>
             <pubKeyFile>dhpubkey_1.pem</pubKeyFile>
@@ -15,7 +15,7 @@
             <asn1Integer identifier="serialNumber" type="CertificateSerialNumber">
                 <value>10010</value>
             </asn1Integer>
-            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm" />
+            <asn1Sequence identifier="signature" type="AlgorithmIdentifier" fromIdentifier="/ROOTv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm" />
             <asn1Sequence identifier="issuer" type="Name">
                 <asn1Set identifier="relativeDistinguishedName0" type="RelativeDistinguishedName">
                     <asn1Sequence identifier="attributeTypeAndValue0" type="AttributeTypeAndValue">
@@ -83,12 +83,12 @@
                             <value>2.5.4.11</value>
                         </asn1ObjectIdentifier>
                         <asn1PrimitiveUtf8String identifier="value" type="AttributeValue">
-                            <value>TLS-Scanner CCA Leaf Certificate (ROOTv3_CAv3_LEAF_DHv3)</value>
+                            <value>TLS-Scanner CCA Leaf Certificate (ROOTv3_LEAF_DHv3)</value>
                         </asn1PrimitiveUtf8String>
                     </asn1Sequence>
                 </asn1Set>
             </asn1Sequence>
-            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/key" />
+            <asn1Sequence identifier="subjectPublicKeyInfo" type="SubjectPublicKeyInfo" fromIdentifier="/ROOTv3_LEAF_DHv3__leaf_certificate1/key" />
             <asn1Explicit identifier="explicitExtensions">
                 <offset>3</offset>
                 <asn1Sequence identifier="extensions" type="Extensions">
@@ -115,7 +115,7 @@
                         </asn1ObjectIdentifier>
                         <asn1EncapsulatingOctetString identifier="extnValue">
                             <asn1PrimitiveOctetString identifier="subjectKeyIdentifier" type="SubjectKeyIdentifier">
-                                <value>03</value>
+                                <value>0333</value>
                             </asn1PrimitiveOctetString>
                         </asn1EncapsulatingOctetString>
                     </asn1Sequence>
@@ -151,12 +151,12 @@
     </asn1Sequence>
 
 
-    <signatureInfo identifier="ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1SignatureInfo">
-        <toBeSignedIdentifier>/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/tbsCertificate</toBeSignedIdentifier>
-        <signatureValueTargetIdentifier>/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/signatureValue</signatureValueTargetIdentifier>
+    <signatureInfo identifier="ROOTv3_LEAF_DHv3__leaf_certificate1SignatureInfo">
+        <toBeSignedIdentifier>/ROOTv3_LEAF_DHv3__leaf_certificate1/tbsCertificate</toBeSignedIdentifier>
+        <signatureValueTargetIdentifier>/ROOTv3_LEAF_DHv3__leaf_certificate1/signatureValue</signatureValueTargetIdentifier>
         <keyInfoIdentifier>/root_ca_key</keyInfoIdentifier>
-        <signatureAlgorithmOidIdentifier>/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
-        <parametersIdentifier>/ROOTv3_CAv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm/parameters</parametersIdentifier>
+        <signatureAlgorithmOidIdentifier>/ROOTv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm/algorithm</signatureAlgorithmOidIdentifier>
+        <parametersIdentifier>/ROOTv3_LEAF_DHv3__leaf_certificate1/signatureAlgorithm/parameters</parametersIdentifier>
     </signatureInfo>
 
 
