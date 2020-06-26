@@ -8,20 +8,14 @@
  */
 package de.rub.nds.tlsscanner.probe;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.connection.AliasedConnection;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.*;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import java.lang.reflect.Field;
 import de.rub.nds.tlsattacker.core.workflow.action.*;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsattacker.transport.ConnectionEndType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
@@ -72,20 +66,42 @@ public class TlsRngProbe extends TlsProbe {
          TestResult.TRUE)
             { highestVersion = ProtocolVersion.TLS10; }
 
-        List<NamedGroup> groups = new LinkedList<>();
-        groups.addAll(Arrays.asList(NamedGroup.values()));
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Use preferred Ciphersuites if supported
+        List<CipherSuite> serverHelloCollectSuites = new LinkedList<>();
+        if(latestReport.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE){
+            for (CipherSuite cipherSuite : CipherSuite.values()) {
+                if (cipherSuite.name().contains("TLS_RSA")) {
+                    serverHelloCollectSuites.add(cipherSuite);
+                }
+            }
+        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE){
+            for(CipherSuite cipherSuite : CipherSuite.values()){
+                if(cipherSuite.name().contains("TLS_DH")){
+                    serverHelloCollectSuites.add(cipherSuite);
+                }
+            }
+        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE){
+            for(CipherSuite cipherSuite : CipherSuite.values()){
+                if(cipherSuite.name().contains("TLS_ECDH")){
+                    serverHelloCollectSuites.add(cipherSuite);
+                }
+            }
+        }
+        // If not one of the preferred Cipher suites is supported, use standard cipher suites configured
+        // in generateConfig method (i.e. ECDHE cipher suites )
 
         for (int i = 0; i < 4; i++) {
             WorkflowTrace randomnessTest = new WorkflowTrace();
             Config serverHelloConfig = generateTestConfig(intToByteArray(i + 1));
             serverHelloConfig.setAddExtendedRandomExtension(true);
             serverHelloConfig.setHighestProtocolVersion(highestVersion);
+            serverHelloConfig.setDefaultClientSupportedCiphersuites(serverHelloCollectSuites);
 
             ClientHelloMessage client_test = new ClientHelloMessage(serverHelloConfig);
             randomnessTest.addTlsActions(new SendAction(client_test));
-            randomnessTest.addTlsActions(new ReceiveAction());
+            randomnessTest.addTlsActions(new ReceiveAction(new ServerHelloMessage(serverHelloConfig)));
 
             State test_state = new State(serverHelloConfig, randomnessTest);
             LOGGER.warn("Starting test ClientHello");
@@ -93,23 +109,31 @@ public class TlsRngProbe extends TlsProbe {
             LOGGER.warn(test_state.getWorkflowTrace());
         }
 
-        // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Collect IV
+        // Here it is not important which ciphersuite we use for key-exchange, only important thing is maximum
+        // block size of encrypted blocks.
         Config iVCollectConfig = generateTestConfig(intToByteArray(600));
         iVCollectConfig.setHighestProtocolVersion(highestVersion);
 
-        ProtocolMessage[] flight1 = { new ChangeCipherSpecMessage(iVCollectConfig), new FinishedMessage(iVCollectConfig) };
-        List<ProtocolMessage> hello = new ArrayList<>();
-        hello.add(new ServerHelloMessage(iVCollectConfig));
-        hello.add(new CertificateMessage(iVCollectConfig));
-        // TODO: Add dynamic receiving action
-        //hello.add();
-        hello.add(new ServerHelloDoneMessage(iVCollectConfig));
+        ProtocolMessage[] flight1 = { new ChangeCipherSpecMessage(iVCollectConfig),
+                new FinishedMessage(iVCollectConfig) };
+        List<ProtocolMessage> serverHello = new ArrayList<>();
+        serverHello.add(new ServerHelloMessage(iVCollectConfig));
+        serverHello.add(new CertificateMessage(iVCollectConfig));
+
+        if(latestReport.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE){
+            serverHello.add(new ECDHEServerKeyExchangeMessage(iVCollectConfig));
+        } else if(latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE){
+            serverHello.add(new DHEServerKeyExchangeMessage(iVCollectConfig));
+        }
+
+        serverHello.add(new ServerHelloDoneMessage(iVCollectConfig));
 
         WorkflowTrace ivCollectorTrace = new WorkflowTrace();
         ivCollectorTrace.addTlsAction(new SendAction(new ClientHelloMessage(iVCollectConfig)));
-        ivCollectorTrace.addTlsAction(new ReceiveAction((ProtocolMessage[]) hello.toArray()));
+        ivCollectorTrace.addTlsAction(new ReceiveAction((ProtocolMessage[]) serverHello.toArray()));
         ivCollectorTrace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         ivCollectorTrace.addTlsAction(new SendAction(flight1));
         ivCollectorTrace.addTlsAction(new ReceiveAction(flight1));
@@ -130,13 +154,9 @@ public class TlsRngProbe extends TlsProbe {
         executeState(state);
         LOGGER.warn(state.getWorkflowTrace());
 
-        // TODO:
-        boolean successfulHandshake = true;
+        boolean successfulHandshake = state.getWorkflowTrace().executedAsPlanned();
 
         RngResult rng_extract = new RngResult(successfulHandshake);
-
-        // List<AbstractRecord> allReceivedMessages =
-        // WorkflowTraceUtil.getAllReceivedRecords(trace);
 
         return rng_extract;
     }
@@ -174,20 +194,17 @@ public class TlsRngProbe extends TlsProbe {
     private Config generateTestConfig(byte[] clientRandom) {
         Config testConf = getScannerConfig().createConfig();
 
-        // TODO: Select supported Ciphersuites dynamically to force the
-        // random-bytes to an order
-        // TODO: I.e. prefer ciphersuites without key exchange messages from server
-        List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
+        List<CipherSuite> fallBackECDHCipherSuites = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
-            if (cipherSuite.name().contains("TLS_ECDH")) {
-                ourECDHCipherSuites.add(cipherSuite);
+            if (cipherSuite.name().contains("TLS_ECDHE") || cipherSuite.name().contains("TLS_DHE")) {
+                fallBackECDHCipherSuites.add(cipherSuite);
             }
         }
 
         List<NamedGroup> groups = new LinkedList<>();
         groups.addAll(Arrays.asList(NamedGroup.values()));
 
-        testConf.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
+        testConf.setDefaultClientSupportedCiphersuites(fallBackECDHCipherSuites);
         testConf.setEnforceSettings(false);
         testConf.setAddServerNameIndicationExtension(true);
         testConf.setAddEllipticCurveExtension(true);
