@@ -23,6 +23,7 @@ import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.RngResult;
 
@@ -88,27 +89,30 @@ public class TlsRngProbe extends TlsProbe {
         // cipher suites configured
         // in generateConfig method (i.e. ECDHE cipher suites )
 
-        for (int i = 100; i < 104; i++) {
-            WorkflowTrace randomnessTest = new WorkflowTrace();
-            Config serverHelloConfig = generateTestConfig(intToByteArray(i + 1));
-            serverHelloConfig.setParseKeyShareOld(false);
-            serverHelloConfig.setAddExtendedRandomExtension(true);
-            serverHelloConfig.setHighestProtocolVersion(highestVersion);
-            if (!serverHelloCollectSuites.isEmpty()) {
-                serverHelloConfig.setDefaultClientSupportedCiphersuites(serverHelloCollectSuites);
-            }
-            ClientHelloMessage client_test = new ClientHelloMessage(serverHelloConfig);
-            randomnessTest.addTlsActions(new SendAction(client_test));
-            randomnessTest.addTlsActions(new ReceiveAction(new ServerHelloMessage(serverHelloConfig)));
+        boolean supportsExtendedRandom = latestReport.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
 
-            State test_state = new State(serverHelloConfig, randomnessTest);
-            LOGGER.warn("Starting test ClientHello");
-            executeState(test_state);
-            LOGGER.warn("===========================================================================================");
-            LOGGER.warn(test_state.getWorkflowTrace());
-            LOGGER.warn("===========================================================================================");
-
-        }
+         for (int i = 1; i < 701; i++) {
+             WorkflowTrace randomnessTest = new WorkflowTrace();
+             Config serverHelloConfig = generateTestConfig(intToByteArray(i + 1));
+             if (supportsExtendedRandom) {
+                 LOGGER.warn("Extended Random Supported!");
+                 serverHelloConfig.setParseKeyShareOld(false);
+                 serverHelloConfig.setAddExtendedRandomExtension(true);
+             }
+             serverHelloConfig.setHighestProtocolVersion(highestVersion);
+             if (!serverHelloCollectSuites.isEmpty()) {
+                 serverHelloConfig.setDefaultClientSupportedCiphersuites(serverHelloCollectSuites);
+             }
+             ClientHelloMessage client_test = new ClientHelloMessage(serverHelloConfig);
+             randomnessTest.addTlsActions(new SendAction(client_test));
+             randomnessTest.addTlsActions(new ReceiveAction(new ServerHelloMessage(serverHelloConfig)));
+             State test_state = new State(serverHelloConfig, randomnessTest);
+             
+             LOGGER.warn("Starting test ClientHello"); executeState(test_state);
+             LOGGER.warn("===========================================================================================");
+             LOGGER.warn(test_state.getWorkflowTrace());
+             LOGGER.warn("===========================================================================================");
+         }
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -116,49 +120,45 @@ public class TlsRngProbe extends TlsProbe {
         // Here it is not important which ciphersuite we use for key-exchange,
         // only important thing is maximum
         // block size of encrypted blocks.
-        Config iVCollectConfig = generateTestConfig(intToByteArray(600));
-        iVCollectConfig.setHighestProtocolVersion(highestVersion);
-
-        ProtocolMessage[] flight1 = { new ChangeCipherSpecMessage(iVCollectConfig),
-                new FinishedMessage(iVCollectConfig) };
-        List<ProtocolMessage> serverHello = new ArrayList<>();
-        serverHello.add(new ServerHelloMessage(iVCollectConfig));
-        serverHello.add(new CertificateMessage(iVCollectConfig));
-
-        if (latestReport.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE) {
-            serverHello.add(new ECDHEServerKeyExchangeMessage(iVCollectConfig));
-        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE) {
-            serverHello.add(new DHEServerKeyExchangeMessage(iVCollectConfig));
+        for (int i = 0; i < 200; i++) {
+            Config iVCollectConfig = generateTestConfig(intToByteArray(701 + i));
+            iVCollectConfig.setHighestProtocolVersion(highestVersion);
+            ProtocolMessage[] flight1 = { new ChangeCipherSpecMessage(iVCollectConfig),
+                    new FinishedMessage(iVCollectConfig) };
+            List<ProtocolMessage> serverHello = new ArrayList<>();
+            serverHello.add(new ServerHelloMessage(iVCollectConfig));
+            serverHello.add(new CertificateMessage(iVCollectConfig));
+            if (latestReport.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE) {
+                serverHello.add(new ECDHEServerKeyExchangeMessage(iVCollectConfig));
+            } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE) {
+                serverHello.add(new DHEServerKeyExchangeMessage(iVCollectConfig));
+            }
+            serverHello.add(new ServerHelloDoneMessage(iVCollectConfig));
+            ProtocolMessage[] serverHelloFlight = new ProtocolMessage[serverHello.size()];
+            serverHelloFlight = serverHello.toArray(serverHelloFlight);
+            WorkflowTrace ivCollectorTrace = new WorkflowTrace();
+            ivCollectorTrace.addTlsAction(new SendAction(new ClientHelloMessage(iVCollectConfig)));
+            ivCollectorTrace.addTlsAction(new ReceiveAction(serverHelloFlight));
+            ivCollectorTrace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+            ivCollectorTrace.addTlsAction(new SendAction(flight1));
+            ivCollectorTrace.addTlsAction(new ReceiveAction(flight1));
+            for (int j = 0; j < 20; j++) {
+                HttpsRequestMessage request = new HttpsRequestMessage();
+                List<HttpsHeader> header = new LinkedList<>();
+                header.add(new HostHeader());
+                // header.add(new GenericHttpsHeader("Connection",
+                // "keep-alive"));
+                request.setHeader(header);
+                ivCollectorTrace.addTlsAction(new SendAction(request));
+                ivCollectorTrace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
+                State state = new State(iVCollectConfig, ivCollectorTrace);
+                executeState(state);
+                LOGGER.warn(state.getWorkflowTrace());
+            }
         }
 
-        serverHello.add(new ServerHelloDoneMessage(iVCollectConfig));
-        ProtocolMessage[] serverHelloFlight = new ProtocolMessage[serverHello.size()];
-        serverHelloFlight = serverHello.toArray(serverHelloFlight);
-
-        WorkflowTrace ivCollectorTrace = new WorkflowTrace();
-        ivCollectorTrace.addTlsAction(new SendAction(new ClientHelloMessage(iVCollectConfig)));
-        ivCollectorTrace.addTlsAction(new ReceiveAction(serverHelloFlight));
-        ivCollectorTrace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        ivCollectorTrace.addTlsAction(new SendAction(flight1));
-        ivCollectorTrace.addTlsAction(new ReceiveAction(flight1));
-
-        // HTTP Request
-        // HttpsRequestMessage request = new HttpsRequestMessage(tlsConfig);
-        HttpsRequestMessage request = new HttpsRequestMessage();
-        List<HttpsHeader> header = new LinkedList<>();
-        header.add(new HostHeader());
-        // header.add(new GenericHttpsHeader("Connection", "keep-alive"));
-        request.setHeader(header);
-
-        for (int i = 0; i < 2; i++) {
-            ivCollectorTrace.addTlsAction(new SendAction(request));
-            ivCollectorTrace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
-        }
-        State state = new State(iVCollectConfig, ivCollectorTrace);
-        executeState(state);
-        LOGGER.warn(state.getWorkflowTrace());
-
-        boolean successfulHandshake = state.getWorkflowTrace().executedAsPlanned();
+        // TODO: Implement this right.
+        boolean successfulHandshake = true;
 
         RngResult rng_extract = new RngResult(successfulHandshake);
 
@@ -174,7 +174,8 @@ public class TlsRngProbe extends TlsProbe {
                 || report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_SESSION_IDS) == TestResult.NOT_TESTED_YET) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_SESSION_IDS) == TestResult.NOT_TESTED_YET
+                || report.getResult(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE) == TestResult.NOT_TESTED_YET) {
             return false;
         } else {
             // We will conduct the rng extraction based on the test-results, so
