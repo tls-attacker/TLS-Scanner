@@ -87,6 +87,8 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setAddExtendedMasterSecretExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSessionTicketTLSExtension(true);
+        tlsConfig.setParseKeyShareOld(false);
+        tlsConfig.setAddExtendedRandomExtension(true);
         tlsConfig.setAddTruncatedHmacExtension(true);
         tlsConfig.setStopActionsAfterIOException(true);
         List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
