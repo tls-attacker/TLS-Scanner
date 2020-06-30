@@ -7,6 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package de.rub.nds.tlsscanner.probe;
+
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
@@ -50,55 +51,52 @@ public class TlsRngProbe extends TlsProbe {
         // Ensure we use the highest Protocol version possible to prevent the
         // downgrade-attack mitigation to
         // activate
-         if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) ==
-         TestResult.TRUE)
-            { highestVersion = ProtocolVersion.TLS13; }
-         else if
-         (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) ==
-         TestResult.TRUE)
-            { highestVersion = ProtocolVersion.TLS13; }
-         else if
-         (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) ==
-         TestResult.TRUE)
-            { highestVersion = ProtocolVersion.TLS11; }
-         else if
-         (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) ==
-         TestResult.TRUE)
-            { highestVersion = ProtocolVersion.TLS10; }
+        if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
+            highestVersion = ProtocolVersion.TLS13;
+        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
+            highestVersion = ProtocolVersion.TLS13;
+        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
+            highestVersion = ProtocolVersion.TLS11;
+        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
+            highestVersion = ProtocolVersion.TLS10;
+        }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
+        // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Use preferred Ciphersuites if supported
         List<CipherSuite> serverHelloCollectSuites = new LinkedList<>();
-        if(latestReport.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE){
+        if (latestReport.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE) {
             for (CipherSuite cipherSuite : CipherSuite.values()) {
                 if (cipherSuite.name().contains("TLS_RSA")) {
                     serverHelloCollectSuites.add(cipherSuite);
                 }
             }
-        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE){
-            for(CipherSuite cipherSuite : CipherSuite.values()){
-                if(cipherSuite.name().contains("TLS_DH")){
+        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE) {
+            for (CipherSuite cipherSuite : CipherSuite.values()) {
+                if (cipherSuite.name().contains("TLS_DH")) {
                     serverHelloCollectSuites.add(cipherSuite);
                 }
             }
-        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE){
-            for(CipherSuite cipherSuite : CipherSuite.values()){
-                if(cipherSuite.name().contains("TLS_ECDH")){
+        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE) {
+            for (CipherSuite cipherSuite : CipherSuite.values()) {
+                if (cipherSuite.name().contains("TLS_ECDH")) {
                     serverHelloCollectSuites.add(cipherSuite);
                 }
             }
         }
-        // If not one of the preferred Cipher suites is supported, use standard cipher suites configured
+        // If not one of the preferred Cipher suites is supported, use standard
+        // cipher suites configured
         // in generateConfig method (i.e. ECDHE cipher suites )
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 100; i < 104; i++) {
             WorkflowTrace randomnessTest = new WorkflowTrace();
             Config serverHelloConfig = generateTestConfig(intToByteArray(i + 1));
+            serverHelloConfig.setParseKeyShareOld(false);
             serverHelloConfig.setAddExtendedRandomExtension(true);
             serverHelloConfig.setHighestProtocolVersion(highestVersion);
-            serverHelloConfig.setDefaultClientSupportedCiphersuites(serverHelloCollectSuites);
-
+            if (!serverHelloCollectSuites.isEmpty()) {
+                serverHelloConfig.setDefaultClientSupportedCiphersuites(serverHelloCollectSuites);
+            }
             ClientHelloMessage client_test = new ClientHelloMessage(serverHelloConfig);
             randomnessTest.addTlsActions(new SendAction(client_test));
             randomnessTest.addTlsActions(new ReceiveAction(new ServerHelloMessage(serverHelloConfig)));
@@ -106,13 +104,17 @@ public class TlsRngProbe extends TlsProbe {
             State test_state = new State(serverHelloConfig, randomnessTest);
             LOGGER.warn("Starting test ClientHello");
             executeState(test_state);
+            LOGGER.warn("===========================================================================================");
             LOGGER.warn(test_state.getWorkflowTrace());
+            LOGGER.warn("===========================================================================================");
+
         }
 
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Collect IV
-        // Here it is not important which ciphersuite we use for key-exchange, only important thing is maximum
+        // Here it is not important which ciphersuite we use for key-exchange,
+        // only important thing is maximum
         // block size of encrypted blocks.
         Config iVCollectConfig = generateTestConfig(intToByteArray(600));
         iVCollectConfig.setHighestProtocolVersion(highestVersion);
@@ -123,17 +125,19 @@ public class TlsRngProbe extends TlsProbe {
         serverHello.add(new ServerHelloMessage(iVCollectConfig));
         serverHello.add(new CertificateMessage(iVCollectConfig));
 
-        if(latestReport.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE){
+        if (latestReport.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE) {
             serverHello.add(new ECDHEServerKeyExchangeMessage(iVCollectConfig));
-        } else if(latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE){
+        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE) {
             serverHello.add(new DHEServerKeyExchangeMessage(iVCollectConfig));
         }
 
         serverHello.add(new ServerHelloDoneMessage(iVCollectConfig));
+        ProtocolMessage[] serverHelloFlight = new ProtocolMessage[serverHello.size()];
+        serverHelloFlight = serverHello.toArray(serverHelloFlight);
 
         WorkflowTrace ivCollectorTrace = new WorkflowTrace();
         ivCollectorTrace.addTlsAction(new SendAction(new ClientHelloMessage(iVCollectConfig)));
-        ivCollectorTrace.addTlsAction(new ReceiveAction((ProtocolMessage[]) serverHello.toArray()));
+        ivCollectorTrace.addTlsAction(new ReceiveAction(serverHelloFlight));
         ivCollectorTrace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         ivCollectorTrace.addTlsAction(new SendAction(flight1));
         ivCollectorTrace.addTlsAction(new ReceiveAction(flight1));
@@ -146,7 +150,7 @@ public class TlsRngProbe extends TlsProbe {
         // header.add(new GenericHttpsHeader("Connection", "keep-alive"));
         request.setHeader(header);
 
-        for(int i=0; i<32; i++){
+        for (int i = 0; i < 2; i++) {
             ivCollectorTrace.addTlsAction(new SendAction(request));
             ivCollectorTrace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         }
@@ -162,22 +166,21 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     @Override
-     public boolean canBeExecuted(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_CBC) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_SESSION_IDS) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.NOT_TESTED_YET
+    public boolean canBeExecuted(SiteReport report) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.NOT_TESTED_YET) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.NOT_TESTED_YET
+                || report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.NOT_TESTED_YET
+                || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.NOT_TESTED_YET
+                || report.getResult(AnalyzedProperty.SUPPORTS_SESSION_IDS) == TestResult.NOT_TESTED_YET) {
             return false;
-        }
-        else {
+        } else {
             // We will conduct the rng extraction based on the test-results, so
             // we need those properties to be tested
             // before we conduct the RNG-Probe latestReport = report;
+            this.latestReport = report;
             return true;
         }
     }
@@ -214,7 +217,6 @@ public class TlsRngProbe extends TlsProbe {
         // tlsConfig.setWorkflowTraceType(WorkflowTraceType.CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
         testConf.setUseFreshRandom(false);
         testConf.setDefaultClientRandom(clientRandom);
-        testConf.setAddExtendedMasterSecretExtension(false);
 
         // Receive more if you can
         testConf.setQuickReceive(false);
