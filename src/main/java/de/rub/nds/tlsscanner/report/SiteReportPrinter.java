@@ -1672,9 +1672,11 @@ public class SiteReportPrinter {
     }
 
     private StringBuilder sessionTicketZeroKeyDetails(StringBuilder builder) {
-        prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
-        prettyAppend(builder, "Has correct ticket padding:", AnalyzedProperty.HAS_CORRECT_TICKET_PADDING);
-        prettyAppend(builder, "Has GnuTls magic bytes:", AnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
+
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY) == TestResult.TRUE) {
+            prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
+            prettyAppend(builder, "Has GnuTls magic bytes:", AnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
+        }
         return builder;
     }
 

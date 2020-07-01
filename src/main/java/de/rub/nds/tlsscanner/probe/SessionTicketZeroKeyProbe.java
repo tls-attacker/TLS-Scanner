@@ -123,13 +123,11 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             executeState(state);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new SessionTicketZeroKeyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                    TestResult.ERROR_DURING_TEST);
+            return new SessionTicketZeroKeyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
 
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
-            return new SessionTicketZeroKeyResult(TestResult.UNSUPPORTED, TestResult.UNSUPPORTED,
-                    TestResult.UNSUPPORTED);
+            return new SessionTicketZeroKeyResult(TestResult.UNSUPPORTED, TestResult.UNSUPPORTED);
         }
 
         byte[] ticket = null;
@@ -156,16 +154,12 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             SecretKey aesKey = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
             decryptedSessionState = cipher.doFinal(encryptedSessionState);
-            LOGGER.warn("decryptedSsessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
+            LOGGER.debug("decryptedSsessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
         } catch (Exception e) {
-            return new SessionTicketZeroKeyResult(TestResult.FALSE, TestResult.FALSE, TestResult.FALSE);
+            return new SessionTicketZeroKeyResult(TestResult.FALSE, TestResult.FALSE);
         }
-        TestResult hasCorrectPadding = TestResult.TRUE;
         TestResult hasDecryptableMasterSecret;
         TestResult hasGnuTlsMagicBytes;
-
-        List<Byte> target = Arrays.asList(ArrayUtils.toObject(state.getTlsContext().getMasterSecret()));
-        List<Byte> source = Arrays.asList(ArrayUtils.toObject(decryptedSessionState));
 
         if (checkForMasterSecret(decryptedSessionState, state.getTlsContext())) {
             hasDecryptableMasterSecret = TestResult.TRUE;
@@ -180,7 +174,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             hasGnuTlsMagicBytes = TestResult.FALSE;
         }
 
-        return new SessionTicketZeroKeyResult(hasCorrectPadding, hasDecryptableMasterSecret, hasGnuTlsMagicBytes);
+        return new SessionTicketZeroKeyResult(hasDecryptableMasterSecret, hasGnuTlsMagicBytes);
     }
 
     @Override
@@ -210,8 +204,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-                TestResult.COULD_NOT_TEST);
+        return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 
     @Override
