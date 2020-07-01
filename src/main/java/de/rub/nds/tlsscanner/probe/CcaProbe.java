@@ -155,6 +155,9 @@ public class CcaProbe extends TlsProbe {
 
                         CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType, ccaCertificateType);
                         Config tlsConfig = generateConfig();
+                        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
+                        tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
+
                         CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaDelegate, additionalTimeout, increasingTimeout,
                                 3, additionalTcpTimeout);
                         taskList.add(ccaTask);
@@ -213,6 +216,7 @@ public class CcaProbe extends TlsProbe {
         config.setAddServerNameIndicationExtension(true);
         config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        config.setClientAuthentication(true);
 
         config.setQuickReceive(true);
         config.setEarlyStop(true);
