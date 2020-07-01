@@ -35,12 +35,13 @@ public class CcaRequiredProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
+        CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(ccaDelegate);
         Config tlsConfig = generateConfig();
         CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_CCS_FIN;
         CcaCertificateType ccaCertificateType = CcaCertificateType.EMPTY;
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
 
-        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaDelegate, ccaWorkflowType, ccaCertificateType);
+        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager, ccaWorkflowType, ccaCertificateType);
         State state = new State(tlsConfig, trace);
         try {
             executeState(state);

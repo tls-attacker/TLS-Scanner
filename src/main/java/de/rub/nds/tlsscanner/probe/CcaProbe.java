@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.cca.vector.CcaTaskVectorPair;
@@ -58,6 +59,8 @@ public class CcaProbe extends TlsProbe {
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
+
+        CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(ccaDelegate);
 
         /**
          * Add any protocol version (1.0-1.2) to the versions we iterate
@@ -138,6 +141,8 @@ public class CcaProbe extends TlsProbe {
         List<TlsTask> taskList = new LinkedList<>();
         List<CcaTaskVectorPair> taskVectorPairList = new LinkedList<>();
 
+
+
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
                 /**
@@ -158,7 +163,7 @@ public class CcaProbe extends TlsProbe {
                         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
 
-                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaDelegate, additionalTimeout, increasingTimeout,
+                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout, increasingTimeout,
                                 3, additionalTcpTimeout);
                         taskList.add(ccaTask);
                         taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
