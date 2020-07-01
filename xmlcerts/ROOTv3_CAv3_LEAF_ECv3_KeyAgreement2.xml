@@ -1,7 +1,7 @@
 <asn1XmlContent>
 
     <asn1Sequence identifier="ROOTv3_CAv3_LEAF_ECv3_KeyAgreement2__leaf_certificate1" type="Certificate">
-        <keyInfo identifier="key" keyType="ECDH">
+        <keyInfo identifier="key" keyType="ECDSA">
             <keyFile>eckey_secp160r1.pem</keyFile>
             <pubKeyFile>ecpubkey_secp160r1.pem</pubKeyFile>
         </keyInfo>
