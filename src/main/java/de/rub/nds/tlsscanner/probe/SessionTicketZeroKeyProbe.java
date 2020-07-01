@@ -138,8 +138,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             }
         }
 
-        byte[] key = ArrayConverter
-                .hexStringToByteArray("0000000000000000000000000000000000000000000000000000000000000000");
+        byte[] key = new byte[32];
         byte[] iv, encryptedSessionState;
         byte[] decryptedSessionState = null;
 
