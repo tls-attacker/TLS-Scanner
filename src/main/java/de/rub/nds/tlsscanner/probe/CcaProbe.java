@@ -65,62 +65,10 @@ public class CcaProbe extends TlsProbe {
         desiredVersions.add(ProtocolVersion.TLS10);
         desiredVersions.add(ProtocolVersion.TLS12);
 
-
-        List<VersionSuiteListPair> versionSuiteListPairs = new LinkedList<>();
-        for(VersionSuiteListPair versionSuiteListPair: this.versionSuiteListPairsList) {
-            if (desiredVersions.contains(versionSuiteListPair.getVersion())) {
-                versionSuiteListPairs.add(versionSuiteListPair);
-            }
-        }
-
-        /**
-         * If we do not want a detailed scan, use only one cipher suite per protocol version.
-         */
-        List<CipherSuite> implementedCipherSuites = CipherSuite.getImplemented();
-        List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
-        if (!getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            for (VersionSuiteListPair versionSuiteListPair: versionSuiteListPairs) {
-                List<CipherSuite> cipherSuites = new LinkedList<>();
-                for (CipherSuite cipherSuite: versionSuiteListPair.getCiphersuiteList()) {
-                    if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh() && implementedCipherSuites.contains(cipherSuite)) {
-                        cipherSuites.add(cipherSuite);
-                        break;
-                    }
-                }
-                /**
-                 * Only add a version if we found a matching cipher suite (DH[E])
-                 */
-                if (!cipherSuites.isEmpty()) {
-                    versionSuiteListPairList.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
-                }
-            }
-        }
-
-        if (versionSuiteListPairList.isEmpty()) {
-            /**
-             * We haven't found a DH ciphersuite that's implemented by TLS-Scanner/Attacker
-             * Remove any cipherSuite not implemented by TLS-Scanner/Attacker to prevent confusing results
-             */
-            for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
-                List<CipherSuite> cipherSuites = new LinkedList<>();
-                for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
-                    if (implementedCipherSuites.contains(cipherSuite)) {
-                        cipherSuites.add(cipherSuite);
-                    }
-                }
-                if (!cipherSuites.isEmpty()) {
-                    versionSuiteListPairList.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
-                }
-            }
-        }
-        /**
-         * versionSuiteListPairs by now contains either any ciphersuite that both the server and TLS-Scanner/Attacker
-         * support for TLS1.0-1.2 or at most a single DH ciphersuite per version. If it's empty we can't continue.
-         */
-        versionSuiteListPairs = versionSuiteListPairList;
+        List<VersionSuiteListPair> versionSuiteListPairs = getVersionSuitePairList(desiredVersions);
 
         if (versionSuiteListPairs.isEmpty()) {
-            LOGGER.error("No common ciphersuites found. Can't continue scan.");
+            LOGGER.warn("No common cipher suites found. Can't continue scan.");
             return new CcaResult(TestResult.COULD_NOT_TEST, null);
         }
 
@@ -129,8 +77,6 @@ public class CcaProbe extends TlsProbe {
 
         List<TlsTask> taskList = new LinkedList<>();
         List<CcaTaskVectorPair> taskVectorPairList = new LinkedList<>();
-
-
 
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
@@ -220,4 +166,61 @@ public class CcaProbe extends TlsProbe {
         return config;
     }
 
+    private List<VersionSuiteListPair> getVersionSuitePairList(List<ProtocolVersion> desiredVersions) {
+        List<VersionSuiteListPair> versionSuiteListPairs = new LinkedList<>();
+        for(VersionSuiteListPair versionSuiteListPair: this.versionSuiteListPairsList) {
+            if (desiredVersions.contains(versionSuiteListPair.getVersion())) {
+                versionSuiteListPairs.add(versionSuiteListPair);
+            }
+        }
+
+        List<CipherSuite> implementedCipherSuites = CipherSuite.getImplemented();
+        List<VersionSuiteListPair> versionSuiteListPairList;
+
+        versionSuiteListPairList = getNonDetailedVersionSuitePairList(versionSuiteListPairs, implementedCipherSuites);
+        if (versionSuiteListPairList.isEmpty()) {
+            versionSuiteListPairList = getDetailedVersionSuitePairList(versionSuiteListPairs, implementedCipherSuites);
+        }
+
+        return versionSuiteListPairList;
+    }
+
+    private List<VersionSuiteListPair> getDetailedVersionSuitePairList(List<VersionSuiteListPair> versionSuiteListPairs,
+                                                                          List<CipherSuite> implementedCipherSuites) {
+        List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
+        for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
+            List<CipherSuite> cipherSuites = new LinkedList<>();
+            for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
+                if (implementedCipherSuites.contains(cipherSuite)) {
+                    cipherSuites.add(cipherSuite);
+                }
+            }
+            if (!cipherSuites.isEmpty()) {
+                versionSuiteListPairList.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
+            }
+        }
+        return versionSuiteListPairList;
+    }
+    
+    private List<VersionSuiteListPair> getNonDetailedVersionSuitePairList(List<VersionSuiteListPair> versionSuiteListPairs,
+                                                                          List<CipherSuite> implementedCipherSuites) {
+        List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
+        if (!getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            for (VersionSuiteListPair versionSuiteListPair: versionSuiteListPairs) {
+                List<CipherSuite> cipherSuites = new LinkedList<>();
+                for (CipherSuite cipherSuite: versionSuiteListPair.getCiphersuiteList()) {
+                    if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh() && implementedCipherSuites.contains(cipherSuite)) {
+                        cipherSuites.add(cipherSuite);
+                        break;
+                    }
+                }
+                if (!cipherSuites.isEmpty()) {
+                    versionSuiteListPairList.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
+                }
+            }
+        }
+        return versionSuiteListPairList;
+    }
+
 }
+
