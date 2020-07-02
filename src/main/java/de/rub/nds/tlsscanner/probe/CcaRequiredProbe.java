@@ -46,7 +46,7 @@ public class CcaRequiredProbe extends TlsProbe {
         try {
             executeState(state);
         } catch (Exception E) {
-            LOGGER.error("Could not test if client authentication is required.");
+            LOGGER.warn("Could not test if client authentication is required.");
         }
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return new CcaRequiredResult(TestResult.FALSE);
