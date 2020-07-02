@@ -127,6 +127,7 @@ public class SiteReportPrinter {
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
+        sessionTicketZeroKeyDetails(builder);
         appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
         // appendGcm(builder);
@@ -638,6 +639,8 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Extra Clear DROWN", AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
+        prettyAppend(builder, "CVE-2020-13777 (Zero key)", AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
+
         return builder;
     }
 
@@ -1667,4 +1670,14 @@ public class SiteReportPrinter {
             LOGGER.debug("Not printing performance data.");
         }
     }
+
+    private StringBuilder sessionTicketZeroKeyDetails(StringBuilder builder) {
+
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY) == TestResult.TRUE) {
+            prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
+            prettyAppend(builder, "Has GnuTls magic bytes:", AnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
+        }
+        return builder;
+    }
+
 }

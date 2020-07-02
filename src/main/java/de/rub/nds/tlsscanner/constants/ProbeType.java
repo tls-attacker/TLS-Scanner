@@ -34,6 +34,7 @@ public enum ProbeType {
     COMMON_BUGS,
     RESUMPTION,
     RENEGOTIATION,
+    SESSION_TICKET_ZERO_KEY,
     SNI,
     HANDSHAKE_SIMULATION,
     TLS13,

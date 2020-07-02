@@ -36,6 +36,7 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
 import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
 import de.rub.nds.tlsscanner.probe.ResumptionProbe;
+import de.rub.nds.tlsscanner.probe.SessionTicketZeroKeyProbe;
 import de.rub.nds.tlsscanner.probe.SniProbe;
 import de.rub.nds.tlsscanner.probe.Tls13Probe;
 import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
@@ -117,6 +118,7 @@ public class TlsScanner {
         probeList.add(new ECPointFormatProbe(config, parallelExecutor));
         probeList.add(new ResumptionProbe(config, parallelExecutor));
         probeList.add(new RenegotiationProbe(config, parallelExecutor));
+        probeList.add(new SessionTicketZeroKeyProbe(config, parallelExecutor));
         probeList.add(new HeartbleedProbe(config, parallelExecutor));
         probeList.add(new PaddingOracleProbe(config, parallelExecutor));
         probeList.add(new BleichenbacherProbe(config, parallelExecutor));
