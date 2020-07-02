@@ -1463,8 +1463,8 @@ public class SiteReportPrinter {
                 prettyAppend(builder, ccaTestResult.getWorkflowType().name().concat("--")
                                 .concat(ccaTestResult.getCertificateType().name()).concat("--")
                                 .concat(ccaTestResult.getProtocolVersion().name()).concat("--")
-                                .concat(ccaTestResult.getCipherSuite().name()), ccaTestResult.getBypassable(),
-                        ccaTestResult.getBypassable() ? AnsiColor.RED : AnsiColor.GREEN);
+                                .concat(ccaTestResult.getCipherSuite().name()), ccaTestResult.getSucceeded(),
+                        ccaTestResult.getSucceeded() ? AnsiColor.RED : AnsiColor.GREEN);
 
             }
         }

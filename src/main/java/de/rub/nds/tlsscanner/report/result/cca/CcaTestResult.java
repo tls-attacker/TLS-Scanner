@@ -15,22 +15,22 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 
 public class CcaTestResult {
 
-    private final Boolean bypassable;
+    private final Boolean succeeded;
     private final CcaWorkflowType workflowType;
     private final CcaCertificateType certificateType;
     private final ProtocolVersion protocolVersion;
     private final CipherSuite cipherSuite;
 
-    public CcaTestResult(Boolean bypassable, CcaWorkflowType workflowType, CcaCertificateType certificateType,
+    public CcaTestResult(Boolean succeeded, CcaWorkflowType workflowType, CcaCertificateType certificateType,
                          ProtocolVersion protocolVersion, CipherSuite cipherSuite) {
-        this.bypassable = bypassable;
+        this.succeeded = succeeded;
         this.workflowType = workflowType;
         this.certificateType = certificateType;
         this.protocolVersion = protocolVersion;
         this.cipherSuite = cipherSuite;
     }
 
-    public Boolean getBypassable() {return bypassable;}
+    public Boolean getSucceeded() {return succeeded;}
 
     public CcaWorkflowType getWorkflowType() {return workflowType;}
 
