@@ -190,7 +190,7 @@ public class CcaProbe extends TlsProbe {
         if ((report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
                 && (report.getVersionSuitePairs() != null)) {
             return true;
-        };
+        }
         return false;
     }
 

@@ -535,17 +535,11 @@ public class SiteReport extends Observable {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
     }
 
-    public synchronized Boolean getCcaSupported() { return ccaSupported; }
+    public synchronized Boolean getCcaSupported() { return this.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE; }
 
-    public synchronized void setCcaSupported(Boolean ccaSupported) {
-        this.ccaSupported = ccaSupported;
-    }
 
-    public synchronized Boolean getCcaRequired() { return ccaRequired; }
+    public synchronized Boolean getCcaRequired() { return this.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE; }
 
-    public synchronized void setCcaRequired(Boolean ccaRequired) {
-        this.ccaRequired = ccaRequired;
-    }
 
     public synchronized List<CcaTestResult> getCcaTestResultList() {return ccaTestResultList;}
 

@@ -24,6 +24,5 @@ public class CcaSupportResult extends ProbeResult {
 
     @Override public void mergeData(SiteReport report) {
         report.putResult(AnalyzedProperty.SUPPORTS_CCA, supportsCca);
-        report.setCcaSupported(supportsCca == TestResult.TRUE);
     }
 }
