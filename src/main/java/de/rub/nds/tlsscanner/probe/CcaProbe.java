@@ -44,6 +44,8 @@ public class CcaProbe extends TlsProbe {
 
     private long additionalTcpTimeout = 1000;
 
+    private int reexecutions = 3;
+
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config, 7);
         versionSuiteListPairsList = new LinkedList<>();
@@ -52,35 +54,22 @@ public class CcaProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
 
-        /**
-         * Get the parallel executor
-         * Note: the executor is affected by -parallelProbes. If not set the size is 1 (yawn)
-         */
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
         CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(ccaDelegate);
 
-        /**
-         * Add any protocol version (1.0-1.2) to the versions we iterate
-         */
         List<ProtocolVersion> desiredVersions = new LinkedList<>();
         desiredVersions.add(ProtocolVersion.TLS11);
         desiredVersions.add(ProtocolVersion.TLS10);
         desiredVersions.add(ProtocolVersion.TLS12);
 
 
-        /**
-         * Add any VersionSuitePair that is supported by the target
-         * and by our test cases (Version 1.0 - 1.2)
-         */
         List<VersionSuiteListPair> versionSuiteListPairs = new LinkedList<>();
         for(VersionSuiteListPair versionSuiteListPair: this.versionSuiteListPairsList) {
             if (desiredVersions.contains(versionSuiteListPair.getVersion())) {
-                versionSuiteListPairs.add
-
-                        (versionSuiteListPair);
+                versionSuiteListPairs.add(versionSuiteListPair);
             }
         }
 
@@ -164,7 +153,7 @@ public class CcaProbe extends TlsProbe {
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
 
                         CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout, increasingTimeout,
-                                3, additionalTcpTimeout);
+                                reexecutions, additionalTcpTimeout);
                         taskList.add(ccaTask);
                         taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
                     }
@@ -173,7 +162,7 @@ public class CcaProbe extends TlsProbe {
         }
 
         List<CcaTestResult> resultList = new LinkedList<>();
-        Boolean bypassable = false;
+        Boolean handshakeSucceeded = false;
         parallelExecutor.bulkExecuteTasks(taskList);
         for (CcaTaskVectorPair ccaTaskVectorPair : taskVectorPairList) {
             if (ccaTaskVectorPair.getCcaTask().isHasError()) {
@@ -182,7 +171,7 @@ public class CcaProbe extends TlsProbe {
                 Boolean vectorVulnerable = false;
                 if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, ccaTaskVectorPair.getCcaTask()
                         .getState().getWorkflowTrace())) {
-                    bypassable = true;
+                    handshakeSucceeded = true;
                     vectorVulnerable = true;
                 } else {
                     vectorVulnerable = false;
@@ -193,7 +182,7 @@ public class CcaProbe extends TlsProbe {
             }
         }
 
-        return new CcaResult(bypassable ? TestResult.TRUE : TestResult.FALSE, resultList);
+        return new CcaResult(handshakeSucceeded ? TestResult.TRUE : TestResult.FALSE, resultList);
     }
 
     @Override
