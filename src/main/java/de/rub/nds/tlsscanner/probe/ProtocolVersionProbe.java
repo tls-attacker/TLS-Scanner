@@ -88,7 +88,7 @@ public class ProtocolVersionProbe extends TlsProbe {
             cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
             cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         }
-        tlsConfig.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
+        tlsConfig.setDefaultSelectedProtocolVersion(toTest);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(toTest);
