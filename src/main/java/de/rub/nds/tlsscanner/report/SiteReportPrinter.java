@@ -755,7 +755,7 @@ public class SiteReportPrinter {
                 } else if (testResult.getpValue() < 0.05) {
                     prettyAppend(builder,
                             resultString + "\t | " + padToLength(testResult.getEqualityError().name(), 25)
-                            + padToLength("| PROBABLY VULNERABLE", 25) + "| P: " + pValue, AnsiColor.YELLOW);
+                                    + padToLength("| PROBABLY VULNERABLE", 25) + "| P: " + pValue, AnsiColor.YELLOW);
                 } else if (testResult.getpValue() < 1) {
                     prettyAppend(builder, resultString + "\t | " + padToLength("No significant difference", 25)
                             + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
@@ -844,8 +844,8 @@ public class SiteReportPrinter {
                     prettyAppend(
                             builder,
                             "\t\t" + padToLength((counter.getFingerprint().toHumanReadable()), 40)
-                            + counter.getCounter() + "/" + counter.getTotal() + " ("
-                            + String.format("%.2f", counter.getProbability() * 100) + "%)", color);
+                                    + counter.getCounter() + "/" + counter.getTotal() + " ("
+                                    + String.format("%.2f", counter.getProbability() * 100) + "%)", color);
 
                 }
             }
@@ -880,7 +880,7 @@ public class SiteReportPrinter {
                                 for (VectorResponse vectorFingerPrintPair : testResult.getVectorFingerPrintPairList()) {
                                     prettyAppend(builder,
                                             padToLength("\t" + vectorFingerPrintPair.getVector().getName(), 60)
-                                            + vectorFingerPrintPair.getFingerprint().toHumanReadable());
+                                                    + vectorFingerPrintPair.getFingerprint().toHumanReadable());
                                 }
                             } else {
                                 prettyAppend(builder, "\tNULL");
@@ -928,7 +928,7 @@ public class SiteReportPrinter {
                 if ((response.getShowsVulnerability() == TestResult.TRUE && detail
                         .isGreaterEqualTo(ScannerDetail.NORMAL))
                         || (response.getShowsPointsAreNotValidated() == TestResult.TRUE && detail
-                        .isGreaterEqualTo(ScannerDetail.DETAILED)) || detail == ScannerDetail.ALL) {
+                                .isGreaterEqualTo(ScannerDetail.DETAILED)) || detail == ScannerDetail.ALL) {
                     prettyAppend(builder, response.getParameterSet().toString());
                     switch (response.getShowsPointsAreNotValidated()) {
                         case TRUE:
@@ -1044,9 +1044,9 @@ public class SiteReportPrinter {
                     prettyAppendHeading(
                             builder,
                             "Supported in "
-                            + toHumanReadable(versionSuitePair.getVersion())
-                            + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
-                            : ""));
+                                    + toHumanReadable(versionSuitePair.getVersion())
+                                    + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
+                                            : ""));
                     for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
                         builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
                     }
@@ -1055,10 +1055,8 @@ public class SiteReportPrinter {
 
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                 prettyAppendHeading(builder, "Symmetric Supported");
-                prettyAppend(builder, "Null",
-                        AnalyzedProperty.SUPPORTS_NULL_CIPHERS);
-                prettyAppend(builder, "Export",
-                        AnalyzedProperty.SUPPORTS_EXPORT);
+                prettyAppend(builder, "Null", AnalyzedProperty.SUPPORTS_NULL_CIPHERS);
+                prettyAppend(builder, "Export", AnalyzedProperty.SUPPORTS_EXPORT);
                 prettyAppend(builder, "Anon", AnalyzedProperty.SUPPORTS_ANON);
                 prettyAppend(builder, "DES", AnalyzedProperty.SUPPORTS_DES);
                 prettyAppend(builder, "SEED", AnalyzedProperty.SUPPORTS_SEED);
@@ -1067,11 +1065,9 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "RC4", AnalyzedProperty.SUPPORTS_RC4);
                 prettyAppend(builder, "3DES", AnalyzedProperty.SUPPORTS_3DES);
                 prettyAppend(builder, "AES", AnalyzedProperty.SUPPORTS_AES);
-                prettyAppend(builder, "CAMELLIA",
-                        AnalyzedProperty.SUPPORTS_CAMELLIA);
+                prettyAppend(builder, "CAMELLIA", AnalyzedProperty.SUPPORTS_CAMELLIA);
                 prettyAppend(builder, "ARIA", AnalyzedProperty.SUPPORTS_ARIA);
-                prettyAppend(builder, "CHACHA20 POLY1305",
-                        AnalyzedProperty.SUPPORTS_CHACHA);
+                prettyAppend(builder, "CHACHA20 POLY1305", AnalyzedProperty.SUPPORTS_CHACHA);
 
                 prettyAppendHeading(builder, "KeyExchange Supported");
                 prettyAppend(builder, "RSA", AnalyzedProperty.SUPPORTS_RSA);
@@ -1079,42 +1075,28 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "ECDH", AnalyzedProperty.SUPPORTS_ECDH);
                 prettyAppend(builder, "GOST", AnalyzedProperty.SUPPORTS_GOST);
                 // prettyAppend(builder, "SRP", report.getSupportsSrp());
-                prettyAppend(builder, "Kerberos",
-                        AnalyzedProperty.SUPPORTS_KERBEROS);
-                prettyAppend(builder, "Plain PSK",
-                        AnalyzedProperty.SUPPORTS_PSK_PLAIN);
-                prettyAppend(builder, "PSK RSA",
-                        AnalyzedProperty.SUPPORTS_PSK_RSA);
-                prettyAppend(builder, "PSK DHE",
-                        AnalyzedProperty.SUPPORTS_PSK_DHE);
-                prettyAppend(builder, "PSK ECDHE",
-                        AnalyzedProperty.SUPPORTS_PSK_ECDHE);
-                prettyAppend(builder, "Fortezza",
-                        AnalyzedProperty.SUPPORTS_FORTEZZA);
-                prettyAppend(builder, "New Hope",
-                        AnalyzedProperty.SUPPORTS_NEWHOPE);
+                prettyAppend(builder, "Kerberos", AnalyzedProperty.SUPPORTS_KERBEROS);
+                prettyAppend(builder, "Plain PSK", AnalyzedProperty.SUPPORTS_PSK_PLAIN);
+                prettyAppend(builder, "PSK RSA", AnalyzedProperty.SUPPORTS_PSK_RSA);
+                prettyAppend(builder, "PSK DHE", AnalyzedProperty.SUPPORTS_PSK_DHE);
+                prettyAppend(builder, "PSK ECDHE", AnalyzedProperty.SUPPORTS_PSK_ECDHE);
+                prettyAppend(builder, "Fortezza", AnalyzedProperty.SUPPORTS_FORTEZZA);
+                prettyAppend(builder, "New Hope", AnalyzedProperty.SUPPORTS_NEWHOPE);
                 prettyAppend(builder, "ECMQV", AnalyzedProperty.SUPPORTS_ECMQV);
-                prettyAppend(builder, "TLS 1.3 PSK_DHE",
-                        AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+                prettyAppend(builder, "TLS 1.3 PSK_DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
                 prettyAppendHeading(builder, "Cipher Types Supports");
-                prettyAppend(builder, "Stream",
-                        AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
-                prettyAppend(builder, "Block",
-                        AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
+                prettyAppend(builder, "Stream", AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
+                prettyAppend(builder, "Block", AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS);
                 prettyAppend(builder, "AEAD", AnalyzedProperty.SUPPORTS_AEAD);
             }
             prettyAppendHeading(builder, "Perfect Forward Secrecy");
-            prettyAppend(builder, "Supports PFS",
-                    AnalyzedProperty.SUPPORTS_PFS);
-            prettyAppend(builder, "Prefers PFS",
-                    AnalyzedProperty.PREFERS_PFS);
-            prettyAppend(builder, "Supports Only PFS",
-                    AnalyzedProperty.SUPPORTS_ONLY_PFS);
+            prettyAppend(builder, "Supports PFS", AnalyzedProperty.SUPPORTS_PFS);
+            prettyAppend(builder, "Prefers PFS", AnalyzedProperty.PREFERS_PFS);
+            prettyAppend(builder, "Supports Only PFS", AnalyzedProperty.SUPPORTS_ONLY_PFS);
 
             prettyAppendHeading(builder, "Ciphersuite General");
-            prettyAppend(builder, "Enforces Ciphersuite ordering",
-                    AnalyzedProperty.ENFOCRES_CS_ORDERING);
+            prettyAppend(builder, "Enforces Ciphersuite ordering", AnalyzedProperty.ENFOCRES_CS_ORDERING);
         }
         return builder;
     }
@@ -1722,9 +1704,9 @@ public class SiteReportPrinter {
                     prettyAppend(
                             builder,
                             padToLength(data.getType().name(), 25) + " Starttime: "
-                            + format.format(new Date(data.getStarttime())) + " Stoptime: "
-                            + format.format(new Date(data.getStoptime())) + " Total:"
-                            + PeriodFormat.getDefault().print(period));
+                                    + format.format(new Date(data.getStarttime())) + " Stoptime: "
+                                    + format.format(new Date(data.getStoptime())) + " Total:"
+                                    + PeriodFormat.getDefault().print(period));
 
                 }
             } catch (Exception E) {
