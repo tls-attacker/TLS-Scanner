@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.*;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.*;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -58,23 +59,23 @@ public class TlsRngProbe extends TlsProbe {
         if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS13");
             highestVersion = ProtocolVersion.TLS13;
-            collectServerRandomTls13(4, 1);
+            collectServerRandomTls13(700, 1);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS12");
             highestVersion = ProtocolVersion.TLS12;
-            collectServerRandom(4, 1);
+            collectServerRandom(700, 1);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS11");
             highestVersion = ProtocolVersion.TLS11;
-            collectServerRandom(4, 1);
+            collectServerRandom(700, 1);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS10");
             highestVersion = ProtocolVersion.TLS10;
-            collectServerRandom(4, 1);
+            collectServerRandom(700, 1);
         }
 
         // ////////////////////////////////////////////////////////////////////////////////////////////////////
-        collectIV(101, 10);
+        collectIV(4000, 750);
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // TODO: Implement this right.
@@ -211,6 +212,8 @@ public class TlsRngProbe extends TlsProbe {
 
         boolean supportsExtendedRandom = latestReport.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
 
+        // TODO: Add Session Ticket Support
+
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config serverHelloConfig = generateTls13Config(intToByteArray(clientRandomInit + i));
 
@@ -279,6 +282,7 @@ public class TlsRngProbe extends TlsProbe {
                 LOGGER.warn("Extended Random Supported!");
                 serverHelloConfig.setParseKeyShareOld(false);
                 serverHelloConfig.setAddExtendedRandomExtension(true);
+
             }
             serverHelloConfig.setHighestProtocolVersion(highestVersion);
             serverHelloConfig.setSupportedVersions(highestVersion);
@@ -333,34 +337,34 @@ public class TlsRngProbe extends TlsProbe {
 
         // Collect IV when CBC Suites are available
         Config iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + 1));
-        iVCollectConfig.setHighestProtocolVersion(highestVersion);
+        iVCollectConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
 
         iVCollectConfig.setDefaultClientSupportedCiphersuites(cbcSuites);
-        ProtocolMessage[] flight1 = { new ChangeCipherSpecMessage(iVCollectConfig),
+        ProtocolMessage[] helloDone = { new ChangeCipherSpecMessage(iVCollectConfig),
                 new FinishedMessage(iVCollectConfig) };
-        List<ProtocolMessage> serverHello = new ArrayList<>();
-        serverHello.add(new ServerHelloMessage(iVCollectConfig));
-        serverHello.add(new CertificateMessage(iVCollectConfig));
-        if (latestReport.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE) {
-            serverHello.add(new ECDHEServerKeyExchangeMessage(iVCollectConfig));
-        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE) {
-            serverHello.add(new DHEServerKeyExchangeMessage(iVCollectConfig));
-        }
-        serverHello.add(new ServerHelloDoneMessage(iVCollectConfig));
-        ProtocolMessage[] serverHelloFlight = new ProtocolMessage[serverHello.size()];
-        serverHelloFlight = serverHello.toArray(serverHelloFlight);
         WorkflowTrace ivCollectorTrace = new WorkflowTrace();
         ivCollectorTrace.addTlsAction(new SendAction(new ClientHelloMessage(iVCollectConfig)));
-        ivCollectorTrace.addTlsAction(new ReceiveAction(serverHelloFlight));
+        ivCollectorTrace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(iVCollectConfig)));
         ivCollectorTrace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        ivCollectorTrace.addTlsAction(new SendAction(flight1));
-        ivCollectorTrace.addTlsAction(new ReceiveAction(flight1));
+        ivCollectorTrace.addTlsAction(new SendAction(helloDone));
+        ivCollectorTrace.addTlsAction(new ReceiveAction(helloDone));
+
         for (int j = 0; j < numberOfBlocks; j++) {
             HttpsRequestMessage request = new HttpsRequestMessage();
             List<HttpsHeader> header = new LinkedList<>();
             header.add(new HostHeader());
-            // header.add(new GenericHttpsHeader("Connection",
+            // request.add(new GenericHttpsHeader("Connection",
             // "keep-alive"));
+            request.getHeader().add(
+                    new GenericHttpsHeader("Accept",
+                            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
+            request.getHeader().add(
+                    new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
+            request.getHeader().add(new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
+            request.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
+            request.getHeader()
+                    .add(new GenericHttpsHeader("User-Agent",
+                            "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
             request.setHeader(header);
             ivCollectorTrace.addTlsAction(new SendAction(request));
             ivCollectorTrace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
