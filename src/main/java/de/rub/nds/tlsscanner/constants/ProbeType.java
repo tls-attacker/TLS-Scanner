@@ -39,6 +39,9 @@ public enum ProbeType {
     HANDSHAKE_SIMULATION,
     TLS13,
     MAC,
+    CCA_SUPPORT,
+    CCA_REQUIRED,
+    CCA,
     DIRECT_RACCOON,
     EC_POINT_FORMAT,
     RACCOON_ATTACK

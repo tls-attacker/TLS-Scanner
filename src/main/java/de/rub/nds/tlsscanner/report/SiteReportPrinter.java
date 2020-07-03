@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
+import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
@@ -49,16 +51,21 @@ import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import static de.rub.nds.tlsscanner.rating.TestResult.FALSE;
+import static de.rub.nds.tlsscanner.rating.TestResult.TRUE;
 import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
 import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NondeterministicVectorContainerHolder;
 import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.VectorContainer;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
+import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+
+import java.util.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -141,6 +148,7 @@ public class SiteReportPrinter {
         appendHttps(builder);
         appendRandom(builder);
         appendPublicKeyIssues(builder);
+        appendClientAuthentication(builder);
         appendScoringResults(builder);
         appendRecommendations(builder);
         appendPerformanceData(builder);
@@ -1668,6 +1676,64 @@ public class SiteReportPrinter {
             }
         } else {
             LOGGER.debug("Not printing performance data.");
+        }
+    }
+
+    private void appendClientAuthentication(StringBuilder builder) {
+        prettyAppendHeading(builder, "Client authentication");
+        prettyAppend(builder, "Supported", report.getCcaSupported());
+        prettyAppend(builder, "Required", report.getCcaRequired());
+
+        if (report.getCcaTestResultList() != null) {
+            List<CcaTestResult> ccaTestResults = report.getCcaTestResultList();
+            ccaTestResults.sort(new Comparator<CcaTestResult>() {
+                @Override
+                public int compare(CcaTestResult ccaTestResult, CcaTestResult t1) {
+                    int c;
+                    c = ccaTestResult.getWorkflowType().compareTo(t1.getWorkflowType());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getCertificateType().compareTo(t1.getCertificateType());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getProtocolVersion().compareTo(t1.getProtocolVersion());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getCipherSuite().compareTo(t1.getCipherSuite());
+                    return c;
+                }
+            });
+            CcaWorkflowType lastCcaWorkflowType = null;
+            CcaCertificateType lastCcaCertificateType = null;
+            ProtocolVersion lastProtocolVersion = null;
+            for (CcaTestResult ccaTestResult : ccaTestResults) {
+                if (ccaTestResult.getWorkflowType() != lastCcaWorkflowType) {
+                    lastCcaWorkflowType = ccaTestResult.getWorkflowType();
+                    prettyAppendSubheading(builder, lastCcaWorkflowType.name());
+                }
+                if (ccaTestResult.getCertificateType() != lastCcaCertificateType) {
+                    lastCcaCertificateType = ccaTestResult.getCertificateType();
+                    prettyAppendSubSubheading(builder, lastCcaCertificateType.name());
+                }
+                if (ccaTestResult.getProtocolVersion() != lastProtocolVersion) {
+                    lastProtocolVersion = ccaTestResult.getProtocolVersion();
+                    prettyAppendSubSubSubheading(builder, lastProtocolVersion.name());
+                }
+                prettyAppend(
+                        builder,
+                        ccaTestResult.getWorkflowType().name().concat("--")
+                                .concat(ccaTestResult.getCertificateType().name()).concat("--")
+                                .concat(ccaTestResult.getProtocolVersion().name()).concat("--")
+                                .concat(ccaTestResult.getCipherSuite().name()), ccaTestResult.getSucceeded(),
+                        ccaTestResult.getSucceeded() ? AnsiColor.RED : AnsiColor.GREEN);
+
+            }
         }
     }
 
