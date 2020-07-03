@@ -36,6 +36,7 @@ import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
+import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
@@ -125,6 +126,13 @@ public class SiteReport extends Observable implements Serializable {
     private Integer connectionRfc7918SecureCounter = null;
     private Integer connectionInsecureCounter = null;
     private List<SimulatedClientResult> simulatedClientList = null;
+
+    // CCA
+    private Boolean ccaSupported = null;
+    private Boolean ccaRequired = null;
+    private List<CcaTestResult> ccaTestResultList;
+
+    private List<ProbeType> probeTypeList;
 
     private int performedTcpConnections = 0;
 
@@ -538,6 +546,22 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setKnownVulnerability(KnownPaddingOracleVulnerability knownVulnerability) {
         this.knownVulnerability = knownVulnerability;
+    }
+
+    public synchronized Boolean getCcaSupported() {
+        return this.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE;
+    }
+
+    public synchronized Boolean getCcaRequired() {
+        return this.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE;
+    }
+
+    public synchronized List<CcaTestResult> getCcaTestResultList() {
+        return ccaTestResultList;
+    }
+
+    public synchronized void setCcaTestResultList(List<CcaTestResult> ccaTestResultList) {
+        this.ccaTestResultList = ccaTestResultList;
     }
 
     public synchronized List<InvalidCurveResponse> getInvalidCurveResultList() {

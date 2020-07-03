@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
+import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
@@ -22,13 +24,43 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.DTLS10;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.DTLS12;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.SSL2;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.SSL3;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS10;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS11;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS12;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT14;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT15;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT16;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT17;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT18;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT19;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT20;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT21;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT22;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT23;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT24;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT25;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT26;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT27;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT28;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.AnsiColor;
+import static de.rub.nds.tlsscanner.constants.CheckPatternType.CORRECT;
+import static de.rub.nds.tlsscanner.constants.CheckPatternType.PARTIAL;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
+import static de.rub.nds.tlsscanner.constants.CipherSuiteGrade.GOOD;
+import static de.rub.nds.tlsscanner.constants.CipherSuiteGrade.LOW;
+import static de.rub.nds.tlsscanner.constants.CipherSuiteGrade.MEDIUM;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.leak.ResponseCounter;
+import de.rub.nds.tlsscanner.leak.VectorContainer;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
@@ -45,19 +77,24 @@ import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import static de.rub.nds.tlsscanner.rating.TestResult.FALSE;
+import static de.rub.nds.tlsscanner.rating.TestResult.TRUE;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
-import de.rub.nds.tlsscanner.leak.ResponseCounter;
-import de.rub.nds.tlsscanner.leak.InformationLeakTest;
-import de.rub.nds.tlsscanner.leak.VectorContainer;
-import de.rub.nds.tlsscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
+import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.DUPLICATES;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.UNIX_TIME;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -119,39 +156,32 @@ public class SiteReportPrinter {
         //
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
-        // appendExtensions(builder);
-        // appendCompressions(builder);
-        // appendEcPointFormats(builder);
-        // appendIntolerances(builder);
-        // appendAttackVulnerabilities(builder);
-        // appendBleichenbacherResults(builder);
-        // appendPaddingOracleResults(builder);
+        appendExtensions(builder);
+        appendCompressions(builder);
+        appendEcPointFormats(builder);
+        appendIntolerances(builder);
+        appendAttackVulnerabilities(builder);
+        appendBleichenbacherResults(builder);
+        appendPaddingOracleResults(builder);
+        sessionTicketZeroKeyDetails(builder);
         appendDirectRaccoonResults(builder);
-        // appendInvalidCurveResults(builder);
-        // appendRaccoonAttackDetails(builder);
-        // // appendGcm(builder);
-        // appendRfc(builder);
-        // appendCertificate(builder);
-        // appendSession(builder);
-        // appendRenegotiation(builder);
-        // appendHandshakeSimulation(builder);
-        // appendHttps(builder);
-        // appendRandom(builder);
-        // appendPublicKeyIssues(builder);
-        // appendScoringResults(builder);
-        // appendRecommendations(builder);
-        // appendPerformanceData(builder);
-        prettyAppendHeading(builder, "Result");
-        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON) == TestResult.TRUE) {
-            if (report.getResult(AnalyzedProperty.REUSES_DH_PUBLICKEY) == TestResult.TRUE) {
-                prettyAppend(builder, "VULNERABLE . FULLY EXPLOITABLE", AnsiColor.RED);
-            } else {
-                prettyAppend(builder, "VULNERABLE . NOT EXPLOITABLE", AnsiColor.RED);
-            }
-        } else {
-            prettyAppend(builder, "NOT VULNERABLE", AnsiColor.GREEN);
+        appendInvalidCurveResults(builder);
+        // appendGcm(builder);
+        appendRaccoonAttackDetails(builder);
+        // appendGcm(builder);
+        appendRfc(builder);
+        appendCertificate(builder);
+        appendSession(builder);
+        appendRenegotiation(builder);
+        appendHandshakeSimulation(builder);
+        appendHttps(builder);
+        appendRandom(builder);
+        appendPublicKeyIssues(builder);
+        appendClientAuthentication(builder);
+        appendScoringResults(builder);
+        appendRecommendations(builder);
+        appendPerformanceData(builder);
 
-        }
         return builder.toString();
     }
 
@@ -663,6 +693,8 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Extra Clear DROWN", AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
+        prettyAppend(builder, "CVE-2020-13777 (Zero key)", AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
+
         return builder;
     }
 
@@ -1642,4 +1674,72 @@ public class SiteReportPrinter {
             LOGGER.debug("Not printing performance data.");
         }
     }
+
+    private void appendClientAuthentication(StringBuilder builder) {
+        prettyAppendHeading(builder, "Client authentication");
+        prettyAppend(builder, "Supported", report.getCcaSupported());
+        prettyAppend(builder, "Required", report.getCcaRequired());
+
+        if (report.getCcaTestResultList() != null) {
+            List<CcaTestResult> ccaTestResults = report.getCcaTestResultList();
+            ccaTestResults.sort(new Comparator<CcaTestResult>() {
+                @Override
+                public int compare(CcaTestResult ccaTestResult, CcaTestResult t1) {
+                    int c;
+                    c = ccaTestResult.getWorkflowType().compareTo(t1.getWorkflowType());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getCertificateType().compareTo(t1.getCertificateType());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getProtocolVersion().compareTo(t1.getProtocolVersion());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getCipherSuite().compareTo(t1.getCipherSuite());
+                    return c;
+                }
+            });
+            CcaWorkflowType lastCcaWorkflowType = null;
+            CcaCertificateType lastCcaCertificateType = null;
+            ProtocolVersion lastProtocolVersion = null;
+            for (CcaTestResult ccaTestResult : ccaTestResults) {
+                if (ccaTestResult.getWorkflowType() != lastCcaWorkflowType) {
+                    lastCcaWorkflowType = ccaTestResult.getWorkflowType();
+                    prettyAppendSubheading(builder, lastCcaWorkflowType.name());
+                }
+                if (ccaTestResult.getCertificateType() != lastCcaCertificateType) {
+                    lastCcaCertificateType = ccaTestResult.getCertificateType();
+                    prettyAppendSubSubheading(builder, lastCcaCertificateType.name());
+                }
+                if (ccaTestResult.getProtocolVersion() != lastProtocolVersion) {
+                    lastProtocolVersion = ccaTestResult.getProtocolVersion();
+                    prettyAppendSubSubSubheading(builder, lastProtocolVersion.name());
+                }
+                prettyAppend(
+                        builder,
+                        ccaTestResult.getWorkflowType().name().concat("--")
+                                .concat(ccaTestResult.getCertificateType().name()).concat("--")
+                                .concat(ccaTestResult.getProtocolVersion().name()).concat("--")
+                                .concat(ccaTestResult.getCipherSuite().name()), ccaTestResult.getSucceeded(),
+                        ccaTestResult.getSucceeded() ? AnsiColor.RED : AnsiColor.GREEN);
+
+            }
+        }
+    }
+
+    private StringBuilder sessionTicketZeroKeyDetails(StringBuilder builder) {
+
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY) == TestResult.TRUE) {
+            prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
+            prettyAppend(builder, "Has GnuTls magic bytes:", AnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
+        }
+        return builder;
+    }
+
 }
