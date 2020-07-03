@@ -11,18 +11,21 @@
             <PatternLayout pattern="%highlight{%msg}%n"/>
         </Console>
     </Appenders>
-     <Loggers>
-		<Logger name="Direct" level="INFO" additivity="false">
+    <Loggers>
+        <Logger name="Direct" level="INFO" additivity="false">
             <AppenderRef ref="Direct"/>
-	 </Logger> 
-     <Logger name="de.rub.nds.tlsattacker" level="ERROR" additivity="false">
+        </Logger> 
+        <Logger name="de.rub.nds.tlsattacker" level="ERROR" additivity="false">
             <AppenderRef ref="Direct"/>
-	 </Logger>
-     <Logger name="de.rub.nds.tlsscanner" level="INFO" additivity="false">
+        </Logger>
+        <Logger name="de.rub.nds.tlsscanner" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
-	 </Logger>
-		<Root level="WARN">
-			<AppenderRef ref="Console"/>
-		</Root>
-  </Loggers>
+        </Logger>
+        <Logger name="DirectLogger" level="OFF" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="WARN">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
 </Configuration>

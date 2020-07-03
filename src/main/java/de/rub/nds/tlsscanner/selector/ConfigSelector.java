@@ -36,15 +36,16 @@ public class ConfigSelector {
         List<SignatureAndHashAlgorithm> sigHashList = new LinkedList<>();
         sigHashList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashList);
-        config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL, CompressionMethod.LZS, CompressionMethod.DEFLATE);
+        config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL, CompressionMethod.LZS,
+                CompressionMethod.DEFLATE);
         config.setQuickReceive(true);
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);
-        //cleanupConfig(config);
+        // cleanupConfig(config);
         return config;
     }
 
-    public static Config cleanupConfig(Config config) {
+    public static void cleanupConfig(Config config) {
         boolean hasEcCipherSuite = false;
         for (CipherSuite suite : config.getDefaultClientSupportedCiphersuites()) {
             if (suite.name().toUpperCase().contains("_EC")) {
@@ -53,6 +54,5 @@ public class ConfigSelector {
         }
         config.setAddEllipticCurveExtension(hasEcCipherSuite);
         config.setAddECPointFormatExtension(hasEcCipherSuite);
-        return config;
     }
 }

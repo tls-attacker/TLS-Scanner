@@ -24,6 +24,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.HeartbleedResult;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -40,20 +41,23 @@ public class HeartbleedProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
+            HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig()
+                    .getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
             StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
             if (supportedCiphers != null) {
-                CiphersuiteDelegate ciphersuiteDelegate = (CiphersuiteDelegate) heartbleedConfig.getDelegate(CiphersuiteDelegate.class);
+                CiphersuiteDelegate ciphersuiteDelegate = (CiphersuiteDelegate) heartbleedConfig
+                        .getDelegate(CiphersuiteDelegate.class);
                 ciphersuiteDelegate.setCipherSuites(supportedCiphers);
             }
             HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
             Boolean vulnerable = attacker.isVulnerable();
-            return new HeartbleedResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception e) {
+            return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResult.TRUE : TestResult.FALSE);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new HeartbleedResult(TestResult.ERROR_DURING_TEST);
         }
     }

@@ -34,6 +34,7 @@ public enum ProbeType {
     COMMON_BUGS,
     RESUMPTION,
     RENEGOTIATION,
+    SESSION_TICKET_ZERO_KEY,
     SNI,
     HANDSHAKE_SIMULATION,
     TLS13,
@@ -41,4 +42,7 @@ public enum ProbeType {
     CCA_SUPPORT,
     CCA_REQUIRED,
     CCA,
+    DIRECT_RACCOON,
+    EC_POINT_FORMAT,
+    RACCOON_ATTACK
 }

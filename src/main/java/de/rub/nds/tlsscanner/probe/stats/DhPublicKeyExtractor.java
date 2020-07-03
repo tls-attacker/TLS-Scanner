@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.probe.stats;
 
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsattacker.core.protocol.message.DHEServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -17,19 +18,23 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.math.BigInteger;
 import java.util.List;
 
-public class DhPublicKeyExtractor extends StatExtractor<BigInteger> {
+public class DhPublicKeyExtractor extends StatExtractor<CustomDhPublicKey> {
 
     public DhPublicKeyExtractor() {
-        super(TrackableValueType.DH_PUBKEY);
+        super(TrackableValueType.DHE_PUBLICKEY);
     }
 
     @Override
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
-        List<ProtocolMessage> allReceivedMessages = WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
+        List<ProtocolMessage> allReceivedMessages = WorkflowTraceUtil.getAllReceivedMessages(trace,
+                ProtocolMessageType.HANDSHAKE);
         for (ProtocolMessage message : allReceivedMessages) {
             if (message instanceof DHEServerKeyExchangeMessage) {
-                put(new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getPublicKey().getValue()));
+                put(new CustomDhPublicKey(new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getModulus()
+                        .getValue()), new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getGenerator()
+                        .getValue()), new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getPublicKey()
+                        .getValue())));
             }
         }
     }

@@ -25,17 +25,22 @@ import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NonDetermnisimEvaluationReport;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,13 +48,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Observable;
 import java.util.Set;
-import org.bouncycastle.crypto.tls.Certificate;
 
-public class SiteReport extends Observable {
+public class SiteReport extends Observable implements Serializable {
 
     private final HashMap<String, TestResult> resultMap;
 
-    //General
+    // General
     private List<PerformanceData> performanceList;
 
     private final String host;
@@ -57,16 +61,19 @@ public class SiteReport extends Observable {
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
 
-    //Attacks
+    // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
     private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
+    private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList;
+    private List<InvalidCurveResponse> invalidCurveResultList;
+    private List<RaccoonAttackProbabilities> raccoonAttackProbabilities;
 
-    //Version
+    // Version
     private List<ProtocolVersion> versions = null;
 
-    //Extensions
+    // Extensions
     private List<ExtensionType> supportedExtensions = null;
     private List<NamedGroup> supportedNamedGroups = null;
     private List<NamedGroup> supportedTls13Groups = null;
@@ -74,46 +81,44 @@ public class SiteReport extends Observable {
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
 
-    //Compression
+    // Compression
     private List<CompressionMethod> supportedCompressionMethods = null;
 
-    //RFC
+    // RFC
     private CheckPattern macCheckPatterAppData = null;
     private CheckPattern macCheckPatternFinished = null;
     private CheckPattern verifyCheckPattern = null;
 
-    //Certificate
-    private Certificate certificate = null;
+    // Certificate
     private CertificateChain certificateChain;
 
-    //Ciphers
+    // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
     private Set<CipherSuite> cipherSuites = null;
-    private List<CipherSuite> supportedTls13CipherSuites = null;
 
-    //Session
+    // Session
     private Long sessionTicketLengthHint = null;
 
-    //Renegotiation + SCSV
-    //GCM Nonces
+    // Renegotiation + SCSV
+    // GCM Nonces
     private GcmPattern gcmPattern = null;
 
-    //HTTPS Header
+    // HTTPS Header
     private List<HttpsHeader> headerList = null;
     private Long hstsMaxAge = null;
     private Integer hpkpMaxAge = null;
     private List<HpkpPin> normalHpkpPins;
     private List<HpkpPin> reportOnlyHpkpPins;
 
-    //Randomness
+    // Randomness
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
-    private RandomEvaluationResult randomEvaluationResult;
+    private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
 
-    //PublicKey Params
+    // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
     private Integer weakestDhStrength = null;
 
-    //Handshake Simulation
+    // Handshake Simulation
     private Integer handshakeSuccessfulCounter = null;
     private Integer handshakeFailedCounter = null;
     private Integer connectionRfc7918SecureCounter = null;
@@ -161,6 +166,10 @@ public class SiteReport extends Observable {
         return getResult(property.toString());
     }
 
+    public synchronized void removeResult(AnalyzedProperty property) {
+        resultMap.remove(property.toString());
+    }
+
     public synchronized TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null) ? TestResult.NOT_TESTED_YET : result;
@@ -171,7 +180,9 @@ public class SiteReport extends Observable {
     }
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
-        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
+        this.putResult(property,
+                Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
+                        : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
     public synchronized void putResult(DrownVulnerabilityType result) {
@@ -179,13 +190,13 @@ public class SiteReport extends Observable {
         if (result != null) {
             switch (result) {
                 case NONE:
-                    putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, false);
+                    putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, false);
                     break;
                 case UNKNOWN:
-                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_DROWN.toString(), TestResult.UNCERTAIN);
+                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN.toString(), TestResult.UNCERTAIN);
                     break;
                 default:
-                    putResult(AnalyzedProperty.VULNERABLE_TO_DROWN, TestResult.TRUE);
+                    putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, TestResult.TRUE);
             }
         }
     }
@@ -242,7 +253,8 @@ public class SiteReport extends Observable {
         return supportedTokenBindingKeyParameters;
     }
 
-    public synchronized void setSupportedTokenBindingKeyParameters(List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
+    public synchronized void setSupportedTokenBindingKeyParameters(
+            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
@@ -270,22 +282,6 @@ public class SiteReport extends Observable {
         this.cipherSuites = cipherSuites;
     }
 
-    public synchronized List<CipherSuite> getSupportedTls13CipherSuites() {
-        return supportedTls13CipherSuites;
-    }
-
-    public synchronized void setSupportedTls13CipherSuites(List<CipherSuite> supportedTls13CipherSuites) {
-        this.supportedTls13CipherSuites = supportedTls13CipherSuites;
-    }
-
-    public synchronized Certificate getCertificate() {
-        return certificate;
-    }
-
-    public synchronized void setCertificate(Certificate certificate) {
-        this.certificate = certificate;
-    }
-
     public synchronized List<NamedGroup> getSupportedNamedGroups() {
         return supportedNamedGroups;
     }
@@ -306,7 +302,8 @@ public class SiteReport extends Observable {
         return supportedSignatureAndHashAlgorithms;
     }
 
-    public synchronized void setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+    public synchronized void setSupportedSignatureAndHashAlgorithms(
+            List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
     }
 
@@ -435,8 +432,18 @@ public class SiteReport extends Observable {
         return paddingOracleTestResultList;
     }
 
-    public synchronized void setPaddingOracleTestResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
+    public synchronized void setPaddingOracleTestResultList(
+            List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
+    }
+
+    public synchronized List<DirectRaccoonCipherSuiteFingerprint> getDirectRaccoonResultList() {
+        return directRaccoonTestResultList;
+    }
+
+    public synchronized void setDirectRaccoonTestResultList(
+            List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList) {
+        this.directRaccoonTestResultList = directRaccoonTestResultList;
     }
 
     public synchronized List<HttpsHeader> getHeaderList() {
@@ -483,7 +490,8 @@ public class SiteReport extends Observable {
         return extractedValueContainerMap;
     }
 
-    public synchronized void setExtractedValueContainerList(Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
+    public synchronized void setExtractedValueContainerList(
+            Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
@@ -531,19 +539,41 @@ public class SiteReport extends Observable {
         return paddingOracleShakyEvalResultList;
     }
 
-    public synchronized void setPaddingOracleShakyEvalResultList(List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
+    public synchronized void setPaddingOracleShakyEvalResultList(
+            List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
         this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
     }
 
-    public synchronized Boolean getCcaSupported() { return this.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE; }
+    public synchronized Boolean getCcaSupported() {
+        return this.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE;
+    }
 
+    public synchronized Boolean getCcaRequired() {
+        return this.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE;
+    }
 
-    public synchronized Boolean getCcaRequired() { return this.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE; }
-
-
-    public synchronized List<CcaTestResult> getCcaTestResultList() {return ccaTestResultList;}
+    public synchronized List<CcaTestResult> getCcaTestResultList() {
+        return ccaTestResultList;
+    }
 
     public synchronized void setCcaTestResultList(List<CcaTestResult> ccaTestResultList) {
         this.ccaTestResultList = ccaTestResultList;
     }
+
+    public synchronized List<InvalidCurveResponse> getInvalidCurveResultList() {
+        return invalidCurveResultList;
+    }
+
+    public synchronized void setInvalidCurveResultList(List<InvalidCurveResponse> invalidCurveResultList) {
+        this.invalidCurveResultList = invalidCurveResultList;
+    }
+
+    public synchronized List<RaccoonAttackProbabilities> getRaccoonAttackProbabilities() {
+        return raccoonAttackProbabilities;
+    }
+
+    public synchronized void setRaccoonAttackProbabilities(List<RaccoonAttackProbabilities> raccoonAttackProbabilities) {
+        this.raccoonAttackProbabilities = raccoonAttackProbabilities;
+    }
+
 }

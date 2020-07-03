@@ -53,26 +53,31 @@ public class ProtocolVersionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<ProtocolVersion> supportedVersionList = new LinkedList<>();
-        List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
-        for (ProtocolVersion version : toTestList) {
-            if (isProtocolVersionSupported(version, false)) {
-                supportedVersionList.add(version);
-            } else {
-                unsupportedVersionList.add(version);
-            }
-        }
-        if (supportedVersionList.isEmpty()) {
-            unsupportedVersionList = new LinkedList<>();
+        try {
+            List<ProtocolVersion> supportedVersionList = new LinkedList<>();
+            List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
             for (ProtocolVersion version : toTestList) {
-                if (isProtocolVersionSupported(version, true)) {
+                if (isProtocolVersionSupported(version, false)) {
                     supportedVersionList.add(version);
                 } else {
                     unsupportedVersionList.add(version);
                 }
             }
+            if (supportedVersionList.isEmpty()) {
+                unsupportedVersionList = new LinkedList<>();
+                for (ProtocolVersion version : toTestList) {
+                    if (isProtocolVersionSupported(version, true)) {
+                        supportedVersionList.add(version);
+                    } else {
+                        unsupportedVersionList.add(version);
+                    }
+                }
+            }
+            return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new ProtocolVersionResult(null, null);
         }
-        return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
     }
 
     public boolean isProtocolVersionSupported(ProtocolVersion toTest, boolean intolerance) {
@@ -96,21 +101,12 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        if (toTest == ProtocolVersion.SSL2) {
-            // Dont send extensions if we are in sslv2
-            tlsConfig.setAddECPointFormatExtension(false);
-            tlsConfig.setAddEllipticCurveExtension(false);
-            tlsConfig.setAddHeartbeatExtension(false);
-            tlsConfig.setAddMaxFragmentLengthExtension(false);
-            tlsConfig.setAddServerNameIndicationExtension(false);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(false);
-        } else {
-            tlsConfig.setAddServerNameIndicationExtension(true);
-            tlsConfig.setAddECPointFormatExtension(true);
-            tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        }
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddECPointFormatExtension(true);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
 
         tlsConfig.setDefaultClientNamedGroups(namedGroups);

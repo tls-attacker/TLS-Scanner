@@ -56,11 +56,11 @@ public class CertificateReport {
         return certificate;
     }
 
-    public X509CertificateHolder getCertificateHolder() {
+    public X509CertificateHolder convertToCertificateHolder() {
         return new X509CertificateHolder(certificate);
     }
 
-    public X509Certificate getX509Certificate() {
+    public X509Certificate convertToX509Certificate() {
         try {
             return new X509CertificateObject(certificate);
         } catch (CertificateParsingException ex) {
@@ -250,7 +250,8 @@ public class CertificateReport {
                     .append("\n");
         }
         if (signatureAndHashAlgorithm != null) {
-            builder.append("Hash Algorithm     : ").append(signatureAndHashAlgorithm.getHashAlgorithm().name()).append("\n");
+            builder.append("Hash Algorithm     : ").append(signatureAndHashAlgorithm.getHashAlgorithm().name())
+                    .append("\n");
         }
         if (extendedValidation != null) {
             builder.append("Extended Validation: ").append(extendedValidation).append("\n");

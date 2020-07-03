@@ -55,8 +55,6 @@ public class ScannerConfig extends TLSDelegateConfig {
     @ParametersDelegate
     private CcaDelegate ccaDelegate;
 
-    private boolean noProgressbar = false;
-
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
 
@@ -82,14 +80,6 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(generalDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
-    }
-
-    public boolean isNoProgressbar() {
-        return noProgressbar;
-    }
-
-    public void setNoProgressbar(boolean noProgressbar) {
-        this.noProgressbar = noProgressbar;
     }
 
     public int getOverallThreads() {
@@ -151,7 +141,8 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Override
     public Config createConfig() {
         Config config = super.createConfig(Config.createConfig());
-        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname()) || clientDelegate.getSniHostname() != null) {
+        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
+                || clientDelegate.getSniHostname() != null) {
             config.setAddServerNameIndicationExtension(true);
         } else {
             config.setAddServerNameIndicationExtension(false);

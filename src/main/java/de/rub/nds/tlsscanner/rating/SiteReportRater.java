@@ -43,9 +43,10 @@ public class SiteReportRater {
     /**
      * Returns a generic SiteReportRater
      *
-     * @param recommendationLanguage Language of the recommendations. If no
-     * language file can be found for selected language a default recommendation
-     * file in english is returned
+     * @param recommendationLanguage
+     *            Language of the recommendations. If no language file can be
+     *            found for selected language a default recommendation file in
+     *            english is returned
      * @return
      * @throws JAXBException
      */
@@ -61,7 +62,8 @@ public class SiteReportRater {
         String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + recommendationLanguage + ".xml";
         URL u = classLoader.getResource(fileName);
         if (u == null) {
-            LOGGER.warn("Could not find language resources \"" + fileName + "\" for SiteReportRater. Using default (english).");
+            LOGGER.warn("Could not find language resources \"" + fileName
+                    + "\" for SiteReportRater. Using default (english).");
             fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
         }
         in = classLoader.getResourceAsStream(fileName);
@@ -77,7 +79,8 @@ public class SiteReportRater {
         for (RatingInfluencer ratingInfluencer : influencers.getRatingInfluencers()) {
             TestResult result = resultMap.get(ratingInfluencer.getAnalyzedProperty().toString());
             if (result != null) {
-                PropertyResultRatingInfluencer propertyRatingInfluencer = ratingInfluencer.getPropertyRatingInfluencer(result);
+                PropertyResultRatingInfluencer propertyRatingInfluencer = ratingInfluencer
+                        .getPropertyRatingInfluencer(result);
                 ratingInfluencers.put(ratingInfluencer.getAnalyzedProperty(), propertyRatingInfluencer);
             }
         }
@@ -95,8 +98,7 @@ public class SiteReportRater {
                 LOGGER.warn("Influencer has 'null' influence");
             }
         }
-        for (PropertyResultRatingInfluencer influencer
-                : influencers.values()) {
+        for (PropertyResultRatingInfluencer influencer : influencers.values()) {
             if (influencer.getScoreCap() != null && score >= influencer.getScoreCap()) {
                 score = influencer.getScoreCap();
             }

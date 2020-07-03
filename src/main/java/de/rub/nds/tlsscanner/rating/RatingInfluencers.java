@@ -45,7 +45,8 @@ public class RatingInfluencers implements Serializable {
 
     public static RatingInfluencers createRatingInfluencers(InputStream stream) {
         return RatingIO.readRatingInfluencers(stream);
-        // todo: close stream? https://www.tutorialspoint.com/java/xml/javax_xml_bind_jaxb_unmarshal_inputstream
+        // todo: close stream?
+        // https://www.tutorialspoint.com/java/xml/javax_xml_bind_jaxb_unmarshal_inputstream
     }
 
     @XmlElement(name = "ratingInfluencer")

@@ -65,6 +65,7 @@ public class HttpHeaderProbe extends TlsProbe {
             tlsConfig.setStopActionsAfterFatal(true);
             tlsConfig.setHttpsParsingEnabled(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
+            tlsConfig.setStopActionsAfterIOException(true);
             // Dont send extensions if we are in sslv2
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
@@ -86,14 +87,18 @@ public class HttpHeaderProbe extends TlsProbe {
 
             httpsRequestMessage.getHeader().add(new HostHeader());
             httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
-            httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept",
-                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
-            httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
-            httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
+            httpsRequestMessage.getHeader().add(
+                    new GenericHttpsHeader("Accept",
+                            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
+            httpsRequestMessage.getHeader().add(
+                    new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
+            httpsRequestMessage.getHeader().add(
+                    new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
             httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
-            httpsRequestMessage.getHeader().add(new GenericHttpsHeader(
-                    "User-Agent",
-                    "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
+            httpsRequestMessage
+                    .getHeader()
+                    .add(new GenericHttpsHeader("User-Agent",
+                            "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
 
             trace.addTlsAction(new SendAction(httpsRequestMessage));
             trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
@@ -117,7 +122,8 @@ public class HttpHeaderProbe extends TlsProbe {
                 headerList = new LinkedList<>();
             }
             return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
-        } catch (Exception e) {
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
         }
     }

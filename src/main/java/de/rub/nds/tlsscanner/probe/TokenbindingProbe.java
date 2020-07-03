@@ -44,13 +44,18 @@ public class TokenbindingProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
-        supportedTokenBindingVersion.addAll(getSupportedVersions());
-        List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
-        if (!supportedTokenBindingVersion.isEmpty()) {
-            supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
+        try {
+            List<TokenBindingVersion> supportedTokenBindingVersion = new LinkedList<>();
+            supportedTokenBindingVersion.addAll(getSupportedVersions());
+            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = new LinkedList<>();
+            if (!supportedTokenBindingVersion.isEmpty()) {
+                supportedTokenBindingKeyParameters.addAll(getKeyParameters(supportedTokenBindingVersion.get(0)));
+            }
+            return new TokenbindingResult(supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new TokenbindingResult(null, null);
         }
-        return new TokenbindingResult(supportedTokenBindingVersion, supportedTokenBindingKeyParameters);
     }
 
     private List<TokenBindingKeyParameters> getKeyParameters(TokenBindingVersion version) {
@@ -66,6 +71,7 @@ public class TokenbindingProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         // Dont send extensions if we are in sslv2
         tlsConfig.setAddECPointFormatExtension(true);

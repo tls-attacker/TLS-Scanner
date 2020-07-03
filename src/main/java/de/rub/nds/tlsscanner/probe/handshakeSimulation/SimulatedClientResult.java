@@ -18,7 +18,7 @@ import java.util.List;
 
 public class SimulatedClientResult {
 
-    //To set in HandshakeSimulationProbe
+    // To set in HandshakeSimulationProbe
     private Boolean receivedServerHello = null;
     private Boolean receivedCertificate = null;
     private Boolean receivedServerKeyExchange = null;
@@ -48,7 +48,7 @@ public class SimulatedClientResult {
 
     private final TlsClientConfig tlsClientConfig;
 
-    //To set in HandshakeSimulationAfterProbe
+    // To set in HandshakeSimulationAfterProbe
     private Boolean highestPossibleProtocolVersionSeleceted = null;
     private Boolean handshakeSuccessful = null;
     private Boolean connectionInsecure = null;

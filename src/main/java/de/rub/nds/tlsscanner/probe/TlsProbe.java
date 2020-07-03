@@ -18,8 +18,6 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
@@ -81,8 +79,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
             LOGGER.warn("" + getProbeName() + " - is null result");
         }
 
-        LOGGER.debug(
-                "Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
+        LOGGER.debug("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
         return result;
     }
 
@@ -107,7 +104,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     public abstract boolean canBeExecuted(SiteReport report);
-    
+
     public abstract ProbeResult getCouldNotExecuteResult();
 
     public abstract void adjustConfig(SiteReport report);

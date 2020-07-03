@@ -28,7 +28,8 @@ public class CcaResult extends ProbeResult {
         this.resultList = resultList;
     }
 
-    @Override public void mergeData(SiteReport report) {
+    @Override
+    public void mergeData(SiteReport report) {
         report.putResult(AnalyzedProperty.VULNERABLE_TO_CCA_BYPASS, vulnerable);
         report.setCcaTestResultList(resultList);
     }

@@ -11,6 +11,7 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
+nbactions.xml
 .mvn/timing.properties
 .classpath
 .project

@@ -14,6 +14,8 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -21,28 +23,31 @@ import java.util.List;
  */
 public class PaddingOracleResponseMap extends ProbeResult {
 
+    private final static Logger LOGGER = LogManager.getLogger();
+
     private final List<PaddingOracleCipherSuiteFingerprint> resultList;
-    private final List<PaddingOracleCipherSuiteFingerprint> shakyEvalList;
 
-    private TestResult vulnerable;
-
-    public PaddingOracleResponseMap(List<PaddingOracleCipherSuiteFingerprint> resultList, List<PaddingOracleCipherSuiteFingerprint> shakyEvalList, TestResult vulnerable) {
+    public PaddingOracleResponseMap(List<PaddingOracleCipherSuiteFingerprint> resultList) {
         super(ProbeType.PADDING_ORACLE);
         this.resultList = resultList;
-        this.shakyEvalList = shakyEvalList;
-        this.vulnerable = vulnerable;
     }
 
     @Override
     public void mergeData(SiteReport report) {
+        TestResult vulnerable = TestResult.UNCERTAIN;
         if (resultList != null && resultList.isEmpty() && vulnerable == null) {
             vulnerable = TestResult.FALSE;
-        }
-        if (resultList == null) {
+        } else if (resultList == null) {
             vulnerable = TestResult.COULD_NOT_TEST;
+        } else {
+            vulnerable = TestResult.FALSE;
+            for (PaddingOracleCipherSuiteFingerprint fingerprint : resultList) {
+                if (fingerprint.isConsideredVulnerable()) {
+                    vulnerable = TestResult.TRUE;
+                }
+            }
         }
         report.setPaddingOracleTestResultList(resultList);
-        report.setPaddingOracleShakyEvalResultList(shakyEvalList);
         report.putResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }
 

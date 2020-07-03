@@ -12,7 +12,6 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.LinkedList;
-import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -74,7 +73,8 @@ public class InfluencersSerializationTest {
         um = context.createUnmarshaller();
         result = (RatingInfluencers) um.unmarshal(new StringReader(xmlString));
 
-        assertEquals("Influencer length check.", original.getRatingInfluencers().size(), result.getRatingInfluencers().size());
+        assertEquals("Influencer length check.", original.getRatingInfluencers().size(), result.getRatingInfluencers()
+                .size());
 
         RatingInfluencer oInfluencer = original.getRatingInfluencers().get(0);
         RatingInfluencer rInfluencer = result.getRatingInfluencers().get(0);
@@ -86,27 +86,4 @@ public class InfluencersSerializationTest {
         assertEquals(ori.getInfluence(), rri.getInfluence(), 0.1);
         assertEquals(ori.getScoreCap(), rri.getScoreCap(), 0.1);
     }
-
-//    @Test
-//    public void testSerializeSimple() throws Exception {
-//        RatingInfluencers test = new RatingInfluencers();
-//        List<RatingInfluencer> influencers = new LinkedList<>();
-//        
-//        for (AnalyzedProperty a : AnalyzedProperty.values()) {
-//            RatingInfluencer i = new RatingInfluencer();
-//            i.setAnalyzedProperty(a);
-//            i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, 0));
-//            i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.FALSE, 0));
-//            influencers.add(i);
-//        }
-//        test.setRatingInfluencers(influencers);
-//        
-//        m.marshal(test, writer);
-//
-//        String xmlString = writer.toString();
-//        LOGGER.info(xmlString);
-//        System.out.println(xmlString);
-//        
-//        Assert.assertNotNull(influencers);
-//    }
 }

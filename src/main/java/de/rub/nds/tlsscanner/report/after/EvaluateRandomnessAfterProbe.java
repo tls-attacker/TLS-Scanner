@@ -23,10 +23,17 @@ public class EvaluateRandomnessAfterProbe extends AfterProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter.hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
+    private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
+            .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
 
     @Override
     public void analyze(SiteReport report) {
+
+        if (report.getExtractedValueContainerMap().isEmpty()) {
+            report.setRandomEvaluationResult(RandomEvaluationResult.NO_DUPLICATES);
+            return;
+        }
+
         ExtractedValueContainer container = report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
         ExtractedValueContainer tempContainter = new ExtractedValueContainer(TrackableValueType.RANDOM);
         for (Object o : container.getExtractedValueList()) {

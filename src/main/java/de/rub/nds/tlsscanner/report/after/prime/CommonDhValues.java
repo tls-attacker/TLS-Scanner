@@ -20,7 +20,8 @@ public class CommonDhValues implements Serializable {
     private boolean safePrime;
     private String name;
 
-    public CommonDhValues(BigInteger generator, BigInteger modulus, int length, boolean prime, boolean safePrime, String name) {
+    public CommonDhValues(BigInteger generator, BigInteger modulus, int length, boolean prime, boolean safePrime,
+            String name) {
         this.generator = generator;
         this.modulus = modulus;
         this.length = length;

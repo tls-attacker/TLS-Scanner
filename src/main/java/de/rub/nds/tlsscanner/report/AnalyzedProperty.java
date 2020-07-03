@@ -46,6 +46,9 @@ public enum AnalyzedProperty {
     SUPPORTS_IDEA(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_RC2(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_RC4(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_LEGACY_PRF(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_SHA256_PRF(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_SHA384_PRF(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_CBC(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_AEAD(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_POST_QUANTUM(AnalyzedPropertyCategory.CIPHER_SUITES),
@@ -74,6 +77,8 @@ public enum AnalyzedProperty {
     SUPPORTS_TOKENBINDING(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_MONTGOMERY_CURVES(AnalyzedPropertyCategory.EC),
     SUPPORTS_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_TLS13_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_TLS13_PSK_DHE(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_SESSION_IDS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_ROTATION_HINT(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SECURE_RENEGOTIATION_EXTENSION(AnalyzedPropertyCategory.RENEGOTIATION),
@@ -92,6 +97,10 @@ public enum AnalyzedProperty {
     SUPPORTS_HPKP(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HPKP_REPORTING(AnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HTTP_COMPRESSION(AnalyzedPropertyCategory.HTTPS_HEADERS),
+    SUPPORTS_UNCOMPRESSED_POINT(AnalyzedPropertyCategory.EC),
+    SUPPORTS_ANSIX962_COMPRESSED_PRIME(AnalyzedPropertyCategory.EC),
+    SUPPORTS_ANSIX962_COMPRESSED_CHAR2(AnalyzedPropertyCategory.EC),
+    SUPPORTS_SECP_COMPRESSION_TLS13(AnalyzedPropertyCategory.EC),
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFOCRES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
@@ -159,15 +168,19 @@ public enum AnalyzedProperty {
      * does it ignore the sig hash algorithms
      */
     IGNORES_OFFERED_SIG_HASH_ALGOS(AnalyzedPropertyCategory.QUIRKS),
+    VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_DIRECT_RACCOON(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_PADDING_ORACLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_INVALID_CURVE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_INVALID_CURVE_EPHEMERAL(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_INVALID_CURVE_TWIST(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_POODLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_TLS_POODLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_SWEET_32(AnalyzedPropertyCategory.ATTACKS),
-    VULNERABLE_TO_DROWN(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_GENERAL_DROWN(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_EXTRA_CLEAR_DROWN(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_HEARTBLEED(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_TICKETBLEED(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_EARLY_CCS(AnalyzedPropertyCategory.ATTACKS),
@@ -176,6 +189,7 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_LOGJAM(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_FREAK(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_RACCOON_ATTACK(AnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
@@ -186,6 +200,7 @@ public enum AnalyzedProperty {
     REUSES_DH_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_GCM_NONCES(AnalyzedPropertyCategory.FRESHNESS),
     REQUIRES_SNI(AnalyzedPropertyCategory.SNI),
+    HAS_GNU_TLS_MAGIC_BYTES(AnalyzedPropertyCategory.SESSION_TICKET),
 
     /**
      * CCA Properties
@@ -193,7 +208,6 @@ public enum AnalyzedProperty {
     SUPPORTS_CCA(AnalyzedPropertyCategory.CERTIFICATE),
     REQUIRES_CCA(AnalyzedPropertyCategory.CERTIFICATE),
     VULNERABLE_TO_CCA_BYPASS(AnalyzedPropertyCategory.ATTACKS);
-
 
     private AnalyzedPropertyCategory category;
 

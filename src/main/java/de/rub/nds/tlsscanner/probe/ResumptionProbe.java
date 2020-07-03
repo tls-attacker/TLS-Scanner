@@ -44,12 +44,13 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setQuickReceive(true);
             List<CipherSuite> ciphersuites = new LinkedList<>();
             ciphersuites.addAll(supportedSuites);
-            //TODO this can fail in some rare occasions
+            // TODO this can fail in some rare occasions
             tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites.get(0));
             tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setEnforceSettings(false);
             tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopActionsAfterIOException(true);
             tlsConfig.setStopReceivingAfterFatal(true);
             tlsConfig.setStopActionsAfterFatal(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_RESUMPTION);
@@ -61,8 +62,10 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
             State state = new State(tlsConfig);
             executeState(state);
-            return new ResumptionResult(state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception e) {
+            return new ResumptionResult(state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE
+                    : TestResult.FALSE);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST);
         }
     }

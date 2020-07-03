@@ -30,7 +30,8 @@ public class PaddingOracleIdentificationAfterProbe extends AfterProbe {
     @Override
     public void analyze(SiteReport report) {
         if (Objects.equals(report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResult.TRUE)) {
-            KnownPaddingOracleVulnerability knownVulnerability = attributor.getKnownVulnerability(report.getPaddingOracleTestResultList());
+            KnownPaddingOracleVulnerability knownVulnerability = attributor.getKnownVulnerability(report
+                    .getPaddingOracleTestResultList());
             report.setKnownVulnerability(knownVulnerability);
         }
     }

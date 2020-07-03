@@ -1,9 +1,22 @@
-FROM maven:3.6.1-jdk-8
-RUN git clone https://github.com/RUB-NDS/TLS-Attacker.git
+FROM maven:3.6.1-jdk-8 AS build-image
+WORKDIR /build
+
 RUN git clone https://github.com/RUB-NDS/TLS-Scanner.git --recurse-submodules
-WORKDIR /TLS-Attacker/
+
+RUN git clone https://github.com/RUB-NDS/TLS-Attacker.git && \
+    TLS_ATTACKER_VERSION=$(cat TLS-Scanner/pom.xml | grep -A 1 "<artifactId>TLS-Core</artifactId>" | grep -o -E "[0-9.]+") && \
+    cd TLS-Attacker && \
+    git checkout "tags/$TLS_ATTACKER_VERSION" -b "$TLS_ATTACKER_VERSION" && \
+    mvn clean install -DskipTests=true
+
+WORKDIR /build/TLS-Scanner
 RUN mvn clean install -DskipTests=true
-WORKDIR /TLS-Scanner/
-RUN mvn clean install -DskipTests=true
-WORKDIR /TLS-Scanner/apps/
-ENTRYPOINT ["java" ,"-jar","TLS-Scanner.jar"]
+
+#############
+FROM openjdk:8-alpine
+
+COPY --from=build-image /build/TLS-Scanner/apps /apps
+
+WORKDIR /apps
+ENTRYPOINT ["java", "-jar", "TLS-Scanner.jar"]
+

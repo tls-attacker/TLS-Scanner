@@ -22,16 +22,14 @@ public class CertificateResult extends ProbeResult {
     private Certificate certs;
     private CertificateChain chain;
 
-    public CertificateResult(CertificateChain chain, Certificate certs) {
+    public CertificateResult(CertificateChain chain) {
         super(ProbeType.CERTIFICATE);
         this.chain = chain;
-        this.certs = certs;
     }
 
     @Override
     public void mergeData(SiteReport report) {
         report.setCertificateChain(chain);
-        report.setCertificate(certs);
     }
 
 }

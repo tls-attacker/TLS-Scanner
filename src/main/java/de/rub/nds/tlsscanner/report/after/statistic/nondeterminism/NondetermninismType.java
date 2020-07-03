@@ -6,12 +6,14 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report.after.padding;
+package de.rub.nds.tlsscanner.report.after.statistic.nondeterminism;
 
 /**
  *
  * @author ic0ns
  */
-public enum ShakyType {
-    CONNECTION, HETEROGEN, MIXED
+public enum NondetermninismType {
+    CONNECTION,
+    HETEROGEN,
+    MIXED
 }

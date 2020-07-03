@@ -50,7 +50,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {
             try {
-                TlsClientConfig tlsClientConfig = TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/" + configFileName);
+                TlsClientConfig tlsClientConfig = TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/"
+                        + configFileName);
                 if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     simmulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 } else {
@@ -64,23 +65,29 @@ public class HandshakeSimulationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<State> clientStateList = new LinkedList<>();
-        List<SimulatedClientResult> resultList = new LinkedList<>();
-        for (SimulationRequest request : simmulationRequestList) {
-            State state = request.getExecutableState(scannerConfig);
-            clientStateList.add(state);
-            resultList.add(new SimulatedClientResult(request.getTlsClientConfig(), state));
+        try {
+            List<State> clientStateList = new LinkedList<>();
+            List<SimulatedClientResult> resultList = new LinkedList<>();
+            for (SimulationRequest request : simmulationRequestList) {
+                State state = request.getExecutableState(scannerConfig);
+                clientStateList.add(state);
+                resultList.add(new SimulatedClientResult(request.getTlsClientConfig(), state));
+            }
+            executeState(clientStateList);
+            for (SimulatedClientResult result : resultList) {
+                evaluateClientConfig(result);
+                evaluateReceivedMessages(result);
+            }
+            return new HandshakeSimulationResult(resultList);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new HandshakeSimulationResult(null);
         }
-        executeState(clientStateList);
-        for (SimulatedClientResult result : resultList) {
-            evaluateClientConfig(result);
-            evaluateReceivedMessages(result);
-        }
-        return new HandshakeSimulationResult(resultList);
     }
 
     private void evaluateClientConfig(SimulatedClientResult simulatedClient) {
         Config config = simulatedClient.getState().getConfig();
+        config.setStopActionsAfterIOException(true);
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
         simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
         if (config.isAddAlpnExtension()) {
@@ -89,18 +96,24 @@ public class HandshakeSimulationProbe extends TlsProbe {
             simulatedClient.setAlpnAnnouncedProtocols("-");
         }
         simulatedClient.setSupportedVersionList(simulatedClient.getTlsClientConfig().getSupportedVersionList());
-        simulatedClient.setVersionAcceptForbiddenCiphersuiteList(simulatedClient.getTlsClientConfig().getVersionAcceptForbiddenCiphersuiteList());
+        simulatedClient.setVersionAcceptForbiddenCiphersuiteList(simulatedClient.getTlsClientConfig()
+                .getVersionAcceptForbiddenCiphersuiteList());
         simulatedClient.setSupportedRsaKeySizeList(simulatedClient.getTlsClientConfig().getSupportedRsaKeySizeList());
         simulatedClient.setSupportedDheKeySizeList(simulatedClient.getTlsClientConfig().getSupportedDheKeySizeList());
     }
 
     private void evaluateReceivedMessages(SimulatedClientResult simulatedClient) {
         WorkflowTrace trace = simulatedClient.getState().getWorkflowTrace();
-        simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
-        simulatedClient.setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace));
-        simulatedClient.setReceivedServerKeyExchange(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
-        simulatedClient.setReceivedCertificateRequest(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, trace));
-        simulatedClient.setReceivedServerHelloDone(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
+        simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO,
+                trace));
+        simulatedClient.setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE,
+                trace));
+        simulatedClient.setReceivedServerKeyExchange(WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
+        simulatedClient.setReceivedCertificateRequest(WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.CERTIFICATE_REQUEST, trace));
+        simulatedClient.setReceivedServerHelloDone(WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO_DONE, trace));
         simulatedClient.setReceivedAlert(WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, trace));
         simulatedClient.setReceivedUnknown(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.UNKNOWN, trace));
         if (!simulatedClient.getReceivedAlert()) {
@@ -180,7 +193,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
             }
             if (simulatedClient.getServerPublicKeyParameter() == null) {
                 if (context.getServerEcPublicKey() != null) {
-                    simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getX().getData().bitLength() * 8);
+                    simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getX().getData()
+                            .bitLength() * 8);
                 }
             }
         }

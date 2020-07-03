@@ -22,7 +22,7 @@ public class CcaTestResult {
     private final CipherSuite cipherSuite;
 
     public CcaTestResult(Boolean succeeded, CcaWorkflowType workflowType, CcaCertificateType certificateType,
-                         ProtocolVersion protocolVersion, CipherSuite cipherSuite) {
+            ProtocolVersion protocolVersion, CipherSuite cipherSuite) {
         this.succeeded = succeeded;
         this.workflowType = workflowType;
         this.certificateType = certificateType;
@@ -30,13 +30,23 @@ public class CcaTestResult {
         this.cipherSuite = cipherSuite;
     }
 
-    public Boolean getSucceeded() {return succeeded;}
+    public Boolean getSucceeded() {
+        return succeeded;
+    }
 
-    public CcaWorkflowType getWorkflowType() {return workflowType;}
+    public CcaWorkflowType getWorkflowType() {
+        return workflowType;
+    }
 
-    public CcaCertificateType getCertificateType() {return certificateType;}
+    public CcaCertificateType getCertificateType() {
+        return certificateType;
+    }
 
-    public ProtocolVersion getProtocolVersion() { return protocolVersion; }
+    public ProtocolVersion getProtocolVersion() {
+        return protocolVersion;
+    }
 
-    public CipherSuite getCipherSuite() { return cipherSuite; }
+    public CipherSuite getCipherSuite() {
+        return cipherSuite;
+    }
 }

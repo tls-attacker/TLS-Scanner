@@ -6,7 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report.after.padding;
+package de.rub.nds.tlsscanner.report.after.statistic;
 
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 
@@ -14,9 +14,9 @@ public class ResponseCounter {
 
     private final ResponseFingerprint fingerprint;
 
-    private final int counter;
+    private int counter;
 
-    private final int total;
+    private int total;
 
     public ResponseCounter(ResponseFingerprint fingerprint, int counter, int total) {
         this.fingerprint = fingerprint;
@@ -34,6 +34,15 @@ public class ResponseCounter {
 
     public int getTotal() {
         return total;
+    }
+
+    public void increaseCounterAndTotal() {
+        counter++;
+        total++;
+    }
+
+    public void increaseOnlyTotal() {
+        total++;
     }
 
     public double getProbability() {
