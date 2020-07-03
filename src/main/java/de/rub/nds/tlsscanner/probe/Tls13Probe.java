@@ -47,7 +47,7 @@ import java.util.List;
 public class Tls13Probe extends TlsProbe {
 
     public Tls13Probe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TLS13, scannerConfig, 0);
+        super(parallelExecutor, ProbeType.TLS13, scannerConfig);
     }
 
     private List<CipherSuite> getSupportedCiphersuites() {

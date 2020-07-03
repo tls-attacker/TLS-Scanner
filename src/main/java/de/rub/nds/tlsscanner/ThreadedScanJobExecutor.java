@@ -10,12 +10,12 @@ package de.rub.nds.tlsscanner;
 
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -66,7 +66,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     public SiteReport execute() {
         this.notScheduledTasks = new ArrayList<>(scanJob.getProbeList());
 
-        SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<>());
+        SiteReport report = new SiteReport(config.getClientDelegate().getHost());
         report.addObserver(this);
 
         checkForExecutableProbes(report);
@@ -101,6 +101,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                         ProbeResult probeResult = result.get();
                         ConsoleLogger.CONSOLE.info("+++" + probeResult.getProbeName() + " executed");
                         finishedFutures.add(result);
+                        report.markProbeAsExecuted(result.get().getType());
                         if (probeResult != null) {
                             probeResult.merge(report);
                         }

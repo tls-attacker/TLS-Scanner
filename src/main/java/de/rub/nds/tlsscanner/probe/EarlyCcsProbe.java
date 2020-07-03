@@ -23,7 +23,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 public class EarlyCcsProbe extends TlsProbe {
 
     public EarlyCcsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EARLY_CCS, scannerConfig, 8);
+        super(parallelExecutor, ProbeType.EARLY_CCS, scannerConfig);
     }
 
     @Override

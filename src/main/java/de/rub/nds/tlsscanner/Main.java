@@ -14,12 +14,14 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.AnsiColor;
-import de.rub.nds.tlsscanner.constants.AnsiEscapeSequence;
+import de.rub.nds.tlsscanner.leak.InformationLeakReport;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
 
 /**
  *
@@ -48,7 +50,6 @@ public class Main {
                 ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: "
                         + ((System.currentTimeMillis() - time) / 1000) + "s\n"
                         + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
-
             } catch (ConfigurationException E) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", E);
             }

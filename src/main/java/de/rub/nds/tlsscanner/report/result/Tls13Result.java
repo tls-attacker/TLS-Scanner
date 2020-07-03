@@ -26,7 +26,7 @@ public class Tls13Result extends ProbeResult {
 
     private final List<NamedGroup> supportedNamedGroups;
 
-    private final List<CipherSuite> supportedCipherSuites;
+    private List<CipherSuite> supportedCipherSuites;
 
     private final TestResult supportsSECPCompression;
     private final TestResult issuesSessionTicket;
@@ -170,6 +170,9 @@ public class Tls13Result extends ProbeResult {
         }
         if (report.getVersionSuitePairs() == null) {
             report.setVersionSuitePairs(new LinkedList<>());
+        }
+        if (supportedCipherSuites == null) {
+            supportedCipherSuites = new LinkedList<>();
         }
         report.getVersionSuitePairs().add(new VersionSuiteListPair(ProtocolVersion.TLS13, supportedCipherSuites));
         if (supportedNamedGroups != null) {

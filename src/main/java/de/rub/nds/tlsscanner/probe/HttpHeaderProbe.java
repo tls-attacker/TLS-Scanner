@@ -45,7 +45,7 @@ import java.util.List;
 public class HttpHeaderProbe extends TlsProbe {
 
     public HttpHeaderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig, 0);
+        super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig);
     }
 
     @Override

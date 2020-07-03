@@ -31,9 +31,6 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-parallelProbes", required = false, description = "Defines the number of threads responsible for different TLS probes. If set to 1, only one specific TLS probe (e.g., TLS version scan) can be run in time.")
     private int parallelProbes = 1;
 
-    @Parameter(names = "-danger", required = false, description = "Integer value (1 - 10) which specifies how aggressive the Scanner should test. Default 10")
-    private int dangerLevel = 10;
-
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
     private boolean noColor = false;
 
@@ -44,9 +41,9 @@ public class ScannerConfig extends TLSDelegateConfig {
     private ScannerDetail scanDetail = ScannerDetail.NORMAL;
 
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
-    private ScannerDetail reportDetail = ScannerDetail.NORMAL;
+    private ScannerDetail reportDetail = ScannerDetail.ALL;
 
-    @Parameter(names = "-overallThreads", required = false, description = "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed server.")
+    @Parameter(names = "-threads", required = false, description = "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed server.")
     private int overallThreads = 1;
 
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
@@ -104,14 +101,6 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public StarttlsDelegate getStarttlsDelegate() {
         return starttlsDelegate;
-    }
-
-    public int getDangerLevel() {
-        return dangerLevel;
-    }
-
-    public void setDangerLevel(int dangerLevel) {
-        this.dangerLevel = dangerLevel;
     }
 
     public boolean isNoColor() {

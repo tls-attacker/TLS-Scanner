@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-
 import java.security.PublicKey;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
@@ -42,7 +41,7 @@ public class CertificateReport {
     private Boolean dnsCAA;
     private Boolean trusted;
     private Certificate certificate;
-    private String sha256FingerprintHex;
+    private String sha256Fingerprint;
     private Boolean rocaVulnerable;
     private Boolean trustAnchor;
     private Boolean selfSigned;
@@ -70,11 +69,11 @@ public class CertificateReport {
     }
 
     public String getSHA256Fingerprint() {
-        return sha256FingerprintHex;
+        return sha256Fingerprint;
     }
 
-    public void setSha256FingerprintHex(String sha256FingerprintHex) {
-        this.sha256FingerprintHex = sha256FingerprintHex;
+    public void setSha256Fingerprint(String sha256Fingerprint) {
+        this.sha256Fingerprint = sha256Fingerprint;
     }
 
     public void setCertificate(Certificate certificate) {
@@ -220,7 +219,7 @@ public class CertificateReport {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Fingerprint: ").append(sha256FingerprintHex).append("\n");
+        builder.append("Fingerprint: ").append(sha256Fingerprint).append("\n");
         if (subject != null) {
             builder.append("Subject: ").append(subject).append("\n");
         }

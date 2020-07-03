@@ -21,27 +21,28 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.leak.info.DirectRaccoonOracleTestInfo;
+import de.rub.nds.tlsscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NonDetermnisimEvaluationReport;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,8 @@ public class SiteReport extends Observable implements Serializable {
 
     private final HashMap<String, TestResult> resultMap;
 
+    private Set<ProbeType> executedProbes;
+
     // General
     private List<PerformanceData> performanceList;
 
@@ -63,10 +66,9 @@ public class SiteReport extends Observable implements Serializable {
 
     // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
-    private List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList;
-    private List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList;
+    private List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
-    private List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList;
+    private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList;
     private List<InvalidCurveResponse> invalidCurveResultList;
     private List<RaccoonAttackProbabilities> raccoonAttackProbabilities;
 
@@ -85,7 +87,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<CompressionMethod> supportedCompressionMethods = null;
 
     // RFC
-    private CheckPattern macCheckPatterAppData = null;
+    private CheckPattern macCheckPatternAppData = null;
     private CheckPattern macCheckPatternFinished = null;
     private CheckPattern verifyCheckPattern = null;
 
@@ -134,12 +136,27 @@ public class SiteReport extends Observable implements Serializable {
 
     private int performedTcpConnections = 0;
 
-    public SiteReport(String host, List<ProbeType> probeTypeList) {
+    private SiteReport() {
+        resultMap = new HashMap<>();
+        host = null;
+    }
+
+    public SiteReport(String host) {
         this.host = host;
-        this.probeTypeList = probeTypeList;
         performanceList = new LinkedList<>();
         extractedValueContainerMap = new HashMap<>();
         resultMap = new HashMap<>();
+        cipherSuites = new HashSet<>();
+        versionSuitePairs = new LinkedList<>();
+        executedProbes = new HashSet<>();
+    }
+
+    public synchronized boolean isProbeAlreadyExecuted(ProbeType type) {
+        return (executedProbes.contains(type));
+    }
+
+    public synchronized void markProbeAsExecuted(ProbeType type) {
+        executedProbes.add(type);
     }
 
     public synchronized Long getSessionTicketLengthHint() {
@@ -229,10 +246,6 @@ public class SiteReport extends Observable implements Serializable {
         return host;
     }
 
-    public synchronized List<ProbeType> getProbeTypeList() {
-        return probeTypeList;
-    }
-
     public synchronized Boolean getServerIsAlive() {
         return serverIsAlive;
     }
@@ -278,8 +291,8 @@ public class SiteReport extends Observable implements Serializable {
         return cipherSuites;
     }
 
-    public synchronized void setCipherSuites(Set<CipherSuite> cipherSuites) {
-        this.cipherSuites = cipherSuites;
+    public synchronized void addCipherSuites(Set<CipherSuite> cipherSuites) {
+        this.cipherSuites.addAll(cipherSuites);
     }
 
     public synchronized List<NamedGroup> getSupportedNamedGroups() {
@@ -324,11 +337,11 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized CheckPattern getMacCheckPatternAppData() {
-        return macCheckPatterAppData;
+        return macCheckPatternAppData;
     }
 
-    public synchronized void setMacCheckPatterAppData(CheckPattern macCheckPatterAppData) {
-        this.macCheckPatterAppData = macCheckPatterAppData;
+    public synchronized void setMacCheckPatternAppData(CheckPattern macCheckPatternAppData) {
+        this.macCheckPatternAppData = macCheckPatternAppData;
     }
 
     public synchronized CheckPattern getVerifyCheckPattern() {
@@ -428,22 +441,22 @@ public class SiteReport extends Observable implements Serializable {
         this.performanceList = performanceList;
     }
 
-    public synchronized List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleTestResultList() {
+    public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
         return paddingOracleTestResultList;
     }
 
     public synchronized void setPaddingOracleTestResultList(
-            List<PaddingOracleCipherSuiteFingerprint> paddingOracleTestResultList) {
+            List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 
-    public synchronized List<DirectRaccoonCipherSuiteFingerprint> getDirectRaccoonResultList() {
-        return directRaccoonTestResultList;
+    public synchronized List<InformationLeakTest<DirectRaccoonOracleTestInfo>> getDirectRaccoonResultList() {
+        return directRaccoonResultList;
     }
 
-    public synchronized void setDirectRaccoonTestResultList(
-            List<DirectRaccoonCipherSuiteFingerprint> directRaccoonTestResultList) {
-        this.directRaccoonTestResultList = directRaccoonTestResultList;
+    public synchronized void setDirectRaccoonResultList(
+            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
+        this.directRaccoonResultList = directRaccoonResultList;
     }
 
     public synchronized List<HttpsHeader> getHeaderList() {
@@ -533,15 +546,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setKnownVulnerability(KnownPaddingOracleVulnerability knownVulnerability) {
         this.knownVulnerability = knownVulnerability;
-    }
-
-    public synchronized List<PaddingOracleCipherSuiteFingerprint> getPaddingOracleShakyEvalResultList() {
-        return paddingOracleShakyEvalResultList;
-    }
-
-    public synchronized void setPaddingOracleShakyEvalResultList(
-            List<PaddingOracleCipherSuiteFingerprint> paddingOracleShakyEvalResultList) {
-        this.paddingOracleShakyEvalResultList = paddingOracleShakyEvalResultList;
     }
 
     public synchronized Boolean getCcaSupported() {

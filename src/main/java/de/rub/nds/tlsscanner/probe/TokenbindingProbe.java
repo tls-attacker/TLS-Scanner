@@ -39,7 +39,7 @@ import java.util.Set;
 public class TokenbindingProbe extends TlsProbe {
 
     public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TOKENBINDING, config, 0);
+        super(parallelExecutor, ProbeType.TOKENBINDING, config);
     }
 
     @Override

@@ -22,6 +22,11 @@ public class VersionSuiteListPair {
 
     private final List<CipherSuite> ciphersuiteList;
 
+    private VersionSuiteListPair() {
+        version = null;
+        ciphersuiteList = null;
+    }
+
     public VersionSuiteListPair(ProtocolVersion version, List<CipherSuite> ciphersuiteList) {
         this.version = version;
         this.ciphersuiteList = ciphersuiteList;

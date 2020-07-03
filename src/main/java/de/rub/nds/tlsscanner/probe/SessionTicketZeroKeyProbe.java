@@ -93,12 +93,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     private List<CipherSuite> supportedSuites;
 
     public SessionTicketZeroKeyProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig, 0);
-    }
-
-    public SessionTicketZeroKeyProbe(ParallelExecutor parallelExecutor, ProbeType type, ScannerConfig scannerConfig,
-            int danger) {
-        super(parallelExecutor, type, scannerConfig, danger);
+        super(parallelExecutor, ProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig);
     }
 
     @Override

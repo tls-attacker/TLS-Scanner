@@ -19,7 +19,9 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.leak.VectorContainer;
+import de.rub.nds.tlsscanner.leak.info.PaddingOracleTestInfo;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -57,10 +59,8 @@ public class PaddingOracleAttributor {
         affectedProducts
                 .add("BIG-IP (LTM, AAM, AFM, Analytics, APM, ASM, DNS, Edge Gateway, FPS, GTM, Link Controller, PEM, WebAccelerator)");
         List<ProtocolMessage> messageList = new LinkedList<>();
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, false, 0, 0, null, null, messageList, null,
-                SocketState.CLOSED);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, false, 0, 0, null, null, messageList, null,
-                SocketState.TIMEOUT);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.TIMEOUT);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -142,15 +142,13 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.INTERNAL_ERROR.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -210,15 +208,13 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.CLOSE_NOTIFY.getValue());
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.TIMEOUT);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.TIMEOUT);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -279,8 +275,7 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.CLOSE_NOTIFY.getValue());
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.DECODE_ERROR.getValue());
@@ -290,8 +285,7 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.CLOSE_NOTIFY.getValue());
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -351,13 +345,10 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.SOCKET_EXCEPTION);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.SOCKET_EXCEPTION);
         messageList = new LinkedList<>();
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, false, 0, 0, null, null, messageList, null,
-                SocketState.SOCKET_EXCEPTION);
-        ResponseFingerprint responseThree = new ResponseFingerprint(false, false, 0, 0, null, null, messageList, null,
-                SocketState.TIMEOUT);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.SOCKET_EXCEPTION);
+        ResponseFingerprint responseThree = new ResponseFingerprint(messageList, null, SocketState.TIMEOUT);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseTwo));
@@ -422,8 +413,7 @@ public class PaddingOracleAttributor {
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
 
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
@@ -435,8 +425,7 @@ public class PaddingOracleAttributor {
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
 
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null,
-                SocketState.TIMEOUT);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.TIMEOUT);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -545,15 +534,13 @@ public class PaddingOracleAttributor {
         alert.setDescription(AlertDescription.BAD_RECORD_MAC.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseOne = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.RECORD_OVERFLOW.getValue());
         alert.setLevel(AlertLevel.FATAL.getValue());
         messageList.add(alert);
-        ResponseFingerprint responseTwo = new ResponseFingerprint(false, true, 1, 1, null, null, messageList, null,
-                SocketState.CLOSED);
+        ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
 
         List<IdentifierResponse> responseList = new LinkedList<>();
         responseList.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -598,7 +585,7 @@ public class PaddingOracleAttributor {
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
 
-        responseOne = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null, SocketState.CLOSED);
+        responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         messageList = new LinkedList<>();
         alert = new AlertMessage();
         alert.setDescription(AlertDescription.RECORD_OVERFLOW.getValue());
@@ -610,7 +597,7 @@ public class PaddingOracleAttributor {
         alert.setLevel(AlertLevel.WARNING.getValue());
         messageList.add(alert);
 
-        responseTwo = new ResponseFingerprint(false, true, 2, 2, null, null, messageList, null, SocketState.CLOSED);
+        responseTwo = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
 
         List<IdentifierResponse> responseListB = new LinkedList<>();
         responseListB.add(new IdentifierResponse("BasicMac1", responseOne));
@@ -666,14 +653,14 @@ public class PaddingOracleAttributor {
     }
 
     public KnownPaddingOracleVulnerability getKnownVulnerability(
-            List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
+            List<InformationLeakTest<PaddingOracleTestInfo>> informationLeakTestList) {
         LOGGER.trace("Trying to attribute PaddingOracle to a Known Vulnerability");
         for (KnownPaddingOracleVulnerability vulnerability : knownVulnerabilityList) {
-            if (!checkCipherSuitesPlausible(vulnerability, fingerPrintList)) {
+            if (!checkCipherSuitesPlausible(vulnerability, informationLeakTestList)) {
                 LOGGER.trace("Ciphersuites are not plausible for " + vulnerability.getCve());
                 continue;
             }
-            if (!checkTestVectorResponseListPlausible(vulnerability, fingerPrintList)) {
+            if (!checkTestVectorResponseListPlausible(vulnerability, informationLeakTestList)) {
                 LOGGER.trace("Responses are not plausible for " + vulnerability.getCve());
                 continue;
             }
@@ -685,19 +672,19 @@ public class PaddingOracleAttributor {
     }
 
     private boolean checkCipherSuitesPlausible(KnownPaddingOracleVulnerability vulnerability,
-            List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
+            List<InformationLeakTest<PaddingOracleTestInfo>> informationLeakTestList) {
         for (CipherSuite suite : vulnerability.getKnownAffectedCiphersuites()) {
-            for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-                if (fingerprint.getSuite() == suite
-                        && !Objects.equals(fingerprint.isConsideredVulnerable(), Boolean.TRUE)) {
+            for (InformationLeakTest<PaddingOracleTestInfo> informationLeakTest : informationLeakTestList) {
+                if (informationLeakTest.getTestInfo().getCipherSuite() == suite
+                        && !Objects.equals(informationLeakTest.isSignificantDistinctAnswers(), Boolean.TRUE)) {
                     return false;
                 }
             }
         }
         for (CipherSuite suite : vulnerability.getKnownNotAffectedCiphersuites()) {
-            for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-                if (fingerprint.getSuite() == suite
-                        && Objects.equals(fingerprint.isConsideredVulnerable(), Boolean.TRUE)) {
+            for (InformationLeakTest<PaddingOracleTestInfo> informationLeakTest : informationLeakTestList) {
+                if (informationLeakTest.getTestInfo().getCipherSuite() == suite
+                        && Objects.equals(informationLeakTest.isSignificantDistinctAnswers(), Boolean.TRUE)) {
                     return false;
                 }
             }
@@ -706,24 +693,26 @@ public class PaddingOracleAttributor {
     }
 
     private boolean checkTestVectorResponseListPlausible(KnownPaddingOracleVulnerability vulnerability,
-            List<PaddingOracleCipherSuiteFingerprint> fingerPrintList) {
-        List<VectorResponse> vulnerableVectorResponseList = null;
-        for (PaddingOracleCipherSuiteFingerprint fingerprint : fingerPrintList) {
-            if (fingerprint.isConsideredVulnerable() == Boolean.TRUE) {
-                vulnerableVectorResponseList = fingerprint.getResponseMap();
+            List<InformationLeakTest<PaddingOracleTestInfo>> informationLeakTestList) {
+        List<VectorContainer> vectorContainerList = null;
+        for (InformationLeakTest<PaddingOracleTestInfo> informationLeakTest : informationLeakTestList) {
+            if (informationLeakTest.isSignificantDistinctAnswers() == Boolean.TRUE) {
+                vectorContainerList = informationLeakTest.getVectorContainerList();
             }
         }
-        if (vulnerableVectorResponseList == null) {
+        if (vectorContainerList == null) {
             return false;
         }
-        for (VectorResponse vulnResponse : vulnerableVectorResponseList) {
+        for (VectorContainer vectorContainer : vectorContainerList) {
             boolean found = false;
             for (IdentifierResponse response : vulnerability.getResponseIdentification()) {
-                PaddingVector paddingVector = (PaddingVector) vulnResponse.getVector();
+                PaddingVector paddingVector = (PaddingVector) vectorContainer.getVector();
                 if (response.getIdentifier().equals(paddingVector.getIdentifier())) {
                     found = true;
-                    if (FingerPrintChecker.checkSimpleEquality(response.getFingerprint(),
-                            vulnResponse.getFingerprint(), true) != EqualityError.NONE) {
+                    // TODO This need to be a coorect check - this currently
+                    // just checks the first message
+                    if (FingerPrintChecker.checkEquality(response.getFingerprint(), vectorContainer
+                            .getResponseFingerprintList().get(0)) != EqualityError.NONE) {
                         return false;
                     }
                     break;

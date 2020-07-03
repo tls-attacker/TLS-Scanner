@@ -93,7 +93,7 @@ public class CommonBugProbe extends TlsProbe {
     // really big client
     // hello messages
     public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.COMMON_BUGS, config, 1);
+        super(parallelExecutor, ProbeType.COMMON_BUGS, config);
     }
 
     @Override

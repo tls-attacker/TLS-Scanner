@@ -138,7 +138,7 @@ public class TlsScanner {
                     isConnectable = true;
                 }
             }
-            SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>());
+            SiteReport report = new SiteReport(config.getClientDelegate().getHost());
             report.setServerIsAlive(isConnectable);
             report.setSupportsSslTls(false);
             return report;
