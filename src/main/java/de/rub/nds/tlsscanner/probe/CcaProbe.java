@@ -47,7 +47,7 @@ public class CcaProbe extends TlsProbe {
     private int reexecutions = 3;
 
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA, config, 7);
+        super(parallelExecutor, ProbeType.CCA, config);
         versionSuiteListPairsList = new LinkedList<>();
     }
 

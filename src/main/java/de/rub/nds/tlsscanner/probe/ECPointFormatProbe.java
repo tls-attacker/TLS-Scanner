@@ -30,7 +30,7 @@ import java.util.List;
 public class ECPointFormatProbe extends TlsProbe {
 
     public ECPointFormatProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EC_POINT_FORMAT, scannerConfig, 0);
+        super(parallelExecutor, ProbeType.EC_POINT_FORMAT, scannerConfig);
     }
 
     @Override

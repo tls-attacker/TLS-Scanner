@@ -34,7 +34,7 @@ import java.util.List;
 public class NamedCurvesProbe extends TlsProbe {
 
     public NamedCurvesProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.NAMED_GROUPS, config, 0);
+        super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
     }
 
     @Override

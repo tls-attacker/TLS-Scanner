@@ -33,7 +33,7 @@ import java.util.List;
 public class CiphersuiteOrderProbe extends TlsProbe {
 
     public CiphersuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CIPHERSUITE_ORDER, config, 0);
+        super(parallelExecutor, ProbeType.CIPHERSUITE_ORDER, config);
     }
 
     @Override

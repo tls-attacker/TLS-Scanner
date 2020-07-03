@@ -45,7 +45,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     private final List<SimulationRequest> simmulationRequestList;
 
     public HandshakeSimulationProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config, 1);
+        super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config);
         simmulationRequestList = new LinkedList<>();
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {

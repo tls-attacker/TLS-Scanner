@@ -26,7 +26,7 @@ import java.util.Objects;
 public class DrownProbe extends TlsProbe {
 
     public DrownProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DROWN, scannerConfig, 8);
+        super(parallelExecutor, ProbeType.DROWN, scannerConfig);
     }
 
     @Override

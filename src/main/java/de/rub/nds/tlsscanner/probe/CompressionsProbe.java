@@ -35,7 +35,7 @@ import java.util.List;
 public class CompressionsProbe extends TlsProbe {
 
     public CompressionsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.COMPRESSIONS, config, 0);
+        super(parallelExecutor, ProbeType.COMPRESSIONS, config);
     }
 
     @Override

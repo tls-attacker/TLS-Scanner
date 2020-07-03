@@ -42,7 +42,7 @@ public class ProtocolVersionProbe extends TlsProbe {
     private List<ProtocolVersion> toTestList;
 
     public ProtocolVersionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.PROTOCOL_VERSION, config, 0);
+        super(parallelExecutor, ProbeType.PROTOCOL_VERSION, config);
         toTestList = new LinkedList<>();
         toTestList.add(ProtocolVersion.SSL2);
         toTestList.add(ProtocolVersion.SSL3);

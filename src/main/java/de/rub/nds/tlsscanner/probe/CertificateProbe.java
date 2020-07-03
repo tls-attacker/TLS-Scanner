@@ -33,7 +33,7 @@ import org.bouncycastle.crypto.tls.Certificate;
 public class CertificateProbe extends TlsProbe {
 
     public CertificateProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CERTIFICATE, config, 0);
+        super(parallelExecutor, ProbeType.CERTIFICATE, config);
     }
 
     @Override

@@ -74,7 +74,7 @@ public class InvalidCurveProbe extends TlsProbe {
     private int executedCombinations = 0;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.INVALID_CURVE, config, 10);
+        super(parallelExecutor, ProbeType.INVALID_CURVE, config);
     }
 
     @Override

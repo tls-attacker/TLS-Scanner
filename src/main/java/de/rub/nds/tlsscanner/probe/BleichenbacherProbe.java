@@ -40,7 +40,7 @@ public class BleichenbacherProbe extends TlsProbe {
     private List<CipherSuite> suiteList;
 
     public BleichenbacherProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.BLEICHENBACHER, config, 10);
+        super(parallelExecutor, ProbeType.BLEICHENBACHER, config);
         suiteList = new LinkedList<>();
     }
 

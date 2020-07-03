@@ -31,7 +31,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 public class CcaSupportProbe extends TlsProbe {
 
     public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA_SUPPORT, config, 1);
+        super(parallelExecutor, ProbeType.CCA_SUPPORT, config);
     }
 
     @Override

@@ -28,7 +28,7 @@ import de.rub.nds.tlsscanner.report.result.TlsPoodleResult;
 public class TlsPoodleProbe extends TlsProbe {
 
     public TlsPoodleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TLS_POODLE, config, 8);
+        super(parallelExecutor, ProbeType.TLS_POODLE, config);
     }
 
     @Override

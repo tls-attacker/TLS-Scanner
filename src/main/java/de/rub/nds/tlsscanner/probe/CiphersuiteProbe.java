@@ -37,7 +37,7 @@ public class CiphersuiteProbe extends TlsProbe {
     private final List<ProtocolVersion> protocolVersions;
 
     public CiphersuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CIPHERSUITE, config, 0);
+        super(parallelExecutor, ProbeType.CIPHERSUITE, config);
         protocolVersions = new LinkedList<>();
         protocolVersions.add(ProtocolVersion.SSL3);
         protocolVersions.add(ProtocolVersion.TLS10);
