@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NONCE;
 
@@ -63,6 +64,8 @@ public class OcspProbe extends TlsProbe {
 
     public static final int NONCE_TEST_VALUE_1 = 42;
     public static final int NONCE_TEST_VALUE_2 = 1337;
+    private static final long STAPLED_NONCE_RANDOM_SEED = 42;
+    private static final int STAPLED_NONCE_RANDOM_BIT_LENGTH = 128;
 
     public OcspProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.OCSP, config);
@@ -168,8 +171,8 @@ public class OcspProbe extends TlsProbe {
         // Nonce
         Asn1PrimitiveOctetString nonceOctetString = new Asn1PrimitiveOctetString();
 
-        SecureRandom rand = new SecureRandom();
-        BigInteger nonce = new BigInteger(128, rand);
+        Random rand = new Random(STAPLED_NONCE_RANDOM_SEED);
+        BigInteger nonce = new BigInteger(STAPLED_NONCE_RANDOM_BIT_LENGTH, rand);
 
         nonceOctetString.setValue(nonce.toByteArray());
         encapsulatingOctetString.addChild(nonceOctetString);
