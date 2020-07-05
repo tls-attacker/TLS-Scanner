@@ -591,7 +591,6 @@ public class SiteReport extends Observable implements Serializable {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
     }
 
-
     public synchronized Boolean getSupportsStapling() {
         return supportsStapling;
     }

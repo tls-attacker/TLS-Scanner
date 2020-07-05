@@ -62,7 +62,7 @@ public class OcspProbe extends TlsProbe {
     private OCSPResponse secondResponse;
 
     public OcspProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.OCSP, config, 0);
+        super(parallelExecutor, ProbeType.OCSP, config);
     }
 
     @Override

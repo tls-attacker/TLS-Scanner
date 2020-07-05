@@ -147,34 +147,10 @@ public class SiteReportPrinter {
         builder.append("\n");
         if (report.getServerIsAlive() == Boolean.FALSE) {
             builder.append("Cannot reach the Server. Is it online?");
-        } else if (report.getSupportsSslTls() == Boolean.FALSE) {
-            builder.append("Server does not seem to support SSL / TLS on the scanned port");
-        } else {
-            appendProtocolVersions(builder);
-            appendCipherSuites(builder);
-            appendExtensions(builder);
-            appendCompressions(builder);
-            appendEcPointFormats(builder);
-            appendIntolerances(builder);
-            appendAttackVulnerabilities(builder);
-            appendBleichenbacherResults(builder);
-            appendPaddingOracleResults(builder);
-            appendInvalidCurveResults(builder);
-            // appendGcm(builder);
-            appendRfc(builder);
-            appendCertificate(builder);
-            appendOcsp(builder);
-            appendSession(builder);
-            appendRenegotiation(builder);
-            appendHandshakeSimulation(builder);
-            appendHttps(builder);
-            appendRandom(builder);
-            appendPublicKeyIssues(builder);
-            appendScoringResults(builder);
-            appendRecommendations(builder);
-            appendPerformanceData(builder);
         }
-
+        if (report.getSupportsSslTls() == Boolean.FALSE) {
+            builder.append("Server does not seem to support SSL / TLS on the scanned port");
+        }
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
         appendExtensions(builder);
@@ -189,6 +165,7 @@ public class SiteReportPrinter {
         // appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
+        appendOcsp(builder);
         appendSession(builder);
         appendRenegotiation(builder);
         appendHandshakeSimulation(builder);
@@ -198,15 +175,6 @@ public class SiteReportPrinter {
         appendScoringResults(builder);
         appendRecommendations(builder);
         appendPerformanceData(builder);
-
-        // TODO: Remove me later, only here for evaluation!
-        try {
-            PrintWriter pw = new PrintWriter(new FileOutputStream(new File("results.csv"), true));
-            pw.println(createCsvResults());
-            pw.close();
-        } catch (Exception e) {
-            LOGGER.error("CSV creation failed for host " + report.getHost());
-        }
 
         return builder.toString();
     }
@@ -219,122 +187,6 @@ public class SiteReportPrinter {
         }
         informationLeakTestList.addAll(report.getDirectRaccoonResultList());
         appendInformationLeakTestList(builder, informationLeakTestList, "Direct Raccoon Results");
-    }
-
-    private String createCsvResults() {
-        StringBuilder csvBuilder = new StringBuilder();
-        csvBuilder.append(report.getHost()).append(",");
-        if (report.getServerIsAlive() == null) {
-            csvBuilder.append("1,");
-        } else if (Boolean.FALSE.equals(report.getServerIsAlive())) {
-            csvBuilder.append("0,");
-        }
-        if (report.getSupportsSslTls() == null) {
-            csvBuilder.append("1,");
-        } else if (Boolean.FALSE.equals(report.getServerIsAlive())) {
-            csvBuilder.append("0,");
-        }
-
-        if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP) == TestResult.TRUE) {
-            csvBuilder.append("1,");
-        } else if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP) == TestResult.FALSE) {
-            csvBuilder.append("0,");
-        } else {
-            csvBuilder.append("-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1");
-            return csvBuilder.toString();
-        }
-
-        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.TRUE) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2) == TestResult.TRUE) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-        if (Boolean.TRUE.equals(report.getSupportsStapling())) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-        if (Boolean.TRUE.equals(report.getMustStaple())) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-        if (report.getResult(AnalyzedProperty.STAPLING_UNRELIABLE) == TestResult.TRUE) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-
-        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13) == TestResult.TRUE) {
-            if (report.getResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES) == TestResult.TRUE) {
-                csvBuilder.append("2,");
-            } else if (report.getResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES) == TestResult.FALSE) {
-                csvBuilder.append("1,");
-            }
-        } else if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13) == TestResult.FALSE) {
-            csvBuilder.append("0,");
-        } else {
-            csvBuilder.append("-1,");
-        }
-
-        if (report.getResult(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE) == TestResult.TRUE) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-        if (report.getDifferenceHoursStapled() != null) {
-            csvBuilder.append(report.getDifferenceHoursStapled()).append(",");
-        } else {
-            csvBuilder.append("-1,");
-        }
-        if (report.getResult(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED) == TestResult.TRUE) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_NONCE) == TestResult.TRUE) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-        if (report.getResult(AnalyzedProperty.NONCE_MISMATCH) == TestResult.TRUE) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_STAPLED_NONCE) == TestResult.TRUE) {
-            csvBuilder.append("1,");
-        } else {
-            csvBuilder.append("0,");
-        }
-
-        // Get longevity of OCSP response
-        OCSPResponse firstResponse = report.getFirstOcspResponse();
-        if (report.getFirstOcspResponse() != null && report.getFirstOcspResponse().getResponseStatus() == 0) {
-            // Check if stapled response is older than a freshly requested
-            // one
-            CertificateStatus certificateStatus = firstResponse.getCertificateStatusList().get(0);
-            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'", Locale.ENGLISH);
-            LocalDateTime firstResponseTime = LocalDateTime.parse(certificateStatus.getTimeOfLastUpdate(),
-                    inputFormatter);
-            LocalDateTime secondResponseTime = LocalDateTime.parse(certificateStatus.getTimeOfNextUpdate(),
-                    inputFormatter);
-
-            // Check how long the stapled response has been cached for, in
-            // hours
-            Duration difference = Duration.between(firstResponseTime, secondResponseTime);
-            long differenceInHours = difference.toHours();
-            csvBuilder.append(differenceInHours);
-        } else {
-            csvBuilder.append("-1");
-        }
-
-        return csvBuilder.toString();
     }
 
     private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
