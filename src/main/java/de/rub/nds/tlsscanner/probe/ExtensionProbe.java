@@ -22,7 +22,9 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,13 +38,19 @@ import java.util.List;
 public class ExtensionProbe extends TlsProbe {
 
     public ExtensionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EXTENSIONS, config, 0);
+        super(parallelExecutor, ProbeType.EXTENSIONS, config);
     }
 
     @Override
     public ProbeResult executeTest() {
-        List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
-        return new ExtensionResult(allSupportedExtensions);
+        try {
+            List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
+            return new ExtensionResult(allSupportedExtensions);
+
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+        }
+        return new ExtensionResult(null);
     }
 
     public List<ExtensionType> getSupportedExtensions() {
@@ -83,6 +91,7 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSessionTicketTLSExtension(true);
         tlsConfig.setAddTruncatedHmacExtension(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
 
         // Certificate Status v2 shenanigans

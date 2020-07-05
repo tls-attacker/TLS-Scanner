@@ -15,11 +15,13 @@ import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.probe.certificate.roca.BrokenKey;
 import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
@@ -129,7 +131,8 @@ public class CertificateReportGenerator {
         try {
             X509Certificate x509Cert = new X509CertificateObject(cert);
             if (x509Cert.getPublicKey() != null) {
-                report.setPublicKey(x509Cert.getPublicKey());
+
+                report.setPublicKey((PublicKey) CertificateUtils.parseCustomPublicKey(x509Cert.getPublicKey()));
             }
         } catch (CertificateParsingException ex) {
             LOGGER.error("Could not parse PublicKey from certificate", ex);
@@ -254,7 +257,7 @@ public class CertificateReportGenerator {
 
     private static void setSha256Hash(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         try {
-            report.setSha256FingerprintHex(DatatypeConverter.printHexBinary(
+            report.setSha256Fingerprint(DatatypeConverter.printHexBinary(
                     MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
         } catch (IOException | NoSuchAlgorithmException e) {
             LOGGER.warn("Could not create SHA-256 Hash", e);

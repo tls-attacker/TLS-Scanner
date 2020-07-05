@@ -21,11 +21,11 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.TlsClientConfig;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import static de.rub.nds.tlsscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConfigFileList;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulationRequest;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
@@ -45,7 +45,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     private final List<SimulationRequest> simmulationRequestList;
 
     public HandshakeSimulationProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config, 1);
+        super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config);
         simmulationRequestList = new LinkedList<>();
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {
@@ -65,23 +65,28 @@ public class HandshakeSimulationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<State> clientStateList = new LinkedList<>();
-        List<SimulatedClientResult> resultList = new LinkedList<>();
-        for (SimulationRequest request : simmulationRequestList) {
-            State state = request.getExecutableState(scannerConfig);
-            clientStateList.add(state);
-            resultList.add(new SimulatedClientResult(request.getTlsClientConfig(), state));
+        try {
+            List<State> clientStateList = new LinkedList<>();
+            List<SimulatedClientResult> resultList = new LinkedList<>();
+            for (SimulationRequest request : simmulationRequestList) {
+                State state = request.getExecutableState(scannerConfig);
+                clientStateList.add(state);
+            }
+            executeState(clientStateList);
+            for (SimulatedClientResult result : resultList) {
+                // evaluateClientConfig(result);
+                // evaluateReceivedMessages(result);
+            }
+            return new HandshakeSimulationResult(resultList);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new HandshakeSimulationResult(null);
         }
-        executeState(clientStateList);
-        for (SimulatedClientResult result : resultList) {
-            evaluateClientConfig(result);
-            evaluateReceivedMessages(result);
-        }
-        return new HandshakeSimulationResult(resultList);
     }
 
-    private void evaluateClientConfig(SimulatedClientResult simulatedClient) {
-        Config config = simulatedClient.getState().getConfig();
+    private void evaluateClientConfig(SimulatedClientResult simulatedClient, State state) {
+        Config config = state.getConfig();
+        config.setStopActionsAfterIOException(true);
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
         simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
         if (config.isAddAlpnExtension()) {
@@ -96,8 +101,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
         simulatedClient.setSupportedDheKeySizeList(simulatedClient.getTlsClientConfig().getSupportedDheKeySizeList());
     }
 
-    private void evaluateReceivedMessages(SimulatedClientResult simulatedClient) {
-        WorkflowTrace trace = simulatedClient.getState().getWorkflowTrace();
+    private void evaluateReceivedMessages(SimulatedClientResult simulatedClient, State state) {
+        WorkflowTrace trace = state.getWorkflowTrace();
         simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO,
                 trace));
         simulatedClient.setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE,
@@ -139,7 +144,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
             }
             simulatedClient.setReceivedAllMandatoryMessages(receivedAllMandatoryMessages);
             if (receivedAllMandatoryMessages) {
-                TlsContext context = simulatedClient.getState().getTlsContext();
+                TlsContext context = state.getTlsContext();
                 evaluateServerHello(context, simulatedClient);
                 evaluateCertificate(context, simulatedClient);
                 if (simulatedClient.getReceivedServerKeyExchange()) {

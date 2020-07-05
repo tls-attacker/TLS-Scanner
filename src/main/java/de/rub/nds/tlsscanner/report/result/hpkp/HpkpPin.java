@@ -15,6 +15,9 @@ public class HpkpPin {
     private String pinType;
     private byte[] pin;
 
+    private HpkpPin() {
+    }
+
     public HpkpPin(String pinType, byte[] ping) {
         this.pinType = pinType;
         this.pin = ping;

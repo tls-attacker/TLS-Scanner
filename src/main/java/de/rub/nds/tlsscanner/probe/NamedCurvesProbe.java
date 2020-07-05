@@ -8,8 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.report.result.NamedGroupResult;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -20,7 +18,9 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.result.NamedGroupResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,18 +34,24 @@ import java.util.List;
 public class NamedCurvesProbe extends TlsProbe {
 
     public NamedCurvesProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.NAMED_GROUPS, config, 0);
+        super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
     }
 
     @Override
     public ProbeResult executeTest() {
-        List<NamedGroup> groups = getSupportedNamedGroups();
-        return new NamedGroupResult(groups);
+        try {
+            List<NamedGroup> groups = getSupportedNamedGroups();
+            return new NamedGroupResult(groups);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new NamedGroupResult(null);
+        }
     }
 
     private List<NamedGroup> getSupportedNamedGroups() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);

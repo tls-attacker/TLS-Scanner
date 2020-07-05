@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.HeartbleedCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.HeartbleedAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
@@ -18,12 +17,14 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.HeartbleedResult;
+import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -34,7 +35,7 @@ public class HeartbleedProbe extends TlsProbe {
     private List<CipherSuite> supportedCiphers;
 
     public HeartbleedProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HEARTBLEED, config, 9);
+        super(parallelExecutor, ProbeType.HEARTBLEED, config);
     }
 
     @Override
@@ -54,8 +55,9 @@ public class HeartbleedProbe extends TlsProbe {
             }
             HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
             Boolean vulnerable = attacker.isVulnerable();
-            return new HeartbleedResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception e) {
+            return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResult.TRUE : TestResult.FALSE);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new HeartbleedResult(TestResult.ERROR_DURING_TEST);
         }
     }

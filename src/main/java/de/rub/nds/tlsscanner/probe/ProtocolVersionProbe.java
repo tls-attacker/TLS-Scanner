@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -26,6 +25,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.ProtocolVersionResult;
@@ -42,7 +42,7 @@ public class ProtocolVersionProbe extends TlsProbe {
     private List<ProtocolVersion> toTestList;
 
     public ProtocolVersionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.PROTOCOL_VERSION, config, 0);
+        super(parallelExecutor, ProbeType.PROTOCOL_VERSION, config);
         toTestList = new LinkedList<>();
         toTestList.add(ProtocolVersion.SSL2);
         toTestList.add(ProtocolVersion.SSL3);
@@ -53,26 +53,31 @@ public class ProtocolVersionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<ProtocolVersion> supportedVersionList = new LinkedList<>();
-        List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
-        for (ProtocolVersion version : toTestList) {
-            if (isProtocolVersionSupported(version, false)) {
-                supportedVersionList.add(version);
-            } else {
-                unsupportedVersionList.add(version);
-            }
-        }
-        if (supportedVersionList.isEmpty()) {
-            unsupportedVersionList = new LinkedList<>();
+        try {
+            List<ProtocolVersion> supportedVersionList = new LinkedList<>();
+            List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
             for (ProtocolVersion version : toTestList) {
-                if (isProtocolVersionSupported(version, true)) {
+                if (isProtocolVersionSupported(version, false)) {
                     supportedVersionList.add(version);
                 } else {
                     unsupportedVersionList.add(version);
                 }
             }
+            if (supportedVersionList.isEmpty()) {
+                unsupportedVersionList = new LinkedList<>();
+                for (ProtocolVersion version : toTestList) {
+                    if (isProtocolVersionSupported(version, true)) {
+                        supportedVersionList.add(version);
+                    } else {
+                        unsupportedVersionList.add(version);
+                    }
+                }
+            }
+            return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new ProtocolVersionResult(null, null);
         }
-        return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
     }
 
     public boolean isProtocolVersionSupported(ProtocolVersion toTest, boolean intolerance) {
@@ -96,21 +101,12 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        if (toTest == ProtocolVersion.SSL2) {
-            // Dont send extensions if we are in sslv2
-            tlsConfig.setAddECPointFormatExtension(false);
-            tlsConfig.setAddEllipticCurveExtension(false);
-            tlsConfig.setAddHeartbeatExtension(false);
-            tlsConfig.setAddMaxFragmentLengthExtension(false);
-            tlsConfig.setAddServerNameIndicationExtension(false);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(false);
-        } else {
-            tlsConfig.setAddServerNameIndicationExtension(true);
-            tlsConfig.setAddECPointFormatExtension(true);
-            tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        }
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddECPointFormatExtension(true);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
 
         tlsConfig.setDefaultClientNamedGroups(namedGroups);

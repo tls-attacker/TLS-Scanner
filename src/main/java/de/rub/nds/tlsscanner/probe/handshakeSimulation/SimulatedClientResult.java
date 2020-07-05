@@ -44,9 +44,9 @@ public class SimulatedClientResult {
     private List<Integer> supportedRsaKeySizeList = null;
     private List<Integer> supportedDheKeySizeList = null;
 
-    private final State state;
+    // private final State state;
 
-    private final TlsClientConfig tlsClientConfig;
+    // private final TlsClientConfig tlsClientConfig;
 
     // To set in HandshakeSimulationAfterProbe
     private Boolean highestPossibleProtocolVersionSeleceted = null;
@@ -57,23 +57,17 @@ public class SimulatedClientResult {
     private List<String> insecureReasons = null;
 
     private SimulatedClientResult() {
-        state = null;
-        tlsClientConfig = null;
+        // tlsClientConfig = null;
     }
 
-    public SimulatedClientResult(TlsClientConfig tlsClientConfig, State state) {
-        this.state = state;
-        this.tlsClientConfig = tlsClientConfig;
+    public SimulatedClientResult(TlsClientConfig tlsClientConfig) {
+        // this.tlsClientConfig = tlsClientConfig;
         this.failureReasons = new LinkedList<>();
         this.insecureReasons = new LinkedList<>();
     }
 
     public TlsClientConfig getTlsClientConfig() {
-        return tlsClientConfig;
-    }
-
-    public State getState() {
-        return state;
+        return null;
     }
 
     public Boolean getReceivedServerHello() {

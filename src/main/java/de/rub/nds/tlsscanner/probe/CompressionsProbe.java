@@ -8,8 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.report.result.CompressionsResult;
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -21,7 +19,9 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.result.CompressionsResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,13 +35,18 @@ import java.util.List;
 public class CompressionsProbe extends TlsProbe {
 
     public CompressionsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.COMPRESSIONS, config, 0);
+        super(parallelExecutor, ProbeType.COMPRESSIONS, config);
     }
 
     @Override
     public ProbeResult executeTest() {
-        List<CompressionMethod> compressions = getSupportedCompressionMethods();
-        return new CompressionsResult(compressions);
+        try {
+            List<CompressionMethod> compressions = getSupportedCompressionMethods();
+            return new CompressionsResult(compressions);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new CompressionsResult(null);
+        }
     }
 
     private List<CompressionMethod> getSupportedCompressionMethods() {
@@ -57,6 +62,7 @@ public class CompressionsProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);

@@ -8,12 +8,10 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.ec.InvalidCurvePoint;
 import de.rub.nds.tlsattacker.attacks.ec.TwistedCurvePoint;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -27,6 +25,7 @@ import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurveOverFp;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveParameterSet;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
@@ -36,7 +35,6 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.InvalidCurveResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,18 +74,24 @@ public class InvalidCurveProbe extends TlsProbe {
     private int executedCombinations = 0;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.INVALID_CURVE, config, 10);
+        super(parallelExecutor, ProbeType.INVALID_CURVE, config);
     }
 
     @Override
     public ProbeResult executeTest() {
-        List<InvalidCurveParameterSet> parameterSets = prepareParameterCombinations();
-        List<InvalidCurveResponse> responses = new LinkedList<>();
-        for (InvalidCurveParameterSet parameterSet : parameterSets) {
-            InvalidCurveResponse scanResponse = executeSingleScan(parameterSet);
-            responses.add(scanResponse);
+        try {
+            List<InvalidCurveParameterSet> parameterSets = prepareParameterCombinations();
+            List<InvalidCurveResponse> responses = new LinkedList<>();
+            for (InvalidCurveParameterSet parameterSet : parameterSets) {
+                InvalidCurveResponse scanResponse = executeSingleScan(parameterSet);
+                responses.add(scanResponse);
+            }
+            return evaluateResponses(responses);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                    TestResult.ERROR_DURING_TEST, null);
         }
-        return evaluateResponses(responses);
     }
 
     @Override
@@ -118,12 +122,12 @@ public class InvalidCurveProbe extends TlsProbe {
         issuesTls13SessionTickets = report.getResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
         supportsTls13PskDhe = report.getResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
 
-        List<NamedGroup> groups = new LinkedList<>();
+        supportedFpGroups = new LinkedList<>();
         if (report.getSupportedNamedGroups() != null) {
             for (NamedGroup group : report.getSupportedNamedGroups()) {
                 if (NamedGroup.getImplemented().contains(group)
                         && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
-                    groups.add(group);
+                    supportedFpGroups.add(group);
                 }
             }
         } else {
@@ -169,18 +173,22 @@ public class InvalidCurveProbe extends TlsProbe {
         }
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
-            List<NamedGroup> tls13groups = new LinkedList();
+            List<NamedGroup> supportedTls13FpGroups = new LinkedList();
             for (NamedGroup group : report.getSupportedTls13Groups()) {
                 if (NamedGroup.getImplemented().contains(group)
                         && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
-                    tls13groups.add(group);
+                    supportedTls13FpGroups.add(group);
                 }
             }
 
             List<CipherSuite> tls13CipherSuites = new LinkedList<>();
-            for (CipherSuite cipherSuite : report.getSupportedTls13CipherSuites()) {
-                if (cipherSuite.isImplemented()) {
-                    tls13CipherSuites.add(cipherSuite);
+            for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
+                if (pair.getVersion().isTLS13()) {
+                    for (CipherSuite cipherSuite : pair.getCiphersuiteList()) {
+                        if (cipherSuite.isImplemented()) {
+                            tls13CipherSuites.add(cipherSuite);
+                        }
+                    }
                 }
             }
 
@@ -191,8 +199,9 @@ public class InvalidCurveProbe extends TlsProbe {
             }
 
             cipherSuitesMap.put(ProtocolVersion.TLS13, tls13CipherSuites);
-            supportedTls13FpGroups = tls13groups;
             tls13FpPointFormatsToTest = tls13FpPointFormats;
+        } else {
+            supportedTls13FpGroups = new LinkedList<>();
         }
 
         // sometimes we found more versions while testing ciphersuites
@@ -206,7 +215,6 @@ public class InvalidCurveProbe extends TlsProbe {
 
         fpPointFormatsToTest = fpPointFormats;
         supportedProtocolVersions = protocolVersions;
-        supportedFpGroups = groups;
         supportedECDHCipherSuites = cipherSuitesMap;
 
     }
@@ -540,7 +548,6 @@ public class InvalidCurveProbe extends TlsProbe {
      * Groups ciphersuites per Version in a hopefully sensible way that reduces
      * the probe count but still provides enough accuracy
      */
-
     private HashMap<ProtocolVersion, List<CipherSuite>> filterCipherSuites() {
         HashMap<ProtocolVersion, List<CipherSuite>> groupedMap = new HashMap<>();
         for (ProtocolVersion protocolVersion : supportedProtocolVersions) {

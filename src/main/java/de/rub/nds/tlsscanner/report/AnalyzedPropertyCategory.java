@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.report;
 
 public enum AnalyzedPropertyCategory {
+    SESSION_TICKET,
     VERSIONS,
     CIPHER_SUITES,
     EXTENSIONS,

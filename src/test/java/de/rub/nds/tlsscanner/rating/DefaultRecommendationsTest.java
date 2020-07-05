@@ -507,7 +507,7 @@ public class DefaultRecommendationsTest {
                         "Disable 64 bit block siphers like 3DES."), "https://sweet32.info"));
         recommendations
                 .add(new Recommendation(
-                        AnalyzedProperty.VULNERABLE_TO_DROWN,
+                        AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN,
                         "Vulnerable to DROWN",
                         "Evaluates whether the TLS server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened eNcryption)",
                         new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to DROWN",
@@ -545,7 +545,7 @@ public class DefaultRecommendationsTest {
                 "https://www.iacr.org/cryptodb/data/paper.php?pubkey=3091"));
         recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_BREACH, "Vulnerable to BREACH",
                 "Evaluates whether the TLS server is vulnerable to BREACH", new PropertyResultRecommendation(
-                        TestResult.TRUE, "The TLS server is vulnerable to BREACH", "Disable TLS compression"),
+                        TestResult.TRUE, "The TLS server is vulnerable to BREACH", "Disable HTTP compression"),
                 "http://breachattack.com"));
         recommendations
                 .add(new Recommendation(

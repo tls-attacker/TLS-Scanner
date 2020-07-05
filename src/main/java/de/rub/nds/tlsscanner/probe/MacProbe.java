@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
@@ -32,6 +31,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -44,6 +44,7 @@ import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.CheckPatternType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.mac.ByteCheckStatus;
+import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.mac.StateIndexPair;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.MacResult;
@@ -63,12 +64,15 @@ public class MacProbe extends TlsProbe {
     private ResponseFingerprint correctFingerprint;
 
     public MacProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.MAC, scannerConfig, 4);
+        super(parallelExecutor, ProbeType.MAC, scannerConfig);
     }
 
     @Override
     public ProbeResult executeTest() {
         correctFingerprint = getCorrectAppDataFingerprint();
+        if (correctFingerprint == null) {
+            return new MacResult(null, null, null);
+        }
         LOGGER.debug("Correct fingerprint: " + correctFingerprint.toString());
         CheckPattern appPattern;
         if (receivedAppdata(correctFingerprint)) {
@@ -92,7 +96,9 @@ public class MacProbe extends TlsProbe {
 
     private ResponseFingerprint getCorrectAppDataFingerprint() {
         Config config = scannerConfig.createConfig();
+        config.setStopActionsAfterIOException(true);
         config.setAddRenegotiationInfoExtension(true);
+        config.setHttpsParsingEnabled(true);
         config.setQuickReceive(true);
         if (suiteList != null) {
             config.setDefaultClientSupportedCiphersuites(suiteList.get(0));
@@ -125,14 +131,21 @@ public class MacProbe extends TlsProbe {
 
         State state = new State(config, trace);
         executeState(state);
-
-        ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
-        try {
-            state.getTlsContext().getTransportHandler().closeConnection();
-        } catch (IOException ex) {
-            LOGGER.warn("Could not close TransportHandler correctly", ex);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(state);
+            try {
+                TlsContext tlsContext = state.getTlsContext();
+                if (tlsContext.getTransportHandler() != null) {
+                    tlsContext.getTransportHandler().closeConnection();
+                }
+            } catch (IOException ex) {
+                LOGGER.warn("Could not close TransportHandler correctly", ex);
+            }
+            return fingerprint;
+        } else {
+            LOGGER.warn("Could not extract getCorrectAppDataFingerprint()");
+            return null;
         }
-        return fingerprint;
     }
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
@@ -256,17 +269,24 @@ public class MacProbe extends TlsProbe {
         executeState(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
-            if (receivedOnlyFinAndCcs(trace)) {
-                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
-            } else if (receivedFinAndCcs(trace)) {
-                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
+            if (trace.executedAsPlanned()) {
+                if (receivedOnlyFinAndCcs(trace)) {
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
+                } else if (receivedFinAndCcs(trace)) {
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
+                } else {
+                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
+                }
+                try {
+                    TlsContext tlsContext = stateIndexPair.getState().getTlsContext();
+                    if (tlsContext.getTransportHandler() != null) {
+                        tlsContext.getTransportHandler().closeConnection();
+                    }
+                } catch (IOException ex) {
+                    LOGGER.warn("Could not close TransportHandler", ex);
+                }
             } else {
-                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
-            }
-            try {
-                stateIndexPair.getState().getTlsContext().getTransportHandler().closeConnection();
-            } catch (IOException ex) {
-                LOGGER.warn("Could not close TransportHandler", ex);
+                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.ERROR_DURING_TEST;
             }
         }
         return byteCheckArray;
@@ -302,26 +322,33 @@ public class MacProbe extends TlsProbe {
         executeState(stateList);
         for (StateIndexPair stateIndexPair : stateIndexList) {
             WorkflowTrace trace = stateIndexPair.getState().getWorkflowTrace();
-            if (check == Check.APPDATA) {
-                ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
-                EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint, true);
-                LOGGER.debug("Fingerprint: " + fingerprint.toString());
-                if (equalityError != EqualityError.NONE) {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
+            if (trace.executedAsPlanned()) {
+                if (check == Check.APPDATA) {
+                    ResponseFingerprint fingerprint = ResponseExtractor.getFingerprint(stateIndexPair.getState());
+                    EqualityError equalityError = FingerPrintChecker.checkEquality(fingerprint, correctFingerprint);
+                    LOGGER.debug("Fingerprint: " + fingerprint.toString());
+                    if (equalityError != EqualityError.NONE) {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
+                    } else {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
+                    }
                 } else {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
+                    if (receivedOnlyFinAndCcs(trace)) {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
+                    } else if (receivedFinAndCcs(trace)) {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
+                    } else {
+                        byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
+                    }
                 }
             } else {
-                if (receivedOnlyFinAndCcs(trace)) {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.NOT_CHECKED;
-                } else if (receivedFinAndCcs(trace)) {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED_WITH_FIN;
-                } else {
-                    byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.CHECKED;
-                }
+                byteCheckArray[stateIndexPair.getIndex()] = ByteCheckStatus.ERROR_DURING_TEST;
             }
             try {
-                stateIndexPair.getState().getTlsContext().getTransportHandler().closeConnection();
+                TlsContext tlsContext = stateIndexPair.getState().getTlsContext();
+                if (tlsContext.getTransportHandler() != null) {
+                    tlsContext.getTransportHandler().closeConnection();
+                }
             } catch (IOException ex) {
                 LOGGER.warn("Could not close TransportHandler", ex);
             }

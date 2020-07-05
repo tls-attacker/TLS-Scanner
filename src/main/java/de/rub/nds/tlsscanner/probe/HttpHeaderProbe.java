@@ -45,7 +45,7 @@ import java.util.List;
 public class HttpHeaderProbe extends TlsProbe {
 
     public HttpHeaderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig, 0);
+        super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig);
     }
 
     @Override
@@ -65,6 +65,7 @@ public class HttpHeaderProbe extends TlsProbe {
             tlsConfig.setStopActionsAfterFatal(true);
             tlsConfig.setHttpsParsingEnabled(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
+            tlsConfig.setStopActionsAfterIOException(true);
             // Dont send extensions if we are in sslv2
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
@@ -121,7 +122,8 @@ public class HttpHeaderProbe extends TlsProbe {
                 headerList = new LinkedList<>();
             }
             return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
-        } catch (Exception e) {
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
         }
     }

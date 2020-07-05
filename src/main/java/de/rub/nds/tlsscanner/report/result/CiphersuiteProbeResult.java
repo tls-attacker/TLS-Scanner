@@ -12,6 +12,7 @@ import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CipherType;
+import de.rub.nds.tlsattacker.core.constants.PRFAlgorithm;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
@@ -62,6 +63,9 @@ public class CiphersuiteProbeResult extends ProbeResult {
     private TestResult prefersPfsCiphers = TestResult.FALSE;
     private TestResult supportsStreamCiphers = TestResult.FALSE;
     private TestResult supportsBlockCiphers = TestResult.FALSE;
+    private TestResult supportsLegacyPrf = TestResult.FALSE;
+    private TestResult supportsSha256Prf = TestResult.FALSE;
+    private TestResult supportsSha384Prf = TestResult.FALSE;
 
     public CiphersuiteProbeResult(List<VersionSuiteListPair> pairLists) {
         super(ProbeType.CIPHERSUITE);
@@ -79,13 +83,26 @@ public class CiphersuiteProbeResult extends ProbeResult {
                     prefersPfsCiphers = TestResult.FALSE;
                 }
                 allSupported.addAll(pair.getCiphersuiteList());
+
+                for (CipherSuite suite : pair.getCiphersuiteList()) {
+                    PRFAlgorithm prfAlgorithm = AlgorithmResolver.getPRFAlgorithm(pair.getVersion(), suite);
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
+                        supportsLegacyPrf = TestResult.TRUE;
+                    }
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
+                        supportsSha256Prf = TestResult.TRUE;
+                    }
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
+                        supportsSha384Prf = TestResult.TRUE;
+                    }
+                }
             }
             for (CipherSuite suite : allSupported) {
                 adjustBulk(suite);
                 adjustKeyExchange(suite);
                 adjustCipherType(suite);
             }
-            report.setCipherSuites(allSupported);
+            report.addCipherSuites(allSupported);
         } else {
             supportsAeadCiphers = TestResult.COULD_NOT_TEST;
             prefersPfsCiphers = TestResult.COULD_NOT_TEST;
@@ -122,6 +139,9 @@ public class CiphersuiteProbeResult extends ProbeResult {
             supportsStaticEcdh = TestResult.COULD_NOT_TEST;
             supportsStreamCiphers = TestResult.COULD_NOT_TEST;
             supportsTrippleDesCiphers = TestResult.COULD_NOT_TEST;
+            supportsLegacyPrf = TestResult.COULD_NOT_TEST;
+            supportsSha256Prf = TestResult.COULD_NOT_TEST;
+            supportsSha384Prf = TestResult.COULD_NOT_TEST;
         }
         writeToReport(report);
     }
@@ -283,6 +303,9 @@ public class CiphersuiteProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.PREFERS_PFS, prefersPfsCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_STREAM_CIPHERS, supportsStreamCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, supportsBlockCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
+        report.putResult(AnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
+        report.putResult(AnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
         report.setVersionSuitePairs(pairLists);
     }
 

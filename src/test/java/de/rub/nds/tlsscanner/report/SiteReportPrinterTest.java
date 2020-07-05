@@ -13,15 +13,12 @@
  */
 package de.rub.nds.tlsscanner.report;
 
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import java.util.LinkedList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -53,7 +50,7 @@ public class SiteReportPrinterTest {
      */
     @Test
     public void testPrintEmptyReport() {
-        SiteReport report = new SiteReport("Somehost", new LinkedList<ProbeType>());
+        SiteReport report = new SiteReport("Somehost");
         for (ScannerDetail detail : ScannerDetail.values()) {
             SiteReportPrinter printer = new SiteReportPrinter(report, detail, true);
             printer.getFullReport();

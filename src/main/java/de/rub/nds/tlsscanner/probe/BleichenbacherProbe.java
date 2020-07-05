@@ -8,8 +8,6 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
-import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.report.result.BleichenbacherResult;
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.BleichenbacherAttacker;
 import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
@@ -22,10 +20,12 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.report.result.BleichenbacherResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import java.util.LinkedList;
@@ -40,7 +40,7 @@ public class BleichenbacherProbe extends TlsProbe {
     private List<CipherSuite> suiteList;
 
     public BleichenbacherProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.BLEICHENBACHER, config, 10);
+        super(parallelExecutor, ProbeType.BLEICHENBACHER, config);
         suiteList = new LinkedList<>();
     }
 
@@ -75,8 +75,8 @@ public class BleichenbacherProbe extends TlsProbe {
                         .getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
             }
             return new BleichenbacherResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE, resultList);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for Bleichenbacher");
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new BleichenbacherResult(TestResult.ERROR_DURING_TEST, new LinkedList<BleichenbacherTestResult>());
         }
     }

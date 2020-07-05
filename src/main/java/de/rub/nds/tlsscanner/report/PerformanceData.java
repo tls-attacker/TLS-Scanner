@@ -20,6 +20,9 @@ public class PerformanceData {
     private long starttime;
     private long stoptime;
 
+    private PerformanceData() {
+    }
+
     public PerformanceData(ProbeType type, long starttime, long stoptime) {
         this.type = type;
         this.starttime = starttime;

@@ -17,5 +17,6 @@ package de.rub.nds.tlsscanner.probe.mac;
 public enum ByteCheckStatus {
     CHECKED,
     NOT_CHECKED,
-    CHECKED_WITH_FIN
+    CHECKED_WITH_FIN,
+    ERROR_DURING_TEST
 }

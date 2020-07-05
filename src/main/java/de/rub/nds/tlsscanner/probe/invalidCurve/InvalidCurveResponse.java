@@ -6,11 +6,9 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package de.rub.nds.tlsscanner.probe.invalidCurve;
 
 import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import java.util.LinkedList;
@@ -20,6 +18,7 @@ import java.util.List;
  *
  */
 public class InvalidCurveResponse {
+
     private InvalidCurveParameterSet parameterSet;
     private List<FingerprintSecretPair> fingerprintSecretPairs;
     private List<Point> receivedEcPublicKeys;
@@ -30,6 +29,9 @@ public class InvalidCurveResponse {
 
     private TestResult finishedHandshakeHadReusedKey = TestResult.FALSE;
     private TestResult dirtyKeysWarning = TestResult.FALSE;
+
+    private InvalidCurveResponse() {
+    }
 
     public InvalidCurveResponse(InvalidCurveParameterSet parameterSet,
             List<FingerprintSecretPair> fingerprintSecretPairs, TestResult showsPointsAreNotValidated,

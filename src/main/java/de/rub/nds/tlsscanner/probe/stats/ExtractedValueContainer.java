@@ -19,6 +19,11 @@ public class ExtractedValueContainer<T> {
 
     private final TrackableValueType type;
 
+    public ExtractedValueContainer() {
+        extractedValueList = null;
+        type = null;
+    }
+
     public ExtractedValueContainer(TrackableValueType type) {
         extractedValueList = new LinkedList<>();
         this.type = type;

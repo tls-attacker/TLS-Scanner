@@ -9,8 +9,8 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.SignatureAndHashAlgorithmResult;
@@ -22,7 +22,7 @@ import de.rub.nds.tlsscanner.report.result.SignatureAndHashAlgorithmResult;
 public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     public SignatureAndHashAlgorithmProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.SIGNATURE_AND_HASH, config, 4);
+        super(parallelExecutor, ProbeType.SIGNATURE_AND_HASH, config);
     }
 
     @Override

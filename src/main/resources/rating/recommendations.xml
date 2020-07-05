@@ -1268,7 +1268,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>VULNERABLE_TO_DROWN</analyzedProperty>
+        <analyzedProperty>VULNERABLE_TO_GENERAL_DROWN</analyzedProperty>
         <shortName>Vulnerable to DROWN</shortName>
         <shortDescription>Evaluates whether the TLS server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened eNcryption)</shortDescription>
         <links>
@@ -1354,7 +1354,7 @@
             <resultingRecommendation>
                 <result>TRUE</result>
                 <shortDescription>The TLS server is vulnerable to BREACH</shortDescription>
-                <handlingRecommendation>Disable TLS compression</handlingRecommendation>
+                <handlingRecommendation>Disable HTTP compression</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>

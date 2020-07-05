@@ -19,12 +19,16 @@ import java.util.List;
  *
  */
 public class InvalidCurveParameterSet {
+
     private ProtocolVersion protocolVersion;
     private List<CipherSuite> cipherSuites;
     private NamedGroup namedGroup;
     private ECPointFormat pointFormat;
     private boolean twistAttack;
     private boolean attackInRenegotiation;
+
+    private InvalidCurveParameterSet() {
+    }
 
     public InvalidCurveParameterSet(ProtocolVersion protocolVersion, List<CipherSuite> cipherSuites,
             NamedGroup namedGroup, ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation) {

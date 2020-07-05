@@ -31,7 +31,7 @@ import java.util.List;
 public class SniProbe extends TlsProbe {
 
     public SniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.SNI, scannerConfig, 0);
+        super(parallelExecutor, ProbeType.SNI, scannerConfig);
     }
 
     @Override
@@ -43,6 +43,7 @@ public class SniProbe extends TlsProbe {
             config.setQuickReceive(true);
             config.setEarlyStop(true);
             config.setStopReceivingAfterFatal(true);
+            config.setStopActionsAfterIOException(true);
             config.setStopActionsAfterFatal(true);
             List<CipherSuite> toTestList = new LinkedList<>();
             toTestList.addAll(Arrays.asList(CipherSuite.values()));
@@ -66,9 +67,10 @@ public class SniProbe extends TlsProbe {
                 return new SniResult(TestResult.TRUE);
             }
             // We cannot get a ServerHello from this Server...
-            LOGGER.warn("SNI Test could not get a ServerHello message from the Server!");
-            return new SniResult(TestResult.ERROR_DURING_TEST);
-        } catch (Exception e) {
+            LOGGER.debug("SNI Test could not get a ServerHello message from the Server!");
+            return new SniResult(TestResult.UNCERTAIN);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
             return new SniResult(TestResult.ERROR_DURING_TEST);
         }
     }

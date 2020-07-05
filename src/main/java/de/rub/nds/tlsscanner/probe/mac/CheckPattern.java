@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.probe.mac;
 
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.constants.CheckPatternType;
-import de.rub.nds.tlsscanner.probe.mac.ByteCheckStatus;
 import java.util.List;
 
 public class CheckPattern {
@@ -22,6 +21,9 @@ public class CheckPattern {
     private ByteCheckStatus[] bytePattern;
 
     private List<ResponseFingerprint> responseFingerprintList = null;
+
+    private CheckPattern() {
+    }
 
     public CheckPattern(CheckPatternType type, boolean foundFinishedAndAlert, ByteCheckStatus[] bytePattern) {
         this.type = type;

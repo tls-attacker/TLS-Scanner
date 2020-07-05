@@ -15,33 +15,8 @@ import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.probe.BleichenbacherProbe;
-import de.rub.nds.tlsscanner.probe.CertificateProbe;
-import de.rub.nds.tlsscanner.probe.CiphersuiteOrderProbe;
-import de.rub.nds.tlsscanner.probe.CiphersuiteProbe;
-import de.rub.nds.tlsscanner.probe.CommonBugProbe;
-import de.rub.nds.tlsscanner.probe.CompressionsProbe;
-import de.rub.nds.tlsscanner.probe.DrownProbe;
-import de.rub.nds.tlsscanner.probe.ECPointFormatProbe;
-import de.rub.nds.tlsscanner.probe.EarlyCcsProbe;
-import de.rub.nds.tlsscanner.probe.ExtensionProbe;
-import de.rub.nds.tlsscanner.probe.HeartbleedProbe;
-import de.rub.nds.tlsscanner.probe.HttpHeaderProbe;
-import de.rub.nds.tlsscanner.probe.InvalidCurveProbe;
-import de.rub.nds.tlsscanner.probe.MacProbe;
-import de.rub.nds.tlsscanner.probe.NamedCurvesProbe;
-import de.rub.nds.tlsscanner.probe.OcspProbe;
-import de.rub.nds.tlsscanner.probe.PaddingOracleProbe;
-import de.rub.nds.tlsscanner.probe.PoodleProbe;
+import de.rub.nds.tlsscanner.probe.*;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.probe.RenegotiationProbe;
-import de.rub.nds.tlsscanner.probe.ResumptionProbe;
-import de.rub.nds.tlsscanner.probe.SniProbe;
-import de.rub.nds.tlsscanner.probe.Tls13Probe;
-import de.rub.nds.tlsscanner.probe.TlsPoodleProbe;
-import de.rub.nds.tlsscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.report.after.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.report.after.EcPublicKeyAfterProbe;
@@ -49,6 +24,8 @@ import de.rub.nds.tlsscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
 import de.rub.nds.tlsscanner.report.after.PaddingOracleIdentificationAfterProbe;
+import de.rub.nds.tlsscanner.report.after.PoodleAfterProbe;
+import de.rub.nds.tlsscanner.report.after.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
@@ -66,15 +43,13 @@ public class TlsScanner {
 
     private final ParallelExecutor parallelExecutor;
     private final ScannerConfig config;
-    private final boolean closeAfterFinish;
-    private final boolean closeAfterFinishParallel;
+    private boolean closeAfterFinishParallel;
     private final List<TlsProbe> probeList;
     private final List<AfterProbe> afterList;
 
     public TlsScanner(ScannerConfig config) {
 
         this.config = config;
-        closeAfterFinish = true;
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config
                 .getClientDelegate().getHost() + "-Worker"));
@@ -83,35 +58,22 @@ public class TlsScanner {
         fillDefaultProbeLists();
     }
 
-    public TlsScanner(ScannerConfig config, ScanJobExecutor executor) {
-        this.config = config;
-        closeAfterFinish = false;
-        closeAfterFinishParallel = true;
-        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config
-                .getClientDelegate().getHost() + "-Worker"));
-        this.probeList = new LinkedList<>();
-        this.afterList = new LinkedList<>();
-        fillDefaultProbeLists();
-    }
-
-    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor) {
+    public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor) {
         this.config = config;
         this.parallelExecutor = parallelExecutor;
-        closeAfterFinish = false;
-        closeAfterFinishParallel = false;
+        closeAfterFinishParallel = true;
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         fillDefaultProbeLists();
     }
 
-    public TlsScanner(ScannerConfig config, ScanJobExecutor executor, ParallelExecutor parallelExecutor,
-            List<TlsProbe> probeList, List<AfterProbe> afterList) {
+    public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor, List<TlsProbe> probeList,
+            List<AfterProbe> afterList) {
         this.parallelExecutor = parallelExecutor;
         this.config = config;
         this.probeList = probeList;
         this.afterList = afterList;
-        closeAfterFinish = false;
-        closeAfterFinishParallel = false;
+        closeAfterFinishParallel = true;
     }
 
     private void fillDefaultProbeLists() {
@@ -135,7 +97,7 @@ public class TlsScanner {
                         || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(probeList, afterList);
-                    executor = new ThreadedScanJobExecutor(config, job, config.getOverallThreads(), config
+                    executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(), config
                             .getClientDelegate().getHost());
                     SiteReport report = executor.execute();
                     return report;
@@ -143,7 +105,7 @@ public class TlsScanner {
                     isConnectable = true;
                 }
             }
-            SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>());
+            SiteReport report = new SiteReport(config.getClientDelegate().getHost());
             report.setServerIsAlive(isConnectable);
             report.setSupportsSslTls(false);
             return report;
@@ -163,20 +125,39 @@ public class TlsScanner {
     }
 
     public boolean isConnectable() {
-        Config tlsConfig = config.createConfig();
-        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-        return checker.isConnectable();
+        try {
+            Config tlsConfig = config.createConfig();
+            ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+            return checker.isConnectable();
+        } catch (Exception E) {
+            LOGGER.warn("Could not test if we can connect to the server", E);
+            return false;
+        }
     }
 
     private boolean speaksTls() {
-        Config tlsConfig = config.createConfig();
-        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-        return checker.speaksTls(tlsConfig);
+        try {
+            Config tlsConfig = config.createConfig();
+            ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+            return checker.speaksTls(tlsConfig);
+        } catch (Exception E) {
+            LOGGER.warn("Could not test if the server speaks TLS. Probably could not connect.");
+            LOGGER.debug(E);
+            return false;
+        }
     }
 
     private boolean speaksStartTls() {
         Config tlsConfig = config.createConfig();
         ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
         return checker.speaksStartTls(tlsConfig);
+    }
+
+    public void setCloseAfterFinishParallel(boolean closeAfterFinishParallel) {
+        this.closeAfterFinishParallel = closeAfterFinishParallel;
+    }
+
+    public boolean isCloseAfterFinishParallel() {
+        return closeAfterFinishParallel;
     }
 }

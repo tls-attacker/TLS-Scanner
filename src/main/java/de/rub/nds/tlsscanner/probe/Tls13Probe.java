@@ -52,7 +52,7 @@ import java.util.List;
 public class Tls13Probe extends TlsProbe {
 
     public Tls13Probe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TLS13, scannerConfig, 0);
+        super(parallelExecutor, ProbeType.TLS13, scannerConfig);
     }
 
     private List<CipherSuite> getSupportedCiphersuites() {
@@ -87,9 +87,6 @@ public class Tls13Probe extends TlsProbe {
         setupEmptyKeyShares(state.getWorkflowTrace());
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            // ServerHelloMessage message = (ServerHelloMessage)
-            // WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
-            // state.getWorkflowTrace());
             return state.getTlsContext().getSelectedCipherSuite();
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST,
                 state.getWorkflowTrace())) {
@@ -217,8 +214,10 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setPSKKeyExchangeModes(pskKex);
         tlsConfig.setAddPSKKeyExchangeModesExtension(true);
         State state = new State(tlsConfig);
-        state.getWorkflowTrace().addTlsAction(
-                new ReceiveAction(ReceiveAction.ReceiveOption.CHECK_ONLY_EXPECTED, new NewSessionTicketMessage(false)));
+        state.getWorkflowTrace()
+                .addTlsAction(
+                        new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
+                                new NewSessionTicketMessage(false)));
 
         executeState(state);
         if (state.getWorkflowTrace().getLastMessageAction().executedAsPlanned()) {
@@ -238,9 +237,9 @@ public class Tls13Probe extends TlsProbe {
         State state = new State(tlsConfig);
         WorkflowTrace trace = state.getWorkflowTrace();
 
-        trace.addTlsAction(new ReceiveAction(ReceiveAction.ReceiveOption.CHECK_ONLY_EXPECTED,
+        trace.addTlsAction(new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
                 new NewSessionTicketMessage(false)));
-        trace.addTlsAction(new ResetConnectionAction());
+        trace.addTlsAction(new ResetConnectionAction(tlsConfig.getDefaultClientConnection().getAlias()));
 
         tlsConfig.setAddPreSharedKeyExtension(Boolean.TRUE);
         WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
@@ -333,32 +332,38 @@ public class Tls13Probe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<ProtocolVersion> tls13VersionList = new LinkedList<>();
-        for (ProtocolVersion version : ProtocolVersion.values()) {
-            if (version.isTLS13()) {
-                tls13VersionList.add(version);
+        try {
+            List<ProtocolVersion> tls13VersionList = new LinkedList<>();
+            for (ProtocolVersion version : ProtocolVersion.values()) {
+                if (version.isTLS13()) {
+                    tls13VersionList.add(version);
+                }
             }
-        }
-        List<ProtocolVersion> supportedProtocolVersions = new LinkedList<>();
-        List<ProtocolVersion> unsupportedProtocolVersions = new LinkedList<>();
-        for (ProtocolVersion version : tls13VersionList) {
-            if (isTls13Supported(version)) {
-                supportedProtocolVersions.add(version);
-            } else {
-                unsupportedProtocolVersions.add(version);
+            List<ProtocolVersion> supportedProtocolVersions = new LinkedList<>();
+            List<ProtocolVersion> unsupportedProtocolVersions = new LinkedList<>();
+            for (ProtocolVersion version : tls13VersionList) {
+                if (isTls13Supported(version)) {
+                    supportedProtocolVersions.add(version);
+                } else {
+                    unsupportedProtocolVersions.add(version);
+                }
             }
+            List<NamedGroup> supportedNamedGroups = getSupportedGroups();
+            List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
+            List<CertificateStatusMessage> ocspStapling = getCertificateStatusFromCertificateEntryExtension();
+            TestResult supportsSECPCompression = null;
+            if (containsSECPGroup(supportedNamedGroups)) {
+                supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);
+            }
+            TestResult issuesSessionTicket = getIssuesSessionTicket(supportedProtocolVersions);
+            TestResult supportsPskDhe = getSupportsPskDhe(supportedProtocolVersions);
+            return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups,
+                    supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe, ocspStapling);
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new Tls13Result(null, null, null, null, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                    TestResult.ERROR_DURING_TEST, null);
         }
-        List<NamedGroup> supportedNamedGroups = getSupportedGroups();
-        List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
-        List<CertificateStatusMessage> ocspStapling = getCertificateStatusFromCertificateEntryExtension();
-        TestResult supportsSECPCompression = null;
-        if (containsSECPGroup(supportedNamedGroups)) {
-            supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);
-        }
-        TestResult issuesSessionTicket = getIssuesSessionTicket(supportedProtocolVersions);
-        TestResult supportsPskDhe = getSupportsPskDhe(supportedProtocolVersions);
-        return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups,
-                supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe, ocspStapling);
     }
 
     @Override
