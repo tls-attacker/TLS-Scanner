@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.report.result;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.probe.OcspProbe;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
@@ -48,10 +49,6 @@ public class OcspResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setSupportsOcsp(supportsOcsp);
-        report.setSupportsStapling(supportsStapling);
-        report.setMustStaple(mustStaple);
-        report.setSupportsNonce(supportsNonce);
         report.setStapledOcspResponse(stapledResponse);
         report.setFirstOcspResponse(firstResponse);
         report.setSecondOcspResponse(secondResponse);
@@ -65,6 +62,12 @@ public class OcspResult extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_OCSP, TestResult.FALSE);
         } else if (supportsOcsp == null) {
             report.putResult(AnalyzedProperty.SUPPORTS_OCSP, TestResult.ERROR_DURING_TEST);
+        }
+
+        if (supportsStapling) {
+            report.putResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING, TestResult.TRUE);
+        } else {
+            report.putResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING, TestResult.FALSE);
         }
 
         if (stapledResponse != null) {
@@ -117,7 +120,7 @@ public class OcspResult extends ProbeResult {
                 report.putResult(AnalyzedProperty.SUPPORTS_NONCE, TestResult.TRUE);
 
                 // Check if the client nonce was used
-                if (firstResponse.getNonce().intValue() != 42) {
+                if (firstResponse.getNonce().intValue() != OcspProbe.NONCE_TEST_VALUE_1) {
                     report.putResult(AnalyzedProperty.NONCE_MISMATCH, TestResult.TRUE);
                 }
                 // Check if a nonce was reused, e.g. caching didn't respect

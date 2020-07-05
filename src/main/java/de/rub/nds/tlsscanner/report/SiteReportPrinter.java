@@ -606,12 +606,10 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "OCSP");
         prettyAppend(builder, "Supports OCSP ", AnalyzedProperty.SUPPORTS_OCSP);
 
-        // TODO: Find a better place to merge the data of these two probes?
-
         // In case extension probe & OCSP probe differ, report stapling as
         // unreliable.
         if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.TRUE
-                && Boolean.FALSE.equals(report.getSupportsStapling())) {
+                && report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.FALSE) {
             prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
             prettyAppend(builder, "Extension scan reported OCSP Stapling support, but OCSP scan does not.",
                     AnsiColor.YELLOW);
@@ -619,7 +617,7 @@ public class SiteReportPrinter {
                     AnsiColor.RED);
             report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
         } else if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.FALSE
-                && Boolean.TRUE.equals(report.getSupportsStapling())) {
+                && report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
             prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
             prettyAppend(builder, "Extension scan reported no OCSP support, but OCSP scan does. \n", AnsiColor.YELLOW);
             report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
@@ -628,18 +626,21 @@ public class SiteReportPrinter {
         // Print stapling support & 'must-staple'
         if (report.getResult(AnalyzedProperty.STAPLING_UNRELIABLE) == TestResult.TRUE) {
             prettyAppend(builder, "Supports OCSP Stapling", "true, but unreliable", AnsiColor.YELLOW);
-            if (report.getMustStaple() != null) {
-                prettyAppend(builder, "Enforces OCSP Stapling", report.getMustStaple(),
-                        report.getMustStaple() ? AnsiColor.RED : AnsiColor.DEFAULT_COLOR);
+            if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResult.TRUE) {
+                prettyAppend(builder, "Enforces OCSP Stapling", "true", AnsiColor.RED);
+            } else {
+                prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
             }
         } else {
-            if (Boolean.TRUE.equals(report.getMustStaple())) {
-                prettyAppend(builder, "Supports OCSP Stapling", report.getSupportsStapling(),
-                        report.getSupportsStapling() ? AnsiColor.GREEN : AnsiColor.RED);
-                prettyAppend(builder, "Enforces OCSP Stapling", report.getMustStaple(),
-                        report.getMustStaple() ? AnsiColor.GREEN : AnsiColor.RED);
+            if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResult.TRUE) {
+                if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
+                    prettyAppend(builder, "Supports OCSP Stapling", "true", AnsiColor.GREEN);
+                } else {
+                    prettyAppend(builder, "Supports OCSP Stapling", "false", AnsiColor.RED);
+                }
+                prettyAppend(builder, "Enforces OCSP Stapling", "true", AnsiColor.GREEN);
             } else {
-                prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+                prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_OCSP_STAPLING);
                 prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
             }
         }
@@ -652,7 +653,7 @@ public class SiteReportPrinter {
         }
 
         // Is stapling supported, but a CertificateStatus message is missing?
-        if (Boolean.TRUE.equals(report.getSupportsStapling())) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
             prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
             if (report.getFirstOcspResponse() != null && report.getFirstOcspResponse().getResponseStatus() == 0) {
                 long differenceHoursStapled = report.getDifferenceHoursStapled();
@@ -669,7 +670,7 @@ public class SiteReportPrinter {
 
         // Are nonces used? If so, do they match?
         prettyAppend(builder, "Supports Nonce", AnalyzedProperty.SUPPORTS_NONCE);
-        if (Boolean.TRUE.equals(report.getSupportsNonce())) {
+        if (Boolean.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_NONCE) == TestResult.TRUE)) {
             prettyAppend(builder, "Nonce Mismatch / Cached Nonce", AnalyzedProperty.NONCE_MISMATCH);
         }
 

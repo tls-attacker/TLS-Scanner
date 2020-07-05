@@ -61,6 +61,9 @@ public class OcspProbe extends TlsProbe {
     private OCSPResponse firstResponse;
     private OCSPResponse secondResponse;
 
+    public static final int NONCE_TEST_VALUE_1 = 42;
+    public static final int NONCE_TEST_VALUE_2 = 1337;
+
     public OcspProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.OCSP, config);
     }
@@ -96,7 +99,7 @@ public class OcspProbe extends TlsProbe {
     private void getStapledResponse(Config tlsConfig) {
         State state = new State(tlsConfig);
         executeState(state);
-        ArrayList supportedExtensions = new ArrayList(state.getTlsContext().getNegotiatedExtensionSet());
+        List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
 
         CertificateStatusMessage certificateStatusMessage = null;
         if (supportedExtensions.contains(ExtensionType.STATUS_REQUEST)) {
@@ -126,9 +129,9 @@ public class OcspProbe extends TlsProbe {
             // responder URL, the certificate seems to support OCSP
             supportsOcsp = true;
 
-            // First Request Message with '42' as nonce
+            // First Request Message with first fixed nonce test value
             OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
-            ocspFirstRequestMessage.setNonce(new BigInteger("42"));
+            ocspFirstRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_1)));
             ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
             firstResponse = ocspRequest.makeRequest(ocspFirstRequestMessage);
 
@@ -137,7 +140,7 @@ public class OcspProbe extends TlsProbe {
             if (firstResponse.getNonce() != null) {
                 supportsNonce = true;
                 OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
-                ocspSecondRequestMessage.setNonce(new BigInteger("1337"));
+                ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
                 ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
                 secondResponse = ocspRequest.makeRequest(ocspSecondRequestMessage);
                 LOGGER.debug(secondResponse.toString());

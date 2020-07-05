@@ -204,6 +204,7 @@ public enum AnalyzedProperty {
     STAPLED_RESPONSE_EXPIRED(AnalyzedPropertyCategory.OCSP),
     SUPPORTS_NONCE(AnalyzedPropertyCategory.OCSP),
     SUPPORTS_STAPLED_NONCE(AnalyzedPropertyCategory.OCSP),
+    SUPPORTS_OCSP_STAPLING(AnalyzedPropertyCategory.OCSP),
     NONCE_MISMATCH(AnalyzedPropertyCategory.OCSP),
     STAPLING_UNRELIABLE(AnalyzedPropertyCategory.OCSP),
     STAPLING_TLS13_MULTIPLE_CERTIFICATES(AnalyzedPropertyCategory.OCSP),

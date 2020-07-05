@@ -96,10 +96,6 @@ public class SiteReport extends Observable implements Serializable {
     private CertificateChain certificateChain;
 
     // OCSP
-    private Boolean supportsOcsp = null;
-    private Boolean supportsStapling = null;
-    private Boolean mustStaple = null;
-    private Boolean supportsNonce = null;
     private OCSPResponse stapledOcspResponse = null;
     private OCSPResponse firstOcspResponse = null;
     private OCSPResponse secondOcspResponse = null;
@@ -591,14 +587,6 @@ public class SiteReport extends Observable implements Serializable {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
     }
 
-    public synchronized Boolean getSupportsStapling() {
-        return supportsStapling;
-    }
-
-    public synchronized void setSupportsStapling(Boolean supportsStapling) {
-        this.supportsStapling = supportsStapling;
-    }
-
     public synchronized OCSPResponse getStapledOcspResponse() {
         return stapledOcspResponse;
     }
@@ -623,35 +611,11 @@ public class SiteReport extends Observable implements Serializable {
         this.secondOcspResponse = secondOcspResponse;
     }
 
-    public synchronized Boolean getSupportsNonce() {
-        return supportsNonce;
-    }
-
-    public synchronized void setSupportsNonce(Boolean supportsNonce) {
-        this.supportsNonce = supportsNonce;
-    }
-
-    public synchronized Boolean getMustStaple() {
-        return mustStaple;
-    }
-
-    public synchronized void setMustStaple(Boolean mustStaple) {
-        this.mustStaple = mustStaple;
-    }
-
     public synchronized Long getDifferenceHoursStapled() {
         return differenceHoursStapled;
     }
 
     public synchronized void setDifferenceHoursStapled(Long differenceHoursStapled) {
         this.differenceHoursStapled = differenceHoursStapled;
-    }
-
-    public synchronized Boolean getSupportsOcsp() {
-        return supportsOcsp;
-    }
-
-    public synchronized void setSupportsOcsp(Boolean supportsOcsp) {
-        this.supportsOcsp = supportsOcsp;
     }
 }
