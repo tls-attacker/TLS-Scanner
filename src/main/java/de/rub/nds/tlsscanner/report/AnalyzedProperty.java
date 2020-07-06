@@ -187,8 +187,6 @@ public enum AnalyzedProperty {
     REUSES_DH_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_GCM_NONCES(AnalyzedPropertyCategory.FRESHNESS),
     REQUIRES_SNI(AnalyzedPropertyCategory.SNI),
-	
-    HAS_CORRECT_TICKET_PADDING(AnalyzedPropertyCategory.SESSION_TICKET),
     HAS_GNU_TLS_MAGIC_BYTES(AnalyzedPropertyCategory.SESSION_TICKET);	
 
     private AnalyzedPropertyCategory category;
