@@ -16,9 +16,18 @@ import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
+import de.rub.nds.tlsattacker.core.record.AbstractRecord;
+import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.state.TlsContext;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.*;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.MessageActionResult;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.ReceiveMessageHelper;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.SendMessageHelper;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
@@ -30,7 +39,10 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.RngResult;
+import org.apache.commons.lang3.ArrayUtils;
+import sun.rmi.runtime.Log;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,23 +71,23 @@ public class TlsRngProbe extends TlsProbe {
         if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS13");
             highestVersion = ProtocolVersion.TLS13;
-            collectServerRandomTls13(700, 1);
+            collectServerRandomTls13(4, 1);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS12");
             highestVersion = ProtocolVersion.TLS12;
-            collectServerRandom(700, 1);
+            collectServerRandom(4, 1);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS11");
             highestVersion = ProtocolVersion.TLS11;
-            collectServerRandom(700, 1);
+            collectServerRandom(4, 1);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS10");
             highestVersion = ProtocolVersion.TLS10;
-            collectServerRandom(700, 1);
+            collectServerRandom(4, 1);
         }
 
         // ////////////////////////////////////////////////////////////////////////////////////////////////////
-        collectIV(4000, 750);
+        collectIV(4, 750);
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // TODO: Implement this right.
@@ -340,40 +352,54 @@ public class TlsRngProbe extends TlsProbe {
         iVCollectConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
 
         iVCollectConfig.setDefaultClientSupportedCiphersuites(cbcSuites);
-        ProtocolMessage[] helloDone = { new ChangeCipherSpecMessage(iVCollectConfig),
-                new FinishedMessage(iVCollectConfig) };
-        WorkflowTrace ivCollectorTrace = new WorkflowTrace();
-        ivCollectorTrace.addTlsAction(new SendAction(new ClientHelloMessage(iVCollectConfig)));
-        ivCollectorTrace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(iVCollectConfig)));
-        ivCollectorTrace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        ivCollectorTrace.addTlsAction(new SendAction(helloDone));
-        ivCollectorTrace.addTlsAction(new ReceiveAction(helloDone));
 
-        for (int j = 0; j < numberOfBlocks; j++) {
-            HttpsRequestMessage request = new HttpsRequestMessage();
-            List<HttpsHeader> header = new LinkedList<>();
-            header.add(new HostHeader());
-            // request.add(new GenericHttpsHeader("Connection",
-            // "keep-alive"));
-            request.getHeader().add(
-                    new GenericHttpsHeader("Accept",
-                            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
-            request.getHeader().add(
-                    new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
-            request.getHeader().add(new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
-            request.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
-            request.getHeader()
-                    .add(new GenericHttpsHeader("User-Agent",
-                            "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
-            request.setHeader(header);
-            ivCollectorTrace.addTlsAction(new SendAction(request));
-            ivCollectorTrace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
-        }
-        State state = new State(iVCollectConfig, ivCollectorTrace);
-        executeState(state);
+        iVCollectConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
+        iVCollectConfig.setWorkflowExecutorShouldClose(false);
+
+        State state = new State(iVCollectConfig);
+        WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(
+                WorkflowExecutorType.DEFAULT, state);
+        workflowExecutor.executeWorkflow();
+
         LOGGER.warn(state.getWorkflowTrace());
         LOGGER.warn(state.getTlsContext().getSelectedProtocolVersion());
         LOGGER.warn(state.getTlsContext().getSelectedCipherSuite());
+
+        HttpsRequestMessage httpGet = new HttpsRequestMessage(iVCollectConfig);
+        List<HttpsHeader> header = new LinkedList<>();
+        header.add(new HostHeader());
+        httpGet.setHeader(header);
+        TlsContext tlsContext = state.getTlsContext();
+
+        try {
+            LOGGER.warn("CONNECTION IS CLOSED: " + tlsContext.getTransportHandler().isClosed());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        SendMessageHelper sendMessageHelper = new SendMessageHelper();
+        ReceiveMessageHelper receiveMessageHelper = new ReceiveMessageHelper();
+        List<AbstractRecord> records = new ArrayList<>();
+        List<ProtocolMessage> messages = new ArrayList<>();
+        messages.add(httpGet);
+        MessageActionResult result = null;
+        try {
+            sendMessageHelper.sendMessages(messages, records, tlsContext);
+            result = receiveMessageHelper.receiveMessages(tlsContext);
+            messages = new ArrayList<>(result.getMessageList());
+            records = new ArrayList<>(result.getRecordList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            tlsContext.getTransportHandler().closeConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LOGGER.warn(ArrayConverter.bytesToHexString(((Record) records.get(0)).getComputations()
+                .getCbcInitialisationVector()));
+
     }
 
     private byte[] intToByteArray(int number) {
