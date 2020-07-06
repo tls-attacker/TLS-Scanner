@@ -73,7 +73,6 @@ public class CcaRequiredProbe extends TlsProbe {
     private Config generateConfig() {
         Config config = getScannerConfig().createConfig();
         config.setAutoSelectCertificate(false);
-        config.setAddServerNameIndicationExtension(true);
         config.setWorkflowTraceType(WorkflowTraceType.HELLO);
         config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
 

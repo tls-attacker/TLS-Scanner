@@ -76,7 +76,6 @@ public class TokenbindingProbe extends TlsProbe {
         // Dont send extensions if we are in sslv2
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddExtendedMasterSecretExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
@@ -117,7 +116,6 @@ public class TokenbindingProbe extends TlsProbe {
         // Dont send extensions if we are in sslv2
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddExtendedMasterSecretExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);

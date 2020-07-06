@@ -121,7 +121,6 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setAddECPointFormatExtension(false);
             config.setAddEllipticCurveExtension(false);
             config.setAddRenegotiationInfoExtension(true);
-            config.setAddServerNameIndicationExtension(true);
             config.setAddSignatureAndHashAlgorithmsExtension(true);
 
             config.setWorkflowExecutorShouldClose(false);

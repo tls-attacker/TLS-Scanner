@@ -66,7 +66,6 @@ public class CompressionsProbe extends TlsProbe {
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());

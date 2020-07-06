@@ -104,7 +104,6 @@ public class MacProbe extends TlsProbe {
             config.setDefaultClientSupportedCiphersuites(suiteList.get(0));
             config.setDefaultSelectedCipherSuite(suiteList.get(0));
         }
-        config.setAddServerNameIndicationExtension(true);
         config.setWorkflowExecutorShouldClose(false);
 
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
@@ -256,7 +255,6 @@ public class MacProbe extends TlsProbe {
         config.setQuickReceive(true);
         config.setDefaultClientSupportedCiphersuites(suite);
         config.setDefaultSelectedCipherSuite(suite);
-        config.setAddServerNameIndicationExtension(true);
         config.setWorkflowExecutorShouldClose(false);
         List<StateIndexPair> stateIndexList = new LinkedList<>();
         for (int i = 0; i < 12; i++) {
@@ -303,7 +301,6 @@ public class MacProbe extends TlsProbe {
         config.setQuickReceive(true);
         config.setDefaultClientSupportedCiphersuites(suite);
         config.setDefaultSelectedCipherSuite(suite);
-        config.setAddServerNameIndicationExtension(true);
         config.setWorkflowExecutorShouldClose(false);
         config.setHttpsParsingEnabled(true);
         List<StateIndexPair> stateIndexList = new LinkedList<>();

@@ -157,7 +157,6 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setDefaultSelectedProtocolVersion(version);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
-            config.setAddServerNameIndicationExtension(true);
             boolean containsEc = false;
             for (CipherSuite suite : config.getDefaultClientSupportedCiphersuites()) {
                 KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
