@@ -303,8 +303,8 @@ public class Tls13Probe extends TlsProbe {
         return tls13VersionList;
     }
 
-    private List<CertificateStatusMessage> getCertificateStatusFromCertificateEntryExtension() {
-        List<CertificateStatusMessage> certificateStatuses = new LinkedList<>();
+    private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {
+        List<CertificateStatusRequestExtensionMessage> certificateStatuses = new LinkedList<>();
         Config tlsConfig = getCommonConfig(WorkflowTraceType.HANDSHAKE, ProtocolVersion.TLS13, getTls13Suite(),
                 getImplementedTls13Groups());
         State state = new State(tlsConfig);
@@ -321,8 +321,7 @@ public class Tls13Probe extends TlsProbe {
             for (CertificateEntry certificateEntry : certificateEntries) {
                 for (ExtensionMessage extensionMessage : certificateEntry.getExtensions()) {
                     if (extensionMessage instanceof CertificateStatusRequestExtensionMessage) {
-                        certificateStatuses.add(((CertificateStatusRequestExtensionMessage) extensionMessage)
-                                .getCertificateStatus());
+                        certificateStatuses.add((CertificateStatusRequestExtensionMessage) extensionMessage);
                     }
                 }
             }
@@ -350,7 +349,7 @@ public class Tls13Probe extends TlsProbe {
             }
             List<NamedGroup> supportedNamedGroups = getSupportedGroups();
             List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
-            List<CertificateStatusMessage> ocspStapling = getCertificateStatusFromCertificateEntryExtension();
+            List<CertificateStatusRequestExtensionMessage> ocspStapling = getCertificateStatusFromCertificateEntryExtension();
             TestResult supportsSECPCompression = null;
             if (containsSECPGroup(supportedNamedGroups)) {
                 supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);

@@ -12,6 +12,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateStatusMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.CertificateStatusRequestExtensionMessage;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
@@ -33,12 +34,13 @@ public class Tls13Result extends ProbeResult {
     private final TestResult issuesSessionTicket;
     private final TestResult supportsPskDhe;
 
-    private final List<CertificateStatusMessage> ocspStapling;
+    private final List<CertificateStatusRequestExtensionMessage> ocspStapling;
 
     public Tls13Result(List<ProtocolVersion> supportedProtocolVersion,
             List<ProtocolVersion> unsupportedProtocolVersion, List<NamedGroup> supportedNamedGroups,
             List<CipherSuite> supportedCipherSuites, TestResult supportsSECPCompression,
-            TestResult issuesSessionTicket, TestResult supportsPskDhe, List<CertificateStatusMessage> ocspStapling) {
+            TestResult issuesSessionTicket, TestResult supportsPskDhe,
+            List<CertificateStatusRequestExtensionMessage> ocspStapling) {
         super(ProbeType.TLS13);
         this.supportedProtocolVersion = supportedProtocolVersion;
         this.unsupportedProtocolVersion = unsupportedProtocolVersion;
