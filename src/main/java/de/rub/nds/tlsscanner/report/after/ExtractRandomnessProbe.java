@@ -105,7 +105,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
         String host_name_full = report.getHost();
         String rng_file = host_name_full.substring(0, host_name_full.length() - 4);
-        List<ComparableByteArray> fullByteSequenceList = new ArrayList();
+        List<Byte> fullByteSequence = new ArrayList();
 
         try {
             PrintStream random_file = new PrintStream(rng_file);
@@ -162,27 +162,23 @@ public class ExtractRandomnessProbe extends AfterProbe {
         // to the real full byte sequence but is close enough.
         for (int i = 0; i < max(extractedRandomList.size(), extractedSessionIDList.size()); i++) {
             if (extractedRandomList.size() <= i) {
-                fullByteSequenceList.add(extractedRandomList.get(i));
+                for (byte b : extractedRandomList.get(i).getArray()) {
+                    fullByteSequence.add(b);
+                }
             }
             if (extractedSessionIDList.size() <= i) {
-                fullByteSequenceList.add(extractedSessionIDList.get(i));
+                for (byte b : extractedSessionIDList.get(i).getArray()) {
+                    fullByteSequence.add(b);
+                }
             }
         }
         for (ComparableByteArray iVector : extractedIVList) {
-            fullByteSequenceList.add(iVector);
-        }
-
-        List<Byte> fullByteSequence = new ArrayList<Byte>();
-        for (ComparableByteArray bytes : fullByteSequenceList) {
-            for (Byte b : bytes.getArray()) {
+            for (byte b : iVector.getArray()) {
                 fullByteSequence.add(b);
             }
         }
 
-        ComparableByteArray[] fullByteSequenceTest = new ComparableByteArray[fullByteSequence.size()];
-        fullByteSequenceTest = fullByteSequence.toArray(fullByteSequenceTest);
-
-        if (fullByteSequenceTest.length < MINIMUM_AMOUNT_OF_BYTES) {
+        if (fullByteSequence.size() < MINIMUM_AMOUNT_OF_BYTES) {
             LOGGER.warn("Minimum Amount of Bytes not reached! This will negatively impact the "
                     + "performance of the tests. This will be noted in the site report.");
             report.setRandomMinimalLengthResult(RandomMinimalLengthResult.NOT_FULFILLED);
@@ -190,27 +186,33 @@ public class ExtractRandomnessProbe extends AfterProbe {
             report.setRandomMinimalLengthResult(RandomMinimalLengthResult.FULFILLED);
         }
 
+        Byte[] fullByteSequenceArrayTmp = new Byte[fullByteSequence.size()];
+        fullByteSequenceArrayTmp = fullByteSequence.toArray(fullByteSequenceArrayTmp);
+        byte[] fullByteSequenceArray = ArrayUtils.toPrimitive(fullByteSequenceArrayTmp);
+        ComparableByteArray testSequenceElement = new ComparableByteArray(fullByteSequenceArray);
+        ComparableByteArray[] testSequence = new ComparableByteArray[] { testSequenceElement };
+
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Monobit : " + frequencyTest(fullByteSequenceTest, 1));
+        LOGGER.warn("P-Value of Monobit : " + frequencyTest(testSequence, 1));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Frequency-Test with Block size 10 : " + frequencyTest(fullByteSequenceTest, 128));
+        LOGGER.warn("P-Value of Frequency-Test with Block size 10 : " + frequencyTest(testSequence, 128));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of RunsTest : " + runsTest(fullByteSequenceTest));
+        LOGGER.warn("P-Value of RunsTest : " + runsTest(testSequence));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of longestRunWithinABlock : " + longestRunWithinBlock(fullByteSequenceTest, 8));
+        LOGGER.warn("P-Value of longestRunWithinABlock : " + longestRunWithinBlock(testSequence, 8));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Discrete Fourier Test : " + discreteFourierTest(fullByteSequenceTest));
+        LOGGER.warn("P-Value of Discrete Fourier Test : " + discreteFourierTest(testSequence));
         LOGGER.warn("============================================================================================");
         LOGGER.warn("Failed Tests-ratio of NonOverlappingTemplate Test : "
-                + nonOverlappingTemplateTest(fullByteSequenceTest, 9));
+                + nonOverlappingTemplateTest(testSequence, 9));
         LOGGER.warn("Its hard to say what number of nonOverlappingTemplate Tests are concerning.");
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("Average P-Value returned by Serial Test : " + serialTest(fullByteSequenceTest, 16));
+        LOGGER.warn("Average P-Value returned by Serial Test : " + serialTest(testSequence, 16));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Approximate Entropy Test : " + approximateEntropyTest(fullByteSequenceTest, 10));
+        LOGGER.warn("P-Value of Approximate Entropy Test : " + approximateEntropyTest(testSequence, 10));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Cumulative Sums Test : " + cusumTest(fullByteSequenceTest, true));
-        LOGGER.warn("P-Value of Cumulative Sums (REVERSE) Test :" + cusumTest(fullByteSequenceTest, false));
+        LOGGER.warn("P-Value of Cumulative Sums Test : " + cusumTest(testSequence, true));
+        LOGGER.warn("P-Value of Cumulative Sums (REVERSE) Test :" + cusumTest(testSequence, false));
         LOGGER.warn("============================================================================================");
     }
 

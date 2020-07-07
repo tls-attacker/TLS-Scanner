@@ -108,6 +108,7 @@ public class TlsScanner {
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterprobe());
         afterList.add(new EvaluateRandomnessAfterProbe());
+        afterList.add(new ExtractRandomnessProbe());
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());

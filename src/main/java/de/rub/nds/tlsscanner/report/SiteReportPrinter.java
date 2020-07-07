@@ -1227,9 +1227,9 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "Nonce");
         prettyAppendRandom(builder, "Random", report.getRandomEvaluationResult());
         if (report.getRandomMinimalLengthResult() == RandomMinimalLengthResult.FULFILLED) {
-            prettyAppend(builder, "At least 100 KB of Random Data collected: TRUE", AnsiColor.GREEN);
+            prettyAppend(builder, "At least 100 KB of Random Data", "TRUE", AnsiColor.GREEN);
         } else {
-            prettyAppend(builder, "At least 100 KB of Random Data collected: FALSE", AnsiColor.RED);
+            prettyAppend(builder, "At least 100 KB of Random Data", "FALSE", AnsiColor.RED);
         }
     }
 
