@@ -63,6 +63,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+
+import de.rub.nds.tlsscanner.report.result.statistics.RandomMinimalLengthResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Objects;
@@ -1224,6 +1226,11 @@ public class SiteReportPrinter {
     private void appendRandom(StringBuilder builder) {
         prettyAppendHeading(builder, "Nonce");
         prettyAppendRandom(builder, "Random", report.getRandomEvaluationResult());
+        if (report.getRandomMinimalLengthResult() == RandomMinimalLengthResult.FULFILLED) {
+            prettyAppend(builder, "At least 100 KB of Random Data collected: TRUE", AnsiColor.GREEN);
+        } else {
+            prettyAppend(builder, "At least 100 KB of Random Data collected: FALSE", AnsiColor.RED);
+        }
     }
 
     private void appendPublicKeyIssues(StringBuilder builder) {

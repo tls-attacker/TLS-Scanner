@@ -40,6 +40,8 @@ import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerp
 import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+import de.rub.nds.tlsscanner.report.result.statistics.RandomMinimalLengthResult;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -121,6 +123,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<ComparableByteArray> extractedIVList = null;
     private List<ComparableByteArray> extractedRandomList = null;
     private List<ComparableByteArray> extractedSessionIDList = null;
+    private RandomMinimalLengthResult randomMinimalLengthResult = RandomMinimalLengthResult.NOT_ANALYZED;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -520,6 +523,14 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
         this.randomEvaluationResult = randomEvaluationResult;
+    }
+
+    public synchronized RandomMinimalLengthResult getRandomMinimalLengthResult() {
+        return randomMinimalLengthResult;
+    }
+
+    public synchronized void setRandomMinimalLengthResult(RandomMinimalLengthResult randomMinimalLengthResult) {
+        this.randomMinimalLengthResult = randomMinimalLengthResult;
     }
 
     public synchronized Set<CommonDhValues> getUsedCommonDhValueList() {

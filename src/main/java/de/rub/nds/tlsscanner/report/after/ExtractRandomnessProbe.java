@@ -12,12 +12,15 @@ import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 
 import java.util.*;
 import java.io.PrintStream;
 
+import de.rub.nds.tlsscanner.report.result.statistics.RandomMinimalLengthResult;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.jtransforms.fft.DoubleFFT_1D;
 
@@ -36,6 +39,9 @@ import static org.apache.commons.math3.special.Erf.erfc;
 public class ExtractRandomnessProbe extends AfterProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    // Lets settle for at least 100 KB of Random Data
+    private final int MINIMUM_AMOUNT_OF_BYTES = 100000;
 
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
             .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
@@ -77,80 +83,61 @@ public class ExtractRandomnessProbe extends AfterProbe {
     @Override
     public void analyze(SiteReport report) {
 
-        if (report.getExtractedValueContainerMap().isEmpty()) {
-            report.setRandomEvaluationResult(RandomEvaluationResult.NO_DUPLICATES);
+        if (report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.FALSE
+                || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.COULD_NOT_TEST) {
+            LOGGER.warn("AfterProbe can only be executed when TlsRngProbe was successfully executed.");
             return;
         }
 
-        ExtractedValueContainer container = report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
-        ExtractedValueContainer tempContainter = new ExtractedValueContainer(TrackableValueType.RANDOM);
-        for (Object o : container.getExtractedValueList()) {
-            ComparableByteArray random = (ComparableByteArray) o;
-            if (!Arrays.equals(HELLO_RETRY_REQUEST_CONST, random.getArray())) {
-                tempContainter.put(o);
-            }
-        }
+        List<ComparableByteArray> extractedRandomList = report.getExtractedRandomList();
+        List<ComparableByteArray> extractedIVList = report.getExtractedIVList();
+        List<ComparableByteArray> extractedSessionIDList = report.getExtractedSessionIDList();
 
-        container = report.getExtractedValueContainerMap().get(TrackableValueType.SESSION_ID);
-        ExtractedValueContainer tempContainter2 = new ExtractedValueContainer(TrackableValueType.SESSION_ID);
-        for (Object o : container.getExtractedValueList()) {
-            tempContainter2.put(o);
-        }
-
-        container = report.getExtractedValueContainerMap().get(TrackableValueType.IV);
-        ExtractedValueContainer tempContainer4 = new ExtractedValueContainer(TrackableValueType.IV);
-        if (!container.getExtractedValueList().isEmpty()) {
-            for (Object o : container.getExtractedValueList()) {
-                tempContainer4.put(o);
+        // Check for HELLO_RETRY_REQUEST_CONSTANT when TLS 1.3
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
+            for (ComparableByteArray random : extractedRandomList) {
+                if (random.equals(HELLO_RETRY_REQUEST_CONST)) {
+                    // Remove HELLO RETRY REQUEST "randoms"
+                    extractedRandomList.remove(random);
+                }
             }
         }
 
         String host_name_full = report.getHost();
         String rng_file = host_name_full.substring(0, host_name_full.length() - 4);
-        List<ComparableByteArray> full_byte_sequences = new ArrayList<ComparableByteArray>();
+        List<ComparableByteArray> fullByteSequenceList = new ArrayList();
 
         try {
             PrintStream random_file = new PrintStream(rng_file);
 
             // Extract Server Hello Random Bytes
             random_file.println("SERVER RANDOM");
-            for (Object o : tempContainter.getExtractedValueList()) {
-                ComparableByteArray byteArrayRNG = (ComparableByteArray) o;
-                full_byte_sequences.add(byteArrayRNG);
+            for (ComparableByteArray random : extractedRandomList) {
+                ;
                 String random_bytes = "";
-
-                for (byte b : byteArrayRNG.getArray()) {
+                for (byte b : random.getArray()) {
                     random_bytes = random_bytes + String.format("%02X", b);
                 }
-
                 random_file.println(random_bytes);
             }
 
             // Extract Server Hello Session ID
             random_file.println("SESSION ID");
-            for (Object o : tempContainter2.getExtractedValueList()) {
-                ComparableByteArray byteArrayRNG = (ComparableByteArray) o;
-                full_byte_sequences.add(byteArrayRNG);
+            for (ComparableByteArray sessionID : extractedSessionIDList) {
                 String random_bytes = "";
-
-                for (byte b : byteArrayRNG.getArray()) {
+                for (byte b : sessionID.getArray()) {
                     random_bytes = random_bytes + String.format("%02X", b);
                 }
-
                 random_file.println(random_bytes);
             }
 
             // Extract Application IV
             random_file.println("IV");
-            for (Object o : tempContainer4.getExtractedValueList()) {
-                ComparableByteArray byteArrayRNG = (ComparableByteArray) o;
-                full_byte_sequences.add(byteArrayRNG);
+            for (ComparableByteArray iVector : extractedIVList) {
                 String random_bytes = "";
-
-                for (byte b : byteArrayRNG.getArray()) {
+                for (byte b : iVector.getArray()) {
                     random_bytes = random_bytes + String.format("%02X", b);
                 }
-
                 random_file.println(random_bytes);
             }
 
@@ -168,28 +155,62 @@ public class ExtractRandomnessProbe extends AfterProbe {
         // ComparableByteArray[] test3 = new ComparableByteArray[] { test2 };
         // LOGGER.warn(frequencyTest(test3, 10));
 
-        ComparableByteArray[] test = new ComparableByteArray[full_byte_sequences.size()];
-        ComparableByteArray[] test2 = full_byte_sequences.toArray(test);
+        // full_byte_sequence
+        // Structure: ServerRandom + SessionID for every Handshake
+        // Then at the end all IV from the HTTP GET.
+        // This will result in a few holes logically when compared
+        // to the real full byte sequence but is close enough.
+        for (int i = 0; i < max(extractedRandomList.size(), extractedSessionIDList.size()); i++) {
+            if (extractedRandomList.size() <= i) {
+                fullByteSequenceList.add(extractedRandomList.get(i));
+            }
+            if (extractedSessionIDList.size() <= i) {
+                fullByteSequenceList.add(extractedSessionIDList.get(i));
+            }
+        }
+        for (ComparableByteArray iVector : extractedIVList) {
+            fullByteSequenceList.add(iVector);
+        }
+
+        List<Byte> fullByteSequence = new ArrayList<Byte>();
+        for (ComparableByteArray bytes : fullByteSequenceList) {
+            for (Byte b : bytes.getArray()) {
+                fullByteSequence.add(b);
+            }
+        }
+
+        ComparableByteArray[] fullByteSequenceTest = new ComparableByteArray[fullByteSequence.size()];
+        fullByteSequenceTest = fullByteSequence.toArray(fullByteSequenceTest);
+
+        if (fullByteSequenceTest.length < MINIMUM_AMOUNT_OF_BYTES) {
+            LOGGER.warn("Minimum Amount of Bytes not reached! This will negatively impact the "
+                    + "performance of the tests. This will be noted in the site report.");
+            report.setRandomMinimalLengthResult(RandomMinimalLengthResult.NOT_FULFILLED);
+        } else {
+            report.setRandomMinimalLengthResult(RandomMinimalLengthResult.FULFILLED);
+        }
+
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Monobit : " + frequencyTest(test2, 1));
+        LOGGER.warn("P-Value of Monobit : " + frequencyTest(fullByteSequenceTest, 1));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Frequency-Test with Block size 10 : " + frequencyTest(test2, 128));
+        LOGGER.warn("P-Value of Frequency-Test with Block size 10 : " + frequencyTest(fullByteSequenceTest, 128));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of RunsTest : " + runsTest(test2));
+        LOGGER.warn("P-Value of RunsTest : " + runsTest(fullByteSequenceTest));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of longestRunWithinABlock : " + longestRunWithinBlock(test2, 8));
+        LOGGER.warn("P-Value of longestRunWithinABlock : " + longestRunWithinBlock(fullByteSequenceTest, 8));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Discrete Fourier Test : " + discreteFourierTest(test2));
+        LOGGER.warn("P-Value of Discrete Fourier Test : " + discreteFourierTest(fullByteSequenceTest));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("Failed Tests-ratio of NonOverlappingTemplate Test : " + nonOverlappingTemplateTest(test2, 9));
+        LOGGER.warn("Failed Tests-ratio of NonOverlappingTemplate Test : "
+                + nonOverlappingTemplateTest(fullByteSequenceTest, 9));
         LOGGER.warn("Its hard to say what number of nonOverlappingTemplate Tests are concerning.");
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("Average P-Value returned by Serial Test : " + serialTest(test2, 16));
+        LOGGER.warn("Average P-Value returned by Serial Test : " + serialTest(fullByteSequenceTest, 16));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Approximate Entropy Test : " + approximateEntropyTest(test2, 10));
+        LOGGER.warn("P-Value of Approximate Entropy Test : " + approximateEntropyTest(fullByteSequenceTest, 10));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Cumulative Sums Test : " + cusumTest(test2, true));
-        LOGGER.warn("P-Value of Cumulative Sums (REVERSE) Test :" + cusumTest(test, false));
+        LOGGER.warn("P-Value of Cumulative Sums Test : " + cusumTest(fullByteSequenceTest, true));
+        LOGGER.warn("P-Value of Cumulative Sums (REVERSE) Test :" + cusumTest(fullByteSequenceTest, false));
         LOGGER.warn("============================================================================================");
     }
 
