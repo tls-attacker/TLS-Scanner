@@ -23,6 +23,7 @@ import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
@@ -114,6 +115,12 @@ public class SiteReport extends Observable implements Serializable {
     // Randomness
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
     private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
+
+    // TODO: Check if this is appropriate
+    // Randomness NEW
+    private List<ComparableByteArray> extractedIVList = null;
+    private List<ComparableByteArray> extractedRandomList = null;
+    private List<ComparableByteArray> extractedSessionIDList = null;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -570,6 +577,30 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setRaccoonAttackProbabilities(List<RaccoonAttackProbabilities> raccoonAttackProbabilities) {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
+    }
+
+    public synchronized void setExtractedIVList(List<ComparableByteArray> extractedIVList) {
+        this.extractedIVList = extractedIVList;
+    }
+
+    public synchronized List<ComparableByteArray> getExtractedIVList() {
+        return extractedIVList;
+    }
+
+    public synchronized void setExtractedRandomList(List<ComparableByteArray> extractedRandomList) {
+        this.extractedRandomList = extractedRandomList;
+    }
+
+    public synchronized List<ComparableByteArray> getExtractedRandomList() {
+        return extractedRandomList;
+    }
+
+    public synchronized void setExtractedSessionIDList(List<ComparableByteArray> extractedSessionIDList) {
+        this.extractedSessionIDList = extractedSessionIDList;
+    }
+
+    public synchronized List<ComparableByteArray> getExtractedSessionIDList() {
+        return extractedSessionIDList;
     }
 
 }

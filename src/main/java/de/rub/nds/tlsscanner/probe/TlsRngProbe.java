@@ -8,11 +8,11 @@
  */
 package de.rub.nds.tlsscanner.probe;
 
+import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
-import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
@@ -22,30 +22,25 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.action.*;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.MessageActionResult;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.ReceiveMessageHelper;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.SendMessageHelper;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.report.result.RngResult;
+import de.rub.nds.tlsscanner.report.result.TlsRngResult;
 import org.apache.commons.lang3.ArrayUtils;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,6 +52,9 @@ public class TlsRngProbe extends TlsProbe {
 
     private ProtocolVersion highestVersion;
     private SiteReport latestReport;
+    private List<ComparableByteArray> extractedIVList;
+    private List<ComparableByteArray> extractedRandomList;
+    private List<ComparableByteArray> extractedSessionIDList;
 
     public TlsRngProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RNG, config, 0);
@@ -64,6 +62,9 @@ public class TlsRngProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
+        extractedIVList = new LinkedList<>();
+        extractedRandomList = new LinkedList<>();
+        extractedSessionIDList = new LinkedList<>();
 
         // Ensure we use the highest Protocol version possible to prevent the
         // downgrade-attack mitigation to
@@ -93,7 +94,8 @@ public class TlsRngProbe extends TlsProbe {
         // TODO: Implement this right.
         boolean successfulHandshake = true;
 
-        RngResult rng_extract = new RngResult(successfulHandshake);
+        TlsRngResult rng_extract = new TlsRngResult(successfulHandshake, extractedIVList, extractedRandomList,
+                extractedSessionIDList);
 
         return rng_extract;
     }
@@ -121,7 +123,7 @@ public class TlsRngProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new RngResult(false);
+        return new TlsRngResult(false, null, null, null);
     }
 
     @Override
@@ -202,6 +204,11 @@ public class TlsRngProbe extends TlsProbe {
         List<CipherSuite> serverHelloCollectSuites = new LinkedList<>();
         CipherSuite[] supportedSuites = new CipherSuite[latestReport.getSupportedTls13CipherSuites().toArray().length];
         supportedSuites = latestReport.getSupportedTls13CipherSuites().toArray(supportedSuites);
+        byte[] serverRandom = null;
+        byte[] serverExtendedRandom = null;
+        byte[] sessionID = null;
+
+        // TODO: Remove this. TLS 1.3 does not support static key exchanges.
         if (latestReport.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE) {
             for (CipherSuite cipherSuite : supportedSuites) {
                 if (cipherSuite.name().contains("TLS_RSA")) {
@@ -224,8 +231,6 @@ public class TlsRngProbe extends TlsProbe {
 
         boolean supportsExtendedRandom = latestReport.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
 
-        // TODO: Add Session Ticket Support
-
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config serverHelloConfig = generateTls13Config(intToByteArray(clientRandomInit + i));
 
@@ -246,8 +251,16 @@ public class TlsRngProbe extends TlsProbe {
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
             State test_state = new State(serverHelloConfig);
-            LOGGER.warn("Starting test ClientHello in TLS 13");
             executeState(test_state);
+
+            serverRandom = test_state.getTlsContext().getServerRandom();
+            serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
+            byte[] completeServerRandom = ArrayConverter.concatenate(serverRandom, serverExtendedRandom);
+            extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+
+            // SessionIDs are mirrored from client SessionID in TLS 1.3, so we
+            // dont bother with them here.
+
             LOGGER.warn("===========================================================================================");
             LOGGER.warn(test_state.getWorkflowTrace());
             LOGGER.warn(test_state.getTlsContext().getSelectedProtocolVersion());
@@ -262,6 +275,7 @@ public class TlsRngProbe extends TlsProbe {
 
     private void collectServerRandom(int numberOfHandshakes, int clientRandomInit) {
         // Use preferred Ciphersuites if supported
+        // TODO: Set SessionID to fixed value to see if SessionIDs are mirrored
         List<CipherSuite> serverHelloCollectSuites = new LinkedList<>();
         CipherSuite[] supportedSuites = new CipherSuite[latestReport.getCipherSuites().toArray().length];
         supportedSuites = latestReport.getCipherSuites().toArray(supportedSuites);
@@ -289,6 +303,9 @@ public class TlsRngProbe extends TlsProbe {
 
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config serverHelloConfig = generateTestConfig(intToByteArray(clientRandomInit + i));
+            byte[] serverRandom = null;
+            byte[] serverExtendedRandom = null;
+            byte[] sessionID = null;
 
             if (supportsExtendedRandom) {
                 LOGGER.warn("Extended Random Supported!");
@@ -310,8 +327,16 @@ public class TlsRngProbe extends TlsProbe {
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
             State test_state = new State(serverHelloConfig);
-            LOGGER.warn("Starting test ClientHello");
             executeState(test_state);
+
+            serverRandom = test_state.getTlsContext().getServerRandom();
+            serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
+            byte[] completeServerRandom = ArrayConverter.concatenate(serverRandom, serverExtendedRandom);
+            extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+
+            sessionID = test_state.getTlsContext().getServerSessionId();
+            extractedSessionIDList.add(new ComparableByteArray(sessionID));
+
             LOGGER.warn("===========================================================================================");
             LOGGER.warn(test_state.getWorkflowTrace());
             LOGGER.warn(test_state.getTlsContext().getSelectedProtocolVersion());
@@ -365,40 +390,58 @@ public class TlsRngProbe extends TlsProbe {
         LOGGER.warn(state.getTlsContext().getSelectedProtocolVersion());
         LOGGER.warn(state.getTlsContext().getSelectedCipherSuite());
 
+        SendMessageHelper sendMessageHelper = new SendMessageHelper();
+        ReceiveMessageHelper receiveMessageHelper = new ReceiveMessageHelper();
+
         HttpsRequestMessage httpGet = new HttpsRequestMessage(iVCollectConfig);
         List<HttpsHeader> header = new LinkedList<>();
         header.add(new HostHeader());
         httpGet.setHeader(header);
-        TlsContext tlsContext = state.getTlsContext();
-
-        try {
-            LOGGER.warn("CONNECTION IS CLOSED: " + tlsContext.getTransportHandler().isClosed());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        SendMessageHelper sendMessageHelper = new SendMessageHelper();
-        ReceiveMessageHelper receiveMessageHelper = new ReceiveMessageHelper();
         List<AbstractRecord> records = new ArrayList<>();
         List<ProtocolMessage> messages = new ArrayList<>();
-        messages.add(httpGet);
         MessageActionResult result = null;
-        try {
-            sendMessageHelper.sendMessages(messages, records, tlsContext);
-            result = receiveMessageHelper.receiveMessages(tlsContext);
-            messages = new ArrayList<>(result.getMessageList());
-            records = new ArrayList<>(result.getRecordList());
-        } catch (IOException e) {
-            e.printStackTrace();
+        TlsContext tlsContext = state.getTlsContext();
+
+        for (int i = 0; i < numberOfBlocks; i++) {
+            result = null;
+            messages = new ArrayList<>();
+            messages.add(httpGet);
+            records = null;
+            result = null;
+            try {
+                sendMessageHelper.sendMessages(messages, records, tlsContext);
+                result = receiveMessageHelper.receiveMessages(tlsContext);
+                messages = new ArrayList<>(result.getMessageList());
+                records = new ArrayList<>(result.getRecordList());
+            } catch (IOException e) {
+                LOGGER.warn("Encountered Problems sending or receiving Messages for IV collection.");
+                e.printStackTrace();
+            }
+
+            if (messages.get(0).getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
+                ModifiableByteArray extractedIV = ((Record) records.get(0)).getComputations()
+                        .getCbcInitialisationVector();
+                extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
+            } else {
+                LOGGER.debug("Received unexpected Message before receiving required amount of application messages.");
+                // TODO: Implement fallback --> Either retry new connection or
+                // collect more Server Randoms.
+                try {
+                    tlsContext.getTransportHandler().closeConnection();
+                } catch (IOException e) {
+                    LOGGER.warn("Could not close TransportHandler.");
+                    e.printStackTrace();
+                }
+            }
+
         }
 
         try {
             tlsContext.getTransportHandler().closeConnection();
         } catch (IOException e) {
+            LOGGER.warn("Could not close TransportHandler.");
             e.printStackTrace();
         }
-        LOGGER.warn(ArrayConverter.bytesToHexString(((Record) records.get(0)).getComputations()
-                .getCbcInitialisationVector()));
 
     }
 
