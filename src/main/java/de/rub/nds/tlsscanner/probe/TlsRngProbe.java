@@ -66,7 +66,7 @@ public class TlsRngProbe extends TlsProbe {
         extractedIVList = new LinkedList<>();
         extractedRandomList = new LinkedList<>();
         extractedSessionIDList = new LinkedList<>();
-        int numberOfHandshakes = 100;
+        int numberOfHandshakes = 600;
         int clientRandomStart = 1;
 
         // Ensure we use the highest Protocol version possible to prevent the
@@ -91,7 +91,7 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         // ////////////////////////////////////////////////////////////////////////////////////////////////////
-        collectIV(100, clientRandomStart + 700);
+        collectIV(1000, clientRandomStart + 700);
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // TODO: Implement this right.
@@ -386,6 +386,8 @@ public class TlsRngProbe extends TlsProbe {
         MessageActionResult result = null;
         TlsContext tlsContext = state.getTlsContext();
 
+        int strikes = 0;
+
         for (int i = 0; i < numberOfBlocks; i++) {
             result = null;
             messages = new ArrayList<>();
@@ -400,6 +402,14 @@ public class TlsRngProbe extends TlsProbe {
             } catch (IOException e) {
                 LOGGER.warn("Encountered Problems sending or receiving Messages for IV collection.");
                 e.printStackTrace();
+                LOGGER.warn("Increasing Strikes.");
+                strikes++;
+                LOGGER.warn("Current strikes: "+strikes);
+                if (strikes == 3) {
+                    LOGGER.warn("Closing Connection after 4 missing Messages.");
+                    break;
+                }
+                continue;
             }
 
             if (!(messages.size() == 0)
@@ -410,6 +420,13 @@ public class TlsRngProbe extends TlsProbe {
                 LOGGER.warn("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
             } else {
                 LOGGER.debug("Received unexpected Message before receiving required amount of application messages.");
+                LOGGER.warn("Increasing Strikes.");
+                strikes++;
+                LOGGER.warn("Current strikes: "+strikes);
+                if (strikes == 3) {
+                    LOGGER.warn("Closing Connection after 4 missing or unexpected Messsages.");
+                    break;
+                }
                 // TODO: Implement fallback --> Either retry new connection or
                 // collect more Server Randoms.
                 try {
