@@ -8,11 +8,13 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
+import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
 import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
-import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -22,54 +24,89 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.DTLS10;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.DTLS12;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.SSL2;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.SSL3;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS10;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS11;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS12;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT14;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT15;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT16;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT17;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT18;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT19;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT20;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT21;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT22;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT23;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT24;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT25;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT26;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT27;
+import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT28;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 import de.rub.nds.tlsscanner.constants.AnsiColor;
+import static de.rub.nds.tlsscanner.constants.CheckPatternType.CORRECT;
+import static de.rub.nds.tlsscanner.constants.CheckPatternType.PARTIAL;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
+import static de.rub.nds.tlsscanner.constants.CipherSuiteGrade.GOOD;
+import static de.rub.nds.tlsscanner.constants.CipherSuiteGrade.LOW;
+import static de.rub.nds.tlsscanner.constants.CipherSuiteGrade.MEDIUM;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.leak.ResponseCounter;
+import de.rub.nds.tlsscanner.leak.VectorContainer;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateIssue;
-import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
-import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
-import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
-import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.probe.handshakeSimulation.HandshakeFailureReasons;
+import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.probe.invalidCurve.InvalidCurveResponse;
+import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
+import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
+import de.rub.nds.tlsscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.report.after.statistic.ResponseCounter;
-import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.NondeterministicVectorContainerHolder;
-import de.rub.nds.tlsscanner.report.after.statistic.nondeterminism.VectorContainer;
+import static de.rub.nds.tlsscanner.rating.TestResult.FALSE;
+import static de.rub.nds.tlsscanner.rating.TestResult.TRUE;
+import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
+import de.rub.nds.tlsscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
-import de.rub.nds.tlsscanner.report.result.paddingoracle.PaddingOracleCipherSuiteFingerprint;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.DUPLICATES;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
+import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.UNIX_TIME;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
-
 import de.rub.nds.tlsscanner.report.result.statistics.RandomMinimalLengthResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
@@ -119,7 +156,7 @@ public class SiteReportPrinter {
             builder.append("Server does not seem to support SSL / TLS on the scanned port");
             return builder.toString();
         }
-
+        //
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
         appendExtensions(builder);
@@ -129,9 +166,9 @@ public class SiteReportPrinter {
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
+        sessionTicketZeroKeyDetails(builder);
         appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
-        // appendGcm(builder);
         appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
         appendRfc(builder);
@@ -142,6 +179,7 @@ public class SiteReportPrinter {
         appendHttps(builder);
         appendRandom(builder);
         appendPublicKeyIssues(builder);
+        appendClientAuthentication(builder);
         appendScoringResults(builder);
         appendRecommendations(builder);
         appendPerformanceData(builder);
@@ -149,7 +187,17 @@ public class SiteReportPrinter {
         return builder.toString();
     }
 
-    private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
+    private void appendDirectRaccoonResults(StringBuilder builder) {
+        // TODO this recopying is weired
+        List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
+        if (report.getDirectRaccoonResultList() == null) {
+            return;
+        }
+        informationLeakTestList.addAll(report.getDirectRaccoonResultList());
+        appendInformationLeakTestList(builder, informationLeakTestList, "Direct Raccoon Results");
+    }
+
+    public StringBuilder appendHandshakeSimulation(StringBuilder builder) {
         if (report.getSimulatedClientList() != null) {
             appendHsNormal(builder);
             if (detail == ScannerDetail.DETAILED) {
@@ -162,7 +210,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHsNormal(StringBuilder builder) {
+    public StringBuilder appendHsNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Overview");
         prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
         builder.append("\n");
@@ -183,7 +231,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHandshakeSimulationTable(StringBuilder builder) {
+    public StringBuilder appendHandshakeSimulationTable(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation");
         int counter = 0;
         appendHandshakeSimulationTableRowHeading(builder, "Client", "Version", "Ciphersuite", "Forward Secrecy",
@@ -208,7 +256,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHandshakeSimulationTableRowHeading(StringBuilder builder, String tlsClient,
+    public StringBuilder appendHandshakeSimulationTableRowHeading(StringBuilder builder, String tlsClient,
             String tlsVersion, String ciphersuite, String forwardSecrecy, String keyLength) {
         builder.append(String.format(hsClientFormat, tlsClient));
         builder.append(String.format("| " + hsVersionFormat, tlsVersion));
@@ -219,7 +267,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHandshakeTableRowSuccessful(StringBuilder builder, SimulatedClientResult simulatedClient) {
+    public StringBuilder appendHandshakeTableRowSuccessful(StringBuilder builder, SimulatedClientResult simulatedClient) {
         String clientName = simulatedClient.getTlsClientConfig().getType() + ":"
                 + simulatedClient.getTlsClientConfig().getVersion();
         builder.append(getClientColor(clientName, simulatedClient.getConnectionInsecure(),
@@ -233,26 +281,33 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHandshakeTableRowFailed(StringBuilder builder, SimulatedClientResult simulatedClient) {
-        String clientName = simulatedClient.getTlsClientConfig().getType() + ":"
-                + simulatedClient.getTlsClientConfig().getVersion();
-        builder.append(String.format("%s", getRedString(clientName, hsClientFormat)));
-        if (!simulatedClient.getFailReasons().isEmpty()) {
-            for (HandshakeFailureReasons reason : simulatedClient.getFailReasons()) {
-                builder.append(String.format("| %s", getRedString(reason.getReason(), hsVersionFormat)));
-            }
-        } else {
-            ReceivingAction action = simulatedClient.getState().getWorkflowTrace().getLastReceivingAction();
-            if (action.getReceivedMessages().isEmpty()) {
-                builder.append(String.format("| %s", getRedString("Failed - No answer from server", "%s")));
-            } else {
-                StringBuilder messages = new StringBuilder();
-                for (ProtocolMessage message : action.getReceivedMessages()) {
-                    messages.append(message.toCompactString()).append(", ");
-                }
-                builder.append(String.format("| %s", getRedString("Failed - " + messages, "%s")));
-            }
-        }
+    public StringBuilder appendHandshakeTableRowFailed(StringBuilder builder, SimulatedClientResult simulatedClient) {
+        // String clientName = simulatedClient.getTlsClientConfig().getType() +
+        // ":"
+        // + simulatedClient.getTlsClientConfig().getVersion();
+        // builder.append(String.format("%s", getRedString(clientName,
+        // hsClientFormat)));
+        // if (!simulatedClient.getFailReasons().isEmpty()) {
+        // for (HandshakeFailureReasons reason :
+        // simulatedClient.getFailReasons()) {
+        // builder.append(String.format("| %s", getRedString(reason.getReason(),
+        // hsVersionFormat)));
+        // }
+        // } else {
+        // ReceivingAction action =
+        // simulatedClient.getState().getWorkflowTrace().getLastReceivingAction();
+        // if (action.getReceivedMessages().isEmpty()) {
+        // builder.append(String.format("| %s",
+        // getRedString("Failed - No answer from server", "%s")));
+        // } else {
+        // StringBuilder messages = new StringBuilder();
+        // for (ProtocolMessage message : action.getReceivedMessages()) {
+        // messages.append(message.toCompactString()).append(", ");
+        // }
+        // builder.append(String.format("| %s", getRedString("Failed - " +
+        // messages, "%s")));
+        // }
+        // }
         builder.append("\n");
         return builder;
     }
@@ -350,7 +405,7 @@ public class SiteReportPrinter {
         return null;
     }
 
-    private StringBuilder appendHandshakeSimulationDetails(StringBuilder builder) {
+    public StringBuilder appendHandshakeSimulationDetails(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Details");
         for (SimulatedClientResult simulatedClient : report.getSimulatedClientList()) {
             prettyAppendHeading(builder, simulatedClient.getTlsClientConfig().getType() + ":"
@@ -402,7 +457,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendRfc(StringBuilder builder) {
+    public StringBuilder appendRfc(StringBuilder builder) {
         prettyAppendHeading(builder, "RFC");
         prettyAppendCheckPattern(builder, "Checks MAC (AppData)", report.getMacCheckPatternAppData());
         prettyAppendCheckPattern(builder, "Checks MAC (Finished)", report.getMacCheckPatternFinished());
@@ -410,14 +465,14 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendRenegotiation(StringBuilder builder) {
+    public StringBuilder appendRenegotiation(StringBuilder builder) {
         prettyAppendHeading(builder, "Renegotioation");
         prettyAppend(builder, "Clientside Secure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION);
         prettyAppend(builder, "Clientside Insecure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION);
         return builder;
     }
 
-    private StringBuilder appendCertificate(StringBuilder builder) {
+    public StringBuilder appendCertificate(StringBuilder builder) {
         if (report.getCertificateChain() != null) {
             CertificateChain chain = report.getCertificateChain();
             prettyAppendHeading(builder, "Certificate Chain");
@@ -555,7 +610,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendSession(StringBuilder builder) {
+    public StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
         prettyAppend(builder, "Supports Session resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
         prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
@@ -569,7 +624,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendGcm(StringBuilder builder) {
+    public StringBuilder appendGcm(StringBuilder builder) {
         prettyAppendHeading(builder, "GCM");
         prettyAppend(builder, "GCM Nonce reuse", AnalyzedProperty.REUSES_GCM_NONCES);
         if (null == report.getGcmPattern()) {
@@ -595,7 +650,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendIntolerances(StringBuilder builder) {
+    public StringBuilder appendIntolerances(StringBuilder builder) {
         prettyAppendHeading(builder, "Common Bugs [EXPERIMENTAL]");
         prettyAppend(builder, "Version Intolerant", AnalyzedProperty.HAS_VERSION_INTOLERANCE);
         prettyAppend(builder, "Ciphersuite Intolerant", AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE);
@@ -616,7 +671,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
+    public StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
         prettyAppendHeading(builder, "Attack Vulnerabilities");
         if (report.getKnownVulnerability() == null) {
             prettyAppend(builder, "Padding Oracle", AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE);
@@ -640,10 +695,12 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Extra Clear DROWN", AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
+        prettyAppend(builder, "CVE-2020-13777 (Zero key)", AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
+
         return builder;
     }
 
-    private StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
+    public StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMaximumFractionDigits(24);
         if (report.getRaccoonAttackProbabilities() != null) {
@@ -680,22 +737,20 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendDirectRaccoonResults(StringBuilder builder) {
-
-        prettyAppendHeading(builder, "DirectRaccoon Responsemap");
+    public StringBuilder appendInformationLeakTestList(StringBuilder builder,
+            List<InformationLeakTest> informationLeakTestList, String heading) {
+        prettyAppendHeading(builder, heading);
         if (report.getDirectRaccoonResultList() == null || report.getDirectRaccoonResultList().isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
-            for (DirectRaccoonCipherSuiteFingerprint testResult : report.getDirectRaccoonResultList()) {
+            for (InformationLeakTest testResult : informationLeakTestList) {
                 String pValue;
                 if (testResult.getpValue() >= 0.001) {
                     pValue = String.format("%.3f", testResult.getpValue());
                 } else {
                     pValue = "<0.001";
                 }
-                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | "
-                        + testResult.getVersion() + " | " + padToLength(testResult.getWorkflowType().name(), 15)
-                        + " Functional:" + testResult.getHandshakeIsWorking();
+                String resultString = testResult.getTestInfo().getPrintableName();
                 if (testResult.getpValue() < 0.01) {
                     prettyAppend(builder, resultString + "\t | "
                             + padToLength(testResult.getEqualityError().name(), 25) + padToLength("| VULNERABLE", 25)
@@ -712,12 +767,11 @@ public class SiteReportPrinter {
                             + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
                 }
 
-                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isConsideredVulnerable(),
+                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isSignificantDistinctAnswers(),
                         Boolean.TRUE)) || detail == ScannerDetail.ALL) {
                     if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
                         prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                        appendPaddingOracleResponseMapList(builder, new NondeterministicVectorContainerHolder(
-                                testResult.getResponseMapList()));
+                        appendInformationLeakTestResult(builder, testResult);
                     }
                 }
             }
@@ -726,145 +780,125 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendPaddingOracleResults(StringBuilder builder) {
-        if (Objects.equals(report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResult.TRUE)) {
-            prettyAppendHeading(builder, "PaddingOracle Details");
+    public StringBuilder appendPaddingOracleResults(StringBuilder builder) {
+        try {
+            if (Objects.equals(report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResult.TRUE)) {
+                prettyAppendHeading(builder, "PaddingOracle Details");
 
-            if (report.getKnownVulnerability() != null) {
-                KnownPaddingOracleVulnerability knownVulnerability = report.getKnownVulnerability();
-                prettyAppend(builder, "Identification", knownVulnerability.getLongName(), AnsiColor.RED);
-                prettyAppend(builder, "CVE", knownVulnerability.getCve(), AnsiColor.RED);
-                if (knownVulnerability.getStrength() != PaddingOracleStrength.WEAK) {
-                    prettyAppend(builder, "Strength", knownVulnerability.getStrength().name(), AnsiColor.RED);
-                } else {
-                    prettyAppend(builder, "Strength", knownVulnerability.getStrength().name(), AnsiColor.YELLOW);
-                }
-                if (knownVulnerability.isObservable()) {
-                    prettyAppend(builder, "Observable", "" + knownVulnerability.isObservable(), AnsiColor.RED);
-                } else {
-                    prettyAppend(builder, "Observable", "" + knownVulnerability.isObservable(), AnsiColor.YELLOW);
-                }
-                prettyAppend(builder, "\n");
-                prettyAppend(builder, knownVulnerability.getDescription());
-                prettyAppendHeading(builder, "Affected Products");
+                if (report.getKnownVulnerability() != null) {
+                    KnownPaddingOracleVulnerability knownVulnerability = report.getKnownVulnerability();
+                    prettyAppend(builder, "Identification", knownVulnerability.getLongName(), AnsiColor.RED);
+                    prettyAppend(builder, "CVE", knownVulnerability.getCve(), AnsiColor.RED);
+                    if (knownVulnerability.getStrength() != PaddingOracleStrength.WEAK) {
+                        prettyAppend(builder, "Strength", knownVulnerability.getStrength().name(), AnsiColor.RED);
+                    } else {
+                        prettyAppend(builder, "Strength", knownVulnerability.getStrength().name(), AnsiColor.YELLOW);
+                    }
+                    if (knownVulnerability.isObservable()) {
+                        prettyAppend(builder, "Observable", "" + knownVulnerability.isObservable(), AnsiColor.RED);
+                    } else {
+                        prettyAppend(builder, "Observable", "" + knownVulnerability.isObservable(), AnsiColor.YELLOW);
+                    }
+                    prettyAppend(builder, "\n");
+                    prettyAppend(builder, knownVulnerability.getDescription());
+                    prettyAppendHeading(builder, "Affected Products");
 
-                for (String s : knownVulnerability.getAffectedProducts()) {
-                    prettyAppend(builder, s, AnsiColor.YELLOW);
+                    for (String s : knownVulnerability.getAffectedProducts()) {
+                        prettyAppend(builder, s, AnsiColor.YELLOW);
+                    }
+                    prettyAppend(builder, "");
+                    prettyAppend(builder,
+                            "If your tested software/hardware is not in this list, please let us know so we can add it here.");
+                } else {
+                    prettyAppend(
+                            builder,
+                            "Identification",
+                            "Could not identify vulnerability. Please contact us if you know which software/hardware is generating this behavior.",
+                            AnsiColor.YELLOW);
                 }
-                prettyAppend(builder, "");
-                prettyAppend(builder,
-                        "If your tested software/hardware is not in this list, please let us know so we can add it here.");
+            }
+            prettyAppendHeading(builder, "PaddingOracle Responsemap");
+            if (report.getPaddingOracleTestResultList() == null || report.getPaddingOracleTestResultList().isEmpty()) {
+                prettyAppend(builder, "No Testresults");
             } else {
-                prettyAppend(
-                        builder,
-                        "Identification",
-                        "Could not identify vulnerability. Please contact us if you know which software/hardware is generating this behavior.",
-                        AnsiColor.YELLOW);
+                // TODO this recopying is weired
+                List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
+                informationLeakTestList.addAll(report.getPaddingOracleTestResultList());
+                appendInformationLeakTestList(builder, informationLeakTestList, "Padding Oracle Details");
             }
+        } catch (Exception E) {
+            prettyAppend(builder, "Error:" + E.getMessage());
         }
-        prettyAppendHeading(builder, "PaddingOracle Responsemap");
-        if (report.getPaddingOracleTestResultList() == null || report.getPaddingOracleTestResultList().isEmpty()) {
-            prettyAppend(builder, "No Testresults");
-        } else {
-            for (PaddingOracleCipherSuiteFingerprint testResult : report.getPaddingOracleTestResultList()) {
-                String pValue;
-                if (testResult.getpValue() >= 0.001) {
-                    pValue = String.format("%.3f", testResult.getpValue());
-                } else {
-                    pValue = "<0.001";
-                }
-                String resultString = "" + padToLength(testResult.getSuite().name(), 40) + " | "
-                        + testResult.getVersion() + " | " + padToLength(testResult.getVectorGeneratorType().name(), 15);
-                if (testResult.getpValue() < 0.01) {
-                    prettyAppend(builder, resultString + "\t | "
-                            + padToLength(testResult.getEqualityError().name(), 25) + padToLength("| VULNERABLE", 25)
-                            + "| P: " + pValue, AnsiColor.RED);
-                } else if (testResult.getpValue() < 0.05) {
-                    prettyAppend(builder,
-                            resultString + "\t | " + padToLength(testResult.getEqualityError().name(), 25)
-                                    + padToLength("| PROBABLY VULNERABLE", 25) + "| P: " + pValue, AnsiColor.YELLOW);
-                } else if (testResult.getpValue() < 1) {
-                    prettyAppend(builder, resultString + "\t | " + padToLength("No significant difference", 25)
-                            + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
-                } else {
-                    prettyAppend(builder, resultString + "\t | " + padToLength("No behavior difference", 25)
-                            + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
-                }
+        return builder;
+    }
 
-                if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isConsideredVulnerable(),
-                        Boolean.TRUE)) || detail == ScannerDetail.ALL) {
-                    if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
-                        prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                        appendPaddingOracleResponseMapList(builder, new NondeterministicVectorContainerHolder(
-                                testResult.getResponseMap()));
+    public StringBuilder appendInformationLeakTestResult(StringBuilder builder, InformationLeakTest informationLeakTest) {
+        try {
+            ResponseFingerprint defaultAnswer = informationLeakTest.retrieveMostCommonAnswer().getFingerprint();
+            List<VectorContainer> vectorContainerList = informationLeakTest.getVectorContainerList();
+            for (VectorContainer vectorContainer : vectorContainerList) {
+                prettyAppend(builder, "\t" + padToLength(vectorContainer.getVector().getName(), 40));
+                for (ResponseCounter counter : vectorContainer.getDistinctResponsesCounterList()) {
+                    AnsiColor color = AnsiColor.GREEN;
+                    if (!counter.getFingerprint().equals(defaultAnswer)) {
+                        // TODO received app data should also make this red
+                        color = AnsiColor.RED;
                     }
+                    prettyAppend(
+                            builder,
+                            "\t\t" + padToLength((counter.getFingerprint().toHumanReadable()), 40)
+                                    + counter.getCounter() + "/" + counter.getTotal() + " ("
+                                    + String.format("%.2f", counter.getProbability() * 100) + "%)", color);
+
                 }
             }
-
+        } catch (Exception E) {
+            prettyAppend(builder, "Error: " + E.getMessage());
         }
         return builder;
     }
 
-    private StringBuilder appendPaddingOracleResponseMapList(StringBuilder builder,
-            NondeterministicVectorContainerHolder vectorContainerHolder) {
-        ResponseFingerprint defaultAnswer = vectorContainerHolder.getDefaultAnswer().getFingerprint();
-        for (VectorContainer vectorContainer : vectorContainerHolder.getStatisticList()) {
-            prettyAppend(builder, "\t" + padToLength(vectorContainer.getVector().getName(), 40));
-            for (ResponseCounter counter : vectorContainer.getDistinctResponsesCounterList()) {
-                AnsiColor color = AnsiColor.GREEN;
-                if (!counter.getFingerprint().equals(defaultAnswer)) {
-                    // TODO received app data should also make this red
-                    color = AnsiColor.RED;
-                }
-                prettyAppend(
-                        builder,
-                        "\t\t" + padToLength((counter.getFingerprint().toHumanReadable()), 40) + counter.getCounter()
-                                + "/" + counter.getTotal() + " ("
-                                + String.format("%.2f", counter.getProbability() * 100) + "%)", color);
-
-            }
-        }
-        return builder;
-    }
-
-    private StringBuilder appendBleichenbacherResults(StringBuilder builder) {
+    public StringBuilder appendBleichenbacherResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Bleichenbacher Details");
-        if (report.getBleichenbacherTestResultList() == null || report.getBleichenbacherTestResultList().isEmpty()) {
-            prettyAppend(builder, "No Testresults");
-        } else {
-            for (BleichenbacherTestResult testResult : report.getBleichenbacherTestResultList()) {
-                String resultString = "" + padToLength(testResult.getWorkflowType().name(), 40);
-                if (testResult.getVulnerable() == Boolean.TRUE) {
-                    prettyAppend(builder, resultString + "\t | " + testResult.getEqualityError() + "  VULNERABLE",
-                            AnsiColor.RED);
-                } else if (testResult.getVulnerable() == Boolean.FALSE) {
-                    prettyAppend(builder, resultString + "\t | No Behavior Difference", AnsiColor.GREEN);
-                } else {
-                    prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
-                }
+        try {
+            if (report.getBleichenbacherTestResultList() == null || report.getBleichenbacherTestResultList().isEmpty()) {
+                prettyAppend(builder, "No Testresults");
+            } else {
+                for (BleichenbacherTestResult testResult : report.getBleichenbacherTestResultList()) {
+                    String resultString = "" + padToLength(testResult.getWorkflowType().name(), 40);
+                    if (testResult.getVulnerable() == Boolean.TRUE) {
+                        prettyAppend(builder, resultString + "\t | " + testResult.getEqualityError() + "  VULNERABLE",
+                                AnsiColor.RED);
+                    } else if (testResult.getVulnerable() == Boolean.FALSE) {
+                        prettyAppend(builder, resultString + "\t | No Behavior Difference", AnsiColor.GREEN);
+                    } else {
+                        prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
+                    }
 
-                if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
-                    if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
-                        prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                        if (testResult.getVectorFingerPrintPairList() != null
-                                && !testResult.getVectorFingerPrintPairList().isEmpty()) {
-                            for (VectorFingerprintPair vectorFingerPrintPair : testResult
-                                    .getVectorFingerPrintPairList()) {
-                                prettyAppend(builder,
-                                        padToLength("\t" + vectorFingerPrintPair.getVector().getDescription(), 60)
-                                                + vectorFingerPrintPair.getFingerprint().toHumanReadable());
+                    if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
+                        if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
+                            prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
+                            if (testResult.getVectorFingerPrintPairList() != null
+                                    && !testResult.getVectorFingerPrintPairList().isEmpty()) {
+                                for (VectorResponse vectorFingerPrintPair : testResult.getVectorFingerPrintPairList()) {
+                                    prettyAppend(builder,
+                                            padToLength("\t" + vectorFingerPrintPair.getVector().getName(), 60)
+                                                    + vectorFingerPrintPair.getFingerprint().toHumanReadable());
+                                }
+                            } else {
+                                prettyAppend(builder, "\tNULL");
                             }
-                        } else {
-                            prettyAppend(builder, "\tNULL");
                         }
                     }
                 }
             }
+        } catch (Exception E) {
+            prettyAppend(builder, " Error: " + E.getMessage());
         }
         return builder;
     }
 
-    private StringBuilder appendEcPointFormats(StringBuilder builder) {
+    public StringBuilder appendEcPointFormats(StringBuilder builder) {
         prettyAppendHeading(builder, "Elliptic Curve Point Formats");
         prettyAppend(builder, "Uncompressed", AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT);
         prettyAppend(builder, "ANSIX962 Prime", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME);
@@ -873,7 +907,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendInvalidCurveResults(StringBuilder builder) {
+    public StringBuilder appendInvalidCurveResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Invalid Curve Details");
         boolean foundCouldNotTest = false;
         if (report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE) == TestResult.NOT_TESTED_YET
@@ -944,7 +978,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private String toHumanReadable(ProtocolVersion version) {
+    public String toHumanReadable(ProtocolVersion version) {
         switch (version) {
             case DTLS10:
                 return "DTLS 1.0";
@@ -997,39 +1031,31 @@ public class SiteReportPrinter {
         }
     }
 
-    private StringBuilder appendCipherSuites(StringBuilder builder) {
+    public StringBuilder appendCipherSuites(StringBuilder builder) {
         if (report.getCipherSuites() != null) {
             prettyAppendHeading(builder, "Supported Ciphersuites");
-            for (CipherSuite suite : report.getCipherSuites()) {
-                builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
-            }
-            if (report.getSupportedTls13CipherSuites() != null) {
-                for (CipherSuite suite : report.getSupportedTls13CipherSuites()) {
+            if (!report.getCipherSuites().isEmpty()) {
+                for (CipherSuite suite : report.getCipherSuites()) {
                     builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
+                }
+            } else {
+                prettyAppend(builder, "-empty-", AnsiColor.RED);
+            }
+
+            if (report.getVersionSuitePairs() != null && !report.getVersionSuitePairs().isEmpty()) {
+                for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
+                    prettyAppendHeading(
+                            builder,
+                            "Supported in "
+                                    + toHumanReadable(versionSuitePair.getVersion())
+                                    + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
+                                            : ""));
+                    for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
+                        builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
+                    }
                 }
             }
 
-            for (VersionSuiteListPair versionSuitePair : report.getVersionSuitePairs()) {
-                prettyAppendHeading(
-                        builder,
-                        "Supported in "
-                                + toHumanReadable(versionSuitePair.getVersion())
-                                + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
-                                        : ""));
-                for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
-                    builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
-                }
-            }
-            if (report.getSupportedTls13CipherSuites() != null && report.getSupportedTls13CipherSuites().size() > 0) {
-                prettyAppendHeading(
-                        builder,
-                        "Supported in TLS 1.3"
-                                + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
-                                        : ""));
-                for (CipherSuite suite : report.getSupportedTls13CipherSuites()) {
-                    builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
-                }
-            }
             if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                 prettyAppendHeading(builder, "Symmetric Supported");
                 prettyAppend(builder, "Null", AnalyzedProperty.SUPPORTS_NULL_CIPHERS);
@@ -1078,7 +1104,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendProtocolVersions(StringBuilder builder) {
+    public StringBuilder appendProtocolVersions(StringBuilder builder) {
         if (report.getVersions() != null) {
             prettyAppendHeading(builder, "Versions");
             prettyAppend(builder, "SSL 2.0", AnalyzedProperty.SUPPORTS_SSL_2);
@@ -1151,49 +1177,55 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendHttps(StringBuilder builder) {
+    public StringBuilder appendHttps(StringBuilder builder) {
         if (report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE) {
             prettyAppendHeading(builder, "HSTS");
-            if (report.getResult(AnalyzedProperty.SUPPORTS_HSTS) == TestResult.TRUE) {
-                prettyAppend(builder, "HSTS", AnalyzedProperty.SUPPORTS_HSTS);
-                prettyAppend(builder, "HSTS Preloading", AnalyzedProperty.SUPPORTS_HSTS_PRELOADING);
-                prettyAppend(builder, "max-age (seconds)", (long) report.getHstsMaxAge());
-            } else {
-                prettyAppend(builder, "Not supported");
-            }
-            prettyAppendHeading(builder, "HPKP");
-            if (report.getResult(AnalyzedProperty.SUPPORTS_HPKP) == TestResult.TRUE
-                    || report.getResult(AnalyzedProperty.SUPPORTS_HPKP_REPORTING) == TestResult.TRUE) {
-                prettyAppend(builder, "HPKP", AnalyzedProperty.SUPPORTS_HPKP);
-                prettyAppend(builder, "HPKP (report only)", AnalyzedProperty.SUPPORTS_HPKP_REPORTING);
-                prettyAppend(builder, "max-age (seconds)", (long) report.getHpkpMaxAge());
-                if (report.getNormalHpkpPins().size() > 0) {
-                    prettyAppend(builder, "");
-                    prettyAppend(builder, "HPKP-Pins:", AnsiColor.GREEN);
-                    for (HpkpPin pin : report.getNormalHpkpPins()) {
-                        prettyAppend(builder, pin.toString());
-                    }
-                }
-                if (report.getReportOnlyHpkpPins().size() > 0) {
-                    prettyAppend(builder, "");
-                    prettyAppend(builder, "Report Only HPKP-Pins:", AnsiColor.GREEN);
-                    for (HpkpPin pin : report.getReportOnlyHpkpPins()) {
-                        prettyAppend(builder, pin.toString());
-                    }
-                }
+            try {
 
-            } else {
-                prettyAppend(builder, "Not supported");
-            }
-            prettyAppendHeading(builder, "HTTPS Response Header");
-            for (HttpsHeader header : report.getHeaderList()) {
-                prettyAppend(builder, header.getHeaderName().getValue() + ":" + header.getHeaderValue().getValue());
+                if (report.getResult(AnalyzedProperty.SUPPORTS_HSTS) == TestResult.TRUE) {
+                    prettyAppend(builder, "HSTS", AnalyzedProperty.SUPPORTS_HSTS);
+                    prettyAppend(builder, "HSTS Preloading", AnalyzedProperty.SUPPORTS_HSTS_PRELOADING);
+                    prettyAppend(builder, "max-age (seconds)", (long) report.getHstsMaxAge());
+                } else {
+                    prettyAppend(builder, "Not supported");
+                }
+                prettyAppendHeading(builder, "HPKP");
+                if (report.getResult(AnalyzedProperty.SUPPORTS_HPKP) == TestResult.TRUE
+                        || report.getResult(AnalyzedProperty.SUPPORTS_HPKP_REPORTING) == TestResult.TRUE) {
+                    prettyAppend(builder, "HPKP", AnalyzedProperty.SUPPORTS_HPKP);
+                    prettyAppend(builder, "HPKP (report only)", AnalyzedProperty.SUPPORTS_HPKP_REPORTING);
+                    prettyAppend(builder, "max-age (seconds)", (long) report.getHpkpMaxAge());
+                    if (report.getNormalHpkpPins().size() > 0) {
+                        prettyAppend(builder, "");
+                        prettyAppend(builder, "HPKP-Pins:", AnsiColor.GREEN);
+                        for (HpkpPin pin : report.getNormalHpkpPins()) {
+                            prettyAppend(builder, pin.toString());
+                        }
+                    }
+                    if (report.getReportOnlyHpkpPins().size() > 0) {
+                        prettyAppend(builder, "");
+                        prettyAppend(builder, "Report Only HPKP-Pins:", AnsiColor.GREEN);
+                        for (HpkpPin pin : report.getReportOnlyHpkpPins()) {
+                            prettyAppend(builder, pin.toString());
+                        }
+                    }
+
+                } else {
+                    prettyAppend(builder, "Not supported");
+                }
+                prettyAppendHeading(builder, "HTTPS Response Header");
+                for (HttpsHeader header : report.getHeaderList()) {
+                    prettyAppend(builder, header.getHeaderName().getValue() + ":" + header.getHeaderValue().getValue());
+                }
+            } catch (Exception E) {
+                prettyAppend(builder, "Error: " + E.getMessage());
             }
         }
+
         return builder;
     }
 
-    private StringBuilder appendExtensions(StringBuilder builder) {
+    public StringBuilder appendExtensions(StringBuilder builder) {
         if (report.getSupportedExtensions() != null) {
             prettyAppendHeading(builder, "Supported Extensions");
             for (ExtensionType type : report.getSupportedExtensions()) {
@@ -1223,7 +1255,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private void appendRandom(StringBuilder builder) {
+    public void appendRandom(StringBuilder builder) {
         prettyAppendHeading(builder, "Nonce");
         prettyAppendRandom(builder, "Random", report.getRandomEvaluationResult());
         if (report.getRandomMinimalLengthResult() == RandomMinimalLengthResult.FULFILLED) {
@@ -1233,7 +1265,7 @@ public class SiteReportPrinter {
         }
     }
 
-    private void appendPublicKeyIssues(StringBuilder builder) {
+    public void appendPublicKeyIssues(StringBuilder builder) {
         prettyAppendHeading(builder, "PublicKey Parameter");
         prettyAppend(builder, "EC PublicKey reuse", AnalyzedProperty.REUSES_EC_PUBLICKEY);
         prettyAppend(builder, "DH PublicKey reuse", AnalyzedProperty.REUSES_DH_PUBLICKEY);
@@ -1258,7 +1290,7 @@ public class SiteReportPrinter {
         }
     }
 
-    private void appendScoringResults(StringBuilder builder) {
+    public void appendScoringResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Scoring results");
 
         SiteReportRater rater;
@@ -1301,7 +1333,7 @@ public class SiteReportPrinter {
         }
     }
 
-    private void appendRecommendations(StringBuilder builder) {
+    public void appendRecommendations(StringBuilder builder) {
         prettyAppendHeading(builder, "Recommedations");
 
         SiteReportRater rater;
@@ -1393,7 +1425,7 @@ public class SiteReportPrinter {
         }
     }
 
-    private StringBuilder appendCurves(StringBuilder builder) {
+    public StringBuilder appendCurves(StringBuilder builder) {
         if (report.getSupportedNamedGroups() != null) {
             prettyAppendHeading(builder, "Supported Named Groups");
             if (report.getSupportedNamedGroups().size() > 0) {
@@ -1407,7 +1439,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendSignatureAndHashAlgorithms(StringBuilder builder) {
+    public StringBuilder appendSignatureAndHashAlgorithms(StringBuilder builder) {
         if (report.getSupportedSignatureAndHashAlgorithms() != null) {
             prettyAppendHeading(builder, "Supported Signature and Hash Algorithms");
             if (report.getSupportedSignatureAndHashAlgorithms().size() > 0) {
@@ -1421,7 +1453,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendCompressions(StringBuilder builder) {
+    public StringBuilder appendCompressions(StringBuilder builder) {
         if (report.getSupportedCompressionMethods() != null) {
             prettyAppendHeading(builder, "Supported Compressions");
             for (CompressionMethod compression : report.getSupportedCompressionMethods()) {
@@ -1624,7 +1656,7 @@ public class SiteReportPrinter {
         return builder.toString();
     }
 
-    private StringBuilder appendTls13Groups(StringBuilder builder) {
+    public StringBuilder appendTls13Groups(StringBuilder builder) {
         if (report.getSupportedTls13Groups() != null) {
             prettyAppendHeading(builder, "TLS 1.3 Named Groups");
             if (report.getSupportedTls13Groups().size() > 0) {
@@ -1667,25 +1699,97 @@ public class SiteReportPrinter {
         this.depth = depth;
     }
 
-    private void appendPerformanceData(StringBuilder builder) {
+    public void appendPerformanceData(StringBuilder builder) {
         if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
             prettyAppendHeading(builder, "Scanner Performance");
-            prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
-            prettyAppendSubheading(builder, "Probe execution performance");
-            for (PerformanceData data : report.getPerformanceList()) {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                Duration duration = new Duration(data.getStarttime(), data.getStoptime());
-                Period period = new Period(data.getStoptime() - data.getStarttime());
-                prettyAppend(
-                        builder,
-                        padToLength(data.getType().name(), 25) + " Starttime: "
-                                + format.format(new Date(data.getStarttime())) + " Stoptime: "
-                                + format.format(new Date(data.getStoptime())) + " Total:"
-                                + PeriodFormat.getDefault().print(period));
+            try {
+                prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
+                prettyAppendSubheading(builder, "Probe execution performance");
+                for (PerformanceData data : report.getPerformanceList()) {
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    Duration duration = new Duration(data.getStarttime(), data.getStoptime());
+                    Period period = new Period(data.getStoptime() - data.getStarttime());
+                    prettyAppend(
+                            builder,
+                            padToLength(data.getType().name(), 25) + " Starttime: "
+                                    + format.format(new Date(data.getStarttime())) + " Stoptime: "
+                                    + format.format(new Date(data.getStoptime())) + " Total:"
+                                    + PeriodFormat.getDefault().print(period));
 
+                }
+            } catch (Exception E) {
+                prettyAppend(builder, "Error: " + E.getMessage());
             }
         } else {
             LOGGER.debug("Not printing performance data.");
         }
     }
+
+    private void appendClientAuthentication(StringBuilder builder) {
+        prettyAppendHeading(builder, "Client authentication");
+        prettyAppend(builder, "Supported", report.getCcaSupported());
+        prettyAppend(builder, "Required", report.getCcaRequired());
+
+        if (report.getCcaTestResultList() != null) {
+            List<CcaTestResult> ccaTestResults = report.getCcaTestResultList();
+            ccaTestResults.sort(new Comparator<CcaTestResult>() {
+                @Override
+                public int compare(CcaTestResult ccaTestResult, CcaTestResult t1) {
+                    int c;
+                    c = ccaTestResult.getWorkflowType().compareTo(t1.getWorkflowType());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getCertificateType().compareTo(t1.getCertificateType());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getProtocolVersion().compareTo(t1.getProtocolVersion());
+                    if (c != 0) {
+                        return c;
+                    }
+
+                    c = ccaTestResult.getCipherSuite().compareTo(t1.getCipherSuite());
+                    return c;
+                }
+            });
+            CcaWorkflowType lastCcaWorkflowType = null;
+            CcaCertificateType lastCcaCertificateType = null;
+            ProtocolVersion lastProtocolVersion = null;
+            for (CcaTestResult ccaTestResult : ccaTestResults) {
+                if (ccaTestResult.getWorkflowType() != lastCcaWorkflowType) {
+                    lastCcaWorkflowType = ccaTestResult.getWorkflowType();
+                    prettyAppendSubheading(builder, lastCcaWorkflowType.name());
+                }
+                if (ccaTestResult.getCertificateType() != lastCcaCertificateType) {
+                    lastCcaCertificateType = ccaTestResult.getCertificateType();
+                    prettyAppendSubSubheading(builder, lastCcaCertificateType.name());
+                }
+                if (ccaTestResult.getProtocolVersion() != lastProtocolVersion) {
+                    lastProtocolVersion = ccaTestResult.getProtocolVersion();
+                    prettyAppendSubSubSubheading(builder, lastProtocolVersion.name());
+                }
+                prettyAppend(
+                        builder,
+                        ccaTestResult.getWorkflowType().name().concat("--")
+                                .concat(ccaTestResult.getCertificateType().name()).concat("--")
+                                .concat(ccaTestResult.getProtocolVersion().name()).concat("--")
+                                .concat(ccaTestResult.getCipherSuite().name()), ccaTestResult.getSucceeded(),
+                        ccaTestResult.getSucceeded() ? AnsiColor.RED : AnsiColor.GREEN);
+
+            }
+        }
+    }
+
+    private StringBuilder sessionTicketZeroKeyDetails(StringBuilder builder) {
+
+        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY) == TestResult.TRUE) {
+            prettyAppendHeading(builder, "Session Ticket Zero Key Attack Details");
+            prettyAppend(builder, "Has GnuTls magic bytes:", AnalyzedProperty.HAS_GNU_TLS_MAGIC_BYTES);
+        }
+        return builder;
+    }
+
 }

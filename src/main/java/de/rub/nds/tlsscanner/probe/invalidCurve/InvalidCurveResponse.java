@@ -30,6 +30,9 @@ public class InvalidCurveResponse {
     private TestResult finishedHandshakeHadReusedKey = TestResult.FALSE;
     private TestResult dirtyKeysWarning = TestResult.FALSE;
 
+    private InvalidCurveResponse() {
+    }
+
     public InvalidCurveResponse(InvalidCurveParameterSet parameterSet,
             List<FingerprintSecretPair> fingerprintSecretPairs, TestResult showsPointsAreNotValidated,
             List<Point> receivedEcPublicKeys, List<Point> receivedFinishedEcKeys, TestResult dirtyKeysWarning) {

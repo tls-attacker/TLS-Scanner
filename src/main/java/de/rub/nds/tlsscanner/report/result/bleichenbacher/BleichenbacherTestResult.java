@@ -9,8 +9,8 @@
 package de.rub.nds.tlsscanner.report.result.bleichenbacher;
 
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
-import de.rub.nds.tlsattacker.attacks.pkcs1.VectorFingerprintPair;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import java.util.List;
 
@@ -24,12 +24,20 @@ public class BleichenbacherTestResult {
     private final BleichenbacherCommandConfig.Type scanDetail;
     private final BleichenbacherWorkflowType workflowType;
 
-    private final List<VectorFingerprintPair> vectorFingerPrintPairList;
+    private final List<VectorResponse> vectorFingerPrintPairList;
 
     private final EqualityError equalityError;
 
+    private BleichenbacherTestResult() {
+        vulnerable = null;
+        scanDetail = null;
+        workflowType = null;
+        vectorFingerPrintPairList = null;
+        equalityError = null;
+    }
+
     public BleichenbacherTestResult(Boolean vulnerable, BleichenbacherCommandConfig.Type scanDetail,
-            BleichenbacherWorkflowType workflowType, List<VectorFingerprintPair> vectorFingerPrintPairList,
+            BleichenbacherWorkflowType workflowType, List<VectorResponse> vectorFingerPrintPairList,
             EqualityError equalityError) {
         this.vulnerable = vulnerable;
         this.scanDetail = scanDetail;
@@ -50,7 +58,7 @@ public class BleichenbacherTestResult {
         return workflowType;
     }
 
-    public List<VectorFingerprintPair> getVectorFingerPrintPairList() {
+    public List<VectorResponse> getVectorFingerPrintPairList() {
         return vectorFingerPrintPairList;
     }
 

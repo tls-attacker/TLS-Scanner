@@ -199,7 +199,7 @@ public class CertificateReportGenerator {
 
     private static void setSha256Hash(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         try {
-            report.setSha256FingerprintHex(DatatypeConverter.printHexBinary(
+            report.setSha256Fingerprint(DatatypeConverter.printHexBinary(
                     MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
         } catch (IOException | NoSuchAlgorithmException e) {
             LOGGER.warn("Could not create SHA-256 Hash", e);

@@ -95,6 +95,7 @@ public class TlsScanner {
         probeList.add(new ECPointFormatProbe(config, parallelExecutor));
         probeList.add(new ResumptionProbe(config, parallelExecutor));
         probeList.add(new RenegotiationProbe(config, parallelExecutor));
+        probeList.add(new SessionTicketZeroKeyProbe(config, parallelExecutor));
         probeList.add(new HeartbleedProbe(config, parallelExecutor));
         probeList.add(new PaddingOracleProbe(config, parallelExecutor));
         probeList.add(new BleichenbacherProbe(config, parallelExecutor));
@@ -103,6 +104,9 @@ public class TlsScanner {
         probeList.add(new DrownProbe(config, parallelExecutor));
         probeList.add(new EarlyCcsProbe(config, parallelExecutor));
         probeList.add(new MacProbe(config, parallelExecutor));
+        probeList.add(new CcaSupportProbe(config, parallelExecutor));
+        probeList.add(new CcaRequiredProbe(config, parallelExecutor));
+        probeList.add(new CcaProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());
@@ -137,7 +141,7 @@ public class TlsScanner {
                     isConnectable = true;
                 }
             }
-            SiteReport report = new SiteReport(config.getClientDelegate().getHost(), new LinkedList<ProbeType>());
+            SiteReport report = new SiteReport(config.getClientDelegate().getHost());
             report.setServerIsAlive(isConnectable);
             report.setSupportsSslTls(false);
             return report;

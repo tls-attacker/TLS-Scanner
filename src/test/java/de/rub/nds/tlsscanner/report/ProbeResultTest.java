@@ -15,7 +15,6 @@ import de.rub.nds.tlsscanner.probe.HandshakeSimulationProbe;
 import de.rub.nds.tlsscanner.probe.TlsProbe;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.util.LinkedList;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +58,7 @@ public class ProbeResultTest {
                     if (c.getParameterTypes()[0].equals(ScannerConfig.class)) {
                         LOGGER.info("Testing mergability:" + testName);
                         TlsProbe probe = (TlsProbe) c.newInstance(null, null);
-                        SiteReport report = new SiteReport("somehost", new LinkedList<>());
+                        SiteReport report = new SiteReport("somehost");
                         probe.getCouldNotExecuteResult().merge(report);
                         LOGGER.info("--Success");
                         LOGGER.info("Testing printability:");

@@ -15,6 +15,7 @@ import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Tls13Result extends ProbeResult {
@@ -25,7 +26,7 @@ public class Tls13Result extends ProbeResult {
 
     private final List<NamedGroup> supportedNamedGroups;
 
-    private final List<CipherSuite> supportedCipherSuites;
+    private List<CipherSuite> supportedCipherSuites;
 
     private final TestResult supportsSECPCompression;
     private final TestResult issuesSessionTicket;
@@ -167,13 +168,16 @@ public class Tls13Result extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_27, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT_28, TestResult.COULD_NOT_TEST);
         }
+        if (report.getVersionSuitePairs() == null) {
+            report.setVersionSuitePairs(new LinkedList<>());
+        }
+        if (supportedCipherSuites == null) {
+            supportedCipherSuites = new LinkedList<>();
+        }
+        report.getVersionSuitePairs().add(new VersionSuiteListPair(ProtocolVersion.TLS13, supportedCipherSuites));
         if (supportedNamedGroups != null) {
             report.setSupportedTls13Groups(supportedNamedGroups);
         }
-        if (supportedCipherSuites != null) {
-            report.setSupportedTls13CipherSuites(supportedCipherSuites);
-        }
-
         if (report.getVersions() != null) {
             report.getVersions().addAll(supportedProtocolVersion);
         } else {

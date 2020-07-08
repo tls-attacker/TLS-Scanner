@@ -99,11 +99,14 @@ public class HttpHeaderResult extends ProbeResult {
                                 hpkpNotParseable = TestResult.FALSE;
                             }
                         }
-                        if (value.trim().startsWith("pin-")) {
+                        try {
                             String[] pinString = value.split("=");
                             HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(
                                     pinString[1].replace("\"", "")));
                             pinList.add(pin);
+                        } catch (Exception E) {
+                            LOGGER.warn("HPKP was not parseable", E);
+                            hpkpNotParseable = TestResult.TRUE;
                         }
                     }
                 }
@@ -128,10 +131,15 @@ public class HttpHeaderResult extends ProbeResult {
                             }
                         }
                         if (value.trim().startsWith("pin-")) {
-                            String[] pinString = value.split("=");
-                            HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(
-                                    pinString[1].replace("\"", "")));
-                            reportOnlyPinList.add(pin);
+                            try {
+                                String[] pinString = value.split("=");
+                                HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(
+                                        pinString[1].replace("\"", "")));
+                                reportOnlyPinList.add(pin);
+                            } catch (Exception E) {
+                                LOGGER.warn("HPKP was not parseable", E);
+                                hpkpNotParseable = TestResult.TRUE;
+                            }
                         }
                     }
                 }

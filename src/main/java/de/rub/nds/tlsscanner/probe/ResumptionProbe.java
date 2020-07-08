@@ -34,7 +34,7 @@ public class ResumptionProbe extends TlsProbe {
     private List<CipherSuite> supportedSuites;
 
     public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig, 0);
+        super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig);
     }
 
     @Override

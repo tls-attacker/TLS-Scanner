@@ -9,21 +9,17 @@
 package de.rub.nds.tlsscanner.report.after;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.tlsscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
-import org.apache.logging.log4j.Logger;
+import java.util.*;
 import org.apache.logging.log4j.LogManager;
-
+import org.apache.logging.log4j.Logger;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.*;
-
-import static org.junit.Assert.*;
 
 /**
  * Test-Class for EvaluateRandomnessAfterProbe.java, which currently analyzes a
@@ -59,8 +55,7 @@ public class EvaluateRandomnessAfterProbeTest {
      * @return a SiteReport filled with the provided random-bytes
      */
     private SiteReport generateSiteReport(byte[]... randomBytes) {
-        List<ProbeType> probeTypeList = new ArrayList<ProbeType>();
-        SiteReport generatedReport = new SiteReport("test", probeTypeList);
+        SiteReport generatedReport = new SiteReport("test");
 
         ExtractedValueContainer extractedValueContainer = new ExtractedValueContainer(TrackableValueType.RANDOM);
         Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap = new HashMap<>();
@@ -141,8 +136,7 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testEmptyValueContainerMap() {
-        List<ProbeType> probeTypeList = new ArrayList<ProbeType>();
-        SiteReport report = new SiteReport("test", probeTypeList);
+        SiteReport report = new SiteReport("test");
         Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap = new HashMap<>();
         report.setExtractedValueContainerList(extractedValueContainerMap);
 
@@ -159,8 +153,7 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testEmptySiteReportAnalyze() {
-        List<ProbeType> probeTypeList = new ArrayList<ProbeType>();
-        SiteReport report = new SiteReport("test", probeTypeList);
+        SiteReport report = new SiteReport("test");
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
         assertTrue(report.getExtractedValueContainerMap().isEmpty());

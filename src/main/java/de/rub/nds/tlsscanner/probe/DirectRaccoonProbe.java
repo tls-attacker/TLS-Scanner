@@ -10,29 +10,26 @@ package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
-import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonVector;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonWorkflowType;
+import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoontWorkflowGenerator;
 import de.rub.nds.tlsscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.DirectRaccoonResponseMap;
+import de.rub.nds.tlsscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.leak.info.DirectRaccoonOracleTestInfo;
+import de.rub.nds.tlsscanner.report.result.DirectRaccoonResult;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonCipherSuiteFingerprint;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonVector;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoontWorkflowGenerator;
-import de.rub.nds.tlsscanner.probe.directRaccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -51,62 +48,52 @@ public class DirectRaccoonProbe extends TlsProbe {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final int iterationsPerHandshake = 3;
-    private final int additionalIterationsPerHandshake = 100;
+    private final int additionalIterationsPerHandshake = 97;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
     public DirectRaccoonProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DIRECT_RACCOON, config, 1);
+        super(parallelExecutor, ProbeType.DIRECT_RACCOON, config);
     }
 
     @Override
     public ProbeResult executeTest() {
         try {
-            List<DirectRaccoonCipherSuiteFingerprint> testResultList = new LinkedList<>();
+            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
             loop: for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
                         || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCiphersuiteList()) {
                         if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
-                            for (DirectRaccoonWorkflowType workflowType : DirectRaccoonWorkflowType.values()) {
-                                if (workflowType == DirectRaccoonWorkflowType.INITIAL) {
-                                    continue;
-                                }
-                                boolean normalHandshakeWorking = isNormalHandshakeWorking(pair.getVersion(), suite);
-                                DirectRaccoonCipherSuiteFingerprint directRaccoonCipherSuiteFingerprint = getDirectRaccoonCipherSuiteFingerprint(
-                                        pair.getVersion(), suite, workflowType);
-                                directRaccoonCipherSuiteFingerprint.setHandshakeIsWorking(normalHandshakeWorking);
-                                testResultList.add(directRaccoonCipherSuiteFingerprint);
-                            }
+                            InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest = createDirectRaccoonInformationLeakTest(
+                                    pair.getVersion(), suite, DirectRaccoonWorkflowType.CKE_CCS_FIN);
+                            testResultList.add(informationLeakTest);
+
                         }
                     }
                 }
             }
-            for (DirectRaccoonCipherSuiteFingerprint fingerprint : testResultList) {
-                if (fingerprint.isConsideredVulnerable()) {
-                    return new DirectRaccoonResponseMap(testResultList, TestResult.TRUE);
-                }
-            }
-            return new DirectRaccoonResponseMap(testResultList, TestResult.FALSE);
+            return new DirectRaccoonResult(testResultList);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DirectRaccoonResponseMap(null, TestResult.ERROR_DURING_TEST);
+            return new DirectRaccoonResult(null);
         }
     }
 
-    private DirectRaccoonCipherSuiteFingerprint getDirectRaccoonCipherSuiteFingerprint(ProtocolVersion version,
-            CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
+    private InformationLeakTest<DirectRaccoonOracleTestInfo> createDirectRaccoonInformationLeakTest(
+            ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
 
         List<VectorResponse> responseMap = createVectorResponseList(version, suite, workflowType,
                 iterationsPerHandshake);
-        DirectRaccoonCipherSuiteFingerprint cipherSuiteFingerprint = new DirectRaccoonCipherSuiteFingerprint(version,
-                suite, workflowType, responseMap);
-        if (cipherSuiteFingerprint.isPotentiallyVulnerable()) {
+        InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest = new InformationLeakTest<>(
+                new DirectRaccoonOracleTestInfo(suite, version, workflowType), responseMap);
+
+        if (informationLeakTest.isDistinctAnswers()) {
             LOGGER.debug("Found non identical answers, performing " + iterationsPerHandshake + " additional tests");
             responseMap = createVectorResponseList(version, suite, workflowType, additionalIterationsPerHandshake);
-            cipherSuiteFingerprint.appendToResponseMap(responseMap);
+            informationLeakTest.extendTestWithVectorResponses(responseMap);
         }
-        return cipherSuiteFingerprint;
+        return informationLeakTest;
     }
 
     private List<VectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite,
@@ -120,34 +107,6 @@ public class DirectRaccoonProbe extends TlsProbe {
         }
         Collections.shuffle(booleanList);
         return getVectorResponseList(version, suite, type, initialDhSecret, booleanList);
-    }
-
-    private boolean isNormalHandshakeWorking(ProtocolVersion version, CipherSuite suite) {
-        try {
-            Config config = getScannerConfig().createConfig();
-            config.setHighestProtocolVersion(version);
-            config.setDefaultSelectedProtocolVersion(version);
-            config.setDefaultClientSupportedCiphersuites(suite);
-            config.setDefaultSelectedCipherSuite(suite);
-            config.setAddECPointFormatExtension(false);
-            config.setAddEllipticCurveExtension(false);
-            config.setAddRenegotiationInfoExtension(true);
-            config.setAddServerNameIndicationExtension(true);
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
-            config.setStopActionsAfterFatal(true);
-            config.setStopReceivingAfterFatal(true);
-            config.setStopActionsAfterIOException(true);
-            config.setQuickReceive(true);
-            config.setEarlyStop(true);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                    WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
-            State state = new State(config, trace);
-            executeState(state);
-            return state.getWorkflowTrace().executedAsPlanned();
-        } catch (Exception E) {
-            LOGGER.warn("Could not perform initial handshake", E);
-            return false;
-        }
     }
 
     private List<VectorResponse> getVectorResponseList(ProtocolVersion version, CipherSuite suite,
@@ -170,6 +129,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setStopReceivingAfterFatal(false);
             config.setStopActionsAfterIOException(true);
             config.setEarlyStop(true);
+            config.setQuickReceive(true);
 
             WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflow(config, workflowType,
                     initialClientDhSecret, nullByte);
@@ -229,6 +189,6 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DirectRaccoonResponseMap(null, TestResult.COULD_NOT_TEST);
+        return new DirectRaccoonResult(null);
     }
 }

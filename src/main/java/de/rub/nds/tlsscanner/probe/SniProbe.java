@@ -31,7 +31,7 @@ import java.util.List;
 public class SniProbe extends TlsProbe {
 
     public SniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.SNI, scannerConfig, 0);
+        super(parallelExecutor, ProbeType.SNI, scannerConfig);
     }
 
     @Override

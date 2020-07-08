@@ -47,7 +47,7 @@ public class RenegotiationProbe extends TlsProbe {
     private TestResult supportsRenegotiationExtension;
 
     public RenegotiationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RENEGOTIATION, scannerConfig, 0);
+        super(parallelExecutor, ProbeType.RENEGOTIATION, scannerConfig);
     }
 
     @Override

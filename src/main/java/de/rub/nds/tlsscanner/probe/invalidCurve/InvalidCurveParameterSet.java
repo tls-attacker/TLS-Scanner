@@ -27,6 +27,9 @@ public class InvalidCurveParameterSet {
     private boolean twistAttack;
     private boolean attackInRenegotiation;
 
+    private InvalidCurveParameterSet() {
+    }
+
     public InvalidCurveParameterSet(ProtocolVersion protocolVersion, List<CipherSuite> cipherSuites,
             NamedGroup namedGroup, ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation) {
         this.protocolVersion = protocolVersion;

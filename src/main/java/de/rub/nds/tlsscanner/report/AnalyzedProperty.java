@@ -169,6 +169,7 @@ public enum AnalyzedProperty {
      * does it ignore the sig hash algorithms
      */
     IGNORES_OFFERED_SIG_HASH_ALGOS(AnalyzedPropertyCategory.QUIRKS),
+    VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_DIRECT_RACCOON(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_PADDING_ORACLE(AnalyzedPropertyCategory.ATTACKS),
@@ -199,7 +200,15 @@ public enum AnalyzedProperty {
     REUSES_EC_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_DH_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_GCM_NONCES(AnalyzedPropertyCategory.FRESHNESS),
-    REQUIRES_SNI(AnalyzedPropertyCategory.SNI);
+    REQUIRES_SNI(AnalyzedPropertyCategory.SNI),
+    HAS_GNU_TLS_MAGIC_BYTES(AnalyzedPropertyCategory.SESSION_TICKET),
+
+    /**
+     * CCA Properties
+     */
+    SUPPORTS_CCA(AnalyzedPropertyCategory.CERTIFICATE),
+    REQUIRES_CCA(AnalyzedPropertyCategory.CERTIFICATE),
+    VULNERABLE_TO_CCA_BYPASS(AnalyzedPropertyCategory.ATTACKS);
 
     private AnalyzedPropertyCategory category;
 
