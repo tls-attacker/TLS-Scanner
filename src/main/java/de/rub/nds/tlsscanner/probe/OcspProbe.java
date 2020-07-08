@@ -27,7 +27,6 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateStatusMessage;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -54,6 +53,7 @@ import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NON
  */
 public class OcspProbe extends TlsProbe {
 
+    Certificate serverCertChain;
     private Boolean supportsOcsp;
     private boolean supportsStapling;
     private boolean mustStaple;
@@ -74,7 +74,6 @@ public class OcspProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         Config tlsConfig = initTlsConfig();
-        Certificate serverCertChain = CertificateFetcher.fetchServerCertificate(tlsConfig);
 
         if (serverCertChain == null) {
             LOGGER.error("Couldn't fetch certificate chain from server!");
@@ -221,11 +220,12 @@ public class OcspProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
+        return report.getCertificateChain() != null;
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
+        serverCertChain = report.getCertificateChain().getCertificate();
     }
 
     @Override
