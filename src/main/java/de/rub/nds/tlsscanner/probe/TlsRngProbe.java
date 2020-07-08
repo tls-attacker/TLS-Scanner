@@ -66,6 +66,8 @@ public class TlsRngProbe extends TlsProbe {
         extractedIVList = new LinkedList<>();
         extractedRandomList = new LinkedList<>();
         extractedSessionIDList = new LinkedList<>();
+        int numberOfHandshakes = 100;
+        int clientRandomStart = 1;
 
         // Ensure we use the highest Protocol version possible to prevent the
         // downgrade-attack mitigation to
@@ -73,23 +75,23 @@ public class TlsRngProbe extends TlsProbe {
         if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS13");
             highestVersion = ProtocolVersion.TLS13;
-            collectServerRandomTls13(600, 1);
+            collectServerRandomTls13(numberOfHandshakes, clientRandomStart);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS12");
             highestVersion = ProtocolVersion.TLS12;
-            collectServerRandom(600, 1);
+            collectServerRandom(numberOfHandshakes, clientRandomStart);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS11");
             highestVersion = ProtocolVersion.TLS11;
-            collectServerRandom(600, 1);
+            collectServerRandom(numberOfHandshakes, clientRandomStart);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS10");
             highestVersion = ProtocolVersion.TLS10;
-            collectServerRandom(600, 1);
+            collectServerRandom(numberOfHandshakes, clientRandomStart);
         }
 
         // ////////////////////////////////////////////////////////////////////////////////////////////////////
-        collectIV(1000, 750);
+        collectIV(100, clientRandomStart + 700);
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // TODO: Implement this right.
@@ -357,6 +359,8 @@ public class TlsRngProbe extends TlsProbe {
         iVCollectConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         iVCollectConfig.setWorkflowExecutorShouldClose(false);
 
+        // Don't wait until nothing more received.
+        iVCollectConfig.setEarlyStop(true);
         State state = new State(iVCollectConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(
                 WorkflowExecutorType.DEFAULT, state);
@@ -365,6 +369,7 @@ public class TlsRngProbe extends TlsProbe {
         LOGGER.warn(state.getWorkflowTrace());
         LOGGER.warn(state.getTlsContext().getSelectedProtocolVersion());
         LOGGER.warn(state.getTlsContext().getSelectedCipherSuite());
+        LOGGER.warn("IS EARLY STOP: " + state.getTlsContext().getConfig().isEarlyStop());
 
         SendMessageHelper sendMessageHelper = new SendMessageHelper();
         ReceiveMessageHelper receiveMessageHelper = new ReceiveMessageHelper();
@@ -399,6 +404,7 @@ public class TlsRngProbe extends TlsProbe {
                 ModifiableByteArray extractedIV = ((Record) records.get(0)).getComputations()
                         .getCbcInitialisationVector();
                 extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
+                LOGGER.warn("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
             } else {
                 LOGGER.debug("Received unexpected Message before receiving required amount of application messages.");
                 // TODO: Implement fallback --> Either retry new connection or
