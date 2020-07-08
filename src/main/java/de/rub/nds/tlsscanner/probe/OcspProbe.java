@@ -14,6 +14,7 @@ import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
 import de.rub.nds.asn1.model.Asn1ObjectIdentifier;
 import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
 import de.rub.nds.asn1.model.Asn1Sequence;
+import de.rub.nds.asn1.parser.ParserException;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
@@ -45,6 +46,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NONCE;
 
@@ -127,14 +129,24 @@ public class OcspProbe extends TlsProbe {
 
     private void performRequest(Certificate serverCertificateChain) {
         try {
-            CertificateInformationExtractor leafCertExtractor = new CertificateInformationExtractor(
+            CertificateInformationExtractor mainCertExtractor = new CertificateInformationExtractor(
                     serverCertificateChain.getCertificateAt(0));
-            URL ocspResponderUrl = new URL(leafCertExtractor.getOcspServerUrl());
-            OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
+            URL ocspResponderUrl;
 
-            // If the request hasn't thrown an exception due to a missing
-            // responder URL, the certificate seems to support OCSP
-            supportsOcsp = true;
+            // Check if leaf certificate supports OCSP
+            try {
+                ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
+                supportsOcsp = true;
+            } catch (NoSuchFieldException ex) {
+                LOGGER.error("Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
+                supportsOcsp = false;
+                return;
+            } catch (Exception ex) {
+                LOGGER.error("Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
+                return;
+            }
+
+            OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
 
             // First Request Message with first fixed nonce test value
             OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
@@ -154,9 +166,6 @@ public class OcspProbe extends TlsProbe {
             } else {
                 supportsNonce = false;
             }
-        } catch (UnsupportedOperationException e) {
-            LOGGER.warn("OCSP is not supported by the leaf certificate.");
-            supportsOcsp = false;
         } catch (Exception e) {
             LOGGER.error("OCSP probe failed.");
         }
