@@ -93,9 +93,8 @@ public class OcspResult extends ProbeResult {
                 // Check if stapled response is older than a freshly requested
                 // one
                 DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'", Locale.ENGLISH);
-                LocalDateTime firstResponseTime = LocalDateTime
-                        .parse(stapledResponse.getResponseTime(), inputFormatter);
-                LocalDateTime secondResponseTime = LocalDateTime.parse(firstResponse.getResponseTime(), inputFormatter);
+                LocalDateTime firstResponseTime = LocalDateTime.parse(stapledResponse.getProducedAt(), inputFormatter);
+                LocalDateTime secondResponseTime = LocalDateTime.parse(firstResponse.getProducedAt(), inputFormatter);
 
                 // Check how long the stapled response has been cached for, in
                 // hours
