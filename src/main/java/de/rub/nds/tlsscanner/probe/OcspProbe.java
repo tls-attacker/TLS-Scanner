@@ -39,7 +39,7 @@ import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import org.bouncycastle.crypto.tls.Certificate;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -127,7 +127,11 @@ public class OcspProbe extends TlsProbe {
 
     private void performRequest(Certificate serverCertificateChain) {
         try {
-            OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain);
+            CertificateInformationExtractor leafCertExtractor = new CertificateInformationExtractor(
+                    serverCertificateChain.getCertificateAt(0));
+            URL ocspResponderUrl = new URL(leafCertExtractor.getOcspServerUrl());
+            OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
+
             // If the request hasn't thrown an exception due to a missing
             // responder URL, the certificate seems to support OCSP
             supportsOcsp = true;

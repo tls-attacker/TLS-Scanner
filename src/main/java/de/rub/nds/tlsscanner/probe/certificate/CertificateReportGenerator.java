@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.probe.certificate.roca.BrokenKey;
 import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
 import java.io.IOException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -220,24 +221,31 @@ public class CertificateReportGenerator {
     private static void setRevoked(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         // Revocation check via OCSP
         if (report.getOcspSupported()) {
+            CertificateInformationExtractor mainCertExtractor = new CertificateInformationExtractor(cert);
+            org.bouncycastle.asn1.x509.Certificate issuerCert;
+            URL mainCertOcspUrl;
             OCSPRequest ocspRequest;
+
+            // Try to get issuer certificate, or use root CA locally
             try {
-                ocspRequest = new OCSPRequest(cert);
+                issuerCert = mainCertExtractor.retrieveIssuerCertificate();
             } catch (Exception e) {
                 LOGGER.debug("Didn't find issuer entry in certificate, trying TrustAnchor.");
                 TrustAnchorManager trustAnchorManager = TrustAnchorManager.getInstance();
                 X509Certificate x509cert = null;
                 try {
                     x509cert = new X509CertificateObject(cert);
+                    issuerCert = trustAnchorManager.getTrustAnchorCertificate(x509cert.getIssuerX500Principal());
                 } catch (CertificateParsingException exp) {
                     LOGGER.error("Certificate conversion to X509CertificateObject failed. Aborting OCSP revocation check.");
                     return;
                 }
-                org.bouncycastle.asn1.x509.Certificate caCert = trustAnchorManager.getTrustAnchorCertificate(x509cert
-                        .getIssuerX500Principal());
-                ocspRequest = new OCSPRequest(cert, caCert);
             }
+
+            // Try to make OCSP Request
             try {
+                mainCertOcspUrl = new URL(mainCertExtractor.getOcspServerUrl());
+                ocspRequest = new OCSPRequest(cert, issuerCert, mainCertOcspUrl);
                 OCSPResponse ocspResponse = ocspRequest.makeRequest();
                 CertificateStatus certificateStatus = ocspResponse.getCertificateStatusList().get(0);
                 int revocationStatus = certificateStatus.getCertificateStatus();
