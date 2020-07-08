@@ -361,6 +361,9 @@ public class TlsRngProbe extends TlsProbe {
 
         // Don't wait until nothing more received.
         iVCollectConfig.setEarlyStop(true);
+        iVCollectConfig.setQuickReceive(true);
+        iVCollectConfig.setEnforceSettings(true);
+
         State state = new State(iVCollectConfig);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(
                 WorkflowExecutorType.DEFAULT, state);
@@ -391,7 +394,7 @@ public class TlsRngProbe extends TlsProbe {
             result = null;
             try {
                 sendMessageHelper.sendMessages(messages, records, tlsContext);
-                result = receiveMessageHelper.receiveMessages(tlsContext);
+                result = receiveMessageHelper.receiveMessagesTill(new ApplicationMessage(iVCollectConfig), tlsContext);
                 messages = new ArrayList<>(result.getMessageList());
                 records = new ArrayList<>(result.getRecordList());
             } catch (IOException e) {
