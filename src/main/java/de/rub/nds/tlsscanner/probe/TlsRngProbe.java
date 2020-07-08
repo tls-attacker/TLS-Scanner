@@ -36,6 +36,7 @@ import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.TlsRngResult;
+import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
@@ -57,7 +58,7 @@ public class TlsRngProbe extends TlsProbe {
     private List<ComparableByteArray> extractedSessionIDList;
 
     public TlsRngProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.RNG, config, 0);
+        super(parallelExecutor, ProbeType.RNG, config);
     }
 
     @Override
@@ -201,33 +202,14 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     private void collectServerRandomTls13(int numberOfHandshakes, int clientRandomInit) {
-        List<CipherSuite> serverHelloCollectSuites = new LinkedList<>();
-        CipherSuite[] supportedSuites = new CipherSuite[latestReport.getSupportedTls13CipherSuites().toArray().length];
-        supportedSuites = latestReport.getSupportedTls13CipherSuites().toArray(supportedSuites);
-        byte[] serverRandom = null;
-        byte[] serverExtendedRandom = null;
-        byte[] sessionID = null;
-
-        // TODO: Remove this. TLS 1.3 does not support static key exchanges.
-        if (latestReport.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE) {
-            for (CipherSuite cipherSuite : supportedSuites) {
-                if (cipherSuite.name().contains("TLS_RSA")) {
-                    serverHelloCollectSuites.add(cipherSuite);
-                }
-            }
-        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.TRUE) {
-            for (CipherSuite cipherSuite : supportedSuites) {
-                if (cipherSuite.name().contains("TLS_DH")) {
-                    serverHelloCollectSuites.add(cipherSuite);
-                }
-            }
-        } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.TRUE) {
-            for (CipherSuite cipherSuite : supportedSuites) {
-                if (cipherSuite.name().contains("TLS_ECDH")) {
-                    serverHelloCollectSuites.add(cipherSuite);
-                }
+        CipherSuite[] supportedSuites = null;
+        for (VersionSuiteListPair versionSuitePair : latestReport.getVersionSuitePairs()) {
+            if (versionSuitePair.getVersion().isTLS13()) {
+                supportedSuites = versionSuitePair.getCiphersuiteList().toArray(supportedSuites);
             }
         }
+        byte[] serverRandom = null;
+        byte[] serverExtendedRandom = null;
 
         boolean supportsExtendedRandom = latestReport.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
 
@@ -240,12 +222,6 @@ public class TlsRngProbe extends TlsProbe {
                 serverHelloConfig.setAddExtendedRandomExtension(true);
             }
 
-            if (!serverHelloCollectSuites.isEmpty()) {
-                serverHelloConfig.setDefaultClientSupportedCiphersuites(serverHelloCollectSuites);
-            } else {
-                // Fallback to supported Suites
-                serverHelloConfig.setDefaultClientSupportedCiphersuites(supportedSuites);
-            }
             serverHelloConfig.setEnforceSettings(true);
 
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
@@ -418,7 +394,8 @@ public class TlsRngProbe extends TlsProbe {
                 e.printStackTrace();
             }
 
-            if (!(messages.size() == 0) && messages.get(0).getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
+            if (!(messages.size() == 0)
+                    && messages.get(0).getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
                 ModifiableByteArray extractedIV = ((Record) records.get(0)).getComputations()
                         .getCbcInitialisationVector();
                 extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
