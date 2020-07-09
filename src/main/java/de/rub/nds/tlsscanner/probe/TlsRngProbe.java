@@ -210,7 +210,8 @@ public class TlsRngProbe extends TlsProbe {
         CipherSuite[] supportedSuites = null;
         for (VersionSuiteListPair versionSuitePair : latestReport.getVersionSuitePairs()) {
             if (versionSuitePair.getVersion().isTLS13()) {
-                supportedSuites = versionSuitePair.getCiphersuiteList().toArray(supportedSuites);
+                supportedSuites = new CipherSuite[versionSuitePair.getCiphersuiteList().size()];
+                versionSuitePair.getCiphersuiteList().toArray(supportedSuites);
             }
         }
         byte[] serverRandom = null;
@@ -386,7 +387,8 @@ public class TlsRngProbe extends TlsProbe {
         httpGet.setHeader(header);
         ModifiableString modifiableString = new ModifiableString();
         modifiableString.setModification(StringModificationFactory.explicitValue("HEAD"));
-        // When possible use this : httpGet.setRequestType(Modifiable.explicit("HEAD"));
+        // When possible use this :
+        // httpGet.setRequestType(Modifiable.explicit("HEAD"));
         httpGet.setRequestType(modifiableString);
         List<AbstractRecord> records = new ArrayList<>();
         List<ProtocolMessage> messages = new ArrayList<>();

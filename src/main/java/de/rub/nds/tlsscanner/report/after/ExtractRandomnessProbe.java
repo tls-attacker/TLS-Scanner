@@ -161,12 +161,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
         // This will result in a few holes logically when compared
         // to the real full byte sequence but is close enough.
         for (int i = 0; i < max(extractedRandomList.size(), extractedSessionIDList.size()); i++) {
-            if (extractedRandomList.size() <= i) {
+            if (!(extractedRandomList.isEmpty()) && extractedRandomList.size() <= i) {
                 for (byte b : extractedRandomList.get(i).getArray()) {
                     fullByteSequence.add(b);
                 }
             }
-            if (extractedSessionIDList.size() <= i) {
+            if (!(extractedSessionIDList.isEmpty()) && extractedSessionIDList.size() <= i) {
                 for (byte b : extractedSessionIDList.get(i).getArray()) {
                     fullByteSequence.add(b);
                 }
