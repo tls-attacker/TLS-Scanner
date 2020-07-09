@@ -381,10 +381,12 @@ public class TlsRngProbe extends TlsProbe {
         List<HttpsHeader> header = new LinkedList<>();
         header.add(new HostHeader());
         httpGet.setHeader(header);
+        httpGet.setRequestType("HEAD");
         List<AbstractRecord> records = new ArrayList<>();
         List<ProtocolMessage> messages = new ArrayList<>();
         MessageActionResult result = null;
         TlsContext tlsContext = state.getTlsContext();
+        // tlsContext.getTransportHandler().setTimeout(10000);
 
         int strikes = 0;
 
@@ -404,8 +406,8 @@ public class TlsRngProbe extends TlsProbe {
                 e.printStackTrace();
                 LOGGER.warn("Increasing Strikes.");
                 strikes++;
-                LOGGER.warn("Current strikes: "+strikes);
-                if (strikes == 3) {
+                LOGGER.warn("Current strikes: " + strikes);
+                if (strikes == 6) {
                     LOGGER.warn("Closing Connection after 4 missing Messages.");
                     break;
                 }
@@ -422,8 +424,8 @@ public class TlsRngProbe extends TlsProbe {
                 LOGGER.debug("Received unexpected Message before receiving required amount of application messages.");
                 LOGGER.warn("Increasing Strikes.");
                 strikes++;
-                LOGGER.warn("Current strikes: "+strikes);
-                if (strikes == 3) {
+                LOGGER.warn("Current strikes: " + strikes);
+                if (strikes == 6) {
                     LOGGER.warn("Closing Connection after 4 missing or unexpected Messsages.");
                     break;
                 }
