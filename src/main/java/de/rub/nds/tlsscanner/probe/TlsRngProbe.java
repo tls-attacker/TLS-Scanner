@@ -9,7 +9,10 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
+import de.rub.nds.modifiablevariable.string.ModifiableString;
+import de.rub.nds.modifiablevariable.string.StringModificationFactory;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
@@ -381,7 +384,10 @@ public class TlsRngProbe extends TlsProbe {
         List<HttpsHeader> header = new LinkedList<>();
         header.add(new HostHeader());
         httpGet.setHeader(header);
-        httpGet.setRequestType("HEAD");
+        ModifiableString modifiableString = new ModifiableString();
+        modifiableString.setModification(StringModificationFactory.explicitValue("HEAD"));
+        // When possible use this : httpGet.setRequestType(Modifiable.explicit("HEAD"));
+        httpGet.setRequestType(modifiableString);
         List<AbstractRecord> records = new ArrayList<>();
         List<ProtocolMessage> messages = new ArrayList<>();
         MessageActionResult result = null;
@@ -390,7 +396,8 @@ public class TlsRngProbe extends TlsProbe {
 
         int strikes = 0;
 
-        for (int i = 0; i < numberOfBlocks; i++) {
+        int currentlyReceivedBlocks = 0;
+        while (currentlyReceivedBlocks < numberOfBlocks) {
             result = null;
             messages = new ArrayList<>();
             messages.add(httpGet);
@@ -416,10 +423,15 @@ public class TlsRngProbe extends TlsProbe {
 
             if (!(messages.size() == 0)
                     && messages.get(0).getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
-                ModifiableByteArray extractedIV = ((Record) records.get(0)).getComputations()
-                        .getCbcInitialisationVector();
-                extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
-                LOGGER.warn("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
+                int receivedBlocks = 0;
+                for (AbstractRecord rec : records) {
+                    receivedBlocks++;
+                    ModifiableByteArray extractedIV = ((Record) rec).getComputations().getCbcInitialisationVector();
+                    extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
+                    LOGGER.warn("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
+                }
+                currentlyReceivedBlocks = currentlyReceivedBlocks + receivedBlocks;
+                LOGGER.warn("Currently Received Blocks : " + currentlyReceivedBlocks);
             } else {
                 LOGGER.debug("Received unexpected Message before receiving required amount of application messages.");
                 LOGGER.warn("Increasing Strikes.");
