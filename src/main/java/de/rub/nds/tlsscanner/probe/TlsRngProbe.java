@@ -385,11 +385,13 @@ public class TlsRngProbe extends TlsProbe {
         List<HttpsHeader> header = new LinkedList<>();
         header.add(new HostHeader());
         httpGet.setHeader(header);
-        ModifiableString modifiableString = new ModifiableString();
-        modifiableString.setModification(StringModificationFactory.explicitValue("HEAD"));
+        // HTTP HEAD REQUEST --> Currently HTTP GET better because we get more
+        // blocks per request
+        // ModifiableString modifiableString = new ModifiableString();
+        // modifiableString.setModification(StringModificationFactory.explicitValue("HEAD"));
         // When possible use this :
         // httpGet.setRequestType(Modifiable.explicit("HEAD"));
-        httpGet.setRequestType(modifiableString);
+        // httpGet.setRequestType(modifiableString);
         List<AbstractRecord> records = new ArrayList<>();
         List<ProtocolMessage> messages = new ArrayList<>();
         MessageActionResult result = null;
