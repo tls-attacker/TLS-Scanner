@@ -14,8 +14,6 @@ import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
-import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
-import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -23,39 +21,12 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.DTLS10;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.DTLS12;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.SSL2;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.SSL3;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS10;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS11;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS12;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT14;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT15;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT16;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT17;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT18;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT19;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT20;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT21;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT22;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT23;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT24;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT25;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT26;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT27;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT28;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.AnsiColor;
-import static de.rub.nds.tlsscanner.constants.CheckPatternType.CORRECT;
-import static de.rub.nds.tlsscanner.constants.CheckPatternType.PARTIAL;
 import de.rub.nds.tlsscanner.constants.CipherSuiteGrade;
-import static de.rub.nds.tlsscanner.constants.CipherSuiteGrade.GOOD;
-import static de.rub.nds.tlsscanner.constants.CipherSuiteGrade.LOW;
-import static de.rub.nds.tlsscanner.constants.CipherSuiteGrade.MEDIUM;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.leak.InformationLeakTest;
 import de.rub.nds.tlsscanner.leak.ResponseCounter;
@@ -76,8 +47,6 @@ import de.rub.nds.tlsscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.rating.TestResult;
-import static de.rub.nds.tlsscanner.rating.TestResult.FALSE;
-import static de.rub.nds.tlsscanner.rating.TestResult.TRUE;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -86,11 +55,13 @@ import de.rub.nds.tlsscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
-import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.DUPLICATES;
-import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
-import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
-import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
-import static de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult.UNIX_TIME;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
+
+import javax.xml.bind.JAXBException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -98,15 +69,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import javax.xml.bind.JAXBException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormat;
 
 public class SiteReportPrinter {
 
@@ -147,10 +111,13 @@ public class SiteReportPrinter {
         builder.append("\n");
         if (report.getServerIsAlive() == Boolean.FALSE) {
             builder.append("Cannot reach the Server. Is it online?");
+            return builder.toString();
         }
         if (report.getSupportsSslTls() == Boolean.FALSE) {
             builder.append("Server does not seem to support SSL / TLS on the scanned port");
+            return builder.toString();
         }
+        //
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
         appendExtensions(builder);
@@ -160,6 +127,8 @@ public class SiteReportPrinter {
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
+        sessionTicketZeroKeyDetails(builder);
+        appendDirectRaccoonResults(builder);
         appendInvalidCurveResults(builder);
         appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
@@ -172,6 +141,7 @@ public class SiteReportPrinter {
         appendHttps(builder);
         appendRandom(builder);
         appendPublicKeyIssues(builder);
+        appendClientAuthentication(builder);
         appendScoringResults(builder);
         appendRecommendations(builder);
         appendPerformanceData(builder);
@@ -189,7 +159,7 @@ public class SiteReportPrinter {
         appendInformationLeakTestList(builder, informationLeakTestList, "Direct Raccoon Results");
     }
 
-    private StringBuilder appendHandshakeSimulation(StringBuilder builder) {
+    public StringBuilder appendHandshakeSimulation(StringBuilder builder) {
         if (report.getSimulatedClientList() != null) {
             appendHsNormal(builder);
             if (detail == ScannerDetail.DETAILED) {
@@ -704,7 +674,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private StringBuilder appendSession(StringBuilder builder) {
+    public StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
         prettyAppend(builder, "Supports Session resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
         prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
