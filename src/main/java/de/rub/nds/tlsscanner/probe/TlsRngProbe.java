@@ -61,6 +61,7 @@ public class TlsRngProbe extends TlsProbe {
     private List<ComparableByteArray> extractedRandomList;
     private List<ComparableByteArray> extractedSessionIDList;
     private final int SERVER_RANDOM_SIZE = 32;
+    private final int IV_SIZE = 16;
     private final int NUMBER_OF_HANDSHAKES = 600;
     private final int CLIENT_RANDOM_START = 1;
     private final int IV_BLOCKS = 4000;
@@ -356,10 +357,8 @@ public class TlsRngProbe extends TlsProbe {
         if (cbcSuites.isEmpty()) {
             if (shortCbcSuites.isEmpty()) {
                 LOGGER.warn("NO CBC SUITES! Falling back to collect more Server Randoms instead ...");
-                // This is actually a lot more if extended Randoms are supported
-                // but in that case we will just
-                // collect more than necessary, which should not hurt
-                int numberOfHandshakes = (numberOfBlocks / SERVER_RANDOM_SIZE);
+                // Assume we would collect 16 Bytes per record
+                int numberOfHandshakes = (numberOfBlocks / (SERVER_RANDOM_SIZE / IV_SIZE));
                 if (highestVersion == ProtocolVersion.TLS13) {
                     collectServerRandomTls13(numberOfHandshakes, clientRandomInit + handshakeCounter);
                 } else {
@@ -476,7 +475,7 @@ public class TlsRngProbe extends TlsProbe {
         if (receivedBlocksCounter < numberOfBlocks) {
             // This means there were problems while collecting IV.
             // Collecting remaining bytes as server randoms.
-            int numberOfHandshakes = (numberOfBlocks - receivedBlocksCounter) / 32;
+            int numberOfHandshakes = (numberOfBlocks - receivedBlocksCounter) / (SERVER_RANDOM_SIZE / IV_SIZE);
             if (highestVersion == ProtocolVersion.TLS13) {
                 collectServerRandomTls13(numberOfHandshakes, clientRandomInit + handshakeCounter);
             } else {
