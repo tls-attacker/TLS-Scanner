@@ -47,6 +47,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -59,6 +60,10 @@ public class TlsRngProbe extends TlsProbe {
     private List<ComparableByteArray> extractedIVList;
     private List<ComparableByteArray> extractedRandomList;
     private List<ComparableByteArray> extractedSessionIDList;
+    private final int SERVER_RANDOM_SIZE = 32;
+    private final int NUMBER_OF_HANDSHAKES = 600;
+    private final int CLIENT_RANDOM_START = 1;
+    private final int IV_BLOCKS = 4000;
 
     public TlsRngProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RNG, config);
@@ -69,8 +74,6 @@ public class TlsRngProbe extends TlsProbe {
         extractedIVList = new LinkedList<>();
         extractedRandomList = new LinkedList<>();
         extractedSessionIDList = new LinkedList<>();
-        int numberOfHandshakes = 600;
-        int clientRandomStart = 1;
 
         // Ensure we use the highest Protocol version possible to prevent the
         // downgrade-attack mitigation to
@@ -78,23 +81,23 @@ public class TlsRngProbe extends TlsProbe {
         if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS13");
             highestVersion = ProtocolVersion.TLS13;
-            collectServerRandomTls13(numberOfHandshakes, clientRandomStart);
+            collectServerRandomTls13(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS12");
             highestVersion = ProtocolVersion.TLS12;
-            collectServerRandom(numberOfHandshakes, clientRandomStart);
+            collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS11");
             highestVersion = ProtocolVersion.TLS11;
-            collectServerRandom(numberOfHandshakes, clientRandomStart);
+            collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS10");
             highestVersion = ProtocolVersion.TLS10;
-            collectServerRandom(numberOfHandshakes, clientRandomStart);
+            collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         }
 
         // ////////////////////////////////////////////////////////////////////////////////////////////////////
-        collectIV(1000, clientRandomStart + 700);
+        collectIV(IV_BLOCKS, CLIENT_RANDOM_START + NUMBER_OF_HANDSHAKES + 50);
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // TODO: Implement this right.
@@ -334,49 +337,53 @@ public class TlsRngProbe extends TlsProbe {
         // Here it is not important which ciphersuite we use for key-exchange,
         // only important thing is maximum
         // block size of encrypted blocks.
+        int handshakeCounter = 1;
         CipherSuite[] supportedSuites = new CipherSuite[latestReport.getCipherSuites().toArray().length];
         supportedSuites = latestReport.getCipherSuites().toArray(supportedSuites);
         List<CipherSuite> cbcSuites = new LinkedList<>();
+        List<CipherSuite> shortCbcSuites = new LinkedList<>();
+        List<CipherSuite> selectedSuites = new LinkedList<>();
         for (CipherSuite suite : supportedSuites) {
             if (suite.name().contains("CBC")) {
-                // TODO: Add only the "Large" CBC suites with 16 byte block size
-                cbcSuites.add(suite);
+                if (suite.name().contains("256_CBC")) {
+                    cbcSuites.add(suite);
+                } else {
+                    shortCbcSuites.add(suite);
+                }
             }
         }
 
         if (cbcSuites.isEmpty()) {
-            LOGGER.warn("NO CBC SUITES! Falling back to collect more Server Randoms instead ...");
-            if (highestVersion == ProtocolVersion.TLS13) {
-                collectServerRandomTls13(200, clientRandomInit + 1);
+            if (shortCbcSuites.isEmpty()) {
+                LOGGER.warn("NO CBC SUITES! Falling back to collect more Server Randoms instead ...");
+                // This is actually a lot more if extended Randoms are supported
+                // but in that case we will just
+                // collect more than necessary, which should not hurt
+                int numberOfHandshakes = (numberOfBlocks / SERVER_RANDOM_SIZE);
+                if (highestVersion == ProtocolVersion.TLS13) {
+                    collectServerRandomTls13(numberOfHandshakes, clientRandomInit + handshakeCounter);
+                } else {
+                    collectServerRandom(numberOfHandshakes, clientRandomInit + handshakeCounter);
+                }
+                return;
             } else {
-                collectServerRandom(200, clientRandomInit + 1);
+                selectedSuites = shortCbcSuites;
             }
-            return;
+        } else {
+            selectedSuites = cbcSuites;
         }
 
         // Collect IV when CBC Suites are available
-        Config iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + 1));
-        iVCollectConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        Config iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
 
-        iVCollectConfig.setDefaultClientSupportedCiphersuites(cbcSuites);
+        iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
 
-        iVCollectConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
-        iVCollectConfig.setWorkflowExecutorShouldClose(false);
+        State collectState = generateOpenConnection(iVCollectConfig);
 
-        // Don't wait until nothing more received.
-        iVCollectConfig.setEarlyStop(true);
-        iVCollectConfig.setQuickReceive(true);
-        iVCollectConfig.setEnforceSettings(true);
-
-        State state = new State(iVCollectConfig);
-        WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(
-                WorkflowExecutorType.DEFAULT, state);
-        workflowExecutor.executeWorkflow();
-
-        LOGGER.warn(state.getWorkflowTrace());
-        LOGGER.warn(state.getTlsContext().getSelectedProtocolVersion());
-        LOGGER.warn(state.getTlsContext().getSelectedCipherSuite());
-        LOGGER.warn("IS EARLY STOP: " + state.getTlsContext().getConfig().isEarlyStop());
+        LOGGER.warn(collectState.getWorkflowTrace());
+        LOGGER.warn(collectState.getTlsContext().getSelectedProtocolVersion());
+        LOGGER.warn(collectState.getTlsContext().getSelectedCipherSuite());
+        LOGGER.warn("IS EARLY STOP: " + collectState.getTlsContext().getConfig().isEarlyStop());
 
         SendMessageHelper sendMessageHelper = new SendMessageHelper();
         ReceiveMessageHelper receiveMessageHelper = new ReceiveMessageHelper();
@@ -395,64 +402,66 @@ public class TlsRngProbe extends TlsProbe {
         List<AbstractRecord> records = new ArrayList<>();
         List<ProtocolMessage> messages = new ArrayList<>();
         MessageActionResult result = null;
-        TlsContext tlsContext = state.getTlsContext();
+        TlsContext tlsContext = collectState.getTlsContext();
         // tlsContext.getTransportHandler().setTimeout(10000);
 
-        int strikes = 0;
+        int failures = 0;
+        int receivedBlocksCounter = 0;
+        while (receivedBlocksCounter < numberOfBlocks) {
 
-        int currentlyReceivedBlocks = 0;
-        while (currentlyReceivedBlocks < numberOfBlocks) {
-            result = null;
+            if (failures > 2) {
+                LOGGER.warn("Creating new connection for IV Collection.");
+                handshakeCounter++;
+                iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
+                iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
+                collectState = generateOpenConnection(iVCollectConfig);
+                tlsContext = collectState.getTlsContext();
+                try {
+                    if (collectState.getTlsContext().getTransportHandler().isClosed()) {
+                        LOGGER.warn("Could not create new connection.");
+                        break;
+                    }
+                    failures = 0;
+                } catch (IOException e) {
+                    LOGGER.warn("Could not create new connection.");
+                    e.printStackTrace();
+                    break;
+                }
+
+            }
+
             messages = new ArrayList<>();
             messages.add(httpGet);
             records = null;
             result = null;
             try {
                 sendMessageHelper.sendMessages(messages, records, tlsContext);
-                result = receiveMessageHelper.receiveMessagesTill(new ApplicationMessage(iVCollectConfig), tlsContext);
-                messages = new ArrayList<>(result.getMessageList());
-                records = new ArrayList<>(result.getRecordList());
             } catch (IOException e) {
-                LOGGER.warn("Encountered Problems sending or receiving Messages for IV collection.");
+                LOGGER.warn("Encountered Problems sending Requests. Socket closed?");
                 e.printStackTrace();
-                LOGGER.warn("Increasing Strikes.");
-                strikes++;
-                LOGGER.warn("Current strikes: " + strikes);
-                if (strikes == 6) {
-                    LOGGER.warn("Closing Connection after 4 missing Messages.");
-                    break;
-                }
+                failures++;
                 continue;
             }
+
+            result = receiveMessageHelper.receiveMessagesTill(new ApplicationMessage(iVCollectConfig), tlsContext);
+            messages = new ArrayList<>(result.getMessageList());
+            records = new ArrayList<>(result.getRecordList());
 
             if (!(messages.size() == 0)
                     && messages.get(0).getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
                 int receivedBlocks = 0;
-                for (AbstractRecord rec : records) {
+                for (AbstractRecord receivedRecords : records) {
                     receivedBlocks++;
-                    ModifiableByteArray extractedIV = ((Record) rec).getComputations().getCbcInitialisationVector();
+                    ModifiableByteArray extractedIV = ((Record) receivedRecords).getComputations()
+                            .getCbcInitialisationVector();
                     extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
                     LOGGER.warn("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
                 }
-                currentlyReceivedBlocks = currentlyReceivedBlocks + receivedBlocks;
-                LOGGER.warn("Currently Received Blocks : " + currentlyReceivedBlocks);
+                receivedBlocksCounter = receivedBlocksCounter + receivedBlocks;
+                LOGGER.warn("Currently Received Blocks : " + receivedBlocksCounter);
             } else {
-                LOGGER.debug("Received unexpected Message before receiving required amount of application messages.");
-                LOGGER.warn("Increasing Strikes.");
-                strikes++;
-                LOGGER.warn("Current strikes: " + strikes);
-                if (strikes == 6) {
-                    LOGGER.warn("Closing Connection after 4 missing or unexpected Messsages.");
-                    break;
-                }
-                // TODO: Implement fallback --> Either retry new connection or
-                // collect more Server Randoms.
-                try {
-                    tlsContext.getTransportHandler().closeConnection();
-                } catch (IOException e) {
-                    LOGGER.warn("Could not close TransportHandler.");
-                    e.printStackTrace();
-                }
+                LOGGER.warn("Did not receive any messages.");
+                failures++;
             }
 
         }
@@ -464,6 +473,32 @@ public class TlsRngProbe extends TlsProbe {
             e.printStackTrace();
         }
 
+        if (receivedBlocksCounter < numberOfBlocks) {
+            // This means there were problems while collecting IV.
+            // Collecting remaining bytes as server randoms.
+            int numberOfHandshakes = (numberOfBlocks - receivedBlocksCounter) / 32;
+            if (highestVersion == ProtocolVersion.TLS13) {
+                collectServerRandomTls13(numberOfHandshakes, clientRandomInit + handshakeCounter);
+            } else {
+                collectServerRandom(numberOfHandshakes, clientRandomInit + handshakeCounter);
+            }
+
+        }
+
+    }
+
+    private State generateOpenConnection(Config config) {
+        config.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
+        config.setWorkflowExecutorShouldClose(false);
+        config.setEarlyStop(true);
+        config.setQuickReceive(true);
+        config.setEnforceSettings(true);
+        State state = new State(config);
+        WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(
+                WorkflowExecutorType.DEFAULT, state);
+        workflowExecutor.executeWorkflow();
+        return state;
     }
 
     private byte[] intToByteArray(int number) {

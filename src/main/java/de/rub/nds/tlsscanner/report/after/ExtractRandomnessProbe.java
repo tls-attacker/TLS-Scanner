@@ -40,8 +40,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Lets settle for at least 100 KB of Random Data
-    private final int MINIMUM_AMOUNT_OF_BYTES = 100000;
+    // Lets settle for at least 8000 KB of Random Data
+    // --> 600 * 32 Byte (Server Random)
+    // --> 4000 * 16 Byte (IV)
+    // = 83200
+    // So sessionIDs are nice to have.
+    private final int MINIMUM_AMOUNT_OF_BYTES = 83200;
 
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
             .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
@@ -207,12 +211,19 @@ public class ExtractRandomnessProbe extends AfterProbe {
                 + nonOverlappingTemplateTest(testSequence, 9));
         LOGGER.warn("Its hard to say what number of nonOverlappingTemplate Tests are concerning.");
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("Average P-Value returned by Serial Test : " + serialTest(testSequence, 16));
+        // LOGGER.warn("Average P-Value returned by Serial Test : " +
+        // serialTest(testSequence, 16));
+        // Takes longest time of all Tests
+        LOGGER.warn("Serial Test currently deactivated.");
         LOGGER.warn("============================================================================================");
         LOGGER.warn("P-Value of Approximate Entropy Test : " + approximateEntropyTest(testSequence, 10));
         LOGGER.warn("============================================================================================");
-        LOGGER.warn("P-Value of Cumulative Sums Test : " + cusumTest(testSequence, true));
-        LOGGER.warn("P-Value of Cumulative Sums (REVERSE) Test :" + cusumTest(testSequence, false));
+        // Takes longest time of all Tests ( besides serialTest)
+        // LOGGER.warn("P-Value of Cumulative Sums Test : " +
+        // cusumTest(testSequence, true));
+        // LOGGER.warn("P-Value of Cumulative Sums (REVERSE) Test :" +
+        // cusumTest(testSequence, false));
+        LOGGER.warn("Cusum Test currently deactivated.");
         LOGGER.warn("============================================================================================");
     }
 
