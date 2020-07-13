@@ -152,6 +152,7 @@ public class TlsRngProbe extends TlsProbe {
         testConf.setUseFreshRandom(false);
         testConf.setDefaultClientRandom(clientRandom);
         testConf.setStopActionsAfterFatal(true);
+        testConf.setDefaultClientSessionId(intToByteArray(1));
 
         testConf.setQuickReceive(true);
         testConf.setEarlyStop(true);
