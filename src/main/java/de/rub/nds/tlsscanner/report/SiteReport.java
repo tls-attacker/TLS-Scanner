@@ -122,9 +122,9 @@ public class SiteReport extends Observable implements Serializable {
 
     // TODO: Check if this is appropriate
     // Randomness NEW
-    private List<ComparableByteArray> extractedIVList = null;
-    private List<ComparableByteArray> extractedRandomList = null;
-    private List<ComparableByteArray> extractedSessionIDList = null;
+    private LinkedList<ComparableByteArray> extractedIVList = null;
+    private LinkedList<ComparableByteArray> extractedRandomList = null;
+    private LinkedList<ComparableByteArray> extractedSessionIDList = null;
     private RandomMinimalLengthResult randomMinimalLengthResult = RandomMinimalLengthResult.NOT_ANALYZED;
 
     // PublicKey Params
@@ -599,27 +599,27 @@ public class SiteReport extends Observable implements Serializable {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
     }
 
-    public synchronized void setExtractedIVList(List<ComparableByteArray> extractedIVList) {
+    public synchronized void setExtractedIVList(LinkedList<ComparableByteArray> extractedIVList) {
         this.extractedIVList = extractedIVList;
     }
 
-    public synchronized List<ComparableByteArray> getExtractedIVList() {
+    public synchronized LinkedList<ComparableByteArray> getExtractedIVList() {
         return extractedIVList;
     }
 
-    public synchronized void setExtractedRandomList(List<ComparableByteArray> extractedRandomList) {
+    public synchronized void setExtractedRandomList(LinkedList<ComparableByteArray> extractedRandomList) {
         this.extractedRandomList = extractedRandomList;
     }
 
-    public synchronized List<ComparableByteArray> getExtractedRandomList() {
+    public synchronized LinkedList<ComparableByteArray> getExtractedRandomList() {
         return extractedRandomList;
     }
 
-    public synchronized void setExtractedSessionIDList(List<ComparableByteArray> extractedSessionIDList) {
+    public synchronized void setExtractedSessionIDList(LinkedList<ComparableByteArray> extractedSessionIDList) {
         this.extractedSessionIDList = extractedSessionIDList;
     }
 
-    public synchronized List<ComparableByteArray> getExtractedSessionIDList() {
+    public synchronized LinkedList<ComparableByteArray> getExtractedSessionIDList() {
         return extractedSessionIDList;
     }
 

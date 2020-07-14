@@ -40,7 +40,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Lets settle for at least 8000 KB of Random Data
+    // Lets settle for at least 8000 B of Random Data
     // --> 600 * 32 Byte (Server Random)
     // --> 4000 * 16 Byte (IV)
     // = 83200
@@ -93,9 +93,9 @@ public class ExtractRandomnessProbe extends AfterProbe {
             return;
         }
 
-        List<ComparableByteArray> extractedRandomList = report.getExtractedRandomList();
-        List<ComparableByteArray> extractedIVList = report.getExtractedIVList();
-        List<ComparableByteArray> extractedSessionIDList = report.getExtractedSessionIDList();
+        LinkedList<ComparableByteArray> extractedRandomList = report.getExtractedRandomList();
+        LinkedList<ComparableByteArray> extractedIVList = report.getExtractedIVList();
+        LinkedList<ComparableByteArray> extractedSessionIdList = report.getExtractedSessionIDList();
 
         // Check for HELLO_RETRY_REQUEST_CONSTANT when TLS 1.3
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
@@ -117,7 +117,6 @@ public class ExtractRandomnessProbe extends AfterProbe {
             // Extract Server Hello Random Bytes
             random_file.println("SERVER RANDOM");
             for (ComparableByteArray random : extractedRandomList) {
-                ;
                 String random_bytes = "";
                 for (byte b : random.getArray()) {
                     random_bytes = random_bytes + String.format("%02X", b);
@@ -127,9 +126,9 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
             // Extract Server Hello Session ID
             random_file.println("SESSION ID");
-            for (ComparableByteArray sessionID : extractedSessionIDList) {
+            for (ComparableByteArray sessionId : extractedSessionIdList) {
                 String random_bytes = "";
-                for (byte b : sessionID.getArray()) {
+                for (byte b : sessionId.getArray()) {
                     random_bytes = random_bytes + String.format("%02X", b);
                 }
                 random_file.println(random_bytes);
@@ -164,24 +163,41 @@ public class ExtractRandomnessProbe extends AfterProbe {
         // Then at the end all IV from the HTTP GET.
         // This will result in a few holes logically when compared
         // to the real full byte sequence but is close enough.
-        for (int i = 0; i < max(extractedRandomList.size(), extractedSessionIDList.size()); i++) {
-            if (!(extractedRandomList.isEmpty()) && extractedRandomList.size() <= i) {
-                for (byte b : extractedRandomList.get(i).getArray()) {
+
+        int serverRandomCounter = 0;
+        int sessionIdCounter = 0;
+        int iVCounter = 0;
+
+        for (int i = 0; i < max(extractedRandomList.size(), extractedSessionIdList.size()); i++) {
+            if (i < extractedRandomList.size()) {
+                byte[] extractedRandomBytes = extractedRandomList.get(i).getArray();
+                serverRandomCounter += extractedRandomBytes.length;
+                for (byte b : extractedRandomBytes) {
                     fullByteSequence.add(b);
                 }
             }
-            if (!(extractedSessionIDList.isEmpty()) && extractedSessionIDList.size() <= i) {
-                for (byte b : extractedSessionIDList.get(i).getArray()) {
+
+            if (i < extractedSessionIdList.size()) {
+                byte[] extractedSessionIdBytes = extractedSessionIdList.get(i).getArray();
+                sessionIdCounter += extractedSessionIdBytes.length;
+                for (byte b : extractedSessionIdBytes) {
                     fullByteSequence.add(b);
                 }
             }
         }
+
         for (ComparableByteArray iVector : extractedIVList) {
-            for (byte b : iVector.getArray()) {
+            byte[] extractedIVBytes = iVector.getArray();
+            iVCounter += extractedIVBytes.length;
+            for (byte b : extractedIVBytes) {
                 fullByteSequence.add(b);
             }
         }
 
+        LOGGER.warn("Number of collected Bytes: " + fullByteSequence.size());
+        LOGGER.warn("Consisting of serverRandom: " + serverRandomCounter + " bytes.");
+        LOGGER.warn("Consisting of sessionID: " + sessionIdCounter + " bytes.");
+        LOGGER.warn("Consisting of IV: " + iVCounter + " bytes.");
         if (fullByteSequence.size() < MINIMUM_AMOUNT_OF_BYTES) {
             LOGGER.warn("Minimum Amount of Bytes not reached! This will negatively impact the "
                     + "performance of the tests. This will be noted in the site report.");
@@ -196,6 +212,26 @@ public class ExtractRandomnessProbe extends AfterProbe {
         ComparableByteArray testSequenceElement = new ComparableByteArray(fullByteSequenceArray);
         ComparableByteArray[] testSequence = new ComparableByteArray[] { testSequenceElement };
 
+        if (testSequence.length == 0) {
+            LOGGER.warn("No Bytes to test.");
+            return;
+        }
+
+        LOGGER.warn("============================================================================================");
+        ComparableByteArray[] extractedRandomArray = new ComparableByteArray[extractedRandomList.size()];
+        extractedRandomArray = extractedRandomList.toArray(extractedRandomArray);
+        boolean randomDuplicate = testForDuplicates(extractedRandomArray);
+        LOGGER.warn("Duplicates in server Randoms: " + randomDuplicate);
+        LOGGER.warn("============================================================================================");
+        ComparableByteArray[] extractedSessionIdArray = new ComparableByteArray[extractedSessionIdList.size()];
+        extractedSessionIdArray = extractedSessionIdList.toArray(extractedSessionIdArray);
+        boolean sessionIdDuplicate = testForDuplicates(extractedSessionIdArray);
+        LOGGER.warn("Duplicates in Session IDs : " + sessionIdDuplicate);
+        LOGGER.warn("============================================================================================");
+        ComparableByteArray[] extractedIvArray = new ComparableByteArray[extractedIVList.size()];
+        extractedIvArray = extractedIVList.toArray(extractedIvArray);
+        boolean IvDuplicate = testForDuplicates(extractedIvArray);
+        LOGGER.warn("Duplicates in IVs: " + IvDuplicate);
         LOGGER.warn("============================================================================================");
         LOGGER.warn("P-Value of Monobit : " + frequencyTest(testSequence, 1));
         LOGGER.warn("============================================================================================");
@@ -228,8 +264,6 @@ public class ExtractRandomnessProbe extends AfterProbe {
     }
 
     /**
-     * TODO: REWORK THIS! Compare not the objects, but the individual entries of
-     * the byteArrays
      * 
      * @param byteSequence
      * @return

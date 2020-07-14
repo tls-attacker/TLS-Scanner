@@ -15,20 +15,22 @@ import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class TlsRngResult extends ProbeResult {
 
     private boolean rng_extracted = false;
 
-    private final List<ComparableByteArray> extractedIVList;
+    private final LinkedList<ComparableByteArray> extractedIVList;
 
-    private final List<ComparableByteArray> extractedServerRandomList;
+    private final LinkedList<ComparableByteArray> extractedServerRandomList;
 
-    private final List<ComparableByteArray> extractedSessionIDList;
+    private final LinkedList<ComparableByteArray> extractedSessionIDList;
 
-    public TlsRngResult(boolean rng_extracted, List<ComparableByteArray> extractedIVList,
-            List<ComparableByteArray> extractedServerRandomList, List<ComparableByteArray> extractedSessionIDList) {
+    public TlsRngResult(boolean rng_extracted, LinkedList<ComparableByteArray> extractedIVList,
+            LinkedList<ComparableByteArray> extractedServerRandomList,
+            LinkedList<ComparableByteArray> extractedSessionIDList) {
         super(ProbeType.RNG);
         this.rng_extracted = rng_extracted;
         this.extractedIVList = extractedIVList;

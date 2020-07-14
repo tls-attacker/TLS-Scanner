@@ -57,9 +57,9 @@ public class TlsRngProbe extends TlsProbe {
 
     private ProtocolVersion highestVersion;
     private SiteReport latestReport;
-    private List<ComparableByteArray> extractedIVList;
-    private List<ComparableByteArray> extractedRandomList;
-    private List<ComparableByteArray> extractedSessionIDList;
+    private LinkedList<ComparableByteArray> extractedIVList;
+    private LinkedList<ComparableByteArray> extractedRandomList;
+    private LinkedList<ComparableByteArray> extractedSessionIDList;
     private final int SERVER_RANDOM_SIZE = 32;
     private final int IV_SIZE = 16;
     private final int NUMBER_OF_HANDSHAKES = 600;
@@ -451,11 +451,14 @@ public class TlsRngProbe extends TlsProbe {
                     && messages.get(0).getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
                 int receivedBlocks = 0;
                 for (AbstractRecord receivedRecords : records) {
-                    receivedBlocks++;
                     ModifiableByteArray extractedIV = ((Record) receivedRecords).getComputations()
                             .getCbcInitialisationVector();
-                    extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
-                    LOGGER.warn("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
+                    if (!(extractedIV == null)) {
+                        receivedBlocks++;
+                        extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
+                        LOGGER.warn("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
+                    }
+
                 }
                 receivedBlocksCounter = receivedBlocksCounter + receivedBlocks;
                 LOGGER.warn("Currently Received Blocks : " + receivedBlocksCounter);
