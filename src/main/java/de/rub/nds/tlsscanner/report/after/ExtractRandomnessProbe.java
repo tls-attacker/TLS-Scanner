@@ -269,12 +269,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
      * @return
      */
     private boolean testForDuplicates(ComparableByteArray[] byteSequence) {
-        Set<Integer> entryList = new HashSet<Integer>();
-        for (ComparableByteArray i : byteSequence) {
-            if (entryList.contains(i.hashCode())) {
+        Set<ComparableByteArray> entryList = new HashSet<ComparableByteArray>();
+        for (ComparableByteArray byteArray : byteSequence) {
+            if (entryList.contains(byteArray)) {
                 return true;
             }
-            entryList.add(i.hashCode());
+            entryList.add(byteArray);
         }
         return false;
     }
