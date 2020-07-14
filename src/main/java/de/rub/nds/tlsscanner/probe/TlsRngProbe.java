@@ -410,12 +410,17 @@ public class TlsRngProbe extends TlsProbe {
         TlsContext tlsContext = collectState.getTlsContext();
         // tlsContext.getTransportHandler().setTimeout(10000);
 
-        int failures = 0;
+        int receiveFailures = 0;
+        int newConnectionCounter = 0;
         int receivedBlocksCounter = 0;
         while (receivedBlocksCounter < numberOfBlocks) {
 
-            if (failures > 2) {
+            if (receiveFailures > 2) {
                 LOGGER.warn("Creating new connection for IV Collection.");
+                if (newConnectionCounter > 3) {
+                    LOGGER.warn("Too many new Connections without new messages. Quitting.");
+                    break;
+                }
                 handshakeCounter++;
                 iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
                 iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
@@ -426,7 +431,8 @@ public class TlsRngProbe extends TlsProbe {
                         break;
                     }
                     tlsContext = collectState.getTlsContext();
-                    failures = 0;
+                    newConnectionCounter++;
+                    receiveFailures = 0;
                 } catch (IOException e) {
                     LOGGER.warn("Could not create new connection.");
                     e.printStackTrace();
@@ -444,7 +450,7 @@ public class TlsRngProbe extends TlsProbe {
             } catch (IOException e) {
                 LOGGER.warn("Encountered Problems sending Requests. Socket closed?");
                 e.printStackTrace();
-                failures++;
+                receiveFailures++;
                 continue;
             }
 
@@ -459,6 +465,14 @@ public class TlsRngProbe extends TlsProbe {
                     ModifiableByteArray extractedIV = ((Record) receivedRecords).getComputations()
                             .getCbcInitialisationVector();
                     if (!(extractedIV == null)) {
+                        // Set newConnectionCounter to 0 if we received valid
+                        // IVs after creating a new
+                        // connection to mitigate the problem of successfully
+                        // creating new
+                        // connections but not receiving any messages.
+                        if (!(newConnectionCounter == 0)) {
+                            newConnectionCounter = 0;
+                        }
                         receivedBlocks++;
                         extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
                         LOGGER.warn("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
@@ -469,7 +483,7 @@ public class TlsRngProbe extends TlsProbe {
                 LOGGER.warn("Currently Received Blocks : " + receivedBlocksCounter);
             } else {
                 LOGGER.warn("Did not receive any messages.");
-                failures++;
+                receiveFailures++;
             }
 
         }
