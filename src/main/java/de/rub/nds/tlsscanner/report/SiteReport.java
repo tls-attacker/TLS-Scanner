@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.rating.TestResult;
@@ -126,6 +127,7 @@ public class SiteReport extends Observable implements Serializable {
     private LinkedList<ComparableByteArray> extractedRandomList = null;
     private LinkedList<ComparableByteArray> extractedSessionIDList = null;
     private RandomMinimalLengthResult randomMinimalLengthResult = RandomMinimalLengthResult.NOT_ANALYZED;
+    private LinkedList<RandomType> randomTypeDuplicates = new LinkedList<>();
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -599,28 +601,74 @@ public class SiteReport extends Observable implements Serializable {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
     }
 
+    /**
+     * Sets the List of extracted IVs in the SiteReport and is used by the
+     * TlsRngProbe
+     * 
+     * @param extractedIVList
+     *            LinkedList of extracted IVs.
+     */
     public synchronized void setExtractedIVList(LinkedList<ComparableByteArray> extractedIVList) {
         this.extractedIVList = extractedIVList;
     }
 
+    /**
+     * Returns the List of IVs extracted by the TlsRngProbe
+     * 
+     * @return LinkedList of ComparableByteArrays containing the IVs
+     */
     public synchronized LinkedList<ComparableByteArray> getExtractedIVList() {
         return extractedIVList;
     }
 
+    /**
+     * Sets the List of extracted Randoms in the SiteReport and is used by the
+     * TlsRngProbe
+     * 
+     * @param extractedRandomList
+     *            LinkedList of extracted Server Hello Randoms.
+     */
     public synchronized void setExtractedRandomList(LinkedList<ComparableByteArray> extractedRandomList) {
         this.extractedRandomList = extractedRandomList;
     }
 
+    /**
+     * Returns the List of Server Hello Randoms extracted by the TlsRngProbe
+     * 
+     * @return LinkedList of ComparableByteArrays containing the Server Hello
+     *         Randoms
+     */
     public synchronized LinkedList<ComparableByteArray> getExtractedRandomList() {
         return extractedRandomList;
     }
 
+    /**
+     * Sets the List of extracted SessionIDs in the SiteReport and is used by
+     * the TlsRngProbe
+     * 
+     * @param extractedSessionIDList
+     *            LinkedList of extracted Server Hello Session IDs.
+     */
     public synchronized void setExtractedSessionIDList(LinkedList<ComparableByteArray> extractedSessionIDList) {
         this.extractedSessionIDList = extractedSessionIDList;
     }
 
+    /**
+     * Returns the List of Server Hello SessionIDs extracted by the TlsRngProbe
+     * 
+     * @return LinkedList of ComparableByteArrays containing the Server Hello
+     *         SessionIDs
+     */
     public synchronized LinkedList<ComparableByteArray> getExtractedSessionIDList() {
         return extractedSessionIDList;
+    }
+
+    public synchronized void putResult(LinkedList<RandomType> duplicatesDetected) {
+        this.randomTypeDuplicates = duplicatesDetected;
+    }
+
+    public synchronized LinkedList<RandomType> getRandomDuplicatesResult() {
+        return this.randomTypeDuplicates;
     }
 
 }

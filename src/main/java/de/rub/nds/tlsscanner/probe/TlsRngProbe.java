@@ -15,6 +15,7 @@ import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
+import de.rub.nds.tlsattacker.core.exceptions.TransportHandlerConnectException;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
@@ -379,6 +380,10 @@ public class TlsRngProbe extends TlsProbe {
         iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
 
         State collectState = generateOpenConnection(iVCollectConfig);
+        if (collectState == null) {
+            LOGGER.warn("Can't collect IVs.");
+            return;
+        }
 
         LOGGER.warn(collectState.getWorkflowTrace());
         LOGGER.warn(collectState.getTlsContext().getSelectedProtocolVersion());
@@ -415,12 +420,12 @@ public class TlsRngProbe extends TlsProbe {
                 iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
                 iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
                 collectState = generateOpenConnection(iVCollectConfig);
-                tlsContext = collectState.getTlsContext();
                 try {
-                    if (collectState.getTlsContext().getTransportHandler().isClosed()) {
+                    if (!(collectState == null) && collectState.getTlsContext().getTransportHandler().isClosed()) {
                         LOGGER.warn("Could not create new connection.");
                         break;
                     }
+                    tlsContext = collectState.getTlsContext();
                     failures = 0;
                 } catch (IOException e) {
                     LOGGER.warn("Could not create new connection.");
@@ -500,8 +505,14 @@ public class TlsRngProbe extends TlsProbe {
         State state = new State(config);
         WorkflowExecutor workflowExecutor = WorkflowExecutorFactory.createWorkflowExecutor(
                 WorkflowExecutorType.DEFAULT, state);
-        workflowExecutor.executeWorkflow();
-        return state;
+        try {
+            workflowExecutor.executeWorkflow();
+            return state;
+        } catch (TransportHandlerConnectException ex) {
+            ex.printStackTrace();
+            LOGGER.warn("Could not open new Connection.");
+            return null;
+        }
     }
 
     private byte[] intToByteArray(int number) {

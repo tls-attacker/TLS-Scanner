@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.report.after;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.tlsscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
@@ -116,34 +117,39 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
             // Extract Server Hello Random Bytes
             random_file.println("SERVER RANDOM");
-            for (ComparableByteArray random : extractedRandomList) {
-                String random_bytes = "";
-                for (byte b : random.getArray()) {
-                    random_bytes = random_bytes + String.format("%02X", b);
+            if (!extractedRandomList.isEmpty()) {
+                for (ComparableByteArray random : extractedRandomList) {
+                    String random_bytes = "";
+                    for (byte b : random.getArray()) {
+                        random_bytes = random_bytes + String.format("%02X", b);
+                    }
+                    random_file.println(random_bytes);
                 }
-                random_file.println(random_bytes);
             }
 
             // Extract Server Hello Session ID
             random_file.println("SESSION ID");
-            for (ComparableByteArray sessionId : extractedSessionIdList) {
-                String random_bytes = "";
-                for (byte b : sessionId.getArray()) {
-                    random_bytes = random_bytes + String.format("%02X", b);
+            if (!extractedSessionIdList.isEmpty()) {
+                for (ComparableByteArray sessionId : extractedSessionIdList) {
+                    String random_bytes = "";
+                    for (byte b : sessionId.getArray()) {
+                        random_bytes = random_bytes + String.format("%02X", b);
+                    }
+                    random_file.println(random_bytes);
                 }
-                random_file.println(random_bytes);
             }
 
             // Extract Application IV
             random_file.println("IV");
-            for (ComparableByteArray iVector : extractedIVList) {
-                String random_bytes = "";
-                for (byte b : iVector.getArray()) {
-                    random_bytes = random_bytes + String.format("%02X", b);
+            if (!extractedIVList.isEmpty()) {
+                for (ComparableByteArray iVector : extractedIVList) {
+                    String random_bytes = "";
+                    for (byte b : iVector.getArray()) {
+                        random_bytes = random_bytes + String.format("%02X", b);
+                    }
+                    random_file.println(random_bytes);
                 }
-                random_file.println(random_bytes);
             }
-
             random_file.close();
 
         } catch (IOException e) {
@@ -211,6 +217,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         byte[] fullByteSequenceArray = ArrayUtils.toPrimitive(fullByteSequenceArrayTmp);
         ComparableByteArray testSequenceElement = new ComparableByteArray(fullByteSequenceArray);
         ComparableByteArray[] testSequence = new ComparableByteArray[] { testSequenceElement };
+        LinkedList<RandomType> duplicateList = new LinkedList<>();
 
         if (testSequence.length == 0) {
             LOGGER.warn("No Bytes to test.");
@@ -221,17 +228,29 @@ public class ExtractRandomnessProbe extends AfterProbe {
         ComparableByteArray[] extractedRandomArray = new ComparableByteArray[extractedRandomList.size()];
         extractedRandomArray = extractedRandomList.toArray(extractedRandomArray);
         boolean randomDuplicate = testForDuplicates(extractedRandomArray);
+        if (randomDuplicate) {
+            duplicateList.add(RandomType.RANDOM);
+        }
         LOGGER.warn("Duplicates in server Randoms: " + randomDuplicate);
         LOGGER.warn("============================================================================================");
         ComparableByteArray[] extractedSessionIdArray = new ComparableByteArray[extractedSessionIdList.size()];
         extractedSessionIdArray = extractedSessionIdList.toArray(extractedSessionIdArray);
         boolean sessionIdDuplicate = testForDuplicates(extractedSessionIdArray);
+        if (sessionIdDuplicate) {
+            duplicateList.add(RandomType.SESSION_ID);
+        }
         LOGGER.warn("Duplicates in Session IDs : " + sessionIdDuplicate);
         LOGGER.warn("============================================================================================");
         ComparableByteArray[] extractedIvArray = new ComparableByteArray[extractedIVList.size()];
         extractedIvArray = extractedIVList.toArray(extractedIvArray);
-        boolean IvDuplicate = testForDuplicates(extractedIvArray);
-        LOGGER.warn("Duplicates in IVs: " + IvDuplicate);
+        boolean iVDuplicate = testForDuplicates(extractedIvArray);
+        if (iVDuplicate) {
+            duplicateList.add(RandomType.IV);
+        }
+        LOGGER.warn("Duplicates in IVs: " + iVDuplicate);
+        // /////////////////////////////////////////////////
+        report.putResult(duplicateList);
+        // ////////////////////////////////////////////////
         LOGGER.warn("============================================================================================");
         LOGGER.warn("P-Value of Monobit : " + frequencyTest(testSequence, 1));
         LOGGER.warn("============================================================================================");
