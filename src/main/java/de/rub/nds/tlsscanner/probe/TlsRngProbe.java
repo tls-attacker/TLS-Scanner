@@ -160,7 +160,8 @@ public class TlsRngProbe extends TlsProbe {
 
         List<NamedGroup> supportedGroups = new LinkedList<>();
         for (NamedGroup group : latestReport.getSupportedNamedGroups()) {
-            if (!group.name().contains("FFDHE")) {
+            if (!group.name().contains("FFDHE") && !group.name().contains(NamedGroup.ECDH_X25519.name())
+                    && !group.name().contains(NamedGroup.ECDH_X448.name())) {
                 supportedGroups.add(group);
             }
         }
@@ -180,7 +181,9 @@ public class TlsRngProbe extends TlsProbe {
         tlsConfig.setStopActionsAfterFatal(true);
         List<NamedGroup> tls13Groups = new LinkedList<>();
         for (NamedGroup group : NamedGroup.values()) {
-            if (group.isTls13() && !(group.name().contains("FFDHE"))) {
+            if (group.isTls13() && !group.name().contains("FFDHE")
+                    && !group.name().contains(NamedGroup.ECDH_X25519.name())
+                    && !group.name().contains(NamedGroup.ECDH_X448.name())) {
                 tls13Groups.add(group);
             }
         }
@@ -426,9 +429,13 @@ public class TlsRngProbe extends TlsProbe {
                 iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
                 collectState = generateOpenConnection(iVCollectConfig);
                 try {
-                    if (!(collectState == null) && collectState.getTlsContext().getTransportHandler().isClosed()) {
-                        LOGGER.warn("Could not create new connection.");
-                        break;
+                    if ((collectState == null) || collectState.getTlsContext().getTransportHandler().isClosed()) {
+                        LOGGER.warn("Trying again for new Connection.");
+                        collectState = generateOpenConnection(iVCollectConfig);
+                        if ((collectState == null) || collectState.getTlsContext().getTransportHandler().isClosed()) {
+                            LOGGER.warn("No new Connections possible. Stopping IV Collection.");
+                            break;
+                        }
                     }
                     tlsContext = collectState.getTlsContext();
                     newConnectionCounter++;
@@ -521,12 +528,12 @@ public class TlsRngProbe extends TlsProbe {
                 WorkflowExecutorType.DEFAULT, state);
         try {
             workflowExecutor.executeWorkflow();
-            return state;
         } catch (TransportHandlerConnectException ex) {
             ex.printStackTrace();
             LOGGER.warn("Could not open new Connection.");
             return null;
         }
+        return state;
     }
 
     private byte[] intToByteArray(int number) {
