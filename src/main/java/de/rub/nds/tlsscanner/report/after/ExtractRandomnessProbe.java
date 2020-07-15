@@ -90,8 +90,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
     @Override
     public void analyze(SiteReport report) {
 
+        LOGGER.warn("TLS-RNG-PROBE RESULT : " + report.getResult(AnalyzedProperty.RNG_EXTRACTED));
         if (report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.FALSE
-                || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.COULD_NOT_TEST) {
+                || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.COULD_NOT_TEST
+                || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.NOT_TESTED_YET) {
             LOGGER.warn("AfterProbe can only be executed when TlsRngProbe was successfully executed.");
             return;
         }
