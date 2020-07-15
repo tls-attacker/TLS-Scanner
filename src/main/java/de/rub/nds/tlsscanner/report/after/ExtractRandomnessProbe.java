@@ -48,6 +48,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
     // So sessionIDs are nice to have.
     private final int MINIMUM_AMOUNT_OF_BYTES = 83200;
     private final double MINIMUM_P_VALUE = 0.01;
+    // TODO: Find better value. Maybe 0.5 is too high and 0.25 is already
+    // concerning?
     private final double TEMPLATE_TEST_MAXIMUM_FAILED_TESTS = 0.5;
 
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
@@ -124,10 +126,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
             if (!extractedRandomList.isEmpty()) {
                 for (ComparableByteArray random : extractedRandomList) {
                     String random_bytes = "";
-                    for (byte b : random.getArray()) {
-                        random_bytes = random_bytes + String.format("%02X", b);
+                    if (!(random == null)) {
+                        for (byte b : random.getArray()) {
+                            random_bytes = random_bytes + String.format("%02X", b);
+                        }
+                        random_file.println(random_bytes);
                     }
-                    random_file.println(random_bytes);
                 }
             }
 
@@ -136,10 +140,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
             if (!extractedSessionIdList.isEmpty()) {
                 for (ComparableByteArray sessionId : extractedSessionIdList) {
                     String random_bytes = "";
-                    for (byte b : sessionId.getArray()) {
-                        random_bytes = random_bytes + String.format("%02X", b);
+                    if (!(sessionId == null)) {
+                        for (byte b : sessionId.getArray()) {
+                            random_bytes = random_bytes + String.format("%02X", b);
+                        }
+                        random_file.println(random_bytes);
                     }
-                    random_file.println(random_bytes);
                 }
             }
 
@@ -148,10 +154,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
             if (!extractedIVList.isEmpty()) {
                 for (ComparableByteArray iVector : extractedIVList) {
                     String random_bytes = "";
-                    for (byte b : iVector.getArray()) {
-                        random_bytes = random_bytes + String.format("%02X", b);
+                    if (!(iVector == null)) {
+                        for (byte b : iVector.getArray()) {
+                            random_bytes = random_bytes + String.format("%02X", b);
+                        }
+                        random_file.println(random_bytes);
                     }
-                    random_file.println(random_bytes);
                 }
             }
             random_file.close();
@@ -322,7 +330,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
             LOGGER.warn("FREQUENCY_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
-        // report.putFrequencyResult(frequencyList);
+        report.putFrequencyResult(frequencyList);
         // ////////////////////////////////////////////////
         LOGGER.warn("============================================================================================");
         if (runsTest(extractedRandomArray) <= MINIMUM_P_VALUE) {
@@ -350,7 +358,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
             LOGGER.warn("RUNS_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
-        // report.putRunsResult(runsList);
+        report.putRunsResult(runsList);
         // ////////////////////////////////////////////////
         LOGGER.warn("============================================================================================");
         if (longestRunWithinBlock(extractedRandomArray, 8) <= MINIMUM_P_VALUE) {
@@ -379,7 +387,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
             LOGGER.warn("LONGEST_RUN_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
-        // report.putLongestRunBlockResult(longestRunBlockList);
+        report.putLongestRunBlockResult(longestRunBlockList);
         // ////////////////////////////////////////////////
         LOGGER.warn("============================================================================================");
         if (discreteFourierTest(extractedRandomArray) <= MINIMUM_P_VALUE) {
@@ -407,7 +415,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
             LOGGER.warn("FOURIER_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
-        // report.putFourierResult(fourierList);
+        report.putFourierResult(fourierList);
         // ////////////////////////////////////////////////
         LOGGER.warn("============================================================================================");
         if (nonOverlappingTemplateTest(extractedRandomArray, 9) >= TEMPLATE_TEST_MAXIMUM_FAILED_TESTS) {
@@ -437,7 +445,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
             LOGGER.warn("TEMPLATE_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
-        // report.putTemplateResult(nonOverlappingTemplateList);
+        report.putTemplateResult(nonOverlappingTemplateList);
         // ////////////////////////////////////////////////
         LOGGER.warn("============================================================================================");
         // LOGGER.warn("Average P-Value returned by Serial Test : " +
@@ -471,7 +479,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
             LOGGER.warn("ENTROPY_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
-        // report.putEntropyResult(entropyList);
+        report.putEntropyResult(entropyList);
         // ////////////////////////////////////////////////
         LOGGER.warn("============================================================================================");
         // Takes longest time of all Tests ( besides serialTest)
