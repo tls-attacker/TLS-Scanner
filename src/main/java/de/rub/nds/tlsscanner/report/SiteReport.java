@@ -35,7 +35,6 @@ import de.rub.nds.tlsscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -46,14 +45,7 @@ import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 import de.rub.nds.tlsscanner.report.result.statistics.RandomMinimalLengthResult;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Observable;
-import java.util.Set;
+import java.util.*;
 
 public class SiteReport extends Observable implements Serializable {
 
@@ -128,6 +120,7 @@ public class SiteReport extends Observable implements Serializable {
     private LinkedList<ComparableByteArray> extractedSessionIDList = null;
     private RandomMinimalLengthResult randomMinimalLengthResult = RandomMinimalLengthResult.NOT_ANALYZED;
     private LinkedList<RandomType> randomTypeDuplicates = new LinkedList<>();
+    private LinkedList<RandomType> failedMonoBitTypes = new LinkedList<>();
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -663,12 +656,46 @@ public class SiteReport extends Observable implements Serializable {
         return extractedSessionIDList;
     }
 
-    public synchronized void putResult(LinkedList<RandomType> duplicatesDetected) {
+    /**
+     * Method used to set the List of RandomTypes which failed the Duplicate
+     * Test in the ExtractRandomnessProbe
+     * 
+     * @param duplicatesDetected
+     *            LinkedList of RandomTypes
+     */
+    public synchronized void putRandomDuplicatesResult(LinkedList<RandomType> duplicatesDetected) {
         this.randomTypeDuplicates = duplicatesDetected;
     }
 
+    /**
+     * Method used to get the List of RandomTypes which failed the Duplicate
+     * Test in the ExtractRandomnessProbe
+     * 
+     * @return LinkedList of RandomTypes which failed the Duplicate Test
+     */
     public synchronized LinkedList<RandomType> getRandomDuplicatesResult() {
         return this.randomTypeDuplicates;
+    }
+
+    /**
+     * Method used to set the List of RandomTypes which failed the MonoBit Test
+     * in the ExtractRandomnessProbe
+     * 
+     * @param failedTypes
+     *            LinkedList of RandomTypes which failed the MonoBitTest
+     */
+    public synchronized void putMonoBitResult(LinkedList<RandomType> failedTypes) {
+        this.failedMonoBitTypes = failedTypes;
+    }
+
+    /**
+     * Method used to get the List of RandomTypes which failed the MonoBit Test
+     * in the ExtractRandomnessProbe
+     * 
+     * @return LinkedList of RandomTypes which failed the MonoBitTest
+     */
+    public synchronized LinkedList<RandomType> getMonoBitResult() {
+        return failedMonoBitTypes;
     }
 
 }
