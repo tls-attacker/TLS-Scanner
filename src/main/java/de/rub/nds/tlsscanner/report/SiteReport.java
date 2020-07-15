@@ -119,8 +119,14 @@ public class SiteReport extends Observable implements Serializable {
     private LinkedList<ComparableByteArray> extractedRandomList = null;
     private LinkedList<ComparableByteArray> extractedSessionIDList = null;
     private RandomMinimalLengthResult randomMinimalLengthResult = RandomMinimalLengthResult.NOT_ANALYZED;
-    private LinkedList<RandomType> randomTypeDuplicates = new LinkedList<>();
-    private LinkedList<RandomType> failedMonoBitTypes = new LinkedList<>();
+    private LinkedList<RandomType> randomTypeDuplicates = null;
+    private LinkedList<RandomType> failedMonoBitTypes = null;
+    private LinkedList<RandomType> failedFrequencyTypes = null;
+    private LinkedList<RandomType> failedRunsTypes = null;
+    private LinkedList<RandomType> failedLongestRunBlockTypes = null;
+    private LinkedList<RandomType> failedFourierTypes = null;
+    private LinkedList<RandomType> failedTemplateTypes = null;
+    private LinkedList<RandomType> failedEntropyTypes = null;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -696,6 +702,139 @@ public class SiteReport extends Observable implements Serializable {
      */
     public synchronized LinkedList<RandomType> getMonoBitResult() {
         return failedMonoBitTypes;
+    }
+
+    /**
+     * Method used to set the List of RandomTypes which failed the Frequency
+     * Test in the ExtractRandomnessProbe
+     * 
+     * @param failedTypes
+     *            LinkedList of Randomtyes which failed the Frequency Test
+     */
+    public synchronized void putFrequencyResult(LinkedList<RandomType> failedTypes) {
+        this.failedFrequencyTypes = failedTypes;
+    }
+
+    /**
+     * Method used to get the List of RandomTypes which failed the Frequency
+     * Test in the ExtractRandomnessProbe
+     *
+     * @return LinkedList of RandomTypes which failed the Frequency Test
+     */
+    public synchronized LinkedList<RandomType> getFrequencyResult() {
+        return failedFrequencyTypes;
+    }
+
+    /**
+     * Method used to set the List of RandomTypes which failed the Runs Test in
+     * the ExtractRandomnessProbe
+     * 
+     * @param failedTypes
+     *            LinkedList of RandomTypes which failed the Runs Test
+     */
+    public synchronized void putRunsResult(LinkedList<RandomType> failedTypes) {
+        this.failedRunsTypes = failedTypes;
+    }
+
+    /**
+     * Method used to get the List of RandomTypes which failed the Runs Test in
+     * the ExtractRandomnessProbe
+     * 
+     * @return LinkedList of RandomTypes which failed the Frequency Test
+     */
+    public synchronized LinkedList<RandomType> getRunsResult() {
+        return failedRunsTypes;
+    }
+
+    /**
+     * Method used to set the List of RandomTypes which failed the Longest Run
+     * within a Block Test in the ExtractRandomnessProbe
+     * 
+     * @param failedTypes
+     *            LinkedList of RandomTypes which failed the Longest Run within
+     *            a Block Test
+     */
+    public synchronized void putLongestRunBlockResult(LinkedList<RandomType> failedTypes) {
+        this.failedLongestRunBlockTypes = failedTypes;
+    }
+
+    /**
+     * Method used to get the List of RandomTypes which failed the Longest Run
+     * within a Block Test in the ExtractRandomnessProbe
+     * 
+     * @return LinkedList of RandomTypes which failed the Longest Run within a
+     *         Block Test
+     */
+    public synchronized LinkedList<RandomType> getLongestRunBlockResult() {
+        return failedLongestRunBlockTypes;
+    }
+
+    /**
+     * Method used to set the List of RandomTypes which failed the discrete
+     * Fourier Test in the ExtractRandomnessProbe
+     * 
+     * @param failedTypes
+     *            LinkedList of RandomTypes which failed the discrete Fourier
+     *            Test
+     */
+    public synchronized void putFourierResult(LinkedList<RandomType> failedTypes) {
+        this.failedFourierTypes = failedTypes;
+    }
+
+    /**
+     * Method used to get the List of RandomTypes which failed the discrete
+     * Fourier Test in the ExtractRandomnessProbe
+     * 
+     * @return LinkedList of RandomTypes which failed the discrete Fourier Test
+     */
+    public synchronized LinkedList<RandomType> getFourierResult() {
+        return failedFourierTypes;
+    }
+
+    /**
+     * Method used to set the List of RandomTypes which failed the Non
+     * Overlapping Template Test in the ExtractRandomnessProbe
+     * 
+     * @param failedTypes
+     *            LinkedList of RandomTypes which failed the Non Overlapping
+     *            Template Test
+     */
+    public synchronized void putTemplateResult(LinkedList<RandomType> failedTypes) {
+        this.failedTemplateTypes = failedTypes;
+    }
+
+    /**
+     * Method used to get the List of RandomTypes which failed the Non
+     * Overlapping Template Test in the ExtractRandomnessProbe
+     * 
+     * @return LinkedList of RandomTypes which failed the Non Overlapping
+     *         Template Test
+     */
+    public synchronized LinkedList<RandomType> getTemplateResult() {
+        return failedTemplateTypes;
+    }
+
+    /**
+     * Method used to set the List of RandomTypes which failed the Approximate
+     * Entropy Test in the ExtractRandomnessProbe
+     * 
+     * @param failedTypes
+     *            LinkedList of RandomTypes which failed the Approximate Entropy
+     *            Test
+     */
+    public synchronized void putEntropyResult(LinkedList<RandomType> failedTypes) {
+        this.failedEntropyTypes = failedTypes;
+    }
+
+    /**
+     * Method used to get the List of RandomTypes which failed the Approximate
+     * Entropy Test in the ExtractRandomnessProbe
+     * 
+     * @return LinkedList of RandomTypes which failed the Approximate Entropy
+     *         Test
+     */
+    public synchronized LinkedList<RandomType> getEntropyResult() {
+        return failedEntropyTypes;
     }
 
 }
