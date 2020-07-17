@@ -119,7 +119,7 @@ public class SiteReport extends Observable implements Serializable {
     private LinkedList<ComparableByteArray> extractedRandomList = null;
     private LinkedList<ComparableByteArray> extractedSessionIDList = null;
     private RandomMinimalLengthResult randomMinimalLengthResult = RandomMinimalLengthResult.NOT_ANALYZED;
-    private boolean usesUnixtime = false;
+    private Boolean usesUnixtime = null;
     private LinkedList<RandomType> randomTypeDuplicates = null;
     private LinkedList<RandomType> failedMonoBitTypes = null;
     private LinkedList<RandomType> failedFrequencyTypes = null;

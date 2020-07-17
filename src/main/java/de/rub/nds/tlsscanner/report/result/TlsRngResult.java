@@ -56,5 +56,6 @@ public class TlsRngResult extends ProbeResult {
         report.setExtractedRandomList(extractedServerRandomList);
         report.setExtractedSessionIDList(extractedSessionIDList);
 
+        report.putUnixtimeResult(usesUnixtime);
     }
 }
