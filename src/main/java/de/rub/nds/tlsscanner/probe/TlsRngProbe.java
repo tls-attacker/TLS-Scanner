@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -63,11 +64,13 @@ public class TlsRngProbe extends TlsProbe {
     private LinkedList<ComparableByteArray> extractedRandomList;
     private LinkedList<ComparableByteArray> extractedSessionIDList;
     private final int SERVER_RANDOM_SIZE = 32;
+    private final double TIMELESS_SERVER_RANDOM_SIZE = 28.0;
     private final int IV_SIZE = 16;
     private final int NUMBER_OF_HANDSHAKES = 600;
     private final int CLIENT_RANDOM_START = 1;
     private final int IV_BLOCKS = 4000;
     private final int UNIX_TIME_ALLOWED_DEVIATION = 30;
+    private boolean usesUnixTime = false;
 
     public TlsRngProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RNG, config);
@@ -78,7 +81,6 @@ public class TlsRngProbe extends TlsProbe {
         extractedIVList = new LinkedList<>();
         extractedRandomList = new LinkedList<>();
         extractedSessionIDList = new LinkedList<>();
-        boolean usesUnixTime = false;
 
         // Ensure we use the highest Protocol version possible to prevent the
         // downgrade-attack mitigation to
@@ -235,6 +237,13 @@ public class TlsRngProbe extends TlsProbe {
 
         boolean supportsExtendedRandom = latestReport.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
 
+        if (usesUnixTime) {
+            // Convert required amount of Handshakes to number of handshakes
+            // when we only get 28 Bytes.
+            numberOfHandshakes = (int) Math.ceil((numberOfHandshakes * SERVER_RANDOM_SIZE)
+                    / TIMELESS_SERVER_RANDOM_SIZE);
+        }
+
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config serverHelloConfig = generateTls13Config(intToByteArray(clientRandomInit + i));
 
@@ -251,23 +260,30 @@ public class TlsRngProbe extends TlsProbe {
             State test_state = new State(serverHelloConfig);
             executeState(test_state);
 
+            LOGGER.warn("===========================================================================================");
+
             serverRandom = test_state.getTlsContext().getServerRandom();
             serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
             byte[] completeServerRandom = ArrayConverter.concatenate(serverRandom, serverExtendedRandom);
             if (!(completeServerRandom.length == 0)) {
-                extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+                if (usesUnixTime) {
+                    byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, 4,
+                            completeServerRandom.length);
+                    LOGGER.warn("TIMELESS SERVER RANDOM : " + ArrayConverter.bytesToHexString(timeLessServerRandom));
+                    extractedRandomList.add(new ComparableByteArray(timeLessServerRandom));
+                } else {
+                    extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+                }
             }
 
             // SessionIDs are mirrored from client SessionID in TLS 1.3, so we
             // dont bother with them here.
 
-            LOGGER.warn("===========================================================================================");
-            LOGGER.warn(test_state.getWorkflowTrace());
-            LOGGER.warn(test_state.getTlsContext().getSelectedProtocolVersion());
-            LOGGER.warn(test_state.getTlsContext().getSelectedCipherSuite());
-            LOGGER.warn(ArrayConverter.bytesToHexString(test_state.getTlsContext().getServerSessionId()));
             LOGGER.warn(ArrayConverter.bytesToHexString(test_state.getTlsContext().getClientRandom()));
             LOGGER.warn(ArrayConverter.bytesToHexString(test_state.getTlsContext().getServerRandom()));
+            LOGGER.warn(test_state.getTlsContext().getSelectedProtocolVersion());
+            LOGGER.warn(test_state.getTlsContext().getSelectedCipherSuite());
+            LOGGER.warn(test_state.getWorkflowTrace());
             LOGGER.warn("===========================================================================================");
         }
 
@@ -300,6 +316,13 @@ public class TlsRngProbe extends TlsProbe {
 
         boolean supportsExtendedRandom = latestReport.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
 
+        if (usesUnixTime) {
+            // Convert required amount of Handshakes to number of handshakes
+            // when we only get 28 Bytes.
+            numberOfHandshakes = (int) Math.ceil((numberOfHandshakes * SERVER_RANDOM_SIZE)
+                    / TIMELESS_SERVER_RANDOM_SIZE);
+        }
+
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config serverHelloConfig = generateTestConfig(intToByteArray(clientRandomInit + i));
             byte[] serverRandom = null;
@@ -328,24 +351,36 @@ public class TlsRngProbe extends TlsProbe {
             State test_state = new State(serverHelloConfig);
             executeState(test_state);
 
+            LOGGER.warn("===========================================================================================");
+
             serverRandom = test_state.getTlsContext().getServerRandom();
             serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
+
+            LOGGER.warn("CLIENT RANDOM: "
+                    + ArrayConverter.bytesToHexString(test_state.getTlsContext().getClientRandom()));
+            LOGGER.warn("SERVER RANDOM: "
+                    + ArrayConverter.bytesToHexString(test_state.getTlsContext().getServerRandom()));
+
             byte[] completeServerRandom = ArrayConverter.concatenate(serverRandom, serverExtendedRandom);
             if (!(completeServerRandom.length == 0)) {
-                extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+                if (usesUnixTime) {
+                    byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, 4,
+                            completeServerRandom.length);
+                    LOGGER.warn("TIMELESS SERVER RANDOM : " + ArrayConverter.bytesToHexString(timeLessServerRandom));
+                    extractedRandomList.add(new ComparableByteArray(timeLessServerRandom));
+                } else {
+                    extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+                }
             }
 
             sessionID = test_state.getTlsContext().getServerSessionId();
-            if (!(sessionID.length == 0)) {
+            if (!(sessionID == null) && !(sessionID.length == 0)) {
                 extractedSessionIDList.add(new ComparableByteArray(sessionID));
             }
 
-            LOGGER.warn("===========================================================================================");
-            LOGGER.warn(test_state.getWorkflowTrace());
             LOGGER.warn(test_state.getTlsContext().getSelectedProtocolVersion());
             LOGGER.warn(test_state.getTlsContext().getSelectedCipherSuite());
-            LOGGER.warn(ArrayConverter.bytesToHexString(test_state.getTlsContext().getClientRandom()));
-            LOGGER.warn(ArrayConverter.bytesToHexString(test_state.getTlsContext().getServerRandom()));
+            LOGGER.warn(test_state.getWorkflowTrace());
             LOGGER.warn("===========================================================================================");
         }
     }
