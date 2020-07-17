@@ -78,6 +78,7 @@ public class TlsRngProbe extends TlsProbe {
         extractedIVList = new LinkedList<>();
         extractedRandomList = new LinkedList<>();
         extractedSessionIDList = new LinkedList<>();
+        boolean usesUnixTime = false;
 
         // Ensure we use the highest Protocol version possible to prevent the
         // downgrade-attack mitigation to
@@ -85,22 +86,22 @@ public class TlsRngProbe extends TlsProbe {
         if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS13");
             highestVersion = ProtocolVersion.TLS13;
-            checkForUnixTime();
+            usesUnixTime = checkForUnixTime();
             collectServerRandomTls13(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS12");
             highestVersion = ProtocolVersion.TLS12;
-            checkForUnixTime();
+            usesUnixTime = checkForUnixTime();
             collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS11");
             highestVersion = ProtocolVersion.TLS11;
-            checkForUnixTime();
+            usesUnixTime = checkForUnixTime();
             collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS10");
             highestVersion = ProtocolVersion.TLS10;
-            checkForUnixTime();
+            usesUnixTime = checkForUnixTime();
             collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         }
 
@@ -112,7 +113,7 @@ public class TlsRngProbe extends TlsProbe {
         boolean successfulHandshake = true;
 
         TlsRngResult rng_extract = new TlsRngResult(successfulHandshake, extractedIVList, extractedRandomList,
-                extractedSessionIDList);
+                extractedSessionIDList, usesUnixTime);
 
         return rng_extract;
     }
@@ -140,7 +141,7 @@ public class TlsRngProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new TlsRngResult(false, null, null, null);
+        return new TlsRngResult(false, null, null, null, false);
     }
 
     @Override

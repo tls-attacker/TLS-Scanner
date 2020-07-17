@@ -119,6 +119,7 @@ public class SiteReport extends Observable implements Serializable {
     private LinkedList<ComparableByteArray> extractedRandomList = null;
     private LinkedList<ComparableByteArray> extractedSessionIDList = null;
     private RandomMinimalLengthResult randomMinimalLengthResult = RandomMinimalLengthResult.NOT_ANALYZED;
+    private boolean usesUnixtime = false;
     private LinkedList<RandomType> randomTypeDuplicates = null;
     private LinkedList<RandomType> failedMonoBitTypes = null;
     private LinkedList<RandomType> failedFrequencyTypes = null;
@@ -835,6 +836,14 @@ public class SiteReport extends Observable implements Serializable {
      */
     public synchronized LinkedList<RandomType> getEntropyResult() {
         return failedEntropyTypes;
+    }
+
+    public synchronized void putUnixtimeResult(boolean usesUnixtime) {
+        this.usesUnixtime = usesUnixtime;
+    }
+
+    public synchronized boolean getUnixtimeResult() {
+        return this.usesUnixtime;
     }
 
 }

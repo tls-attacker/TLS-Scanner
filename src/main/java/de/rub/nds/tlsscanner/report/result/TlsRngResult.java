@@ -28,14 +28,17 @@ public class TlsRngResult extends ProbeResult {
 
     private final LinkedList<ComparableByteArray> extractedSessionIDList;
 
+    private final boolean usesUnixtime;
+
     public TlsRngResult(boolean rng_extracted, LinkedList<ComparableByteArray> extractedIVList,
             LinkedList<ComparableByteArray> extractedServerRandomList,
-            LinkedList<ComparableByteArray> extractedSessionIDList) {
+            LinkedList<ComparableByteArray> extractedSessionIDList, boolean usesUnixtime) {
         super(ProbeType.RNG);
         this.rng_extracted = rng_extracted;
         this.extractedIVList = extractedIVList;
         this.extractedServerRandomList = extractedServerRandomList;
         this.extractedSessionIDList = extractedSessionIDList;
+        this.usesUnixtime = usesUnixtime;
     }
 
     @Override
