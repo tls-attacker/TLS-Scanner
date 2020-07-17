@@ -1265,17 +1265,19 @@ public class SiteReportPrinter {
         } else {
             prettyAppend(builder, "At least 100 KB of Random Data", "FALSE", AnsiColor.RED);
         }
-        if (report.getRandomDuplicatesResult().contains(RandomType.RANDOM)) {
+        if (!(report.getRandomDuplicatesResult() == null)
+                && report.getRandomDuplicatesResult().contains(RandomType.RANDOM)) {
             prettyAppend(builder, "Server Hello Random", "DUPLICATES", AnsiColor.RED);
         } else {
             prettyAppend(builder, "Server Hello Random", "NO DUPLICATES", AnsiColor.GREEN);
         }
-        if (report.getRandomDuplicatesResult().contains(RandomType.SESSION_ID)) {
+        if (!(report.getRandomDuplicatesResult() == null)
+                && report.getRandomDuplicatesResult().contains(RandomType.SESSION_ID)) {
             prettyAppend(builder, "Session ID", "DUPLICATES", AnsiColor.RED);
         } else {
             prettyAppend(builder, "Session ID", "NO DUPLICATES", AnsiColor.GREEN);
         }
-        if (report.getRandomDuplicatesResult().contains(RandomType.IV)) {
+        if (!(report.getRandomDuplicatesResult() == null) && report.getRandomDuplicatesResult().contains(RandomType.IV)) {
             prettyAppend(builder, "IV", "DUPLICATES", AnsiColor.RED);
         } else {
             prettyAppend(builder, "IV", "NO DUPLICATES", AnsiColor.GREEN);

@@ -45,6 +45,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,6 +67,7 @@ public class TlsRngProbe extends TlsProbe {
     private final int NUMBER_OF_HANDSHAKES = 600;
     private final int CLIENT_RANDOM_START = 1;
     private final int IV_BLOCKS = 4000;
+    private final int UNIX_TIME_ALLOWED_DEVIATION = 30;
 
     public TlsRngProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RNG, config);
@@ -83,18 +85,22 @@ public class TlsRngProbe extends TlsProbe {
         if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS13");
             highestVersion = ProtocolVersion.TLS13;
+            checkForUnixTime();
             collectServerRandomTls13(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS12");
             highestVersion = ProtocolVersion.TLS12;
+            checkForUnixTime();
             collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS11");
             highestVersion = ProtocolVersion.TLS11;
+            checkForUnixTime();
             collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
             LOGGER.warn("SETTING HIGHEST VERSION TO TLS10");
             highestVersion = ProtocolVersion.TLS10;
+            checkForUnixTime();
             collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         }
 
@@ -247,7 +253,9 @@ public class TlsRngProbe extends TlsProbe {
             serverRandom = test_state.getTlsContext().getServerRandom();
             serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
             byte[] completeServerRandom = ArrayConverter.concatenate(serverRandom, serverExtendedRandom);
-            extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+            if (!(completeServerRandom.length == 0)) {
+                extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+            }
 
             // SessionIDs are mirrored from client SessionID in TLS 1.3, so we
             // dont bother with them here.
@@ -266,7 +274,6 @@ public class TlsRngProbe extends TlsProbe {
 
     private void collectServerRandom(int numberOfHandshakes, int clientRandomInit) {
         // Use preferred Ciphersuites if supported
-        // TODO: Set SessionID to fixed value to see if SessionIDs are mirrored
         List<CipherSuite> serverHelloCollectSuites = new LinkedList<>();
         CipherSuite[] supportedSuites = new CipherSuite[latestReport.getCipherSuites().toArray().length];
         supportedSuites = latestReport.getCipherSuites().toArray(supportedSuites);
@@ -323,10 +330,14 @@ public class TlsRngProbe extends TlsProbe {
             serverRandom = test_state.getTlsContext().getServerRandom();
             serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
             byte[] completeServerRandom = ArrayConverter.concatenate(serverRandom, serverExtendedRandom);
-            extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+            if (!(completeServerRandom.length == 0)) {
+                extractedRandomList.add(new ComparableByteArray(completeServerRandom));
+            }
 
             sessionID = test_state.getTlsContext().getServerSessionId();
-            extractedSessionIDList.add(new ComparableByteArray(sessionID));
+            if (!(sessionID.length == 0)) {
+                extractedSessionIDList.add(new ComparableByteArray(sessionID));
+            }
 
             LOGGER.warn("===========================================================================================");
             LOGGER.warn(test_state.getWorkflowTrace());
@@ -514,6 +525,74 @@ public class TlsRngProbe extends TlsProbe {
 
         }
 
+    }
+
+    /**
+     * Checks if the Host utilities Unix time for Server Randoms
+     * 
+     * @return
+     */
+    private boolean checkForUnixTime() {
+        boolean usesUnixTime = false;
+        Config unixConfig;
+        int matchCounter = 0;
+
+        if (highestVersion == ProtocolVersion.TLS13) {
+            unixConfig = generateTls13Config(intToByteArray(9999));
+        } else {
+            unixConfig = generateTestConfig(intToByteArray(9999));
+            CipherSuite[] supportedSuites = new CipherSuite[latestReport.getCipherSuites().toArray().length];
+            supportedSuites = latestReport.getCipherSuites().toArray(supportedSuites);
+            unixConfig.setDefaultClientSupportedCiphersuites(supportedSuites);
+        }
+
+        unixConfig.setEnforceSettings(true);
+        unixConfig.setHighestProtocolVersion(highestVersion);
+        unixConfig.setSupportedVersions(highestVersion);
+        unixConfig.setUseFreshRandom(true);
+
+        unixConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+
+        for (int i = 0; i < 10; i++) {
+            int currentUnixTime = (int) (System.currentTimeMillis() / 1000);
+            int serverUnixTime = 0;
+            LOGGER.warn("UNIX_TIME_STAMP_TEST : Current UnixTimeStamp : " + currentUnixTime);
+            // currentUnixTime = new byte[]{
+            // (byte) (currentUnixTime >> 24),
+            // (byte) (currentUnixTime >> 16),
+            // (byte) (currentUnixTime >> 8),
+            // (byte) currentUnixTime
+            // };
+
+            State unixState = new State(unixConfig);
+            executeState(unixState);
+
+            LOGGER.warn("UNIX_TIME_STAMP_TEST: SERVER RANDOM: "
+                    + ArrayConverter.bytesToHexString(unixState.getTlsContext().getServerRandom()));
+            byte[] serverRandom = unixState.getTlsContext().getServerRandom();
+            if (!(serverRandom == null)) {
+                byte[] unixTimeStamp = new byte[4];
+                for (int j = 0; j < 4; j++) {
+                    unixTimeStamp[j] = serverRandom[j];
+                }
+                serverUnixTime = java.nio.ByteBuffer.wrap(unixTimeStamp).order(ByteOrder.BIG_ENDIAN).getInt();
+                if (currentUnixTime - UNIX_TIME_ALLOWED_DEVIATION < serverUnixTime) {
+                    if (currentUnixTime + UNIX_TIME_ALLOWED_DEVIATION > serverUnixTime) {
+                        matchCounter++;
+                    }
+                }
+            }
+        }
+
+        LOGGER.warn("MATCHCOUNTER: " + matchCounter);
+        if (matchCounter == 10) {
+            LOGGER.warn("ServerRandom utilizes UnixTimestamps.");
+            usesUnixTime = true;
+        } else {
+            LOGGER.warn("No UnixTimestamps detected.");
+        }
+
+        return usesUnixTime;
     }
 
     private State generateOpenConnection(Config config) {

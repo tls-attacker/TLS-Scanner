@@ -50,6 +50,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
     private final double MINIMUM_P_VALUE = 0.01;
     // TODO: Find better value. Maybe 0.5 is too high and 0.25 is already
     // concerning?
+    // TODO: Maybe use Poisson Distribution to check
     private final double TEMPLATE_TEST_MAXIMUM_FAILED_TESTS = 0.5;
 
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
@@ -126,12 +127,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
             if (!extractedRandomList.isEmpty()) {
                 for (ComparableByteArray random : extractedRandomList) {
                     String random_bytes = "";
-                    if (!(random == null)) {
-                        for (byte b : random.getArray()) {
-                            random_bytes = random_bytes + String.format("%02X", b);
-                        }
-                        random_file.println(random_bytes);
+                    for (byte b : random.getArray()) {
+                        random_bytes = random_bytes + String.format("%02X", b);
                     }
+                    random_file.println(random_bytes);
                 }
             }
 
@@ -140,12 +139,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
             if (!extractedSessionIdList.isEmpty()) {
                 for (ComparableByteArray sessionId : extractedSessionIdList) {
                     String random_bytes = "";
-                    if (!(sessionId == null)) {
-                        for (byte b : sessionId.getArray()) {
-                            random_bytes = random_bytes + String.format("%02X", b);
-                        }
-                        random_file.println(random_bytes);
+                    for (byte b : sessionId.getArray()) {
+                        random_bytes = random_bytes + String.format("%02X", b);
                     }
+                    random_file.println(random_bytes);
                 }
             }
 
@@ -154,12 +151,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
             if (!extractedIVList.isEmpty()) {
                 for (ComparableByteArray iVector : extractedIVList) {
                     String random_bytes = "";
-                    if (!(iVector == null)) {
-                        for (byte b : iVector.getArray()) {
-                            random_bytes = random_bytes + String.format("%02X", b);
-                        }
-                        random_file.println(random_bytes);
+                    for (byte b : iVector.getArray()) {
+                        random_bytes = random_bytes + String.format("%02X", b);
                     }
+                    random_file.println(random_bytes);
                 }
             }
             random_file.close();
