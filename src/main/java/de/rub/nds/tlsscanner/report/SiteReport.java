@@ -99,6 +99,7 @@ public class SiteReport extends Observable implements Serializable {
     private OCSPResponse stapledOcspResponse = null;
     private OCSPResponse firstOcspResponse = null;
     private OCSPResponse secondOcspResponse = null;
+    private OCSPResponse httpGetOcspResponse = null;
     private Long differenceHoursStapled = null;
 
     // Ciphers
@@ -617,5 +618,13 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setDifferenceHoursStapled(Long differenceHoursStapled) {
         this.differenceHoursStapled = differenceHoursStapled;
+    }
+
+    public synchronized OCSPResponse getHttpGetOcspResponse() {
+        return httpGetOcspResponse;
+    }
+
+    public synchronized void setHttpGetOcspResponse(OCSPResponse httpGetOcspResponse) {
+        this.httpGetOcspResponse = httpGetOcspResponse;
     }
 }

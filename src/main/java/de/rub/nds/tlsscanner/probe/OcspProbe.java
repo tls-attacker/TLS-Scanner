@@ -61,6 +61,7 @@ public class OcspProbe extends TlsProbe {
     private OCSPResponse stapledResponse;
     private OCSPResponse firstResponse;
     private OCSPResponse secondResponse;
+    private OCSPResponse httpGetResponse;
 
     public static final int NONCE_TEST_VALUE_1 = 42;
     public static final int NONCE_TEST_VALUE_2 = 1337;
@@ -85,7 +86,7 @@ public class OcspProbe extends TlsProbe {
         performRequest(serverCertChain);
 
         return new OcspResult(supportsOcsp, supportsStapling, mustStaple, supportsNonce, stapledResponse,
-                firstResponse, secondResponse);
+                firstResponse, secondResponse, httpGetResponse);
     }
 
     private void getMustStaple(Certificate certChain) {
@@ -150,6 +151,7 @@ public class OcspProbe extends TlsProbe {
             ocspFirstRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_1)));
             ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
             firstResponse = ocspRequest.makeRequest(ocspFirstRequestMessage);
+            httpGetResponse = ocspRequest.makeGetRequest(ocspFirstRequestMessage);
 
             // If nonce is supported used, check if server actually replies
             // with a different one immediately after
@@ -230,6 +232,6 @@ public class OcspProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new OcspResult(null, false, false, false, null, null, null);
+        return new OcspResult(null, false, false, false, null, null, null, null);
     }
 }

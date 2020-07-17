@@ -34,9 +34,11 @@ public class OcspResult extends ProbeResult {
     private final OCSPResponse stapledResponse;
     private final OCSPResponse firstResponse;
     private final OCSPResponse secondResponse;
+    private final OCSPResponse httpGetResponse;
 
     public OcspResult(Boolean supportsOcsp, boolean supportsStapling, boolean mustStaple, boolean supportsNonce,
-            OCSPResponse stapledResponse, OCSPResponse firstResponse, OCSPResponse secondResponse) {
+            OCSPResponse stapledResponse, OCSPResponse firstResponse, OCSPResponse secondResponse,
+            OCSPResponse httpGetResponse) {
         super(ProbeType.OCSP);
         this.supportsOcsp = supportsOcsp;
         this.supportsStapling = supportsStapling;
@@ -45,6 +47,7 @@ public class OcspResult extends ProbeResult {
         this.stapledResponse = stapledResponse;
         this.firstResponse = firstResponse;
         this.secondResponse = secondResponse;
+        this.httpGetResponse = httpGetResponse;
     }
 
     @Override
@@ -52,6 +55,7 @@ public class OcspResult extends ProbeResult {
         report.setStapledOcspResponse(stapledResponse);
         report.setFirstOcspResponse(firstResponse);
         report.setSecondOcspResponse(secondResponse);
+        report.setHttpGetOcspResponse(httpGetResponse);
 
         // Check if status_request is supported, but no certificate status
         // request message was given

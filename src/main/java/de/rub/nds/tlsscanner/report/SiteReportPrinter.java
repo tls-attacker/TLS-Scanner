@@ -653,9 +653,9 @@ public class SiteReportPrinter {
             prettyAppend(builder, report.getStapledOcspResponse().toString(false));
         }
 
-        // Print requested response
+        // Print requested HTTP POST response
         if (report.getFirstOcspResponse() != null) {
-            prettyAppendSubheading(builder, "Requested OCSP Response");
+            prettyAppendSubheading(builder, "Requested OCSP Response (HTTP POST)");
             if (report.getFirstOcspResponse().getResponseStatus() > 0) {
                 prettyAppend(builder, "OCSP Request was not accepted by the OCSP Responder.", AnsiColor.RED);
 
@@ -670,7 +670,18 @@ public class SiteReportPrinter {
                 }
             }
             prettyAppend(builder, report.getFirstOcspResponse().toString(false));
+        } else if (report.getFirstOcspResponse() == null && report.getHttpGetOcspResponse() != null) {
+            prettyAppend(builder, "Retrieved an OCSP response via HTTP GET, but not via HTTP POST.", AnsiColor.YELLOW);
         }
+
+        // Print requested HTTP GET response
+        if (report.getHttpGetOcspResponse() != null) {
+            prettyAppendSubheading(builder, "Requested OCSP Response (HTTP GET)");
+            prettyAppend(builder, report.getHttpGetOcspResponse().toString(false));
+        } else if (report.getHttpGetOcspResponse() == null && report.getFirstOcspResponse() != null) {
+            prettyAppend(builder, "Retrieved an OCSP response via HTTP POST, but not via HTTP GET.", AnsiColor.YELLOW);
+        }
+
         return builder;
     }
 
