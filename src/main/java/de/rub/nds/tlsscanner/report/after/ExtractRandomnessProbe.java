@@ -211,6 +211,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LOGGER.warn("Consisting of serverRandom: " + serverRandomCounter + " bytes.");
         LOGGER.warn("Consisting of sessionID: " + sessionIdCounter + " bytes.");
         LOGGER.warn("Consisting of IV: " + iVCounter + " bytes.");
+
+        if (serverRandomCounter + sessionIdCounter + iVCounter == 0) {
+            LOGGER.warn("No Randomness extracted. Aborting Tests.");
+            return;
+        }
+
         if (fullByteSequence.size() < MINIMUM_AMOUNT_OF_BYTES) {
             LOGGER.warn("Minimum Amount of Bytes not reached! This will negatively impact the "
                     + "performance of the tests. This will be noted in the site report.");
@@ -244,11 +250,6 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
         ComparableByteArray[] extractedIvArray = new ComparableByteArray[extractedIVList.size()];
         extractedIvArray = extractedIVList.toArray(extractedIvArray);
-
-        if (testSequence.length == 0) {
-            LOGGER.warn("No Bytes to test.");
-            return;
-        }
 
         LOGGER.warn("============================================================================================");
         boolean randomDuplicate = testForDuplicates(extractedRandomArray);
