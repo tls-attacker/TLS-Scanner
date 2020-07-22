@@ -30,15 +30,18 @@ public class TlsRngResult extends ProbeResult {
 
     private final boolean usesUnixtime;
 
+    private final boolean prematureStop;
+
     public TlsRngResult(boolean rng_extracted, LinkedList<ComparableByteArray> extractedIVList,
             LinkedList<ComparableByteArray> extractedServerRandomList,
-            LinkedList<ComparableByteArray> extractedSessionIDList, boolean usesUnixtime) {
+            LinkedList<ComparableByteArray> extractedSessionIDList, boolean usesUnixtime, boolean prematureStop) {
         super(ProbeType.RNG);
         this.rng_extracted = rng_extracted;
         this.extractedIVList = extractedIVList;
         this.extractedServerRandomList = extractedServerRandomList;
         this.extractedSessionIDList = extractedSessionIDList;
         this.usesUnixtime = usesUnixtime;
+        this.prematureStop = prematureStop;
     }
 
     @Override
@@ -57,5 +60,6 @@ public class TlsRngResult extends ProbeResult {
         report.setExtractedSessionIDList(extractedSessionIDList);
 
         report.putUnixtimeResult(usesUnixtime);
+        report.putPrematureStopResult(prematureStop);
     }
 }

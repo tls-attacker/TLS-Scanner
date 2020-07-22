@@ -128,6 +128,7 @@ public class SiteReport extends Observable implements Serializable {
     private LinkedList<RandomType> failedFourierTypes = null;
     private LinkedList<RandomType> failedTemplateTypes = null;
     private LinkedList<RandomType> failedEntropyTypes = null;
+    private Boolean prematureStop = null;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -844,6 +845,14 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized boolean getUnixtimeResult() {
         return this.usesUnixtime;
+    }
+
+    public synchronized void putPrematureStopResult(boolean prematureStop) {
+        this.prematureStop = prematureStop;
+    }
+
+    public synchronized boolean getPrematureStopResult() {
+        return prematureStop;
     }
 
 }

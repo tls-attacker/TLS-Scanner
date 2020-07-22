@@ -63,6 +63,7 @@ public class TlsRngProbe extends TlsProbe {
     private LinkedList<ComparableByteArray> extractedIVList;
     private LinkedList<ComparableByteArray> extractedRandomList;
     private LinkedList<ComparableByteArray> extractedSessionIDList;
+    private boolean prematureStop = false;
     private final int SERVER_RANDOM_SIZE = 32;
     private final double TIMELESS_SERVER_RANDOM_SIZE = 28.0;
     private final int IV_SIZE = 16;
@@ -118,7 +119,7 @@ public class TlsRngProbe extends TlsProbe {
         boolean successfulHandshake = true;
 
         TlsRngResult rng_extract = new TlsRngResult(successfulHandshake, extractedIVList, extractedRandomList,
-                extractedSessionIDList, usesUnixTime);
+                extractedSessionIDList, usesUnixTime, prematureStop);
 
         return rng_extract;
     }
@@ -146,7 +147,7 @@ public class TlsRngProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new TlsRngResult(false, null, null, null, false);
+        return new TlsRngResult(false, null, null, null, false, false);
     }
 
     @Override
@@ -262,6 +263,7 @@ public class TlsRngProbe extends TlsProbe {
 
             if (TLS_CONNECTION_COUNTER >= 1000) {
                 LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                prematureStop = true;
                 return;
             }
 
@@ -359,6 +361,7 @@ public class TlsRngProbe extends TlsProbe {
 
             if (TLS_CONNECTION_COUNTER >= 1000) {
                 LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                prematureStop = true;
                 return;
             }
 
@@ -491,6 +494,7 @@ public class TlsRngProbe extends TlsProbe {
                 iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
                 if (TLS_CONNECTION_COUNTER >= 1000) {
                     LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                    prematureStop = true;
                     return;
                 }
                 collectState = generateOpenConnection(iVCollectConfig);
@@ -499,6 +503,7 @@ public class TlsRngProbe extends TlsProbe {
                         LOGGER.warn("Trying again for new Connection.");
                         if (TLS_CONNECTION_COUNTER >= 1000) {
                             LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                            prematureStop = true;
                             return;
                         }
                         collectState = generateOpenConnection(iVCollectConfig);
