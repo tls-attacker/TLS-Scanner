@@ -848,6 +848,11 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
         int n = fullSequence.length();
 
+        if (n == 0) {
+            LOGGER.warn("Only Sequences longer than 0 are allowed.");
+            return 0.0;
+        }
+
         double N_l;
         double N_o;
         double d;
