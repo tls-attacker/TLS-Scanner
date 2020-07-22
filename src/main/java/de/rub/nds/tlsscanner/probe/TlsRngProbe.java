@@ -69,8 +69,11 @@ public class TlsRngProbe extends TlsProbe {
     private final int NUMBER_OF_HANDSHAKES = 600;
     private final int CLIENT_RANDOM_START = 1;
     private final int IV_BLOCKS = 4000;
-    private final int UNIX_TIME_ALLOWED_DEVIATION = 30;
+    // TODO: If the Server is too slow, this may result in undetected counters.
+    private final int UNIX_TIME_ALLOWED_DEVIATION = 2;
     private boolean usesUnixTime = false;
+    private int TLS_CONNECTIONS_UPPER_LIMIT = 1000;
+    private int TLS_CONNECTION_COUNTER = 0;
 
     public TlsRngProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RNG, config);
@@ -257,8 +260,14 @@ public class TlsRngProbe extends TlsProbe {
 
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
+            if (TLS_CONNECTION_COUNTER >= 1000) {
+                LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                return;
+            }
+
             State test_state = new State(serverHelloConfig);
             executeState(test_state);
+            TLS_CONNECTION_COUNTER++;
 
             LOGGER.warn("===========================================================================================");
 
@@ -348,8 +357,14 @@ public class TlsRngProbe extends TlsProbe {
 
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
+            if (TLS_CONNECTION_COUNTER >= 1000) {
+                LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                return;
+            }
+
             State test_state = new State(serverHelloConfig);
             executeState(test_state);
+            TLS_CONNECTION_COUNTER++;
 
             LOGGER.warn("===========================================================================================");
 
@@ -474,10 +489,18 @@ public class TlsRngProbe extends TlsProbe {
                 handshakeCounter++;
                 iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
                 iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
+                if (TLS_CONNECTION_COUNTER >= 1000) {
+                    LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                    return;
+                }
                 collectState = generateOpenConnection(iVCollectConfig);
                 try {
                     if ((collectState == null) || collectState.getTlsContext().getTransportHandler().isClosed()) {
                         LOGGER.warn("Trying again for new Connection.");
+                        if (TLS_CONNECTION_COUNTER >= 1000) {
+                            LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                            return;
+                        }
                         collectState = generateOpenConnection(iVCollectConfig);
                         if ((collectState == null) || collectState.getTlsContext().getTransportHandler().isClosed()) {
                             LOGGER.warn("No new Connections possible. Stopping IV Collection.");
@@ -589,16 +612,11 @@ public class TlsRngProbe extends TlsProbe {
 
         unixConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
-        for (int i = 0; i < 10; i++) {
-            int currentUnixTime = (int) (System.currentTimeMillis() / 1000);
+        int lastUnixTime = 0;
+
+        for (int i = 0; i < 11; i++) {
+            // int currentUnixTime = (int) (System.currentTimeMillis() / 1000);
             int serverUnixTime = 0;
-            LOGGER.warn("UNIX_TIME_STAMP_TEST : Current UnixTimeStamp : " + currentUnixTime);
-            // currentUnixTime = new byte[]{
-            // (byte) (currentUnixTime >> 24),
-            // (byte) (currentUnixTime >> 16),
-            // (byte) (currentUnixTime >> 8),
-            // (byte) currentUnixTime
-            // };
 
             State unixState = new State(unixConfig);
             executeState(unixState);
@@ -612,12 +630,17 @@ public class TlsRngProbe extends TlsProbe {
                     unixTimeStamp[j] = serverRandom[j];
                 }
                 serverUnixTime = java.nio.ByteBuffer.wrap(unixTimeStamp).order(ByteOrder.BIG_ENDIAN).getInt();
-                if (currentUnixTime - UNIX_TIME_ALLOWED_DEVIATION < serverUnixTime) {
-                    if (currentUnixTime + UNIX_TIME_ALLOWED_DEVIATION > serverUnixTime) {
-                        matchCounter++;
+                LOGGER.warn("Previous Time: " + lastUnixTime);
+                LOGGER.warn("Current Time: " + serverUnixTime);
+                if (!(i == 0)) {
+                    if (lastUnixTime - UNIX_TIME_ALLOWED_DEVIATION < serverUnixTime) {
+                        if (lastUnixTime + UNIX_TIME_ALLOWED_DEVIATION > serverUnixTime) {
+                            matchCounter++;
+                        }
                     }
                 }
             }
+            lastUnixTime = serverUnixTime;
         }
 
         LOGGER.warn("MATCHCOUNTER: " + matchCounter);
@@ -648,6 +671,7 @@ public class TlsRngProbe extends TlsProbe {
             LOGGER.warn("Could not open new Connection.");
             return null;
         }
+        TLS_CONNECTION_COUNTER++;
         return state;
     }
 

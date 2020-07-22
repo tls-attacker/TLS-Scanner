@@ -41,12 +41,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    // Lets settle for at least 8000 B of Random Data
-    // --> 600 * 32 Byte (Server Random)
-    // --> 4000 * 16 Byte (IV)
-    // = 83200
-    // So sessionIDs are nice to have.
-    private final int MINIMUM_AMOUNT_OF_BYTES = 83200;
+    // Minimum 32 000 Bytes ~ 1000 ServerHelloRandoms
+    private final int MINIMUM_AMOUNT_OF_BYTES = 32000;
     private final double MINIMUM_P_VALUE = 0.01;
     // TODO: Find better value. Maybe 0.5 is too high and 0.25 is already
     // concerning?
