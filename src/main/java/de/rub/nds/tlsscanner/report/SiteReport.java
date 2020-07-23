@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -110,7 +111,9 @@ public class SiteReport extends Observable implements Serializable {
     private List<HpkpPin> reportOnlyHpkpPins;
 
     // Randomness
+    @JsonIgnore
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
+    @JsonIgnore
     private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
 
     // TODO: Check if this is appropriate
