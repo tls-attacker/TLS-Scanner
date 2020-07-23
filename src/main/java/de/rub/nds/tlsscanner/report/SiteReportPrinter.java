@@ -1315,11 +1315,12 @@ public class SiteReportPrinter {
         if (!(report.getTemplateResult() == null)) {
             prettyAppend(builder, "Non Overlapping Template Test - Percentage of Failed Templates");
             prettyAppend(builder, "Server Hello Random",
-                    String.valueOf(report.getTemplateResult().get(RandomType.RANDOM) * 100));
-            prettyAppend(builder, "Session ID", String.valueOf(report.getTemplateResult().get(RandomType.RANDOM) * 100));
-            prettyAppend(builder, "IV", String.valueOf(report.getTemplateResult().get(RandomType.RANDOM) * 100));
+                    (int) (report.getTemplateResult().get(RandomType.RANDOM) * 100) + "%");
+            prettyAppend(builder, "Session ID", (int) (report.getTemplateResult().get(RandomType.SESSION_ID) * 100)
+                    + "%");
+            prettyAppend(builder, "IV", (int) (report.getTemplateResult().get(RandomType.IV) * 100) + "%");
             prettyAppend(builder, "Complete Sequence",
-                    String.valueOf(report.getTemplateResult().get(RandomType.RANDOM) * 100));
+                    (int) (report.getTemplateResult().get(RandomType.COMPLETE_SEQUENCE) * 100) + "%");
 
         }
 
