@@ -409,16 +409,16 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LOGGER.warn("============================================================================================");
         double percentage = 0.0;
         percentage = nonOverlappingTemplateTest(extractedRandomArray, 9);
-        LOGGER.warn("TEMPLATE_TEST ServerHelloRandom Successful Test Percentage : " + (percentage * 100));
+        LOGGER.warn("TEMPLATE_TEST ServerHelloRandom Failed Test Percentage : " + (percentage * 100));
         nonOverlappingTemplateList.put(RandomType.RANDOM, percentage);
         percentage = nonOverlappingTemplateTest(extractedSessionIdArray, 9);
-        LOGGER.warn("TEMPLATE_TEST SessionID Successful Test Percentage : " + (percentage * 100));
+        LOGGER.warn("TEMPLATE_TEST SessionID Failed Test Percentage : " + (percentage * 100));
         nonOverlappingTemplateList.put(RandomType.SESSION_ID, percentage);
         percentage = nonOverlappingTemplateTest(extractedIvArray, 9);
-        LOGGER.warn("TEMPLATE_TEST IV Successful Test Percentage : " + (percentage * 100));
+        LOGGER.warn("TEMPLATE_TEST IV Failed Test Percentage : " + (percentage * 100));
         nonOverlappingTemplateList.put(RandomType.IV, percentage);
         percentage = nonOverlappingTemplateTest(testSequence, 9);
-        LOGGER.warn("TEMPLATE_TEST FullSequence Successful Test Percentage : " + (percentage * 100));
+        LOGGER.warn("TEMPLATE_TEST FullSequence Failed Test Percentage : " + (percentage * 100));
         nonOverlappingTemplateList.put(RandomType.COMPLETE_SEQUENCE, percentage);
         // /////////////////////////////////////////////////
         report.putTemplateResult(nonOverlappingTemplateList);
