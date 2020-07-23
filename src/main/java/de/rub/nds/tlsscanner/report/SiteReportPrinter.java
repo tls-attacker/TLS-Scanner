@@ -1270,7 +1270,12 @@ public class SiteReportPrinter {
         if (report.getPrematureStopResult() == true) {
             prettyAppend(builder, "Handshakelimit reached", "TRUE", AnsiColor.RED);
         } else {
-            prettyAppend(builder, "reached", "FALSE", AnsiColor.GREEN);
+            prettyAppend(builder, "Handshakelimit reached", "FALSE", AnsiColor.GREEN);
+        }
+        if (report.getUnixtimeResult() == true) {
+            prettyAppend(builder, "Uses Unixtime", "TRUE");
+        } else {
+            prettyAppend(builder, "Uses Unixtime", "FALSE");
         }
         if (!(report.getRandomDuplicatesResult() == null)
                 && report.getRandomDuplicatesResult().contains(RandomType.RANDOM)) {
@@ -1299,8 +1304,7 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Types failing RUNS_TEST", report.getRunsResult().toString());
         }
         if (!(report.getLongestRunBlockResult() == null)) {
-            prettyAppend(builder, "Types failing LONGEST_RUN_TEST", report.getLongestRunBlockResult().toString(),
-                    AnsiColor.RED);
+            prettyAppend(builder, "Types failing LONGEST_RUN_TEST", report.getLongestRunBlockResult().toString());
         }
         if (!(report.getFourierResult() == null)) {
             prettyAppend(builder, "Types failing FOURIER_TEST", report.getFourierResult().toString());
