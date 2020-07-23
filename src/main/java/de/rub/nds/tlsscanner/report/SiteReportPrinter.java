@@ -1309,11 +1309,18 @@ public class SiteReportPrinter {
         if (!(report.getFourierResult() == null)) {
             prettyAppend(builder, "Types failing FOURIER_TEST", report.getFourierResult().toString());
         }
-        if (!(report.getTemplateResult() == null)) {
-            prettyAppend(builder, "Types failing TEMPLATE_TEST", report.getTemplateResult().toString());
-        }
         if (!(report.getEntropyResult() == null)) {
             prettyAppend(builder, "Types failing ENTROPY_TEST", report.getEntropyResult().toString());
+        }
+        if (!(report.getTemplateResult() == null)) {
+            prettyAppend(builder, "Non Overlapping Template Test - Percentage of Failed Templates");
+            prettyAppend(builder, "Server Hello Random",
+                    String.valueOf(report.getTemplateResult().get(RandomType.RANDOM) * 100));
+            prettyAppend(builder, "Session ID", String.valueOf(report.getTemplateResult().get(RandomType.RANDOM) * 100));
+            prettyAppend(builder, "IV", String.valueOf(report.getTemplateResult().get(RandomType.RANDOM) * 100));
+            prettyAppend(builder, "Complete Sequence",
+                    String.valueOf(report.getTemplateResult().get(RandomType.RANDOM) * 100));
+
         }
 
     }

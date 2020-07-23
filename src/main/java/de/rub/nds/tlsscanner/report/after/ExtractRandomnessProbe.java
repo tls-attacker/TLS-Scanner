@@ -44,10 +44,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
     // Minimum 32 000 Bytes ~ 1000 ServerHelloRandoms
     private final int MINIMUM_AMOUNT_OF_BYTES = 32000;
     private final double MINIMUM_P_VALUE = 0.01;
-    // TODO: Find better value. Maybe 0.5 is too high and 0.25 is already
-    // concerning?
-    // TODO: Maybe use Poisson Distribution to check
-    private final double TEMPLATE_TEST_MAXIMUM_FAILED_TESTS = 0.5;
+    // private final double TEMPLATE_TEST_MAXIMUM_FAILED_TESTS = 0.5;
 
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
             .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
@@ -232,7 +229,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LinkedList<RandomType> runsList = new LinkedList<>();
         LinkedList<RandomType> longestRunBlockList = new LinkedList<>();
         LinkedList<RandomType> fourierList = new LinkedList<>();
-        LinkedList<RandomType> nonOverlappingTemplateList = new LinkedList<>();
+        Map<RandomType, Double> nonOverlappingTemplateList = new HashMap<>();
         LinkedList<RandomType> entropyList = new LinkedList<>();
         // LinkedList<RandomType> serialList = new LinkedList<>();
         // LinkedList<RandomType> cuSumList = new LinkedList<>();
@@ -410,32 +407,19 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putFourierResult(fourierList);
         // ////////////////////////////////////////////////
         LOGGER.warn("============================================================================================");
-        if (nonOverlappingTemplateTest(extractedRandomArray, 9) >= TEMPLATE_TEST_MAXIMUM_FAILED_TESTS) {
-            LOGGER.warn("TEMPLATE_TEST ServerHelloRandom : FAILED");
-            nonOverlappingTemplateList.add(RandomType.RANDOM);
-        } else {
-            LOGGER.warn("TEMPLATE_TEST ServerHelloRandom : PASSED");
-        }
-        if (!(extractedSessionIdArray.length == 0)
-                && nonOverlappingTemplateTest(extractedSessionIdArray, 9) >= TEMPLATE_TEST_MAXIMUM_FAILED_TESTS) {
-            LOGGER.warn("TEMPLATE_TEST SessionID : FAILED");
-            nonOverlappingTemplateList.add(RandomType.SESSION_ID);
-        } else {
-            LOGGER.warn("TEMPLATE_TEST SessionID : PASSED");
-        }
-        if (!(extractedIvArray.length == 0)
-                && nonOverlappingTemplateTest(extractedIvArray, 9) >= TEMPLATE_TEST_MAXIMUM_FAILED_TESTS) {
-            LOGGER.warn("TEMPLATE_TEST IV : FAILED");
-            nonOverlappingTemplateList.add(RandomType.IV);
-        } else {
-            LOGGER.warn("TEMPLATE_TEST IV : PASSED");
-        }
-        if (nonOverlappingTemplateTest(testSequence, 9) >= TEMPLATE_TEST_MAXIMUM_FAILED_TESTS) {
-            LOGGER.warn("TEMPLATE_TEST FullSequence : FAILED");
-            nonOverlappingTemplateList.add(RandomType.COMPLETE_SEQUENCE);
-        } else {
-            LOGGER.warn("TEMPLATE_TEST FullSequence : PASSED");
-        }
+        double percentage = 0.0;
+        percentage = nonOverlappingTemplateTest(extractedRandomArray, 9);
+        LOGGER.warn("TEMPLATE_TEST ServerHelloRandom Successful Test Percentage : " + (percentage * 100));
+        nonOverlappingTemplateList.put(RandomType.RANDOM, percentage);
+        percentage = nonOverlappingTemplateTest(extractedSessionIdArray, 9);
+        LOGGER.warn("TEMPLATE_TEST SessionID Successful Test Percentage : " + (percentage * 100));
+        nonOverlappingTemplateList.put(RandomType.SESSION_ID, percentage);
+        percentage = nonOverlappingTemplateTest(extractedIvArray, 9);
+        LOGGER.warn("TEMPLATE_TEST IV Successful Test Percentage : " + (percentage * 100));
+        nonOverlappingTemplateList.put(RandomType.IV, percentage);
+        percentage = nonOverlappingTemplateTest(testSequence, 9);
+        LOGGER.warn("TEMPLATE_TEST FullSequence Successful Test Percentage : " + (percentage * 100));
+        nonOverlappingTemplateList.put(RandomType.COMPLETE_SEQUENCE, percentage);
         // /////////////////////////////////////////////////
         report.putTemplateResult(nonOverlappingTemplateList);
         // ////////////////////////////////////////////////
@@ -505,6 +489,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
         for (ComparableByteArray randomString : byteSequence) {
             fullSequence = fullSequence + byteArrayToBitString(randomString);
+        }
+
+        if (fullSequence.length() == 0) {
+            return 0.0;
         }
 
         int[] convertedSequence = new int[fullSequence.length()];
@@ -580,6 +568,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
             fullSequence = fullSequence + byteArrayToBitString(randomString);
         }
 
+        if (fullSequence.length() == 0) {
+            return 0.0;
+        }
+
         String extendedSequence = fullSequence + fullSequence.substring(0, blockLength - 1);
         String extendedSecondSequence = fullSequence + fullSequence.substring(0, blockLength);
 
@@ -636,6 +628,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
         for (ComparableByteArray randomString : byteSequence) {
             fullSequence = fullSequence + byteArrayToBitString(randomString);
+        }
+
+        if (fullSequence.length() == 0) {
+            return 0.0;
         }
 
         // Extend the input sequence by appending beginning bits to the end of
@@ -766,6 +762,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
         for (ComparableByteArray randomString : byteSequence) {
             fullSequence = fullSequence + byteArrayToBitString(randomString);
+        }
+
+        if (fullSequence.length() == 0) {
+            return 0.0;
         }
 
         // fixed to 8 for this test
@@ -913,6 +913,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
         for (ComparableByteArray randomString : byteSequence) {
             fullSequence = fullSequence + byteArrayToBitString(randomString);
+        }
+
+        if (fullSequence.length() == 0) {
+            return 0.0;
         }
 
         if (blockLength == LONGEST_RUN_VALUES[0][0]) {

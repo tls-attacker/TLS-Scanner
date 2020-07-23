@@ -126,7 +126,7 @@ public class SiteReport extends Observable implements Serializable {
     private LinkedList<RandomType> failedRunsTypes = null;
     private LinkedList<RandomType> failedLongestRunBlockTypes = null;
     private LinkedList<RandomType> failedFourierTypes = null;
-    private LinkedList<RandomType> failedTemplateTypes = null;
+    private Map<RandomType, Double> failedTemplateTypes = null;
     private LinkedList<RandomType> failedEntropyTypes = null;
     private Boolean prematureStop = null;
 
@@ -794,25 +794,27 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     /**
-     * Method used to set the List of RandomTypes which failed the Non
-     * Overlapping Template Test in the ExtractRandomnessProbe
+     * Method used to set the Map of RandomTypes with the associated percentage
+     * of failed Templates in the Overlapping Template Test in the
+     * ExtractRandomnessProbe
      * 
      * @param failedTypes
      *            LinkedList of RandomTypes which failed the Non Overlapping
      *            Template Test
      */
-    public synchronized void putTemplateResult(LinkedList<RandomType> failedTypes) {
+    public synchronized void putTemplateResult(Map<RandomType, Double> failedTypes) {
         this.failedTemplateTypes = failedTypes;
     }
 
     /**
-     * Method used to get the List of RandomTypes which failed the Non
-     * Overlapping Template Test in the ExtractRandomnessProbe
+     * Method used to get the Map of RandomTypes with the associated percentage
+     * of failed Templates in the the Non Overlapping Template Test in the
+     * ExtractRandomnessProbe
      * 
-     * @return LinkedList of RandomTypes which failed the Non Overlapping
-     *         Template Test
+     * @return Map of RandomTypes with percentage of failed Templates in the Non
+     *         Overlapping Template Test
      */
-    public synchronized LinkedList<RandomType> getTemplateResult() {
+    public synchronized Map<RandomType, Double> getTemplateResult() {
         return failedTemplateTypes;
     }
 
