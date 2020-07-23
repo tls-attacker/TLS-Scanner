@@ -1260,16 +1260,17 @@ public class SiteReportPrinter {
 
     public void appendRandom(StringBuilder builder) {
         prettyAppendHeading(builder, "Nonce");
-        prettyAppendRandom(builder, "Random", report.getRandomEvaluationResult());
+        // prettyAppendRandom(builder, "Random",
+        // report.getRandomEvaluationResult());
         if (report.getRandomMinimalLengthResult() == RandomMinimalLengthResult.FULFILLED) {
             prettyAppend(builder, "At least 100 KB of Random Data", "TRUE", AnsiColor.GREEN);
         } else {
             prettyAppend(builder, "At least 100 KB of Random Data", "FALSE", AnsiColor.RED);
         }
         if (report.getPrematureStopResult() == true) {
-            prettyAppend(builder, "Premature Stop caused by Handshake limit", "TRUE", AnsiColor.RED);
+            prettyAppend(builder, "Handshakelimit reached", "TRUE", AnsiColor.RED);
         } else {
-            prettyAppend(builder, "Premature Stop caused by Handshake limit", "FALSE", AnsiColor.GREEN);
+            prettyAppend(builder, "reached", "FALSE", AnsiColor.GREEN);
         }
         if (!(report.getRandomDuplicatesResult() == null)
                 && report.getRandomDuplicatesResult().contains(RandomType.RANDOM)) {
@@ -1289,26 +1290,26 @@ public class SiteReportPrinter {
             prettyAppend(builder, "IV", "NO DUPLICATES", AnsiColor.GREEN);
         }
         if (!(report.getMonoBitResult() == null)) {
-            prettyAppend(builder, "Types failing MONOBIT_TEST", report.getMonoBitResult().toString(), AnsiColor.RED);
+            prettyAppend(builder, "Types failing MONOBIT_TEST", report.getMonoBitResult().toString());
         }
         if (!(report.getFrequencyResult() == null)) {
-            prettyAppend(builder, "Types failing FREQUENCY_TEST", report.getFrequencyResult().toString(), AnsiColor.RED);
+            prettyAppend(builder, "Types failing FREQUENCY_TEST", report.getFrequencyResult().toString());
         }
         if (!(report.getRunsResult() == null)) {
-            prettyAppend(builder, "Types failing RUNS_TEST", report.getRunsResult().toString(), AnsiColor.RED);
+            prettyAppend(builder, "Types failing RUNS_TEST", report.getRunsResult().toString());
         }
         if (!(report.getLongestRunBlockResult() == null)) {
             prettyAppend(builder, "Types failing LONGEST_RUN_TEST", report.getLongestRunBlockResult().toString(),
                     AnsiColor.RED);
         }
         if (!(report.getFourierResult() == null)) {
-            prettyAppend(builder, "Types failing FOURIER_TEST", report.getFourierResult().toString(), AnsiColor.RED);
+            prettyAppend(builder, "Types failing FOURIER_TEST", report.getFourierResult().toString());
         }
         if (!(report.getTemplateResult() == null)) {
-            prettyAppend(builder, "Types failing TEMPLATE_TEST", report.getTemplateResult().toString(), AnsiColor.RED);
+            prettyAppend(builder, "Types failing TEMPLATE_TEST", report.getTemplateResult().toString());
         }
         if (!(report.getEntropyResult() == null)) {
-            prettyAppend(builder, "Types failing ENTROPY_TEST", report.getEntropyResult().toString(), AnsiColor.RED);
+            prettyAppend(builder, "Types failing ENTROPY_TEST", report.getEntropyResult().toString());
         }
 
     }
