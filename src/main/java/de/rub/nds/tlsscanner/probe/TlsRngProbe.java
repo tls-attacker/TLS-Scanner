@@ -71,10 +71,11 @@ public class TlsRngProbe extends TlsProbe {
     private final int CLIENT_RANDOM_START = 1;
     private final int IV_BLOCKS = 4000;
     // TODO: If the Server is too slow, this may result in undetected counters.
-    private final int UNIX_TIME_ALLOWED_DEVIATION = 2;
+    private final int UNIX_TIME_ALLOWED_DEVIATION = 5;
     private boolean usesUnixTime = false;
     private int TLS_CONNECTIONS_UPPER_LIMIT = 1000;
     private int TLS_CONNECTION_COUNTER = 0;
+    private int UNIX_TIME_MAXIMUM_RETRIES = 20;
 
     public TlsRngProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RNG, config);
@@ -618,17 +619,28 @@ public class TlsRngProbe extends TlsProbe {
         unixConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
         int lastUnixTime = 0;
+        int serverUnixTime = 0;
+        int attempts = 0;
 
         for (int i = 0; i < 11; i++) {
+            LOGGER.warn("Unix time Iteration " + i);
             // int currentUnixTime = (int) (System.currentTimeMillis() / 1000);
-            int serverUnixTime = 0;
+            if (attempts >= UNIX_TIME_MAXIMUM_RETRIES) {
+                break;
+            }
 
+            long startTime = System.currentTimeMillis();
             State unixState = new State(unixConfig);
             executeState(unixState);
+            long endTime = System.currentTimeMillis();
+
+            long duration = (endTime - startTime) / 1000;
 
             LOGGER.warn("UNIX_TIME_STAMP_TEST: SERVER RANDOM: "
                     + ArrayConverter.bytesToHexString(unixState.getTlsContext().getServerRandom()));
+            LOGGER.warn(unixState.getTlsContext().getServerRandom());
             byte[] serverRandom = unixState.getTlsContext().getServerRandom();
+            LOGGER.warn("Duration: " + duration);
             if (!(serverRandom == null)) {
                 byte[] unixTimeStamp = new byte[4];
                 for (int j = 0; j < 4; j++) {
@@ -638,14 +650,23 @@ public class TlsRngProbe extends TlsProbe {
                 LOGGER.warn("Previous Time: " + lastUnixTime);
                 LOGGER.warn("Current Time: " + serverUnixTime);
                 if (!(i == 0)) {
-                    if (lastUnixTime - UNIX_TIME_ALLOWED_DEVIATION < serverUnixTime) {
-                        if (lastUnixTime + UNIX_TIME_ALLOWED_DEVIATION > serverUnixTime) {
+                    if (lastUnixTime - (UNIX_TIME_ALLOWED_DEVIATION + duration) <= serverUnixTime) {
+                        if (lastUnixTime + (UNIX_TIME_ALLOWED_DEVIATION + duration) >= serverUnixTime) {
                             matchCounter++;
+                            LOGGER.warn("MATCH! Current Counter: " + matchCounter);
                         }
                     }
                 }
+            } else {
+                // Compensate timeout by setting the serverUnixTime to
+                // Expectation
+                LOGGER.warn("Server Random is null. Repeating current iteration and adding compensation.");
+                serverUnixTime = serverUnixTime + (int) duration;
+                // repeat last step
+                i--;
             }
             lastUnixTime = serverUnixTime;
+            attempts++;
         }
 
         LOGGER.warn("MATCHCOUNTER: " + matchCounter);
