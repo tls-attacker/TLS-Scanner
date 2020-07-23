@@ -166,6 +166,7 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_POODLE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_TLS_POODLE(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_SWEET_32(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_DROWN(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_HEARTBLEED(AnalyzedPropertyCategory.ATTACKS),
@@ -185,7 +186,8 @@ public enum AnalyzedProperty {
     REUSES_EC_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_DH_PUBLICKEY(AnalyzedPropertyCategory.FRESHNESS),
     REUSES_GCM_NONCES(AnalyzedPropertyCategory.FRESHNESS),
-    REQUIRES_SNI(AnalyzedPropertyCategory.SNI);
+    REQUIRES_SNI(AnalyzedPropertyCategory.SNI),
+    HAS_GNU_TLS_MAGIC_BYTES(AnalyzedPropertyCategory.SESSION_TICKET);	
 
     private AnalyzedPropertyCategory category;
 

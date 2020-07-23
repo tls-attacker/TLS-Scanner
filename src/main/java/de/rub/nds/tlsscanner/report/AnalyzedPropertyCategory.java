@@ -13,6 +13,7 @@ public enum AnalyzedPropertyCategory {
     CIPHER_SUITES,
     EXTENSIONS,
     SESSION_RESUMPTION,
+    SESSION_TICKET,
     RENEGOTIATION,
     HTTPS_HEADERS,
     QUIRKS,

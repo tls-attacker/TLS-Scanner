@@ -35,6 +35,7 @@ public enum ProbeType {
     RESUMPTION,
     RENEGOTIATION,
     SNI,
+    SESSION_TICKET_ZERO_KEY,
     HANDSHAKE_SIMULATION,
     TLS13,
     MAC,
