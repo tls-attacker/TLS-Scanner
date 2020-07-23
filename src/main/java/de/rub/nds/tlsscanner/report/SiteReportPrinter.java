@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.report;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
@@ -1265,6 +1266,11 @@ public class SiteReportPrinter {
         } else {
             prettyAppend(builder, "At least 100 KB of Random Data", "FALSE", AnsiColor.RED);
         }
+        if (report.getPrematureStopResult() == true) {
+            prettyAppend(builder, "Premature Stop caused by Handshake limit", "TRUE", AnsiColor.RED);
+        } else {
+            prettyAppend(builder, "Premature Stop caused by Handshake limit", "FALSE", AnsiColor.GREEN);
+        }
         if (!(report.getRandomDuplicatesResult() == null)
                 && report.getRandomDuplicatesResult().contains(RandomType.RANDOM)) {
             prettyAppend(builder, "Server Hello Random", "DUPLICATES", AnsiColor.RED);
@@ -1282,6 +1288,29 @@ public class SiteReportPrinter {
         } else {
             prettyAppend(builder, "IV", "NO DUPLICATES", AnsiColor.GREEN);
         }
+        if (!(report.getMonoBitResult() == null)) {
+            prettyAppend(builder, "Types failing MONOBIT_TEST", report.getMonoBitResult().toString(), AnsiColor.RED);
+        }
+        if (!(report.getFrequencyResult() == null)) {
+            prettyAppend(builder, "Types failing FREQUENCY_TEST", report.getFrequencyResult().toString(), AnsiColor.RED);
+        }
+        if (!(report.getRunsResult() == null)) {
+            prettyAppend(builder, "Types failing RUNS_TEST", report.getRunsResult().toString(), AnsiColor.RED);
+        }
+        if (!(report.getLongestRunBlockResult() == null)) {
+            prettyAppend(builder, "Types failing LONGEST_RUN_TEST", report.getLongestRunBlockResult().toString(),
+                    AnsiColor.RED);
+        }
+        if (!(report.getFourierResult() == null)) {
+            prettyAppend(builder, "Types failing FOURIER_TEST", report.getFourierResult().toString(), AnsiColor.RED);
+        }
+        if (!(report.getTemplateResult() == null)) {
+            prettyAppend(builder, "Types failing TEMPLATE_TEST", report.getTemplateResult().toString(), AnsiColor.RED);
+        }
+        if (!(report.getEntropyResult() == null)) {
+            prettyAppend(builder, "Types failing ENTROPY_TEST", report.getEntropyResult().toString(), AnsiColor.RED);
+        }
+
     }
 
     public void appendPublicKeyIssues(StringBuilder builder) {

@@ -844,7 +844,11 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized boolean getUnixtimeResult() {
-        return this.usesUnixtime;
+        if (usesUnixtime == null) {
+            return false;
+        } else {
+            return usesUnixtime;
+        }
     }
 
     public synchronized void putPrematureStopResult(boolean prematureStop) {
@@ -852,7 +856,11 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized boolean getPrematureStopResult() {
-        return prematureStop;
+        if (prematureStop == null) {
+            return false;
+        } else {
+            return prematureStop;
+        }
     }
 
 }
