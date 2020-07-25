@@ -86,11 +86,11 @@ public class ExtractRandomnessProbe extends AfterProbe {
     @Override
     public void analyze(SiteReport report) {
 
-        LOGGER.warn("TLS-RNG-PROBE RESULT : " + report.getResult(AnalyzedProperty.RNG_EXTRACTED));
+        LOGGER.debug("TLS-RNG-PROBE RESULT : " + report.getResult(AnalyzedProperty.RNG_EXTRACTED));
         if (report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.FALSE
                 || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.COULD_NOT_TEST
                 || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.NOT_TESTED_YET) {
-            LOGGER.warn("AfterProbe can only be executed when TlsRngProbe was successfully executed.");
+            LOGGER.debug("AfterProbe can only be executed when TlsRngProbe was successfully executed.");
             return;
         }
 
@@ -153,8 +153,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
             random_file.close();
 
         } catch (IOException e) {
-            LOGGER.warn("IOEXCEPTION!");
-            LOGGER.warn(e.toString());
+            LOGGER.debug("IOEXCEPTION!");
+            LOGGER.debug(e.toString());
         }
 
         // String test =
@@ -200,18 +200,18 @@ public class ExtractRandomnessProbe extends AfterProbe {
             }
         }
 
-        LOGGER.warn("Number of collected Bytes: " + fullByteSequence.size());
-        LOGGER.warn("Consisting of serverRandom: " + serverRandomCounter + " bytes.");
-        LOGGER.warn("Consisting of sessionID: " + sessionIdCounter + " bytes.");
-        LOGGER.warn("Consisting of IV: " + iVCounter + " bytes.");
+        LOGGER.debug("Number of collected Bytes: " + fullByteSequence.size());
+        LOGGER.debug("Consisting of serverRandom: " + serverRandomCounter + " bytes.");
+        LOGGER.debug("Consisting of sessionID: " + sessionIdCounter + " bytes.");
+        LOGGER.debug("Consisting of IV: " + iVCounter + " bytes.");
 
         if (serverRandomCounter + sessionIdCounter + iVCounter == 0) {
-            LOGGER.warn("No Randomness extracted. Aborting Tests.");
+            LOGGER.debug("No Randomness extracted. Aborting Tests.");
             return;
         }
 
         if (fullByteSequence.size() < MINIMUM_AMOUNT_OF_BYTES) {
-            LOGGER.warn("Minimum Amount of Bytes not reached! This will negatively impact the "
+            LOGGER.debug("Minimum Amount of Bytes not reached! This will negatively impact the "
                     + "performance of the tests. This will be noted in the site report.");
             report.setRandomMinimalLengthResult(RandomMinimalLengthResult.NOT_FULFILLED);
         } else {
@@ -244,227 +244,227 @@ public class ExtractRandomnessProbe extends AfterProbe {
         ComparableByteArray[] extractedIvArray = new ComparableByteArray[extractedIVList.size()];
         extractedIvArray = extractedIVList.toArray(extractedIvArray);
 
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("============================================================================================");
         boolean randomDuplicate = testForDuplicates(extractedRandomArray);
         if (randomDuplicate) {
             duplicateList.add(RandomType.RANDOM);
         }
-        LOGGER.warn("Duplicates in server Randoms: " + randomDuplicate);
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("Duplicates in server Randoms: " + randomDuplicate);
+        LOGGER.debug("============================================================================================");
         boolean sessionIdDuplicate = testForDuplicates(extractedSessionIdArray);
         if (sessionIdDuplicate) {
             duplicateList.add(RandomType.SESSION_ID);
         }
-        LOGGER.warn("Duplicates in Session IDs : " + sessionIdDuplicate);
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("Duplicates in Session IDs : " + sessionIdDuplicate);
+        LOGGER.debug("============================================================================================");
         boolean iVDuplicate = testForDuplicates(extractedIvArray);
         if (iVDuplicate) {
             duplicateList.add(RandomType.IV);
         }
-        LOGGER.warn("Duplicates in IVs: " + iVDuplicate);
+        LOGGER.debug("Duplicates in IVs: " + iVDuplicate);
         // /////////////////////////////////////////////////
         report.putRandomDuplicatesResult(duplicateList);
         // ////////////////////////////////////////////////
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("============================================================================================");
         if (frequencyTest(extractedRandomArray, 1) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("MONOBIT_TEST ServerHelloRandom : FAILED");
+            LOGGER.debug("MONOBIT_TEST ServerHelloRandom : FAILED");
             monoBitList.add(RandomType.RANDOM);
         } else {
-            LOGGER.warn("MONOBIT_TEST ServerHelloRandom : PASSED");
+            LOGGER.debug("MONOBIT_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0) && frequencyTest(extractedSessionIdArray, 1) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("MONOBIT_TEST SessionID : FAILED");
+            LOGGER.debug("MONOBIT_TEST SessionID : FAILED");
             monoBitList.add(RandomType.SESSION_ID);
         } else {
-            LOGGER.warn("MONOBIT_TEST SessionID : PASSED");
+            LOGGER.debug("MONOBIT_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0) && frequencyTest(extractedIvArray, 1) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("MONOBIT_TEST IV : FAILED");
+            LOGGER.debug("MONOBIT_TEST IV : FAILED");
             monoBitList.add(RandomType.IV);
         } else {
-            LOGGER.warn("MONOBIT_TEST IV : PASSED");
+            LOGGER.debug("MONOBIT_TEST IV : PASSED");
         }
         if (frequencyTest(testSequence, 1) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("MONOBIT_TEST FullSequence : FAILED");
+            LOGGER.debug("MONOBIT_TEST FullSequence : FAILED");
             monoBitList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
-            LOGGER.warn("MONOBIT_TEST FullSequence : PASSED");
+            LOGGER.debug("MONOBIT_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
         report.putMonoBitResult(monoBitList);
         // ////////////////////////////////////////////////
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("============================================================================================");
         if (frequencyTest(extractedRandomArray, 128) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("FREQUENCY_TEST ServerHelloRandom : FAILED");
+            LOGGER.debug("FREQUENCY_TEST ServerHelloRandom : FAILED");
             frequencyList.add(RandomType.RANDOM);
         } else {
-            LOGGER.warn("FREQUENCY_TEST ServerHelloRandom : PASSED");
+            LOGGER.debug("FREQUENCY_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0) && frequencyTest(extractedSessionIdArray, 128) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("FREQUENCY_TEST SessionID : FAILED");
+            LOGGER.debug("FREQUENCY_TEST SessionID : FAILED");
             frequencyList.add(RandomType.SESSION_ID);
         } else {
-            LOGGER.warn("FREQUENCY_TEST SessionID : PASSED");
+            LOGGER.debug("FREQUENCY_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0) && frequencyTest(extractedIvArray, 128) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("FREQUENCY_TEST IV : FAILED");
+            LOGGER.debug("FREQUENCY_TEST IV : FAILED");
             frequencyList.add(RandomType.IV);
         } else {
-            LOGGER.warn("FREQUENCY_TEST IV : PASSED");
+            LOGGER.debug("FREQUENCY_TEST IV : PASSED");
         }
         if (frequencyTest(testSequence, 128) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("FREQUENCY_TEST FullSequence : FAILED");
+            LOGGER.debug("FREQUENCY_TEST FullSequence : FAILED");
             frequencyList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
-            LOGGER.warn("FREQUENCY_TEST FullSequence : PASSED");
+            LOGGER.debug("FREQUENCY_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
         report.putFrequencyResult(frequencyList);
         // ////////////////////////////////////////////////
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("============================================================================================");
         if (runsTest(extractedRandomArray) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("RUNS_TEST ServerHelloRandom : FAILED");
+            LOGGER.debug("RUNS_TEST ServerHelloRandom : FAILED");
             runsList.add(RandomType.RANDOM);
         } else {
-            LOGGER.warn("RUNS_TEST ServerHelloRandom : PASSED");
+            LOGGER.debug("RUNS_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0) && runsTest(extractedSessionIdArray) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("RUNS_TEST SessionID : FAILED");
+            LOGGER.debug("RUNS_TEST SessionID : FAILED");
             runsList.add(RandomType.SESSION_ID);
         } else {
-            LOGGER.warn("RUNS_TEST SessionID : PASSED");
+            LOGGER.debug("RUNS_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0) && runsTest(extractedIvArray) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("RUNS_TEST IV : FAILED");
+            LOGGER.debug("RUNS_TEST IV : FAILED");
             runsList.add(RandomType.IV);
         } else {
-            LOGGER.warn("RUNS_TEST IV : PASSED");
+            LOGGER.debug("RUNS_TEST IV : PASSED");
         }
         if (runsTest(testSequence) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("RUNS_TEST FullSequence : FAILED");
+            LOGGER.debug("RUNS_TEST FullSequence : FAILED");
             runsList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
-            LOGGER.warn("RUNS_TEST FullSequence : PASSED");
+            LOGGER.debug("RUNS_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
         report.putRunsResult(runsList);
         // ////////////////////////////////////////////////
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("============================================================================================");
         if (longestRunWithinBlock(extractedRandomArray, 8) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("LONGEST_RUN_TEST ServerHelloRandom : FAILED");
+            LOGGER.debug("LONGEST_RUN_TEST ServerHelloRandom : FAILED");
             longestRunBlockList.add(RandomType.RANDOM);
         } else {
-            LOGGER.warn("LONGEST_RUN_TEST ServerHelloRandom : PASSED");
+            LOGGER.debug("LONGEST_RUN_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0)
                 && longestRunWithinBlock(extractedSessionIdArray, 8) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("LONGEST_RUN_TEST SessionID : FAILED");
+            LOGGER.debug("LONGEST_RUN_TEST SessionID : FAILED");
             longestRunBlockList.add(RandomType.SESSION_ID);
         } else {
-            LOGGER.warn("LONGEST_RUN_TEST SessionID : PASSED");
+            LOGGER.debug("LONGEST_RUN_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0) && longestRunWithinBlock(extractedIvArray, 8) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("LONGEST_RUN_TEST IV : FAILED");
+            LOGGER.debug("LONGEST_RUN_TEST IV : FAILED");
             longestRunBlockList.add(RandomType.IV);
         } else {
-            LOGGER.warn("LONGEST_RUN_TEST IV : PASSED");
+            LOGGER.debug("LONGEST_RUN_TEST IV : PASSED");
         }
         if (longestRunWithinBlock(testSequence, 8) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("LONGEST_RUN_TEST FullSequence : FAILED");
+            LOGGER.debug("LONGEST_RUN_TEST FullSequence : FAILED");
             longestRunBlockList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
-            LOGGER.warn("LONGEST_RUN_TEST FullSequence : PASSED");
+            LOGGER.debug("LONGEST_RUN_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
         report.putLongestRunBlockResult(longestRunBlockList);
         // ////////////////////////////////////////////////
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("============================================================================================");
         if (discreteFourierTest(extractedRandomArray) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("FOURIER_TEST ServerHelloRandom : FAILED");
+            LOGGER.debug("FOURIER_TEST ServerHelloRandom : FAILED");
             fourierList.add(RandomType.RANDOM);
         } else {
-            LOGGER.warn("FOURIER_TEST ServerHelloRandom : PASSED");
+            LOGGER.debug("FOURIER_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0) && discreteFourierTest(extractedSessionIdArray) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("FOURIER_TEST SessionID : FAILED");
+            LOGGER.debug("FOURIER_TEST SessionID : FAILED");
             fourierList.add(RandomType.SESSION_ID);
         } else {
-            LOGGER.warn("FOURIER_TEST SessionID : PASSED");
+            LOGGER.debug("FOURIER_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0) && discreteFourierTest(extractedIvArray) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("FOURIER_TEST IV : FAILED");
+            LOGGER.debug("FOURIER_TEST IV : FAILED");
             fourierList.add(RandomType.IV);
         } else {
-            LOGGER.warn("FOURIER_TEST IV : PASSED");
+            LOGGER.debug("FOURIER_TEST IV : PASSED");
         }
         if (discreteFourierTest(testSequence) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("FOURIER_TEST FullSequence : FAILED");
+            LOGGER.debug("FOURIER_TEST FullSequence : FAILED");
             fourierList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
-            LOGGER.warn("FOURIER_TEST FullSequence : PASSED");
+            LOGGER.debug("FOURIER_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
         report.putFourierResult(fourierList);
         // ////////////////////////////////////////////////
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("============================================================================================");
         double percentage = 0.0;
         percentage = nonOverlappingTemplateTest(extractedRandomArray, 9);
-        LOGGER.warn("TEMPLATE_TEST ServerHelloRandom Failed Test Percentage : " + (percentage * 100));
+        LOGGER.debug("TEMPLATE_TEST ServerHelloRandom Failed Test Percentage : " + (percentage * 100));
         nonOverlappingTemplateList.put(RandomType.RANDOM, percentage);
         percentage = nonOverlappingTemplateTest(extractedSessionIdArray, 9);
-        LOGGER.warn("TEMPLATE_TEST SessionID Failed Test Percentage : " + (percentage * 100));
+        LOGGER.debug("TEMPLATE_TEST SessionID Failed Test Percentage : " + (percentage * 100));
         nonOverlappingTemplateList.put(RandomType.SESSION_ID, percentage);
         percentage = nonOverlappingTemplateTest(extractedIvArray, 9);
-        LOGGER.warn("TEMPLATE_TEST IV Failed Test Percentage : " + (percentage * 100));
+        LOGGER.debug("TEMPLATE_TEST IV Failed Test Percentage : " + (percentage * 100));
         nonOverlappingTemplateList.put(RandomType.IV, percentage);
         percentage = nonOverlappingTemplateTest(testSequence, 9);
-        LOGGER.warn("TEMPLATE_TEST FullSequence Failed Test Percentage : " + (percentage * 100));
+        LOGGER.debug("TEMPLATE_TEST FullSequence Failed Test Percentage : " + (percentage * 100));
         nonOverlappingTemplateList.put(RandomType.COMPLETE_SEQUENCE, percentage);
         // /////////////////////////////////////////////////
         report.putTemplateResult(nonOverlappingTemplateList);
         // ////////////////////////////////////////////////
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("============================================================================================");
         // LOGGER.warn("Average P-Value returned by Serial Test : " +
         // serialTest(testSequence, 16));
         // Takes longest time of all Tests
-        LOGGER.warn("Serial Test currently deactivated.");
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("Serial Test currently deactivated.");
+        LOGGER.debug("============================================================================================");
         if (approximateEntropyTest(extractedRandomArray, 10) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("ENTROPY_TEST ServerHelloRandom : FAILED");
+            LOGGER.debug("ENTROPY_TEST ServerHelloRandom : FAILED");
             entropyList.add(RandomType.RANDOM);
         } else {
-            LOGGER.warn("ENTROPY_TEST ServerHelloRandom : PASSED");
+            LOGGER.debug("ENTROPY_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0)
                 && approximateEntropyTest(extractedSessionIdArray, 10) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("ENTROPY_TEST SessionID : FAILED");
+            LOGGER.debug("ENTROPY_TEST SessionID : FAILED");
             entropyList.add(RandomType.SESSION_ID);
         } else {
-            LOGGER.warn("ENTROPY_TEST SessionID : PASSED");
+            LOGGER.debug("ENTROPY_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0) && approximateEntropyTest(extractedIvArray, 10) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("ENTROPY_TEST IV : FAILED");
+            LOGGER.debug("ENTROPY_TEST IV : FAILED");
             entropyList.add(RandomType.IV);
         } else {
-            LOGGER.warn("ENTROPY_TEST IV : PASSED");
+            LOGGER.debug("ENTROPY_TEST IV : PASSED");
         }
         if (approximateEntropyTest(testSequence, 10) <= MINIMUM_P_VALUE) {
-            LOGGER.warn("ENTROPY_TEST FullSequence : FAILED");
+            LOGGER.debug("ENTROPY_TEST FullSequence : FAILED");
             entropyList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
-            LOGGER.warn("ENTROPY_TEST FullSequence : PASSED");
+            LOGGER.debug("ENTROPY_TEST FullSequence : PASSED");
         }
         // /////////////////////////////////////////////////
         report.putEntropyResult(entropyList);
         // ////////////////////////////////////////////////
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("============================================================================================");
         // Takes longest time of all Tests ( besides serialTest)
         // LOGGER.warn("P-Value of Cumulative Sums Test : " +
         // cusumTest(testSequence, true));
         // LOGGER.warn("P-Value of Cumulative Sums (REVERSE) Test :" +
         // cusumTest(testSequence, false));
-        LOGGER.warn("Cusum Test currently deactivated.");
-        LOGGER.warn("============================================================================================");
+        LOGGER.debug("Cusum Test currently deactivated.");
+        LOGGER.debug("============================================================================================");
     }
 
     /**
@@ -721,13 +721,13 @@ public class ExtractRandomnessProbe extends AfterProbe {
         double pValueOne = Gamma.regularizedGammaQ(pow(2, blockLength - 1) / 2.0, delta / 2.0);
         double pValueTwo = Gamma.regularizedGammaQ(pow(2, blockLength - 2) / 2.0, deltaSquared / 2.0);
 
-        LOGGER.warn("SERIAL TEST pValueOne : " + pValueOne);
-        LOGGER.warn("SERIAL TEST pValueTwo : " + pValueTwo);
+        LOGGER.debug("SERIAL TEST pValueOne : " + pValueOne);
+        LOGGER.debug("SERIAL TEST pValueTwo : " + pValueTwo);
 
         if (pValueOne >= 0.01 & pValueTwo >= 0.01) {
-            LOGGER.warn("SERIAL TEST PASSED!");
+            LOGGER.debug("SERIAL TEST PASSED!");
         } else {
-            LOGGER.warn("SERIAL TEST FAILED!");
+            LOGGER.debug("SERIAL TEST FAILED!");
         }
 
         pValue = (pValueOne + pValueTwo) / 2.0;
@@ -756,7 +756,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         int failedTests = 0;
 
         if (!(templateSize == 9)) {
-            LOGGER.warn("Currently only templateSize of 9 supported!");
+            LOGGER.debug("Currently only templateSize of 9 supported!");
             return 0.0;
         }
 
@@ -818,7 +818,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
             }
         }
 
-        LOGGER.warn("Failed Tests : " + failedTests);
+        LOGGER.debug("Failed Tests : " + failedTests);
 
         return (double) failedTests / TEMPLATE_NINE.length;
     }
@@ -845,7 +845,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         int n = fullSequence.length();
 
         if (n == 0) {
-            LOGGER.warn("Only Sequences longer than 0 are allowed.");
+            LOGGER.debug("Only Sequences longer than 0 are allowed.");
             return 0.0;
         }
 
@@ -922,27 +922,27 @@ public class ExtractRandomnessProbe extends AfterProbe {
         if (blockLength == LONGEST_RUN_VALUES[0][0]) {
             category = 0;
             if (fullSequence.length() < 128) {
-                LOGGER.warn("Sequence is too short for this block size");
+                LOGGER.debug("Sequence is too short for this block size");
                 return pValue;
             }
         }
         if (blockLength == LONGEST_RUN_VALUES[1][0]) {
             category = 1;
             if (fullSequence.length() < 6272) {
-                LOGGER.warn("Sequence is too short for this block size");
+                LOGGER.debug("Sequence is too short for this block size");
                 return pValue;
             }
         }
         if (blockLength == LONGEST_RUN_VALUES[2][0]) {
             category = 2;
             if (fullSequence.length() < 750000) {
-                LOGGER.warn("Sequence is too short for this block size");
+                LOGGER.debug("Sequence is too short for this block size");
                 return pValue;
             }
         }
 
         if (category == -1) {
-            LOGGER.warn("longestRunWithinBlock only allows block lengths of 8, 128 and 10^4");
+            LOGGER.debug("longestRunWithinBlock only allows block lengths of 8, 128 and 10^4");
             return pValue;
         }
 

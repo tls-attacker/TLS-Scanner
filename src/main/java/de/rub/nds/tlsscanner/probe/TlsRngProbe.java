@@ -91,22 +91,22 @@ public class TlsRngProbe extends TlsProbe {
         // downgrade-attack mitigation to
         // activate
         if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
-            LOGGER.warn("SETTING HIGHEST VERSION TO TLS13");
+            LOGGER.debug("SETTING HIGHEST VERSION TO TLS13");
             highestVersion = ProtocolVersion.TLS13;
             usesUnixTime = checkForUnixTime();
             collectServerRandomTls13(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
-            LOGGER.warn("SETTING HIGHEST VERSION TO TLS12");
+            LOGGER.debug("SETTING HIGHEST VERSION TO TLS12");
             highestVersion = ProtocolVersion.TLS12;
             usesUnixTime = checkForUnixTime();
             collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
-            LOGGER.warn("SETTING HIGHEST VERSION TO TLS11");
+            LOGGER.debug("SETTING HIGHEST VERSION TO TLS11");
             highestVersion = ProtocolVersion.TLS11;
             usesUnixTime = checkForUnixTime();
             collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
         } else if (latestReport.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
-            LOGGER.warn("SETTING HIGHEST VERSION TO TLS10");
+            LOGGER.debug("SETTING HIGHEST VERSION TO TLS10");
             highestVersion = ProtocolVersion.TLS10;
             usesUnixTime = checkForUnixTime();
             collectServerRandom(NUMBER_OF_HANDSHAKES, CLIENT_RANDOM_START);
@@ -253,7 +253,7 @@ public class TlsRngProbe extends TlsProbe {
             Config serverHelloConfig = generateTls13Config(intToByteArray(clientRandomInit + i));
 
             if (supportsExtendedRandom) {
-                LOGGER.warn("Extended Random Supported!");
+                LOGGER.debug("Extended Random Supported!");
                 serverHelloConfig.setParseKeyShareOld(false);
                 serverHelloConfig.setAddExtendedRandomExtension(true);
             }
@@ -263,7 +263,7 @@ public class TlsRngProbe extends TlsProbe {
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
             if (TLS_CONNECTION_COUNTER >= 1000) {
-                LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                 prematureStop = true;
                 return;
             }
@@ -272,7 +272,7 @@ public class TlsRngProbe extends TlsProbe {
             executeState(test_state);
             TLS_CONNECTION_COUNTER++;
 
-            LOGGER.warn("===========================================================================================");
+            LOGGER.debug("===========================================================================================");
 
             serverRandom = test_state.getTlsContext().getServerRandom();
             serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
@@ -281,7 +281,7 @@ public class TlsRngProbe extends TlsProbe {
                 if (usesUnixTime) {
                     byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, 4,
                             completeServerRandom.length);
-                    LOGGER.warn("TIMELESS SERVER RANDOM : " + ArrayConverter.bytesToHexString(timeLessServerRandom));
+                    LOGGER.debug("TIMELESS SERVER RANDOM : " + ArrayConverter.bytesToHexString(timeLessServerRandom));
                     extractedRandomList.add(new ComparableByteArray(timeLessServerRandom));
                 } else {
                     extractedRandomList.add(new ComparableByteArray(completeServerRandom));
@@ -291,12 +291,12 @@ public class TlsRngProbe extends TlsProbe {
             // SessionIDs are mirrored from client SessionID in TLS 1.3, so we
             // dont bother with them here.
 
-            LOGGER.warn(ArrayConverter.bytesToHexString(test_state.getTlsContext().getClientRandom()));
-            LOGGER.warn(ArrayConverter.bytesToHexString(test_state.getTlsContext().getServerRandom()));
-            LOGGER.warn(test_state.getTlsContext().getSelectedProtocolVersion());
-            LOGGER.warn(test_state.getTlsContext().getSelectedCipherSuite());
-            LOGGER.warn(test_state.getWorkflowTrace());
-            LOGGER.warn("===========================================================================================");
+            LOGGER.debug(ArrayConverter.bytesToHexString(test_state.getTlsContext().getClientRandom()));
+            LOGGER.debug(ArrayConverter.bytesToHexString(test_state.getTlsContext().getServerRandom()));
+            LOGGER.debug(test_state.getTlsContext().getSelectedProtocolVersion());
+            LOGGER.debug(test_state.getTlsContext().getSelectedCipherSuite());
+            LOGGER.debug(test_state.getWorkflowTrace());
+            LOGGER.debug("===========================================================================================");
         }
 
     }
@@ -342,7 +342,7 @@ public class TlsRngProbe extends TlsProbe {
             byte[] sessionID = null;
 
             if (supportsExtendedRandom) {
-                LOGGER.warn("Extended Random Supported!");
+                LOGGER.debug("Extended Random Supported!");
                 serverHelloConfig.setParseKeyShareOld(false);
                 serverHelloConfig.setAddExtendedRandomExtension(true);
 
@@ -361,7 +361,7 @@ public class TlsRngProbe extends TlsProbe {
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
             if (TLS_CONNECTION_COUNTER >= 1000) {
-                LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                 prematureStop = true;
                 return;
             }
@@ -370,14 +370,14 @@ public class TlsRngProbe extends TlsProbe {
             executeState(test_state);
             TLS_CONNECTION_COUNTER++;
 
-            LOGGER.warn("===========================================================================================");
+            LOGGER.debug("===========================================================================================");
 
             serverRandom = test_state.getTlsContext().getServerRandom();
             serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
 
-            LOGGER.warn("CLIENT RANDOM: "
+            LOGGER.debug("CLIENT RANDOM: "
                     + ArrayConverter.bytesToHexString(test_state.getTlsContext().getClientRandom()));
-            LOGGER.warn("SERVER RANDOM: "
+            LOGGER.debug("SERVER RANDOM: "
                     + ArrayConverter.bytesToHexString(test_state.getTlsContext().getServerRandom()));
 
             byte[] completeServerRandom = ArrayConverter.concatenate(serverRandom, serverExtendedRandom);
@@ -385,7 +385,7 @@ public class TlsRngProbe extends TlsProbe {
                 if (usesUnixTime) {
                     byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, 4,
                             completeServerRandom.length);
-                    LOGGER.warn("TIMELESS SERVER RANDOM : " + ArrayConverter.bytesToHexString(timeLessServerRandom));
+                    LOGGER.debug("TIMELESS SERVER RANDOM : " + ArrayConverter.bytesToHexString(timeLessServerRandom));
                     extractedRandomList.add(new ComparableByteArray(timeLessServerRandom));
                 } else {
                     extractedRandomList.add(new ComparableByteArray(completeServerRandom));
@@ -397,10 +397,10 @@ public class TlsRngProbe extends TlsProbe {
                 extractedSessionIDList.add(new ComparableByteArray(sessionID));
             }
 
-            LOGGER.warn(test_state.getTlsContext().getSelectedProtocolVersion());
-            LOGGER.warn(test_state.getTlsContext().getSelectedCipherSuite());
-            LOGGER.warn(test_state.getWorkflowTrace());
-            LOGGER.warn("===========================================================================================");
+            LOGGER.debug(test_state.getTlsContext().getSelectedProtocolVersion());
+            LOGGER.debug(test_state.getTlsContext().getSelectedCipherSuite());
+            LOGGER.debug(test_state.getWorkflowTrace());
+            LOGGER.debug("===========================================================================================");
         }
     }
 
@@ -427,7 +427,7 @@ public class TlsRngProbe extends TlsProbe {
 
         if (cbcSuites.isEmpty()) {
             if (shortCbcSuites.isEmpty()) {
-                LOGGER.warn("NO CBC SUITES! Falling back to collect more Server Randoms instead ...");
+                LOGGER.debug("NO CBC SUITES! Falling back to collect more Server Randoms instead ...");
                 // Assume we would collect 16 Bytes per record
                 int numberOfHandshakes = (numberOfBlocks / (SERVER_RANDOM_SIZE / IV_SIZE));
                 if (highestVersion == ProtocolVersion.TLS13) {
@@ -450,14 +450,14 @@ public class TlsRngProbe extends TlsProbe {
 
         State collectState = generateOpenConnection(iVCollectConfig);
         if (collectState == null) {
-            LOGGER.warn("Can't collect IVs.");
+            LOGGER.debug("Can't collect IVs.");
             return;
         }
 
-        LOGGER.warn(collectState.getWorkflowTrace());
-        LOGGER.warn(collectState.getTlsContext().getSelectedProtocolVersion());
-        LOGGER.warn(collectState.getTlsContext().getSelectedCipherSuite());
-        LOGGER.warn("IS EARLY STOP: " + collectState.getTlsContext().getConfig().isEarlyStop());
+        LOGGER.debug(collectState.getWorkflowTrace());
+        LOGGER.debug(collectState.getTlsContext().getSelectedProtocolVersion());
+        LOGGER.debug(collectState.getTlsContext().getSelectedCipherSuite());
+        LOGGER.debug("IS EARLY STOP: " + collectState.getTlsContext().getConfig().isEarlyStop());
 
         SendMessageHelper sendMessageHelper = new SendMessageHelper();
         ReceiveMessageHelper receiveMessageHelper = new ReceiveMessageHelper();
@@ -485,31 +485,31 @@ public class TlsRngProbe extends TlsProbe {
         while (receivedBlocksCounter < numberOfBlocks) {
 
             if (receiveFailures > 2) {
-                LOGGER.warn("Creating new connection for IV Collection.");
+                LOGGER.debug("Creating new connection for IV Collection.");
                 if (newConnectionCounter > 3) {
-                    LOGGER.warn("Too many new Connections without new messages. Quitting.");
+                    LOGGER.debug("Too many new Connections without new messages. Quitting.");
                     break;
                 }
                 handshakeCounter++;
                 iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
                 iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
                 if (TLS_CONNECTION_COUNTER >= 1000) {
-                    LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                    LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                     prematureStop = true;
                     return;
                 }
                 collectState = generateOpenConnection(iVCollectConfig);
                 try {
                     if ((collectState == null) || collectState.getTlsContext().getTransportHandler().isClosed()) {
-                        LOGGER.warn("Trying again for new Connection.");
+                        LOGGER.debug("Trying again for new Connection.");
                         if (TLS_CONNECTION_COUNTER >= 1000) {
-                            LOGGER.warn("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
+                            LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                             prematureStop = true;
                             return;
                         }
                         collectState = generateOpenConnection(iVCollectConfig);
                         if ((collectState == null) || collectState.getTlsContext().getTransportHandler().isClosed()) {
-                            LOGGER.warn("No new Connections possible. Stopping IV Collection.");
+                            LOGGER.debug("No new Connections possible. Stopping IV Collection.");
                             break;
                         }
                     }
@@ -517,7 +517,7 @@ public class TlsRngProbe extends TlsProbe {
                     newConnectionCounter++;
                     receiveFailures = 0;
                 } catch (IOException e) {
-                    LOGGER.warn("Could not create new connection.");
+                    LOGGER.debug("Could not create new connection.");
                     e.printStackTrace();
                     break;
                 }
@@ -531,7 +531,7 @@ public class TlsRngProbe extends TlsProbe {
             try {
                 sendMessageHelper.sendMessages(messages, records, tlsContext);
             } catch (IOException e) {
-                LOGGER.warn("Encountered Problems sending Requests. Socket closed?");
+                LOGGER.debug("Encountered Problems sending Requests. Socket closed?");
                 e.printStackTrace();
                 receiveFailures++;
                 continue;
@@ -558,14 +558,14 @@ public class TlsRngProbe extends TlsProbe {
                         }
                         receivedBlocks++;
                         extractedIVList.add(new ComparableByteArray(extractedIV.getOriginalValue()));
-                        LOGGER.warn("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
+                        LOGGER.debug("Received IV: " + ArrayConverter.bytesToHexString(extractedIV.getOriginalValue()));
                     }
 
                 }
                 receivedBlocksCounter = receivedBlocksCounter + receivedBlocks;
-                LOGGER.warn("Currently Received Blocks : " + receivedBlocksCounter);
+                LOGGER.debug("Currently Received Blocks : " + receivedBlocksCounter);
             } else {
-                LOGGER.warn("Did not receive any messages.");
+                LOGGER.debug("Did not receive any messages.");
                 receiveFailures++;
             }
 
@@ -574,7 +574,7 @@ public class TlsRngProbe extends TlsProbe {
         try {
             tlsContext.getTransportHandler().closeConnection();
         } catch (IOException e) {
-            LOGGER.warn("Could not close TransportHandler.");
+            LOGGER.debug("Could not close TransportHandler.");
             e.printStackTrace();
         }
 
@@ -623,7 +623,7 @@ public class TlsRngProbe extends TlsProbe {
         int attempts = 0;
 
         for (int i = 0; i < 11; i++) {
-            LOGGER.warn("Unix time Iteration " + i);
+            LOGGER.debug("Unix time Iteration " + i);
             // int currentUnixTime = (int) (System.currentTimeMillis() / 1000);
             if (attempts >= UNIX_TIME_MAXIMUM_RETRIES) {
                 break;
@@ -636,31 +636,31 @@ public class TlsRngProbe extends TlsProbe {
 
             long duration = (endTime - startTime) / 1000;
 
-            LOGGER.warn("UNIX_TIME_STAMP_TEST: SERVER RANDOM: "
+            LOGGER.debug("UNIX_TIME_STAMP_TEST: SERVER RANDOM: "
                     + ArrayConverter.bytesToHexString(unixState.getTlsContext().getServerRandom()));
-            LOGGER.warn(unixState.getTlsContext().getServerRandom());
+            LOGGER.debug(unixState.getTlsContext().getServerRandom());
             byte[] serverRandom = unixState.getTlsContext().getServerRandom();
-            LOGGER.warn("Duration: " + duration);
+            LOGGER.debug("Duration: " + duration);
             if (!(serverRandom == null)) {
                 byte[] unixTimeStamp = new byte[4];
                 for (int j = 0; j < 4; j++) {
                     unixTimeStamp[j] = serverRandom[j];
                 }
                 serverUnixTime = java.nio.ByteBuffer.wrap(unixTimeStamp).order(ByteOrder.BIG_ENDIAN).getInt();
-                LOGGER.warn("Previous Time: " + lastUnixTime);
-                LOGGER.warn("Current Time: " + serverUnixTime);
+                LOGGER.debug("Previous Time: " + lastUnixTime);
+                LOGGER.debug("Current Time: " + serverUnixTime);
                 if (!(i == 0)) {
                     if (lastUnixTime - (UNIX_TIME_ALLOWED_DEVIATION + duration) <= serverUnixTime) {
                         if (lastUnixTime + (UNIX_TIME_ALLOWED_DEVIATION + duration) >= serverUnixTime) {
                             matchCounter++;
-                            LOGGER.warn("MATCH! Current Counter: " + matchCounter);
+                            LOGGER.debug("MATCH! Current Counter: " + matchCounter);
                         }
                     }
                 }
             } else {
                 // Compensate timeout by setting the serverUnixTime to
                 // Expectation
-                LOGGER.warn("Server Random is null. Repeating current iteration and adding compensation.");
+                LOGGER.debug("Server Random is null. Repeating current iteration and adding compensation.");
                 serverUnixTime = serverUnixTime + (int) duration;
                 // repeat last step
                 i--;
@@ -669,12 +669,12 @@ public class TlsRngProbe extends TlsProbe {
             attempts++;
         }
 
-        LOGGER.warn("MATCHCOUNTER: " + matchCounter);
+        LOGGER.debug("MATCHCOUNTER: " + matchCounter);
         if (matchCounter == 10) {
-            LOGGER.warn("ServerRandom utilizes UnixTimestamps.");
+            LOGGER.debug("ServerRandom utilizes UnixTimestamps.");
             usesUnixTime = true;
         } else {
-            LOGGER.warn("No UnixTimestamps detected.");
+            LOGGER.debug("No UnixTimestamps detected.");
         }
 
         return usesUnixTime;
@@ -694,7 +694,7 @@ public class TlsRngProbe extends TlsProbe {
             workflowExecutor.executeWorkflow();
         } catch (TransportHandlerConnectException ex) {
             ex.printStackTrace();
-            LOGGER.warn("Could not open new Connection.");
+            LOGGER.debug("Could not open new Connection.");
             return null;
         }
         TLS_CONNECTION_COUNTER++;
