@@ -108,54 +108,31 @@ public class ExtractRandomnessProbe extends AfterProbe {
             }
         }
 
-        String host_name_full = report.getHost();
-        String rng_file = host_name_full.substring(0, host_name_full.length() - 4);
+        // String host_name_full = report.getHost();
+        // String rng_file = host_name_full.substring(0, host_name_full.length()
+        // - 4);
         List<Byte> fullByteSequence = new ArrayList();
 
-        try {
-            PrintStream random_file = new PrintStream(rng_file);
-
-            // Extract Server Hello Random Bytes
-            random_file.println("SERVER RANDOM");
-            if (!extractedRandomList.isEmpty()) {
-                for (ComparableByteArray random : extractedRandomList) {
-                    String random_bytes = "";
-                    for (byte b : random.getArray()) {
-                        random_bytes = random_bytes + String.format("%02X", b);
-                    }
-                    random_file.println(random_bytes);
-                }
-            }
-
-            // Extract Server Hello Session ID
-            random_file.println("SESSION ID");
-            if (!extractedSessionIdList.isEmpty()) {
-                for (ComparableByteArray sessionId : extractedSessionIdList) {
-                    String random_bytes = "";
-                    for (byte b : sessionId.getArray()) {
-                        random_bytes = random_bytes + String.format("%02X", b);
-                    }
-                    random_file.println(random_bytes);
-                }
-            }
-
-            // Extract Application IV
-            random_file.println("IV");
-            if (!extractedIVList.isEmpty()) {
-                for (ComparableByteArray iVector : extractedIVList) {
-                    String random_bytes = "";
-                    for (byte b : iVector.getArray()) {
-                        random_bytes = random_bytes + String.format("%02X", b);
-                    }
-                    random_file.println(random_bytes);
-                }
-            }
-            random_file.close();
-
-        } catch (IOException e) {
-            LOGGER.debug("IOEXCEPTION!");
-            LOGGER.debug(e.toString());
-        }
+        /*
+         * try { PrintStream random_file = new PrintStream(rng_file); // Extract
+         * Server Hello Random Bytes random_file.println("SERVER RANDOM"); if
+         * (!extractedRandomList.isEmpty()) { for (ComparableByteArray random :
+         * extractedRandomList) { String random_bytes = ""; for (byte b :
+         * random.getArray()) { random_bytes = random_bytes +
+         * String.format("%02X", b); } random_file.println(random_bytes); } } //
+         * Extract Server Hello Session ID random_file.println("SESSION ID"); if
+         * (!extractedSessionIdList.isEmpty()) { for (ComparableByteArray
+         * sessionId : extractedSessionIdList) { String random_bytes = ""; for
+         * (byte b : sessionId.getArray()) { random_bytes = random_bytes +
+         * String.format("%02X", b); } random_file.println(random_bytes); } } //
+         * Extract Application IV random_file.println("IV"); if
+         * (!extractedIVList.isEmpty()) { for (ComparableByteArray iVector :
+         * extractedIVList) { String random_bytes = ""; for (byte b :
+         * iVector.getArray()) { random_bytes = random_bytes +
+         * String.format("%02X", b); } random_file.println(random_bytes); } }
+         * random_file.close(); } catch (IOException e) {
+         * LOGGER.debug("IOEXCEPTION!"); LOGGER.debug(e.toString()); }
+         */
 
         // String test =
         // "1100100100001111110110101010001000100001011010001100001000110100110001001100011001100010100010111000";
