@@ -25,12 +25,10 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
-
         ScannerConfig config = new ScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
         try {
             commander.parse(args);
-
             if (config.getGeneralDelegate().isHelp()) {
                 commander.usage();
                 return;
