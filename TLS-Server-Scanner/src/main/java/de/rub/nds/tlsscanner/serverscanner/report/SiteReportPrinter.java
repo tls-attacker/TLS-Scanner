@@ -599,31 +599,29 @@ public class SiteReportPrinter {
 
         // Print stapling support & 'must-staple'
         if (report.getResult(AnalyzedProperty.STAPLING_UNRELIABLE) == TestResult.TRUE) {
-            prettyAppend(builder, "Supports OCSP Stapling", "true, but unreliable", AnsiColor.YELLOW);
+            prettyAppend(builder, "OCSP Stapling", "true, but unreliable", AnsiColor.YELLOW);
             if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResult.TRUE) {
-                prettyAppend(builder, "Enforces OCSP Stapling", "true", AnsiColor.RED);
+                prettyAppend(builder, "Must Staple", "true", AnsiColor.RED);
             } else {
-                prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
+                prettyAppend(builder, "Must Staple", AnalyzedProperty.MUST_STAPLE);
             }
         } else {
             if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResult.TRUE) {
                 if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
-                    prettyAppend(builder, "Supports OCSP Stapling", "true", AnsiColor.GREEN);
+                    prettyAppend(builder, "OCSP Stapling", "true", AnsiColor.GREEN);
                 } else {
-                    prettyAppend(builder, "Supports OCSP Stapling", "false", AnsiColor.RED);
+                    prettyAppend(builder, "OCSP Stapling", "false", AnsiColor.RED);
                 }
-                prettyAppend(builder, "Enforces OCSP Stapling", "true", AnsiColor.GREEN);
+                prettyAppend(builder, "Must Staple", "true", AnsiColor.GREEN);
             } else {
-                prettyAppend(builder, "Supports OCSP Stapling", AnalyzedProperty.SUPPORTS_OCSP_STAPLING);
-                prettyAppend(builder, "Enforces OCSP Stapling", AnalyzedProperty.MUST_STAPLE);
+                prettyAppend(builder, "OCSP Stapling", AnalyzedProperty.SUPPORTS_OCSP_STAPLING);
+                prettyAppend(builder, "Must Staple", AnalyzedProperty.MUST_STAPLE);
             }
         }
 
         if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13) != TestResult.COULD_NOT_TEST) {
-            prettyAppend(builder, "Supports OCSP Stapling (TLS 1.3)",
-                    AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
-            prettyAppend(builder, "Supports OCSP Stapling for Multiple Certificates (TLS 1.3)",
-                    AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
+            prettyAppend(builder, "OCSP Stapling (TLS 1.3)", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
+            prettyAppend(builder, "Multi Stapling (TLS 1.3)", AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
         }
 
         // Is stapling supported, but a CertificateStatus message is missing?
