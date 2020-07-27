@@ -103,8 +103,8 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.SUPPORTS_SSL_3, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_TLS_1_0, getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_TLS_1_1,
-                getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap.put(AnalyzedProperty.SUPPORTS_TLS_1_2, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+                getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_TLS_1_2, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.SUPPORTS_TLS_1_3,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT,
