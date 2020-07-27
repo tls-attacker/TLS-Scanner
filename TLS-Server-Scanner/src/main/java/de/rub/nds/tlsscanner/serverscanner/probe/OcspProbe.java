@@ -53,7 +53,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
  */
 public class OcspProbe extends TlsProbe {
 
-    Certificate serverCertChain;
+    private Certificate serverCertChain;
     private Boolean supportsOcsp;
     private boolean supportsStapling;
     private boolean mustStaple;
