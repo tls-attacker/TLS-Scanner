@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 public enum AnalyzedProperty {
 
+    SUPPORTS_ESNI(AnalyzedPropertyCategory.ESNI),
     SUPPORTS_SSL_2(AnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_SSL_3(AnalyzedPropertyCategory.VERSIONS),
     SUPPORTS_TLS_1_0(AnalyzedPropertyCategory.VERSIONS),
@@ -214,7 +215,6 @@ public enum AnalyzedProperty {
     REUSES_GCM_NONCES(AnalyzedPropertyCategory.FRESHNESS),
     REQUIRES_SNI(AnalyzedPropertyCategory.SNI),
     HAS_GNU_TLS_MAGIC_BYTES(AnalyzedPropertyCategory.SESSION_TICKET),
-
     /**
      * CCA Properties
      */

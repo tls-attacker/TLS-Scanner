@@ -13,8 +13,8 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsscanner.probe.EsniProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
@@ -106,6 +106,7 @@ public class TlsScanner {
         probeList.add(new CcaSupportProbe(config, parallelExecutor));
         probeList.add(new CcaRequiredProbe(config, parallelExecutor));
         probeList.add(new CcaProbe(config, parallelExecutor));
+        probeList.add(new EsniProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());

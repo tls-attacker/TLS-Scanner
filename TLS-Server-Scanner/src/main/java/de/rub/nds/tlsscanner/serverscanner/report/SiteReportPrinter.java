@@ -1316,6 +1316,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Tokenbinding", AnalyzedProperty.SUPPORTS_TOKENBINDING);
         prettyAppend(builder, "Certificate Status Request", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
         prettyAppend(builder, "Certificate Status Request v2", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
+        prettyAppend(builder, "ESNI", AnalyzedProperty.SUPPORTS_ESNI);
 
         if (report.getResult(AnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResult.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");
