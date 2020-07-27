@@ -3,7 +3,7 @@ target/
 apps/
 trust_stores_observatory/
 log/
-src/main/resources/trust/*
+*/src/main/resources/trust/*
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -17,3 +17,4 @@ nbactions.xml
 .project
 .settings/
 /nbproject/
+.factorypath
