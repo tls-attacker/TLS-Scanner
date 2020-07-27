@@ -22,6 +22,8 @@ import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateVerifyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.cert.CertificateEntry;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.CertificateStatusRequestExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareEntry;
@@ -298,6 +300,32 @@ public class Tls13Probe extends TlsProbe {
         return tls13VersionList;
     }
 
+    private List<CertificateStatusRequestExtensionMessage> getCertificateStatusFromCertificateEntryExtension() {
+        List<CertificateStatusRequestExtensionMessage> certificateStatuses = new LinkedList<>();
+        Config tlsConfig = getCommonConfig(WorkflowTraceType.HANDSHAKE, ProtocolVersion.TLS13, getTls13Suite(),
+                getImplementedTls13Groups());
+        State state = new State(tlsConfig);
+        List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+        pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+        pskKex.add(PskKeyExchangeMode.PSK_KE);
+        tlsConfig.setPSKKeyExchangeModes(pskKex);
+        tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
+            CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil.getFirstReceivedMessage(
+                    HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
+            List<CertificateEntry> certificateEntries = certificateMessage.getCertificatesListAsEntry();
+            for (CertificateEntry certificateEntry : certificateEntries) {
+                for (ExtensionMessage extensionMessage : certificateEntry.getExtensions()) {
+                    if (extensionMessage instanceof CertificateStatusRequestExtensionMessage) {
+                        certificateStatuses.add((CertificateStatusRequestExtensionMessage) extensionMessage);
+                    }
+                }
+            }
+        }
+        return certificateStatuses;
+    }
+
     @Override
     public ProbeResult executeTest() {
         try {
@@ -318,6 +346,7 @@ public class Tls13Probe extends TlsProbe {
             }
             List<NamedGroup> supportedNamedGroups = getSupportedGroups();
             List<CipherSuite> supportedTls13Suites = getSupportedCiphersuites();
+            List<CertificateStatusRequestExtensionMessage> ocspStapling = getCertificateStatusFromCertificateEntryExtension();
             TestResult supportsSECPCompression = null;
             if (containsSECPGroup(supportedNamedGroups)) {
                 supportsSECPCompression = getSECPCompressionSupported(supportedProtocolVersions);
@@ -325,11 +354,11 @@ public class Tls13Probe extends TlsProbe {
             TestResult issuesSessionTicket = getIssuesSessionTicket(supportedProtocolVersions);
             TestResult supportsPskDhe = getSupportsPskDhe(supportedProtocolVersions);
             return new Tls13Result(supportedProtocolVersions, unsupportedProtocolVersions, supportedNamedGroups,
-                    supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe);
+                    supportedTls13Suites, supportsSECPCompression, issuesSessionTicket, supportsPskDhe, ocspStapling);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new Tls13Result(null, null, null, null, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                    TestResult.ERROR_DURING_TEST);
+                    TestResult.ERROR_DURING_TEST, null);
         }
     }
 
@@ -344,7 +373,7 @@ public class Tls13Probe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new Tls13Result(null, null, null, null, null, null, null);
+        return new Tls13Result(null, null, null, null, null, null, null, null);
     }
 
     private Config getCommonConfig(WorkflowTraceType traceType, ProtocolVersion highestProtocolVersion,
@@ -367,6 +396,7 @@ public class Tls13Probe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
 

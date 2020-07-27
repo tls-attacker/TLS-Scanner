@@ -11,9 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
-import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.NOT_VULNERABLE;
-import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_EXPLOITABLE;
-import static de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
@@ -24,39 +21,13 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.DTLS10;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.DTLS12;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.SSL2;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.SSL3;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS10;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS11;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS12;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT14;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT15;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT16;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT17;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT18;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT19;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT20;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT21;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT22;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT23;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT24;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT25;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT26;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT27;
-import static de.rub.nds.tlsattacker.core.constants.ProtocolVersion.TLS13_DRAFT28;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
 import static de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType.CORRECT;
-import static de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType.PARTIAL;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
-import static de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade.GOOD;
-import static de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade.LOW;
-import static de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade.MEDIUM;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.ResponseCounter;
@@ -77,8 +48,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import static de.rub.nds.tlsscanner.serverscanner.rating.TestResult.FALSE;
-import static de.rub.nds.tlsscanner.serverscanner.rating.TestResult.TRUE;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -91,7 +60,6 @@ import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.Rando
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.UNIX_TIME;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -170,6 +138,7 @@ public class SiteReportPrinter {
         // appendGcm(builder);
         appendRfc(builder);
         appendCertificate(builder);
+        appendOcsp(builder);
         appendSession(builder);
         appendRenegotiation(builder);
         appendHandshakeSimulation(builder);
@@ -604,6 +573,117 @@ public class SiteReportPrinter {
                 }
             }
         }
+        return builder;
+    }
+
+    private StringBuilder appendOcsp(StringBuilder builder) {
+        prettyAppendHeading(builder, "OCSP");
+        prettyAppend(builder, "Supports OCSP ", AnalyzedProperty.SUPPORTS_OCSP);
+
+        // In case extension probe & OCSP probe differ, report stapling as
+        // unreliable.
+        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.TRUE
+                && report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.FALSE) {
+            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
+            prettyAppend(builder, "Extension scan reported OCSP Stapling support, but OCSP scan does not.",
+                    AnsiColor.YELLOW);
+            prettyAppend(builder, "The results are likely incomplete. Maybe rescan for more information? \n",
+                    AnsiColor.RED);
+            report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
+        } else if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST) == TestResult.FALSE
+                && report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
+            prettyAppend(builder, "OCSP Stapling is unreliable on this server.", AnsiColor.YELLOW);
+            prettyAppend(builder, "Extension scan reported no OCSP support, but OCSP scan does. \n", AnsiColor.YELLOW);
+            report.putResult(AnalyzedProperty.STAPLING_UNRELIABLE, TestResult.TRUE);
+        }
+
+        // Print stapling support & 'must-staple'
+        if (report.getResult(AnalyzedProperty.STAPLING_UNRELIABLE) == TestResult.TRUE) {
+            prettyAppend(builder, "OCSP Stapling", "true, but unreliable", AnsiColor.YELLOW);
+            if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResult.TRUE) {
+                prettyAppend(builder, "Must Staple", "true", AnsiColor.RED);
+            } else {
+                prettyAppend(builder, "Must Staple", AnalyzedProperty.MUST_STAPLE);
+            }
+        } else {
+            if (report.getResult(AnalyzedProperty.MUST_STAPLE) == TestResult.TRUE) {
+                if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
+                    prettyAppend(builder, "OCSP Stapling", "true", AnsiColor.GREEN);
+                } else {
+                    prettyAppend(builder, "OCSP Stapling", "false", AnsiColor.RED);
+                }
+                prettyAppend(builder, "Must Staple", "true", AnsiColor.GREEN);
+            } else {
+                prettyAppend(builder, "OCSP Stapling", AnalyzedProperty.SUPPORTS_OCSP_STAPLING);
+                prettyAppend(builder, "Must Staple", AnalyzedProperty.MUST_STAPLE);
+            }
+        }
+
+        if (report.getResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13) != TestResult.COULD_NOT_TEST) {
+            prettyAppend(builder, "OCSP Stapling (TLS 1.3)", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13);
+            prettyAppend(builder, "Multi Stapling (TLS 1.3)", AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES);
+        }
+
+        // Is stapling supported, but a CertificateStatus message is missing?
+        if (report.getResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING) == TestResult.TRUE) {
+            prettyAppend(builder, "Includes Stapled Response", AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE);
+            if (report.getFirstOcspResponse() != null && report.getFirstOcspResponse().getResponseStatus() == 0) {
+                long differenceHoursStapled = report.getDifferenceHoursStapled();
+                if (differenceHoursStapled < 24) {
+                    prettyAppend(builder, "Stapled Response Cached", differenceHoursStapled + " hours", AnsiColor.GREEN);
+                } else {
+                    prettyAppend(builder, "Stapled Response Cached", differenceHoursStapled / 24 + " days",
+                            AnsiColor.YELLOW);
+                }
+                prettyAppend(builder, "Stapled Response Expired", AnalyzedProperty.STAPLED_RESPONSE_EXPIRED);
+            }
+            prettyAppend(builder, "Supports Stapled Nonce", AnalyzedProperty.SUPPORTS_STAPLED_NONCE);
+        }
+
+        // Are nonces used? If so, do they match?
+        prettyAppend(builder, "Supports Nonce", AnalyzedProperty.SUPPORTS_NONCE);
+        if (Boolean.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_NONCE) == TestResult.TRUE)) {
+            prettyAppend(builder, "Nonce Mismatch / Cached Nonce", AnalyzedProperty.NONCE_MISMATCH);
+        }
+
+        // Print stapled response
+        if (report.getStapledOcspResponse() != null) {
+            prettyAppendSubheading(builder, "Stapled OCSP Response");
+            if (report.getStapledOcspResponse().getResponseStatus() > 0) {
+                prettyAppend(builder, "Server stapled an erroneous OCSP response. \n", AnsiColor.RED);
+            }
+            prettyAppend(builder, report.getStapledOcspResponse().toString(false));
+        }
+
+        // Print requested HTTP POST response
+        if (report.getFirstOcspResponse() != null) {
+            prettyAppendSubheading(builder, "Requested OCSP Response (HTTP POST)");
+            if (report.getFirstOcspResponse().getResponseStatus() > 0) {
+                prettyAppend(builder, "OCSP Request was not accepted by the OCSP Responder.", AnsiColor.RED);
+
+                // Check if certificate chain was unordered. This will make the
+                // request fail very likely.
+                CertificateChain chain = report.getCertificateChain();
+                if (Boolean.FALSE.equals(chain.getChainIsOrdered())) {
+                    prettyAppend(
+                            builder,
+                            "This likely happened due the certificate chain being unordered. This is not supported yet by this scan.",
+                            AnsiColor.RED);
+                }
+            }
+            prettyAppend(builder, report.getFirstOcspResponse().toString(false));
+        } else if (report.getFirstOcspResponse() == null && report.getHttpGetOcspResponse() != null) {
+            prettyAppend(builder, "Retrieved an OCSP response via HTTP GET, but not via HTTP POST.", AnsiColor.YELLOW);
+        }
+
+        // Print requested HTTP GET response
+        if (report.getHttpGetOcspResponse() != null) {
+            prettyAppendSubheading(builder, "Requested OCSP Response (HTTP GET)");
+            prettyAppend(builder, report.getHttpGetOcspResponse().toString(false));
+        } else if (report.getHttpGetOcspResponse() == null && report.getFirstOcspResponse() != null) {
+            prettyAppend(builder, "Retrieved an OCSP response via HTTP POST, but not via HTTP GET.", AnsiColor.YELLOW);
+        }
+
         return builder;
     }
 
@@ -1234,6 +1314,8 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Extended Master Secret", AnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET);
         prettyAppend(builder, "Encrypt Then Mac", AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC);
         prettyAppend(builder, "Tokenbinding", AnalyzedProperty.SUPPORTS_TOKENBINDING);
+        prettyAppend(builder, "Certificate Status Request", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST);
+        prettyAppend(builder, "Certificate Status Request v2", AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2);
 
         if (report.getResult(AnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResult.TRUE) {
             prettyAppendHeading(builder, "Tokenbinding Version");

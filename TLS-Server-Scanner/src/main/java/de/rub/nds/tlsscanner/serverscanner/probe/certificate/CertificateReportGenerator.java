@@ -8,6 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
+import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
+import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
+import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
+import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
@@ -15,12 +19,14 @@ import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.io.IOException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
@@ -183,15 +189,75 @@ public class CertificateReportGenerator {
     }
 
     private static void setOcspMustStaple(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
+        CertificateInformationExtractor ocspCertInfoExtractor = new CertificateInformationExtractor(cert);
+        try {
+            Boolean mustStaple = ocspCertInfoExtractor.getMustStaple();
+            if (mustStaple != null) {
+                report.setOcspMustStaple(mustStaple);
+            }
+        } catch (Exception e) {
+            LOGGER.debug("Could not extract OCSP 'must-staple' information from certificate.");
+        }
     }
 
     private static void setCRLSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
     private static void setOcspSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
+        CertificateInformationExtractor ocspCertInfoExtractor = new CertificateInformationExtractor(cert);
+        try {
+            String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
+            if (ocspUrl != null) {
+                report.setOcspSupported(true);
+            }
+        } catch (NoSuchFieldException e) {
+            report.setOcspSupported(false);
+            LOGGER.debug("OCSP is not supported for this certificate.");
+        } catch (Exception e) {
+            LOGGER.error("An error happened during retrieving OCSP information for this certificate.");
+        }
     }
 
     private static void setRevoked(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
+        // Revocation check via OCSP
+        if (report.getOcspSupported()) {
+            CertificateInformationExtractor mainCertExtractor = new CertificateInformationExtractor(cert);
+            org.bouncycastle.asn1.x509.Certificate issuerCert;
+            URL mainCertOcspUrl;
+            OCSPRequest ocspRequest;
+
+            // Try to get issuer certificate, or use root CA locally
+            try {
+                issuerCert = mainCertExtractor.retrieveIssuerCertificate();
+            } catch (Exception e) {
+                LOGGER.debug("Didn't find issuer entry in certificate, trying TrustAnchor.");
+                TrustAnchorManager trustAnchorManager = TrustAnchorManager.getInstance();
+                X509Certificate x509cert = null;
+                try {
+                    x509cert = new X509CertificateObject(cert);
+                    issuerCert = trustAnchorManager.getTrustAnchorCertificate(x509cert.getIssuerX500Principal());
+                } catch (CertificateParsingException exp) {
+                    LOGGER.error("Certificate conversion to X509CertificateObject failed. Aborting OCSP revocation check.");
+                    return;
+                }
+            }
+
+            // Try to make OCSP Request
+            try {
+                mainCertOcspUrl = new URL(mainCertExtractor.getOcspServerUrl());
+                ocspRequest = new OCSPRequest(cert, issuerCert, mainCertOcspUrl);
+                OCSPResponse ocspResponse = ocspRequest.makeRequest();
+                CertificateStatus certificateStatus = ocspResponse.getCertificateStatusList().get(0);
+                int revocationStatus = certificateStatus.getCertificateStatus();
+                if (revocationStatus == 0) {
+                    report.setRevoked(false);
+                } else if (revocationStatus == 1) {
+                    report.setRevoked(true);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Failed to get certificate revocation status via OCSP.");
+            }
+        }
     }
 
     private static void setDnsCCA(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {

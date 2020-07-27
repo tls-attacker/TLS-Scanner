@@ -18,3 +18,5 @@ nbactions.xml
 .settings/
 /nbproject/
 .factorypath
+.idea
+*.iml

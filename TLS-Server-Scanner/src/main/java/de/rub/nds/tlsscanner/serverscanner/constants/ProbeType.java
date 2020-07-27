@@ -14,6 +14,7 @@ package de.rub.nds.tlsscanner.serverscanner.constants;
  */
 public enum ProbeType {
     CERTIFICATE,
+    OCSP,
     CIPHERSUITE_ORDER,
     CIPHERSUITE,
     HEARTBLEED,

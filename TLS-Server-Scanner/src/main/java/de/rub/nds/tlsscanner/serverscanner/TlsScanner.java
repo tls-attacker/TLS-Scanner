@@ -82,6 +82,7 @@ public class TlsScanner {
         probeList.add(new CompressionsProbe(config, parallelExecutor));
         probeList.add(new NamedCurvesProbe(config, parallelExecutor));
         probeList.add(new CertificateProbe(config, parallelExecutor));
+        probeList.add(new OcspProbe(config, parallelExecutor));
         probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
         probeList.add(new CiphersuiteProbe(config, parallelExecutor));
         probeList.add(new DirectRaccoonProbe(config, parallelExecutor));

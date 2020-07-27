@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
+import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -93,6 +94,13 @@ public class SiteReport extends Observable implements Serializable {
 
     // Certificate
     private CertificateChain certificateChain;
+
+    // OCSP
+    private OCSPResponse stapledOcspResponse = null;
+    private OCSPResponse firstOcspResponse = null;
+    private OCSPResponse secondOcspResponse = null;
+    private OCSPResponse httpGetOcspResponse = null;
+    private Long differenceHoursStapled = null;
 
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -580,4 +588,43 @@ public class SiteReport extends Observable implements Serializable {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
     }
 
+    public synchronized OCSPResponse getStapledOcspResponse() {
+        return stapledOcspResponse;
+    }
+
+    public synchronized void setStapledOcspResponse(OCSPResponse stapledOcspResponse) {
+        this.stapledOcspResponse = stapledOcspResponse;
+    }
+
+    public synchronized OCSPResponse getFirstOcspResponse() {
+        return firstOcspResponse;
+    }
+
+    public synchronized void setFirstOcspResponse(OCSPResponse firstOcspResponse) {
+        this.firstOcspResponse = firstOcspResponse;
+    }
+
+    public synchronized OCSPResponse getSecondOcspResponse() {
+        return secondOcspResponse;
+    }
+
+    public synchronized void setSecondOcspResponse(OCSPResponse secondOcspResponse) {
+        this.secondOcspResponse = secondOcspResponse;
+    }
+
+    public synchronized Long getDifferenceHoursStapled() {
+        return differenceHoursStapled;
+    }
+
+    public synchronized void setDifferenceHoursStapled(Long differenceHoursStapled) {
+        this.differenceHoursStapled = differenceHoursStapled;
+    }
+
+    public synchronized OCSPResponse getHttpGetOcspResponse() {
+        return httpGetOcspResponse;
+    }
+
+    public synchronized void setHttpGetOcspResponse(OCSPResponse httpGetOcspResponse) {
+        this.httpGetOcspResponse = httpGetOcspResponse;
+    }
 }
