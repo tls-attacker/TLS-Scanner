@@ -220,7 +220,11 @@ public class CertificateChain {
                 CertPathValidationException[] causes = certPathValidationResult.getCauses();
                 if (causes != null) {
                     for (CertPathValidationException exception : causes) {
-                        exception.printStackTrace();
+                        if (exception.getCause().getMessage().contains("Unhandled Critical Extensions")) {
+                            certificateIssues.add(CertificateIssue.UNHANDLED_CRITICAL_EXTENSIONS);
+                        } else {
+                            LOGGER.error("Unknown path validation issue", exception);
+                        }
                     }
                 }
             }
@@ -353,8 +357,8 @@ public class CertificateChain {
         CertPath path = new CertPath(certPath);
         X509ContentVerifierProviderBuilder verifier = new JcaX509ContentVerifierProviderBuilder()
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME);
-        CertPathValidationResult result = path.validate(new CertPathValidation[] {
-                new ParentCertIssuedValidation(verifier), new BasicConstraintsValidation(), new KeyUsageValidation() });
+        CertPathValidationResult result = path.validate(new CertPathValidation[]{
+            new ParentCertIssuedValidation(verifier), new BasicConstraintsValidation(), new KeyUsageValidation()});
 
         return result;
     }

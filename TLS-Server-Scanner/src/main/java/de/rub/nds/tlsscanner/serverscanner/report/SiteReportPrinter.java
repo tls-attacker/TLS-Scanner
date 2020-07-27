@@ -1783,12 +1783,8 @@ public class SiteReportPrinter {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                     Duration duration = new Duration(data.getStarttime(), data.getStoptime());
                     Period period = new Period(data.getStoptime() - data.getStarttime());
-                    prettyAppend(
-                            builder,
-                            padToLength(data.getType().name(), 25) + " Starttime: "
-                                    + format.format(new Date(data.getStarttime())) + " Stoptime: "
-                                    + format.format(new Date(data.getStoptime())) + " Total:"
-                                    + PeriodFormat.getDefault().print(period));
+                    prettyAppend(builder, padToLength(data.getType().name(), 25) + " "
+                            + PeriodFormat.getDefault().print(period));
 
                 }
             } catch (Exception E) {
