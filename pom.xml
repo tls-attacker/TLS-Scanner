@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TLS-Scanner</artifactId>
     <groupId>de.rub.nds.tlsscanner</groupId>
-    <version>3.0.3</version>
+    <version>4.0.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>TLS-Scanner-Core</module>
