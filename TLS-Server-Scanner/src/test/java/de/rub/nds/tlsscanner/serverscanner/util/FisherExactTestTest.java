@@ -11,7 +11,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.rub.nds.tlsscanner.util;
+package de.rub.nds.tlsscanner.serverscanner.util;
 
 import org.junit.After;
 import org.junit.AfterClass;

@@ -6,28 +6,28 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner;
+package de.rub.nds.tlsscanner.serverscanner;
 
 import de.rub.nds.tlsattacker.attacks.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.probe.*;
-import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.after.AfterProbe;
-import de.rub.nds.tlsscanner.report.after.DhValueAfterProbe;
-import de.rub.nds.tlsscanner.report.after.EcPublicKeyAfterProbe;
-import de.rub.nds.tlsscanner.report.after.EvaluateRandomnessAfterProbe;
-import de.rub.nds.tlsscanner.report.after.FreakAfterProbe;
-import de.rub.nds.tlsscanner.report.after.LogjamAfterprobe;
-import de.rub.nds.tlsscanner.report.after.PaddingOracleIdentificationAfterProbe;
-import de.rub.nds.tlsscanner.report.after.PoodleAfterProbe;
-import de.rub.nds.tlsscanner.report.after.RaccoonAttackAfterProbe;
-import de.rub.nds.tlsscanner.report.after.Sweet32AfterProbe;
-import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
+import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.*;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.EvaluateRandomnessAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.FreakAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.LogjamAfterprobe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.PaddingOracleIdentificationAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.PoodleAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.RaccoonAttackAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;

@@ -6,12 +6,12 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.trust;
+package de.rub.nds.tlsscanner.serverscanner.trust;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import de.rub.nds.tlsattacker.core.certificate.PemUtil;
-import de.rub.nds.tlsscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;

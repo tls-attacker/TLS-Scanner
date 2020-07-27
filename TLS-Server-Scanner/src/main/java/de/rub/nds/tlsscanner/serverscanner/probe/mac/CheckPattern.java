@@ -6,10 +6,10 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.probe.mac;
+package de.rub.nds.tlsscanner.serverscanner.probe.mac;
 
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.constants.CheckPatternType;
+import de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType;
 import java.util.List;
 
 public class CheckPattern {

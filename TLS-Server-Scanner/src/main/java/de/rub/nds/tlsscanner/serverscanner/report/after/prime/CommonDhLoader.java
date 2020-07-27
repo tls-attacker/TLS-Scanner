@@ -6,7 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report.after.prime;
+package de.rub.nds.tlsscanner.serverscanner.report.after.prime;
 
 import java.io.IOException;
 import java.io.InputStream;

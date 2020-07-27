@@ -6,11 +6,11 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.probe.certificate;
+package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
-import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
-import de.rub.nds.tlsscanner.trust.TrustPlatform;
+import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
+import de.rub.nds.tlsscanner.serverscanner.trust.TrustPlatform;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;

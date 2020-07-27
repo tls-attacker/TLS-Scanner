@@ -6,9 +6,9 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.rating;
+package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;

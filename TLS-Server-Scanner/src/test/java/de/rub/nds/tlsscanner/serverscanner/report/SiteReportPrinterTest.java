@@ -11,9 +11,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.rub.nds.tlsscanner.report;
+package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.tlsscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

@@ -6,13 +6,13 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report.after;
+package de.rub.nds.tlsscanner.serverscanner.report.after;
 
-import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
-import de.rub.nds.tlsscanner.probe.padding.PaddingOracleAttributor;
-import de.rub.nds.tlsscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
+import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleAttributor;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.Objects;
 
 /**

@@ -6,13 +6,13 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report;
+package de.rub.nds.tlsscanner.serverscanner.report;
 
 import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
-import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.probe.HandshakeSimulationProbe;
-import de.rub.nds.tlsscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.probe.HandshakeSimulationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Set;
@@ -40,7 +40,7 @@ public class ProbeResultTest {
     @Test
     public void testResultMerge() throws Exception {
         LOGGER.info("Testint result merging:");
-        Reflections reflections = new Reflections("de.rub.nds.tlsscanner.probe");
+        Reflections reflections = new Reflections("de.rub.nds.tlsscanner.serverscanner.probe");
         Set<Class<? extends TlsProbe>> probeClasses = reflections.getSubTypesOf(TlsProbe.class);
         for (Class<? extends TlsProbe> someProbeClass : probeClasses) {
             if (Modifier.isAbstract(someProbeClass.getModifiers())) {

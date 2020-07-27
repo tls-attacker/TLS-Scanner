@@ -6,7 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.util;
+package de.rub.nds.tlsscanner.serverscanner.util;
 
 public class FisherExactTest {
 

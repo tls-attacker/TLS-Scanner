@@ -8,7 +8,7 @@
  */
 /*
  */
-package de.rub.nds.tlsscanner.probe.mac;
+package de.rub.nds.tlsscanner.serverscanner.probe.mac;
 
 /**
  *

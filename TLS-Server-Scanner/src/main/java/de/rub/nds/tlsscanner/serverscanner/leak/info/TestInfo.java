@@ -11,7 +11,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.rub.nds.tlsscanner.leak.info;
+package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
 /**
  *

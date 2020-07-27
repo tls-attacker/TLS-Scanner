@@ -6,11 +6,11 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.report.result;
+package de.rub.nds.tlsscanner.serverscanner.report.result;
 
-import de.rub.nds.tlsscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.probe.handshakeSimulation.SimulatedClientResult;
-import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.List;
 
 public class HandshakeSimulationResult extends ProbeResult {

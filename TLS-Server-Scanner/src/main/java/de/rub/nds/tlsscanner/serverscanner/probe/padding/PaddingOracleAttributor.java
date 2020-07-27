@@ -6,7 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.probe.padding;
+package de.rub.nds.tlsscanner.serverscanner.probe.padding;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.padding.vector.PaddingVector;
@@ -19,9 +19,9 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-import de.rub.nds.tlsscanner.leak.InformationLeakTest;
-import de.rub.nds.tlsscanner.leak.VectorContainer;
-import de.rub.nds.tlsscanner.leak.info.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.serverscanner.leak.VectorContainer;
+import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;

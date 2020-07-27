@@ -6,14 +6,14 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.probe.certificate;
+package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateUtils;
-import de.rub.nds.tlsscanner.probe.certificate.roca.BrokenKey;
-import de.rub.nds.tlsscanner.trust.TrustAnchorManager;
+import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
+import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

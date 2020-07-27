@@ -6,10 +6,10 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner;
+package de.rub.nds.tlsscanner.serverscanner;
 
-import de.rub.nds.tlsscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.report.after.AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import java.util.List;
 
 /**
