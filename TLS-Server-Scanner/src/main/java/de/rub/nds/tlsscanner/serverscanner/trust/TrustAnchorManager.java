@@ -94,7 +94,7 @@ public class TrustAnchorManager {
     }
 
     public boolean isInitialized() {
-        return trustAnchorSet == null && trustPlatformList == null && trustAnchors == null;
+        return trustAnchorSet != null && trustPlatformList != null && trustAnchors != null;
     }
 
     private TrustPlatform readPlatform(String name) throws IOException {
