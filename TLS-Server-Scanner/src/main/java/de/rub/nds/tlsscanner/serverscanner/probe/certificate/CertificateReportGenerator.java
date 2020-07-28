@@ -238,7 +238,7 @@ public class CertificateReportGenerator {
                 TrustAnchorManager trustAnchorManager = TrustAnchorManager.getInstance();
                 X509Certificate x509cert = null;
                 try {
-                    if (trustAnchorManager.isInitialized()) {
+                    if (!trustAnchorManager.isInitialized()) {
                         return;
                     }
                     x509cert = new X509CertificateObject(cert);
