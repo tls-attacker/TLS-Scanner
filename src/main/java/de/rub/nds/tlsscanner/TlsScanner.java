@@ -78,7 +78,11 @@ public class TlsScanner {
     }
 
     private void fillDefaultProbeLists() {
-        probeList.add(new CommonBugProbe(config, parallelExecutor));
+        if (config.isCollectRng()) {
+            probeList.add(new TlsRngProbe(config, parallelExecutor));
+            afterList.add(new ExtractRandomnessProbe());
+        }
+        // probeList.add(new CommonBugProbe(config, parallelExecutor));
         // probeList.add(new SniProbe(config, parallelExecutor));
         // probeList.add(new CompressionsProbe(config, parallelExecutor));
         probeList.add(new NamedCurvesProbe(config, parallelExecutor));
@@ -89,11 +93,10 @@ public class TlsScanner {
         // probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
         probeList.add(new ExtensionProbe(config, parallelExecutor));
         probeList.add(new Tls13Probe(config, parallelExecutor));
-        probeList.add(new TlsRngProbe(config, parallelExecutor));
         // probeList.add(new TokenbindingProbe(config, parallelExecutor));
         // probeList.add(new HttpHeaderProbe(config, parallelExecutor));
         // probeList.add(new ECPointFormatProbe(config, parallelExecutor));
-        probeList.add(new ResumptionProbe(config, parallelExecutor));
+        // probeList.add(new ResumptionProbe(config, parallelExecutor));
         // probeList.add(new RenegotiationProbe(config, parallelExecutor));
         // probeList.add(new SessionTicketZeroKeyProbe(config,
         // parallelExecutor));
@@ -113,7 +116,6 @@ public class TlsScanner {
         // afterList.add(new FreakAfterProbe());
         // afterList.add(new LogjamAfterprobe());
         // afterList.add(new EvaluateRandomnessAfterProbe());
-        afterList.add(new ExtractRandomnessProbe());
         // afterList.add(new EcPublicKeyAfterProbe());
         // afterList.add(new DhValueAfterProbe());
         // afterList.add(new PaddingOracleIdentificationAfterProbe());

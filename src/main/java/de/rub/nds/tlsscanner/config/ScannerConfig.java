@@ -49,6 +49,9 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
 
+    @Parameter(names = "-testRng", required = false, description = "Collect Randomness and test for faults")
+    private boolean collectRng = false;
+
     @ParametersDelegate
     private CcaDelegate ccaDelegate;
 
@@ -125,6 +128,14 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setReportDetail(ScannerDetail reportDetail) {
         this.reportDetail = reportDetail;
+    }
+
+    public void setCollectRng(boolean collectRng) {
+        this.collectRng = collectRng;
+    }
+
+    public boolean isCollectRng() {
+        return collectRng;
     }
 
     @Override

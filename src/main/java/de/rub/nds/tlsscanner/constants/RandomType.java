@@ -8,9 +8,19 @@
  */
 package de.rub.nds.tlsscanner.constants;
 
+/**
+ * Enum representing types of randomness you can encounter during and after TLS
+ * Handshakes.
+ */
 public enum RandomType {
+    // Initialization Vectors used in CBC Cipher suites.
     IV,
+    // Session IDs used for session resumption used in the ServerHello Message
     SESSION_ID,
+    // Random byte string to ensure unique TLS Handshakes used in the
+    // ServerHello Message
     RANDOM,
+    // Complete Sequence consisting of concatenated Randoms, Session IDs and
+    // IVs.
     COMPLETE_SEQUENCE
 }

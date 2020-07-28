@@ -9,10 +9,7 @@
 package de.rub.nds.tlsscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-import de.rub.nds.modifiablevariable.string.ModifiableString;
-import de.rub.nds.modifiablevariable.string.StringModificationFactory;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.exceptions.TransportHandlerConnectException;
@@ -41,7 +38,6 @@ import de.rub.nds.tlsscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.report.result.TlsRngResult;
 import de.rub.nds.tlsscanner.report.result.VersionSuiteListPair;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -50,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -70,7 +65,6 @@ public class TlsRngProbe extends TlsProbe {
     private final int NUMBER_OF_HANDSHAKES = 600;
     private final int CLIENT_RANDOM_START = 1;
     private final int IV_BLOCKS = 4000;
-    // TODO: If the Server is too slow, this may result in undetected counters.
     private final int UNIX_TIME_ALLOWED_DEVIATION = 5;
     private boolean usesUnixTime = false;
     private int TLS_CONNECTIONS_UPPER_LIMIT = 1000;
@@ -133,9 +127,7 @@ public class TlsRngProbe extends TlsProbe {
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_SESSION_IDS) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE) == TestResult.NOT_TESTED_YET) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.NOT_TESTED_YET) {
             return false;
         } else {
             // We will conduct the rng extraction based on the test-results, so
@@ -518,7 +510,7 @@ public class TlsRngProbe extends TlsProbe {
                     receiveFailures = 0;
                 } catch (IOException e) {
                     LOGGER.debug("Could not create new connection.");
-                    e.printStackTrace();
+                    LOGGER.debug(e);
                     break;
                 }
 
@@ -532,7 +524,7 @@ public class TlsRngProbe extends TlsProbe {
                 sendMessageHelper.sendMessages(messages, records, tlsContext);
             } catch (IOException e) {
                 LOGGER.debug("Encountered Problems sending Requests. Socket closed?");
-                e.printStackTrace();
+                LOGGER.debug(e);
                 receiveFailures++;
                 continue;
             }
@@ -575,7 +567,7 @@ public class TlsRngProbe extends TlsProbe {
             tlsContext.getTransportHandler().closeConnection();
         } catch (IOException e) {
             LOGGER.debug("Could not close TransportHandler.");
-            e.printStackTrace();
+            LOGGER.debug(e);
         }
 
         if (receivedBlocksCounter < numberOfBlocks) {
@@ -693,8 +685,8 @@ public class TlsRngProbe extends TlsProbe {
         try {
             workflowExecutor.executeWorkflow();
         } catch (TransportHandlerConnectException ex) {
-            ex.printStackTrace();
             LOGGER.debug("Could not open new Connection.");
+            LOGGER.debug(ex);
             return null;
         }
         TLS_CONNECTION_COUNTER++;
