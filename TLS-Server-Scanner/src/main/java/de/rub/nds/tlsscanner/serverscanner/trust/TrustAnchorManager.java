@@ -42,12 +42,12 @@ public class TrustAnchorManager {
 
     private List<TrustPlatform> trustPlatformList;
 
-    private final HashMap<String, CertificateEntry> trustAnchors;
+    private HashMap<String, CertificateEntry> trustAnchors;
 
     private static TrustAnchorManager INSTANCE = null;
 
-    private final Set<TrustAnchor> trustAnchorSet;
-    private final Set<Certificate> asn1CaCertificateSet;
+    private Set<TrustAnchor> trustAnchorSet;
+    private Set<Certificate> asn1CaCertificateSet;
 
     public static synchronized TrustAnchorManager getInstance() {
         if (INSTANCE == null) {
@@ -65,24 +65,36 @@ public class TrustAnchorManager {
             trustPlatformList.add(readPlatform("openjdk.yaml"));
             trustPlatformList.add(readPlatform("oracle_java.yaml"));
             trustPlatformList.add(readPlatform("apple.yaml"));
+
+            trustAnchors = new HashMap<>();
+            for (TrustPlatform platform : trustPlatformList) {
+                for (CertificateEntry entry : platform.getCertificateEntries()) {
+                    if (!trustAnchors.containsKey(entry.getFingerprint())) {
+                        trustAnchors.put(entry.getFingerprint(), entry);
+                    }
+                }
+                for (CertificateEntry entry : platform.getBlockedCertificateEntries()) {
+                    if (!trustAnchors.containsKey(entry.getFingerprint())) {
+                        trustAnchors.put(entry.getFingerprint(), entry);
+                    }
+                }
+            }
+            this.trustAnchorSet = getFullTrustAnchorSet();
+            this.asn1CaCertificateSet = getFullCaCertificateSet();
         } catch (IOException | IllegalArgumentException ex) {
-            LOGGER.error("Could not load trusted platforms", ex);
+            trustAnchorSet = null;
+            trustAnchors = null;
+            trustPlatformList = null;
+            asn1CaCertificateSet = null;
+            LOGGER.error("Could not load TrustAnchors. This means that you are running TLS-Scanner without its submodules. "
+                    + "If you want to evaluate if certificates are trusted by browsers you need to initialize submodules."
+                    + "You can do this by running the following command:'git submodule update --init --recursive'");
+            LOGGER.debug(ex);
         }
-        trustAnchors = new HashMap<>();
-        for (TrustPlatform platform : trustPlatformList) {
-            for (CertificateEntry entry : platform.getCertificateEntries()) {
-                if (!trustAnchors.containsKey(entry.getFingerprint())) {
-                    trustAnchors.put(entry.getFingerprint(), entry);
-                }
-            }
-            for (CertificateEntry entry : platform.getBlockedCertificateEntries()) {
-                if (!trustAnchors.containsKey(entry.getFingerprint())) {
-                    trustAnchors.put(entry.getFingerprint(), entry);
-                }
-            }
-        }
-        this.trustAnchorSet = getFullTrustAnchorSet();
-        this.asn1CaCertificateSet = getFullCaCertificateSet();
+    }
+
+    public boolean isInitialized() {
+        return trustAnchorSet != null && trustPlatformList != null && trustAnchors != null;
     }
 
     private TrustPlatform readPlatform(String name) throws IOException {

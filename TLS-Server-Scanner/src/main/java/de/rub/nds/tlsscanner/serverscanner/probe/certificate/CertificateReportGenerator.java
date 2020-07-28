@@ -79,7 +79,11 @@ public class CertificateReportGenerator {
         report.setCertificate(cert);
         setVulnerableRoca(report, cert);
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
-        report.setTrustAnchor(anchorManger.isTrustAnchor(report));
+        if (anchorManger.isInitialized()) {
+            report.setTrustAnchor(anchorManger.isTrustAnchor(report));
+        } else {
+            report.setTrustAnchor(null);
+        }
         if (report.getIssuer().equals(report.getSubject())) {
             report.setSelfSigned(true);
         } else {
@@ -234,6 +238,9 @@ public class CertificateReportGenerator {
                 TrustAnchorManager trustAnchorManager = TrustAnchorManager.getInstance();
                 X509Certificate x509cert = null;
                 try {
+                    if (!trustAnchorManager.isInitialized()) {
+                        return;
+                    }
                     x509cert = new X509CertificateObject(cert);
                     issuerCert = trustAnchorManager.getTrustAnchorCertificate(x509cert.getIssuerX500Principal());
                 } catch (CertificateParsingException exp) {

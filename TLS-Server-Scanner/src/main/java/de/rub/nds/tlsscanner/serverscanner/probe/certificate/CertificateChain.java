@@ -142,24 +142,28 @@ public class CertificateChain {
                     LOGGER.debug("Could not find next certificate");
                     // Could not find issuer for certificate - check if its in
                     // the trust store
-                    if (TrustAnchorManager.getInstance().isTrustAnchor(
-                            tempCertificate.convertToX509Certificate().getIssuerX500Principal())) {
-                        // Certificate is issued by trust anchor
-                        LOGGER.debug("Could find issuer");
-                        chainIsComplete = true;
-                        org.bouncycastle.asn1.x509.Certificate trustAnchorCertificate = TrustAnchorManager
-                                .getInstance().getTrustAnchorCertificate(
-                                        tempCertificate.convertToX509Certificate().getIssuerX500Principal());
-                        if (trustAnchorCertificate != null) {
-                            CertificateReport trustAnchorReport = CertificateReportGenerator
-                                    .generateReport(trustAnchorCertificate);
-                            orderedCertificateChain.add(trustAnchorReport);
-                            trustAnchorReport.setTrustAnchor(true);
-                            trustAnchor = trustAnchorReport;
+                    if (TrustAnchorManager.getInstance().isInitialized()) {
+                        if (TrustAnchorManager.getInstance().isTrustAnchor(
+                                tempCertificate.convertToX509Certificate().getIssuerX500Principal())) {
+                            // Certificate is issued by trust anchor
+                            LOGGER.debug("Could find issuer");
+                            chainIsComplete = true;
+                            org.bouncycastle.asn1.x509.Certificate trustAnchorCertificate = TrustAnchorManager
+                                    .getInstance().getTrustAnchorCertificate(
+                                            tempCertificate.convertToX509Certificate().getIssuerX500Principal());
+                            if (trustAnchorCertificate != null) {
+                                CertificateReport trustAnchorReport = CertificateReportGenerator
+                                        .generateReport(trustAnchorCertificate);
+                                orderedCertificateChain.add(trustAnchorReport);
+                                trustAnchorReport.setTrustAnchor(true);
+                                trustAnchor = trustAnchorReport;
+                            }
+                        } else {
+                            LOGGER.debug("Could not find issuer");
+                            chainIsComplete = false;
                         }
                     } else {
-                        LOGGER.debug("Could not find issuer");
-                        chainIsComplete = false;
+                        LOGGER.error("Cannot check if the chain is complete since the trust manager is not initalized");
                     }
                     break;
                 }
