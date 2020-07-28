@@ -361,8 +361,8 @@ public class CertificateChain {
         CertPath path = new CertPath(certPath);
         X509ContentVerifierProviderBuilder verifier = new JcaX509ContentVerifierProviderBuilder()
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME);
-        CertPathValidationResult result = path.validate(new CertPathValidation[]{
-            new ParentCertIssuedValidation(verifier), new BasicConstraintsValidation(), new KeyUsageValidation()});
+        CertPathValidationResult result = path.validate(new CertPathValidation[] {
+                new ParentCertIssuedValidation(verifier), new BasicConstraintsValidation(), new KeyUsageValidation() });
 
         return result;
     }
