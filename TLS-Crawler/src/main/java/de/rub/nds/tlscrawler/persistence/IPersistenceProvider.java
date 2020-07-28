@@ -12,7 +12,7 @@ import com.mongodb.client.FindIterable;
 import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
 
 import de.rub.nds.tlscrawler.data.ScanTask;
-import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.Collection;
 import java.util.List;
 import org.bson.conversions.Bson;

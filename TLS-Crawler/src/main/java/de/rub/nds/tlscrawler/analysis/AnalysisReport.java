@@ -8,9 +8,9 @@ package de.rub.nds.tlscrawler.analysis;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.probe.padding.KnownPaddingOracleVulnerability;
-import de.rub.nds.tlsscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import java.util.Map;
 
 /**

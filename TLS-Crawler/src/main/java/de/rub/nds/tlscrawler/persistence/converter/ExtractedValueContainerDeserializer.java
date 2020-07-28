@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import java.io.IOException;
 import java.util.List;
 

@@ -44,8 +44,8 @@ import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintDeserializ
 import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerializer;
 import de.rub.nds.tlscrawler.persistence.converter.VectorDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.VectorSerializer;
-import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.security.PublicKey;
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import java.util.*;

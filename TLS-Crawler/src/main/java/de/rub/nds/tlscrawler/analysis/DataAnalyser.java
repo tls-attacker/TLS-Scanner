@@ -7,8 +7,8 @@ package de.rub.nds.tlscrawler.analysis;
 
 import de.rub.nds.tlscrawler.config.AnalysisCommandConfig;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.Collection;
 import org.bson.BsonBoolean;
 import org.bson.BsonDocument;
