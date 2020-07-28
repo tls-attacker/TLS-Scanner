@@ -79,7 +79,11 @@ public class CertificateReportGenerator {
         report.setCertificate(cert);
         setVulnerableRoca(report, cert);
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
-        report.setTrustAnchor(anchorManger.isTrustAnchor(report));
+        if (anchorManger.isInitialized()) {
+            report.setTrustAnchor(anchorManger.isTrustAnchor(report));
+        } else {
+            report.setTrustAnchor(null);
+        }
         if (report.getIssuer().equals(report.getSubject())) {
             report.setSelfSigned(true);
         } else {
