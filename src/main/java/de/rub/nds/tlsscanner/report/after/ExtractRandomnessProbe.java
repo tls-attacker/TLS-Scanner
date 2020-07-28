@@ -858,7 +858,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         double failurePercent = (double) failedTests / TEMPLATE_NINE.length;
         // Use 0 and 1 to represent False and True to use the Map
         double testPassed = 0;
-        if (pValue >= 0.01) {
+        if (pValue >= MINIMUM_P_VALUE) {
             testPassed = 1;
         }
         result.put(templateConstants.TEST_RESULT, testPassed);
