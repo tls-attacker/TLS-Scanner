@@ -35,10 +35,10 @@ public class ResponseFingerprintSerialisationConverter extends StdSerializer<Res
     public void serialize(ResponseFingerprint responseFingerprint, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeStringField("socketState", responseFingerprint.getSocketState().name());
-        jsonGenerator.writeNumberField("numberOfMessagesReceived", responseFingerprint.getNumberOfMessageReceived());
-        jsonGenerator.writeNumberField("numberOfRecordsReceived", responseFingerprint.getNumberRecordsReceived());
-        jsonGenerator.writeBooleanField("encryptedAlert", responseFingerprint.isEncryptedAlert());
-        jsonGenerator.writeBooleanField("receivedTransportHandlerException", responseFingerprint.isReceivedTransportHandlerException());
+        jsonGenerator.writeNumberField("numberOfMessagesReceived", responseFingerprint.getMessageList().size());
+        jsonGenerator.writeNumberField("numberOfRecordsReceived", responseFingerprint.getRecordList().size());
+//        jsonGenerator.writeBooleanField("encryptedAlert", responseFingerprint.isEncryptedAlert());
+//        jsonGenerator.writeBooleanField("receivedTransportHandlerException", responseFingerprint.isReceivedTransportHandlerException());
         jsonGenerator.writeArrayFieldStart("receivedMessages");
         for (ProtocolMessage message : responseFingerprint.getMessageList()) {
             jsonGenerator.writeString(message.toCompactString());
