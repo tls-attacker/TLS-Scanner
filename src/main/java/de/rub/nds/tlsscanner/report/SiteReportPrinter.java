@@ -1313,14 +1313,17 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Types failing ENTROPY_TEST", report.getEntropyResult().toString());
         }
         if (!(report.getTemplateResult() == null)) {
+            prettyAppend(builder, "Types failing TEMPLATE_TEST", report.getTemplateResult().toString());
+        }
+        if (!(report.getTemplateResult() == null)) {
             prettyAppend(builder, "Non Overlapping Template Test - Percentage of Failed Templates");
-            prettyAppend(builder, "Server Hello Random",
-                    (int) (report.getTemplateResult().get(RandomType.RANDOM) * 100) + "%");
-            prettyAppend(builder, "Session ID", (int) (report.getTemplateResult().get(RandomType.SESSION_ID) * 100)
-                    + "%");
-            prettyAppend(builder, "IV", (int) (report.getTemplateResult().get(RandomType.IV) * 100) + "%");
+            prettyAppend(builder, "Server Hello Random", (int) (report.getTemplatePercentageMap()
+                    .get(RandomType.RANDOM) * 100) + "%");
+            prettyAppend(builder, "Session ID",
+                    (int) (report.getTemplatePercentageMap().get(RandomType.SESSION_ID) * 100) + "%");
+            prettyAppend(builder, "IV", (int) (report.getTemplatePercentageMap().get(RandomType.IV) * 100) + "%");
             prettyAppend(builder, "Complete Sequence",
-                    (int) (report.getTemplateResult().get(RandomType.COMPLETE_SEQUENCE) * 100) + "%");
+                    (int) (report.getTemplatePercentageMap().get(RandomType.COMPLETE_SEQUENCE) * 100) + "%");
 
         }
 

@@ -129,7 +129,8 @@ public class SiteReport extends Observable implements Serializable {
     private LinkedList<RandomType> failedRunsTypes = null;
     private LinkedList<RandomType> failedLongestRunBlockTypes = null;
     private LinkedList<RandomType> failedFourierTypes = null;
-    private Map<RandomType, Double> failedTemplateTypes = null;
+    private LinkedList<RandomType> failedTemplateTypes = null;
+    private Map<RandomType, Double> failedTemplateMap = null;
     private LinkedList<RandomType> failedEntropyTypes = null;
     private Boolean prematureStop = null;
 
@@ -805,8 +806,8 @@ public class SiteReport extends Observable implements Serializable {
      *            LinkedList of RandomTypes which failed the Non Overlapping
      *            Template Test
      */
-    public synchronized void putTemplateResult(Map<RandomType, Double> failedTypes) {
-        this.failedTemplateTypes = failedTypes;
+    public synchronized void putTemplatePercentageMap(Map<RandomType, Double> failedTypes) {
+        this.failedTemplateMap = failedTypes;
     }
 
     /**
@@ -817,7 +818,29 @@ public class SiteReport extends Observable implements Serializable {
      * @return Map of RandomTypes with percentage of failed Templates in the Non
      *         Overlapping Template Test
      */
-    public synchronized Map<RandomType, Double> getTemplateResult() {
+    public synchronized Map<RandomType, Double> getTemplatePercentageMap() {
+        return failedTemplateMap;
+    }
+
+    /***
+     * Method used to set the Linked List of RandomTypes which failed the Non
+     * Overlapping Template Test.
+     * 
+     * @param failedTypes
+     *            RandomTypes that failed the Non Overlapping Template Test.
+     */
+    public synchronized void putTemplateResult(LinkedList<RandomType> failedTypes) {
+        this.failedTemplateTypes = failedTypes;
+    }
+
+    /***
+     * Method used to get the Linked List of RandomTypes which failed the Non
+     * Overlapping Template Test.
+     * 
+     * @return Linked List of RandomTypes that failed the Non Overlapping
+     *         Template Test
+     */
+    public synchronized LinkedList<RandomType> getTemplateResult() {
         return failedTemplateTypes;
     }
 

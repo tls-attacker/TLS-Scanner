@@ -11,15 +11,11 @@ package de.rub.nds.tlsscanner.report.after;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.probe.stats.ComparableByteArray;
-import de.rub.nds.tlsscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.report.result.statistics.RandomEvaluationResult;
 
 import java.util.*;
-import java.io.PrintStream;
 
 import de.rub.nds.tlsscanner.report.result.statistics.RandomMinimalLengthResult;
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -30,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.special.Gamma;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.io.IOException;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +40,13 @@ public class ExtractRandomnessProbe extends AfterProbe {
     // Minimum 32 000 Bytes ~ 1000 ServerHelloRandoms
     private final int MINIMUM_AMOUNT_OF_BYTES = 32000;
     private final double MINIMUM_P_VALUE = 0.01;
+
     // private final double TEMPLATE_TEST_MAXIMUM_FAILED_TESTS = 0.5;
+
+    private enum templateConstants {
+        TEST_RESULT,
+        PERCENTAGE
+    }
 
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
             .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
@@ -206,7 +208,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LinkedList<RandomType> runsList = new LinkedList<>();
         LinkedList<RandomType> longestRunBlockList = new LinkedList<>();
         LinkedList<RandomType> fourierList = new LinkedList<>();
-        Map<RandomType, Double> nonOverlappingTemplateList = new HashMap<>();
+        Map<RandomType, Double> nonOverlappingTemplatePercentagesMap = new HashMap<>();
+        LinkedList<RandomType> nonOverlappingTemplateList = new LinkedList<>();
         LinkedList<RandomType> entropyList = new LinkedList<>();
         // LinkedList<RandomType> serialList = new LinkedList<>();
         // LinkedList<RandomType> cuSumList = new LinkedList<>();
@@ -384,20 +387,55 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putFourierResult(fourierList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
-        double percentage = 0.0;
-        percentage = nonOverlappingTemplateTest(extractedRandomArray, 9);
-        LOGGER.debug("TEMPLATE_TEST ServerHelloRandom Failed Test Percentage : " + (percentage * 100));
-        nonOverlappingTemplateList.put(RandomType.RANDOM, percentage);
-        percentage = nonOverlappingTemplateTest(extractedSessionIdArray, 9);
-        LOGGER.debug("TEMPLATE_TEST SessionID Failed Test Percentage : " + (percentage * 100));
-        nonOverlappingTemplateList.put(RandomType.SESSION_ID, percentage);
-        percentage = nonOverlappingTemplateTest(extractedIvArray, 9);
-        LOGGER.debug("TEMPLATE_TEST IV Failed Test Percentage : " + (percentage * 100));
-        nonOverlappingTemplateList.put(RandomType.IV, percentage);
-        percentage = nonOverlappingTemplateTest(testSequence, 9);
-        LOGGER.debug("TEMPLATE_TEST FullSequence Failed Test Percentage : " + (percentage * 100));
-        nonOverlappingTemplateList.put(RandomType.COMPLETE_SEQUENCE, percentage);
+        Map<templateConstants, Double> templateResult;
+        double templateFailedPercentage;
+
+        templateResult = nonOverlappingTemplateTest(extractedRandomArray, 9);
+        if (templateResult.get(templateConstants.TEST_RESULT) == 0) {
+            LOGGER.debug("TEMPLATE_TEST ServerHelloRandom : FAILED");
+            nonOverlappingTemplateList.add(RandomType.RANDOM);
+        } else {
+            LOGGER.debug("TEMPLATE_TEST ServerHelloRandom : PASSED");
+        }
+        templateFailedPercentage = templateResult.get(templateConstants.PERCENTAGE);
+        LOGGER.debug("TEMPLATE_TEST ServerHelloRandom Failed Test Percentage : " + (templateFailedPercentage * 100));
+        nonOverlappingTemplatePercentagesMap.put(RandomType.RANDOM, templateFailedPercentage);
+
+        templateResult = nonOverlappingTemplateTest(extractedSessionIdArray, 9);
+        if (templateResult.get(templateConstants.TEST_RESULT) == 0) {
+            LOGGER.debug("TEMPLATE_TEST SessionID : FAILED");
+            nonOverlappingTemplateList.add(RandomType.SESSION_ID);
+        } else {
+            LOGGER.debug("TEMPLATE_TEST SessionID : PASSED");
+        }
+        templateFailedPercentage = templateResult.get(templateConstants.PERCENTAGE);
+        LOGGER.debug("TEMPLATE_TEST SessionID Failed Test Percentage : " + (templateFailedPercentage * 100));
+        nonOverlappingTemplatePercentagesMap.put(RandomType.SESSION_ID, templateFailedPercentage);
+
+        templateResult = nonOverlappingTemplateTest(extractedIvArray, 9);
+        if (templateResult.get(templateConstants.TEST_RESULT) == 0) {
+            LOGGER.debug("TEMPLATE_TEST IV : FAILED");
+            nonOverlappingTemplateList.add(RandomType.IV);
+        } else {
+            LOGGER.debug("TEMPLATE_TEST IV : PASSED");
+        }
+        templateFailedPercentage = templateResult.get(templateConstants.PERCENTAGE);
+        LOGGER.debug("TEMPLATE_TEST IV Failed Test Percentage : " + (templateFailedPercentage * 100));
+        nonOverlappingTemplatePercentagesMap.put(RandomType.IV, templateFailedPercentage);
+
+        templateResult = nonOverlappingTemplateTest(testSequence, 9);
+        if (templateResult.get(templateConstants.TEST_RESULT) == 0) {
+            LOGGER.debug("TEMPLATE_TEST FullSequence : FAILED");
+            nonOverlappingTemplateList.add(RandomType.COMPLETE_SEQUENCE);
+        } else {
+            LOGGER.debug("TEMPLATE_TEST FullSequence : PASSED");
+        }
+        templateFailedPercentage = templateResult.get(templateConstants.PERCENTAGE);
+        LOGGER.debug("TEMPLATE_TEST FullSequence Failed Test Percentage : " + (templateFailedPercentage * 100));
+        nonOverlappingTemplatePercentagesMap.put(RandomType.COMPLETE_SEQUENCE, templateFailedPercentage);
+
         // /////////////////////////////////////////////////
+        report.putTemplatePercentageMap(nonOverlappingTemplatePercentagesMap);
         report.putTemplateResult(nonOverlappingTemplateList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
@@ -727,14 +765,20 @@ public class ExtractRandomnessProbe extends AfterProbe {
      *            "9" CURRENTLY SUPPORTED)
      * @return The ratio of failed tests to number of tests
      */
-    private Double nonOverlappingTemplateTest(ComparableByteArray[] byteSequence, int templateSize) {
+    private Map<templateConstants, Double> nonOverlappingTemplateTest(ComparableByteArray[] byteSequence,
+            int templateSize) {
         String fullSequence = "";
         int NUMBER_OF_BLOCKS = 8;
         int failedTests = 0;
+        double fisherSum = 0.0;
+        double pValue = 0.0;
+        Map<templateConstants, Double> result = new HashMap<>();
 
         if (!(templateSize == 9)) {
             LOGGER.debug("Currently only templateSize of 9 supported!");
-            return 0.0;
+            result.put(templateConstants.TEST_RESULT, 0.0);
+            result.put(templateConstants.PERCENTAGE, 0.0);
+            return result;
         }
 
         for (ComparableByteArray randomString : byteSequence) {
@@ -742,7 +786,9 @@ public class ExtractRandomnessProbe extends AfterProbe {
         }
 
         if (fullSequence.length() == 0) {
-            return 0.0;
+            result.put(templateConstants.TEST_RESULT, 0.0);
+            result.put(templateConstants.PERCENTAGE, 0.0);
+            return result;
         }
 
         // fixed to 8 for this test
@@ -793,11 +839,32 @@ public class ExtractRandomnessProbe extends AfterProbe {
                 // current Template failed the Test
                 failedTests++;
             }
+
+            fisherSum = fisherSum + Math.log(currentPValue);
         }
 
+        // Use Fisher's Method to combine the p-values to one p-value
+        double fisherResult = (-2) * fisherSum;
+        if (Double.isInfinite(fisherResult)) {
+            LOGGER.debug("P Value is " + 0);
+        } else {
+            // Using Fishers Method we get Chi Square Distribution with
+            // TEMPLATE_NINE.length * 2 degrees of Freedom.
+            pValue = Gamma.regularizedGammaQ(TEMPLATE_NINE.length, fisherResult / 2.0);
+            LOGGER.debug("P Value is : " + pValue);
+        }
         LOGGER.debug("Failed Tests : " + failedTests);
 
-        return (double) failedTests / TEMPLATE_NINE.length;
+        double failurePercent = (double) failedTests / TEMPLATE_NINE.length;
+        // Use 0 and 1 to represent False and True to use the Map
+        double testPassed = 0;
+        if (pValue >= 0.01) {
+            testPassed = 1;
+        }
+        result.put(templateConstants.TEST_RESULT, testPassed);
+        result.put(templateConstants.PERCENTAGE, failurePercent);
+
+        return result;
     }
 
     /***
