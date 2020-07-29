@@ -17,7 +17,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 import java.util.*;
 
-import de.rub.nds.tlsscanner.report.result.statistics.RandomMinimalLengthResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomMinimalLengthResult;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.jtransforms.fft.DoubleFFT_1D;
 
