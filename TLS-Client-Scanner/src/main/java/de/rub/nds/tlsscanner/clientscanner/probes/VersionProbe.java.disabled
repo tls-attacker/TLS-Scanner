@@ -1,0 +1,69 @@
+package de.rub.nds.tlsscanner.clientscanner.probes;
+
+import java.util.Iterator;
+
+import javax.xml.bind.annotation.XmlTransient;
+
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
+import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
+import de.rub.nds.tlsscanner.clientscanner.workflow.DispatchingAction;
+import de.rub.nds.tlsscanner.clientscanner.workflow.GetClientHelloMessage;
+
+public class VersionProbe extends DispatchingAction implements Iterator<TlsAction> {
+    enum IteratorState {
+        INIT, REQ_HELLO, GOT_HELLO, FINISHED,
+    }
+
+    protected IteratorState iState = IteratorState.INIT;
+
+    @Override
+    public boolean hasNext() {
+        return iState != IteratorState.FINISHED;
+    }
+
+    @Override
+    public TlsAction next() {
+        switch (iState) {
+        case INIT:
+            iState = IteratorState.REQ_HELLO;
+            return new GetClientHelloMessage();
+        case REQ_HELLO:
+            ReceivingAction x = state.getWorkflowTrace().getLastReceivingAction();
+            if (!(x instanceof GetClientHelloMessage)) {
+                throw new RuntimeException("[internal error] Workflowtrace conains invalid receiving action");
+            }
+            if (!((GetClientHelloMessage) x).executedAsPlanned()) {
+                throw new RuntimeException("[internal error] Did not get CHLO");
+            }
+            iState = IteratorState.GOT_HELLO;
+        case GOT_HELLO:
+            ClientHelloMessage CHLO = ((GetClientHelloMessage) state.getWorkflowTrace().getLastReceivingAction())
+                    .getClientHelloMessage();
+            System.out.print(CHLO);
+            iState = IteratorState.FINISHED;
+            break;
+        default:
+            break;
+        }
+        return null;
+    }
+
+    @Override
+    public Iterator<TlsAction> getGenerator() {
+        return this;
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        iState = IteratorState.INIT;
+    }
+
+    @Override
+    public boolean executedAsPlanned() {
+        return iState == IteratorState.FINISHED;
+    }
+
+}
