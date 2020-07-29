@@ -3,8 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TLS-Scanner</artifactId>
     <groupId>de.rub.nds.tlsscanner</groupId>
-    <version>3.0.3</version>
-    <packaging>jar</packaging>
+    <version>4.0.0</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>TLS-Scanner-Core</module>
+        <module>TLS-Server-Scanner</module>
+        <module>TLS-Client-Scanner</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
@@ -15,6 +20,11 @@
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>Attacks</artifactId>
             <version>3.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.rub.nds</groupId>
+            <artifactId>Asn1Tool</artifactId>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -93,6 +103,7 @@
         <finalName>TLS-Scanner</finalName>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
@@ -110,9 +121,8 @@
                                     <type>${project.packaging}</type>
                                     <destFileName>${project.build.finalName}.${project.packaging}</destFileName>
                                 </artifactItem>
-                        
                             </artifactItems>
-                            <outputDirectory>${basedir}/apps</outputDirectory>
+                            <outputDirectory>${main.basedir}/apps</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -122,7 +132,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/apps/lib</outputDirectory>
+                            <outputDirectory>${main.basedir}/apps/lib</outputDirectory>
                             <!--Ensures only runnable dependencies are included-->
                             <includeScope>compile</includeScope>
                         </configuration>
@@ -130,33 +140,18 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- Build an executable JAR -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>de.rub.nds.tlsscanner.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <version>3.0</version>
                 <configuration>
-                    <header>${basedir}/license_header_plain.txt</header>
+                    <header>${main.basedir}/license_header_plain.txt</header>
                     <strictCheck>true</strictCheck>
                     <includes>
                         <include>src/**/*.java</include>
                     </includes>
                     <properties>
                         <year>${project.inceptionYear}</year>
-                        <owner>Ruhr University Bochum, Hackmanit GmbH</owner>
+                        <owner>Ruhr University Bochum, Paderborn University, Hackmanit GmbH</owner>
                     </properties>
                 </configuration>
                 <executions>
@@ -197,36 +192,12 @@
                     <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/src/main/resources/trust/</outputDirectory>
-                            <resources>          
-                                <resource>
-                                    <directory>${basedir}/trust_stores_observatory/trust_stores/</directory>
-                                </resource>
-                                <resource>
-                                    <directory>${basedir}/trust_stores_observatory/certificates/</directory>
-                                </resource>
-                            </resources>              
-                        </configuration>            
-                    </execution>
-                </executions>
-            </plugin>
             <!-- Format the Code -->
             <plugin>
                 <groupId>net.revelc.code</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
                 <configuration>
-                    <configFile>${basedir}/maven-eclipse-codestyle.xml</configFile>
+                    <configFile>${main.basedir}/maven-eclipse-codestyle.xml</configFile>
                     <lineEnding>LF</lineEnding>
                 </configuration>
                 <executions>
@@ -242,7 +213,10 @@
     </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <licenseOwner>Ruhr University Bochum, Paderborn University, Hackmanit GmbH</licenseOwner>
+        <main.basedir>${project.basedir}</main.basedir>
     </properties>
 </project>
