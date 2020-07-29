@@ -34,25 +34,28 @@ public abstract class StateDispatcher<T> implements IDispatcher {
     public void fillTrace(WorkflowTrace trace, State chloState) {
         String raddr = chloState.getInboundTlsContexts().get(0).getConnection().getIp();
         T previousState = getPreviousState(raddr);
-        this.fillTrace(trace, previousState);
+        T newState = this.fillTrace(trace, chloState, previousState);
+        setPreviousState(raddr, newState);
         trace.addTlsAction(new StateDispatcherPostAction(raddr));
     }
 
     protected void postExecute(String raddr, State state) {
         T previousState = getPreviousState(raddr);
-        setPreviousState(raddr, getNewState(previousState, state));
+        setPreviousState(raddr, getNewStatePostExec(previousState, state));
     }
 
-    protected abstract void fillTrace(WorkflowTrace trace, T previousState);
-    protected abstract T getNewState(T previousState, State state);
+    protected abstract T fillTrace(WorkflowTrace trace, State chloState, T previousState);
 
+    protected abstract T getNewStatePostExec(T previousState, State state);
 
     @XmlTransient
     public class StateDispatcherPostAction extends TlsAction {
         private String raddr;
+
         public StateDispatcherPostAction(String raddr) {
             this.raddr = raddr;
         }
+
         @Override
         public void execute(State state) throws WorkflowExecutionException {
             StateDispatcher.this.postExecute(raddr, state);

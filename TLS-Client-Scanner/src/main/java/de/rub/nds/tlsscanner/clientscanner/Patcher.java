@@ -16,11 +16,8 @@ import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceSerializer;
-import de.rub.nds.tlsattacker.core.workflow.action.GeneralAction;
 import de.rub.nds.tlsattacker.util.UnlimitedStrengthEnabler;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.StateDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probes.HelloWorldProbe;
 import de.rub.nds.tlsscanner.clientscanner.workflow.GetClientHelloMessage;
 

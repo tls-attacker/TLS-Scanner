@@ -21,11 +21,9 @@ import org.apache.logging.log4j.core.config.Configurator;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceSerializer;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probes.HelloWorldProbe;
+import de.rub.nds.tlsscanner.clientscanner.probes.VersionProbe;
 
 public class Main {
 
@@ -46,7 +44,7 @@ public class Main {
 
         // Two threads
         // Server: Manage incoming connections
-        Server s = new Server(state, new HelloWorldProbe());
+        Server s = new Server(state, new VersionProbe());
         s.start();
         // (optionally) Client controller: Tell clients to connect to Server(s)
 

@@ -1,9 +1,5 @@
 package de.rub.nds.tlsscanner.clientscanner.probes;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -16,7 +12,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerCertificateAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerKeyExchangeAction;
-import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.StateDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.workflow.GetClientHelloMessage;
 
@@ -28,7 +23,7 @@ public class HelloWorldProbe extends StateDispatcher<Integer> {
     }
 
     @Override
-    protected void fillTrace(WorkflowTrace trace, Integer previousState) {
+    protected Integer fillTrace(WorkflowTrace trace, State chloState, Integer previousState) {
         trace.addTlsAction(new GetClientHelloMessage());
         trace.addTlsAction(new GetClientHelloMessage());
         trace.addTlsAction(new SendAction(new ServerHelloMessage()));
@@ -44,10 +39,11 @@ public class HelloWorldProbe extends StateDispatcher<Integer> {
         msg.setDataConfig(String.join("\r\n", "HTTP/1.1 200 OK", "Server: TLS-Client-Scanner",
                 "Content-Length: " + (content.length() + 2), "", content, "").getBytes());
         trace.addTlsAction(new SendAction(msg));
+        return previousState;
     }
 
     @Override
-    protected Integer getNewState(Integer previousState, State state) {
+    protected Integer getNewStatePostExec(Integer previousState, State state) {
         return previousState += 1;
     }
 
