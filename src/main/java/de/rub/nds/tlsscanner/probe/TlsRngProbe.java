@@ -244,6 +244,8 @@ public class TlsRngProbe extends TlsProbe {
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config serverHelloConfig = generateTls13Config(intToByteArray(clientRandomInit + i));
 
+            serverHelloConfig.setDefaultClientSupportedCiphersuites(supportedSuites);
+
             if (supportsExtendedRandom) {
                 LOGGER.debug("Extended Random Supported!");
                 serverHelloConfig.setParseKeyShareOld(false);
