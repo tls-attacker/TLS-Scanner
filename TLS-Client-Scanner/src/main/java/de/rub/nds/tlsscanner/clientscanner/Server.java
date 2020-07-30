@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.workflow.ThreadedServerWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.workflow.CSWorkflowExecutor;
 
@@ -17,8 +18,8 @@ public class Server extends Thread {
 
     private WorkflowExecutor executor;
 
-    public Server(de.rub.nds.tlsattacker.core.state.State state, IDispatcher rootDispatcher) throws UnknownHostException {
-        this.executor = new CSWorkflowExecutor(state, rootDispatcher);
+    public Server(ClientScannerConfig csconfig, IDispatcher rootDispatcher) {
+        this.executor = new CSWorkflowExecutor(csconfig, rootDispatcher);
     }
 
     public void run() {

@@ -1,8 +1,7 @@
 package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 
-import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public interface IDispatcher {
-    public void fillTrace(WorkflowTrace trace, State chloState);
+    public ClientProbeResult execute(DispatchInformation dispatchInformation);
 }

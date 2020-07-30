@@ -1,4 +1,4 @@
-package de.rub.nds.tlsscanner.clientscanner.probes;
+package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.HashMap;
 import java.util.List;

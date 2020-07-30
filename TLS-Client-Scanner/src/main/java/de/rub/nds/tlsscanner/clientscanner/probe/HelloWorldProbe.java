@@ -1,4 +1,6 @@
-package de.rub.nds.tlsscanner.clientscanner.probes;
+package de.rub.nds.tlsscanner.clientscanner.probe;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
@@ -12,10 +14,11 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerCertificateAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerKeyExchangeAction;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.StateDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.workflow.GetClientHelloMessage;
 
-public class HelloWorldProbe extends StateDispatcher<Integer> {
+public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
 
     public HelloWorldProbe() {
         super();
@@ -23,7 +26,8 @@ public class HelloWorldProbe extends StateDispatcher<Integer> {
     }
 
     @Override
-    protected Integer fillTrace(WorkflowTrace trace, State chloState, Integer previousState) {
+    protected Pair<ClientProbeResult, Integer> execute(Integer previousState, DispatchInformation dispatchInformation) {
+        WorkflowTrace trace = new WorkflowTrace();
         trace.addTlsAction(new GetClientHelloMessage());
         trace.addTlsAction(new GetClientHelloMessage());
         trace.addTlsAction(new SendAction(new ServerHelloMessage()));
@@ -39,12 +43,10 @@ public class HelloWorldProbe extends StateDispatcher<Integer> {
         msg.setDataConfig(String.join("\r\n", "HTTP/1.1 200 OK", "Server: TLS-Client-Scanner",
                 "Content-Length: " + (content.length() + 2), "", content, "").getBytes());
         trace.addTlsAction(new SendAction(msg));
-        return previousState;
-    }
 
-    @Override
-    protected Integer getNewStatePostExec(Integer previousState, State state) {
-        return previousState += 1;
+        State state = new State(dispatchInformation.csConfig.createConfig(), trace);
+        executeState(state, dispatchInformation, true);
+        return Pair.of(null, previousState + 1);
     }
 
 }

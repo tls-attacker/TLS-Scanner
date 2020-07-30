@@ -18,7 +18,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.util.UnlimitedStrengthEnabler;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
-import de.rub.nds.tlsscanner.clientscanner.probes.HelloWorldProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.HelloWorldProbe;
 import de.rub.nds.tlsscanner.clientscanner.workflow.GetClientHelloMessage;
 
 public class Patcher {
@@ -83,9 +83,7 @@ public class Patcher {
      * @return Proxy which behaves like an XmlElement annotation
      */
     private static XmlElement _xmlElement(String name, Class<?> type) {
-        return (XmlElement) Proxy.newProxyInstance(
-                XmlElement.class.getClassLoader(),
-                new Class[] { XmlElement.class },
+        return (XmlElement) Proxy.newProxyInstance(XmlElement.class.getClassLoader(), new Class[] { XmlElement.class },
                 new XmlElementInvocationHandler(name, type));
     }
 
@@ -100,11 +98,10 @@ public class Patcher {
             Field field = WorkflowTrace.class.getDeclaredField("tlsActions");
             field.getDeclaredAnnotations();
             XmlElements annotation = field.getDeclaredAnnotation(XmlElements.class);
-            XmlElement[] toAdd = {
-                    _xmlElement("DHelloWorld", HelloWorldDispatcher.class),
+            XmlElement[] toAdd = { _xmlElement("DHelloWorld", HelloWorldDispatcher.class),
                     _xmlElement("PHelloWorld", HelloWorldProbe.class),
                     _xmlElement("GetCHLO", GetClientHelloMessage.class),
-                    //_xmlElement("VersionProbe", VersionProbe.class),
+                    // _xmlElement("VersionProbe", VersionProbe.class),
             };
 
             XmlElement[] newValues = new XmlElement[annotation.value().length + toAdd.length];

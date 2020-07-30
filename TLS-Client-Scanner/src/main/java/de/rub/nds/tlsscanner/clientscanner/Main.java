@@ -13,17 +13,21 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
-import de.rub.nds.tlsscanner.clientscanner.probes.HelloWorldProbe;
-import de.rub.nds.tlsscanner.clientscanner.probes.VersionProbe;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
 
 public class Main {
 
@@ -34,17 +38,26 @@ public class Main {
         Configurator.setAllLevels("de.rub.nds.tlsscanner.clientscanner", Level.DEBUG);
         Patcher.applyPatches();
 
-        Config config = Config.createConfig();
-        config.setWorkflowExecutorType(WorkflowExecutorType.THREADED_SERVER);
-        config.setDefaultRunningMode(RunningModeType.SERVER);
-        config.getDefaultServerConnection().setHostname("0.0.0.0");
-        config.getDefaultServerConnection().setPort(1337);
+        ClientScannerConfig csconfig = new ClientScannerConfig(new GeneralDelegate());
+        JCommander commander = new JCommander(csconfig);
 
-        State state = new State(config);
+        try {
+            commander.parse(args);
+            if (csconfig.getGeneralDelegate().isHelp()) {
+                commander.usage();
+                return;
+            }
+            mainInternal(csconfig);
+        } catch (ParameterException E) {
+            LOGGER.error("Could not parse provided parameters", E);
+            commander.usage();
+        }
+    }
 
+    private static void mainInternal(ClientScannerConfig csconfig) {
         // Two threads
         // Server: Manage incoming connections
-        Server s = new Server(state, new VersionProbe());
+        Server s = new Server(csconfig, new HelloWorldDispatcher());
         s.start();
         // (optionally) Client controller: Tell clients to connect to Server(s)
 
