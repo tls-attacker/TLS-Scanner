@@ -166,13 +166,12 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                     if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
                         findWork();
                     }
-                    if (currentScanJob != null) {
-                        // Persist task results:
-                        if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
-                                || ((ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) && this.synchronizedTaskRouter.getFinishedCount() != 0)) {
-                            persistResults();
-                        }
+                    // Persist task results:
+                    if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
+                            || ((ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) && this.synchronizedTaskRouter.getFinishedCount() != 0)) {
+                        persistResults();
                     }
+
                     updateTodos();
                     sleep();
                 } catch (Exception E) {
@@ -211,7 +210,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
             LOG.trace("Persisting results.");
             List<ScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
             LOG.info("Storing results");
-            
+
             this.organizer.getPersistenceProvider().insertScanTasks(finishedTasks);
             this.stats.incrementCompletedTaskCount(finishedTasks.size());
             this.iterations = 0;
