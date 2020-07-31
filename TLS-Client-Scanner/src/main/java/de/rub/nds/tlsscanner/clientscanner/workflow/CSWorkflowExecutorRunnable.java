@@ -1,6 +1,8 @@
 package de.rub.nds.tlsscanner.clientscanner.workflow;
 
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,15 +16,15 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorRunnable;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 
-public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable implements IStatePreparator {
+public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable {
     private static final Logger LOGGER = LogManager.getLogger();
     protected final IDispatcher rootDispatcher;
-    protected final Config chloConfig;
     protected final ClientScannerConfig csConfig;
 
     public CSWorkflowExecutorRunnable(ClientScannerConfig csConfig, Socket socket,
@@ -30,21 +32,23 @@ public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable impleme
         super(null, socket, parent);
         this.rootDispatcher = rootDispatcher;
         this.csConfig = csConfig;
-        chloConfig = csConfig.createConfig();
-        chloConfig.setWorkflowExecutorShouldClose(false);
     }
 
     @Override
     protected void runInternal() {
         LOGGER.debug("Trying to get CHLO");
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(chloConfig);
-        WorkflowTrace chloTrace = factory.createTlsEntryWorkflowtrace(chloConfig.getDefaultServerConnection());
+        Config config = csConfig.createConfig();
+        config.setWorkflowExecutorShouldClose(false);
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
+        WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultServerConnection());
         ReceiveAction chloAction = new ReceiveAction(new ClientHelloMessage());
-        chloTrace.addTlsAction(chloAction);
-        State chloState = new State(chloConfig, chloTrace);
-        initConnectionForState(chloState);
-        WorkflowExecutor executor = new DefaultWorkflowExecutor(chloState);
+        trace.addTlsAction(chloAction);
+        State state = new State(config, trace);
+        initConnectionForState(state);
+        WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
         executor.executeWorkflow();
+        config.setWorkflowExecutorShouldOpen(false);
+        config.setWorkflowExecutorShouldClose(true);
 
         if (chloAction.getMessages().size() != 1 || !(chloAction.getMessages().get(0) instanceof ClientHelloMessage)) {
             LOGGER.error("Could not get ClientHello");
@@ -53,24 +57,11 @@ public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable impleme
         }
         ClientHelloMessage chlo = (ClientHelloMessage) chloAction.getMessages().get(0);
         LOGGER.debug("Got CHLO");
+        // Remove initials from workflow
+        List<TlsAction> chloActions = trace.getTlsActions();
+        trace.setTlsActions(new ArrayList<>());
+        trace.addTlsAction(new DummyGetClientHelloAction(chlo));
 
-        rootDispatcher.execute(new DispatchInformation(chlo, chloState, this, this.csConfig));
-    }
-
-    @Override
-    public void prepareState(State state) {
-        initConnectionForState(state);
-    }
-
-    @Override
-    public Config getBaseConfig() {
-        return globalState.getConfig();
-    }
-
-    @Override
-    public State createPreparedState(Config config, WorkflowTrace workflowTrace) {
-        State ret = new State(config, workflowTrace);
-        prepareState(ret);
-        return ret;
+        rootDispatcher.execute(state, new DispatchInformation(chlo, this.csConfig));
     }
 }

@@ -1,6 +1,7 @@
 package de.rub.nds.tlsscanner.clientscanner.workflow;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,14 +30,17 @@ public class GetClientHelloMessage extends ReceiveAction {
         }
         for (TlsAction action : state.getWorkflowTrace().getTlsActions()) {
             if (action instanceof ReceiveAction) {
-                for (ProtocolMessage msg : ((ReceiveAction) action).getReceivedMessages()) {
-                    if (msg instanceof ClientHelloMessage) {
-                        CHLO = (ClientHelloMessage) msg;
+                List<ProtocolMessage> msgs = ((ReceiveAction) action).getReceivedMessages();
+                if (msgs != null) {
+                    for (ProtocolMessage msg : msgs) {
+                        if (msg instanceof ClientHelloMessage) {
+                            CHLO = (ClientHelloMessage) msg;
+                            break;
+                        }
+                    }
+                    if (CHLO != null) {
                         break;
                     }
-                }
-                if (CHLO != null) {
-                    break;
                 }
             }
         }

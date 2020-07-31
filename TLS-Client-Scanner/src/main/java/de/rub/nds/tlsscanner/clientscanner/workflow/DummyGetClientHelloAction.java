@@ -7,7 +7,11 @@ import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class DummyGetClientHelloAction extends ReceiveAction {
+    private static final Logger LOGGER = LogManager.getLogger();
     private ClientHelloMessage chlo;
 
     public DummyGetClientHelloAction(ClientHelloMessage chlo) {
@@ -23,6 +27,7 @@ public class DummyGetClientHelloAction extends ReceiveAction {
         messages = new ArrayList<>(1);
         messages.add(chlo);
         records = new ArrayList<>(0);
+        LOGGER.info("(Dummy) Received messages: {}", getReadableString(messages));
         setExecuted(true);
     }
 }

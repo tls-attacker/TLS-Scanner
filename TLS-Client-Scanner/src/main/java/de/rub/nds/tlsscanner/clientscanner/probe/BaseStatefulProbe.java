@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
@@ -31,14 +32,15 @@ public abstract class BaseStatefulProbe<T> extends BaseProbe {
     }
 
     @Override
-    public ClientProbeResult execute(DispatchInformation dispatchInformation) {
-        String raddr = dispatchInformation.chloState.getInboundTlsContexts().get(0).getConnection().getIp();
+    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) {
+        String raddr = state.getInboundTlsContexts().get(0).getConnection().getIp();
         T previousState = getPreviousState(raddr);
-        Pair<ClientProbeResult, T> ret = this.execute(previousState, dispatchInformation);
+        Pair<ClientProbeResult, T> ret = this.execute(state, dispatchInformation, previousState);
         setPreviousState(raddr, ret.getRight());
         return ret.getLeft();
     }
 
-    protected abstract Pair<ClientProbeResult, T> execute(T previousState, DispatchInformation dispatchInformation);
+    protected abstract Pair<ClientProbeResult, T> execute(State state, DispatchInformation dispatchInformation,
+            T previousState);
 
 }

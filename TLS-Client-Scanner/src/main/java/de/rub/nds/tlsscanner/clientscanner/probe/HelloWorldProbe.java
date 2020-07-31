@@ -26,8 +26,9 @@ public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
     }
 
     @Override
-    protected Pair<ClientProbeResult, Integer> execute(Integer previousState, DispatchInformation dispatchInformation) {
-        WorkflowTrace trace = new WorkflowTrace();
+    protected Pair<ClientProbeResult, Integer> execute(State state, DispatchInformation dispatchInformation,
+            Integer previousState) {
+        WorkflowTrace trace = state.getWorkflowTrace();
         trace.addTlsAction(new GetClientHelloMessage());
         trace.addTlsAction(new GetClientHelloMessage());
         trace.addTlsAction(new SendAction(new ServerHelloMessage()));
@@ -43,9 +44,7 @@ public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
         msg.setDataConfig(String.join("\r\n", "HTTP/1.1 200 OK", "Server: TLS-Client-Scanner",
                 "Content-Length: " + (content.length() + 2), "", content, "").getBytes());
         trace.addTlsAction(new SendAction(msg));
-
-        State state = new State(dispatchInformation.csConfig.createConfig(), trace);
-        executeState(state, dispatchInformation, true);
+        executeState(state);
         return Pair.of(null, previousState + 1);
     }
 
