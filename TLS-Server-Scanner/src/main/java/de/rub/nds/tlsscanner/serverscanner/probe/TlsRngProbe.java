@@ -159,6 +159,7 @@ public class TlsRngProbe extends TlsProbe {
         testConf.setUseFreshRandom(false);
         testConf.setDefaultClientRandom(clientRandom);
         testConf.setStopActionsAfterFatal(true);
+        testConf.setAddServerNameIndicationExtension(true);
         testConf.setDefaultClientSessionId(intToByteArray(1));
 
         testConf.setQuickReceive(true);
@@ -678,6 +679,7 @@ public class TlsRngProbe extends TlsProbe {
         config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setWorkflowExecutorShouldClose(false);
+        config.setAddServerNameIndicationExtension(true);
         config.setEarlyStop(true);
         config.setQuickReceive(true);
         config.setEnforceSettings(true);
