@@ -172,7 +172,9 @@ public class TlsRngProbe extends TlsProbe {
                 supportedGroups.add(group);
             }
         }
-        testConf.setDefaultClientNamedGroups(supportedGroups);
+        if (!(supportedGroups.size() == 0)) {
+            testConf.setDefaultClientNamedGroups(supportedGroups);
+        }
 
         return testConf;
     }
@@ -194,7 +196,9 @@ public class TlsRngProbe extends TlsProbe {
                 tls13Groups.add(group);
             }
         }
-        tlsConfig.setDefaultClientNamedGroups(tls13Groups);
+        if (!(tls13Groups.size() == 0)) {
+            tlsConfig.setDefaultClientNamedGroups(tls13Groups);
+        }
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
