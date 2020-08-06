@@ -24,6 +24,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.SNIDispatcher;
 
 public class Main {
 
@@ -53,7 +54,7 @@ public class Main {
     private static void mainInternal(ClientScannerConfig csconfig) {
         // Two threads
         // Server: Manage incoming connections
-        Server s = new Server(csconfig, new HelloWorldDispatcher());
+        Server s = new Server(csconfig, new SNIDispatcher());
         s.start();
         // (optionally) Client controller: Tell clients to connect to Server(s)
 

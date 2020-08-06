@@ -40,7 +40,6 @@ public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>>
                 break;
             }
         }
-        toTest = ProtocolVersion.TLS13;
         if (toTest == null) {
             throw new RuntimeException("No version left to test");
         }

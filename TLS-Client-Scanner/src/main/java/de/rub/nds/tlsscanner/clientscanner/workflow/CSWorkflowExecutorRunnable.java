@@ -57,10 +57,7 @@ public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable {
         }
         ClientHelloMessage chlo = (ClientHelloMessage) chloAction.getMessages().get(0);
         LOGGER.debug("Got CHLO");
-        // Remove initials from workflow
-        List<TlsAction> chloActions = trace.getTlsActions();
-        trace.setTlsActions(new ArrayList<>());
-        trace.addTlsAction(new DummyGetClientHelloAction(chlo));
+        config.setSkipFirstNActions(trace.getTlsActions().size());
 
         rootDispatcher.execute(state, new DispatchInformation(chlo, this.csConfig));
     }
