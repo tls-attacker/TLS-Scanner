@@ -1,5 +1,7 @@
 package de.rub.nds.tlsscanner.clientscanner.report.result;
 
-public abstract class ClientProbeResult {
+import java.io.Serializable;
+
+public abstract class ClientProbeResult implements Serializable {
 
 }

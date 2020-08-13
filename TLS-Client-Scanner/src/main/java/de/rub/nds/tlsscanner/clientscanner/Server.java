@@ -1,11 +1,12 @@
 package de.rub.nds.tlsscanner.clientscanner;
 
+import java.net.InetAddress;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.workflow.ThreadedServerWorkflowExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.workflow.CSWorkflowExecutor;
@@ -14,10 +15,22 @@ public class Server extends Thread {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private WorkflowExecutor executor;
+    private final CSWorkflowExecutor executor;
 
     public Server(ClientScannerConfig csconfig, IDispatcher rootDispatcher) {
         this.executor = new CSWorkflowExecutor(csconfig, rootDispatcher);
+    }
+
+    public String getHostname() {
+        InetAddress boundAddr = this.executor.getBoundAddress();
+        if (boundAddr == null) {
+            return "127.0.0.42";
+        }
+        return boundAddr.getHostAddress();
+    }
+
+    public int getPort() {
+        return this.executor.getBoundPort();
     }
 
     public void run() {

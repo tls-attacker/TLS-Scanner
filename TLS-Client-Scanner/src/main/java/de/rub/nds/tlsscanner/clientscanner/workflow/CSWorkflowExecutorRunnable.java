@@ -49,6 +49,8 @@ public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable {
         executor.executeWorkflow();
         config.setWorkflowExecutorShouldOpen(false);
         config.setWorkflowExecutorShouldClose(true);
+        config.setResetTrace(false);
+        config.setSkipExecutedActions(true);
 
         if (chloAction.getMessages().size() != 1 || !(chloAction.getMessages().get(0) instanceof ClientHelloMessage)) {
             LOGGER.error("Could not get ClientHello");
@@ -57,8 +59,7 @@ public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable {
         }
         ClientHelloMessage chlo = (ClientHelloMessage) chloAction.getMessages().get(0);
         LOGGER.debug("Got CHLO");
-        config.setSkipFirstNActions(trace.getTlsActions().size());
 
-        rootDispatcher.execute(state, new DispatchInformation(chlo, this.csConfig));
+        rootDispatcher.execute(state, new DispatchInformation(chlo));
     }
 }

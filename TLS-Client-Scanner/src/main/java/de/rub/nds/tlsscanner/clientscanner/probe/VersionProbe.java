@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>> {
@@ -50,6 +51,8 @@ public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>>
         config.setEnforceSettings(true);
         config.setDefaultApplicationMessageData("TLS Version: " + toTest);
         config.setHttpsParsingEnabled(true);
+        config.setStopActionsAfterFatal(true);
+        config.setStopActionsAfterIOException(true);
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace https_trace = factory.createWorkflowTrace(WorkflowTraceType.HTTPS, RunningModeType.SERVER);
         TlsAction traceRecvCHLO = https_trace.removeTlsAction(0);
@@ -62,6 +65,17 @@ public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>>
         executeState(state);
         previousState.put(toTest, state);
         return Pair.of(null, previousState);
+    }
+
+    @Override
+    public boolean canBeExecuted(ClientReport report) {
+        return true;
+    }
+
+    @Override
+    public ClientProbeResult call() throws Exception {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -22,15 +22,18 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.CurlAdapter;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.LocalCommandExecutor;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ProxiedLocalCommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.SNIDispatcher;
 
 public class Main {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void main(String[] args) throws JAXBException, IOException {
+    public static void main(String[] args) throws JAXBException, IOException, InterruptedException {
         Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
         Configurator.setAllLevels("de.rub.nds.tlsscanner.clientscanner", Level.DEBUG);
         Patcher.applyPatches();
@@ -51,23 +54,28 @@ public class Main {
         }
     }
 
-    private static void mainInternal(ClientScannerConfig csconfig) {
+    private static void mainInternal(ClientScannerConfig csconfig) throws InterruptedException {
         // Two threads
         // Server: Manage incoming connections
-        Server s = new Server(csconfig, new SNIDispatcher());
+        Server s = new Server(csconfig, new HelloWorldDispatcher());
         s.start();
-        // (optionally) Client controller: Tell clients to connect to Server(s)
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
+        // (optionally) Client controller: Tell clients to connect to Server(s)
+        IClientAdapter client;
+        // client = new CurlAdapter(new ProxiedLocalCommandExecutor("bash", "-c"));
+        client = new CurlAdapter(new LocalCommandExecutor());
+        client.prepare(true);
+        for (int i = 0; i < 10; i++) {
+            LOGGER.info("##### {} #####", i);
+            client.connect(s.getHostname(), s.getPort());
         }
-        // s.kill();
+        client.cleanup(true);
+
         try {
             s.join();
         } catch (InterruptedException e) {
             LOGGER.error("Failed to wait for server exit due to interrupt", e);
+            throw e;
         }
     }
 }

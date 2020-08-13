@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerCertificateAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerKeyExchangeAction;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.workflow.GetClientHelloMessage;
 
@@ -46,6 +47,17 @@ public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
         trace.addTlsAction(new SendAction(msg));
         executeState(state);
         return Pair.of(null, previousState + 1);
+    }
+
+    @Override
+    public boolean canBeExecuted(ClientReport report) {
+        return true;
+    }
+
+    @Override
+    public ClientProbeResult call() throws Exception {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
