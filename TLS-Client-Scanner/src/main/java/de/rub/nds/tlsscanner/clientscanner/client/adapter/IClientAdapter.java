@@ -1,5 +1,6 @@
 package de.rub.nds.tlsscanner.clientscanner.client.adapter;
 
+import de.rub.nds.tlsscanner.clientscanner.Server;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 
 public interface IClientAdapter {
@@ -10,4 +11,5 @@ public interface IClientAdapter {
     public ClientAdapterResult connect(String hostname, int port) throws InterruptedException;
 
     public void cleanup(boolean deleteAll);
+
 }

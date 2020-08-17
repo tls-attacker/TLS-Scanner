@@ -55,8 +55,7 @@ public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
     }
 
     @Override
-    public ClientProbeResult call() throws Exception {
-        // TODO Auto-generated method stub
+    public ClientProbeResult getCouldNotExecuteResult() {
         return null;
     }
 

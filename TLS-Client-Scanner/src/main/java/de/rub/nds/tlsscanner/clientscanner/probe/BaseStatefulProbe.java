@@ -6,7 +6,10 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.probe.runner.IProbeRunner;
+import de.rub.nds.tlsscanner.clientscanner.probe.runner.StatefulProbeRunner;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public abstract class BaseStatefulProbe<T> extends BaseProbe {
@@ -38,6 +41,11 @@ public abstract class BaseStatefulProbe<T> extends BaseProbe {
         Pair<ClientProbeResult, T> ret = this.execute(state, dispatchInformation, previousState);
         setPreviousState(raddr, ret.getRight());
         return ret.getLeft();
+    }
+
+    @Override
+    public IProbeRunner getRunner(Orchestrator orchestrator) {
+        return new StatefulProbeRunner(this, orchestrator);
     }
 
     protected abstract Pair<ClientProbeResult, T> execute(State state, DispatchInformation dispatchInformation,

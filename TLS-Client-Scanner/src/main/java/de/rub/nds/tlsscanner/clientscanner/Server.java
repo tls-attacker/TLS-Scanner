@@ -18,6 +18,7 @@ public class Server extends Thread {
     private final CSWorkflowExecutor executor;
 
     public Server(ClientScannerConfig csconfig, IDispatcher rootDispatcher) {
+        super("Server");
         this.executor = new CSWorkflowExecutor(csconfig, rootDispatcher);
     }
 

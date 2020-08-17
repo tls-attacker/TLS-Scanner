@@ -8,6 +8,7 @@ import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 
 public class ClientScannerConfig extends TLSDelegateConfig {
+
     @ParametersDelegate
     private GeneralDelegate generalDelegate;
     @ParametersDelegate

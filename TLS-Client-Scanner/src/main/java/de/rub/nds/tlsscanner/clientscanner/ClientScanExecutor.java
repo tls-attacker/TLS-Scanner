@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -15,9 +14,8 @@ import org.apache.logging.log4j.CloseableThreadContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
@@ -27,24 +25,22 @@ public class ClientScanExecutor implements Observer {
     private Collection<IProbe> notScheduledTasks;
     private Collection<Future<ClientProbeResult>> futureResults;
     private final ThreadPoolExecutor executor;
-    private final IClientAdapter clientAdapter;
+    private final Orchestrator orchestrator;
 
-    public ClientScanExecutor(Collection<IProbe> probesToRun, IClientAdapter clientAdapter, int threads,
-            String threadPrefix) {
+    public ClientScanExecutor(Collection<IProbe> probesToRun, Orchestrator orchestrator, ThreadPoolExecutor executor) {
         this.notScheduledTasks = new ArrayList<>(probesToRun);
         this.futureResults = new LinkedList<>();
-        this.clientAdapter = clientAdapter;
-        this.executor = new ThreadPoolExecutor(threads, threads, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
-                new NamedThreadFactory(threadPrefix));
+        this.executor = executor;
+        this.orchestrator = orchestrator;
     }
 
     public ClientReport execute() {
-        clientAdapter.prepare(false);
-        ClientInfo clientInfo = clientAdapter.getReportInformation();
+        ClientInfo clientInfo = orchestrator.getReportInformation();
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(clientInfo.toShortString())) {
+            orchestrator.start();
             return executeInternal(clientInfo);
         } finally {
-            clientAdapter.cleanup(false);
+            orchestrator.cleanup();
         }
     }
 
@@ -58,7 +54,7 @@ public class ClientScanExecutor implements Observer {
         collectStatistics(report);
         executeAfterProbes(report);
         LOGGER.info("Finished scan");
-        return null;
+        return report;
     }
 
     private void checkForExecutableProbes(ClientReport report) {
@@ -76,12 +72,12 @@ public class ClientScanExecutor implements Observer {
                         ClientProbeResult probeResult = result.get();
                         LOGGER.info("+++" + probeResult.getProbeName() + " executed");
                         finishedFutures.add(result);
-                        report.markProbeAsExecuted(result.get().getType());
+                        // TODO report.markProbeAsExecuted(result.get().getType());
                         if (probeResult != null) {
                             probeResult.merge(report);
                         }
 
-                    } catch (InterruptedException | ExecutionException ex) {
+                    } catch (Exception ex) {
                         LOGGER.error("Encountered an exception before we could merge the result. Killing the task.",
                                 ex);
                         result.cancel(true);
@@ -93,10 +89,10 @@ public class ClientScanExecutor implements Observer {
                     LOGGER.error(
                             "Last result merge is more than 30 minutes ago. Starting to kill threads to unblock...");
                     try {
-                        ProbeResult probeResult = result.get(1, TimeUnit.MINUTES);
+                        ClientProbeResult probeResult = result.get(1, TimeUnit.MINUTES);
                         finishedFutures.add(result);
                         probeResult.merge(report);
-                    } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+                    } catch (Exception ex) {
                         result.cancel(true);
                         finishedFutures.add(result);
                         LOGGER.error("Killed task", ex);
@@ -115,7 +111,7 @@ public class ClientScanExecutor implements Observer {
     }
 
     private void reportAboutNotExecutedProbes() {
-        if (LOGGER.isWarnEnabled()) {
+        if (LOGGER.isWarnEnabled() && !notScheduledTasks.isEmpty()) {
             LOGGER.warn("Did not execute the following probes:");
             for (IProbe probe : notScheduledTasks) {
                 LOGGER.warn(probe.getClass().getName());
@@ -133,14 +129,13 @@ public class ClientScanExecutor implements Observer {
 
     @Override
     public synchronized void update(Observable o, Object arg) {
-        // TODO[Merge with serverscanner] move into BaseScanExecutor
-        // This is very similar to ThreadedScanJobExecutor.update in serverscanner
         if (o != null && o instanceof ClientReport) {
             ClientReport report = (ClientReport) o;
+            // iterate over a copy of the list, as we might remove elements
             for (IProbe probe : new ArrayList<>(notScheduledTasks)) {
                 if (probe.canBeExecuted(report)) {
                     notScheduledTasks.remove(probe);
-                    Future<ClientProbeResult> future = executor.submit(probe);
+                    Future<ClientProbeResult> future = executor.submit(probe.getRunner(orchestrator));
                     futureResults.add(future);
                 }
             }

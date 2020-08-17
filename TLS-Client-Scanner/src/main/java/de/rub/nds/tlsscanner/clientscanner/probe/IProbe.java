@@ -1,12 +1,12 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import java.util.concurrent.Callable;
-
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.probe.runner.IProbeRunner;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
-public interface IProbe extends IDispatcher, Callable<ClientProbeResult> {
+public interface IProbe extends IDispatcher {
 
     /**
      * Whether it makes sense to execute this probe given the current report.
@@ -17,4 +17,7 @@ public interface IProbe extends IDispatcher, Callable<ClientProbeResult> {
      */
     public boolean canBeExecuted(ClientReport report);
 
+    public ClientProbeResult getCouldNotExecuteResult();
+
+    public IProbeRunner getRunner(Orchestrator orchestrator);
 }

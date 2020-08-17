@@ -10,10 +10,10 @@ import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 
 public class ServerDelegate extends Delegate {
 
-    @Parameter(names = "-port", required = false, description = "Port to listen on (TODO)")
+    @Parameter(names = "-port", required = true, description = "Port to listen on")
     protected Integer port = null;
 
-    @Parameter(names = "-bindaddr", required = false, description = "Hostname/IP to listen on (TODO)")
+    @Parameter(names = "-bindaddr", required = false, description = "Hostname/IP to listen on")
     protected String bindaddr = null;
 
     @Override
