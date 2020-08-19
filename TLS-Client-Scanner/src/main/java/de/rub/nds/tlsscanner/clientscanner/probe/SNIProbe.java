@@ -3,12 +3,17 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class SNIProbe extends BaseProbe {
     // TODO make this a post probe
+
+    public SNIProbe(Orchestrator orchestrator) {
+        super(orchestrator);
+    }
 
     @Override
     public boolean canBeExecuted(ClientReport report) {

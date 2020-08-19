@@ -25,6 +25,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
@@ -34,13 +35,14 @@ public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>>
     private static final Logger LOGGER = LogManager.getLogger();
     private final Iterable<ProtocolVersion> versionsToTest;
 
-    public VersionProbe(Iterable<ProtocolVersion> versionsToTest) {
+    public VersionProbe(Orchestrator orchestrator, Iterable<ProtocolVersion> versionsToTest) {
+        super(orchestrator);
         this.defaultState = new HashMap<>();
         this.versionsToTest = versionsToTest;
     }
 
-    public VersionProbe() {
-        this(Arrays.asList(ProtocolVersion.values()));
+    public VersionProbe(Orchestrator orchestrator) {
+        this(orchestrator, Arrays.asList(ProtocolVersion.values()));
     }
 
     @Override
@@ -123,7 +125,7 @@ public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>>
                     return a.executedAsPlanned();
                 }
             }
-            return null;
+            throw new RuntimeException(String.format("Could not determine whether version %s is supported", v));
         }
 
         @Override

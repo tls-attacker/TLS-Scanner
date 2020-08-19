@@ -22,7 +22,7 @@ import de.rub.nds.tlsscanner.clientscanner.workflow.GetClientHelloMessage;
 public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
 
     public HelloWorldProbe() {
-        super();
+        super(null);
         this.defaultState = 0;
     }
 

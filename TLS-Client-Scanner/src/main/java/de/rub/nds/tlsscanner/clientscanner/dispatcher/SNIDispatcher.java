@@ -1,39 +1,69 @@
 package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 
-import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.sni.ServerNamePair;
-import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
+import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
+
 public class SNIDispatcher implements IDispatcher {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private Map<String, IDispatcher> forwardRules;
+
+    public SNIDispatcher(Map<String, IDispatcher> rules) {
+        forwardRules = new HashMap<>(rules);
+    }
+
+    public SNIDispatcher() {
+        forwardRules = new HashMap<>();
+    }
+
     @Override
-    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) {
-        ServerNameIndicationExtensionMessage SNI = null;
-        for (ExtensionMessage ext : dispatchInformation.chlo.getExtensions()) {
-            if (ext instanceof ServerNameIndicationExtensionMessage) {
-                SNI = (ServerNameIndicationExtensionMessage) ext;
-                break;
-            }
+    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+        ServerNameIndicationExtensionMessage SNI = SNIUtil
+                .getSNIFromExtensions(dispatchInformation.chlo.getExtensions());
+        if (SNI == null) {
+            LOGGER.debug("Did not find SNI Extension");
+            throw new NoSNIExtensionException();
         }
-        String name = null;
-        for (ServerNamePair snp : SNI.getServerNameList()) {
-            if (snp.getServerNameType().getValue() == 0) {
-                name = new String(snp.getServerName().getValue());
-            } else {
-                LOGGER.warn("Received unknown SNI Name Type {}", snp.getServerNameType().getValue());
-            }
+        String name = SNIUtil.getServerNameFromSNIExtension(SNI);
+        if (name == null) {
+            LOGGER.debug("Did not find Name in SNI Extension");
+            throw new NoSNINameException();
         }
         LOGGER.debug("Got '{}'", name);
-        if (name == null) {
-            // TODO error handling
+        IDispatcher next = null;
+        synchronized (forwardRules) {
+            if (!forwardRules.containsKey(name)) {
+                LOGGER.debug("Did not find rule for {}", name);
+                throw new UnknownSNINameException();
+            } else {
+                next = forwardRules.get(name);
+            }
         }
-        return null;
+        return next.execute(state, dispatchInformation);
+    }
+
+    public class SNIDispatchException extends DispatchException {
+
+    }
+
+    public class NoSNIExtensionException extends SNIDispatchException {
+
+    }
+
+    public class NoSNINameException extends SNIDispatchException {
+
+    }
+
+    public class UnknownSNINameException extends SNIDispatchException {
+
     }
 
 }

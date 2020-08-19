@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 
@@ -60,6 +61,12 @@ public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable {
         ClientHelloMessage chlo = (ClientHelloMessage) chloAction.getMessages().get(0);
         LOGGER.debug("Got CHLO");
 
-        rootDispatcher.execute(state, new DispatchInformation(chlo));
+        try {
+            rootDispatcher.execute(state, new DispatchInformation(chlo));
+        } catch (DispatchException e) {
+            LOGGER.error("Got DispatchException", e);
+        } catch (Exception e) {
+            LOGGER.error("Got Exception while dispatching", e);
+        }
     }
 }

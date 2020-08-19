@@ -11,6 +11,7 @@ import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.Proxi
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,7 @@ public class Orchestrator {
     protected final ControlledClientDispatcher dispatcher;
 
     public Orchestrator(ClientScannerConfig csConfig) {
+        // TODO (create and) handle SNI flag in config
         // clientAdapter = new CurlAdapter(new LocalCommandExecutor());
         clientAdapter = new CurlAdapter(new ProxiedLocalCommandExecutor("bash", "-c"));
         dispatcher = new ControlledClientDispatcher();
@@ -42,15 +44,28 @@ public class Orchestrator {
         clientAdapter.cleanup(false);
     }
 
+    public void postProcessing(ClientReport report) {
+        if (dispatcher.isPrintedNoSNIWarning()) {
+            report.addGenericWarning(
+                    "Client made unexpected connections without an SNI extension. This may cause issues when using multithreaded execution, as the probes and hostnames might not match.");
+        }
+    }
+
     public ClientProbeResult runProbe(IProbe probe) throws InterruptedException, ExecutionException {
-        Future<ClientProbeResult> res = dispatcher.executeProbe(probe);
-        String domain = "127.0.0.1.xip.io";
         String name = probe.getClass().getName();
         String PROBE_NAMESPACE = "de.rub.nds.tlsscanner.clientscanner.probe.";
         if (name.startsWith(PROBE_NAMESPACE)) {
             name = name.substring(PROBE_NAMESPACE.length());
         }
-        clientAdapter.connect(name + '.' + domain, server.getPort());
+        return runProbe(probe, name);
+    }
+
+    public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix)
+            throws InterruptedException, ExecutionException {
+        String hostname = String.format("%s.%s", hostnamePrefix, "127.0.0.1.xip.io");
+        Future<ClientProbeResult> res = dispatcher.enqueueProbe(probe, hostname);
+        clientAdapter.connect(hostname, server.getPort());
         return res.get();
     }
+
 }

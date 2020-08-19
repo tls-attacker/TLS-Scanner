@@ -8,8 +8,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
-import de.rub.nds.tlsscanner.clientscanner.probe.runner.IProbeRunner;
-import de.rub.nds.tlsscanner.clientscanner.probe.runner.StatefulProbeRunner;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public abstract class BaseStatefulProbe<T> extends BaseProbe {
@@ -17,8 +15,8 @@ public abstract class BaseStatefulProbe<T> extends BaseProbe {
     private Map<String, T> previousStateCache;
     protected T defaultState;
 
-    protected BaseStatefulProbe() {
-        super();
+    public BaseStatefulProbe(Orchestrator orchestrator) {
+        super(orchestrator);
         previousStateCache = new HashMap<>();
     }
 
@@ -43,12 +41,15 @@ public abstract class BaseStatefulProbe<T> extends BaseProbe {
         return ret.getLeft();
     }
 
-    @Override
-    public IProbeRunner getRunner(Orchestrator orchestrator) {
-        return new StatefulProbeRunner(this, orchestrator);
-    }
-
     protected abstract Pair<ClientProbeResult, T> execute(State state, DispatchInformation dispatchInformation,
             T previousState);
 
+    @Override
+    public ClientProbeResult call() throws Exception {
+        ClientProbeResult ret = null;
+        while (ret == null) {
+            ret = super.call();
+        }
+        return ret;
+    }
 }

@@ -1,16 +1,15 @@
 package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.probe.HelloWorldProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class HelloWorldDispatcher implements IDispatcher {
 
-    private final IDispatcher probe = new VersionProbe();
+    private final IDispatcher probe = new VersionProbe(null);
 
     @Override
-    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) {
+    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
         return probe.execute(state, dispatchInformation);
     }
 

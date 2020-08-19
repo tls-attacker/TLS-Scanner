@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<clientReport>
+    <resultMap>
+        <entry>
+            <key>de.rub.nds.tlsscanner.clientscanner.probe.SNIProbe</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="sniProbeResult">
+                <supported>true</supported>
+            </value>
+        </entry>
+        <entry>
+            <key>de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="versionProbeResult">
+                <versionSupport>
+                    <entry>
+                        <key>TLS10</key>
+                        <value>true</value>
+                    </entry>
+                    <entry>
+                        <key>SSL2</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>TLS13</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>SSL3</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>TLS11</key>
+                        <value>true</value>
+                    </entry>
+                    <entry>
+                        <key>TLS12</key>
+                        <value>true</value>
+                    </entry>
+                </versionSupport>
+            </value>
+        </entry>
+    </resultMap>
+    <genericWarnings>foobar</genericWarnings>
+    <genericWarnings>foo</genericWarnings>
+    <genericWarnings>bar</genericWarnings>
+    <clientInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="commandClientInfo">
+        <command>
+            <name>curl</name>
+            <version>curl 7.58.0 (x86_64-pc-linux-gnu) libcurl/7.58.0 OpenSSL/1.1.1 zlib/1.2.11 libidn2/2.0.4 libpsl/0.19.1 (+libidn2/2.0.4) nghttp2/1.30.0 librtmp/2.3Release-Date: 2018-01-24Protocols: dict file ftp ftps gopher http https imap imaps ldap ldaps pop3 pop3s rtmp rtsp smb smbs smtp smtps telnet tftp Features: AsynchDNS IDN IPv6 Largefile GSS-API Kerberos SPNEGO NTLM NTLM_WB SSL libz TLS-SRP HTTP2 UnixSockets HTTPS-proxy PSL </version>
+        </command>
+        <executor xsi:type="proxiedLocalSystemInfo">
+            <arch>amd64</arch>
+            <name>Windows 10</name>
+            <version>10.0</version>
+            <proxyCommand>bash</proxyCommand>
+            <proxyCommand>-c</proxyCommand>
+        </executor>
+    </clientInfo>
+</clientReport>

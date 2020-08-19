@@ -38,7 +38,9 @@ public class ClientScanExecutor implements Observer {
         ClientInfo clientInfo = orchestrator.getReportInformation();
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(clientInfo.toShortString())) {
             orchestrator.start();
-            return executeInternal(clientInfo);
+            ClientReport report = executeInternal(clientInfo);
+            orchestrator.postProcessing(report);
+            return report;
         } finally {
             orchestrator.cleanup();
         }
@@ -61,6 +63,7 @@ public class ClientScanExecutor implements Observer {
         update(report, null);
     }
 
+    @SuppressWarnings("squid:S3776") // sonarlint: Cognitive Complexity of methods should not be too high
     private void executeProbesTillNoneCanBeExecuted(ClientReport report) {
         do {
             long lastMerge = System.currentTimeMillis();
@@ -135,7 +138,7 @@ public class ClientScanExecutor implements Observer {
             for (IProbe probe : new ArrayList<>(notScheduledTasks)) {
                 if (probe.canBeExecuted(report)) {
                     notScheduledTasks.remove(probe);
-                    Future<ClientProbeResult> future = executor.submit(probe.getRunner(orchestrator));
+                    Future<ClientProbeResult> future = executor.submit(probe);
                     futureResults.add(future);
                 }
             }

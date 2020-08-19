@@ -1,47 +1,120 @@
 package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
 public class ControlledClientDispatcher implements IDispatcher {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected Queue<ResultFuture> toRun;
+    protected Map<String, Queue<ResultFuture>> toRun;
+    private boolean printedNoSNIWarning = false;
 
     public ControlledClientDispatcher() {
-        toRun = new LinkedBlockingDeque<>();
+        toRun = new HashMap<>();
+    }
+
+    public boolean isPrintedNoSNIWarning() {
+        return printedNoSNIWarning;
     }
 
     @Override
-    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) {
-        ResultFuture task;
-        synchronized (toRun) {
-            if (toRun.isEmpty()) {
-                LOGGER.warn("Got connection but no task");
-                return null;
-            } else {
-                task = toRun.remove();
+    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+        ResultFuture task = null;
+
+        ServerNameIndicationExtensionMessage SNI = SNIUtil
+                .getSNIFromExtensions(dispatchInformation.chlo.getExtensions());
+        if (SNI != null || toRun.containsKey(null)) {
+            String name = SNIUtil.getServerNameFromSNIExtension(SNI);
+            task = getNextTask(name);
+            if (task == null) {
+                LOGGER.warn("Got hostname which we do not have a task for {}", name);
+            }
+        } else {
+            if (!printedNoSNIWarning) {
+                printedNoSNIWarning = true;
+                LOGGER.warn(
+                        "Got no SNI - If the runner is using multiple threads this may cause issues as hostnames may not be matched to probes correctly");
+            }
+            // pick any probe
+            task = getAnyNextTask();
+            if (task == null) {
+                LOGGER.warn("Got no tasks left (NO SNI)");
             }
         }
-        ClientProbeResult res = task.probe.execute(state, dispatchInformation);
-        task.setResult(res);
-        return res;
+        if (task == null) {
+            return null;
+        }
+        try {
+            ClientProbeResult res = task.probe.execute(state, dispatchInformation);
+            task.setResult(res);
+            return res;
+        } catch (Exception e) {
+            task.setException(e);
+            throw e;
+        }
     }
 
-    public Future<ClientProbeResult> executeProbe(IProbe probe) {
+    protected ResultFuture getNextTask(String name) {
+        synchronized (toRun) {
+            if (toRun.containsKey(name)) {
+                Queue<ResultFuture> taskQueue = toRun.get(name);
+                synchronized (taskQueue) {
+                    if (taskQueue.isEmpty()) {
+                        return null;
+                    } else {
+                        ResultFuture ret = taskQueue.remove();
+                        if (taskQueue.isEmpty()) {
+                            toRun.remove(name);
+                        }
+                        return ret;
+                    }
+                }
+            } else {
+                return null;
+            }
+        }
+    }
+
+    protected ResultFuture getAnyNextTask() {
+        synchronized (toRun) {
+            for (Entry<String, Queue<ResultFuture>> kvp : toRun.entrySet()) {
+                if (!kvp.getValue().isEmpty()) {
+                    ResultFuture task = kvp.getValue().remove();
+                    if (kvp.getValue().isEmpty()) {
+                        toRun.remove(kvp.getKey());
+                    }
+                    return task;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Future<ClientProbeResult> enqueueProbe(IProbe probe, String expectedHostname) {
         ResultFuture ret = new ResultFuture(probe);
         synchronized (toRun) {
-            toRun.add(ret);
+            if (!toRun.containsKey(expectedHostname)) {
+                toRun.put(expectedHostname, new LinkedList<>());
+            }
+            Queue<ResultFuture> q = toRun.get(expectedHostname);
+            synchronized (q) {
+                q.add(ret);
+            }
         }
         return ret;
     }

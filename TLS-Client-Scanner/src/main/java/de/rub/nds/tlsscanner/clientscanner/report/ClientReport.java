@@ -1,6 +1,8 @@
 package de.rub.nds.tlsscanner.clientscanner.report;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -18,16 +20,19 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 public class ClientReport extends Observable implements Serializable {
     private static final long serialVersionUID = 1L;
     private final Map<Class<? extends IProbe>, ClientProbeResult> resultMap;
+    private final Collection<String> genericWarnings;
     private final ClientInfo clientInfo;
 
     private ClientReport() {
         // for serialization
         clientInfo = null;
         resultMap = null;
+        genericWarnings = null;
     }
 
     public ClientReport(ClientInfo clientInfo) {
         this.resultMap = new HashMap<>();
+        this.genericWarnings = new ArrayList<>();
         this.clientInfo = clientInfo;
     }
 
@@ -52,6 +57,10 @@ public class ClientReport extends Observable implements Serializable {
         ClientProbeResult ret = resultMap.put(clazz, result);
         markAsChangedAndNotify();
         return ret;
+    }
+
+    public void addGenericWarning(String warning) {
+        genericWarnings.add(warning);
     }
 
     public synchronized void markAsChangedAndNotify() {

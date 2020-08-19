@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -83,13 +84,11 @@ public class Main {
         Orchestrator orchestrator = new Orchestrator(csConfig);
         ThreadPoolExecutor executor = new ThreadPoolExecutor(8, 8, 1, TimeUnit.HOURS, new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-probe-runner"));
-        ClientScanExecutor exec = new ClientScanExecutor(
-                Arrays.asList(
-                        new VersionProbe(
-                                Arrays.asList(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
-                                        ProtocolVersion.TLS11, ProtocolVersion.TLS12, ProtocolVersion.TLS13)),
-                        new SNIProbe()),
-                orchestrator, executor);
+        ClientScanExecutor exec = new ClientScanExecutor(Arrays.asList(
+                new VersionProbe(orchestrator,
+                        Arrays.asList(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
+                                ProtocolVersion.TLS11, ProtocolVersion.TLS12, ProtocolVersion.TLS13)),
+                new SNIProbe(orchestrator)), orchestrator, executor);
         ClientReport rep = exec.execute();
         executor.shutdown();
         try {
