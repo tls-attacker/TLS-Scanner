@@ -15,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
-import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
@@ -25,9 +25,9 @@ public class ClientScanExecutor implements Observer {
     private Collection<IProbe> notScheduledTasks;
     private Collection<Future<ClientProbeResult>> futureResults;
     private final ThreadPoolExecutor executor;
-    private final Orchestrator orchestrator;
+    private final IOrchestrator orchestrator;
 
-    public ClientScanExecutor(Collection<IProbe> probesToRun, Orchestrator orchestrator, ThreadPoolExecutor executor) {
+    public ClientScanExecutor(Collection<IProbe> probesToRun, IOrchestrator orchestrator, ThreadPoolExecutor executor) {
         this.notScheduledTasks = new ArrayList<>(probesToRun);
         this.futureResults = new LinkedList<>();
         this.executor = executor;

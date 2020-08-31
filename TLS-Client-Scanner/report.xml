@@ -2,12 +2,6 @@
 <clientReport>
     <resultMap>
         <entry>
-            <key>de.rub.nds.tlsscanner.clientscanner.probe.SNIProbe</key>
-            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="sniProbeResult">
-                <supported>true</supported>
-            </value>
-        </entry>
-        <entry>
             <key>de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe</key>
             <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="versionProbeResult">
                 <versionSupport>
@@ -20,10 +14,6 @@
                         <value>false</value>
                     </entry>
                     <entry>
-                        <key>TLS13</key>
-                        <value>false</value>
-                    </entry>
-                    <entry>
                         <key>SSL3</key>
                         <value>false</value>
                     </entry>
@@ -32,16 +22,23 @@
                         <value>true</value>
                     </entry>
                     <entry>
+                        <key>TLS13</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
                         <key>TLS12</key>
                         <value>true</value>
                     </entry>
                 </versionSupport>
             </value>
         </entry>
+        <entry>
+            <key>de.rub.nds.tlsscanner.clientscanner.probe.SNIProbe</key>
+            <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="sniProbeResult">
+                <supported>true</supported>
+            </value>
+        </entry>
     </resultMap>
-    <genericWarnings>foobar</genericWarnings>
-    <genericWarnings>foo</genericWarnings>
-    <genericWarnings>bar</genericWarnings>
     <clientInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="commandClientInfo">
         <command>
             <name>curl</name>

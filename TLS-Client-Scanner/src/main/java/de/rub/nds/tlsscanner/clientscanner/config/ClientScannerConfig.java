@@ -10,9 +10,9 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 public class ClientScannerConfig extends TLSDelegateConfig {
 
     @ParametersDelegate
-    private GeneralDelegate generalDelegate;
+    public GeneralDelegate generalDelegate;
     @ParametersDelegate
-    private ServerDelegate serverDelegate;
+    public ServerDelegate serverDelegate;
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
 

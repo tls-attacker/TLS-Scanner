@@ -12,13 +12,14 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.workflow.CSWorkflowExecutor;
 
 public class Server extends Thread {
+    private static int serverCounter = 0;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final CSWorkflowExecutor executor;
 
     public Server(ClientScannerConfig csconfig, IDispatcher rootDispatcher) {
-        super("Server");
+        super("Server" + (serverCounter++));
         this.executor = new CSWorkflowExecutor(csconfig, rootDispatcher);
     }
 

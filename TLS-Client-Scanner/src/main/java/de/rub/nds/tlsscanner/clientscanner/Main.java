@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.clientscanner;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +30,9 @@ import org.apache.logging.log4j.core.config.Configurator;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
+import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.ThreadLocalOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.SNIProbe;
@@ -81,16 +82,17 @@ public class Main {
     }
 
     private static void runScan(ClientScannerConfig csConfig) {
-        Orchestrator orchestrator = new Orchestrator(csConfig);
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(8, 8, 1, TimeUnit.HOURS, new LinkedBlockingDeque<>(),
+        csConfig.serverDelegate.setPort(0); // use any free port
+        IOrchestrator orchestrator = new ThreadLocalOrchestrator(csConfig);
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(8, 8, 1, TimeUnit.HOURS, new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-probe-runner"));
         ClientScanExecutor exec = new ClientScanExecutor(Arrays.asList(
                 new VersionProbe(orchestrator,
                         Arrays.asList(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11, ProtocolVersion.TLS12, ProtocolVersion.TLS13)),
-                new SNIProbe(orchestrator)), orchestrator, executor);
+                new SNIProbe(orchestrator)), orchestrator, pool);
         ClientReport rep = exec.execute();
-        executor.shutdown();
+        pool.shutdown();
         try {
             File file = new File("./report.xml");
             JAXBContext ctx;

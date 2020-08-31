@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
@@ -15,7 +15,7 @@ public abstract class BaseStatefulProbe<T> extends BaseProbe {
     private Map<String, T> previousStateCache;
     protected T defaultState;
 
-    public BaseStatefulProbe(Orchestrator orchestrator) {
+    public BaseStatefulProbe(IOrchestrator orchestrator) {
         super(orchestrator);
         previousStateCache = new HashMap<>();
     }

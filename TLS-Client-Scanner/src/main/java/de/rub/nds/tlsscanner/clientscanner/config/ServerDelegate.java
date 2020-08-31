@@ -28,4 +28,8 @@ public class ServerDelegate extends Delegate {
         }
     }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
+
 }
