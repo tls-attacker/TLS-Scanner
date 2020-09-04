@@ -29,16 +29,21 @@ import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.util.MapUtil;
 
-public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>> {
+public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeState> {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final Iterable<ProtocolVersion> versionsToTest;
 
     public VersionProbe(IOrchestrator orchestrator, Iterable<ProtocolVersion> versionsToTest) {
         super(orchestrator);
-        this.defaultState = new HashMap<>();
         this.versionsToTest = versionsToTest;
+    }
+
+    @Override
+    protected VersionProbeState getDefaultState(DispatchInformation dispatchInformation) {
+        return new VersionProbeState();
     }
 
     public VersionProbe(IOrchestrator orchestrator) {
@@ -46,13 +51,13 @@ public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>>
     }
 
     @Override
-    protected Pair<ClientProbeResult, Map<ProtocolVersion, State>> execute(State state,
-            DispatchInformation dispatchInformation, Map<ProtocolVersion, State> previousState) {
+    protected Pair<ClientProbeResult, VersionProbeState> execute(State state,
+            DispatchInformation dispatchInformation, VersionProbeState previousState) {
         ProtocolVersion toTest = null;
         boolean last = false;
         for (Iterator<ProtocolVersion> it = versionsToTest.iterator(); it.hasNext();) {
             ProtocolVersion v = it.next();
-            if (!previousState.containsKey(v)) {
+            if (!previousState.hasChecked(v)) {
                 toTest = v;
                 last = !it.hasNext();
                 break;
@@ -70,20 +75,12 @@ public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>>
         config.setHttpsParsingEnabled(true);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace https_trace = factory.createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
-        TlsAction traceRecvCHLO = https_trace.removeTlsAction(0);
-        if (!(traceRecvCHLO instanceof ReceiveAction
-                && ((ReceiveAction) traceRecvCHLO).getExpectedMessages().size() == 1
-                && ((ReceiveAction) traceRecvCHLO).getExpectedMessages().get(0) instanceof ClientHelloMessage)) {
-            throw new RuntimeException("Unknown first action in handshake");
-        }
-        state.getWorkflowTrace().addTlsActions(https_trace.getTlsActions());
+        extendWorkflowTrace(state.getWorkflowTrace(), WorkflowTraceType.HANDSHAKE, config);
         executeState(state);
-        previousState.put(toTest, state);
+        previousState.addResult(toTest, state);
         VersionProbeResult ret = null;
         if (last) {
-            ret = new VersionProbeResult(previousState);
+            ret = previousState.toResult();
         }
         return Pair.of(ret, previousState);
     }
@@ -94,17 +91,37 @@ public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>>
     }
 
     @Override
-    public ClientProbeResult getCouldNotExecuteResult() {
+    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
         return null;
+    }
+
+    public static class VersionProbeState {
+        private final Map<ProtocolVersion, State> states;
+
+        public VersionProbeState() {
+            states = new HashMap<>();
+        }
+
+        public boolean hasChecked(ProtocolVersion v) {
+            return states.containsKey(v);
+        }
+
+        public void addResult(ProtocolVersion v, State state) {
+            states.put(v, state);
+        }
+
+        public VersionProbeResult toResult() {
+            return new VersionProbeResult(states);
+        }
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class VersionProbeResult extends ClientProbeResult {
         private final Map<ProtocolVersion, Boolean> versionSupport;
 
-        public VersionProbeResult(Map<ProtocolVersion, State> state) {
+        public VersionProbeResult(Map<ProtocolVersion, State> states) {
             versionSupport = new HashMap<>();
-            for (Map.Entry<ProtocolVersion, State> kv : state.entrySet()) {
+            for (Map.Entry<ProtocolVersion, State> kv : states.entrySet()) {
                 versionSupport.put(kv.getKey(), checkSupported(kv.getKey(), kv.getValue()));
             }
         }
@@ -129,25 +146,14 @@ public class VersionProbe extends BaseStatefulProbe<Map<ProtocolVersion, State>>
         }
 
         @Override
-        public String getProbeName() {
-            return "VersionProbe";
-        }
-
-        @Override
         public void merge(ClientReport report) {
             // TODO synchronization?
             if (report.hasResult(VersionProbe.class)) {
                 // merge
                 VersionProbeResult other = (VersionProbeResult) report.getResult(VersionProbe.class);
                 Map<ProtocolVersion, Boolean> m = other.versionSupport;
-                for (Map.Entry<ProtocolVersion, Boolean> kv : versionSupport.entrySet()) {
-                    if (m.containsKey(kv.getKey()) && m.get(kv.getKey()) != null
-                            && !m.get(kv.getKey()).equals(kv.getValue())) {
-                        throw new IllegalStateException("Cannot merge contradictory information");
-                    } else {
-                        m.put(kv.getKey(), kv.getValue());
-                    }
-                }
+                MapUtil.mergeIntoFirst(m, versionSupport);
+                report.markAsChangedAndNotify();
             } else {
                 report.putResult(VersionProbe.class, this);
             }

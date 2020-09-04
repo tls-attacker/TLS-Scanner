@@ -21,7 +21,7 @@ public class SNIProbe extends BaseProbe {
     }
 
     @Override
-    public ClientProbeResult getCouldNotExecuteResult() {
+    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
         return null;
     }
 
@@ -42,11 +42,6 @@ public class SNIProbe extends BaseProbe {
 
         public SNIProbeResult(boolean supported) {
             this.supported = supported;
-        }
-
-        @Override
-        public String getProbeName() {
-            return "SNI Probe";
         }
 
         @Override

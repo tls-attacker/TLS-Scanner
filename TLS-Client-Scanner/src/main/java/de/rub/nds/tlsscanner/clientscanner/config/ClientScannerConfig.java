@@ -5,6 +5,7 @@ import com.beust.jcommander.ParametersDelegate;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
+import de.rub.nds.tlsattacker.core.config.delegate.CertificateDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 
 public class ClientScannerConfig extends TLSDelegateConfig {
@@ -13,6 +14,9 @@ public class ClientScannerConfig extends TLSDelegateConfig {
     public GeneralDelegate generalDelegate;
     @ParametersDelegate
     public ServerDelegate serverDelegate;
+    @ParametersDelegate
+    private CertificateDelegate certificateDelegate;
+
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
 
@@ -23,6 +27,9 @@ public class ClientScannerConfig extends TLSDelegateConfig {
 
         serverDelegate = new ServerDelegate();
         addDelegate(serverDelegate);
+
+        this.certificateDelegate = new CertificateDelegate();
+        addDelegate(certificateDelegate);
     }
 
     @Override

@@ -13,16 +13,21 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 public abstract class BaseStatefulProbe<T> extends BaseProbe {
 
     private Map<String, T> previousStateCache;
-    protected T defaultState;
 
     public BaseStatefulProbe(IOrchestrator orchestrator) {
         super(orchestrator);
         previousStateCache = new HashMap<>();
     }
 
-    protected T getPreviousState(String raddr) {
+    protected abstract T getDefaultState(DispatchInformation dispatchInformation);
+
+    protected T getPreviousState(String raddr, DispatchInformation dispatchInformation) {
         synchronized (previousStateCache) {
-            return previousStateCache.getOrDefault(raddr, defaultState);
+            if (previousStateCache.containsKey(raddr)) {
+                return previousStateCache.get(raddr);
+            } else {
+                return getDefaultState(dispatchInformation);
+            }
         }
     }
 
@@ -35,7 +40,7 @@ public abstract class BaseStatefulProbe<T> extends BaseProbe {
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) {
         String raddr = state.getInboundTlsContexts().get(0).getConnection().getIp();
-        T previousState = getPreviousState(raddr);
+        T previousState = getPreviousState(raddr, dispatchInformation);
         Pair<ClientProbeResult, T> ret = this.execute(state, dispatchInformation, previousState);
         setPreviousState(raddr, ret.getRight());
         return ret.getLeft();

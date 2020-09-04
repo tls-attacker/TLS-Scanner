@@ -133,8 +133,8 @@ public class ControlledClientDispatcher implements IDispatcher {
             if (hasResult) {
                 throw new IllegalStateException("Already got a result");
             }
-            hasResult = true;
             result = res;
+            hasResult = true;
             notifyAll();
         }
 
@@ -142,8 +142,8 @@ public class ControlledClientDispatcher implements IDispatcher {
             if (hasResult) {
                 throw new IllegalStateException("Already got a result");
             }
-            hasResult = true;
             exception = inner;
+            hasResult = true;
             notifyAll();
         }
 

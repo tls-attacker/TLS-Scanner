@@ -23,7 +23,11 @@ public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
 
     public HelloWorldProbe() {
         super(null);
-        this.defaultState = 0;
+    }
+
+    @Override
+    protected Integer getDefaultState(DispatchInformation dispatchInformation) {
+        return 0;
     }
 
     @Override
@@ -55,7 +59,7 @@ public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
     }
 
     @Override
-    public ClientProbeResult getCouldNotExecuteResult() {
+    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
         return null;
     }
 

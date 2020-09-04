@@ -17,5 +17,5 @@ public interface IProbe extends IDispatcher, Callable<ClientProbeResult> {
      */
     public boolean canBeExecuted(ClientReport report);
 
-    public ClientProbeResult getCouldNotExecuteResult();
+    public ClientProbeResult getCouldNotExecuteResult(ClientReport report);
 }

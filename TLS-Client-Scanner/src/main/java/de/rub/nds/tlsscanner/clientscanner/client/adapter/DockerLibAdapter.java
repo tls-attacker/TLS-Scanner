@@ -1,6 +1,6 @@
 package de.rub.nds.tlsscanner.clientscanner.client.adapter;
 
-import com.spotify.docker.client.exceptions.DockerException;
+import com.github.dockerjava.api.exception.DockerException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,16 +47,7 @@ public class DockerLibAdapter implements IClientAdapter {
             // usually null should not be possible; An exception should have been thrown
             throw new NullPointerException("Could not get client");
         }
-        try {
-            client.start();
-        } catch (DockerException e) {
-            LOGGER.error("Failed to start client", e);
-            client.close();
-        } catch (InterruptedException e) {
-            LOGGER.error("Failed to start client (interrupt)", e);
-            client.close();
-            Thread.currentThread().interrupt();
-        }
+        client.start();
     }
 
     @Override
@@ -67,7 +58,9 @@ public class DockerLibAdapter implements IClientAdapter {
                 Thread.sleep(50);
             }
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(ei.logStream.readFully());
+                for (String ln : ei.frameHandler.getLines()) {
+                    LOGGER.debug(ln);
+                }
             }
             return null;
         } catch (DockerException e) {

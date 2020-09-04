@@ -31,12 +31,13 @@ import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
-import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.ThreadLocalOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteReconProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.SNIProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHWeakPrivateKeyProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 
 public class Main {
@@ -90,7 +91,9 @@ public class Main {
                 new VersionProbe(orchestrator,
                         Arrays.asList(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11, ProtocolVersion.TLS12, ProtocolVersion.TLS13)),
-                new SNIProbe(orchestrator)), orchestrator, pool);
+                new SNIProbe(orchestrator),
+                new CipherSuiteReconProbe(orchestrator),
+                new DHWeakPrivateKeyProbe(orchestrator)), orchestrator, pool);
         ClientReport rep = exec.execute();
         pool.shutdown();
         try {

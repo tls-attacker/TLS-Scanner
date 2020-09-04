@@ -23,7 +23,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 public class ClientScanExecutor implements Observer {
     private static final Logger LOGGER = LogManager.getLogger();
     private Collection<IProbe> notScheduledTasks;
-    private Collection<Future<ClientProbeResult>> futureResults;
+    private Collection<ProbeAndResultFuture> futureResults;
     private final ThreadPoolExecutor executor;
     private final IOrchestrator orchestrator;
 
@@ -67,24 +67,27 @@ public class ClientScanExecutor implements Observer {
     private void executeProbesTillNoneCanBeExecuted(ClientReport report) {
         do {
             long lastMerge = System.currentTimeMillis();
-            List<Future<ClientProbeResult>> finishedFutures = new LinkedList<>();
-            for (Future<ClientProbeResult> result : futureResults) {
+            List<ProbeAndResultFuture> finishedFutures = new LinkedList<>();
+            for (ProbeAndResultFuture probeAndResultFuture : futureResults) {
+                Future<ClientProbeResult> result = probeAndResultFuture.future;
                 if (result.isDone()) {
                     lastMerge = System.currentTimeMillis();
                     try {
                         ClientProbeResult probeResult = result.get();
-                        LOGGER.info("+++" + probeResult.getProbeName() + " executed");
-                        finishedFutures.add(result);
-                        // TODO report.markProbeAsExecuted(result.get().getType());
+                        finishedFutures.add(probeAndResultFuture);
+                        // TODO report.markProbeAsExecuted(result.get().getType())
                         if (probeResult != null) {
+                            LOGGER.info("+++ {} executed", probeAndResultFuture.probe);
                             probeResult.merge(report);
+                        } else {
+                            LOGGER.error("Got null result from probe {}", probeAndResultFuture.probe);
                         }
 
                     } catch (Exception ex) {
                         LOGGER.error("Encountered an exception before we could merge the result. Killing the task.",
                                 ex);
                         result.cancel(true);
-                        finishedFutures.add(result);
+                        finishedFutures.add(probeAndResultFuture);
                     }
                 }
 
@@ -93,11 +96,11 @@ public class ClientScanExecutor implements Observer {
                             "Last result merge is more than 30 minutes ago. Starting to kill threads to unblock...");
                     try {
                         ClientProbeResult probeResult = result.get(1, TimeUnit.MINUTES);
-                        finishedFutures.add(result);
+                        finishedFutures.add(probeAndResultFuture);
                         probeResult.merge(report);
                     } catch (Exception ex) {
                         result.cancel(true);
-                        finishedFutures.add(result);
+                        finishedFutures.add(probeAndResultFuture);
                         LOGGER.error("Killed task", ex);
                     }
                 }
@@ -109,7 +112,7 @@ public class ClientScanExecutor implements Observer {
 
     private void updateClientReporttWithNotExecutedProbes(ClientReport report) {
         for (IProbe probe : notScheduledTasks) {
-            probe.getCouldNotExecuteResult().merge(report);
+            probe.getCouldNotExecuteResult(report).merge(report);
         }
     }
 
@@ -139,11 +142,21 @@ public class ClientScanExecutor implements Observer {
                 if (probe.canBeExecuted(report)) {
                     notScheduledTasks.remove(probe);
                     Future<ClientProbeResult> future = executor.submit(probe);
-                    futureResults.add(future);
+                    futureResults.add(new ProbeAndResultFuture(probe, future));
                 }
             }
         } else {
             LOGGER.error("Received an update from a non-ClientReport");
+        }
+    }
+
+    protected static class ProbeAndResultFuture {
+        public final IProbe probe;
+        public final Future<ClientProbeResult> future;
+
+        public ProbeAndResultFuture(IProbe probe, Future<ClientProbeResult> future) {
+            this.probe = probe;
+            this.future = future;
         }
     }
 }
