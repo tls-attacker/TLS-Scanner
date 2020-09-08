@@ -424,7 +424,7 @@ public class SiteReportPrinter {
     }
 
     public StringBuilder appendRfc(StringBuilder builder) {
-        prettyAppendHeading(builder, "RFC");
+        prettyAppendHeading(builder, "RFC (Experimental)");
         prettyAppendCheckPattern(builder, "Checks MAC (AppData)", report.getMacCheckPatternAppData());
         prettyAppendCheckPattern(builder, "Checks MAC (Finished)", report.getMacCheckPatternFinished());
         prettyAppendCheckPattern(builder, "Checks VerifyData", report.getVerifyCheckPattern());
@@ -780,8 +780,11 @@ public class SiteReportPrinter {
     public StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMaximumFractionDigits(24);
-        if (report.getRaccoonAttackProbabilities() != null) {
+        if ((report.getResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK) == TestResult.TRUE || detail
+                .isGreaterEqualTo(ScannerDetail.DETAILED)) && report.getRaccoonAttackProbabilities() != null) {
             prettyAppendHeading(builder, "Raccoon Attack Details");
+            prettyAppend(builder,
+                    "Here we are calculating how likely it is that the attack can reach a critical block border.");
             prettyAppend(builder, "Available Injection points:", (long) report.getRaccoonAttackProbabilities().size());
             if (report.getRaccoonAttackProbabilities().size() > 0) {
                 prettyAppendSubheading(builder, "Probabilties");
@@ -1367,7 +1370,7 @@ public class SiteReportPrinter {
 
     public void appendScoringResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Scoring results");
-
+        
         SiteReportRater rater;
         try {
             rater = SiteReportRater.getSiteReportRater("en");
@@ -1410,7 +1413,7 @@ public class SiteReportPrinter {
 
     public void appendRecommendations(StringBuilder builder) {
         prettyAppendHeading(builder, "Recommedations");
-
+        
         SiteReportRater rater;
         try {
             rater = SiteReportRater.getSiteReportRater("en");
