@@ -19,20 +19,21 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.workflow.GetClientHelloMessage;
 
-public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
+public class HelloWorldProbe extends BaseStatefulProbe<HelloWorldProbe.HelloWorldState> {
 
     public HelloWorldProbe() {
         super(null);
     }
 
     @Override
-    protected Integer getDefaultState(DispatchInformation dispatchInformation) {
-        return 0;
+    protected HelloWorldState getDefaultState(DispatchInformation dispatchInformation) {
+        return new HelloWorldState(0);
     }
 
     @Override
-    protected Pair<ClientProbeResult, Integer> execute(State state, DispatchInformation dispatchInformation,
-            Integer previousState) {
+    protected HelloWorldState execute(State state, DispatchInformation dispatchInformation,
+            HelloWorldState internalState) {
+        internalState.num++;
         WorkflowTrace trace = state.getWorkflowTrace();
         trace.addTlsAction(new GetClientHelloMessage());
         trace.addTlsAction(new GetClientHelloMessage());
@@ -45,22 +46,42 @@ public class HelloWorldProbe extends BaseStatefulProbe<Integer> {
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage()));
         ApplicationMessage msg = new ApplicationMessage();
-        String content = "Call No:" + (previousState + 1);
+        String content = "Call No:" + (internalState.num);
         msg.setDataConfig(String.join("\r\n", "HTTP/1.1 200 OK", "Server: TLS-Client-Scanner",
                 "Content-Length: " + (content.length() + 2), "", content, "").getBytes());
         trace.addTlsAction(new SendAction(msg));
         executeState(state);
-        return Pair.of(null, previousState + 1);
+        return internalState;
     }
 
     @Override
     public boolean canBeExecuted(ClientReport report) {
-        return true;
+        return false;
     }
 
     @Override
     public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
         return null;
+    }
+
+    public static class HelloWorldState implements BaseStatefulProbe.InternalProbeState {
+        protected int num;
+
+        public HelloWorldState(int num) {
+            this.num = num;
+        }
+
+        @Override
+        public boolean isDone() {
+            return false;
+        }
+
+        @Override
+        public ClientProbeResult getResult() {
+            // never called, as isDone is false
+            return null;
+        }
+
     }
 
 }

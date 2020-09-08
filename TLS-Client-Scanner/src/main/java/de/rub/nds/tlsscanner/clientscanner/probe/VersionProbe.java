@@ -1,29 +1,27 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
@@ -34,16 +32,16 @@ import de.rub.nds.tlsscanner.clientscanner.util.MapUtil;
 public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeState> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Iterable<ProtocolVersion> versionsToTest;
+    private final Collection<ProtocolVersion> versionsToTest;
 
-    public VersionProbe(IOrchestrator orchestrator, Iterable<ProtocolVersion> versionsToTest) {
+    public VersionProbe(IOrchestrator orchestrator, Collection<ProtocolVersion> versionsToTest) {
         super(orchestrator);
         this.versionsToTest = versionsToTest;
     }
 
     @Override
     protected VersionProbeState getDefaultState(DispatchInformation dispatchInformation) {
-        return new VersionProbeState();
+        return new VersionProbeState(versionsToTest);
     }
 
     public VersionProbe(IOrchestrator orchestrator) {
@@ -51,21 +49,9 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
     }
 
     @Override
-    protected Pair<ClientProbeResult, VersionProbeState> execute(State state,
-            DispatchInformation dispatchInformation, VersionProbeState previousState) {
-        ProtocolVersion toTest = null;
-        boolean last = false;
-        for (Iterator<ProtocolVersion> it = versionsToTest.iterator(); it.hasNext();) {
-            ProtocolVersion v = it.next();
-            if (!previousState.hasChecked(v)) {
-                toTest = v;
-                last = !it.hasNext();
-                break;
-            }
-        }
-        if (toTest == null) {
-            throw new RuntimeException("No version left to test");
-        }
+    protected VersionProbeState execute(State state,
+            DispatchInformation dispatchInformation, VersionProbeState internalState) {
+        ProtocolVersion toTest = internalState.getNext();
         LOGGER.debug("Testing version {}", toTest);
         Config config = state.getConfig();
         config.setHighestProtocolVersion(toTest);
@@ -77,12 +63,8 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
         config.setStopActionsAfterIOException(true);
         extendWorkflowTrace(state.getWorkflowTrace(), WorkflowTraceType.HANDSHAKE, config);
         executeState(state);
-        previousState.addResult(toTest, state);
-        VersionProbeResult ret = null;
-        if (last) {
-            ret = previousState.toResult();
-        }
-        return Pair.of(ret, previousState);
+        internalState.addResult(toTest, state);
+        return internalState;
     }
 
     @Override
@@ -95,23 +77,35 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
         return null;
     }
 
-    public static class VersionProbeState {
+    public static class VersionProbeState implements BaseStatefulProbe.InternalProbeState {
         private final Map<ProtocolVersion, State> states;
+        private final List<ProtocolVersion> leftToTest;
 
-        public VersionProbeState() {
+        public VersionProbeState(Collection<ProtocolVersion> toTest) {
             states = new HashMap<>();
+            leftToTest = new LinkedList<>(toTest);
         }
 
         public boolean hasChecked(ProtocolVersion v) {
             return states.containsKey(v);
         }
 
+        public ProtocolVersion getNext() {
+            return leftToTest.remove(0);
+        }
+
         public void addResult(ProtocolVersion v, State state) {
             states.put(v, state);
         }
 
-        public VersionProbeResult toResult() {
+        @Override
+        public VersionProbeResult getResult() {
             return new VersionProbeResult(states);
+        }
+
+        @Override
+        public boolean isDone() {
+            return leftToTest.isEmpty();
         }
     }
 

@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteReconProbe.CipherSuiteReconResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.SNIProbe.SNIProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe.VersionProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHMinimumModulusLengthProbe.DHMinimumModulusLengthResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHWeakPrivateKeyProbe.DHWeakPrivateKeyProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 
@@ -16,6 +17,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
         SNIProbeResult.class,
         CipherSuiteReconResult.class,
         DHWeakPrivateKeyProbeResult.class,
+        DHMinimumModulusLengthResult.class,
 })
 public abstract class ClientProbeResult implements Serializable {
     public abstract void merge(ClientReport report);

@@ -8,10 +8,9 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsscanner.clientscanner.Server;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.DockerLibAdapter;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.CurlAdapter;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ProxiedLocalCommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
@@ -94,7 +93,8 @@ public class Orchestrator implements IOrchestrator {
 
         String hostname = String.format("%s.%s", hostnamePrefix, baseHostname);
         Future<ClientProbeResult> res = dispatcher.enqueueProbe(probe, hostname);
-        clientAdapter.connect(hostname, server.getPort());
+        ClientAdapterResult cres = clientAdapter.connect(hostname, server.getPort());
+        // TODO! feed cres into res
         return res.get();
     }
 

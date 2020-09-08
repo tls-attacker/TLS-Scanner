@@ -37,6 +37,7 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteReconProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.SNIProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHMinimumModulusLengthProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHWeakPrivateKeyProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 
@@ -93,6 +94,7 @@ public class Main {
                                 ProtocolVersion.TLS11, ProtocolVersion.TLS12, ProtocolVersion.TLS13)),
                 new SNIProbe(orchestrator),
                 new CipherSuiteReconProbe(orchestrator),
+                new DHMinimumModulusLengthProbe(orchestrator),
                 new DHWeakPrivateKeyProbe(orchestrator)), orchestrator, pool);
         ClientReport rep = exec.execute();
         pool.shutdown();

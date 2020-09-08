@@ -26,13 +26,13 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe {
 
     protected void extendWorkflowTrace(WorkflowTrace traceWithCHLO, WorkflowTraceType type, Config config) {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace https_trace = factory.createWorkflowTrace(WorkflowTraceType.HANDSHAKE, RunningModeType.SERVER);
-        TlsAction traceRecvCHLO = https_trace.removeTlsAction(0);
+        WorkflowTrace trace_to_append = factory.createWorkflowTrace(type, RunningModeType.SERVER);
+        TlsAction traceRecvCHLO = trace_to_append.removeTlsAction(0);
         if (!(traceRecvCHLO instanceof ReceiveAction
                 && ((ReceiveAction) traceRecvCHLO).getExpectedMessages().size() == 1
                 && ((ReceiveAction) traceRecvCHLO).getExpectedMessages().get(0) instanceof ClientHelloMessage)) {
             throw new RuntimeException("Unknown first action in handshake");
         }
-        traceWithCHLO.addTlsActions(https_trace.getTlsActions());
+        traceWithCHLO.addTlsActions(trace_to_append.getTlsActions());
     }
 }

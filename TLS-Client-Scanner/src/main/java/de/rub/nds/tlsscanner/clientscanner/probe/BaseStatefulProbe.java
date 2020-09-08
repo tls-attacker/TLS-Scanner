@@ -3,14 +3,12 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
-public abstract class BaseStatefulProbe<T> extends BaseProbe {
+public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProbeState> extends BaseProbe {
 
     private Map<String, T> previousStateCache;
 
@@ -37,17 +35,32 @@ public abstract class BaseStatefulProbe<T> extends BaseProbe {
         }
     }
 
+    protected void removePreviousState(String raddr) {
+        synchronized (previousStateCache) {
+            previousStateCache.remove(raddr);
+        }
+    }
+
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) {
         String raddr = state.getInboundTlsContexts().get(0).getConnection().getIp();
         T previousState = getPreviousState(raddr, dispatchInformation);
-        Pair<ClientProbeResult, T> ret = this.execute(state, dispatchInformation, previousState);
-        setPreviousState(raddr, ret.getRight());
-        return ret.getLeft();
+        T ret = this.execute(state, dispatchInformation, previousState);
+        if (ret.isDone()) {
+            removePreviousState(raddr);
+            return ret.getResult();
+        } else {
+            setPreviousState(raddr, ret);
+            if (ret instanceof InternalProbeStateWithPartialResults) {
+                return ((InternalProbeStateWithPartialResults) ret).getPartialResult();
+            } else {
+                return null;
+            }
+        }
     }
 
-    protected abstract Pair<ClientProbeResult, T> execute(State state, DispatchInformation dispatchInformation,
-            T previousState);
+    protected abstract T execute(State state, DispatchInformation dispatchInformation,
+            T internalState);
 
     @Override
     public ClientProbeResult call() throws Exception {
@@ -56,5 +69,15 @@ public abstract class BaseStatefulProbe<T> extends BaseProbe {
             ret = super.call();
         }
         return ret;
+    }
+
+    public static interface InternalProbeState {
+        public boolean isDone();
+
+        public ClientProbeResult getResult();
+    }
+
+    public static interface InternalProbeStateWithPartialResults extends InternalProbeState {
+        public ClientProbeResult getPartialResult();
     }
 }
