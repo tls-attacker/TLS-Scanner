@@ -901,6 +901,8 @@ public class SiteReportPrinter {
             if (report.getPaddingOracleTestResultList() == null || report.getPaddingOracleTestResultList().isEmpty()) {
                 prettyAppend(builder, "No Testresults");
             } else {
+                prettyAppend(builder, "No vulnerability present to identify");
+
                 // TODO this recopying is weired
                 List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
                 informationLeakTestList.addAll(report.getPaddingOracleTestResultList());
