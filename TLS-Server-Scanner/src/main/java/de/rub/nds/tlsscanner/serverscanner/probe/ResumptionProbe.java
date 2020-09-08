@@ -12,8 +12,19 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateVerifyMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -63,11 +74,93 @@ public class ResumptionProbe extends TlsProbe {
             State state = new State(tlsConfig);
             executeState(state);
             return new ResumptionResult(state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE
-                    : TestResult.FALSE);
+                    : TestResult.FALSE, getIssuesSessionTicket(), getSupportsTls13PskDhe());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new ResumptionResult(TestResult.ERROR_DURING_TEST);
+            return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                    TestResult.ERROR_DURING_TEST);
         }
+    }
+
+    private TestResult getSupportsTls13PskDhe() {
+        Config tlsConfig = createConfig();
+        List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+        pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+        tlsConfig.setPSKKeyExchangeModes(pskKex);
+        tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+        State state = new State(tlsConfig);
+        WorkflowTrace trace = state.getWorkflowTrace();
+
+        trace.addTlsAction(new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
+                new NewSessionTicketMessage(false)));
+        trace.addTlsAction(new ResetConnectionAction(tlsConfig.getDefaultClientConnection().getAlias()));
+
+        tlsConfig.setAddPreSharedKeyExtension(Boolean.TRUE);
+        WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
+                WorkflowTraceType.HANDSHAKE, RunningModeType.CLIENT);
+
+        // remove certificate messages from 2nd handshake
+        ReceiveAction firstServerMsgs = (ReceiveAction) secondHandshake.getTlsActions().get(1);
+        List<ProtocolMessage> newExpectedMsgs = new LinkedList<>();
+        for (ProtocolMessage msg : firstServerMsgs.getExpectedMessages()) {
+            if (!(msg instanceof CertificateMessage || msg instanceof CertificateVerifyMessage)) {
+                newExpectedMsgs.add(msg);
+            }
+        }
+        firstServerMsgs.setExpectedMessages(newExpectedMsgs);
+        trace.addTlsActions(secondHandshake.getTlsActions());
+
+        executeState(state);
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            return TestResult.TRUE;
+        }
+        return TestResult.FALSE;
+    }
+
+    private Config createConfig() {
+        Config tlsConfig = getScannerConfig().createConfig();
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getTls13CipherSuites());
+        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
+        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
+        tlsConfig.setAddECPointFormatExtension(false);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddCertificateStatusRequestExtension(true);
+        tlsConfig.setUseFreshRandom(true);
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
+                .getTls13SignatureAndHashAlgorithms());
+        tlsConfig.setTls13BackwardsCompatibilityMode(Boolean.TRUE);
+        return tlsConfig;
+    }
+
+    private TestResult getIssuesSessionTicket() {
+        Config tlsConfig = createConfig();
+        List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+        pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+        pskKex.add(PskKeyExchangeMode.PSK_KE);
+        tlsConfig.setPSKKeyExchangeModes(pskKex);
+        tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+        State state = new State(tlsConfig);
+        state.getWorkflowTrace()
+                .addTlsAction(
+                        new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
+                                new NewSessionTicketMessage(false)));
+
+        executeState(state);
+        if (state.getWorkflowTrace().getLastMessageAction().executedAsPlanned()) {
+            return TestResult.TRUE;
+        }
+        return TestResult.FALSE;
     }
 
     @Override
@@ -86,6 +179,6 @@ public class ResumptionProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new ResumptionResult(TestResult.COULD_NOT_TEST);
+        return new ResumptionResult(TestResult.COULD_NOT_TEST, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET);
     }
 }

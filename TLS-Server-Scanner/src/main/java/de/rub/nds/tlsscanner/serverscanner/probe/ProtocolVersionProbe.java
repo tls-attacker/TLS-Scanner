@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.record.layer.RecordLayerType;
@@ -72,6 +73,11 @@ public class ProtocolVersionProbe extends TlsProbe {
                         unsupportedVersionList.add(version);
                     }
                 }
+            }
+            if (isTls13Supported()) {
+                supportedVersionList.add(ProtocolVersion.TLS13);
+            } else {
+                unsupportedVersionList.add(ProtocolVersion.TLS13);
             }
             return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
         } catch (Exception E) {
@@ -155,4 +161,41 @@ public class ProtocolVersionProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new ProtocolVersionResult(null, null);
     }
+
+    private boolean isTls13Supported() {
+        Config tlsConfig = getScannerConfig().createConfig();
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplemented());
+        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
+        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
+        tlsConfig.setAddECPointFormatExtension(false);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddCertificateStatusRequestExtension(true);
+        tlsConfig.setUseFreshRandom(true);
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
+                .getTls13SignatureAndHashAlgorithms());
+        State state = new State(tlsConfig);
+        executeState(state);
+        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            LOGGER.debug("Did not receive ServerHello Message");
+            LOGGER.debug(state.getWorkflowTrace().toString());
+            return false;
+        } else {
+            LOGGER.debug("Received ServerHelloMessage");
+            LOGGER.debug(state.getWorkflowTrace().toString());
+            LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
+            return state.getTlsContext().getSelectedProtocolVersion() == ProtocolVersion.TLS13;
+        }
+    }
+
 }

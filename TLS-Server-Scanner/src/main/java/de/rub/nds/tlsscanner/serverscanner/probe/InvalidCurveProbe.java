@@ -194,7 +194,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
             List<ECPointFormat> tls13FpPointFormats = new LinkedList<>();
             tls13FpPointFormats.add(ECPointFormat.UNCOMPRESSED);
-            if (report.getResult(AnalyzedProperty.SUPPORTS_SECP_COMPRESSION_TLS13) == TestResult.TRUE) {
+            if (report.getResult(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION) == TestResult.TRUE) {
                 tls13FpPointFormats.add(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             }
 

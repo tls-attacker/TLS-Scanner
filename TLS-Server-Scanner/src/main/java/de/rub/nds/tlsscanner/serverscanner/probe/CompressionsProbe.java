@@ -100,16 +100,6 @@ public class CompressionsProbe extends TlsProbe {
         }
     }
 
-    private List<CipherSuite> getEcCiphersuites() {
-        List<CipherSuite> suiteList = new LinkedList<>();
-        for (CipherSuite suite : CipherSuite.values()) {
-            if (suite.name().contains("ECDH")) {
-                suiteList.add(suite);
-            }
-        }
-        return suiteList;
-    }
-
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return true;

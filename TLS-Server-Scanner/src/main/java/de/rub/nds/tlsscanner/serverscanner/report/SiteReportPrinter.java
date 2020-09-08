@@ -980,7 +980,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Uncompressed", AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT);
         prettyAppend(builder, "ANSIX962 Prime", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME);
         prettyAppend(builder, "ANSIX962 Char2", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2);
-        prettyAppend(builder, "TLS 1.3 ANSIX962  SECP", AnalyzedProperty.SUPPORTS_SECP_COMPRESSION_TLS13);
+        prettyAppend(builder, "TLS 1.3 ANSIX962  SECP", AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION);
         return builder;
     }
 
