@@ -83,7 +83,6 @@ public class PaddingOracleProbe extends TlsProbe {
             return new PaddingOracleResult(testResultList);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            E.printStackTrace();
             return new PaddingOracleResult(new LinkedList<>());
         }
     }
