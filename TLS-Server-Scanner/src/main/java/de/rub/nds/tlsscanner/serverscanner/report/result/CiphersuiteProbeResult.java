@@ -50,6 +50,8 @@ public class CiphersuiteProbeResult extends ProbeResult {
     private TestResult supportsDh = TestResult.FALSE;
     private TestResult supportsEcdh = TestResult.FALSE;
     private TestResult supportsStaticEcdh = TestResult.FALSE;
+    private TestResult supportsEcdsa = TestResult.FALSE;
+    private TestResult supportsDss = TestResult.FALSE;
     private TestResult supportsGost = TestResult.FALSE;
     private TestResult supportsSrp = TestResult.FALSE;
     private TestResult supportsKerberos = TestResult.FALSE;
@@ -101,6 +103,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
                 adjustBulk(suite);
                 adjustKeyExchange(suite);
                 adjustCipherType(suite);
+                adjustCertificate(suite);
             }
             report.addCipherSuites(allSupported);
         } else {
@@ -137,6 +140,8 @@ public class CiphersuiteProbeResult extends ProbeResult {
             supportsSeedCiphers = TestResult.COULD_NOT_TEST;
             supportsSrp = TestResult.COULD_NOT_TEST;
             supportsStaticEcdh = TestResult.COULD_NOT_TEST;
+            supportsEcdsa = TestResult.COULD_NOT_TEST;
+            supportsDss = TestResult.COULD_NOT_TEST;
             supportsStreamCiphers = TestResult.COULD_NOT_TEST;
             supportsTrippleDesCiphers = TestResult.COULD_NOT_TEST;
             supportsLegacyPrf = TestResult.COULD_NOT_TEST;
@@ -268,6 +273,15 @@ public class CiphersuiteProbeResult extends ProbeResult {
         }
     }
 
+    private void adjustCertificate(CipherSuite suite) {
+        if (suite.name().contains("ECDSA")) {
+            supportsEcdsa = TestResult.TRUE;
+        }
+        if (suite.name().contains("DSS")) {
+            supportsDss = TestResult.TRUE;
+        }
+    }
+    
     private void writeToReport(SiteReport report) {
         report.putResult(AnalyzedProperty.SUPPORTS_NULL_CIPHERS, supportsNullCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_ANON, supportsAnonCiphers);
@@ -289,6 +303,8 @@ public class CiphersuiteProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_RSA, supportsRsa);
         report.putResult(AnalyzedProperty.SUPPORTS_DH, supportsDh);
         report.putResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH, supportsStaticEcdh);
+        report.putResult(AnalyzedProperty.SUPPORTS_ECDSA, supportsEcdsa);
+        report.putResult(AnalyzedProperty.SUPPORTS_DSS, supportsDss);
         report.putResult(AnalyzedProperty.SUPPORTS_ECDH, supportsEcdh);
         report.putResult(AnalyzedProperty.SUPPORTS_GOST, supportsGost);
         report.putResult(AnalyzedProperty.SUPPORTS_SRP, supportsSrp);
