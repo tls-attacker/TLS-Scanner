@@ -98,12 +98,10 @@ public class InvalidCurveProbe extends TlsProbe {
     public boolean canBeExecuted(SiteReport report) {
         if (report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT) == TestResult.NOT_TESTED_YET
-                || report.getSupportedNamedGroups() == null || report.getVersionSuitePairs() == null) {
+                || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
+                || !report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE)
+                || !report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS)
+                || !report.isProbeAlreadyExecuted(ProbeType.RESUMPTION)) {
             return false; // dependency is missing
         } else if (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResult.TRUE
                 && report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResult.TRUE
@@ -171,9 +169,9 @@ public class InvalidCurveProbe extends TlsProbe {
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS12);
         }
+        supportedTls13FpGroups = new LinkedList();
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
-            List<NamedGroup> supportedTls13FpGroups = new LinkedList();
             for (NamedGroup group : report.getSupportedTls13Groups()) {
                 if (NamedGroup.getImplemented().contains(group)
                         && CurveFactory.getCurve(group) instanceof EllipticCurveOverFp) {
@@ -200,8 +198,6 @@ public class InvalidCurveProbe extends TlsProbe {
 
             cipherSuitesMap.put(ProtocolVersion.TLS13, tls13CipherSuites);
             tls13FpPointFormatsToTest = tls13FpPointFormats;
-        } else {
-            supportedTls13FpGroups = new LinkedList<>();
         }
 
         // sometimes we found more versions while testing ciphersuites
@@ -275,8 +271,8 @@ public class InvalidCurveProbe extends TlsProbe {
                 groupList = supportedFpGroups;
                 formatList = fpPointFormatsToTest;
             }
-
             for (NamedGroup group : groupList) {
+
                 for (ECPointFormat format : formatList) {
                     if (supportedECDHCipherSuites.get(protocolVersion) == null) {
                         LOGGER.warn("Protocol Version " + protocolVersion
