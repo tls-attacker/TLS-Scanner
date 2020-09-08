@@ -77,7 +77,7 @@ public class OcspProbe extends TlsProbe {
         Config tlsConfig = initTlsConfig();
 
         if (serverCertChain == null) {
-            LOGGER.error("Couldn't fetch certificate chain from server!");
+            LOGGER.warn("Couldn't fetch certificate chain from server!");
             return getCouldNotExecuteResult();
         }
 
@@ -120,7 +120,7 @@ public class OcspProbe extends TlsProbe {
                 stapledResponse = OCSPResponseParser.parseResponse(certificateStatusMessage.getOcspResponseBytes()
                         .getValue());
             } catch (Exception e) {
-                LOGGER.error("Tried parsing stapled OCSP message, but failed. Will be empty.");
+                LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
             }
         }
     }
@@ -136,11 +136,11 @@ public class OcspProbe extends TlsProbe {
                 ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
                 supportsOcsp = true;
             } catch (NoSuchFieldException ex) {
-                LOGGER.error("Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
+                LOGGER.debug("Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
                 supportsOcsp = false;
                 return;
             } catch (Exception ex) {
-                LOGGER.error("Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
+                LOGGER.warn("Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
                 return;
             }
 
