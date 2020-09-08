@@ -137,7 +137,7 @@ public class SiteReportPrinter {
         appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
         appendRfc(builder);
-        appendCertificate(builder);
+        appendCertificates(builder);
         appendOcsp(builder);
         appendSession(builder);
         appendRenegotiation(builder);
@@ -438,9 +438,17 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    public StringBuilder appendCertificate(StringBuilder builder) {
-        if (report.getCertificateChain() != null) {
-            CertificateChain chain = report.getCertificateChain();
+    public StringBuilder appendCertificates(StringBuilder builder){
+        if(report.getCertificateChainList() != null && report.getCertificateChainList().isEmpty() == false) {
+            for(CertificateChain chain: report.getCertificateChainList()) {
+                appendCertificate(builder, chain);
+            }
+        }
+        
+        return builder;
+    }
+    
+    private StringBuilder appendCertificate(StringBuilder builder, CertificateChain chain) {
             prettyAppendHeading(builder, "Certificate Chain");
             prettyAppend(builder, "Chain ordered", chain.getChainIsOrdered(),
                     chain.getChainIsOrdered() ? AnsiColor.GREEN : AnsiColor.YELLOW);
@@ -572,7 +580,6 @@ public class SiteReportPrinter {
 
                 }
             }
-        }
         return builder;
     }
 
@@ -663,7 +670,7 @@ public class SiteReportPrinter {
 
                 // Check if certificate chain was unordered. This will make the
                 // request fail very likely.
-                CertificateChain chain = report.getCertificateChain();
+                CertificateChain chain = report.getCertificateChainList().get(0);
                 if (Boolean.FALSE.equals(chain.getChainIsOrdered())) {
                     prettyAppend(
                             builder,

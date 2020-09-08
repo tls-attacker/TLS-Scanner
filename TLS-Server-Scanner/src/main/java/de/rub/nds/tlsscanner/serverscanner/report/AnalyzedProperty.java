@@ -62,6 +62,8 @@ public enum AnalyzedProperty {
     SUPPORTS_DH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_STATIC_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_ECDSA(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_DSS(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_GOST(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_SRP(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_KERBEROS(AnalyzedPropertyCategory.CIPHER_SUITES),

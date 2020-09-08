@@ -11,6 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import java.util.LinkedList;
+import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 
 /**
@@ -19,17 +21,18 @@ import org.bouncycastle.crypto.tls.Certificate;
  */
 public class CertificateResult extends ProbeResult {
 
-    private Certificate certs;
-    private CertificateChain chain;
+    private List<CertificateChain> certificates;
 
-    public CertificateResult(CertificateChain chain) {
+
+    public CertificateResult(List<CertificateChain> certificates) {
         super(ProbeType.CERTIFICATE);
-        this.chain = chain;
+        this.certificates = certificates;
+
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setCertificateChain(chain);
+        report.setCertificateChainList(certificates);
     }
 
 }

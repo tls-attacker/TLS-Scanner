@@ -93,7 +93,7 @@ public class SiteReport extends Observable implements Serializable {
     private CheckPattern verifyCheckPattern = null;
 
     // Certificate
-    private CertificateChain certificateChain;
+    private List<CertificateChain> certificateChainList;
 
     // OCSP
     private OCSPResponse stapledOcspResponse = null;
@@ -279,12 +279,12 @@ public class SiteReport extends Observable implements Serializable {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
-    public synchronized CertificateChain getCertificateChain() {
-        return certificateChain;
+    public synchronized List<CertificateChain> getCertificateChainList() {
+        return certificateChainList;
     }
 
-    public synchronized void setCertificateChain(CertificateChain certificateChain) {
-        this.certificateChain = certificateChain;
+    public synchronized void setCertificateChainList(List<CertificateChain> certificateChainList) {
+        this.certificateChainList = certificateChainList;
     }
 
     public synchronized List<ProtocolVersion> getVersions() {
