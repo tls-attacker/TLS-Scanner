@@ -51,6 +51,16 @@ public class ResumptionProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
+            return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(), getSupportsTls13PskDhe());
+        } catch (Exception E) {
+            LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                    TestResult.ERROR_DURING_TEST);
+        }
+    }
+
+    private TestResult getSessionResumption() {
+        try {
             Config tlsConfig = getScannerConfig().createConfig();
             tlsConfig.setQuickReceive(true);
             List<CipherSuite> ciphersuites = new LinkedList<>();
@@ -73,48 +83,51 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
             State state = new State(tlsConfig);
             executeState(state);
-            return new ResumptionResult(state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE
-                    : TestResult.FALSE, getIssuesSessionTicket(), getSupportsTls13PskDhe());
+            return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                    TestResult.ERROR_DURING_TEST);
+            LOGGER.error("Could not test for support for Tls13PskDhe");
+            return TestResult.ERROR_DURING_TEST;
         }
     }
 
     private TestResult getSupportsTls13PskDhe() {
-        Config tlsConfig = createConfig();
-        List<PskKeyExchangeMode> pskKex = new LinkedList<>();
-        pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
-        tlsConfig.setPSKKeyExchangeModes(pskKex);
-        tlsConfig.setAddPSKKeyExchangeModesExtension(true);
-        State state = new State(tlsConfig);
-        WorkflowTrace trace = state.getWorkflowTrace();
+        try {
+            Config tlsConfig = createConfig();
+            List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+            pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+            tlsConfig.setPSKKeyExchangeModes(pskKex);
+            tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+            State state = new State(tlsConfig);
+            WorkflowTrace trace = state.getWorkflowTrace();
 
-        trace.addTlsAction(new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
-                new NewSessionTicketMessage(false)));
-        trace.addTlsAction(new ResetConnectionAction(tlsConfig.getDefaultClientConnection().getAlias()));
+            trace.addTlsAction(new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
+                    new NewSessionTicketMessage(false)));
+            trace.addTlsAction(new ResetConnectionAction(tlsConfig.getDefaultClientConnection().getAlias()));
 
-        tlsConfig.setAddPreSharedKeyExtension(Boolean.TRUE);
-        WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
-                WorkflowTraceType.HANDSHAKE, RunningModeType.CLIENT);
+            tlsConfig.setAddPreSharedKeyExtension(Boolean.TRUE);
+            WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
+                    WorkflowTraceType.HANDSHAKE, RunningModeType.CLIENT);
 
-        // remove certificate messages from 2nd handshake
-        ReceiveAction firstServerMsgs = (ReceiveAction) secondHandshake.getTlsActions().get(1);
-        List<ProtocolMessage> newExpectedMsgs = new LinkedList<>();
-        for (ProtocolMessage msg : firstServerMsgs.getExpectedMessages()) {
-            if (!(msg instanceof CertificateMessage || msg instanceof CertificateVerifyMessage)) {
-                newExpectedMsgs.add(msg);
+            // remove certificate messages from 2nd handshake
+            ReceiveAction firstServerMsgs = (ReceiveAction) secondHandshake.getTlsActions().get(1);
+            List<ProtocolMessage> newExpectedMsgs = new LinkedList<>();
+            for (ProtocolMessage msg : firstServerMsgs.getExpectedMessages()) {
+                if (!(msg instanceof CertificateMessage || msg instanceof CertificateVerifyMessage)) {
+                    newExpectedMsgs.add(msg);
+                }
             }
-        }
-        firstServerMsgs.setExpectedMessages(newExpectedMsgs);
-        trace.addTlsActions(secondHandshake.getTlsActions());
+            firstServerMsgs.setExpectedMessages(newExpectedMsgs);
+            trace.addTlsActions(secondHandshake.getTlsActions());
 
-        executeState(state);
-        if (state.getWorkflowTrace().executedAsPlanned()) {
-            return TestResult.TRUE;
+            executeState(state);
+            if (state.getWorkflowTrace().executedAsPlanned()) {
+                return TestResult.TRUE;
+            }
+            return TestResult.FALSE;
+        } catch (Exception E) {
+            LOGGER.error("Could not test for support for Tls13PskDhe");
+            return TestResult.ERROR_DURING_TEST;
         }
-        return TestResult.FALSE;
     }
 
     private Config createConfig() {
@@ -144,23 +157,28 @@ public class ResumptionProbe extends TlsProbe {
     }
 
     private TestResult getIssuesSessionTicket() {
-        Config tlsConfig = createConfig();
-        List<PskKeyExchangeMode> pskKex = new LinkedList<>();
-        pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
-        pskKex.add(PskKeyExchangeMode.PSK_KE);
-        tlsConfig.setPSKKeyExchangeModes(pskKex);
-        tlsConfig.setAddPSKKeyExchangeModesExtension(true);
-        State state = new State(tlsConfig);
-        state.getWorkflowTrace()
-                .addTlsAction(
-                        new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
-                                new NewSessionTicketMessage(false)));
+        try {
+            Config tlsConfig = createConfig();
+            List<PskKeyExchangeMode> pskKex = new LinkedList<>();
+            pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
+            pskKex.add(PskKeyExchangeMode.PSK_KE);
+            tlsConfig.setPSKKeyExchangeModes(pskKex);
+            tlsConfig.setAddPSKKeyExchangeModesExtension(true);
+            State state = new State(tlsConfig);
+            state.getWorkflowTrace()
+                    .addTlsAction(
+                            new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
+                                    new NewSessionTicketMessage(false)));
 
-        executeState(state);
-        if (state.getWorkflowTrace().getLastMessageAction().executedAsPlanned()) {
-            return TestResult.TRUE;
+            executeState(state);
+            if (state.getWorkflowTrace().getLastMessageAction().executedAsPlanned()) {
+                return TestResult.TRUE;
+            }
+            return TestResult.FALSE;
+        } catch (Exception E) {
+            LOGGER.error("Could not test for support for Tls13SessionTickets");
+            return TestResult.ERROR_DURING_TEST;
         }
-        return TestResult.FALSE;
     }
 
     @Override
