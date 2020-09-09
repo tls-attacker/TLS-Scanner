@@ -1,6 +1,7 @@
 package de.rub.nds.tlsscanner.clientscanner.workflow;
 
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
 
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ThreadedServerWorkflowExecutor;
@@ -11,8 +12,8 @@ public class CSWorkflowExecutor extends ThreadedServerWorkflowExecutor {
     protected IDispatcher rootDispatcher;
     protected final ClientScannerConfig csConfig;
 
-    public CSWorkflowExecutor(ClientScannerConfig csconfig, IDispatcher rootDispatcher) {
-        super(new State(csconfig.createConfig()));
+    public CSWorkflowExecutor(ClientScannerConfig csconfig, IDispatcher rootDispatcher, ExecutorService pool) {
+        super(new State(csconfig.createConfig()), pool);
         this.rootDispatcher = rootDispatcher;
         this.csConfig = csconfig;
     }

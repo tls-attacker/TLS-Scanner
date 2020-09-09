@@ -40,7 +40,7 @@ public class Orchestrator implements IOrchestrator {
         }
 
         dispatcher = new ControlledClientDispatcher();
-        server = new Server(csConfig, dispatcher);
+        server = new Server(csConfig, dispatcher, 1);
     }
 
     @Override

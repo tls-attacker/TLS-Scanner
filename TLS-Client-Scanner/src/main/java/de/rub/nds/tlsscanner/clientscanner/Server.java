@@ -1,11 +1,15 @@
 package de.rub.nds.tlsscanner.clientscanner;
 
 import java.net.InetAddress;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
+import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ThreadedServerWorkflowExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
@@ -18,9 +22,16 @@ public class Server extends Thread {
 
     private final CSWorkflowExecutor executor;
 
-    public Server(ClientScannerConfig csconfig, IDispatcher rootDispatcher) {
-        super("Server" + (serverCounter++));
-        this.executor = new CSWorkflowExecutor(csconfig, rootDispatcher);
+    public Server(ClientScannerConfig csconfig, IDispatcher rootDispatcher, int poolSize) {
+        int i = serverCounter++;
+        setName("Server-" + i);
+        int corePoolSize = Math.max(poolSize / 2, 2);
+        if (corePoolSize > poolSize) {
+            corePoolSize = poolSize;
+        }
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(corePoolSize, poolSize, 10, TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
+                new NamedThreadFactory("Server-" + i + "-Worker"));
+        this.executor = new CSWorkflowExecutor(csconfig, rootDispatcher, pool);
     }
 
     public String getHostname() {

@@ -58,10 +58,9 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
         config.setDefaultSelectedProtocolVersion(toTest);
         config.setEnforceSettings(true);
         config.setDefaultApplicationMessageData("TLS Version: " + toTest);
-        config.setHttpsParsingEnabled(true);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
-        extendWorkflowTrace(state.getWorkflowTrace(), WorkflowTraceType.HANDSHAKE, config);
+        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
         executeState(state);
         internalState.addResult(toTest, state);
         return internalState;

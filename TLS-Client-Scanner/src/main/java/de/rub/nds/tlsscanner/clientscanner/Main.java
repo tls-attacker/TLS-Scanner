@@ -71,7 +71,7 @@ public class Main {
     }
 
     private static void runStandalone(ClientScannerConfig csConfig) {
-        Server s = new Server(csConfig, new HelloWorldDispatcher());
+        Server s = new Server(csConfig, new HelloWorldDispatcher(), 8);
         try {
             s.start();
             s.join();

@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModulusState> {
     private static final int BITLENGTH_CUTOFF_LB = 2; // BigInt cannot handle bitLength<2
-    private static final int BITLENGTH_CUTOFF_UB = 8192; // Performance gets too slow
+    private static final int BITLENGTH_CUTOFF_UB = 4096; // Performance gets too slow
     private static final Logger LOGGER = LogManager.getLogger();
 
     public DHMinimumModulusLengthProbe(IOrchestrator orchestrator) {
@@ -36,12 +36,13 @@ public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModu
     @Override
     protected DHWeakModulusState execute(State state, DispatchInformation dispatchInformation, DHWeakModulusState internalState) {
         Config config = state.getConfig();
-        Integer testing = internalState.getNext();
-        LOGGER.debug("Testing {}", testing);
-        config.setDefaultServerDhModulus(new BigInteger(testing, 10, new Random()));
-        extendWorkflowTrace(state.getWorkflowTrace(), WorkflowTraceType.HANDSHAKE, config);
+        Integer toTest = internalState.getNext();
+        LOGGER.debug("Testing {}", toTest);
+        config.setDefaultApplicationMessageData("Keysize: " + toTest);
+        config.setDefaultServerDhModulus(new BigInteger(toTest, 10, new Random()));
+        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
         executeState(state);
-        internalState.put(testing, state);
+        internalState.put(toTest, state);
         return internalState;
     }
 

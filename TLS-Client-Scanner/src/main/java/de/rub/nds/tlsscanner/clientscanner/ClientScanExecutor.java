@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -24,10 +25,10 @@ public class ClientScanExecutor implements Observer {
     private static final Logger LOGGER = LogManager.getLogger();
     private Collection<IProbe> notScheduledTasks;
     private Collection<ProbeAndResultFuture> futureResults;
-    private final ThreadPoolExecutor executor;
+    private final ExecutorService executor;
     private final IOrchestrator orchestrator;
 
-    public ClientScanExecutor(Collection<IProbe> probesToRun, IOrchestrator orchestrator, ThreadPoolExecutor executor) {
+    public ClientScanExecutor(Collection<IProbe> probesToRun, IOrchestrator orchestrator, ExecutorService executor) {
         this.notScheduledTasks = new ArrayList<>(probesToRun);
         this.futureResults = new LinkedList<>();
         this.executor = executor;
