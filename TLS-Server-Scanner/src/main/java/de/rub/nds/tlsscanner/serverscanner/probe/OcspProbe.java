@@ -222,12 +222,12 @@ public class OcspProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getCertificateChain() != null;
+        return report.getCertificateChainList() != null && report.getCertificateChainList().isEmpty() == false;
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
-        serverCertChain = report.getCertificateChain().getCertificate();
+        serverCertChain = report.getCertificateChainList().get(0).getCertificate();
     }
 
     @Override
