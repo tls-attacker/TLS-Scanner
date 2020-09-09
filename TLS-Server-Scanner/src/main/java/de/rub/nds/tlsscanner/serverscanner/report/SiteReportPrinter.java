@@ -832,19 +832,25 @@ public class SiteReportPrinter {
                 }
                 String resultString = testResult.getTestInfo().getPrintableName();
                 if (testResult.getpValue() < 0.01) {
-                    prettyAppend(builder, resultString + "\t | "
-                            + padToLength(testResult.getEqualityError().name(), 25) + padToLength("| VULNERABLE", 25)
-                            + "| P: " + pValue, AnsiColor.RED);
+                    prettyAppend(
+                            builder,
+                            padToLength(resultString, 80) + " | "
+                                    + padToLength(testResult.getEqualityError().name(), 25)
+                                    + padToLength("| VULNERABLE", 25) + "| P: " + pValue, AnsiColor.RED);
                 } else if (testResult.getpValue() < 0.05) {
-                    prettyAppend(builder,
-                            resultString + "\t | " + padToLength(testResult.getEqualityError().name(), 25)
+                    prettyAppend(
+                            builder,
+                            padToLength(resultString, 80) + " | "
+                                    + padToLength(testResult.getEqualityError().name(), 25)
                                     + padToLength("| PROBABLY VULNERABLE", 25) + "| P: " + pValue, AnsiColor.YELLOW);
                 } else if (testResult.getpValue() < 1) {
-                    prettyAppend(builder, resultString + "\t | " + padToLength("No significant difference", 25)
-                            + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
+                    prettyAppend(builder,
+                            padToLength(resultString, 80) + " | " + padToLength("No significant difference", 25)
+                                    + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
                 } else {
-                    prettyAppend(builder, resultString + "\t | " + padToLength("No behavior difference", 25)
-                            + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
+                    prettyAppend(builder,
+                            padToLength(resultString, 80) + " | " + padToLength("No behavior difference", 25)
+                                    + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
                 }
 
                 if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isSignificantDistinctAnswers(),
@@ -1372,7 +1378,7 @@ public class SiteReportPrinter {
 
     public void appendScoringResults(StringBuilder builder) {
         prettyAppendHeading(builder, "Scoring results");
-        
+
         SiteReportRater rater;
         try {
             rater = SiteReportRater.getSiteReportRater("en");
@@ -1415,7 +1421,7 @@ public class SiteReportPrinter {
 
     public void appendRecommendations(StringBuilder builder) {
         prettyAppendHeading(builder, "Recommedations");
-        
+
         SiteReportRater rater;
         try {
             rater = SiteReportRater.getSiteReportRater("en");
