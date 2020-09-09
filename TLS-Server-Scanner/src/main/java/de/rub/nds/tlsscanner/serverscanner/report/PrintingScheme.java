@@ -91,6 +91,16 @@ public class PrintingScheme {
         attackEncodingMap.put(TestResult.UNCERTAIN, "uncertain - requires manual testing");
         attackEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by TLS-Scanner");
 
+        HashMap<TestResult, String> freshnessMap = new HashMap<>();
+        freshnessMap.put(TestResult.COULD_NOT_TEST, "could not test (no)");
+        freshnessMap.put(TestResult.ERROR_DURING_TEST, "error");
+        freshnessMap.put(TestResult.FALSE, "false");
+        freshnessMap.put(TestResult.NOT_TESTED_YET, "not tested yet");
+        freshnessMap.put(TestResult.TIMEOUT, "timeout");
+        freshnessMap.put(TestResult.TRUE, "true");
+        freshnessMap.put(TestResult.UNCERTAIN, "uncertain - requires manual testing");
+        freshnessMap.put(TestResult.UNSUPPORTED, "unsupported by TLS-Scanner");
+
         ColorEncoding attacks = getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN);
 
         HashMap<AnalyzedProperty, ColorEncoding> colorMap = new HashMap<>();
@@ -297,6 +307,8 @@ public class PrintingScheme {
 
         HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
+        textMap.put(AnalyzedPropertyCategory.FRESHNESS, new TextEncoding(freshnessMap));
+        textMap.put(AnalyzedPropertyCategory.FFDHE, new TextEncoding(freshnessMap));
         PrintingScheme scheme = new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding,
                 useColors);
         return scheme;
