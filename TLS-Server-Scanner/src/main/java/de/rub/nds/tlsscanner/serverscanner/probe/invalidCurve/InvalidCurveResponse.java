@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve;
 
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 public class InvalidCurveResponse {
 
-    private InvalidCurveParameterSet parameterSet;
+    private InvalidCurveVector parameterSet;
     private List<FingerprintSecretPair> fingerprintSecretPairs;
     private List<Point> receivedEcPublicKeys;
     private List<Point> receivedFinishedEcKeys;
@@ -33,9 +34,9 @@ public class InvalidCurveResponse {
     private InvalidCurveResponse() {
     }
 
-    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet,
-            List<FingerprintSecretPair> fingerprintSecretPairs, TestResult showsPointsAreNotValidated,
-            List<Point> receivedEcPublicKeys, List<Point> receivedFinishedEcKeys, TestResult dirtyKeysWarning) {
+    public InvalidCurveResponse(InvalidCurveVector parameterSet, List<FingerprintSecretPair> fingerprintSecretPairs,
+            TestResult showsPointsAreNotValidated, List<Point> receivedEcPublicKeys,
+            List<Point> receivedFinishedEcKeys, TestResult dirtyKeysWarning) {
         this.parameterSet = parameterSet;
         this.fingerprintSecretPairs = fingerprintSecretPairs;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
@@ -44,7 +45,7 @@ public class InvalidCurveResponse {
         this.dirtyKeysWarning = dirtyKeysWarning;
     }
 
-    public InvalidCurveResponse(InvalidCurveParameterSet parameterSet, TestResult showsPointsAreNotValidated) {
+    public InvalidCurveResponse(InvalidCurveVector parameterSet, TestResult showsPointsAreNotValidated) {
         this.parameterSet = parameterSet;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
         this.fingerprintSecretPairs = new LinkedList<>();
@@ -54,7 +55,7 @@ public class InvalidCurveResponse {
     /**
      * @return the parameterSet
      */
-    public InvalidCurveParameterSet getParameterSet() {
+    public InvalidCurveVector getParameterSet() {
         return parameterSet;
     }
 

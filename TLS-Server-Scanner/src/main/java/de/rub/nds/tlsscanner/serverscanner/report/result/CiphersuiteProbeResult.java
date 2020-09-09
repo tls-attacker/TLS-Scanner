@@ -281,7 +281,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
             supportsDss = TestResult.TRUE;
         }
     }
-    
+
     private void writeToReport(SiteReport report) {
         report.putResult(AnalyzedProperty.SUPPORTS_NULL_CIPHERS, supportsNullCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_ANON, supportsAnonCiphers);

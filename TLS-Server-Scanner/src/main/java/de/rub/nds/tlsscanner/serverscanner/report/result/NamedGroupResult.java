@@ -10,8 +10,12 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.namedcurve.WitnessType;
+import de.rub.nds.tlsscanner.serverscanner.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -19,16 +23,21 @@ import java.util.List;
  */
 public class NamedGroupResult extends ProbeResult {
 
-    private final List<NamedGroup> namedGroupsList;
+    private final Map<NamedGroup, NamedCurveWitness> namedGroupsMap;
 
-    public NamedGroupResult(List<NamedGroup> groups) {
+    public NamedGroupResult(Map<NamedGroup, NamedCurveWitness> groups) {
         super(ProbeType.NAMED_GROUPS);
-        this.namedGroupsList = groups;
+        this.namedGroupsMap = groups;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setSupportedNamedGroups(namedGroupsList);
+        LinkedList<NamedGroup> allGroups = new LinkedList<>();
+        if (namedGroupsMap != null) {
+            allGroups.addAll(namedGroupsMap.keySet());
+        }
+        report.setSupportedNamedGroups(allGroups);
+        report.setSupportedNamedGroupsWitnesses(namedGroupsMap);
     }
 
 }

@@ -26,6 +26,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve.InvalidCurveResponse;
@@ -79,6 +80,7 @@ public class SiteReport extends Observable implements Serializable {
     // Extensions
     private List<ExtensionType> supportedExtensions = null;
     private List<NamedGroup> supportedNamedGroups = null;
+    private Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses;
     private List<NamedGroup> supportedTls13Groups = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
@@ -94,6 +96,10 @@ public class SiteReport extends Observable implements Serializable {
 
     // Certificate
     private List<CertificateChain> certificateChainList;
+    private List<NamedGroup> ecdsaPkGroupsStatic;
+    private List<NamedGroup> ecdsaPkGroupsEphemeral;
+    private List<NamedGroup> ecdsaSigGroupsStatic;
+    private List<NamedGroup> ecdsaSigGroupsEphemeral;
 
     // OCSP
     private OCSPResponse stapledOcspResponse = null;
@@ -626,5 +632,46 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setHttpGetOcspResponse(OCSPResponse httpGetOcspResponse) {
         this.httpGetOcspResponse = httpGetOcspResponse;
+    }
+
+    public synchronized List<NamedGroup> getEcdsaPkGroupsStatic() {
+        return ecdsaPkGroupsStatic;
+    }
+
+    public synchronized void setEcdsaPkGroupsStatic(List<NamedGroup> ecdsaPkGroupsStatic) {
+        this.ecdsaPkGroupsStatic = ecdsaPkGroupsStatic;
+    }
+
+    public synchronized List<NamedGroup> getEcdsaPkGroupsEphemeral() {
+        return ecdsaPkGroupsEphemeral;
+    }
+
+    public synchronized void setEcdsaPkGroupsEphemeral(List<NamedGroup> ecdsaPkGroupsEphemeral) {
+        this.ecdsaPkGroupsEphemeral = ecdsaPkGroupsEphemeral;
+    }
+
+    public synchronized Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsWitnesses() {
+        return supportedNamedGroupsWitnesses;
+    }
+
+    public synchronized void setSupportedNamedGroupsWitnesses(
+            Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
+        this.supportedNamedGroupsWitnesses = supportedNamedGroupsWitnesses;
+    }
+
+    public synchronized List<NamedGroup> getEcdsaSigGroupsStatic() {
+        return ecdsaSigGroupsStatic;
+    }
+
+    public synchronized void setEcdsaSigGroupsStatic(List<NamedGroup> ecdsaSigGroupsStatic) {
+        this.ecdsaSigGroupsStatic = ecdsaSigGroupsStatic;
+    }
+
+    public synchronized List<NamedGroup> getEcdsaSigGroupsEphemeral() {
+        return ecdsaSigGroupsEphemeral;
+    }
+
+    public synchronized void setEcdsaSigGroupsEphemeral(List<NamedGroup> ecdsaSigGroupsEphemeral) {
+        this.ecdsaSigGroupsEphemeral = ecdsaSigGroupsEphemeral;
     }
 }
