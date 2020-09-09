@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.CertificateStatusRequestExtensionMessage;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
@@ -20,6 +21,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -37,9 +39,11 @@ public class OcspResult extends ProbeResult {
     private final OCSPResponse secondResponse;
     private final OCSPResponse httpGetResponse;
 
+    private final List<CertificateStatusRequestExtensionMessage> tls13CertStatus;
+
     public OcspResult(Boolean supportsOcsp, boolean supportsStapling, boolean mustStaple, boolean supportsNonce,
             OCSPResponse stapledResponse, OCSPResponse firstResponse, OCSPResponse secondResponse,
-            OCSPResponse httpGetResponse) {
+            OCSPResponse httpGetResponse, List<CertificateStatusRequestExtensionMessage> tls13CertStatus) {
         super(ProbeType.OCSP);
         this.supportsOcsp = supportsOcsp;
         this.supportsStapling = supportsStapling;
@@ -49,6 +53,7 @@ public class OcspResult extends ProbeResult {
         this.firstResponse = firstResponse;
         this.secondResponse = secondResponse;
         this.httpGetResponse = httpGetResponse;
+        this.tls13CertStatus = tls13CertStatus;
     }
 
     @Override
@@ -139,6 +144,22 @@ public class OcspResult extends ProbeResult {
             } else {
                 report.putResult(AnalyzedProperty.SUPPORTS_NONCE, TestResult.FALSE);
             }
+        }
+
+        if (tls13CertStatus != null) {
+            if (tls13CertStatus.size() == 1) {
+                report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResult.TRUE);
+                report.putResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResult.FALSE);
+            } else if (tls13CertStatus.size() > 1) {
+                report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResult.TRUE);
+                report.putResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResult.TRUE);
+            } else {
+                report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResult.FALSE);
+                report.putResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResult.FALSE);
+            }
+        } else {
+            report.putResult(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, TestResult.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResult.COULD_NOT_TEST);
         }
     }
 }

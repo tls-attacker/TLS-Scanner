@@ -83,8 +83,7 @@ public class PaddingOracleProbe extends TlsProbe {
             return new PaddingOracleResult(testResultList);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            E.printStackTrace();
-            return new PaddingOracleResult(new LinkedList<>());
+            return new PaddingOracleResult(null);
         }
     }
 
@@ -146,18 +145,12 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
-                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
-                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
+        if (report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE)
+                && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
+            return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
+        } else {
             return false;
         }
-        // TODO TLS13 probe is only a dependency to prevent an
-        // java.util.ConcurrentModificationException. Not good
-        // needs to be fixed before merging!
-        if (!report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE) || !report.isProbeAlreadyExecuted(ProbeType.TLS13)) {
-            return false;
-        }
-        return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
     }
 
     @Override

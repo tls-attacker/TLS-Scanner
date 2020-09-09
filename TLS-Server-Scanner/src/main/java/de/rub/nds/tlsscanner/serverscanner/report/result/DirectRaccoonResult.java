@@ -14,6 +14,7 @@ import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,6 +26,12 @@ public class DirectRaccoonResult extends ProbeResult {
     private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> resultList;
 
     private TestResult vulnerable;
+
+    public DirectRaccoonResult(TestResult result) {
+        super(ProbeType.DIRECT_RACCOON);
+        this.vulnerable = result;
+        resultList = new LinkedList<>();
+    }
 
     public DirectRaccoonResult(List<InformationLeakTest<DirectRaccoonOracleTestInfo>> resultList) {
         super(ProbeType.DIRECT_RACCOON);
