@@ -105,44 +105,50 @@ public class ECPointFormatProbe extends TlsProbe {
     }
 
     private TestResult getTls13SecpCompressionSupported() {
-        // SECP curves in TLS 1.3 don't use compression, some implementations
-        // might still accept compression
-        List<NamedGroup> secpGroups = new LinkedList<>();
-        for (NamedGroup group : NamedGroup.getImplemented()) {
-            if (group.name().contains("SECP")) {
-                secpGroups.add(group);
+        try {
+            // SECP curves in TLS 1.3 don't use compression, some
+            // implementations
+            // might still accept compression
+            List<NamedGroup> secpGroups = new LinkedList<>();
+            for (NamedGroup group : NamedGroup.getImplemented()) {
+                if (group.name().contains("SECP")) {
+                    secpGroups.add(group);
+                }
             }
-        }
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplemented());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        tlsConfig.setDefaultClientNamedGroups(secpGroups);
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setAddCertificateStatusRequestExtension(true);
-        tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
-        tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
-        tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
-        State state = new State(tlsConfig);
+            Config tlsConfig = getScannerConfig().createConfig();
+            tlsConfig.setQuickReceive(true);
+            tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplemented());
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
+            tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
+            tlsConfig.setEnforceSettings(false);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopReceivingAfterFatal(true);
+            tlsConfig.setStopActionsAfterFatal(true);
+            tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+            tlsConfig.setDefaultClientNamedGroups(secpGroups);
+            tlsConfig.setAddECPointFormatExtension(false);
+            tlsConfig.setAddEllipticCurveExtension(true);
+            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+            tlsConfig.setAddSupportedVersionsExtension(true);
+            tlsConfig.setAddKeyShareExtension(true);
+            tlsConfig.setAddServerNameIndicationExtension(true);
+            tlsConfig.setAddCertificateStatusRequestExtension(true);
+            tlsConfig.setUseFreshRandom(true);
+            tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
+                    .getTls13SignatureAndHashAlgorithms());
+            tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
+            tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
+            State state = new State(tlsConfig);
 
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            return TestResult.TRUE;
+            executeState(state);
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+                return TestResult.TRUE;
+            }
+            return TestResult.FALSE;
+        } catch (Exception E) {
+            LOGGER.error("Could not test for Tls13SecpCompression", E);
+            return TestResult.ERROR_DURING_TEST;
         }
-        return TestResult.FALSE;
     }
 
     @Override

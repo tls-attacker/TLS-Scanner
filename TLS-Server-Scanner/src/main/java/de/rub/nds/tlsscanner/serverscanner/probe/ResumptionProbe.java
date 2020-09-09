@@ -165,10 +165,9 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setPSKKeyExchangeModes(pskKex);
             tlsConfig.setAddPSKKeyExchangeModesExtension(true);
             State state = new State(tlsConfig);
-            state.getWorkflowTrace()
-                    .addTlsAction(
-                            new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
-                                    new NewSessionTicketMessage(false)));
+            state.getWorkflowTrace().addTlsAction(
+                    new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(), new NewSessionTicketMessage(
+                            false)));
 
             executeState(state);
             if (state.getWorkflowTrace().getLastMessageAction().executedAsPlanned()) {

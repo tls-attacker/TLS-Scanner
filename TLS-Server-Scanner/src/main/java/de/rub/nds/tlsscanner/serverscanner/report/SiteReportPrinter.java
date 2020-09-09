@@ -136,7 +136,7 @@ public class SiteReportPrinter {
         appendInvalidCurveResults(builder);
         appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
-        appendRfc(builder);
+        // appendRfc(builder);
         appendCertificate(builder);
         appendOcsp(builder);
         appendSession(builder);

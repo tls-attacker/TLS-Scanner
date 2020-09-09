@@ -53,10 +53,10 @@ public class ECPointFormatResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, supportsUncompressedPoint);
         report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, supportsANSIX962CompressedPrime);
         report.putResult(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, supportsANSIX962CompressedChar2);
-        if (tls13SecpCompression == null) {
+        if (tls13SecpCompression != null) {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, tls13SecpCompression);
         } else {
-            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResult.ERROR_DURING_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, TestResult.COULD_NOT_TEST);
         }
     }
 
