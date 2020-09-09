@@ -20,15 +20,18 @@ import java.util.List;
 public class NamedGroupResult extends ProbeResult {
 
     private final List<NamedGroup> namedGroupsList;
+    private final List<NamedGroup> tls13NamedGroupsList;
 
-    public NamedGroupResult(List<NamedGroup> groups) {
+    public NamedGroupResult(List<NamedGroup> groups, List<NamedGroup> tls13Groups) {
         super(ProbeType.NAMED_GROUPS);
         this.namedGroupsList = groups;
+        this.tls13NamedGroupsList = tls13Groups;
     }
 
     @Override
     public void mergeData(SiteReport report) {
         report.setSupportedNamedGroups(namedGroupsList);
+        report.setSupportedTls13Groups(tls13NamedGroupsList);
     }
 
 }

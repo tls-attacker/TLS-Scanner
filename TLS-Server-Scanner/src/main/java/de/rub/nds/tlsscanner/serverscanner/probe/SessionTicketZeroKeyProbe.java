@@ -122,7 +122,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         }
 
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
-            return new SessionTicketZeroKeyResult(TestResult.UNSUPPORTED, TestResult.UNSUPPORTED);
+            return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
         }
 
         byte[] ticket = null;

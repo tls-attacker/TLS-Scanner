@@ -19,16 +19,23 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
  */
 public class ResumptionResult extends ProbeResult {
 
-    private TestResult supportsResumption;
+    private final TestResult supportsResumption;
+    private final TestResult supportsTls13SessionTicket;
+    private final TestResult supportsTls13PskDhe;
 
-    public ResumptionResult(TestResult supportsResumption) {
+    public ResumptionResult(TestResult supportsResumption, TestResult supportsTls13SessionTicket,
+            TestResult supportsTls13PskDhe) {
         super(ProbeType.RESUMPTION);
         this.supportsResumption = supportsResumption;
+        this.supportsTls13SessionTicket = supportsTls13SessionTicket;
+        this.supportsTls13PskDhe = supportsTls13PskDhe;
     }
 
     @Override
     public void mergeData(SiteReport report) {
         report.putResult(AnalyzedProperty.SUPPORTS_SESSION_IDS, supportsResumption);
+        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
+        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
     }
 
 }

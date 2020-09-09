@@ -49,7 +49,7 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(this.getClientSupportedCiphersuites());
-        tlsConfig.setSupportedSignatureAndHashAlgorithms(this.getTls13SignatureAndHashAlgorithms());
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(this.getTls13SignatureAndHashAlgorithms());
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);

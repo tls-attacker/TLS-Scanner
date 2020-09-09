@@ -1,6 +1,7 @@
 FROM maven:3.6.1-jdk-8 AS build-image
 WORKDIR /build
-
+RUN git clone https://github.com/RUB-NDS/ASN.1-Tool.git && cd ASN.1-Tool && mvn clean install && cd ..
+RUN git clone https://github.com/RUB-NDS/X509-Attacker.git && cd X509-Attacker && mvn clean install && cd ..
 RUN git clone https://github.com/RUB-NDS/TLS-Scanner.git --recurse-submodules
 
 RUN git clone https://github.com/RUB-NDS/TLS-Attacker.git && \

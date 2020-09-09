@@ -88,7 +88,6 @@ public class TlsScanner {
         probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
         probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
         probeList.add(new ExtensionProbe(config, parallelExecutor));
-        probeList.add(new Tls13Probe(config, parallelExecutor));
         probeList.add(new TokenbindingProbe(config, parallelExecutor));
         probeList.add(new HttpHeaderProbe(config, parallelExecutor));
         probeList.add(new ECPointFormatProbe(config, parallelExecutor));
@@ -102,7 +101,7 @@ public class TlsScanner {
         probeList.add(new InvalidCurveProbe(config, parallelExecutor));
         probeList.add(new DrownProbe(config, parallelExecutor));
         probeList.add(new EarlyCcsProbe(config, parallelExecutor));
-        probeList.add(new MacProbe(config, parallelExecutor));
+        // probeList.add(new MacProbe(config, parallelExecutor));
         probeList.add(new CcaSupportProbe(config, parallelExecutor));
         probeList.add(new CcaRequiredProbe(config, parallelExecutor));
         probeList.add(new CcaProbe(config, parallelExecutor));

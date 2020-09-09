@@ -70,20 +70,9 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
 
         TestResult reusesDhPublicKey = report.getResult(AnalyzedProperty.REUSES_DH_PUBLICKEY);
         if (reusesDhPublicKey == TestResult.TRUE) {
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.FALSE);
+            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.TRUE);
         } else {
-            TestResult vulnerable = TestResult.FALSE;
-            for (RaccoonAttackProbabilities probability : attackProbabilityList) {
-                if (probability
-                        .getChanceForEquation()
-                        .multiply(
-                                new BigDecimal(MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION, new MathContext(256,
-                                        RoundingMode.DOWN))).intValue() > 0) {
-                    vulnerable = TestResult.TRUE;
-                    break;
-                }
-            }
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, vulnerable);
+            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.FALSE);
 
         }
     }
