@@ -25,8 +25,8 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
-import de.rub.nds.tlsscanner.serverscanner.namedcurve.WitnessType;
-import de.rub.nds.tlsscanner.serverscanner.namedcurve.NamedCurveWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.WitnessType;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -49,14 +49,17 @@ public class NamedCurvesProbe extends TlsProbe {
     private boolean testUsingRsa = true;
     private boolean testUsingEcdsaStatic = true;
     private boolean testUsingEcdsaEphemeral = true;
+    private boolean testUsingTls13 = true;
 
     // curves used for ecdsa in key exchange
     private List<NamedGroup> ecdsaPkGroupsStatic;
     private List<NamedGroup> ecdsaPkGroupsEphemeral;
+    private List<NamedGroup> ecdsaPkGroupsTls13;
 
     // curves used for ecdsa certificate signatures
     private List<NamedGroup> ecdsaCertSigGroupsStatic;
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
+    private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
     public NamedCurvesProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
@@ -68,6 +71,7 @@ public class NamedCurvesProbe extends TlsProbe {
             List<NamedGroup> groupsRsa = new LinkedList<>();
             Map<NamedGroup, NamedCurveWitness> groupsEcdsaStatic = new HashMap<>();
             Map<NamedGroup, NamedCurveWitness> groupsEcdsaEphemeral = new HashMap<>();
+            Map<NamedGroup, NamedCurveWitness> groupsTls13 = new HashMap<>();
 
             if (testUsingRsa) {
                 groupsRsa = getSupportedNamedGroupsRsa();
@@ -80,11 +84,14 @@ public class NamedCurvesProbe extends TlsProbe {
                 groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCiphersuites(),
                         WitnessType.ECDSA_EPHEMERAL_ONLY, ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
             }
+            if (testUsingTls13) {
+                groupsTls13 = getTls13SupportedGroups();
+            }
 
             Map<NamedGroup, NamedCurveWitness> overallSupported = composeFullMap(groupsRsa, groupsEcdsaStatic,
                     groupsEcdsaEphemeral);
 
-            return new NamedGroupResult(overallSupported);
+            return new NamedGroupResult(overallSupported, groupsTls13);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new NamedGroupResult(null, null);
@@ -130,9 +137,9 @@ public class NamedCurvesProbe extends TlsProbe {
             // place signing groups at the bottom of the list, the server should
             // choose
             // all other first
-            placeEcdsaPkGroupsLast(toTestList, pkGroups);
+            placeRequiredGroupsLast(toTestList, pkGroups);
             if (sigGroups != null) {
-                placeEcdsaSigGroupsLast(toTestList, sigGroups);
+                placeRequiredGroupsLast(toTestList, sigGroups);
             }
 
             do {
@@ -241,14 +248,16 @@ public class NamedCurvesProbe extends TlsProbe {
         }
         ecdsaPkGroupsStatic = report.getEcdsaPkGroupsStatic();
         ecdsaPkGroupsEphemeral = report.getEcdsaPkGroupsEphemeral();
+        ecdsaPkGroupsTls13 = report.getEcdsaPkGroupsTls13();
 
         ecdsaCertSigGroupsStatic = report.getEcdsaSigGroupsStatic();
         ecdsaCertSigGroupsEphemeral = report.getEcdsaSigGroupsStatic();
+        ecdsaCertSigGroupsTls13 = report.getEcdsaSigGroupsTls13();
     }
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new NamedGroupResult(new HashMap<>());
+        return new NamedGroupResult(new HashMap<>(), new HashMap<>());
     }
 
     private Config getBasicConfig() {
@@ -270,18 +279,7 @@ public class NamedCurvesProbe extends TlsProbe {
         return tlsConfig;
     }
 
-    public void placeEcdsaPkGroupsLast(List<NamedGroup> groupList, List<NamedGroup> pkGroups) {
-        for (int i = 0; i < groupList.size(); i++) {
-            if (pkGroups.contains(groupList.get(0))) {
-                groupList.remove(i);
-                i--;
-            }
-        }
-
-        groupList.addAll(pkGroups);
-    }
-
-    public void placeEcdsaSigGroupsLast(List<NamedGroup> groupList, List<NamedGroup> sigGroups) {
+    public void placeRequiredGroupsLast(List<NamedGroup> groupList, List<NamedGroup> sigGroups) {
         for (int i = 0; i < groupList.size(); i++) {
             if (sigGroups.contains(groupList.get(0))) {
                 groupList.remove(i);
@@ -290,8 +288,14 @@ public class NamedCurvesProbe extends TlsProbe {
         }
 
         groupList.addAll(sigGroups);
-    private List<NamedGroup> getTls13SupportedGroups() {
-        NamedGroup supportedGroup = null;
+    }
+
+    private Map<NamedGroup, NamedCurveWitness> getTls13SupportedGroups() {
+        Map<NamedGroup, NamedCurveWitness> namedCurveMap = new HashMap<>();
+        NamedGroup selectedGroup = null;
+        NamedGroup certificateGroup = null;
+        NamedGroup certificateSigGroup = null;
+        TlsContext context = null;
         List<NamedGroup> toTestList = new LinkedList<>();
         List<NamedGroup> supportedGroups = new LinkedList<>();
         for (NamedGroup group : NamedGroup.values()) {
@@ -299,23 +303,34 @@ public class NamedCurvesProbe extends TlsProbe {
                 toTestList.add(group);
             }
         }
+        if (ecdsaPkGroupsTls13 != null) {
+            placeRequiredGroupsLast(supportedGroups, ecdsaPkGroupsTls13);
+        }
+        if (ecdsaCertSigGroupsTls13 != null) {
+            placeRequiredGroupsLast(supportedGroups, ecdsaCertSigGroupsTls13);
+        }
         do {
-            supportedGroup = getTls13SupportedGroup(toTestList);
-            if (supportedGroup != null) {
-                if (!toTestList.contains(supportedGroup)) {
-                    LOGGER.warn("Server chose a group we did not offer:" + supportedGroup);
+            context = getTls13SupportedGroup(toTestList);
+
+            if (context != null) {
+                selectedGroup = context.getSelectedGroup();
+                certificateGroup = context.getEcCertificateCurve();
+                certificateSigGroup = context.getEcCertificateSignatureCurve();
+                if (!toTestList.contains(selectedGroup)) {
+                    LOGGER.warn("Server chose a group we did not offer:" + selectedGroup);
                     // TODO add to site report
-                    return supportedGroups;
+                    return namedCurveMap;
                 }
 
-                supportedGroups.add(supportedGroup);
-                toTestList.remove(supportedGroup);
+                namedCurveMap.put(selectedGroup, new NamedCurveWitness(WitnessType.TLS_13, null, certificateGroup,
+                        null, certificateSigGroup));
+                toTestList.remove(selectedGroup);
             }
-        } while (supportedGroup != null && !toTestList.isEmpty());
-        return supportedGroups;
+        } while (context != null && !toTestList.isEmpty());
+        return namedCurveMap;
     }
 
-    public NamedGroup getTls13SupportedGroup(List<NamedGroup> groups) {
+    public TlsContext getTls13SupportedGroup(List<NamedGroup> groups) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplementedTls13CipherSuites());
@@ -342,17 +357,12 @@ public class NamedCurvesProbe extends TlsProbe {
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return state.getTlsContext().getSelectedGroup();
+            return state.getTlsContext();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
             LOGGER.debug(state.getWorkflowTrace().toString());
             return null;
         }
-    }
-
-    @Override
-    public boolean canBeExecuted(SiteReport report) {
-        return true;
     }
 
     private Map<NamedGroup, NamedCurveWitness> composeFullMap(List<NamedGroup> rsaGroups,
@@ -401,7 +411,7 @@ public class NamedCurvesProbe extends TlsProbe {
             } else if (!rsaGroups.contains(group) && !groupsEcdsaStatic.containsKey(group)
                     && groupsEcdsaEphemeral.containsKey(group)) {
                 witness = new NamedCurveWitness(WitnessType.ECDSA_EPHEMERAL_ONLY, null, groupsEcdsaEphemeral.get(group)
-                        .getEcdsaPkGroupEphemeral(), null, groupsEcdsaStatic.get(group).getEcdsaSigGroupEphemeral());
+                        .getEcdsaPkGroupEphemeral(), null, groupsEcdsaEphemeral.get(group).getEcdsaSigGroupEphemeral());
             } else if (!rsaGroups.contains(group) && groupsEcdsaStatic.containsKey(group)
                     && !groupsEcdsaEphemeral.containsKey(group)) {
                 witness = new NamedCurveWitness(WitnessType.ECDSA_STATIC_ONLY, groupsEcdsaStatic.get(group)

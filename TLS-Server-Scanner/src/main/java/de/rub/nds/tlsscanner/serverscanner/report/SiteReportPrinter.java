@@ -137,7 +137,7 @@ public class SiteReportPrinter {
         appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
         // appendRfc(builder);
-        appendCertificate(builder);
+        appendCertificates(builder);
         appendOcsp(builder);
         appendSession(builder);
         appendRenegotiation(builder);

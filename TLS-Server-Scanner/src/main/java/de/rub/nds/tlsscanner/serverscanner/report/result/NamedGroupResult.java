@@ -10,8 +10,8 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.namedcurve.WitnessType;
-import de.rub.nds.tlsscanner.serverscanner.namedcurve.NamedCurveWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.WitnessType;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,10 +24,13 @@ import java.util.Map;
 public class NamedGroupResult extends ProbeResult {
 
     private final Map<NamedGroup, NamedCurveWitness> namedGroupsMap;
+    private final Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13;
 
-    public NamedGroupResult(Map<NamedGroup, NamedCurveWitness> groups) {
+    public NamedGroupResult(Map<NamedGroup, NamedCurveWitness> namedGroupsMap,
+            Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13) {
         super(ProbeType.NAMED_GROUPS);
-        this.namedGroupsMap = groups;
+        this.namedGroupsMap = namedGroupsMap;
+        this.namedGroupsMapTls13 = namedGroupsMapTls13;
     }
 
     @Override
@@ -36,8 +39,16 @@ public class NamedGroupResult extends ProbeResult {
         if (namedGroupsMap != null) {
             allGroups.addAll(namedGroupsMap.keySet());
         }
+
+        LinkedList<NamedGroup> tls13Groups = new LinkedList<>();
+        if (namedGroupsMapTls13 != null) {
+            tls13Groups.addAll(namedGroupsMapTls13.keySet());
+        }
+
         report.setSupportedNamedGroups(allGroups);
+        report.setSupportedTls13Groups(tls13Groups);
         report.setSupportedNamedGroupsWitnesses(namedGroupsMap);
+        report.setSupportedNamedGroupsWitnessesTls13(namedGroupsMapTls13);
     }
 
 }

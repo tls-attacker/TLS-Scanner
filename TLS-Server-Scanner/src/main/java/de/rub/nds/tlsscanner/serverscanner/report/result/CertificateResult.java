@@ -25,18 +25,23 @@ public class CertificateResult extends ProbeResult {
     private List<CertificateChain> certificates;
     private List<NamedGroup> ecdsaPkGroupsStatic;
     private List<NamedGroup> ecdsaPkGroupsEphemeral;
+    private List<NamedGroup> ecdsaPkGroupsTls13;
     private List<NamedGroup> ecdsaSigGroupsStatic;
     private List<NamedGroup> ecdsaSigGroupsEphemeral;
+    private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
     public CertificateResult(List<CertificateChain> certificates, List<NamedGroup> ecdsaPkGroupsStatic,
             List<NamedGroup> ecdsaPkGroupsEphemeral, List<NamedGroup> ecdsaSigGroupsStatic,
-            List<NamedGroup> ecdsaSigGroupsEphemeral) {
+            List<NamedGroup> ecdsaSigGroupsEphemeral, List<NamedGroup> ecdsaPkGroupsTls13,
+            List<NamedGroup> ecdsaCertSigGroupsTls13) {
         super(ProbeType.CERTIFICATE);
         this.certificates = certificates;
         this.ecdsaPkGroupsStatic = ecdsaPkGroupsStatic;
         this.ecdsaPkGroupsEphemeral = ecdsaPkGroupsEphemeral;
         this.ecdsaSigGroupsStatic = ecdsaSigGroupsStatic;
         this.ecdsaSigGroupsEphemeral = ecdsaSigGroupsEphemeral;
+        this.ecdsaPkGroupsTls13 = ecdsaPkGroupsTls13;
+        this.ecdsaCertSigGroupsTls13 = ecdsaCertSigGroupsTls13;
     }
 
     @Override
