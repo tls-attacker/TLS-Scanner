@@ -6,8 +6,9 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.serverscanner.leak;
+package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
+import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.ResponseCounter;
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import java.util.Collections;
