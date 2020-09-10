@@ -305,6 +305,7 @@ public class CertificateProbe extends TlsProbe {
         // use RSA SigAndHashAlgos
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13RsaSigHash());
         tlsConfig.setDefaultClientNamedGroups(getTls13Curves());
+        tlsConfig.setDefaultClientKeyShareNamedGroups(getTls13Curves());
         CertificateChain newCert = performCertScan(tlsConfig, CipherSuite.getImplementedTls13CipherSuites());
         if (newCert != null) {
             tls13Certs.add(newCert);
@@ -414,6 +415,7 @@ public class CertificateProbe extends TlsProbe {
             List<NamedGroup> sigGroups) {
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuitesToTest);
         tlsConfig.setDefaultClientNamedGroups(groupsToTest);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(groupsToTest);
         do {
             State state = new State(tlsConfig);
             executeState(state);

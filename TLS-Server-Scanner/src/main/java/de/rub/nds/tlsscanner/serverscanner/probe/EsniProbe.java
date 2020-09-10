@@ -57,6 +57,9 @@ public class EsniProbe extends TlsProbe {
 
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
         tlsConfig.setDefaultSelectedNamedGroup(NamedGroup.ECDH_X25519);
+        List<NamedGroup> keyShareGroupList = new LinkedList<>();
+        keyShareGroupList.add(NamedGroup.ECDH_X25519);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroupList);
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);

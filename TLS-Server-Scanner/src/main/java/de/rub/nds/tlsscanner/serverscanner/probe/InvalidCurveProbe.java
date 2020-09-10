@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.attacks.ec.InvalidCurvePoint;
 import de.rub.nds.tlsattacker.attacks.ec.TwistedCurvePoint;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
@@ -82,6 +83,8 @@ public class InvalidCurveProbe extends TlsProbe {
 
     private int parameterCombinations;
     private int executedCombinations = 0;
+    
+    private final int repetitions = 100;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config);
@@ -94,7 +97,11 @@ public class InvalidCurveProbe extends TlsProbe {
             List<InvalidCurveResponse> responses = new LinkedList<>();
             for (InvalidCurveVector parameterSet : parameterSets) {
                 if (benignHandshakeSuccessfull(parameterSet)) {
-                    InvalidCurveResponse scanResponse = executeSingleScan(parameterSet);
+                    InvalidCurveResponse scanResponse = executeSingleScan(parameterSet, false);
+                    if(fingerprintsDiffer(scanResponse)) {
+                        InvalidCurveResponse repetitionResponse = executeSingleScan(parameterSet, true);
+                        scanResponse.mergeResponse(repetitionResponse);
+                    }
                     responses.add(scanResponse);
                 }
             }
@@ -248,6 +255,9 @@ public class InvalidCurveProbe extends TlsProbe {
 
         if (protocolVersion == ProtocolVersion.TLS13) {
             attacker.getTlsConfig().setAddKeyShareExtension(true);
+            List<NamedGroup> keyShareGroups = new LinkedList<>();
+            keyShareGroups.add(group);
+            attacker.getTlsConfig().setDefaultClientKeyShareNamedGroups(keyShareGroups);
             attacker.getTlsConfig().setAddECPointFormatExtension(false);
             attacker.getTlsConfig().setAddSupportedVersionsExtension(true);
             attacker.getTlsConfig().setAddPSKKeyExchangeModesExtension(true);
@@ -368,7 +378,7 @@ public class InvalidCurveProbe extends TlsProbe {
         return parameterSets;
     }
 
-    private InvalidCurveResponse executeSingleScan(InvalidCurveVector parameterSet) {
+    private InvalidCurveResponse executeSingleScan(InvalidCurveVector parameterSet, boolean isRepetitionScan) {
         LOGGER.debug("Executing Invalid Curve scan for " + parameterSet.toString());
         try {
             TestResult showsPointsAreNotValidated = TestResult.NOT_TESTED_YET;
@@ -393,7 +403,16 @@ public class InvalidCurveProbe extends TlsProbe {
                             / TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder()
                                     .intValue();
                     double attempts = Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt);
-                    invalidCurveAttackConfig.setProtocolFlows((int) Math.ceil(attempts));
+                    
+                    if(isRepetitionScan && (repetitions - (int) Math.ceil(attempts)) > 0) 
+                    {
+                        invalidCurveAttackConfig.setProtocolFlows(repetitions - (int) Math.ceil(attempts));
+                    }
+                    else
+                    {
+                       invalidCurveAttackConfig.setProtocolFlows((int) Math.ceil(attempts)); 
+                    }
+                    
                 }
                 invalidCurveAttackConfig.setPointCompressionFormat(parameterSet.getPointFormat());
 
@@ -410,7 +429,14 @@ public class InvalidCurveProbe extends TlsProbe {
                         .getOrder().intValue() - 2)
                         / InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue();
                 double attempts = Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt);
-                invalidCurveAttackConfig.setProtocolFlows((int) Math.ceil(attempts));
+                if(isRepetitionScan && (repetitions - (int) Math.ceil(attempts)) > 0) 
+                {
+                    invalidCurveAttackConfig.setProtocolFlows(repetitions - (int) Math.ceil(attempts));
+                }
+                else
+                {
+                    invalidCurveAttackConfig.setProtocolFlows((int) Math.ceil(attempts)); 
+                }
                 invalidCurveAttackConfig.setPointCompressionFormat(ECPointFormat.UNCOMPRESSED);
             }
 
@@ -737,5 +763,23 @@ public class InvalidCurveProbe extends TlsProbe {
         }
 
         return true;
+    }
+    
+    private boolean fingerprintsDiffer(InvalidCurveResponse scanResponse)
+    {
+        ResponseFingerprint firstFingerprint = null;
+        for(FingerprintSecretPair pair : scanResponse.getFingerprintSecretPairs())
+        {
+            if(firstFingerprint == null && pair.getFingerprint() != null) {
+                firstFingerprint = pair.getFingerprint();
+            }
+            else if(firstFingerprint != null) {
+                if(pair.getFingerprint() != null && !pair.getFingerprint().toString().equals(firstFingerprint.toString())) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 }

@@ -342,8 +342,8 @@ public class NamedCurvesProbe extends TlsProbe {
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
         tlsConfig.setDefaultClientNamedGroups(groups);
-        List<KeyShareStoreEntry> keyShareEntryList = new ArrayList<>();
-        tlsConfig.setDefaultClientKeyShareEntries(keyShareEntryList);
+        List<NamedGroup> keyShareGroups = new ArrayList<>();
+        tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroups);
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);

@@ -126,6 +126,7 @@ public class ECPointFormatProbe extends TlsProbe {
             tlsConfig.setStopActionsAfterFatal(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
             tlsConfig.setDefaultClientNamedGroups(secpGroups);
+            tlsConfig.setDefaultClientKeyShareNamedGroups(secpGroups);
             tlsConfig.setAddECPointFormatExtension(false);
             tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
