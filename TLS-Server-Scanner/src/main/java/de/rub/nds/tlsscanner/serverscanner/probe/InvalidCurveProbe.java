@@ -84,7 +84,7 @@ public class InvalidCurveProbe extends TlsProbe {
     private int parameterCombinations;
     private int executedCombinations = 0;
     
-    private final int repetitions = 100;
+    private final int additionalOverall = 100;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config);
@@ -403,10 +403,12 @@ public class InvalidCurveProbe extends TlsProbe {
                             / TwistedCurvePoint.fromIntendedNamedGroup(parameterSet.getNamedGroup()).getOrder()
                                     .intValue();
                     double attempts = Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt);
+                    int additionalIterations = (additionalOverall - (int) Math.ceil(attempts));
                     
-                    if(isRepetitionScan && (repetitions - (int) Math.ceil(attempts)) > 0) 
+                    if(isRepetitionScan && additionalIterations > 0) 
                     {
-                        invalidCurveAttackConfig.setProtocolFlows(repetitions - (int) Math.ceil(attempts));
+                        invalidCurveAttackConfig.setKeyOffset((int) Math.ceil(attempts));
+                        invalidCurveAttackConfig.setProtocolFlows(additionalIterations);
                     }
                     else
                     {
@@ -429,9 +431,12 @@ public class InvalidCurveProbe extends TlsProbe {
                         .getOrder().intValue() - 2)
                         / InvalidCurvePoint.fromNamedGroup(parameterSet.getNamedGroup()).getOrder().intValue();
                 double attempts = Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt);
-                if(isRepetitionScan && (repetitions - (int) Math.ceil(attempts)) > 0) 
+                int additionalIterations = (additionalOverall - (int) Math.ceil(attempts));
+                
+                if(isRepetitionScan && additionalIterations > 0) 
                 {
-                    invalidCurveAttackConfig.setProtocolFlows(repetitions - (int) Math.ceil(attempts));
+                    invalidCurveAttackConfig.setKeyOffset((int) Math.ceil(attempts));
+                    invalidCurveAttackConfig.setProtocolFlows(additionalIterations);
                 }
                 else
                 {

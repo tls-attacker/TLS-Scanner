@@ -178,5 +178,28 @@ public class InvalidCurveResponse {
     public void setDirtyKeysWarning(TestResult dirtyKeysWarning) {
         this.dirtyKeysWarning = dirtyKeysWarning;
     }
+    
+    public void mergeResponse(InvalidCurveResponse toMerge)
+    {
+        fingerprintSecretPairs.addAll(toMerge.getFingerprintSecretPairs());
+        receivedEcPublicKeys.addAll(toMerge.getReceivedEcPublicKeys());
+        receivedFinishedEcKeys.addAll(toMerge.getReceivedFinishedEcKeys());
+        
+        if(toMerge.getShowsPointsAreNotValidated() == TestResult.TRUE) {
+            showsPointsAreNotValidated = TestResult.TRUE;
+        }
+        if(toMerge.getShowsVulnerability() == TestResult.TRUE) {
+            showsVulnerability = TestResult.TRUE;
+        }
+        if(toMerge.getChosenGroupReusesKey() == TestResult.TRUE) {
+            chosenGroupReusesKey = TestResult.TRUE;
+        }
+        if(toMerge.getFinishedHandshakeHadReusedKey() == TestResult.TRUE) {
+            finishedHandshakeHadReusedKey = TestResult.TRUE;
+        }
+        if(toMerge.getDirtyKeysWarning() == TestResult.TRUE) {
+            dirtyKeysWarning = TestResult.TRUE;
+        }
+    }
 
 }
