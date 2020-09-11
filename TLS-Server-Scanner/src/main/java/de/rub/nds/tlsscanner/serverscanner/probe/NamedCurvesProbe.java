@@ -25,7 +25,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.WitnessType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -77,12 +76,10 @@ public class NamedCurvesProbe extends TlsProbe {
                 groupsRsa = getSupportedNamedGroupsRsa();
             }
             if (testUsingEcdsaStatic) {
-                groupsEcdsaStatic = getSupportedNamedGroupsEcdsa(getEcdsaStaticCiphersuites(),
-                        WitnessType.ECDSA_STATIC_ONLY, ecdsaPkGroupsStatic, ecdsaCertSigGroupsStatic);
+                groupsEcdsaStatic = getSupportedNamedGroupsEcdsa(getEcdsaStaticCiphersuites(), ecdsaPkGroupsStatic, ecdsaCertSigGroupsStatic);
             }
             if (testUsingEcdsaEphemeral) {
-                groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCiphersuites(),
-                        WitnessType.ECDSA_EPHEMERAL_ONLY, ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
+                groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCiphersuites(), ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
             }
             if (testUsingTls13) {
                 groupsTls13 = getTls13SupportedGroups();
@@ -123,8 +120,7 @@ public class NamedCurvesProbe extends TlsProbe {
         return supportedNamedCurves;
     }
 
-    private Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsEcdsa(List<CipherSuite> cipherSuites,
-            WitnessType type, List<NamedGroup> pkGroups, List<NamedGroup> sigGroups) {
+    private Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsEcdsa(List<CipherSuite> cipherSuites, List<NamedGroup> pkGroups, List<NamedGroup> sigGroups) {
         HashMap<NamedGroup, NamedCurveWitness> namedCurveMap = new HashMap<>();
         Config tlsConfig = getBasicConfig();
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
@@ -160,12 +156,13 @@ public class NamedCurvesProbe extends TlsProbe {
                     break;
                 }
                 if (context != null) {
-                    if (type == WitnessType.ECDSA_STATIC_ONLY) {
-                        namedCurveMap.put(selectedGroup, new NamedCurveWitness(type, certificateGroup, null,
-                                certificateSigGroup, null));
-                    } else {
-                        namedCurveMap.put(selectedGroup, new NamedCurveWitness(type, null, certificateGroup, null,
+                    if (cipherSuites.get(0).isEphemeral()) {
+                        namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup, null,
                                 certificateSigGroup));
+                    } else {
+                        namedCurveMap.put(selectedGroup, new NamedCurveWitness(certificateGroup, null,
+                                certificateSigGroup, null));
+                        
                     }
 
                     toTestList.remove(selectedGroup);
@@ -322,7 +319,7 @@ public class NamedCurvesProbe extends TlsProbe {
                     return namedCurveMap;
                 }
 
-                namedCurveMap.put(selectedGroup, new NamedCurveWitness(WitnessType.TLS_13, null, certificateGroup,
+                namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup,
                         null, certificateSigGroup));
                 toTestList.remove(selectedGroup);
             }
@@ -387,38 +384,19 @@ public class NamedCurvesProbe extends TlsProbe {
 
         HashMap<NamedGroup, NamedCurveWitness> groupMap = new HashMap<>();
         for (NamedGroup group : foundOverall) {
-            NamedCurveWitness witness = null;
-            if (rsaGroups.contains(group) && groupsEcdsaStatic.containsKey(group)
-                    && groupsEcdsaEphemeral.containsKey(group)) {
-                witness = new NamedCurveWitness(WitnessType.RSA_ECDSA_EPHEMERAL_STATIC, groupsEcdsaStatic.get(group)
-                        .getEcdsaPkGroupStatic(), groupsEcdsaEphemeral.get(group).getEcdsaPkGroupEphemeral(),
-                        groupsEcdsaStatic.get(group).getEcdsaSigGroupStatic(), groupsEcdsaStatic.get(group)
-                                .getEcdsaSigGroupEphemeral());
-            } else if (!rsaGroups.contains(group) && groupsEcdsaStatic.containsKey(group)
-                    && groupsEcdsaEphemeral.containsKey(group)) {
-                witness = new NamedCurveWitness(WitnessType.ECDSA_ONLY, groupsEcdsaStatic.get(group)
-                        .getEcdsaPkGroupStatic(), groupsEcdsaEphemeral.get(group).getEcdsaPkGroupEphemeral(),
-                        groupsEcdsaStatic.get(group).getEcdsaSigGroupStatic(), groupsEcdsaStatic.get(group)
-                                .getEcdsaSigGroupEphemeral());
-            } else if (rsaGroups.contains(group) && !groupsEcdsaStatic.containsKey(group)
-                    && groupsEcdsaEphemeral.containsKey(group)) {
-                witness = new NamedCurveWitness(WitnessType.RSA_ECDSA_EPHEMERAL, null, groupsEcdsaEphemeral.get(group)
-                        .getEcdsaPkGroupEphemeral(), null, groupsEcdsaEphemeral.get(group).getEcdsaSigGroupEphemeral());
-            } else if (rsaGroups.contains(group) && groupsEcdsaStatic.containsKey(group)
-                    && !groupsEcdsaEphemeral.containsKey(group)) {
-                witness = new NamedCurveWitness(WitnessType.RSA_ECSDA_STATIC, groupsEcdsaStatic.get(group)
-                        .getEcdsaPkGroupStatic(), null, groupsEcdsaStatic.get(group).getEcdsaSigGroupStatic(), null);
-            } else if (!rsaGroups.contains(group) && !groupsEcdsaStatic.containsKey(group)
-                    && groupsEcdsaEphemeral.containsKey(group)) {
-                witness = new NamedCurveWitness(WitnessType.ECDSA_EPHEMERAL_ONLY, null, groupsEcdsaEphemeral.get(group)
-                        .getEcdsaPkGroupEphemeral(), null, groupsEcdsaEphemeral.get(group).getEcdsaSigGroupEphemeral());
-            } else if (!rsaGroups.contains(group) && groupsEcdsaStatic.containsKey(group)
-                    && !groupsEcdsaEphemeral.containsKey(group)) {
-                witness = new NamedCurveWitness(WitnessType.ECDSA_STATIC_ONLY, groupsEcdsaStatic.get(group)
-                        .getEcdsaPkGroupStatic(), null, groupsEcdsaStatic.get(group).getEcdsaSigGroupStatic(), null);
-            } else if (rsaGroups.contains(group) && !groupsEcdsaStatic.containsKey(group)
-                    && !groupsEcdsaEphemeral.containsKey(group)) {
-                witness = new NamedCurveWitness(WitnessType.RSA_ONLY, null, null, null, null);
+            NamedCurveWitness witness = new NamedCurveWitness();
+            if(rsaGroups.contains(group)) {
+                witness.setFoundUsingRsaCipher(true);
+            }
+            if(groupsEcdsaStatic.containsKey(group)) {
+                witness.setFoundUsingEcdsaStaticCipher(true);
+                witness.setEcdsaPkGroupStatic(groupsEcdsaStatic.get(group).getEcdsaPkGroupStatic());
+                witness.setEcdsaSigGroupStatic(groupsEcdsaStatic.get(group).getEcdsaSigGroupStatic());
+            }
+            if(groupsEcdsaEphemeral.containsKey(group)) {
+                witness.setFoundUsingEcdsaEphemeralCipher(true);
+                witness.setEcdsaPkGroupEphemeral(groupsEcdsaEphemeral.get(group).getEcdsaPkGroupEphemeral());
+                witness.setEcdsaSigGroupEphemeral(groupsEcdsaEphemeral.get(group).getEcdsaSigGroupEphemeral());
             }
             groupMap.put(group, witness);
         }

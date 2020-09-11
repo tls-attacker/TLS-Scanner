@@ -12,33 +12,30 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 
 public class NamedCurveWitness {
-    private WitnessType witnessType;
+    private boolean foundUsingRsaCipher = false;
+    private boolean foundUsingEcdsaStaticCipher = false;
+    private boolean foundUsingEcdsaEphemeralCipher = false;
 
     // the curves used to generate an ecdsa sig inside the key ex. message
-    private final NamedGroup ecdsaPkGroupStatic;
-    private final NamedGroup ecdsaPkGroupEphemeral;
+    private NamedGroup ecdsaPkGroupStatic;
+    private NamedGroup ecdsaPkGroupEphemeral;
 
     // the curve used to sign the cert that bears the server's signing key
-    private final NamedGroup ecdsaSigGroupStatic;
-    private final NamedGroup ecdsaSigGroupEphemeral;
+    private NamedGroup ecdsaSigGroupStatic;
+    private NamedGroup ecdsaSigGroupEphemeral;
 
-    public NamedCurveWitness(WitnessType witnessType, NamedGroup ecdsaPkGroupStatic, NamedGroup ecdsaPkGroupEphemeral,
+    public NamedCurveWitness() {
+        
+    }
+    
+    public NamedCurveWitness(NamedGroup ecdsaPkGroupStatic, NamedGroup ecdsaPkGroupEphemeral,
             NamedGroup ecdsaSigGroupStatic, NamedGroup ecdsaSigGroupEphemeral) {
-        this.witnessType = witnessType;
         this.ecdsaPkGroupStatic = ecdsaPkGroupStatic;
         this.ecdsaPkGroupEphemeral = ecdsaPkGroupEphemeral;
         this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
         this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
     }
-
-    public WitnessType getWitnessType() {
-        return witnessType;
-    }
-
-    public void setWitnessType(WitnessType witnessType) {
-        this.witnessType = witnessType;
-    }
-
+    
     public NamedGroup getEcdsaPkGroupStatic() {
         return ecdsaPkGroupStatic;
     }
@@ -53,6 +50,46 @@ public class NamedCurveWitness {
 
     public NamedGroup getEcdsaSigGroupEphemeral() {
         return ecdsaSigGroupEphemeral;
+    }
+
+    public boolean isFoundUsingRsaCipher() {
+        return foundUsingRsaCipher;
+    }
+
+    public void setFoundUsingRsaCipher(boolean foundUsingRsaCipher) {
+        this.foundUsingRsaCipher = foundUsingRsaCipher;
+    }
+
+    public boolean isFoundUsingEcdsaStaticCipher() {
+        return foundUsingEcdsaStaticCipher;
+    }
+
+    public void setFoundUsingEcdsaStaticCipher(boolean foundUsingEcdsaStaticCipher) {
+        this.foundUsingEcdsaStaticCipher = foundUsingEcdsaStaticCipher;
+    }
+
+    public boolean isFoundUsingEcdsaEphemeralCipher() {
+        return foundUsingEcdsaEphemeralCipher;
+    }
+
+    public void setFoundUsingEcdsaEphemeralCipher(boolean foundUsingEcdsaEphemeralCipher) {
+        this.foundUsingEcdsaEphemeralCipher = foundUsingEcdsaEphemeralCipher;
+    }
+
+    public void setEcdsaPkGroupStatic(NamedGroup ecdsaPkGroupStatic) {
+        this.ecdsaPkGroupStatic = ecdsaPkGroupStatic;
+    }
+
+    public void setEcdsaPkGroupEphemeral(NamedGroup ecdsaPkGroupEphemeral) {
+        this.ecdsaPkGroupEphemeral = ecdsaPkGroupEphemeral;
+    }
+
+    public void setEcdsaSigGroupStatic(NamedGroup ecdsaSigGroupStatic) {
+        this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
+    }
+
+    public void setEcdsaSigGroupEphemeral(NamedGroup ecdsaSigGroupEphemeral) {
+        this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
     }
 
 }

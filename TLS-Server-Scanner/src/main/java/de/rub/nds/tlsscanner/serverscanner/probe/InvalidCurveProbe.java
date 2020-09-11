@@ -699,12 +699,9 @@ public class InvalidCurveProbe extends TlsProbe {
         if (!testCipher.isTLS13()) {
             if (namedCurveWitnesses.containsKey(testGroup) == false) {
                 return false;
-            } else if ((testCipher.isRSA() && !namedCurveWitnesses.get(testGroup).getWitnessType().name()
-                    .contains("RSA"))
-                    || (testCipher.isECDSA() && testCipher.isEphemeral() && !namedCurveWitnesses.get(testGroup)
-                            .getWitnessType().name().contains("EPHEMERAL"))
-                    || (testCipher.isECDSA() && !testCipher.isEphemeral() && !namedCurveWitnesses.get(testGroup)
-                            .getWitnessType().name().contains("STATIC"))) {
+            } else if ((testCipher.isRSA() && !namedCurveWitnesses.get(testGroup).isFoundUsingRsaCipher())
+                    || (testCipher.isECDSA() && testCipher.isEphemeral() && !namedCurveWitnesses.get(testGroup).isFoundUsingEcdsaEphemeralCipher())
+                    || (testCipher.isECDSA() && !testCipher.isEphemeral() && !namedCurveWitnesses.get(testGroup).isFoundUsingEcdsaStaticCipher())) {
                 return false;
             }
         }
