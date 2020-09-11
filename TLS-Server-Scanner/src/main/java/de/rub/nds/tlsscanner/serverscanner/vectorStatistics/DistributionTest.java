@@ -1,0 +1,104 @@
+
+package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
+
+import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
+import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsscanner.serverscanner.leak.info.TestInfo;
+import de.rub.nds.tlsscanner.serverscanner.util.FisherExactTest;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
+
+
+public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T> {
+    
+    private final int expectedA; //common
+    private final int expectedB; //uncommon
+    
+    public DistributionTest(T testInfo, List<VectorResponse> responseList, int expectedA, int expectedB) {
+        super(testInfo, responseList);
+        this.expectedA = expectedA;
+        this.expectedB = expectedB;
+        if(vectorContainerList.size() != 1) {
+            throw new RuntimeException("DistributionTest expects exactly one VectorContainer");
+        }
+        updateInternals();
+    }
+
+    @Override
+    protected double computePValueFisherExact() {
+        if(!isFisherExactUsable()) {
+            throw new RuntimeException("Trying to use fisher exact test when it is not possible");
+        }
+        List<ResponseCounter> responseCounters = vectorContainerList.get(0).getDistinctResponsesCounterList();
+        int responseA;
+        int responseB;
+        
+        if(responseCounters.get(0).getCounter() > responseCounters.get(1).getCounter())
+        {
+            responseA = responseCounters.get(0).getCounter();
+            responseB = responseCounters.get(1).getCounter();
+        }
+        else
+        {
+            responseA = responseCounters.get(1).getCounter();
+            responseB = responseCounters.get(0).getCounter();
+        } 
+        return FisherExactTest.getPValue(responseA, responseB, expectedA, expectedB); 
+    }
+
+    @Override
+    protected double computePValueChiSquared() {
+        System.out.println("Using ChiSquared");
+        ChiSquareTest test = new ChiSquareTest();
+        ResponseCounter defaultAnswer = retrieveMostCommonAnswer();
+        if (vectorContainerList.get(0).getDistinctResponsesCounterList().size() < 2) {
+            return 1;
+        }
+        double probability = expectedB / expectedA;
+        List<ResponseCounter> sortedMeasured = getSortedDistinctResponseCounters();
+        long[] expected = new long[sortedMeasured.size()];
+        long[] measured = new long[sortedMeasured.size()];
+        for (int i = 0; i < vectorContainerList.get(0).getDistinctResponsesCounterList().size(); i++) {
+            if(i == 0) {
+                expected[i] = expectedA;
+            }
+            else if(i == 1) {
+                expected[i] = expectedB;
+            }
+            measured[i] = sortedMeasured.get(i).getCounter();
+        }
+        double chiSquare = test.chiSquareDataSetsComparison(expected, measured);
+        ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);
+        double pValue = 1 - distribution.cumulativeProbability(chiSquare);
+        System.out.println("P: " + pValue);
+        return pValue;
+    }
+
+    @Override
+    protected boolean isFisherExactUsable() {
+        return vectorContainerList.get(0).getDistinctResponsesCounterList().size() == 2;
+    }
+    
+    private List<ResponseCounter> getSortedDistinctResponseCounters() {
+        List<ResponseCounter> unsorted = vectorContainerList.get(0).getDistinctResponsesCounterList();
+        List<ResponseCounter> sorted = new LinkedList<>();
+        ResponseCounter highestCounter = null;
+        for(int i = 0; i < unsorted.size(); i++) {
+            for(ResponseCounter toCompare: unsorted) {
+                if(!sorted.contains(toCompare) && (highestCounter == null || highestCounter.getCounter() < toCompare.getCounter())) {
+                    highestCounter = toCompare;
+                }
+            }
+            sorted.add(highestCounter);
+            System.out.println("Ct: " + highestCounter.getCounter());
+            highestCounter = null;
+        }
+        
+        return sorted;
+    }
+    
+}

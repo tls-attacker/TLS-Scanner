@@ -11,9 +11,10 @@ package de.rub.nds.tlsscanner.serverscanner.util;
 public class FisherExactTest {
 
     public static double getPValue(int inputAOutput1, int inputBOutput1, int inputAoutput2, int inputBOutput2) {
+        System.out.println("P: " + Math.pow(2, FisherExactTest.getLog2PValue(inputAOutput1, inputBOutput1, inputAoutput2, inputBOutput2)));
         return Math.pow(2, FisherExactTest.getLog2PValue(inputAOutput1, inputBOutput1, inputAoutput2, inputBOutput2));
     }
-
+    
     private static double getLog2PValue(int inputAOutput1, int inputBOutput1, int inputAoutput2, int inputBOutput2) {
         int a = inputAOutput1;
         int b = inputBOutput1;
