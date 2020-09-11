@@ -117,7 +117,7 @@ public class NamedCurvesProbe extends TlsProbe {
                 supportedNamedCurves.add(selectedGroup);
                 toTestList.remove(selectedGroup);
             }
-        } while (context != null || toTestList.size() > 0);
+        } while (context != null && toTestList.size() > 0);
         return supportedNamedCurves;
     }
 
@@ -163,7 +163,7 @@ public class NamedCurvesProbe extends TlsProbe {
 
                     toTestList.remove(selectedGroup);
                 }
-            } while (context != null || toTestList.size() > 0);
+            } while (context != null && toTestList.size() > 0);
         }
         return namedCurveMap;
     }
