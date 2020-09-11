@@ -105,14 +105,15 @@ public class NamedCurvesProbe extends TlsProbe {
         List<NamedGroup> supportedNamedCurves = new LinkedList<>();
         do {
             context = testCurves(toTestList, tlsConfig);
+            
             if (context != null) {
                 selectedGroup = context.getSelectedGroup();
-            }
-            if (!toTestList.contains(selectedGroup)) {
-                LOGGER.debug("Server chose a Curve we did not offer!");
-                break;
-            }
-            if (context != null) {
+                
+                if (!toTestList.contains(selectedGroup)) {
+                    LOGGER.debug("Server chose a Curve we did not offer!");
+                    break;
+                }
+                
                 supportedNamedCurves.add(selectedGroup);
                 toTestList.remove(selectedGroup);
             }
@@ -140,22 +141,17 @@ public class NamedCurvesProbe extends TlsProbe {
 
             do {
                 context = testCurves(toTestList, tlsConfig);
+                
                 if (context != null) {
+                    
                     selectedGroup = context.getSelectedGroup();
                     certificateGroup = context.getEcCertificateCurve();
-                    certificateSigGroup = context.getEcCertificateSignatureCurve(); // might
-                                                                                    // be
-                                                                                    // null,
-                                                                                    // if
-                                                                                    // not
-                                                                                    // ecdsa
-                                                                                    // cert
-                }
-                if (!toTestList.contains(selectedGroup)) {
-                    LOGGER.debug("Server chose a Curve we did not offer!");
-                    break;
-                }
-                if (context != null) {
+                    certificateSigGroup = context.getEcCertificateSignatureCurve();
+                    
+                    if (!toTestList.contains(selectedGroup)) {
+                        LOGGER.debug("Server chose a Curve we did not offer!");
+                        break;
+                    }   
                     if (cipherSuites.get(0).isEphemeral()) {
                         namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup, null,
                                 certificateSigGroup));
@@ -316,7 +312,7 @@ public class NamedCurvesProbe extends TlsProbe {
                 if (!toTestList.contains(selectedGroup)) {
                     LOGGER.warn("Server chose a group we did not offer:" + selectedGroup);
                     // TODO add to site report
-                    return namedCurveMap;
+                    break;
                 }
 
                 namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup,
