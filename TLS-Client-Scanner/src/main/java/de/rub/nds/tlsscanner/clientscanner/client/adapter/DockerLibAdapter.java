@@ -54,10 +54,10 @@ public class DockerLibAdapter implements IClientAdapter {
     public ClientAdapterResult connect(String hostname, int port) throws InterruptedException {
         try {
             DockerExecInstance ei = (DockerExecInstance) client.connect(hostname, port);
-            while (ei.isRunning()) {
-                Thread.sleep(50);
-            }
+            ei.frameHandler.awaitStarted();
+            ei.frameHandler.awaitCompletion();
             if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Exit code {}", ei.getExitCode());
                 for (String ln : ei.frameHandler.getLines()) {
                     LOGGER.debug(ln);
                 }
