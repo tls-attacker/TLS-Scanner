@@ -61,7 +61,7 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
-        executeState(state);
+        executeState(state, dispatchInformation);
         internalState.addResult(toTest, state);
         return internalState;
     }

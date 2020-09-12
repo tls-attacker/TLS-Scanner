@@ -25,7 +25,7 @@ public class DHWeakPrivateKeyProbe extends BaseDHEProbe {
         Config config = state.getConfig();
         config.setDefaultServerDhPrivateKey(BigInteger.valueOf(1));
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
-        executeState(state);
+        executeState(state, dispatchInformation);
         return new DHWeakPrivateKeyProbeResult(state);
     }
 

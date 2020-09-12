@@ -41,7 +41,7 @@ public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModu
         config.setDefaultApplicationMessageData("Keysize: " + toTest);
         config.setDefaultServerDhModulus(new BigInteger(toTest, 10, new Random()));
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
-        executeState(state);
+        executeState(state, dispatchInformation);
         internalState.put(toTest, state);
         return internalState;
     }

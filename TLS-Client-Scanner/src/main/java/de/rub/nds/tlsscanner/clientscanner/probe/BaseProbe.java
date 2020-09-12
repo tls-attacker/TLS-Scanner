@@ -6,6 +6,7 @@ import org.apache.logging.log4j.CloseableThreadContext;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.MessageAction;
@@ -72,6 +73,7 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe {
     protected void extendWorkflowTrace(WorkflowTrace traceWithCHLO, WorkflowTraceType type, Config config) {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace entryTrace = factory.createTlsEntryWorkflowtrace(config.getDefaultServerConnection());
+        entryTrace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         WorkflowTrace actionsToAppend = factory.createWorkflowTrace(type, RunningModeType.SERVER);
         removePrefixAndAssertPrefixIsCorrect(entryTrace, actionsToAppend);
         traceWithCHLO.addTlsActions(actionsToAppend.getTlsActions());
@@ -80,5 +82,6 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe {
     protected void extendWorkflowTraceToApplication(WorkflowTrace traceWithCHLO, Config config) {
         // TODO distinguish different application layers, for now only http(s)
         extendWorkflowTrace(traceWithCHLO, WorkflowTraceType.HTTPS, config);
+        config.setHttpsParsingEnabled(true);
     }
 }

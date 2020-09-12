@@ -15,7 +15,7 @@ public class ClientScannerConfig extends TLSDelegateConfig {
     @ParametersDelegate
     public ServerDelegate serverDelegate;
     @ParametersDelegate
-    private CertificateDelegate certificateDelegate;
+    private CACertDelegate certificateDelegate;
 
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
@@ -28,7 +28,7 @@ public class ClientScannerConfig extends TLSDelegateConfig {
         serverDelegate = new ServerDelegate();
         addDelegate(serverDelegate);
 
-        this.certificateDelegate = new CertificateDelegate();
+        this.certificateDelegate = new CACertDelegate();
         addDelegate(certificateDelegate);
     }
 

@@ -50,7 +50,7 @@ public class HelloWorldProbe extends BaseStatefulProbe<HelloWorldProbe.HelloWorl
         msg.setDataConfig(String.join("\r\n", "HTTP/1.1 200 OK", "Server: TLS-Client-Scanner",
                 "Content-Length: " + (content.length() + 2), "", content, "").getBytes());
         trace.addTlsAction(new SendAction(msg));
-        executeState(state);
+        executeState(state, dispatchInformation);
         return internalState;
     }
 
