@@ -25,6 +25,9 @@ public class SNIUtil {
     }
 
     public static String getServerNameFromSNIExtension(ServerNameIndicationExtensionMessage SNI) {
+        if (SNI == null) {
+            return null;
+        }
         for (ServerNamePair snp : SNI.getServerNameList()) {
             if (snp.getServerNameType().getValue() == 0) {
                 return new String(snp.getServerName().getValue());
