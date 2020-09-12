@@ -60,6 +60,7 @@ public class ControlledClientDispatcher implements IDispatcher {
             return null;
         }
         try {
+            task.setGotConnection();
             ClientProbeResult res = task.probe.execute(state, dispatchInformation);
             task.setResult(res);
             return res;
@@ -105,7 +106,7 @@ public class ControlledClientDispatcher implements IDispatcher {
         return null;
     }
 
-    public Future<ClientProbeResult> enqueueProbe(IProbe probe, String expectedHostname) {
+    public ResultFuture enqueueProbe(IProbe probe, String expectedHostname) {
         ResultFuture ret = new ResultFuture(probe);
         synchronized (toRun) {
             if (!toRun.containsKey(expectedHostname)) {
@@ -119,14 +120,24 @@ public class ControlledClientDispatcher implements IDispatcher {
         return ret;
     }
 
-    protected class ResultFuture implements Future<ClientProbeResult> {
+    public class ResultFuture implements Future<ClientProbeResult> {
         protected final IProbe probe;
         protected boolean hasResult = false;
         protected ClientProbeResult result = null;
         protected Throwable exception = null;
+        protected boolean gotConnection = false;
 
         public ResultFuture(IProbe probe) {
             this.probe = probe;
+        }
+
+        protected synchronized void setGotConnection() {
+            gotConnection = true;
+            notifyAll();
+        }
+
+        public synchronized boolean isGotConnection() {
+            return gotConnection;
         }
 
         protected synchronized void setResult(ClientProbeResult res) {

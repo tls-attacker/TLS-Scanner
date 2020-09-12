@@ -1,7 +1,8 @@
 package de.rub.nds.tlsscanner.clientscanner.client;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,11 +14,13 @@ import de.rub.nds.tlsscanner.clientscanner.client.adapter.DockerLibAdapter;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ResultFuture;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class Orchestrator implements IOrchestrator {
+    private static final int CLIENT_RETRY_COUNT = 3;
     private static final Logger LOGGER = LogManager.getLogger();
     protected final IClientAdapter clientAdapter;
     protected final Server server;
@@ -92,10 +95,34 @@ public class Orchestrator implements IOrchestrator {
         }
 
         String hostname = String.format("%s.%s", hostnamePrefix, baseHostname);
-        Future<ClientProbeResult> res = dispatcher.enqueueProbe(probe, hostname);
-        ClientAdapterResult cres = clientAdapter.connect(hostname, server.getPort());
+        // enqueue probe on serverside
+        ResultFuture res = dispatcher.enqueueProbe(probe, hostname);
+
+        // tell client to connect and get its result
+        ClientAdapterResult cres;
+        int tryNo = 0;
+        while (!res.isGotConnection()) {
+            if (tryNo++ >= CLIENT_RETRY_COUNT) {
+                LOGGER.warn("Failed to get connection from client after {} tries", CLIENT_RETRY_COUNT);
+                break;
+            }
+            cres = clientAdapter.connect(hostname, server.getPort());
+        }
+
+        // wait for result from server
         // TODO! feed cres into res
-        return res.get();
+        if (res.isGotConnection()) {
+            // wait indefinitely
+            return res.get();
+        } else {
+            // we did not get a connection yet, let's just give it the benefit of the doubt
+            // and wait for 10 more seconds
+            try {
+                return res.get(10, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                throw new ExecutionException("Failed to get result.", e);
+            }
+        }
     }
 
 }
