@@ -40,6 +40,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
+import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import java.io.Serializable;
@@ -105,11 +106,12 @@ public class SiteReport extends Observable implements Serializable {
     private List<NamedGroup> ecdsaSigGroupsTls13;
 
     // OCSP
-    private OCSPResponse stapledOcspResponse = null;
+    private List<OcspCertificateResult> ocspResults;
+    /*private OCSPResponse stapledOcspResponse = null;
     private OCSPResponse firstOcspResponse = null;
     private OCSPResponse secondOcspResponse = null;
     private OCSPResponse httpGetOcspResponse = null;
-    private Long differenceHoursStapled = null;
+    private Long differenceHoursStapled = null;*/
 
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -597,46 +599,6 @@ public class SiteReport extends Observable implements Serializable {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
     }
 
-    public synchronized OCSPResponse getStapledOcspResponse() {
-        return stapledOcspResponse;
-    }
-
-    public synchronized void setStapledOcspResponse(OCSPResponse stapledOcspResponse) {
-        this.stapledOcspResponse = stapledOcspResponse;
-    }
-
-    public synchronized OCSPResponse getFirstOcspResponse() {
-        return firstOcspResponse;
-    }
-
-    public synchronized void setFirstOcspResponse(OCSPResponse firstOcspResponse) {
-        this.firstOcspResponse = firstOcspResponse;
-    }
-
-    public synchronized OCSPResponse getSecondOcspResponse() {
-        return secondOcspResponse;
-    }
-
-    public synchronized void setSecondOcspResponse(OCSPResponse secondOcspResponse) {
-        this.secondOcspResponse = secondOcspResponse;
-    }
-
-    public synchronized Long getDifferenceHoursStapled() {
-        return differenceHoursStapled;
-    }
-
-    public synchronized void setDifferenceHoursStapled(Long differenceHoursStapled) {
-        this.differenceHoursStapled = differenceHoursStapled;
-    }
-
-    public synchronized OCSPResponse getHttpGetOcspResponse() {
-        return httpGetOcspResponse;
-    }
-
-    public synchronized void setHttpGetOcspResponse(OCSPResponse httpGetOcspResponse) {
-        this.httpGetOcspResponse = httpGetOcspResponse;
-    }
-
     public synchronized List<NamedGroup> getEcdsaPkGroupsStatic() {
         return ecdsaPkGroupsStatic;
     }
@@ -701,5 +663,13 @@ public class SiteReport extends Observable implements Serializable {
     public synchronized void setSupportedNamedGroupsWitnessesTls13(
             Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
         this.supportedNamedGroupsWitnessesTls13 = supportedNamedGroupsWitnessesTls13;
+    }
+
+    public synchronized List<OcspCertificateResult> getOcspResults() {
+        return ocspResults;
+    }
+
+    public synchronized void setOcspResults(List<OcspCertificateResult> ocspResults) {
+        this.ocspResults = ocspResults;
     }
 }
