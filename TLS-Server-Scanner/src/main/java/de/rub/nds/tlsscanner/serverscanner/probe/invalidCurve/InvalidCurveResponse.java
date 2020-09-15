@@ -211,7 +211,7 @@ public class InvalidCurveResponse {
     public List<VectorResponse> getVectorResponses() {
         List<VectorResponse> responses = new LinkedList<>();
         for (FingerprintSecretPair pair : fingerprintSecretPairs) {
-            if(pair.getFingerprint() != null) {
+            if (pair.getFingerprint() != null) {
                 responses.add(new VectorResponse(vector, pair.getFingerprint()));
             }
         }

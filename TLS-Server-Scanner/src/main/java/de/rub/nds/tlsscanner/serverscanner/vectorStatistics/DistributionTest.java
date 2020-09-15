@@ -10,13 +10,10 @@
 package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.TestInfo;
 import de.rub.nds.tlsscanner.serverscanner.util.FisherExactTest;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
@@ -35,7 +32,7 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
 
     @Override
     protected double computePValueFisherExact() {
-        int expectedB = getExpectedLessCommon();
+        int expectedB = (int) (probability * vectorContainerList.get(0).getResponseFingerprintList().size());
         int expectedA = vectorContainerList.get(0).getResponseFingerprintList().size() - expectedB;
         if (!isFisherExactUsable()) {
             throw new RuntimeException("Trying to use fisher exact test when it is not possible");
@@ -56,14 +53,13 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
 
     @Override
     protected double computePValueChiSquared() {
-        int expectedB = getExpectedLessCommon();
+        int expectedB = (int) (probability * vectorContainerList.get(0).getResponseFingerprintList().size());
         int expectedA = vectorContainerList.get(0).getResponseFingerprintList().size() - expectedB;
         ChiSquareTest test = new ChiSquareTest();
-        ResponseCounter defaultAnswer = retrieveMostCommonAnswer();
+
         if (vectorContainerList.get(0).getDistinctResponsesCounterList().size() < 2) {
             return 1;
         }
-        double probability = expectedB / expectedA;
         List<ResponseCounter> sortedMeasured = getSortedDistinctResponseCounters();
         long[] expected = new long[sortedMeasured.size()];
         long[] measured = new long[sortedMeasured.size()];
@@ -78,7 +74,6 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
         double chiSquare = test.chiSquareDataSetsComparison(expected, measured);
         ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);
         double pValue = 1 - distribution.cumulativeProbability(chiSquare);
-        System.out.println("P: " + pValue);
         return pValue;
     }
 
@@ -103,10 +98,6 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
         }
 
         return sorted;
-    }
-
-    private int getExpectedLessCommon() {
-        return (int) (probability * vectorContainerList.get(0).getResponseFingerprintList().size());
     }
 
 }

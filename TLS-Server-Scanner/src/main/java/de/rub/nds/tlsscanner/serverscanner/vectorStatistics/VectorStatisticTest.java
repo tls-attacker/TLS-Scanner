@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class VectorStatisticTest<T extends TestInfo> {
 
-    protected static final double P_VALUE_SIGNIFICANCE_BORDER = 0.00001;
+    protected static final double P_VALUE_SIGNIFICANCE_BORDER = 0.05;
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
