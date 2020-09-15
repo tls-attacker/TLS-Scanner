@@ -392,7 +392,6 @@ public class TlsRngProbe extends TlsProbe {
             LOGGER.debug("SERVER RANDOM: "
                     + ArrayConverter.bytesToHexString(test_state.getTlsContext().getServerRandom()));
 
-            byte[] completeServerRandom = ArrayConverter.concatenate(serverRandom, serverExtendedRandom);
             if (!(completeServerRandom.length == 0)) {
                 if (usesUnixTime) {
                     byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, 4,
