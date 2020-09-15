@@ -274,7 +274,9 @@ public class TlsRngProbe extends TlsProbe {
             LOGGER.debug("===========================================================================================");
 
             serverRandom = test_state.getTlsContext().getServerRandom();
-            serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
+            // serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
+            // TODO: Extended Random hosts generate fixed strings in the extended randoms
+            serverExtendedRandom = null;
             byte[] completeServerRandom = ArrayConverter.concatenate(serverRandom, serverExtendedRandom);
             if (!(completeServerRandom.length == 0)) {
                 if (usesUnixTime) {
@@ -372,7 +374,9 @@ public class TlsRngProbe extends TlsProbe {
             LOGGER.debug("===========================================================================================");
 
             serverRandom = test_state.getTlsContext().getServerRandom();
-            serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
+            // serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
+            // TODO: Extended Random hosts generate fixed strings in the extended randoms
+            serverExtendedRandom = null;
 
             LOGGER.debug("CLIENT RANDOM: "
                     + ArrayConverter.bytesToHexString(test_state.getTlsContext().getClientRandom()));
