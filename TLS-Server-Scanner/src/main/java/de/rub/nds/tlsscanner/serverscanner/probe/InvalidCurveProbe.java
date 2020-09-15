@@ -107,26 +107,29 @@ public class InvalidCurveProbe extends TlsProbe {
                 if (benignHandshakeSuccessfull(vector)) {
                     InvalidCurveResponse scanResponse = executeSingleScan(vector, InvalidCurveScanType.REGULAR);
 
-                    DistributionTest distTest = new DistributionTest(new InvalidCurveTestInfo(vector),
-                            scanResponse.getVectorResponses(), getProbability(vector, InvalidCurveScanType.REGULAR));
-                    if (distTest.isDistinctAnswers() && redundantScanFeasible(vector)
-                            && scanResponse.getShowsPointsAreNotValidated() != TestResult.TRUE) {
-                        InvalidCurveResponse extendedResponse = executeSingleScan(vector, InvalidCurveScanType.EXTENDED);
-                        distTest.extendTestWithVectorResponses(extendedResponse.getVectorResponses());
-                        scanResponse.mergeResponse(extendedResponse);
-                        if (distTest.isSignificantDistinctAnswers() == false) {
-                            InvalidCurveResponse redundantResponse = executeSingleScan(vector,
-                                    InvalidCurveScanType.REDUNDANT);
-                            DistributionTest redundantDistTest = new DistributionTest(new InvalidCurveTestInfo(vector),
-                                    redundantResponse.getVectorResponses(), getProbability(vector,
-                                            InvalidCurveScanType.REDUNDANT));
-                            if (redundantDistTest.isDistinctAnswers()
-                                    && redundantDistTest.isSignificantDistinctAnswers() == false) {
-                                redundantResponse.setShowsSideChannel(TestResult.TRUE);
+                    if (scanResponse.getVectorResponses().size() > 0) {
+                        DistributionTest distTest = new DistributionTest(new InvalidCurveTestInfo(vector),
+                                scanResponse.getVectorResponses(), getProbability(vector, InvalidCurveScanType.REGULAR));
+                        if (distTest.isDistinctAnswers() && redundantScanFeasible(vector)
+                                && scanResponse.getShowsPointsAreNotValidated() != TestResult.TRUE) {
+                            InvalidCurveResponse extendedResponse = executeSingleScan(vector,
+                                    InvalidCurveScanType.EXTENDED);
+                            distTest.extendTestWithVectorResponses(extendedResponse.getVectorResponses());
+                            scanResponse.mergeResponse(extendedResponse);
+                            if (distTest.isSignificantDistinctAnswers() == false) {
+                                InvalidCurveResponse redundantResponse = executeSingleScan(vector,
+                                        InvalidCurveScanType.REDUNDANT);
+                                DistributionTest redundantDistTest = new DistributionTest(new InvalidCurveTestInfo(
+                                        vector), redundantResponse.getVectorResponses(), getProbability(vector,
+                                        InvalidCurveScanType.REDUNDANT));
+                                if (redundantDistTest.isDistinctAnswers()
+                                        && redundantDistTest.isSignificantDistinctAnswers() == false) {
+                                    redundantResponse.setShowsSideChannel(TestResult.TRUE);
+                                }
+                                responses.add(redundantResponse);
                             }
-                            responses.add(redundantResponse);
-                        }
 
+                        }
                     }
                     responses.add(scanResponse);
                 }
