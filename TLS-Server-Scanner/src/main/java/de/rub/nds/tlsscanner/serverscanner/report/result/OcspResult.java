@@ -30,17 +30,18 @@ import java.util.Locale;
  * @author Nils Hanke <nils.hanke@rub.de>
  */
 public class OcspResult extends ProbeResult {
-    
+
     private final List<OcspCertificateResult> certResults;
 
     private final List<CertificateStatusRequestExtensionMessage> tls13CertStatus;
 
-    public OcspResult(List<OcspCertificateResult> certResults, List<CertificateStatusRequestExtensionMessage> tls13CertStatus) {
+    public OcspResult(List<OcspCertificateResult> certResults,
+            List<CertificateStatusRequestExtensionMessage> tls13CertStatus) {
         super(ProbeType.OCSP);
         this.certResults = certResults;
         this.tls13CertStatus = tls13CertStatus;
     }
-    
+
     @Override
     public void mergeData(SiteReport report) {
         report.setOcspResults(certResults);
@@ -48,17 +49,16 @@ public class OcspResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());
 
         report.putResult(AnalyzedProperty.SUPPORTS_OCSP_STAPLING, getConclusiveSupportsStapling());
-        
+
         report.putResult(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE, getConclusiveIncludesCertMessage());
 
         report.putResult(AnalyzedProperty.SUPPORTS_STAPLED_NONCE, getConclusiveSupportsStapledNonce());
 
         report.putResult(AnalyzedProperty.MUST_STAPLE, getConclusiveMustStaple());
-        
+
         report.putResult(AnalyzedProperty.SUPPORTS_NONCE, getConclusiveSupportsNonce());
-        
+
         report.putResult(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED, getConclusiveStapledResponseExpired());
-        
 
         if (tls13CertStatus != null) {
             if (tls13CertStatus.size() == 1) {
@@ -76,85 +76,84 @@ public class OcspResult extends ProbeResult {
             report.putResult(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, TestResult.COULD_NOT_TEST);
         }
     }
-    
+
     private TestResult getConclusiveSupportsOcsp() {
         boolean foundFalse = false;
-        if(certResults != null) {
-            for(OcspCertificateResult result: certResults) {
-                if(Boolean.TRUE.equals(result.getSupportsOcsp())) {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (Boolean.TRUE.equals(result.getSupportsOcsp())) {
                     return TestResult.TRUE;
-                }
-                else if(Boolean.FALSE.equals(result.getSupportsOcsp())) {
+                } else if (Boolean.FALSE.equals(result.getSupportsOcsp())) {
                     foundFalse = true;
                 }
             }
-            
-            if(foundFalse) {
+
+            if (foundFalse) {
                 return TestResult.FALSE;
             }
         }
         return TestResult.ERROR_DURING_TEST;
     }
-    
+
     private TestResult getConclusiveSupportsStapling() {
-        if(certResults != null) {
-            for(OcspCertificateResult result: certResults) {
-                if(result.isSupportsStapling()) {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isSupportsStapling()) {
                     return TestResult.TRUE;
                 }
             }
         }
         return TestResult.FALSE;
     }
-    
+
     private TestResult getConclusiveIncludesCertMessage() {
-        if(certResults != null) {
-            for(OcspCertificateResult result: certResults) {
-                if(result.getStapledResponse() != null) {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.getStapledResponse() != null) {
                     return TestResult.TRUE;
                 }
             }
         }
         return TestResult.FALSE;
     }
-    
+
     private TestResult getConclusiveSupportsStapledNonce() {
-        if(certResults != null) {
-            for(OcspCertificateResult result: certResults) {
-                if(result.getStapledResponse() != null && result.getStapledResponse().getNonce() != null) {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.getStapledResponse() != null && result.getStapledResponse().getNonce() != null) {
                     return TestResult.TRUE;
                 }
             }
         }
         return TestResult.FALSE;
     }
-    
+
     private TestResult getConclusiveMustStaple() {
-        if(certResults != null) {
-            for(OcspCertificateResult result: certResults) {
-                if(result.isMustStaple()) {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isMustStaple()) {
                     return TestResult.TRUE;
                 }
             }
         }
         return TestResult.FALSE;
     }
-    
+
     private TestResult getConclusiveSupportsNonce() {
-        if(certResults != null) {
-            for(OcspCertificateResult result: certResults) {
-                if(result.isSupportsNonce()) {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isSupportsNonce()) {
                     return TestResult.TRUE;
                 }
             }
         }
         return TestResult.FALSE;
     }
-    
+
     private TestResult getConclusiveStapledResponseExpired() {
-        if(certResults != null) {
-            for(OcspCertificateResult result: certResults) {
-                if(result.isStapledResponseExpired()) {
+        if (certResults != null) {
+            for (OcspCertificateResult result : certResults) {
+                if (result.isStapledResponseExpired()) {
                     return TestResult.TRUE;
                 }
             }

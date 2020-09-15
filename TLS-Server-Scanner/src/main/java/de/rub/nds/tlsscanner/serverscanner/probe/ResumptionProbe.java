@@ -133,8 +133,8 @@ public class ResumptionProbe extends TlsProbe {
     private Config createConfig() {
         Config tlsConfig = getScannerConfig().createConfig();
         List<NamedGroup> tls13Groups = new LinkedList<>();
-        for(NamedGroup group: NamedGroup.getImplemented()) {
-            if(group.isTls13()) {
+        for (NamedGroup group : NamedGroup.getImplemented()) {
+            if (group.isTls13()) {
                 tls13Groups.add(group);
             }
         }

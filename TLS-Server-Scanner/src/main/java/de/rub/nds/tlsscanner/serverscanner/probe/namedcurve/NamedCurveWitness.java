@@ -25,9 +25,9 @@ public class NamedCurveWitness {
     private NamedGroup ecdsaSigGroupEphemeral;
 
     public NamedCurveWitness() {
-        
+
     }
-    
+
     public NamedCurveWitness(NamedGroup ecdsaPkGroupStatic, NamedGroup ecdsaPkGroupEphemeral,
             NamedGroup ecdsaSigGroupStatic, NamedGroup ecdsaSigGroupEphemeral) {
         this.ecdsaPkGroupStatic = ecdsaPkGroupStatic;
@@ -35,7 +35,7 @@ public class NamedCurveWitness {
         this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
         this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
     }
-    
+
     public NamedGroup getEcdsaPkGroupStatic() {
         return ecdsaPkGroupStatic;
     }

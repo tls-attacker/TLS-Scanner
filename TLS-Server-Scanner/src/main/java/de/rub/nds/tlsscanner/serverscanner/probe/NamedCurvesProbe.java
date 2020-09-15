@@ -76,10 +76,12 @@ public class NamedCurvesProbe extends TlsProbe {
                 groupsRsa = getSupportedNamedGroupsRsa();
             }
             if (testUsingEcdsaStatic) {
-                groupsEcdsaStatic = getSupportedNamedGroupsEcdsa(getEcdsaStaticCiphersuites(), ecdsaPkGroupsStatic, ecdsaCertSigGroupsStatic);
+                groupsEcdsaStatic = getSupportedNamedGroupsEcdsa(getEcdsaStaticCiphersuites(), ecdsaPkGroupsStatic,
+                        ecdsaCertSigGroupsStatic);
             }
             if (testUsingEcdsaEphemeral) {
-                groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCiphersuites(), ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
+                groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCiphersuites(),
+                        ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
             }
             if (testUsingTls13) {
                 groupsTls13 = getTls13SupportedGroups();
@@ -105,15 +107,15 @@ public class NamedCurvesProbe extends TlsProbe {
         List<NamedGroup> supportedNamedCurves = new LinkedList<>();
         do {
             context = testCurves(toTestList, tlsConfig);
-            
+
             if (context != null) {
                 selectedGroup = context.getSelectedGroup();
-                
+
                 if (!toTestList.contains(selectedGroup)) {
                     LOGGER.debug("Server chose a Curve we did not offer!");
                     break;
                 }
-                
+
                 supportedNamedCurves.add(selectedGroup);
                 toTestList.remove(selectedGroup);
             }
@@ -121,7 +123,8 @@ public class NamedCurvesProbe extends TlsProbe {
         return supportedNamedCurves;
     }
 
-    private Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsEcdsa(List<CipherSuite> cipherSuites, List<NamedGroup> pkGroups, List<NamedGroup> sigGroups) {
+    private Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsEcdsa(List<CipherSuite> cipherSuites,
+            List<NamedGroup> pkGroups, List<NamedGroup> sigGroups) {
         HashMap<NamedGroup, NamedCurveWitness> namedCurveMap = new HashMap<>();
         Config tlsConfig = getBasicConfig();
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
@@ -141,24 +144,24 @@ public class NamedCurvesProbe extends TlsProbe {
 
             do {
                 context = testCurves(toTestList, tlsConfig);
-                
+
                 if (context != null) {
-                    
+
                     selectedGroup = context.getSelectedGroup();
                     certificateGroup = context.getEcCertificateCurve();
                     certificateSigGroup = context.getEcCertificateSignatureCurve();
-                    
+
                     if (!toTestList.contains(selectedGroup)) {
                         LOGGER.debug("Server chose a Curve we did not offer!");
                         break;
-                    }   
+                    }
                     if (cipherSuites.get(0).isEphemeral()) {
                         namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup, null,
                                 certificateSigGroup));
                     } else {
                         namedCurveMap.put(selectedGroup, new NamedCurveWitness(certificateGroup, null,
                                 certificateSigGroup, null));
-                        
+
                     }
 
                     toTestList.remove(selectedGroup);
@@ -315,8 +318,8 @@ public class NamedCurvesProbe extends TlsProbe {
                     break;
                 }
 
-                namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup,
-                        null, certificateSigGroup));
+                namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup, null,
+                        certificateSigGroup));
                 toTestList.remove(selectedGroup);
             }
         } while (context != null && !toTestList.isEmpty());
@@ -381,15 +384,15 @@ public class NamedCurvesProbe extends TlsProbe {
         HashMap<NamedGroup, NamedCurveWitness> groupMap = new HashMap<>();
         for (NamedGroup group : foundOverall) {
             NamedCurveWitness witness = new NamedCurveWitness();
-            if(rsaGroups.contains(group)) {
+            if (rsaGroups.contains(group)) {
                 witness.setFoundUsingRsaCipher(true);
             }
-            if(groupsEcdsaStatic.containsKey(group)) {
+            if (groupsEcdsaStatic.containsKey(group)) {
                 witness.setFoundUsingEcdsaStaticCipher(true);
                 witness.setEcdsaPkGroupStatic(groupsEcdsaStatic.get(group).getEcdsaPkGroupStatic());
                 witness.setEcdsaSigGroupStatic(groupsEcdsaStatic.get(group).getEcdsaSigGroupStatic());
             }
-            if(groupsEcdsaEphemeral.containsKey(group)) {
+            if (groupsEcdsaEphemeral.containsKey(group)) {
                 witness.setFoundUsingEcdsaEphemeralCipher(true);
                 witness.setEcdsaPkGroupEphemeral(groupsEcdsaEphemeral.get(group).getEcdsaPkGroupEphemeral());
                 witness.setEcdsaSigGroupEphemeral(groupsEcdsaEphemeral.get(group).getEcdsaSigGroupEphemeral());

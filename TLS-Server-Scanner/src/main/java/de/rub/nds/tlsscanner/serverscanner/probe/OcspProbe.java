@@ -83,15 +83,14 @@ public class OcspProbe extends TlsProbe {
             LOGGER.warn("Couldn't fetch certificate chains from server!");
             return getCouldNotExecuteResult();
         }
-        
-        for(CertificateChain serverCertChain: serverCertChains) {
+
+        for (CertificateChain serverCertChain : serverCertChains) {
             OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
-        
 
             getMustStaple(serverCertChain.getCertificate(), certResult);
             getStapledResponse(tlsConfig, certResult);
             performRequest(serverCertChain.getCertificate(), certResult);
-        
+
             ocspCertResults.add(certResult);
         }
         List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
@@ -129,8 +128,8 @@ public class OcspProbe extends TlsProbe {
 
         if (certificateStatusMessage != null) {
             try {
-                certResult.setStapledResponse(OCSPResponseParser.parseResponse(certificateStatusMessage.getOcspResponseBytes()
-                        .getValue()));
+                certResult.setStapledResponse(OCSPResponseParser.parseResponse(certificateStatusMessage
+                        .getOcspResponseBytes().getValue()));
             } catch (Exception e) {
                 LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
             }
@@ -242,7 +241,7 @@ public class OcspProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
         serverCertChains = new LinkedList<>();
-        for(CertificateChain chain: report.getCertificateChainList()) {
+        for (CertificateChain chain : report.getCertificateChainList()) {
             serverCertChains.add(chain);
         }
         tls13NamedGroups = report.getSupportedTls13Groups();

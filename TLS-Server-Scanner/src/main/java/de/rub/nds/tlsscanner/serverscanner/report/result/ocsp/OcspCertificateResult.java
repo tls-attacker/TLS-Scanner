@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.serverscanner.report.result.ocsp;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
@@ -21,15 +29,16 @@ public class OcspCertificateResult {
     private OCSPResponse firstResponse;
     private OCSPResponse secondResponse;
     private OCSPResponse httpGetResponse;
-    
-    private final CertificateChain certificate; 
-    
+
+    private final CertificateChain certificate;
+
     public OcspCertificateResult(CertificateChain certificate) {
         this.certificate = certificate;
     }
-    
-    public OcspCertificateResult(CertificateChain certificate, Boolean supportsOcsp, boolean supportsStapling, boolean mustStaple, boolean supportsNonce,
-    OCSPResponse stapledResponse, OCSPResponse firstResponse, OCSPResponse secondResponse, OCSPResponse httpGetResponse) {
+
+    public OcspCertificateResult(CertificateChain certificate, Boolean supportsOcsp, boolean supportsStapling,
+            boolean mustStaple, boolean supportsNonce, OCSPResponse stapledResponse, OCSPResponse firstResponse,
+            OCSPResponse secondResponse, OCSPResponse httpGetResponse) {
         this.certificate = certificate;
         this.supportsOcsp = supportsOcsp;
         this.supportsStapling = supportsStapling;
@@ -108,7 +117,7 @@ public class OcspCertificateResult {
     public void setHttpGetResponse(OCSPResponse httpGetResponse) {
         this.httpGetResponse = httpGetResponse;
     }
-    
+
     public boolean isStapledResponseExpired() {
         if (firstResponse != null && firstResponse.getResponseStatus() == 0) {
             if (stapledResponse != null && stapledResponse.getResponseStatus() == 0) {
@@ -127,8 +136,8 @@ public class OcspCertificateResult {
         }
         return false;
 
-        }
-    
+    }
+
     public long getDifferenceHoursStapled() {
         if (firstResponse != null && firstResponse.getResponseStatus() == 0) {
             if (stapledResponse != null && stapledResponse.getResponseStatus() == 0) {
@@ -146,35 +155,32 @@ public class OcspCertificateResult {
         }
         return -1;
     }
-    
+
     public boolean isNonceMismatch() {
-            // Check if the use of a nonce is supported
-            if (supportsNonce) {
-                // Check if the client nonce was used
-                if (firstResponse.getNonce().intValue() != OcspProbe.NONCE_TEST_VALUE_1) {
-                    return true;
-                }
-                // Check if a nonce was reused, e.g. caching didn't respect
-                // given client nonce
-                else if (secondResponse != null) {
-                    if (firstResponse.getNonce().equals(secondResponse.getNonce())) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } 
+        // Check if the use of a nonce is supported
+        if (supportsNonce) {
+            // Check if the client nonce was used
+            if (firstResponse.getNonce().intValue() != OcspProbe.NONCE_TEST_VALUE_1) {
+                return true;
             }
-            return false;
-    }
-    
-    public boolean isSupportsStapledNonce() {
-        if(stapledResponse!= null && stapledResponse.getNonce() != null)
-        {
-            return true;
+            // Check if a nonce was reused, e.g. caching didn't respect
+            // given client nonce
+            else if (secondResponse != null) {
+                if (firstResponse.getNonce().equals(secondResponse.getNonce())) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
-        else 
-        {
-           return false;
-        }  
+        return false;
+    }
+
+    public boolean isSupportsStapledNonce() {
+        if (stapledResponse != null && stapledResponse.getNonce() != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
