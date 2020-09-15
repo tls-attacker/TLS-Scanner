@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 
 package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
@@ -12,47 +20,44 @@ import java.util.Set;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
-
 public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T> {
-    
-    private final int expectedA; //common
-    private final int expectedB; //uncommon
-    
-    public DistributionTest(T testInfo, List<VectorResponse> responseList, int expectedA, int expectedB) {
+
+    private final double probability;
+
+    public DistributionTest(T testInfo, List<VectorResponse> responseList, double probability) {
         super(testInfo, responseList);
-        this.expectedA = expectedA;
-        this.expectedB = expectedB;
-        if(vectorContainerList.size() != 1) {
+        if (vectorContainerList.size() != 1) {
             throw new RuntimeException("DistributionTest expects exactly one VectorContainer");
         }
+        this.probability = probability;
         updateInternals();
     }
 
     @Override
     protected double computePValueFisherExact() {
-        if(!isFisherExactUsable()) {
+        int expectedB = getExpectedLessCommon();
+        int expectedA = vectorContainerList.get(0).getResponseFingerprintList().size() - expectedB;
+        if (!isFisherExactUsable()) {
             throw new RuntimeException("Trying to use fisher exact test when it is not possible");
         }
         List<ResponseCounter> responseCounters = vectorContainerList.get(0).getDistinctResponsesCounterList();
         int responseA;
         int responseB;
-        
-        if(responseCounters.get(0).getCounter() > responseCounters.get(1).getCounter())
-        {
+
+        if (responseCounters.get(0).getCounter() > responseCounters.get(1).getCounter()) {
             responseA = responseCounters.get(0).getCounter();
             responseB = responseCounters.get(1).getCounter();
-        }
-        else
-        {
+        } else {
             responseA = responseCounters.get(1).getCounter();
             responseB = responseCounters.get(0).getCounter();
-        } 
-        return FisherExactTest.getPValue(responseA, responseB, expectedA, expectedB); 
+        }
+        return FisherExactTest.getPValue(responseA, responseB, expectedA, expectedB);
     }
 
     @Override
     protected double computePValueChiSquared() {
-        System.out.println("Using ChiSquared");
+        int expectedB = getExpectedLessCommon();
+        int expectedA = vectorContainerList.get(0).getResponseFingerprintList().size() - expectedB;
         ChiSquareTest test = new ChiSquareTest();
         ResponseCounter defaultAnswer = retrieveMostCommonAnswer();
         if (vectorContainerList.get(0).getDistinctResponsesCounterList().size() < 2) {
@@ -63,10 +68,9 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
         long[] expected = new long[sortedMeasured.size()];
         long[] measured = new long[sortedMeasured.size()];
         for (int i = 0; i < vectorContainerList.get(0).getDistinctResponsesCounterList().size(); i++) {
-            if(i == 0) {
+            if (i == 0) {
                 expected[i] = expectedA;
-            }
-            else if(i == 1) {
+            } else if (i == 1) {
                 expected[i] = expectedB;
             }
             measured[i] = sortedMeasured.get(i).getCounter();
@@ -82,23 +86,27 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
     protected boolean isFisherExactUsable() {
         return vectorContainerList.get(0).getDistinctResponsesCounterList().size() == 2;
     }
-    
+
     private List<ResponseCounter> getSortedDistinctResponseCounters() {
         List<ResponseCounter> unsorted = vectorContainerList.get(0).getDistinctResponsesCounterList();
         List<ResponseCounter> sorted = new LinkedList<>();
         ResponseCounter highestCounter = null;
-        for(int i = 0; i < unsorted.size(); i++) {
-            for(ResponseCounter toCompare: unsorted) {
-                if(!sorted.contains(toCompare) && (highestCounter == null || highestCounter.getCounter() < toCompare.getCounter())) {
+        for (int i = 0; i < unsorted.size(); i++) {
+            for (ResponseCounter toCompare : unsorted) {
+                if (!sorted.contains(toCompare)
+                        && (highestCounter == null || highestCounter.getCounter() < toCompare.getCounter())) {
                     highestCounter = toCompare;
                 }
             }
             sorted.add(highestCounter);
-            System.out.println("Ct: " + highestCounter.getCounter());
             highestCounter = null;
         }
-        
+
         return sorted;
     }
-    
+
+    private int getExpectedLessCommon() {
+        return (int) (probability * vectorContainerList.get(0).getResponseFingerprintList().size());
+    }
+
 }

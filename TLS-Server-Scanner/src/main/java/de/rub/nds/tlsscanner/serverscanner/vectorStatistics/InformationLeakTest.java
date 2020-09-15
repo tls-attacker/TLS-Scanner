@@ -8,29 +8,23 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
-import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
-import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerPrintChecker;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.TestInfo;
 import de.rub.nds.tlsscanner.serverscanner.util.FisherExactTest;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest<T> {
 
     public InformationLeakTest(T testInfo, List<VectorResponse> responseList) {
         super(testInfo, responseList);
         updateInternals();
-    } 
+    }
+
     /**
      *
      * @return

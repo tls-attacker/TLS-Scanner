@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
@@ -14,13 +22,12 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 public abstract class VectorStatisticTest<T extends TestInfo> {
-    
-    protected static final double P_VALUE_SIGNIFICANCE_BORDER = 0.00001; //0.15;//
+
+    protected static final double P_VALUE_SIGNIFICANCE_BORDER = 0.00001;
 
     protected static final Logger LOGGER = LogManager.getLogger();
-    
+
     protected final List<VectorContainer> vectorContainerList;
 
     protected final T testInfo;
@@ -30,7 +37,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
     protected boolean distinctAnswers;
 
     protected boolean significantDistinctAnswers;
-    
+
     public VectorStatisticTest(T testInfo, List<VectorResponse> responseList) {
         this.testInfo = testInfo;
         vectorContainerList = new LinkedList<>();
@@ -49,7 +56,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
             vectorContainerList.add(new VectorContainer(vector, tempResponseList));
         }
     }
-    
+
     public boolean isDistinctAnswers() {
         return distinctAnswers;
     }
@@ -65,7 +72,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
     public T getTestInfo() {
         return testInfo;
     }
-    
+
     public List<VectorContainer> getVectorContainerList() {
         return vectorContainerList;
     }
@@ -116,7 +123,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
         }
         return defaultAnswer;
     }
-    
+
     public void extendTestWithVectorResponses(List<VectorResponse> vectorResponseList) {
         for (VectorResponse vectorResponse : vectorResponseList) {
             VectorContainer correctContainer = null;
@@ -153,8 +160,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
         }
         updateInternals();
     }
-    
-    
+
     public EqualityError getEqualityError() {
         Set<ResponseFingerprint> fingerPrintSet = getAllResponseFingerprints();
         for (ResponseFingerprint fingerprint1 : fingerPrintSet) {
@@ -167,14 +173,14 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
         }
         return EqualityError.NONE;
     }
-    
+
     protected final void updateInternals() {
         pValue = computePValue();
         distinctAnswers = getAllResponseFingerprints().size() > 1;
         this.significantDistinctAnswers = pValue < P_VALUE_SIGNIFICANCE_BORDER;
 
     }
-    
+
     private double computePValue() {
         if (isFisherExactUsable()) {
             LOGGER.debug("Computing P value based on fisher's exact test");
@@ -185,8 +191,10 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
             return computePValueChiSquared();
         }
     }
-    
+
     abstract double computePValueFisherExact();
+
     abstract double computePValueChiSquared();
+
     abstract boolean isFisherExactUsable();
 }
