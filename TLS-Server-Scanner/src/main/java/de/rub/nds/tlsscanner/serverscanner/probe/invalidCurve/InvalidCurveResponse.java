@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class InvalidCurveResponse {
 
-    private InvalidCurveVector parameterSet;
+    private InvalidCurveVector vector;
     private List<FingerprintSecretPair> fingerprintSecretPairs;
     private List<Point> receivedEcPublicKeys;
     private List<Point> receivedFinishedEcKeys;
@@ -31,22 +31,27 @@ public class InvalidCurveResponse {
     private TestResult finishedHandshakeHadReusedKey = TestResult.FALSE;
     private TestResult dirtyKeysWarning = TestResult.FALSE;
 
+    private TestResult showsSideChannel = TestResult.FALSE;
+
+    private InvalidCurveScanType scanType = InvalidCurveScanType.REGULAR;
+
     private InvalidCurveResponse() {
     }
 
     public InvalidCurveResponse(InvalidCurveVector parameterSet, List<FingerprintSecretPair> fingerprintSecretPairs,
             TestResult showsPointsAreNotValidated, List<Point> receivedEcPublicKeys,
-            List<Point> receivedFinishedEcKeys, TestResult dirtyKeysWarning) {
-        this.parameterSet = parameterSet;
+            List<Point> receivedFinishedEcKeys, TestResult dirtyKeysWarning, InvalidCurveScanType scanType) {
+        this.vector = parameterSet;
         this.fingerprintSecretPairs = fingerprintSecretPairs;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
         this.receivedEcPublicKeys = receivedEcPublicKeys;
         this.receivedFinishedEcKeys = receivedFinishedEcKeys;
         this.dirtyKeysWarning = dirtyKeysWarning;
+        this.scanType = scanType;
     }
 
     public InvalidCurveResponse(InvalidCurveVector parameterSet, TestResult showsPointsAreNotValidated) {
-        this.parameterSet = parameterSet;
+        this.vector = parameterSet;
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
         this.fingerprintSecretPairs = new LinkedList<>();
         this.receivedEcPublicKeys = new LinkedList<>();
@@ -55,8 +60,8 @@ public class InvalidCurveResponse {
     /**
      * @return the parameterSet
      */
-    public InvalidCurveVector getParameterSet() {
-        return parameterSet;
+    public InvalidCurveVector getVector() {
+        return vector;
     }
 
     /**
@@ -178,28 +183,52 @@ public class InvalidCurveResponse {
     public void setDirtyKeysWarning(TestResult dirtyKeysWarning) {
         this.dirtyKeysWarning = dirtyKeysWarning;
     }
-    
-    public void mergeResponse(InvalidCurveResponse toMerge)
-    {
+
+    public void mergeResponse(InvalidCurveResponse toMerge) {
         fingerprintSecretPairs.addAll(toMerge.getFingerprintSecretPairs());
         receivedEcPublicKeys.addAll(toMerge.getReceivedEcPublicKeys());
         receivedFinishedEcKeys.addAll(toMerge.getReceivedFinishedEcKeys());
-        
-        if(toMerge.getShowsPointsAreNotValidated() == TestResult.TRUE) {
+
+        if (toMerge.getShowsPointsAreNotValidated() == TestResult.TRUE) {
             showsPointsAreNotValidated = TestResult.TRUE;
         }
-        if(toMerge.getShowsVulnerability() == TestResult.TRUE) {
+        if (toMerge.getShowsVulnerability() == TestResult.TRUE) {
             showsVulnerability = TestResult.TRUE;
         }
-        if(toMerge.getChosenGroupReusesKey() == TestResult.TRUE) {
+        if (toMerge.getChosenGroupReusesKey() == TestResult.TRUE) {
             chosenGroupReusesKey = TestResult.TRUE;
         }
-        if(toMerge.getFinishedHandshakeHadReusedKey() == TestResult.TRUE) {
+        if (toMerge.getFinishedHandshakeHadReusedKey() == TestResult.TRUE) {
             finishedHandshakeHadReusedKey = TestResult.TRUE;
         }
-        if(toMerge.getDirtyKeysWarning() == TestResult.TRUE) {
+        if (toMerge.getDirtyKeysWarning() == TestResult.TRUE) {
             dirtyKeysWarning = TestResult.TRUE;
         }
+
+        scanType = toMerge.getScanType();
     }
 
+    public List<VectorResponse> getVectorResponses() {
+        List<VectorResponse> responses = new LinkedList<>();
+        for (FingerprintSecretPair pair : fingerprintSecretPairs) {
+            responses.add(new VectorResponse(vector, pair.getFingerprint()));
+        }
+        return responses;
+    }
+
+    public InvalidCurveScanType getScanType() {
+        return scanType;
+    }
+
+    public void setScanType(InvalidCurveScanType scanType) {
+        this.scanType = scanType;
+    }
+
+    public TestResult getShowsSideChannel() {
+        return showsSideChannel;
+    }
+
+    public void setShowsSideChannel(TestResult showsSideChannel) {
+        this.showsSideChannel = showsSideChannel;
+    }
 }

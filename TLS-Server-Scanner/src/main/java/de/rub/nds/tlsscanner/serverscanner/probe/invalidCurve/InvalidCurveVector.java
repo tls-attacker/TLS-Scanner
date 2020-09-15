@@ -32,17 +32,6 @@ public class InvalidCurveVector implements Vector {
     private InvalidCurveVector() {
     }
 
-    /*
-     * public InvalidCurveVector(ProtocolVersion protocolVersion,
-     * List<CipherSuite> cipherSuites, NamedGroup namedGroup, ECPointFormat
-     * pointFormat, boolean twistAttack, boolean attackInRenegotiation,
-     * NamedGroup certificateGroup) { this.protocolVersion = protocolVersion;
-     * this.cipherSuites = cipherSuites; this.namedGroup = namedGroup;
-     * this.pointFormat = pointFormat; this.twistAttack = twistAttack;
-     * this.attackInRenegotiation = attackInRenegotiation; this.certificateGroup
-     * = certificateGroup; }
-     */
-
     public InvalidCurveVector(ProtocolVersion protocolVersion, CipherSuite cipherSuite, NamedGroup namedGroup,
             ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation,
             List<NamedGroup> ecdsaRequiredGroups) {
@@ -126,20 +115,23 @@ public class InvalidCurveVector implements Vector {
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Not supported yet."); // To
-                                                                       // change
-                                                                       // body
-                                                                       // of
-                                                                       // generated
-                                                                       // methods,
-                                                                       // choose
-                                                                       // Tools
-                                                                       // |
-                                                                       // Templates.
+        return toString();
     }
 
     public List<NamedGroup> getEcdsaRequiredGroups() {
         return ecdsaRequiredGroups;
+    }
+
+    public boolean equals(InvalidCurveVector toCompare) {
+        if (protocolVersion != toCompare.getProtocolVersion() || cipherSuite != toCompare.getCipherSuite()
+                || namedGroup != toCompare.getNamedGroup() || pointFormat != toCompare.getPointFormat()
+                || twistAttack != toCompare.isTwistAttack()
+                || attackInRenegotiation != toCompare.isAttackInRenegotiation()
+                || !ecdsaRequiredGroups.equals(toCompare.getEcdsaRequiredGroups())) {
+            return false;
+        }
+
+        return true;
     }
 
     public void setEcdsaRequiredGroups(List<NamedGroup> ecdsaRequiredGroups) {
