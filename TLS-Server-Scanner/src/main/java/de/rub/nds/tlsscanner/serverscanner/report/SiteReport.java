@@ -107,12 +107,6 @@ public class SiteReport extends Observable implements Serializable {
 
     // OCSP
     private List<OcspCertificateResult> ocspResults;
-    /*
-     * private OCSPResponse stapledOcspResponse = null; private OCSPResponse
-     * firstOcspResponse = null; private OCSPResponse secondOcspResponse = null;
-     * private OCSPResponse httpGetOcspResponse = null; private Long
-     * differenceHoursStapled = null;
-     */
 
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
