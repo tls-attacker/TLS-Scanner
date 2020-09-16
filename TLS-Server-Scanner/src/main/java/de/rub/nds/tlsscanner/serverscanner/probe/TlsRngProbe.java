@@ -279,7 +279,7 @@ public class TlsRngProbe extends TlsProbe {
             byte[] completeServerRandom = null;
 
             if (!(serverRandom == null)) {
-                completeServerRandom = Arrays.copyOfRange(serverRandom, 0, 33);
+                completeServerRandom = Arrays.copyOfRange(serverRandom, 0, 32);
             }
             
             if (!(completeServerRandom.length == 0)) {
@@ -383,7 +383,7 @@ public class TlsRngProbe extends TlsProbe {
             byte[] completeServerRandom = null;
 
             if (!(serverRandom == null)) {
-                completeServerRandom = Arrays.copyOfRange(serverRandom, 0, 33);
+                completeServerRandom = Arrays.copyOfRange(serverRandom, 0, 32);
             }
             
 
