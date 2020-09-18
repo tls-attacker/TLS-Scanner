@@ -224,7 +224,7 @@ public class NamedCurvesProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_RSA_CERT) == TestResult.FALSE) {
             testUsingRsa = false;
         }
 

@@ -51,6 +51,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
     private TestResult supportsEcdh = TestResult.FALSE;
     private TestResult supportsStaticEcdh = TestResult.FALSE;
     private TestResult supportsEcdsa = TestResult.FALSE;
+    private TestResult supportsRsaCert = TestResult.FALSE;
     private TestResult supportsDss = TestResult.FALSE;
     private TestResult supportsGost = TestResult.FALSE;
     private TestResult supportsSrp = TestResult.FALSE;
@@ -141,6 +142,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
             supportsSrp = TestResult.COULD_NOT_TEST;
             supportsStaticEcdh = TestResult.COULD_NOT_TEST;
             supportsEcdsa = TestResult.COULD_NOT_TEST;
+            supportsRsaCert = TestResult.COULD_NOT_TEST;
             supportsDss = TestResult.COULD_NOT_TEST;
             supportsStreamCiphers = TestResult.COULD_NOT_TEST;
             supportsTrippleDesCiphers = TestResult.COULD_NOT_TEST;
@@ -280,6 +282,9 @@ public class CiphersuiteProbeResult extends ProbeResult {
         if (suite.name().contains("DSS")) {
             supportsDss = TestResult.TRUE;
         }
+        if (suite.name().contains("RSA")) {
+            supportsRsaCert = TestResult.TRUE;
+        }
     }
 
     private void writeToReport(SiteReport report) {
@@ -304,6 +309,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_DH, supportsDh);
         report.putResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH, supportsStaticEcdh);
         report.putResult(AnalyzedProperty.SUPPORTS_ECDSA, supportsEcdsa);
+        report.putResult(AnalyzedProperty.SUPPORTS_RSA_CERT, supportsRsaCert);
         report.putResult(AnalyzedProperty.SUPPORTS_DSS, supportsDss);
         report.putResult(AnalyzedProperty.SUPPORTS_ECDH, supportsEcdh);
         report.putResult(AnalyzedProperty.SUPPORTS_GOST, supportsGost);

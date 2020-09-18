@@ -110,7 +110,7 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_RSA_CERT) == TestResult.FALSE) {
             scanForRsaCert = false;
         }
         if (report.getResult(AnalyzedProperty.SUPPORTS_ECDSA) == TestResult.FALSE) {
