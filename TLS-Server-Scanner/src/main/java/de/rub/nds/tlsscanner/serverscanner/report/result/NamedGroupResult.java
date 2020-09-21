@@ -11,6 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,11 +27,17 @@ public class NamedGroupResult extends ProbeResult {
     private final Map<NamedGroup, NamedCurveWitness> namedGroupsMap;
     private final Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13;
 
+    private final TestResult supportsExplicitPrime;
+    private final TestResult supportsExplicitChar2;
+
     public NamedGroupResult(Map<NamedGroup, NamedCurveWitness> namedGroupsMap,
-            Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13) {
+            Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13, TestResult supportsExplicitPrime,
+            TestResult supportsExplicitChar2) {
         super(ProbeType.NAMED_GROUPS);
         this.namedGroupsMap = namedGroupsMap;
         this.namedGroupsMapTls13 = namedGroupsMapTls13;
+        this.supportsExplicitPrime = supportsExplicitPrime;
+        this.supportsExplicitChar2 = supportsExplicitChar2;
     }
 
     @Override
@@ -48,6 +56,8 @@ public class NamedGroupResult extends ProbeResult {
         report.setSupportedTls13Groups(tls13Groups);
         report.setSupportedNamedGroupsWitnesses(namedGroupsMap);
         report.setSupportedNamedGroupsWitnessesTls13(namedGroupsMapTls13);
+        report.putResult(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, supportsExplicitPrime);
+        report.putResult(AnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, supportsExplicitChar2);
     }
 
 }

@@ -10,10 +10,14 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.EllipticCurveType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareStoreEntry;
@@ -72,6 +76,9 @@ public class NamedCurvesProbe extends TlsProbe {
             Map<NamedGroup, NamedCurveWitness> groupsEcdsaEphemeral = new HashMap<>();
             Map<NamedGroup, NamedCurveWitness> groupsTls13 = new HashMap<>();
 
+            TestResult supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
+            TestResult supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
+
             if (testUsingRsa) {
                 groupsRsa = getSupportedNamedGroupsRsa();
             }
@@ -90,10 +97,10 @@ public class NamedCurvesProbe extends TlsProbe {
             Map<NamedGroup, NamedCurveWitness> overallSupported = composeFullMap(groupsRsa, groupsEcdsaStatic,
                     groupsEcdsaEphemeral);
 
-            return new NamedGroupResult(overallSupported, groupsTls13);
+            return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new NamedGroupResult(null, null);
+            return getCouldNotExecuteResult();
         }
     }
 
@@ -183,6 +190,16 @@ public class NamedCurvesProbe extends TlsProbe {
         }
     }
 
+    private List<CipherSuite> getEcCiphersuites() {
+        List<CipherSuite> suiteList = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.values()) {
+            if (suite.name().contains("ECDH")) {
+                suiteList.add(suite);
+            }
+        }
+        return suiteList;
+    }
+
     private List<CipherSuite> getEcRsaCiphersuites() {
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.values()) {
@@ -216,7 +233,8 @@ public class NamedCurvesProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         if (report.getVersionSuitePairs() == null || report.getVersionSuitePairs().isEmpty()
-                || report.getCertificateChainList() == null) {
+                || report.getCertificateChainList() == null
+                || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
             return false;
         }
         return true;
@@ -242,6 +260,9 @@ public class NamedCurvesProbe extends TlsProbe {
             }
 
         }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
+            testUsingTls13 = false;
+        }
         ecdsaPkGroupsStatic = report.getEcdsaPkGroupsStatic();
         ecdsaPkGroupsEphemeral = report.getEcdsaPkGroupsEphemeral();
         ecdsaPkGroupsTls13 = report.getEcdsaPkGroupsTls13();
@@ -253,7 +274,37 @@ public class NamedCurvesProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new NamedGroupResult(new HashMap<>(), new HashMap<>());
+        return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResult.COULD_NOT_TEST,
+                TestResult.COULD_NOT_TEST);
+    }
+
+    private TestResult getExplicitCurveSupport(EllipticCurveType curveType) {
+        Config tlsConfig = getBasicConfig();
+        if (curveType == EllipticCurveType.EXPLICIT_PRIME) {
+            tlsConfig.setDefaultClientNamedGroups(NamedGroup.EXPLICIT_PRIME);
+        } else {
+            tlsConfig.setDefaultClientNamedGroups(NamedGroup.EXPLICIT_CHAR2);
+        }
+
+        tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
+        State state = new State(tlsConfig);
+        executeState(state);
+
+        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.UNKNOWN, state.getWorkflowTrace())) {
+            return TestResult.UNCERTAIN;
+        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE,
+                state.getWorkflowTrace())) {
+            HandshakeMessage sHello = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(
+                    HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
+            if (sHello instanceof ECDHEServerKeyExchangeMessage) {
+                ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) sHello;
+                if (kex.getGroupType().getValue() == curveType.getValue()) {
+                    return TestResult.TRUE;
+                }
+            }
+
+        }
+        return TestResult.FALSE;
     }
 
     private Config getBasicConfig() {
