@@ -11,5 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve;
 public enum InvalidCurveScanType {
     REGULAR,
     EXTENDED,
-    REDUNDANT
+    REDUNDANT,
+    LARGE_GROUP
 }

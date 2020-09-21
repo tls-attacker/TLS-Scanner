@@ -137,4 +137,12 @@ public class InvalidCurveVector implements Vector {
     public void setEcdsaRequiredGroups(List<NamedGroup> ecdsaRequiredGroups) {
         this.ecdsaRequiredGroups = ecdsaRequiredGroups;
     }
+
+    public void setProtocolVersion(ProtocolVersion protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    public void setCipherSuite(CipherSuite cipherSuite) {
+        this.cipherSuite = cipherSuite;
+    }
 }

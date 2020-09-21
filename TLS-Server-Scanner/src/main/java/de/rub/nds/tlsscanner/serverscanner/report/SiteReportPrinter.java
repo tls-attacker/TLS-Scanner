@@ -1098,6 +1098,14 @@ public class SiteReportPrinter {
                             prettyAppend(builder, "Could not test for vulnerability", AnsiColor.YELLOW);
                             break;
                     }
+                    switch (response.getSideChannelSuspected()) {
+                        case TRUE:
+                            prettyAppend(builder, "Side Channel suspected", AnsiColor.RED);
+                            break;
+                        default:
+                            prettyAppend(builder, "No Side Channel suspected", AnsiColor.GREEN);
+                            break;
+                    }
 
                 }
             }

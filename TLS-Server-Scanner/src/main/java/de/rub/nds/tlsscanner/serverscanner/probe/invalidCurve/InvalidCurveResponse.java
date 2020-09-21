@@ -31,8 +31,8 @@ public class InvalidCurveResponse {
     private TestResult finishedHandshakeHadReusedKey = TestResult.FALSE;
     private TestResult dirtyKeysWarning = TestResult.FALSE;
 
-    private TestResult showsSideChannel = TestResult.FALSE;
-
+    private TestResult sideChannelSuspected = TestResult.FALSE;
+    private TestResult hadDistinctFps = TestResult.FALSE;
     private InvalidCurveScanType scanType = InvalidCurveScanType.REGULAR;
 
     private InvalidCurveResponse() {
@@ -205,7 +205,7 @@ public class InvalidCurveResponse {
             dirtyKeysWarning = TestResult.TRUE;
         }
 
-        scanType = toMerge.getScanType();
+        setScanType(toMerge.getScanType());
     }
 
     public List<VectorResponse> getVectorResponses() {
@@ -218,6 +218,22 @@ public class InvalidCurveResponse {
         return responses;
     }
 
+    public TestResult getSideChannelSuspected() {
+        return sideChannelSuspected;
+    }
+
+    public void setSideChannelSuspected(TestResult sideChannelSuspected) {
+        this.sideChannelSuspected = sideChannelSuspected;
+    }
+
+    public TestResult getHadDistinctFps() {
+        return hadDistinctFps;
+    }
+
+    public void setHadDistinctFps(TestResult hadDistinctFps) {
+        this.hadDistinctFps = hadDistinctFps;
+    }
+
     public InvalidCurveScanType getScanType() {
         return scanType;
     }
@@ -226,11 +242,4 @@ public class InvalidCurveResponse {
         this.scanType = scanType;
     }
 
-    public TestResult getShowsSideChannel() {
-        return showsSideChannel;
-    }
-
-    public void setShowsSideChannel(TestResult showsSideChannel) {
-        this.showsSideChannel = showsSideChannel;
-    }
 }
