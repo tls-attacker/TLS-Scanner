@@ -29,8 +29,7 @@ public class VectorContainer {
         this.vector = vector;
         this.distinctResponsesCounterList = new LinkedList<>();
         this.responseList = responseFingerprintList;
-        HashSet<ResponseFingerprint> fingerprintSet = new HashSet<>();
-        fingerprintSet.addAll(responseFingerprintList);
+        List<ResponseFingerprint> fingerprintSet = getUniqueFingerprints(responseFingerprintList);
         for (ResponseFingerprint fingerprint : fingerprintSet) {
             int counter = 0;
             for (ResponseFingerprint tempFingerprint : responseFingerprintList) {
@@ -122,5 +121,24 @@ public class VectorContainer {
 
     public Vector getVector() {
         return vector;
+    }
+
+    private List<ResponseFingerprint> getUniqueFingerprints(List<ResponseFingerprint> responseFingerprintList) {
+        List<ResponseFingerprint> uniqueFps = new LinkedList<>();
+
+        for (ResponseFingerprint fp : responseFingerprintList) {
+            boolean alreadyListed = false;
+            for (ResponseFingerprint uFp : uniqueFps) {
+                if (Objects.equals(fp, uFp)) {
+                    alreadyListed = true;
+                }
+            }
+
+            if (!alreadyListed) {
+                uniqueFps.add(fp);
+            }
+        }
+
+        return uniqueFps;
     }
 }
