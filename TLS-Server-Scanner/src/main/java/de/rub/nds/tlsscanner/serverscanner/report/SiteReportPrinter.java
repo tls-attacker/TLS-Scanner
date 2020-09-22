@@ -442,6 +442,11 @@ public class SiteReportPrinter {
     public StringBuilder appendCertificates(StringBuilder builder) {
         int certCtr = 1;
         if (report.getCertificateChainList() != null && report.getCertificateChainList().isEmpty() == false) {
+            prettyAppendHeading(builder, "Certificate Types");
+            prettyAppend(builder, "RSA", AnalyzedProperty.SUPPORTS_RSA_CERT);
+            prettyAppend(builder, "ECDSA", AnalyzedProperty.SUPPORTS_ECDSA);
+            prettyAppend(builder, "DSS", AnalyzedProperty.SUPPORTS_DSS);
+            prettyAppend(builder, "GOST", AnalyzedProperty.SUPPORTS_GOST);
             for (CertificateChain chain : report.getCertificateChainList()) {
                 prettyAppendHeading(builder, "Certificate Chain (Certificate " + certCtr + " of "
                         + report.getCertificateChainList().size() + ")");
