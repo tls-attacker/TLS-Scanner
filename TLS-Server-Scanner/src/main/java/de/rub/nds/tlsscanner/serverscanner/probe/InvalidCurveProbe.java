@@ -736,11 +736,6 @@ public class InvalidCurveProbe extends TlsProbe {
         } else {
             double errorAttempt = (double) (1 - 2 * getInfinityProbability(vector, scanType));
             int attempts = (int) Math.ceil(Math.log(ERROR_PROBABILITY) / Math.log(errorAttempt));
-            if (scanType == InvalidCurveScanType.LARGE_GROUP) {
-                System.out.println("Scheduling 40 Large-Group iterations for " + vector.toString());
-            } else {
-                System.out.println("Scheduling " + attempts + " iterations for " + vector.toString());
-            }
 
             switch (scanType) {
                 case REGULAR:
