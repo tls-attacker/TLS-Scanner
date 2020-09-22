@@ -442,11 +442,6 @@ public class SiteReportPrinter {
     public StringBuilder appendCertificates(StringBuilder builder) {
         int certCtr = 1;
         if (report.getCertificateChainList() != null && report.getCertificateChainList().isEmpty() == false) {
-            prettyAppendHeading(builder, "Certificate Types");
-            prettyAppend(builder, "RSA", AnalyzedProperty.SUPPORTS_RSA_CERT);
-            prettyAppend(builder, "ECDSA", AnalyzedProperty.SUPPORTS_ECDSA);
-            prettyAppend(builder, "DSS", AnalyzedProperty.SUPPORTS_DSS);
-            prettyAppend(builder, "GOST", AnalyzedProperty.SUPPORTS_GOST);
             for (CertificateChain chain : report.getCertificateChainList()) {
                 prettyAppendHeading(builder, "Certificate Chain (Certificate " + certCtr + " of "
                         + report.getCertificateChainList().size() + ")");
@@ -1231,6 +1226,11 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "New Hope", AnalyzedProperty.SUPPORTS_NEWHOPE);
                 prettyAppend(builder, "ECMQV", AnalyzedProperty.SUPPORTS_ECMQV);
                 prettyAppend(builder, "TLS 1.3 PSK_DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+                
+                prettyAppendHeading(builder, "KeyExchange Signatures");
+                prettyAppend(builder, "RSA", AnalyzedProperty.SUPPORTS_RSA_CERT);
+                prettyAppend(builder, "ECDSA", AnalyzedProperty.SUPPORTS_ECDSA);
+                prettyAppend(builder, "DSS", AnalyzedProperty.SUPPORTS_DSS);
 
                 prettyAppendHeading(builder, "Cipher Types Supports");
                 prettyAppend(builder, "Stream", AnalyzedProperty.SUPPORTS_STREAM_CIPHERS);
