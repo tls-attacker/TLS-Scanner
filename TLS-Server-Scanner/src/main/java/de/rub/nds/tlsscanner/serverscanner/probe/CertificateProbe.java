@@ -101,11 +101,11 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (!report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE)
-                || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
-            return false;
+        if (report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE)
+                && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -134,154 +134,152 @@ public class CertificateProbe extends TlsProbe {
 
     private List<CertificateChain> getRsaCerts() {
         LinkedList<CertificateChain> rsaCerts = new LinkedList<>();
-        Config tlsConfig = getBasicConfig();
-        ArrayList<CipherSuite> allCipherSuites = new ArrayList<>(Arrays.asList(CipherSuite.values()));
 
-        // get TLS_RSA cert
+        CertificateChain tlsRsaCert = getRsaCert();
+        if (tlsRsaCert != null) {
+            rsaCerts.add(tlsRsaCert);
+        }
+
+        CertificateChain dhRsaCert = getDhRsaCert();
+        if (dhRsaCert != null) {
+            rsaCerts.add(dhRsaCert);
+        }
+
+        CertificateChain ecDheRsaCert = getEcDheRsaCert();
+        if (ecDheRsaCert != null) {
+            rsaCerts.add(ecDheRsaCert);
+        }
+
+        rsaCerts.addAll(getEcdhRsaCerts());
+
+        return rsaCerts;
+    }
+
+    private CertificateChain getRsaCert() {
+        Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
-        for (CipherSuite cipherSuite : allCipherSuites) {
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRSA() && cipherSuite.name().contains("TLS_RSA")) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
-        CertificateChain newCert = performCertScan(tlsConfig, cipherSuitesToTest);
-        if (newCert != null) {
-            rsaCerts.add(newCert);
-        }
+        return performCertScan(tlsConfig, cipherSuitesToTest);
+    }
 
-        // get DH_RSA cert
+    private CertificateChain getDhRsaCert() {
+        Config tlsConfig = getBasicConfig();
+        LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         tlsConfig = getBasicConfig();
         cipherSuitesToTest = new LinkedList<>();
-        for (CipherSuite cipherSuite : allCipherSuites) {
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRSA() && cipherSuite.name().contains("_DH_")) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
-        newCert = performCertScan(tlsConfig, cipherSuitesToTest);
-        if (newCert != null && certAlreadyInList(rsaCerts, newCert) == false) {
-            rsaCerts.add(newCert);
-        }
+        return performCertScan(tlsConfig, cipherSuitesToTest);
+    }
 
-        // get DHE_RSA cert
-        tlsConfig = getBasicConfig();
-        cipherSuitesToTest = new LinkedList<>();
-        for (CipherSuite cipherSuite : allCipherSuites) {
-            if (cipherSuite.isRSA() && cipherSuite.name().contains("_DHE_")) {
+    private CertificateChain getEcDheRsaCert() {
+        Config tlsConfig = getBasicConfig();
+        LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
+            if (cipherSuite.isRSA() && (cipherSuite.name().contains("_DHE_") || cipherSuite.name().contains("_ECDHE_"))) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
-        newCert = performCertScan(tlsConfig, cipherSuitesToTest);
-        if (newCert != null && certAlreadyInList(rsaCerts, newCert) == false) {
-            rsaCerts.add(newCert);
-        }
+        return performCertScan(tlsConfig, cipherSuitesToTest);
+    }
 
-        // get ECDH_RSA cert(s)
-        tlsConfig = getBasicConfig();
-        cipherSuitesToTest = new LinkedList<>();
-        for (CipherSuite cipherSuite : allCipherSuites) {
+    private List<CertificateChain> getEcdhRsaCerts() {
+        List<CertificateChain> ecdhRsaCerts = new LinkedList<>();
+        Config tlsConfig = getBasicConfig();
+        LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRSA() && cipherSuite.name().contains("_ECDH_")) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
-        performEcCertScan(tlsConfig, getAllCurves(), cipherSuitesToTest, rsaCerts);
-
-        // get ECDHE_RSA cert
-        tlsConfig = getBasicConfig();
-        cipherSuitesToTest = new LinkedList<>();
-        for (CipherSuite cipherSuite : allCipherSuites) {
-            if (cipherSuite.isRSA() && cipherSuite.name().contains("_ECDHE_")) {
-                cipherSuitesToTest.add(cipherSuite);
-            }
-        }
-        newCert = performCertScan(tlsConfig, cipherSuitesToTest);
-        if (newCert != null && certAlreadyInList(rsaCerts, newCert) == false) {
-            rsaCerts.add(newCert);
-        }
-        return rsaCerts;
+        performEcCertScan(tlsConfig, getAllCurves(), cipherSuitesToTest, ecdhRsaCerts);
+        return ecdhRsaCerts;
     }
 
     private List<CertificateChain> getEcdsaCerts() {
         LinkedList<CertificateChain> ecdsaCerts = new LinkedList<>();
-        Config tlsConfig = getBasicConfig();
-        ArrayList<CipherSuite> allCipherSuites = new ArrayList<>(Arrays.asList(CipherSuite.values()));
-
-        // get ECDH_ECDSA certs
-        LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
-        LinkedList<NamedGroup> pkGroups = new LinkedList<>();
-        LinkedList<NamedGroup> sigGroups = new LinkedList<>();
-
-        for (CipherSuite cipherSuite : allCipherSuites) {
-            if (cipherSuite.isECDSA() && cipherSuite.isEphemeral() == false) {
-                cipherSuitesToTest.add(cipherSuite);
-            }
-        }
-        performEcCertScanEcdsa(tlsConfig, getAllCurves(), cipherSuitesToTest, ecdsaCerts, pkGroups, sigGroups);
-        ecdsaPkGroupsStatic = pkGroups;
-        ecdsaCertSigGroupsStatic = sigGroups;
-
-        // get ECDHE_ECDSA certs
-        tlsConfig = getBasicConfig();
-        cipherSuitesToTest = new LinkedList<>();
-        pkGroups = new LinkedList<>();
-        sigGroups = new LinkedList<>();
-        for (CipherSuite cipherSuite : allCipherSuites) {
-            if (cipherSuite.isECDSA() && cipherSuite.isEphemeral()) {
-                cipherSuitesToTest.add(cipherSuite);
-            }
-        }
-        List<CertificateChain> newCerts = new LinkedList<>();
-        performEcCertScanEcdsa(tlsConfig, getAllCurves(), cipherSuitesToTest, newCerts, pkGroups, sigGroups);
-        ecdsaPkGroupsEphemeral = pkGroups;
-        ecdsaCertSigGroupsEphemeral = sigGroups;
-        for (CertificateChain cert : newCerts) {
-            if (certAlreadyInList(ecdsaCerts, cert) == false) {
-                ecdsaCerts.add(cert);
-            }
-        }
+        ecdsaCerts.addAll(getEcdhEcdsaCerts());
+        ecdsaCerts.addAll(getEcdheEcdsaCerts());
 
         return ecdsaCerts;
     }
 
+    private List<CertificateChain> getEcdhEcdsaCerts() {
+        LinkedList<CertificateChain> ecdhEcdsaCerts = new LinkedList<>();
+        Config tlsConfig = getBasicConfig();
+        LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
+            if (cipherSuite.isECDSA() && cipherSuite.isEphemeral() == false) {
+                cipherSuitesToTest.add(cipherSuite);
+            }
+        }
+        performEcCertScanEcdsa(tlsConfig, getAllCurves(), cipherSuitesToTest, ecdhEcdsaCerts, ecdsaPkGroupsStatic, ecdsaCertSigGroupsStatic);
+        return ecdhEcdsaCerts;
+    }
+
+    private List<CertificateChain> getEcdheEcdsaCerts() {
+        LinkedList<CertificateChain> ecdheEcdsaCerts = new LinkedList<>();
+        Config tlsConfig = getBasicConfig();
+        LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
+            if (cipherSuite.isECDSA() && cipherSuite.isEphemeral()) {
+                cipherSuitesToTest.add(cipherSuite);
+            }
+        }
+        performEcCertScanEcdsa(tlsConfig, getAllCurves(), cipherSuitesToTest, ecdheEcdsaCerts, ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
+        return ecdheEcdsaCerts;
+    }
+
     private List<CertificateChain> getDssCerts() {
         LinkedList<CertificateChain> dssCerts = new LinkedList<>();
-        Config tlsConfig = getBasicConfig();
-        ArrayList<CipherSuite> allCipherSuites = new ArrayList<>(Arrays.asList(CipherSuite.values()));
 
-        // get DH_DSS cert
+        CertificateChain dhDssCert = getDhDssCert();
+        if (dhDssCert != null) {
+            dssCerts.add(dhDssCert);
+        }
+
+        CertificateChain dheDssCert = getDheDssCert();
+        if (dheDssCert != null) {
+            dssCerts.add(dheDssCert);
+        }
+        return dssCerts;
+    }
+
+    private CertificateChain getDhDssCert() {
+        Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
-        for (CipherSuite cipherSuite : allCipherSuites) {
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isDSS() && cipherSuite.isEphemeral() == false) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
-        CertificateChain newCert = performCertScan(tlsConfig, cipherSuitesToTest);
-        if (newCert != null) {
-            dssCerts.add(newCert);
-        }
+        return performCertScan(tlsConfig, cipherSuitesToTest);
+    }
 
-        // get DHE_DSS cert
-        tlsConfig = getBasicConfig();
-        cipherSuitesToTest = new LinkedList<>();
-        for (CipherSuite cipherSuite : allCipherSuites) {
+    private CertificateChain getDheDssCert() {
+        Config tlsConfig = getBasicConfig();
+        LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isDSS() && cipherSuite.isEphemeral() == true) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
-        newCert = performCertScan(tlsConfig, cipherSuitesToTest);
-        if (newCert != null && certAlreadyInList(dssCerts, newCert) == false) {
-            dssCerts.add(newCert);
-        }
-        return dssCerts;
+        return performCertScan(tlsConfig, cipherSuitesToTest);
     }
 
     private List<CertificateChain> getGostCert() {
         LinkedList<CertificateChain> gostCerts = new LinkedList<>();
         Config tlsConfig = getBasicConfig();
-        ArrayList<CipherSuite> allCipherSuites = new ArrayList<>(Arrays.asList(CipherSuite.values()));
 
-        // get GOST cert
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
-        for (CipherSuite cipherSuite : allCipherSuites) {
+        for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isGOST()) {
                 cipherSuitesToTest.add(cipherSuite);
             }
@@ -302,28 +300,29 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
 
-        // use RSA SigAndHashAlgos
+        CertificateChain rsaSigHashCert = getTls13CertRsaSigHash(tlsConfig);
+        if (rsaSigHashCert != null) {
+            tls13Certs.add(rsaSigHashCert);
+        }
+
+        tls13Certs.addAll(getTls13CertsEcdsaSigHash(tlsConfig));
+
+        return tls13Certs;
+    }
+
+    private CertificateChain getTls13CertRsaSigHash(Config tlsConfig) {
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13RsaSigHash());
         tlsConfig.setDefaultClientNamedGroups(getTls13Curves());
         tlsConfig.setDefaultClientKeyShareNamedGroups(getTls13Curves());
-        CertificateChain newCert = performCertScan(tlsConfig, CipherSuite.getImplementedTls13CipherSuites());
-        if (newCert != null) {
-            tls13Certs.add(newCert);
-        }
+        return performCertScan(tlsConfig, CipherSuite.getImplementedTls13CipherSuites());
+    }
 
-        // use ECDSA SigAndHashAlgos
-        List<CertificateChain> newCerts = new LinkedList<>();
+    private List<CertificateChain> getTls13CertsEcdsaSigHash(Config tlsConfig) {
+        List<CertificateChain> tls13ecdsaCerts = new LinkedList<>();
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13EcdsaSigHash());
-
-        performEcCertScanEcdsa(tlsConfig, getTls13Curves(), CipherSuite.getImplementedTls13CipherSuites(), newCerts,
+        performEcCertScanEcdsa(tlsConfig, getTls13Curves(), CipherSuite.getImplementedTls13CipherSuites(), tls13ecdsaCerts,
                 ecdsaPkGroupsTls13, ecdsaCertSigGroupsTls13);
-        for (CertificateChain cert : newCerts) {
-            if (certAlreadyInList(tls13Certs, cert) == false) {
-                tls13Certs.add(cert);
-            }
-        }
-
-        return tls13Certs;
+        return tls13ecdsaCerts;
     }
 
     private Config getBasicConfig() {
@@ -346,10 +345,9 @@ public class CertificateProbe extends TlsProbe {
     }
 
     private List<NamedGroup> getAllCurves() {
-        ArrayList<NamedGroup> namedGroups = new ArrayList<>(Arrays.asList(NamedGroup.values()));
         LinkedList<NamedGroup> curves = new LinkedList<>();
 
-        for (NamedGroup group : namedGroups) {
+        for (NamedGroup group : NamedGroup.values()) {
             if (group.isCurve()) {
                 curves.add(group);
             }
@@ -359,9 +357,8 @@ public class CertificateProbe extends TlsProbe {
     }
 
     private List<NamedGroup> getTls13Curves() {
-        ArrayList<NamedGroup> namedGroups = new ArrayList<>(Arrays.asList(NamedGroup.values()));
         LinkedList<NamedGroup> curves = new LinkedList<>();
-        for (NamedGroup group : namedGroups) {
+        for (NamedGroup group : NamedGroup.values()) {
             if (group.isCurve() && group.isTls13()) {
                 curves.add(group);
             }
@@ -401,9 +398,6 @@ public class CertificateProbe extends TlsProbe {
                         .getDefaultClientConnection().getHostname()));
             } else {
                 // selected ciphersuite or certificate named group invalid
-                if (tlsConfig.getHighestProtocolVersion() == ProtocolVersion.TLS13) {
-                    System.out.println(state.getWorkflowTrace().toString());
-                }
                 cipherSuitesToTest.clear();
                 groupsToTest.clear();
             }
