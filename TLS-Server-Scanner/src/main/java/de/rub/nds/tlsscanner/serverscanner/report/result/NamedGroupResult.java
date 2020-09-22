@@ -29,15 +29,17 @@ public class NamedGroupResult extends ProbeResult {
 
     private final TestResult supportsExplicitPrime;
     private final TestResult supportsExplicitChar2;
+    private final TestResult groupsDependOnCiphersuite;
 
     public NamedGroupResult(Map<NamedGroup, NamedCurveWitness> namedGroupsMap,
             Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13, TestResult supportsExplicitPrime,
-            TestResult supportsExplicitChar2) {
+            TestResult supportsExplicitChar2, TestResult groupsDependOnCiphersuite) {
         super(ProbeType.NAMED_GROUPS);
         this.namedGroupsMap = namedGroupsMap;
         this.namedGroupsMapTls13 = namedGroupsMapTls13;
         this.supportsExplicitPrime = supportsExplicitPrime;
         this.supportsExplicitChar2 = supportsExplicitChar2;
+        this.groupsDependOnCiphersuite = groupsDependOnCiphersuite;
     }
 
     @Override
@@ -58,6 +60,7 @@ public class NamedGroupResult extends ProbeResult {
         report.setSupportedNamedGroupsWitnessesTls13(namedGroupsMapTls13);
         report.putResult(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, supportsExplicitPrime);
         report.putResult(AnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, supportsExplicitChar2);
+        report.putResult(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, groupsDependOnCiphersuite);
     }
 
 }

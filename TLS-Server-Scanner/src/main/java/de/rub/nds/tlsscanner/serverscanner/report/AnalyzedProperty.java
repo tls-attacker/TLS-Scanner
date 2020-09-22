@@ -110,6 +110,7 @@ public enum AnalyzedProperty {
     SUPPORTS_TLS13_SECP_COMPRESSION(AnalyzedPropertyCategory.EC),
     SUPPORTS_EXPLICIT_PRIME_CURVE(AnalyzedPropertyCategory.EC),
     SUPPORTS_EXPLICIT_CHAR2_CURVE(AnalyzedPropertyCategory.EC),
+    GROUPS_DEPEND_ON_CIPHER(AnalyzedPropertyCategory.EC),
     SUPPORTS_OCSP(AnalyzedPropertyCategory.OCSP),
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),

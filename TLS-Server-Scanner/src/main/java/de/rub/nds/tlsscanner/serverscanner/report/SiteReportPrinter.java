@@ -1574,6 +1574,9 @@ public class SiteReportPrinter {
                 for (NamedGroup group : report.getSupportedNamedGroups()) {
                     builder.append(group.name()).append("\n");
                 }
+                if (report.getResult(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER) == TestResult.TRUE) {
+                    prettyAppend(builder, "Not all Groups are supported for all Cipher Suites");
+                }
             } else {
                 builder.append("none\n");
             }

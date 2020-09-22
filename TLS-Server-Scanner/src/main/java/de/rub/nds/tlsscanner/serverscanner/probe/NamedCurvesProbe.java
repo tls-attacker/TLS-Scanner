@@ -97,7 +97,11 @@ public class NamedCurvesProbe extends TlsProbe {
             Map<NamedGroup, NamedCurveWitness> overallSupported = composeFullMap(groupsRsa, groupsEcdsaStatic,
                     groupsEcdsaEphemeral);
 
-            return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2);
+            TestResult groupsDependOnCiphersuite = getGroupsDependOnCiphersuite(overallSupported, groupsRsa,
+                    groupsEcdsaStatic, groupsEcdsaEphemeral);
+
+            return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
+                    groupsDependOnCiphersuite);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return getCouldNotExecuteResult();
@@ -275,7 +279,7 @@ public class NamedCurvesProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResult.COULD_NOT_TEST,
-                TestResult.COULD_NOT_TEST);
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 
     private TestResult getExplicitCurveSupport(EllipticCurveType curveType) {
@@ -452,5 +456,18 @@ public class NamedCurvesProbe extends TlsProbe {
         }
 
         return groupMap;
+    }
+
+    private TestResult getGroupsDependOnCiphersuite(Map<NamedGroup, NamedCurveWitness> overallSupported,
+            List<NamedGroup> groupsRsa, Map<NamedGroup, NamedCurveWitness> groupsEcdsaStatic,
+            Map<NamedGroup, NamedCurveWitness> groupsEcdsaEphemeral) {
+        for (NamedGroup group : overallSupported.keySet()) {
+            if (((testUsingRsa && !groupsRsa.contains(group))
+                    || (testUsingEcdsaStatic && !groupsEcdsaStatic.containsKey(group)) || (testUsingEcdsaEphemeral && !groupsEcdsaEphemeral
+                    .containsKey(group))) && group.isCurve()) {
+                return TestResult.TRUE;
+            }
+        }
+        return TestResult.FALSE;
     }
 }
