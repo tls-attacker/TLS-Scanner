@@ -45,9 +45,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.InvalidCurveResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.DistributionTest;
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.ResponseCounter;
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.VectorContainer;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,9 +90,6 @@ public class InvalidCurveProbe extends TlsProbe {
     private Map<NamedGroup, NamedCurveWitness> namedCurveWitnesses;
 
     private Map<NamedGroup, NamedCurveWitness> namedCurveWitnessesTls13;
-
-    private int parameterCombinations;
-    private int executedCombinations = 0;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config);
