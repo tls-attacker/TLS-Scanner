@@ -713,8 +713,8 @@ public class SiteReportPrinter {
                             "This likely happened due the certificate chain being unordered. This is not supported yet by this scan.",
                             AnsiColor.RED);
                 }
-            }
-            prettyAppend(builder, result.getFirstResponse().toString(false));
+                prettyAppend(builder, result.getFirstResponse().toString(false));
+            }   
         } else if (result.getFirstResponse() == null && result.getHttpGetResponse() != null) {
             prettyAppend(builder, "Retrieved an OCSP response via HTTP GET, but not via HTTP POST.", AnsiColor.YELLOW);
         }
