@@ -29,9 +29,10 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import org.bouncycastle.crypto.tls.Certificate;
+import java.util.Set;
 
 /**
  *
@@ -69,21 +70,21 @@ public class CertificateProbe extends TlsProbe {
             ecdsaCertSigGroupsEphemeral = new LinkedList<>();
             ecdsaCertSigGroupsTls13 = new LinkedList<>();
 
-            LinkedList<CertificateChain> certificates = new LinkedList<>();
+            Set<CertificateChain> certificates = new HashSet<>();
             if (scanForRsaCert) {
-                addNewCertificates(certificates, getRsaCerts());
+                certificates.addAll(getRsaCerts());
             }
             if (scanForDssCert) {
-                addNewCertificates(certificates, getDssCerts());
+                certificates.addAll(getDssCerts());
             }
             if (scanForEcdsaCert) {
-                addNewCertificates(certificates, getEcdsaCerts());
+                certificates.addAll(getEcdsaCerts());
             }
             if (scanForGostCert) {
-                addNewCertificates(certificates, getGostCert());
+                certificates.addAll(getGostCert());
             }
             if (scanForTls13) {
-                addNewCertificates(certificates, getTls13Certs());
+                certificates.addAll(getTls13Certs());
             }
 
             if (certificates.isEmpty()) {
@@ -169,8 +170,6 @@ public class CertificateProbe extends TlsProbe {
     private CertificateChain getDhRsaCert() {
         Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
-        tlsConfig = getBasicConfig();
-        cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRSA() && cipherSuite.name().contains("_DH_")) {
                 cipherSuitesToTest.add(cipherSuite);
@@ -434,30 +433,6 @@ public class CertificateProbe extends TlsProbe {
         } while (groupsToTest.size() > 0 && cipherSuitesToTest.size() > 0);
     }
 
-    private boolean certAlreadyInList(List<CertificateChain> certList, CertificateChain newCert) {
-        for (CertificateChain cert : certList) {
-            if (isSameCertificate(cert, newCert)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private boolean isSameCertificate(CertificateChain cert1, CertificateChain cert2) {
-        if (cert1.getCertificate().getCertificateList().length != cert2.getCertificate().getCertificateList().length) {
-            return false;
-        } else {
-            for (int i = 0; i < cert1.getCertificate().getCertificateList().length; i++) {
-                if (cert1.getCertificate().getCertificateList()[i].getSerialNumber().equals(
-                        cert2.getCertificate().getCertificateList()[i].getSerialNumber()) == false) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     private List<SignatureAndHashAlgorithm> getTls13RsaSigHash() {
         List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
         for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()) {
@@ -478,13 +453,5 @@ public class CertificateProbe extends TlsProbe {
         }
 
         return algorithms;
-    }
-
-    private void addNewCertificates(List<CertificateChain> knownCertificates, List<CertificateChain> foundCertificates) {
-        for (CertificateChain chain : foundCertificates) {
-            if (!certAlreadyInList(knownCertificates, chain)) {
-                knownCertificates.add(chain);
-            }
-        }
     }
 }

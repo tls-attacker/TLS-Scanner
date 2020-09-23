@@ -14,7 +14,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.LinkedList;
 import java.util.List;
-import org.bouncycastle.crypto.tls.Certificate;
+import java.util.Set;
 
 /**
  *
@@ -22,7 +22,7 @@ import org.bouncycastle.crypto.tls.Certificate;
  */
 public class CertificateResult extends ProbeResult {
 
-    private List<CertificateChain> certificates;
+    private Set<CertificateChain> certificates;
     private List<NamedGroup> ecdsaPkGroupsStatic;
     private List<NamedGroup> ecdsaPkGroupsEphemeral;
     private List<NamedGroup> ecdsaPkGroupsTls13;
@@ -30,7 +30,7 @@ public class CertificateResult extends ProbeResult {
     private List<NamedGroup> ecdsaSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
-    public CertificateResult(List<CertificateChain> certificates, List<NamedGroup> ecdsaPkGroupsStatic,
+    public CertificateResult(Set<CertificateChain> certificates, List<NamedGroup> ecdsaPkGroupsStatic,
             List<NamedGroup> ecdsaPkGroupsEphemeral, List<NamedGroup> ecdsaSigGroupsStatic,
             List<NamedGroup> ecdsaSigGroupsEphemeral, List<NamedGroup> ecdsaPkGroupsTls13,
             List<NamedGroup> ecdsaCertSigGroupsTls13) {
@@ -46,7 +46,7 @@ public class CertificateResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setCertificateChainList(certificates);
+        report.setCertificateChainList(new LinkedList<>(certificates));
         report.setEcdsaPkGroupsStatic(ecdsaPkGroupsStatic);
         report.setEcdsaPkGroupsEphemeral(ecdsaPkGroupsEphemeral);
     }
