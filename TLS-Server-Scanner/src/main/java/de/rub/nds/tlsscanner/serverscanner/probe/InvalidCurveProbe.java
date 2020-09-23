@@ -12,9 +12,6 @@ import de.rub.nds.tlsattacker.attacks.config.InvalidCurveAttackConfig;
 import de.rub.nds.tlsattacker.attacks.ec.InvalidCurvePoint;
 import de.rub.nds.tlsattacker.attacks.ec.TwistedCurvePoint;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
-import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
-import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
@@ -98,9 +95,9 @@ public class InvalidCurveProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            List<InvalidCurveVector> parameterSets = prepareVectors();
+            List<InvalidCurveVector> vectors = prepareVectors();
             List<InvalidCurveResponse> responses = new LinkedList<>();
-            for (InvalidCurveVector vector : parameterSets) {
+            for (InvalidCurveVector vector : vectors) {
                 if (benignHandshakeSuccessfull(vector)) {
                     InvalidCurveResponse scanResponse = executeSingleScan(vector, InvalidCurveScanType.REGULAR);
 
@@ -363,25 +360,25 @@ public class InvalidCurveProbe extends TlsProbe {
         // repeat scans in renegotiation
         if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
             ProtocolVersion renegVersion = pickRenegotiationVersion();
-            int setCount = vectors.size();
+            int vectorCount = vectors.size();
             if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
                 // scan all possible combinations in renegotiation
-                for (int i = 0; i < setCount; i++) {
-                    InvalidCurveVector set = vectors.get(i);
-                    if ((set.getProtocolVersion() == ProtocolVersion.TLS13 && (issuesTls13SessionTickets == TestResult.TRUE && supportsTls13PskDhe == TestResult.TRUE))
+                for (int i = 0; i < vectorCount; i++) {
+                    InvalidCurveVector vector = vectors.get(i);
+                    if ((vector.getProtocolVersion() == ProtocolVersion.TLS13 && (issuesTls13SessionTickets == TestResult.TRUE && supportsTls13PskDhe == TestResult.TRUE))
                             || supportsRenegotiation) {
-                        vectors.add(new InvalidCurveVector(set.getProtocolVersion(), set.getCipherSuite(), set
-                                .getNamedGroup(), set.getPointFormat(), set.isTwistAttack(), true, set
+                        vectors.add(new InvalidCurveVector(vector.getProtocolVersion(), vector.getCipherSuite(), vector
+                                .getNamedGroup(), vector.getPointFormat(), vector.isTwistAttack(), true, vector
                                 .getEcdsaRequiredGroups()));
                     }
                 }
             } else if (renegVersion != null) {
                 // scan only one version in renegotiation
-                for (int i = 0; i < setCount; i++) {
-                    InvalidCurveVector set = vectors.get(i);
-                    if (set.getProtocolVersion() == renegVersion) {
-                        vectors.add(new InvalidCurveVector(set.getProtocolVersion(), set.getCipherSuite(), set
-                                .getNamedGroup(), set.getPointFormat(), set.isTwistAttack(), true, set
+                for (int i = 0; i < vectorCount; i++) {
+                    InvalidCurveVector vector = vectors.get(i);
+                    if (vector.getProtocolVersion() == renegVersion) {
+                        vectors.add(new InvalidCurveVector(vector.getProtocolVersion(), vector.getCipherSuite(), vector
+                                .getNamedGroup(), vector.getPointFormat(), vector.isTwistAttack(), true, vector
                                 .getEcdsaRequiredGroups()));
                     }
                 }
