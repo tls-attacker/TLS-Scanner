@@ -9,6 +9,10 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
@@ -236,7 +240,7 @@ public class CertificateReport {
             builder.append("Valid Till : ").append(validTo.toString()).append("\n");
         }
         if (publicKey != null) {
-            builder.append("PublicKey  : ").append(publicKey.toString()).append("\n");
+            builder.append("PublicKey  : ").append(printPublicKey(publicKey)).append("\n");
         }
         if (weakDebianKey != null) {
             builder.append("Weak Debian Key: ").append(weakDebianKey).append("\n");
@@ -322,5 +326,42 @@ public class CertificateReport {
 
     public void setSha256Pin(String sha256Pin) {
         this.sha256Pin = sha256Pin;
+    }
+
+    private String printPublicKey(PublicKey publicKey) {
+        StringBuilder builder = new StringBuilder();
+        if (publicKey instanceof CustomDhPublicKey) {
+            CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
+            builder.append("Static Diffie Hellman\n");
+            builder.append("\t Modulus:").append(dhPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Generator:").append(dhPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Y:").append(dhPublicKey.getY().toString(16)).append("\n");
+        } else if (publicKey instanceof CustomDsaPublicKey) {
+            CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
+            builder.append("DSA\n");
+            builder.append("\t Modulus:").append(dsaPublicKey.getP().toString(16)).append("\n");
+            builder.append("\t Generator:").append(dsaPublicKey.getG().toString(16)).append("\n");
+            builder.append("\t Q:").append(dsaPublicKey.getQ().toString(16)).append("\n");
+            builder.append("\t X:").append(dsaPublicKey.getY().toString(16)).append("\n");
+        } else if (publicKey instanceof CustomRsaPublicKey) {
+            CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
+            builder.append("RSA\n");
+            builder.append("\t Modulus:").append(rsaPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Generator:").append(rsaPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Public exponent:").append(rsaPublicKey.getPublicExponent().toString(16)).append("\n");
+        } else if (publicKey instanceof CustomEcPublicKey) {
+            CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
+            builder.append("Elliptic Curve\n");
+            if (ecPublicKey.getGroup() == null) {
+                builder.append("\t Group (GOST):").append(ecPublicKey.getGostCurve()).append("\n");
+            } else {
+                builder.append("\t Group:").append(ecPublicKey.getGroup()).append("\n");
+            }
+            builder.append("\t Public Point:").append(ecPublicKey.getPoint().toString()).append("\n");
+
+        } else {
+            builder.append(publicKey.toString()).append("\n");
+        }
+        return builder.toString();
     }
 }

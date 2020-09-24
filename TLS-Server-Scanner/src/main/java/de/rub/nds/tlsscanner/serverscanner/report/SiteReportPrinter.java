@@ -24,6 +24,10 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
 import static de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType.CORRECT;
@@ -60,6 +64,7 @@ import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.Rando
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
+import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -508,7 +513,7 @@ public class SiteReportPrinter {
                         }
                     }
                     if (certReport.getPublicKey() != null) {
-                        prettyAppend(builder, "PublicKey", certReport.getPublicKey().toString());
+                        prettyAppendPublicKey(builder, certReport.getPublicKey());
                     }
                     if (certReport.getWeakDebianKey() != null) {
                         prettyAppend(builder, "Weak Debian Key", certReport.getWeakDebianKey(),
@@ -574,6 +579,43 @@ public class SiteReportPrinter {
             }
         }
         return builder;
+    }
+
+    private String prettyAppendPublicKey(StringBuilder builder, PublicKey publicKey) {
+        if (publicKey instanceof CustomDhPublicKey) {
+            CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
+            builder.append("Static Diffie Hellman\n");
+
+            builder.append("\t Modulus:").append(dhPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Generator:").append(dhPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Y:").append(dhPublicKey.getY().toString(16)).append("\n");
+        } else if (publicKey instanceof CustomDsaPublicKey) {
+            CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
+            builder.append("DSA\n");
+            builder.append("\t Modulus:").append(dsaPublicKey.getP().toString(16)).append("\n");
+            builder.append("\t Generator:").append(dsaPublicKey.getG().toString(16)).append("\n");
+            builder.append("\t Q:").append(dsaPublicKey.getQ().toString(16)).append("\n");
+            builder.append("\t X:").append(dsaPublicKey.getY().toString(16)).append("\n");
+        } else if (publicKey instanceof CustomRsaPublicKey) {
+            CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
+            builder.append("RSA\n");
+            builder.append("\t Modulus:").append(rsaPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Generator:").append(rsaPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Public exponent:").append(rsaPublicKey.getPublicExponent().toString(16)).append("\n");
+        } else if (publicKey instanceof CustomEcPublicKey) {
+            CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
+            builder.append("Elliptic Curve\n");
+            if (ecPublicKey.getGroup() == null) {
+                builder.append("\t Group (GOST):").append(ecPublicKey.getGostCurve()).append("\n");
+            } else {
+                builder.append("\t Group:").append(ecPublicKey.getGroup()).append("\n");
+            }
+            builder.append("\t Public Point:").append(ecPublicKey.getPoint().toString()).append("\n");
+
+        } else {
+            builder.append(publicKey.toString()).append("\n");
+        }
+        return builder.toString();
     }
 
     private StringBuilder appendOcsp(StringBuilder builder) {
