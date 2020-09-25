@@ -46,7 +46,9 @@ public class CertificateResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setCertificateChainList(new LinkedList<>(certificates));
+        if (certificates != null) {
+            report.setCertificateChainList(new LinkedList<>(certificates));
+        }
         report.setEcdsaPkGroupsStatic(ecdsaPkGroupsStatic);
         report.setEcdsaPkGroupsEphemeral(ecdsaPkGroupsEphemeral);
     }
