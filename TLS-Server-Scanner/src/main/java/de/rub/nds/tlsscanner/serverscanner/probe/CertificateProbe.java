@@ -219,7 +219,8 @@ public class CertificateProbe extends TlsProbe {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
-        performEcCertScanEcdsa(tlsConfig, getAllCurves(), cipherSuitesToTest, ecdhEcdsaCerts, ecdsaPkGroupsStatic, ecdsaCertSigGroupsStatic);
+        performEcCertScanEcdsa(tlsConfig, getAllCurves(), cipherSuitesToTest, ecdhEcdsaCerts, ecdsaPkGroupsStatic,
+                ecdsaCertSigGroupsStatic);
         return ecdhEcdsaCerts;
     }
 
@@ -232,7 +233,8 @@ public class CertificateProbe extends TlsProbe {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
-        performEcCertScanEcdsa(tlsConfig, getAllCurves(), cipherSuitesToTest, ecdheEcdsaCerts, ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
+        performEcCertScanEcdsa(tlsConfig, getAllCurves(), cipherSuitesToTest, ecdheEcdsaCerts, ecdsaPkGroupsEphemeral,
+                ecdsaCertSigGroupsEphemeral);
         return ecdheEcdsaCerts;
     }
 
@@ -319,8 +321,8 @@ public class CertificateProbe extends TlsProbe {
     private List<CertificateChain> getTls13CertsEcdsaSigHash(Config tlsConfig) {
         List<CertificateChain> tls13ecdsaCerts = new LinkedList<>();
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13EcdsaSigHash());
-        performEcCertScanEcdsa(tlsConfig, getTls13Curves(), CipherSuite.getImplementedTls13CipherSuites(), tls13ecdsaCerts,
-                ecdsaPkGroupsTls13, ecdsaCertSigGroupsTls13);
+        performEcCertScanEcdsa(tlsConfig, getTls13Curves(), CipherSuite.getImplementedTls13CipherSuites(),
+                tls13ecdsaCerts, ecdsaPkGroupsTls13, ecdsaCertSigGroupsTls13);
         return tls13ecdsaCerts;
     }
 

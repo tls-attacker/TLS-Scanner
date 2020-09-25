@@ -338,7 +338,8 @@ public class CertificateReport {
         }
 
         final CertificateReport otherReport = (CertificateReport) obj;
-        if (!Objects.equals(subject, otherReport.getSubject()) || !Objects.equals(commonNames, otherReport.getCommonNames())
+        if (!Objects.equals(subject, otherReport.getSubject())
+                || !Objects.equals(commonNames, otherReport.getCommonNames())
                 || !Objects.equals(alternativenames, otherReport.getAlternativenames())
                 || !Objects.equals(validFrom, otherReport.getValidFrom())
                 || !Objects.equals(validTo, otherReport.getValidTo())

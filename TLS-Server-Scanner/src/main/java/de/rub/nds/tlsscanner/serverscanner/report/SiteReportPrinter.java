@@ -714,7 +714,7 @@ public class SiteReportPrinter {
                             AnsiColor.RED);
                 }
                 prettyAppend(builder, result.getFirstResponse().toString(false));
-            }   
+            }
         } else if (result.getFirstResponse() == null && result.getHttpGetResponse() != null) {
             prettyAppend(builder, "Retrieved an OCSP response via HTTP GET, but not via HTTP POST.", AnsiColor.YELLOW);
         }
@@ -1226,7 +1226,7 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "New Hope", AnalyzedProperty.SUPPORTS_NEWHOPE);
                 prettyAppend(builder, "ECMQV", AnalyzedProperty.SUPPORTS_ECMQV);
                 prettyAppend(builder, "TLS 1.3 PSK_DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
-                
+
                 prettyAppendHeading(builder, "KeyExchange Signatures");
                 prettyAppend(builder, "RSA", AnalyzedProperty.SUPPORTS_RSA_CERT);
                 prettyAppend(builder, "ECDSA", AnalyzedProperty.SUPPORTS_ECDSA);

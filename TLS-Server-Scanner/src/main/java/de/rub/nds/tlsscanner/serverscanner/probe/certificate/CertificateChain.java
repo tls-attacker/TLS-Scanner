@@ -388,7 +388,8 @@ public class CertificateChain {
                 || !Objects.equals(containsValidLeaf, otherCert.getContainsValidLeaf())
                 || !Objects.equals(containsNotYetValid, otherCert.getContainsNotYetValid())
                 || !Objects.equals(containsExpired, otherCert.getContainsExpired())
-                || !Objects.equals(containsWeakSignedNonTruststoresCertificates, otherCert.getContainsWeakSignedNonTruststoresCertificates())) {
+                || !Objects.equals(containsWeakSignedNonTruststoresCertificates,
+                        otherCert.getContainsWeakSignedNonTruststoresCertificates())) {
             return false;
         } else {
             for (int i = 0; i < certificateReportList.size(); i++) {
