@@ -48,14 +48,10 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
         T ret = this.execute(state, dispatchInformation, previousState);
         if (ret.isDone()) {
             removePreviousState(raddr);
-            return ret.getResult();
+            return ret.toResult();
         } else {
             setPreviousState(raddr, ret);
-            if (ret instanceof InternalProbeStateWithPartialResults) {
-                return ((InternalProbeStateWithPartialResults) ret).getPartialResult();
-            } else {
-                return null;
-            }
+            return null;
         }
     }
 
@@ -72,12 +68,8 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
     }
 
     public static interface InternalProbeState {
-        public boolean isDone();
+        boolean isDone();
 
-        public ClientProbeResult getResult();
-    }
-
-    public static interface InternalProbeStateWithPartialResults extends InternalProbeState {
-        public ClientProbeResult getPartialResult();
+        ClientProbeResult toResult();
     }
 }

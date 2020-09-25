@@ -10,6 +10,7 @@ import de.rub.nds.tls.subject.docker.DockerExecInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.instance.TlsClientInstance;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 
 public class DockerLibAdapter implements IClientAdapter {
     private static final Logger LOGGER = LogManager.getLogger();

@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchException;
@@ -17,6 +16,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class CipherSuiteReconProbe extends BaseProbe {
+    // TODO make this a pre probe
 
     public CipherSuiteReconProbe(IOrchestrator orchestrator) {
         super(orchestrator);
@@ -45,6 +45,11 @@ public class CipherSuiteReconProbe extends BaseProbe {
             supportedSuites = new ArrayList<>(state.getTlsContext().getClientSupportedCiphersuites());
         }
 
+        @Override
+        public void merge(ClientReport report) {
+            report.putResult(CipherSuiteReconProbe.class, this);
+        }
+
         public List<CipherSuite> getSupportedSuites() {
             return Collections.unmodifiableList(supportedSuites);
         }
@@ -56,11 +61,6 @@ public class CipherSuiteReconProbe extends BaseProbe {
                 }
             }
             return false;
-        }
-
-        @Override
-        public void merge(ClientReport report) {
-            report.putResult(CipherSuiteReconProbe.class, this);
         }
 
     }

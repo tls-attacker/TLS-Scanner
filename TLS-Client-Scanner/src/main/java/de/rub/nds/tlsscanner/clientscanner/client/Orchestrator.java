@@ -9,15 +9,16 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsscanner.clientscanner.Server;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.DockerLibAdapter;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ResultFuture;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ClientProbeResultFuture;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.util.BaseFuture;
 
 public class Orchestrator implements IOrchestrator {
     private static final int CLIENT_RETRY_COUNT = 3;
@@ -36,6 +37,8 @@ public class Orchestrator implements IOrchestrator {
         // if no sni we pass null as expected hostname to dispatcher, possibly also
         // disable multithreading...
         // clientAdapter = new CurlAdapter(new LocalCommandExecutor())
+        // 7.72.0--openssl-client:1.1.1g
+        // 7.72.0--boringssl-client:master
         clientAdapter = new DockerLibAdapter(TlsImplementationType.CURL, "7.72.0--openssl-client:1.1.1g");
         if (clientAdapter instanceof DockerLibAdapter) {
             baseHostname = "192.168.65.2.xip.io"; // windows, for my machine
@@ -95,34 +98,57 @@ public class Orchestrator implements IOrchestrator {
         }
 
         String hostname = String.format("%s.%s", hostnamePrefix, baseHostname);
+        FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
         // enqueue probe on serverside
-        ResultFuture res = dispatcher.enqueueProbe(probe, hostname);
+        ClientProbeResultFuture serverResultFuture = dispatcher.enqueueProbe(probe, hostname, clientResultHolder);
 
         // tell client to connect and get its result
-        ClientAdapterResult cres;
+        ClientAdapterResult clientResult = null;
         int tryNo = 0;
-        while (!res.isGotConnection()) {
-            if (tryNo++ >= CLIENT_RETRY_COUNT) {
-                LOGGER.warn("Failed to get connection from client after {} tries", CLIENT_RETRY_COUNT);
-                break;
+        try {
+            while (!serverResultFuture.isGotConnection()) {
+                if (tryNo++ >= CLIENT_RETRY_COUNT) {
+                    LOGGER.warn("Failed to get connection from client after {} tries", CLIENT_RETRY_COUNT);
+                    break;
+                }
+                // assume that connect runs synchronously
+                clientResult = clientAdapter.connect(hostname, server.getPort());
             }
-            cres = clientAdapter.connect(hostname, server.getPort());
+            clientResultHolder.setResult(clientResult);
+        } catch (Exception e) {
+            clientResultHolder.setException(e);
+            throw e;
         }
 
         // wait for result from server
-        // TODO! feed cres into res
-        if (res.isGotConnection()) {
+        ClientProbeResult res;
+        if (serverResultFuture.isGotConnection()) {
             // wait indefinitely
-            return res.get();
+            res = serverResultFuture.get();
         } else {
             // we did not get a connection yet, let's just give it the benefit of the doubt
             // and wait for 10 more seconds
             try {
-                return res.get(10, TimeUnit.SECONDS);
+                res = serverResultFuture.get(10, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
                 throw new ExecutionException("Failed to get result.", e);
             }
         }
+        return res;
+    }
+
+    protected static class FutureClientAdapterResult extends BaseFuture<ClientAdapterResult> {
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            throw new UnsupportedOperationException("Not implemented");
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
     }
 
 }

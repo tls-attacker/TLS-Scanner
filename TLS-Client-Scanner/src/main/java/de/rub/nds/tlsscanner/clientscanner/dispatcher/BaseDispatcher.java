@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -31,12 +33,12 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPrivateKey;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceNormalizer;
 import de.rub.nds.tlsattacker.transport.ConnectionEndType;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
 public abstract class BaseDispatcher implements IDispatcher {
@@ -98,7 +100,7 @@ public abstract class BaseDispatcher implements IDispatcher {
         }
     }
 
-    protected void executeState(State state, DispatchInformation dispatchInformation) {
+    protected ClientAdapterResult executeState(State state, DispatchInformation dispatchInformation) {
         WorkflowTrace trace = state.getWorkflowTrace();
         try {
             patchCertificate(state, dispatchInformation);
@@ -114,5 +116,19 @@ public abstract class BaseDispatcher implements IDispatcher {
 
         WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
         executor.executeWorkflow();
+        if (state.getConfig().isWorkflowExecutorShouldClose() &&
+                dispatchInformation.additionalInformation.containsKey(ControlledClientDispatcher.class)) {
+            @SuppressWarnings("unchecked")
+            Future<ClientAdapterResult> cFuture = dispatchInformation.getAdditionalInformation(ControlledClientDispatcher.class, Future.class);
+            try {
+                return cFuture.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted", e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException("Error while getting client result", e);
+            }
+        }
+        return null;
     }
 }

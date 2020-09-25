@@ -15,23 +15,12 @@ public abstract class BaseDHEProbe extends BaseProbe {
 
     @Override
     public boolean canBeExecuted(ClientReport report) {
-        if (!report.hasResult(CipherSuiteReconProbe.class)) {
-            return false;
-        }
-        CipherSuiteReconResult res = report.getResult(CipherSuiteReconProbe.class, CipherSuiteReconResult.class);
-        return res.supportsKeyExchangeDHE();
+        return BaseDHEFunctionality.canBeExecuted(report);
     }
 
     @Override
     public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
-        if (!report.hasResult(CipherSuiteReconProbe.class)) {
-            return new NotExecutedResult(getClass(), "Missing result for CipherSuiteReconProbe");
-        }
-        CipherSuiteReconResult res = report.getResult(CipherSuiteReconProbe.class, CipherSuiteReconResult.class);
-        if (!res.supportsKeyExchangeDHE()) {
-            return new NotExecutedResult(getClass(), "Client does not support DHE");
-        }
-        return new NotExecutedResult(getClass(), "Internal scheduling error");
+        return BaseDHEFunctionality.getCouldNotExecuteResult(getClass(), report);
     }
 
 }

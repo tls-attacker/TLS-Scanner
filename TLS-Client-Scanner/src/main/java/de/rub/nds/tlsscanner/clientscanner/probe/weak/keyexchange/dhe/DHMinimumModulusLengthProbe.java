@@ -1,23 +1,24 @@
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Random;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHMinimumModulusLengthProbe.DHWeakModulusState;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModulusState> {
     private static final int BITLENGTH_CUTOFF_LB = 2; // BigInt cannot handle bitLength<2
@@ -38,6 +39,7 @@ public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModu
         Config config = state.getConfig();
         Integer toTest = internalState.getNext();
         LOGGER.debug("Testing {}", toTest);
+        BaseDHEFunctionality.prepareConfig(config);
         config.setDefaultApplicationMessageData("Keysize: " + toTest);
         config.setDefaultServerDhModulus(new BigInteger(toTest, 10, new Random()));
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
@@ -110,7 +112,7 @@ public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModu
         }
 
         @Override
-        public ClientProbeResult getResult() {
+        public ClientProbeResult toResult() {
             boolean didCutoff = false;
             if (highestRejected != null) {
                 didCutoff = didCutoff || highestRejected >= BITLENGTH_CUTOFF_UB;

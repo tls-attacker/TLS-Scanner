@@ -1,7 +1,5 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -16,6 +14,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerCertificateA
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicServerKeyExchangeAction;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.workflow.GetClientHelloMessage;
 
@@ -77,11 +76,9 @@ public class HelloWorldProbe extends BaseStatefulProbe<HelloWorldProbe.HelloWorl
         }
 
         @Override
-        public ClientProbeResult getResult() {
-            // never called, as isDone is false
-            return null;
+        public ClientProbeResult toResult() {
+            throw new UnsupportedOperationException();
         }
-
     }
 
 }

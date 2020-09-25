@@ -20,6 +20,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
         DHMinimumModulusLengthResult.class,
 })
 public abstract class ClientProbeResult implements Serializable {
+
     public abstract void merge(ClientReport report);
 
 }

@@ -3,7 +3,6 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +21,10 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.MapUtil;
 
@@ -61,8 +60,8 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
-        executeState(state, dispatchInformation);
-        internalState.addResult(toTest, state);
+        ClientAdapterResult cres = executeState(state, dispatchInformation);
+        internalState.addResult(toTest, state, cres);
         return internalState;
     }
 
@@ -78,10 +77,13 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
 
     public static class VersionProbeState implements BaseStatefulProbe.InternalProbeState {
         private final Map<ProtocolVersion, State> states;
+        private final Map<ProtocolVersion, ClientAdapterResult> clientResults;
         private final List<ProtocolVersion> leftToTest;
+        private ProtocolVersion lastTested = null;
 
         public VersionProbeState(Collection<ProtocolVersion> toTest) {
             states = new HashMap<>();
+            clientResults = new HashMap<>();
             leftToTest = new LinkedList<>(toTest);
         }
 
@@ -93,18 +95,18 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
             return leftToTest.remove(0);
         }
 
-        public void addResult(ProtocolVersion v, State state) {
+        public void addResult(ProtocolVersion v, State state, ClientAdapterResult cres) {
             states.put(v, state);
-        }
-
-        @Override
-        public VersionProbeResult getResult() {
-            return new VersionProbeResult(states);
         }
 
         @Override
         public boolean isDone() {
             return leftToTest.isEmpty();
+        }
+
+        @Override
+        public ClientProbeResult toResult() {
+            return new VersionProbeResult(states);
         }
     }
 
@@ -120,22 +122,8 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
         }
 
         private Boolean checkSupported(ProtocolVersion v, State s) {
-            boolean foundSHLO = false;
-            for (TlsAction a : s.getWorkflowTrace().getTlsActions()) {
-                if (!foundSHLO && a instanceof SendAction) {
-                    for (ProtocolMessage m : ((SendAction) a).getMessages()) {
-                        if (m instanceof ServerHelloMessage) {
-                            foundSHLO = true;
-                            break;
-                        }
-                    }
-                } else if (foundSHLO && a instanceof ReceiveAction) {
-                    // client's response to our SHLO
-                    // TODO maybe do a deeper check here...
-                    return a.executedAsPlanned();
-                }
-            }
-            throw new RuntimeException(String.format("Could not determine whether version %s is supported", v));
+            // TODO maybe we need a better check...
+            return s.getWorkflowTrace().executedAsPlanned();
         }
 
         @Override

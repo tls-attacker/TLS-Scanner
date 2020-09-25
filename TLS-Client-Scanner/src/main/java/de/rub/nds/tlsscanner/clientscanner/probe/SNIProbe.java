@@ -9,7 +9,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class SNIProbe extends BaseProbe {
-    // TODO make this a post probe
+    // TODO make this a pre or post probe
 
     public SNIProbe(IOrchestrator orchestrator) {
         super(orchestrator);
@@ -48,7 +48,6 @@ public class SNIProbe extends BaseProbe {
         public void merge(ClientReport report) {
             report.putResult(SNIProbe.class, this);
         }
-
     }
 
 }

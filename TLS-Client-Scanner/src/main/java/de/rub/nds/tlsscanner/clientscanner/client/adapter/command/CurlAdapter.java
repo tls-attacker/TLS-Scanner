@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ICommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ICommandExecutor.ExecuteResult;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 
 public class CurlAdapter extends BaseCommandAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
