@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -17,18 +18,24 @@ import org.apache.logging.log4j.Logger;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.after.IAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class ClientScanExecutor implements Observer {
     private static final Logger LOGGER = LogManager.getLogger();
+
     private Collection<IProbe> notScheduledTasks;
+    private Collection<IAfterProbe> afterProbes;
+
     private Collection<ProbeAndResultFuture> futureResults;
+
     private final ExecutorService executor;
     private final IOrchestrator orchestrator;
 
-    public ClientScanExecutor(Collection<IProbe> probesToRun, IOrchestrator orchestrator, ExecutorService executor) {
+    public ClientScanExecutor(Collection<IProbe> probesToRun, Collection<IAfterProbe> afterProbesToRun, IOrchestrator orchestrator, ExecutorService executor) {
         this.notScheduledTasks = new ArrayList<>(probesToRun);
+        this.afterProbes = afterProbesToRun;
         this.futureResults = new LinkedList<>();
         this.executor = executor;
         this.orchestrator = orchestrator;
@@ -130,7 +137,13 @@ public class ClientScanExecutor implements Observer {
     }
 
     private void executeAfterProbes(ClientReport report) {
-        // TODO
+        LOGGER.debug("Analyzing data...");
+        if (afterProbes != null) {
+            for (IAfterProbe afterProbe : afterProbes) {
+                afterProbe.analyze(report);
+            }
+        }
+        LOGGER.debug("Finished analysis");
     }
 
     @Override
@@ -141,7 +154,8 @@ public class ClientScanExecutor implements Observer {
             for (IProbe probe : new ArrayList<>(notScheduledTasks)) {
                 if (probe.canBeExecuted(report)) {
                     notScheduledTasks.remove(probe);
-                    Future<ClientProbeResult> future = executor.submit(probe);
+                    Callable<ClientProbeResult> callable = probe.getCallable(report);
+                    Future<ClientProbeResult> future = executor.submit(callable);
                     futureResults.add(new ProbeAndResultFuture(probe, future));
                 }
             }

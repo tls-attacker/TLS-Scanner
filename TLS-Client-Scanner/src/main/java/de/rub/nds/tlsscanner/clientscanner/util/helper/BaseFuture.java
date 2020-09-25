@@ -1,4 +1,4 @@
-package de.rub.nds.tlsscanner.clientscanner.util;
+package de.rub.nds.tlsscanner.clientscanner.util.helper;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

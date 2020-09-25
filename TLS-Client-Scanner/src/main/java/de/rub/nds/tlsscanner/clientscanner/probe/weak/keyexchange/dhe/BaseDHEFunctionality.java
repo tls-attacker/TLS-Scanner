@@ -3,13 +3,11 @@ package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.crypto.Cipher;
-
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteReconProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteReconProbe.CipherSuiteReconResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe.SupportedCipherSuitesResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
@@ -31,19 +29,19 @@ class BaseDHEFunctionality {
     }
 
     public static boolean canBeExecuted(ClientReport report) {
-        if (!report.hasResult(CipherSuiteReconProbe.class)) {
+        if (!report.hasResult(SupportedCipherSuitesProbe.class)) {
             return false;
         }
-        CipherSuiteReconResult res = report.getResult(CipherSuiteReconProbe.class, CipherSuiteReconResult.class);
-        return res.supportsKeyExchangeDHE();
+        SupportedCipherSuitesResult res = report.getResult(SupportedCipherSuitesProbe.class, SupportedCipherSuitesResult.class);
+        return res.supportsKeyExchangeDHE(false, true, false);
     }
 
     public static ClientProbeResult getCouldNotExecuteResult(Class<? extends IProbe> clazz, ClientReport report) {
-        if (!report.hasResult(CipherSuiteReconProbe.class)) {
+        if (!report.hasResult(SupportedCipherSuitesProbe.class)) {
             return new NotExecutedResult(clazz, "Missing result for CipherSuiteReconProbe");
         }
-        CipherSuiteReconResult res = report.getResult(CipherSuiteReconProbe.class, CipherSuiteReconResult.class);
-        if (!res.supportsKeyExchangeDHE()) {
+        SupportedCipherSuitesResult res = report.getResult(SupportedCipherSuitesProbe.class, SupportedCipherSuitesResult.class);
+        if (!res.supportsKeyExchangeDHE(false, true, false)) {
             return new NotExecutedResult(clazz, "Client does not support DHE");
         }
         return new NotExecutedResult(clazz, "Internal scheduling error");

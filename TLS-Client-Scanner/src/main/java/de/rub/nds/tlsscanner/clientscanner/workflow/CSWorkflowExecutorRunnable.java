@@ -19,9 +19,9 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 
 public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable {
     private static final Logger LOGGER = LogManager.getLogger();

@@ -2,11 +2,8 @@ package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteReconProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteReconProbe.CipherSuiteReconResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
-import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 
 public abstract class BaseStatefulDHEProbe<T extends BaseStatefulProbe.InternalProbeState> extends BaseStatefulProbe<T> {
     public BaseStatefulDHEProbe(IOrchestrator orchestrator) {

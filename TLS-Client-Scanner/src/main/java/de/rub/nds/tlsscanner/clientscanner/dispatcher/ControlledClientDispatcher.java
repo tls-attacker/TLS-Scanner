@@ -12,11 +12,12 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
-import de.rub.nds.tlsscanner.clientscanner.util.BaseFuture;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
+import de.rub.nds.tlsscanner.clientscanner.util.helper.BaseFuture;
 
 public class ControlledClientDispatcher implements IDispatcher {
     private static final Logger LOGGER = LogManager.getLogger();

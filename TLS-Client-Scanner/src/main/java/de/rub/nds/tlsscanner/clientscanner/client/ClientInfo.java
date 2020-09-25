@@ -1,20 +1,20 @@
 package de.rub.nds.tlsscanner.clientscanner.client;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.DockerLibAdapter.DockerClientInfo;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.BaseCommandAdapter.CommandClientInfo;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.BaseCommandAdapter.CommandInfo;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ProxiedLocalCommandExecutor.ProxiedLocalSystemInfo;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.util.helper.UpdatableXmlSeeAlso;
 
-@XmlSeeAlso({
-        CommandClientInfo.class,
-        CommandInfo.class,
-        ProxiedLocalSystemInfo.class,
-        DockerClientInfo.class,
-})
+@XmlSeeAlso({}) // this is automated via UpdatableXmlSeeAlso
 public abstract class ClientInfo implements Serializable {
+    private static Set<Class<?>> seeAlso = UpdatableXmlSeeAlso.patch(ClientProbeResult.class);
+
+    public ClientInfo() {
+        seeAlso.add(getClass());
+    }
+
     public abstract String toShortString();
 }

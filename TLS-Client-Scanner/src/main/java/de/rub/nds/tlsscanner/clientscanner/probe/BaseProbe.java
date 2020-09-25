@@ -1,6 +1,7 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.apache.logging.log4j.CloseableThreadContext;
 
@@ -17,9 +18,10 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.BaseDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
-public abstract class BaseProbe extends BaseDispatcher implements IProbe {
+public abstract class BaseProbe extends BaseDispatcher implements IProbe, Callable<ClientProbeResult> {
     private IOrchestrator orchestrator;
 
     public BaseProbe(IOrchestrator orchestrator) {
@@ -31,6 +33,11 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe {
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(getClass().getSimpleName())) {
             return orchestrator.runProbe(this);
         }
+    }
+
+    @Override
+    public Callable<ClientProbeResult> getCallable(ClientReport report) {
+        return this;
     }
 
     private void assertActionIsEqual(MessageAction aAction, MessageAction bAction) {

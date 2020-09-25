@@ -1,6 +1,7 @@
 package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHWeakPrivateKeyProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 

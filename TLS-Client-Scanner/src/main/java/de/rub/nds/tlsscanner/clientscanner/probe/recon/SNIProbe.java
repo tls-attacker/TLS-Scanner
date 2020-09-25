@@ -1,34 +1,17 @@
-package de.rub.nds.tlsscanner.clientscanner.probe;
+package de.rub.nds.tlsscanner.clientscanner.probe.recon;
 
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
-import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.probe.recon.HelloReconProbe.HelloReconResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
-public class SNIProbe extends BaseProbe {
-    // TODO make this a pre or post probe
-
-    public SNIProbe(IOrchestrator orchestrator) {
-        super(orchestrator);
-    }
+public class SNIProbe extends BaseAnalyzingProbe {
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
-        return null;
-    }
-
-    @Override
-    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) {
+    ClientProbeResult analyzeChlo(ClientReport report, HelloReconResult chloResult) {
         ServerNameIndicationExtensionMessage SNI = null;
-        for (ExtensionMessage ext : dispatchInformation.chlo.getExtensions()) {
+        for (ExtensionMessage ext : chloResult.chlo.getExtensions()) {
             if (ext instanceof ServerNameIndicationExtensionMessage) {
                 SNI = (ServerNameIndicationExtensionMessage) ext;
                 break;

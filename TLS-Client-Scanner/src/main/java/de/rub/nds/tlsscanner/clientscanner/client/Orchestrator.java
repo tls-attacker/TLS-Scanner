@@ -18,7 +18,7 @@ import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
-import de.rub.nds.tlsscanner.clientscanner.util.BaseFuture;
+import de.rub.nds.tlsscanner.clientscanner.util.helper.BaseFuture;
 
 public class Orchestrator implements IOrchestrator {
     private static final int CLIENT_RETRY_COUNT = 3;

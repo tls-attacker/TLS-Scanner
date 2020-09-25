@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
