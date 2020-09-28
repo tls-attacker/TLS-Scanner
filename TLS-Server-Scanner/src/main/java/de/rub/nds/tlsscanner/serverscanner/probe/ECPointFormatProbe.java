@@ -66,16 +66,38 @@ public class ECPointFormatProbe extends TlsProbe {
     }
 
     private List<ECPointFormat> getSupportedPointFormats() {
+        List<ECPointFormat> supportedFormats = new LinkedList<>();
+        testPointFormat(ECPointFormat.UNCOMPRESSED, supportedFormats);
+        testPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME, supportedFormats);
+        testPointFormat(ECPointFormat.ANSIX962_COMPRESSED_CHAR2, supportedFormats);
+        return supportedFormats;
+    }
+
+    private void testPointFormat(ECPointFormat format, List<ECPointFormat> supportedFormats) {
         List<CipherSuite> ourECDHCipherSuites = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.name().contains("TLS_ECDH")) {
                 ourECDHCipherSuites.add(cipherSuite);
             }
         }
-        List<NamedGroup> groups = new LinkedList<>();
-        groups.addAll(Arrays.asList(NamedGroup.values()));
+
+        List<NamedGroup> groups = null;
+        switch (format) {
+            case UNCOMPRESSED:
+                groups = new LinkedList<>();
+                groups.addAll(Arrays.asList(NamedGroup.values()));
+                groups.remove(NamedGroup.ECDH_X25519);
+                groups.remove(NamedGroup.ECDH_X448);
+                break;
+            case ANSIX962_COMPRESSED_PRIME:
+                groups = getSecpGroups();
+                break;
+            case ANSIX962_COMPRESSED_CHAR2:
+                groups = getSectGroups();
+        }
         Config config = getScannerConfig().createConfig();
         config.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
+        config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
         config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setEnforceSettings(true);
         config.setAddServerNameIndicationExtension(true);
@@ -83,24 +105,16 @@ public class ECPointFormatProbe extends TlsProbe {
         config.setAddECPointFormatExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setAddRenegotiationInfoExtension(true);
-        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
         config.setQuickReceive(true);
+        config.setDefaultSelectedPointFormat(format);
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);
         config.setDefaultClientNamedGroups(groups);
         State state = new State(config);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            if (state.getTlsContext().getServerPointFormatsList() != null) {
-                return state.getTlsContext().getServerPointFormatsList();
-            } else {
-                // no extension means only uncompressed
-                List<ECPointFormat> formats = new LinkedList<>();
-                formats.add(ECPointFormat.UNCOMPRESSED);
-                return formats;
-            }
-        } else {
-            return null;
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            supportedFormats.add(format);
         }
     }
 
@@ -109,12 +123,7 @@ public class ECPointFormatProbe extends TlsProbe {
             // SECP curves in TLS 1.3 don't use compression, some
             // implementations
             // might still accept compression
-            List<NamedGroup> secpGroups = new LinkedList<>();
-            for (NamedGroup group : NamedGroup.getImplemented()) {
-                if (group.name().contains("SECP")) {
-                    secpGroups.add(group);
-                }
-            }
+            List<NamedGroup> secpGroups = getSecpGroups();
             Config tlsConfig = getScannerConfig().createConfig();
             tlsConfig.setQuickReceive(true);
             tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplemented());
@@ -169,6 +178,28 @@ public class ECPointFormatProbe extends TlsProbe {
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
         shouldTestTls13 = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
+    }
+
+    private List<NamedGroup> getSecpGroups() {
+        List<NamedGroup> secpGroups = new LinkedList<>();
+        for (NamedGroup group : NamedGroup.getImplemented()) {
+            if (group.name().contains("SECP")) {
+                secpGroups.add(group);
+            }
+        }
+
+        return secpGroups;
+    }
+
+    private List<NamedGroup> getSectGroups() {
+        List<NamedGroup> sectGroups = new LinkedList<>();
+        for (NamedGroup group : NamedGroup.getImplemented()) {
+            if (group.name().contains("SECT")) {
+                sectGroups.add(group);
+            }
+        }
+
+        return sectGroups;
     }
 
 }
