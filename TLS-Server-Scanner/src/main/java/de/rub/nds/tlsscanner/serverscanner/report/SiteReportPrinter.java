@@ -837,8 +837,8 @@ public class SiteReportPrinter {
                 if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
                         || report.getResult(AnalyzedProperty.SUPPORTS_PSK_DHE) == TestResult.TRUE) {
                     prettyAppendSubheading(builder, "PSK Length Probabilties");
-                    prettyAppend(builder, addIndentations("PSK Length (byte)") + addIndentations("Bitleak") + "Probability",
-                            AnsiColor.BOLD);
+                    prettyAppend(builder, addIndentations("PSK Length (byte)") + addIndentations("Bitleak")
+                            + "Probability", AnsiColor.BOLD);
 
                     for (RaccoonAttackProbabilities probabilbities : report.getRaccoonAttackProbabilities()) {
 
