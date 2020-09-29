@@ -584,34 +584,32 @@ public class SiteReportPrinter {
     private String prettyAppendPublicKey(StringBuilder builder, PublicKey publicKey) {
         if (publicKey instanceof CustomDhPublicKey) {
             CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
-            builder.append("Static Diffie Hellman\n");
+            prettyAppend(builder, "PublicKey Type:", "Static Diffie Hellman");
 
-            builder.append("\t Modulus:").append(dhPublicKey.getModulus().toString(16)).append("\n");
-            builder.append("\t Generator:").append(dhPublicKey.getModulus().toString(16)).append("\n");
-            builder.append("\t Y:").append(dhPublicKey.getY().toString(16)).append("\n");
+            prettyAppend(builder, "Modulus", dhPublicKey.getModulus().toString(16));
+            prettyAppend(builder, "Generator", dhPublicKey.getModulus().toString(16));
+            prettyAppend(builder, "Y", dhPublicKey.getY().toString(16));
         } else if (publicKey instanceof CustomDsaPublicKey) {
             CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
-            builder.append("DSA\n");
-            builder.append("\t Modulus:").append(dsaPublicKey.getP().toString(16)).append("\n");
-            builder.append("\t Generator:").append(dsaPublicKey.getG().toString(16)).append("\n");
-            builder.append("\t Q:").append(dsaPublicKey.getQ().toString(16)).append("\n");
-            builder.append("\t X:").append(dsaPublicKey.getY().toString(16)).append("\n");
+            prettyAppend(builder, "PublicKey Type:", "DSA");
+            prettyAppend(builder, "Modulus", dsaPublicKey.getP().toString(16));
+            prettyAppend(builder, "Generator", dsaPublicKey.getG().toString(16));
+            prettyAppend(builder, "Q", dsaPublicKey.getQ().toString(16));
+            prettyAppend(builder, "X", dsaPublicKey.getY().toString(16));
         } else if (publicKey instanceof CustomRsaPublicKey) {
             CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
-            builder.append("RSA\n");
-            builder.append("\t Modulus:").append(rsaPublicKey.getModulus().toString(16)).append("\n");
-            builder.append("\t Generator:").append(rsaPublicKey.getModulus().toString(16)).append("\n");
-            builder.append("\t Public exponent:").append(rsaPublicKey.getPublicExponent().toString(16)).append("\n");
+            prettyAppend(builder, "PublicKey Type:", "RSA");
+            prettyAppend(builder, "Modulus", rsaPublicKey.getModulus().toString(16));
+            prettyAppend(builder, "Public exponent", rsaPublicKey.getPublicExponent().toString(16));
         } else if (publicKey instanceof CustomEcPublicKey) {
             CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
-            builder.append("Elliptic Curve\n");
+            prettyAppend(builder, "PublicKey Type:", "EC");
             if (ecPublicKey.getGroup() == null) {
-                builder.append("\t Group (GOST):").append(ecPublicKey.getGostCurve()).append("\n");
+                prettyAppend(builder, "Group (GOST)", ecPublicKey.getGostCurve().name());
             } else {
-                builder.append("\t Group:").append(ecPublicKey.getGroup()).append("\n");
+                prettyAppend(builder, "Group", ecPublicKey.getGroup().name());
             }
-            builder.append("\t Public Point:").append(ecPublicKey.getPoint().toString()).append("\n");
-
+            prettyAppend(builder, "Public Point", ecPublicKey.getPoint().toString());
         } else {
             builder.append(publicKey.toString()).append("\n");
         }
