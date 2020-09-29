@@ -9,8 +9,11 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
+import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
@@ -160,7 +163,7 @@ public class CertificateProbe extends TlsProbe {
         Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
-            if (cipherSuite.isRSA() && cipherSuite.name().contains("TLS_RSA")) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.RSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -171,7 +174,7 @@ public class CertificateProbe extends TlsProbe {
         Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
-            if (cipherSuite.isRSA() && cipherSuite.name().contains("_DH_")) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.DH_RSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -182,7 +185,7 @@ public class CertificateProbe extends TlsProbe {
         Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
-            if (cipherSuite.isRSA() && (cipherSuite.name().contains("_DHE_") || cipherSuite.name().contains("_ECDHE_"))) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.DHE_RSA || AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_RSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -194,7 +197,7 @@ public class CertificateProbe extends TlsProbe {
         Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
-            if (cipherSuite.isRSA() && cipherSuite.name().contains("_ECDH_")) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDH_RSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -215,7 +218,7 @@ public class CertificateProbe extends TlsProbe {
         Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
-            if (cipherSuite.isECDSA() && cipherSuite.isEphemeral() == false) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDH_ECDSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -229,7 +232,7 @@ public class CertificateProbe extends TlsProbe {
         Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
-            if (cipherSuite.isECDSA() && cipherSuite.isEphemeral()) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }

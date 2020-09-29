@@ -15,8 +15,11 @@ import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
+import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
@@ -104,7 +107,7 @@ public class InvalidCurveProbe extends TlsProbe {
                     if (scanResponse.getVectorResponses().size() > 0) {
                         DistributionTest distTest = new DistributionTest(new InvalidCurveTestInfo(vector),
                                 scanResponse.getVectorResponses(), getInfinityProbability(vector,
-                                        InvalidCurveScanType.REGULAR));
+                                InvalidCurveScanType.REGULAR));
                         if (distTest.isDistinctAnswers()
                                 && scanResponse.getShowsPointsAreNotValidated() != TestResult.TRUE) {
                             testForSidechannel(distTest, vector, scanResponse);
@@ -656,11 +659,11 @@ public class InvalidCurveProbe extends TlsProbe {
         if (!testCipher.isTLS13()) {
             if (namedCurveWitnesses.containsKey(testGroup) == false) {
                 return false;
-            } else if ((testCipher.isRSA() && !namedCurveWitnesses.get(testGroup).isFoundUsingRsaCipher())
-                    || (testCipher.isECDSA() && testCipher.isEphemeral() && !namedCurveWitnesses.get(testGroup)
-                            .isFoundUsingEcdsaEphemeralCipher())
-                    || (testCipher.isECDSA() && !testCipher.isEphemeral() && !namedCurveWitnesses.get(testGroup)
-                            .isFoundUsingEcdsaStaticCipher())) {
+            } else if ((AlgorithmResolver.getCertificateKeyType(testCipher) == CertificateKeyType.RSA && !namedCurveWitnesses.get(testGroup).isFoundUsingRsaCipher())
+                    || (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher) == KeyExchangeAlgorithm.ECDHE_ECDSA && !namedCurveWitnesses.get(testGroup)
+                    .isFoundUsingEcdsaEphemeralCipher())
+                    || (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher) == KeyExchangeAlgorithm.ECDH_ECDSA && !namedCurveWitnesses.get(testGroup)
+                    .isFoundUsingEcdsaStaticCipher())) {
                 return false;
             }
         }
@@ -843,7 +846,7 @@ public class InvalidCurveProbe extends TlsProbe {
         if (!largeGroupResponse.getVectorResponses().isEmpty()) {
             DistributionTest rejectionDistTest = new DistributionTest(new InvalidCurveTestInfo(vector),
                     largeGroupResponse.getVectorResponses(), getInfinityProbability(vector,
-                            InvalidCurveScanType.LARGE_GROUP));
+                    InvalidCurveScanType.LARGE_GROUP));
             if (rejectionDistTest.isDistinctAnswers() == false) {
                 InvalidCurveResponse extendedResponse = executeSingleScan(vector, InvalidCurveScanType.EXTENDED);
                 initialTest.extendTestWithVectorResponses(extendedResponse.getVectorResponses());
@@ -857,7 +860,7 @@ public class InvalidCurveProbe extends TlsProbe {
                         if (!redundantResponse.getVectorResponses().isEmpty()) {
                             DistributionTest redundantDistTest = new DistributionTest(new InvalidCurveTestInfo(vector),
                                     redundantResponse.getVectorResponses(), getInfinityProbability(vector,
-                                            InvalidCurveScanType.REDUNDANT));
+                                    InvalidCurveScanType.REDUNDANT));
                             if (redundantDistTest.isDistinctAnswers()
                                     && redundantDistTest.isSignificantDistinctAnswers()) {
                                 initialResponse.setSideChannelSuspected(TestResult.TRUE);
