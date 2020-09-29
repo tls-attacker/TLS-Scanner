@@ -131,8 +131,7 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
             if (report.hasResult(VersionProbe.class)) {
                 // merge
                 VersionProbeResult other = (VersionProbeResult) report.getResult(VersionProbe.class);
-                Map<ProtocolVersion, Boolean> m = other.versionSupport;
-                MapUtil.mergeIntoFirst(m, versionSupport);
+                MapUtil.mergeIntoFirst(other.versionSupport, versionSupport);
                 report.markAsChangedAndNotify();
             } else {
                 report.putResult(VersionProbe.class, this);

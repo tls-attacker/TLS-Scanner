@@ -2,6 +2,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
@@ -59,7 +60,7 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
             T internalState);
 
     @Override
-    public ClientProbeResult call() throws Exception {
+    public ClientProbeResult call() throws InterruptedException, ExecutionException {
         ClientProbeResult ret = null;
         while (ret == null) {
             ret = super.call();

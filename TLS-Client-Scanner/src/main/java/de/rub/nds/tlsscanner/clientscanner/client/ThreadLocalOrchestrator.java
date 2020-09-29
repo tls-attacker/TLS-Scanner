@@ -116,11 +116,6 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
     }
 
     @Override
-    public ClientProbeResult runProbe(IProbe probe) throws InterruptedException, ExecutionException {
-        return getLocalOrchestrator().runProbe(probe);
-    }
-
-    @Override
     public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix)
             throws InterruptedException, ExecutionException {
         return getLocalOrchestrator().runProbe(probe, hostnamePrefix);

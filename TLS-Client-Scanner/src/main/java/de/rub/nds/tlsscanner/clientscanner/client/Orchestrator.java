@@ -75,17 +75,6 @@ public class Orchestrator implements IOrchestrator {
     }
 
     @Override
-    public ClientProbeResult runProbe(IProbe probe)
-            throws InterruptedException, ExecutionException {
-        String name = probe.getClass().getName();
-        String PROBE_NAMESPACE = "de.rub.nds.tlsscanner.clientscanner.probe.";
-        if (name.startsWith(PROBE_NAMESPACE)) {
-            name = name.substring(PROBE_NAMESPACE.length());
-        }
-        return runProbe(probe, name);
-    }
-
-    @Override
     public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix)
             throws InterruptedException, ExecutionException {
         // keep track of multithreading to possibly issue warning

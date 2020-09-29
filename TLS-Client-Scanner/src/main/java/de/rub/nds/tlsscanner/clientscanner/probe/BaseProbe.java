@@ -1,7 +1,10 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.logging.log4j.CloseableThreadContext;
 
@@ -20,18 +23,35 @@ import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.BaseDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.util.helper.ReverseIterator;
 
 public abstract class BaseProbe extends BaseDispatcher implements IProbe, Callable<ClientProbeResult> {
+    protected static String PROBE_NAMESPACE = BaseProbe.class.getPackage().getName() + '.';
     private IOrchestrator orchestrator;
 
     public BaseProbe(IOrchestrator orchestrator) {
         this.orchestrator = orchestrator;
     }
 
+    protected String getHostnamePrefix() {
+        String prefix = getClass().getName();
+        if (prefix.startsWith(PROBE_NAMESPACE)) {
+            prefix = prefix.substring(PROBE_NAMESPACE.length());
+        }
+        // reverse segments
+        String[] segments = prefix.split("\\.");
+        prefix = String.join(".", new ReverseIterator<>(segments));
+        return prefix;
+    }
+
+    protected ClientProbeResult callInternal() throws InterruptedException, ExecutionException {
+        return orchestrator.runProbe(this, getHostnamePrefix());
+    }
+
     @Override
-    public ClientProbeResult call() throws Exception {
+    public ClientProbeResult call() throws InterruptedException, ExecutionException {
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(getClass().getSimpleName())) {
-            return orchestrator.runProbe(this);
+            return callInternal();
         }
     }
 

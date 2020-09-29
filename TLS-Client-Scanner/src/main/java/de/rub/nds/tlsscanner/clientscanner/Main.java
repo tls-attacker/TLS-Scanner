@@ -10,7 +10,9 @@
 package de.rub.nds.tlsscanner.clientscanner;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +36,9 @@ import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.ThreadLocalOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.downgrade.SendAlert;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.HelloReconProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SNIProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
@@ -88,17 +92,24 @@ public class Main {
     private static void runScan(ClientScannerConfig csConfig) {
         csConfig.serverDelegate.setPort(0); // use any free port
         IOrchestrator orchestrator = new ThreadLocalOrchestrator(csConfig);
-        ThreadPoolExecutor pool = new ThreadPoolExecutor(8, 8, 1, TimeUnit.HOURS, new LinkedBlockingDeque<>(),
+        int threads = 1;
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(threads, threads, 1, TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-probe-runner"));
-        ClientScanExecutor exec = new ClientScanExecutor(Arrays.asList(
-                new VersionProbe(orchestrator,
-                        Arrays.asList(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
-                                ProtocolVersion.TLS11, ProtocolVersion.TLS12, ProtocolVersion.TLS13)),
-                new HelloReconProbe(orchestrator),
-                new SNIProbe(),
-                new SupportedCipherSuitesProbe(),
-                new DHMinimumModulusLengthProbe(orchestrator),
-                new DHWeakPrivateKeyProbe(orchestrator)), null, orchestrator, pool);
+        List<IProbe> probes = new ArrayList<>();
+        probes.add(new VersionProbe(orchestrator,
+                Arrays.asList(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
+                        ProtocolVersion.TLS11, ProtocolVersion.TLS12, ProtocolVersion.TLS13)));
+        probes.add(new HelloReconProbe(orchestrator));
+        probes.add(new SNIProbe());
+        probes.add(new SupportedCipherSuitesProbe());
+        probes.add(new DHMinimumModulusLengthProbe(orchestrator));
+        probes.add(new DHWeakPrivateKeyProbe(orchestrator));
+        probes.addAll(SendAlert.getDefaultProbes(orchestrator));
+        if (false) {
+            probes.clear();
+            probes.add(new VersionProbe(orchestrator, Arrays.asList(ProtocolVersion.TLS13)));
+        }
+        ClientScanExecutor exec = new ClientScanExecutor(probes, null, orchestrator, pool);
         ClientReport rep = exec.execute();
         pool.shutdown();
         try {
