@@ -860,7 +860,7 @@ public class SiteReportPrinter {
     public StringBuilder appendInformationLeakTestList(StringBuilder builder,
             List<InformationLeakTest> informationLeakTestList, String heading) {
         prettyAppendHeading(builder, heading);
-        if (report.getDirectRaccoonResultList() == null || report.getDirectRaccoonResultList().isEmpty()) {
+        if (informationLeakTestList == null || informationLeakTestList.isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
             for (InformationLeakTest testResult : informationLeakTestList) {
