@@ -11,17 +11,19 @@ import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class DHWeakPrivateKeyProbe extends BaseDHEProbe {
 
     public DHWeakPrivateKeyProbe(IOrchestrator orchestrator) {
-        super(orchestrator);
+        super(orchestrator, true, true, true);
     }
 
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
         Config config = state.getConfig();
+        prepareConfig(config);
         config.setDefaultServerDhPrivateKey(BigInteger.valueOf(1));
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
         executeState(state, dispatchInformation);

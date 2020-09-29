@@ -35,7 +35,7 @@ public class SupportedCipherSuitesProbe extends BaseAnalyzingProbe {
             return Collections.unmodifiableList(supportedSuites);
         }
 
-        public boolean supportsKeyExchangeDHE(boolean tls13, boolean ff, boolean ec) {
+        public boolean supportsKeyExchangeDHE(boolean tls13, boolean ec, boolean ff) {
             for (CipherSuite cs : supportedSuites) {
                 if (tls13 && cs.isTLS13()) {
                     // TODO: need to look at supported groups extension

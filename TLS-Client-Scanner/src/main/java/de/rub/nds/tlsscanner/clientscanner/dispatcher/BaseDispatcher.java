@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
@@ -30,6 +32,9 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import de.rub.nds.tlsattacker.core.certificate.CertificateKeyPair;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
+import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPrivateKey;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -42,6 +47,8 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
 public abstract class BaseDispatcher implements IDispatcher {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     protected void patchCertificate(State state, DispatchInformation dispatchInformation) throws IOException {
         String hostname;
         ServerNameIndicationExtensionMessage sni = SNIUtil.getSNIFromExtensions(dispatchInformation.chlo.getExtensions());
@@ -56,14 +63,57 @@ public abstract class BaseDispatcher implements IDispatcher {
         org.bouncycastle.asn1.x509.Certificate ca_cert = Certificate.parse(stream).getCertificateAt(0);
         CustomPrivateKey ca_sk = kp.getPrivateKey();
 
+        // stolen from server hello preparator
+        // used to determine which kind of cert we need
+        CipherSuite selectedSuite = null;
+        if (state.getConfig().isEnforceSettings()) {
+            selectedSuite = config.getDefaultSelectedCipherSuite();
+        } else {
+            for (CipherSuite suite : config.getDefaultServerSupportedCiphersuites()) {
+                if (state.getTlsContext().getClientSupportedCiphersuites().contains(suite)) {
+                    selectedSuite = suite;
+                    break;
+                }
+            }
+            if (selectedSuite == null) {
+                selectedSuite = config.getDefaultSelectedCipherSuite();
+            }
+        }
+        String kpType = null;
+        int keysize = 0;
+        CertificateKeyType ckt = AlgorithmResolver.getKeyExchangeAlgorithm(selectedSuite).getRequiredCertPublicKeyType();
+        switch (ckt) {
+            case DH:
+                kpType = "DiffieHellman";
+                keysize = 1024;
+                break;
+            case RSA:
+                kpType = "RSA";
+                keysize = 2048;
+                break;
+            case DSS:
+                kpType = "DSA";
+                keysize = 1024;
+                break;
+            case ECDSA:
+                kpType = "EC";
+                keysize = 256;
+                break;
+            default:
+                LOGGER.warn("Unknown Cert Key Type {}", ckt);
+                kpType = "RSA";
+                keysize = 2048;
+                break;
+        }
+
         KeyPairGenerator kpg = null;
         try {
-            kpg = KeyPairGenerator.getInstance("RSA");
+            kpg = KeyPairGenerator.getInstance(kpType);
+            kpg.initialize(keysize);
         } catch (NoSuchAlgorithmException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        kpg.initialize(2048);
         KeyPair ckp = kpg.generateKeyPair();
 
         X500Name issuer = ca_cert.getSubject();

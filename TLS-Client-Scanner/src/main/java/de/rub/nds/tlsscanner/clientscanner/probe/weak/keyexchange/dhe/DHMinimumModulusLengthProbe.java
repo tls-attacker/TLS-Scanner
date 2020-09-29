@@ -26,7 +26,7 @@ public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModu
     private static final Logger LOGGER = LogManager.getLogger();
 
     public DHMinimumModulusLengthProbe(IOrchestrator orchestrator) {
-        super(orchestrator);
+        super(orchestrator, false, false, true);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModu
         Config config = state.getConfig();
         Integer toTest = internalState.getNext();
         LOGGER.debug("Testing {}", toTest);
-        BaseDHEFunctionality.prepareConfig(config);
+        prepareConfig(config);
         config.setDefaultApplicationMessageData("Keysize: " + toTest);
         config.setDefaultServerDhModulus(new BigInteger(toTest, 10, new Random()));
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);

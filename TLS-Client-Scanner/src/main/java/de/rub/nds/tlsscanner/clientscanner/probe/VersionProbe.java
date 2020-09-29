@@ -55,7 +55,6 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
         Config config = state.getConfig();
         config.setHighestProtocolVersion(toTest);
         config.setDefaultSelectedProtocolVersion(toTest);
-        config.setEnforceSettings(true);
         config.setDefaultApplicationMessageData("TLS Version: " + toTest);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
@@ -123,7 +122,7 @@ public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeSta
 
         private Boolean checkSupported(ProtocolVersion v, State s) {
             // TODO maybe we need a better check...
-            return s.getWorkflowTrace().executedAsPlanned();
+            return s.getTlsContext().getSelectedProtocolVersion() == v && s.getWorkflowTrace().executedAsPlanned();
         }
 
         @Override

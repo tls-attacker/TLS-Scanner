@@ -50,7 +50,11 @@ public class ClientReport extends Observable implements Serializable {
 
     public <T extends ClientProbeResult> T getResult(Class<? extends IProbe> clazz, Class<T> expectedReturnType) {
         // convenience function
-        return expectedReturnType.cast(getResult(clazz));
+        try {
+            return expectedReturnType.cast(getResult(clazz));
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
     public ClientProbeResult putResult(Class<? extends IProbe> clazz, ClientProbeResult result) {
