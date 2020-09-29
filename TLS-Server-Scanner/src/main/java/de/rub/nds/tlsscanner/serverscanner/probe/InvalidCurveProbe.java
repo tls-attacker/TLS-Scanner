@@ -683,7 +683,7 @@ public class InvalidCurveProbe extends TlsProbe {
             }
         } else {
             // RSA ciphersuites don't require any additional groups
-            if (testCipher.isECDSA() && testCipher.isEphemeral()) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
                 if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != testGroup) {
                     requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral());
                 }
@@ -691,7 +691,7 @@ public class InvalidCurveProbe extends TlsProbe {
                         && namedCurveWitnesses.get(testGroup).getEcdsaSigGroupEphemeral() != testGroup) {
                     requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaSigGroupEphemeral());
                 }
-            } else if (testCipher.isECDSA()) {
+            } else if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher) == KeyExchangeAlgorithm.ECDH_ECDSA) {
                 if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupStatic() != testGroup) {
                     requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaPkGroupStatic());
                 }
