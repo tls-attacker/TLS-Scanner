@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
+import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -101,6 +102,11 @@ public class SiteReport extends Observable implements Serializable {
     private OCSPResponse secondOcspResponse = null;
     private OCSPResponse httpGetOcspResponse = null;
     private Long differenceHoursStapled = null;
+
+    // Certificate Transparency
+    private SignedCertificateTimestampList precertificateSctList = null;
+    private SignedCertificateTimestampList handshakeSctList = null;
+    private SignedCertificateTimestampList ocspSctList = null;
 
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -626,5 +632,29 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setHttpGetOcspResponse(OCSPResponse httpGetOcspResponse) {
         this.httpGetOcspResponse = httpGetOcspResponse;
+    }
+
+    public synchronized SignedCertificateTimestampList getPrecertificateSctList() {
+        return precertificateSctList;
+    }
+
+    public synchronized void setPrecertificateSctList(SignedCertificateTimestampList precertificateSctList) {
+        this.precertificateSctList = precertificateSctList;
+    }
+
+    public synchronized SignedCertificateTimestampList getHandshakeSctList() {
+        return handshakeSctList;
+    }
+
+    public synchronized void setHandshakeSctList(SignedCertificateTimestampList handshakeSctList) {
+        this.handshakeSctList = handshakeSctList;
+    }
+
+    public synchronized SignedCertificateTimestampList getOcspSctList() {
+        return ocspSctList;
+    }
+
+    public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
+        this.ocspSctList = ocspSctList;
     }
 }

@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
+import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -139,6 +140,7 @@ public class SiteReportPrinter {
         // appendRfc(builder);
         appendCertificate(builder);
         appendOcsp(builder);
+        appendCertificateTransparency(builder);
         appendSession(builder);
         appendRenegotiation(builder);
         appendHandshakeSimulation(builder);
@@ -682,6 +684,39 @@ public class SiteReportPrinter {
             prettyAppend(builder, report.getHttpGetOcspResponse().toString(false));
         } else if (report.getHttpGetOcspResponse() == null && report.getFirstOcspResponse() != null) {
             prettyAppend(builder, "Retrieved an OCSP response via HTTP POST, but not via HTTP GET.", AnsiColor.YELLOW);
+        }
+
+        return builder;
+    }
+
+    private StringBuilder appendCertificateTransparency(StringBuilder builder) {
+        prettyAppendHeading(builder, "Certificate Transparency");
+        prettyAppend(builder, "Supports Precertificate SCTs ", AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE);
+        prettyAppend(builder, "Supports TLS Handshake SCTs ", AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE);
+        prettyAppend(builder, "Supports OCSP Response SCTs ", AnalyzedProperty.SUPPORTS_SCTS_OCSP);
+        // prettyAppend(builder, "Meets Chrome CT Policy ", AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
+        // TODO: Implement this: https://github.com/chromium/ct-policy and keep in mind that there is
+        //  an upcoming update to Chrome's CT Policy!
+
+        if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE) == TestResult.TRUE) {
+            prettyAppendSubheading(builder, "Precertificate SCTs");
+            for (SignedCertificateTimestamp sct : report.getPrecertificateSctList().getCertificateTimestampList()) {
+                prettyAppend(builder, sct.toString() + "\n");
+            }
+        }
+
+        if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE) == TestResult.TRUE) {
+            prettyAppendSubheading(builder, "TLS Handshake SCTs");
+            for (SignedCertificateTimestamp sct : report.getHandshakeSctList().getCertificateTimestampList()) {
+                prettyAppend(builder, sct.toString() + "\n");
+            }
+        }
+
+        if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_OCSP) == TestResult.TRUE) {
+            prettyAppendSubheading(builder, "OCSP Response SCTs");
+            for (SignedCertificateTimestamp sct : report.getOcspSctList().getCertificateTimestampList()) {
+                prettyAppend(builder, sct.toString() + "\n");
+            }
         }
 
         return builder;
