@@ -25,7 +25,6 @@ public enum ProbeType {
     EARLY_CCS,
     NAMED_GROUPS,
     PADDING_ORACLE,
-    POODLE,
     TLS_POODLE,
     PROTOCOL_VERSION,
     INVALID_CURVE,
@@ -39,12 +38,10 @@ public enum ProbeType {
     SESSION_TICKET_ZERO_KEY,
     SNI,
     HANDSHAKE_SIMULATION,
-    TLS13,
     MAC,
     CCA_SUPPORT,
     CCA_REQUIRED,
     CCA,
     DIRECT_RACCOON,
-    EC_POINT_FORMAT,
-    RACCOON_ATTACK
+    EC_POINT_FORMAT
 }
