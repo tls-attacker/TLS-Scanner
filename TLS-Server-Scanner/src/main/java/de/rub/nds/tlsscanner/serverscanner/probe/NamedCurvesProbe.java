@@ -298,10 +298,10 @@ public class NamedCurvesProbe extends TlsProbe {
             return TestResult.UNCERTAIN;
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE,
                 state.getWorkflowTrace())) {
-            HandshakeMessage sHello = (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(
+            HandshakeMessage skeMsg = WorkflowTraceUtil.getFirstReceivedMessage(
                     HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
-            if (sHello instanceof ECDHEServerKeyExchangeMessage) {
-                ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) sHello;
+            if (skeMsg instanceof ECDHEServerKeyExchangeMessage) {
+                ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) skeMsg;
                 if (kex.getGroupType().getValue() == curveType.getValue()) {
                     return TestResult.TRUE;
                 }
