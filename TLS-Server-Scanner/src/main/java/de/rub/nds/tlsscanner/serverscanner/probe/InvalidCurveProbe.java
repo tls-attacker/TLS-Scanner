@@ -29,6 +29,7 @@ import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurveOverFp;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -291,10 +292,10 @@ public class InvalidCurveProbe extends TlsProbe {
             attacker.getTlsConfig().getDefaultClientNamedGroups().addAll(ecdsaRequiredGroups);
         }
 
-        if (supportsSecureRenegotiation == TestResult.TRUE) {
-            attacker.getTlsConfig().setAddRenegotiationInfoExtension(true);
-        } else {
+        if (supportsSecureRenegotiation == TestResult.FALSE && supportsRenegotiation == true) {
             attacker.getTlsConfig().setAddRenegotiationInfoExtension(false);
+        } else {
+            attacker.getTlsConfig().setAddRenegotiationInfoExtension(true);
         }
         return attacker;
     }
