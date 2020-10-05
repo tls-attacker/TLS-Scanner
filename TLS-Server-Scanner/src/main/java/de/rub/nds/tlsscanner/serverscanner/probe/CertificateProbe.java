@@ -278,7 +278,7 @@ public class CertificateProbe extends TlsProbe {
         Config tlsConfig = getBasicConfig();
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
-            if (cipherSuite.isDSS() && cipherSuite.isEphemeral() == true) {
+            if (cipherSuite.isDSS() && cipherSuite.isEphemeral()) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
