@@ -128,6 +128,7 @@ public class NamedCurvesProbe extends TlsProbe {
                 }
 
                 supportedNamedCurves.add(selectedGroup);
+                LOGGER.warn(selectedGroup + ":" + context.getSelectedCipherSuite());
                 toTestList.remove(selectedGroup);
             }
         } while (context != null && toTestList.size() > 0);
@@ -175,6 +176,9 @@ public class NamedCurvesProbe extends TlsProbe {
                         LOGGER.debug("Server chose a Curve we did not offer!");
                         break;
                     }
+                    LOGGER.warn(selectedGroup + ":" + context.getSelectedCipherSuite() + ":(CERT-GROUP:"
+                            + certificateGroup + ":SIG-GROUP"
+                            + ((certificateSigGroup == null) ? "NO_SIG" : certificateSigGroup) + ")");
                     if (cipherSuites.get(0).isEphemeral()) {
                         namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup, null,
                                 certificateSigGroup));
@@ -313,6 +317,8 @@ public class NamedCurvesProbe extends TlsProbe {
                 ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) skeMsg;
                 if (kex.getGroupType().getValue() == curveType.getValue()) {
                     return TestResult.TRUE;
+                } else {
+                    return TestResult.UNSUPPORTED;
                 }
             }
 
@@ -390,6 +396,9 @@ public class NamedCurvesProbe extends TlsProbe {
                     // TODO add to site report
                     break;
                 }
+
+                LOGGER.warn(selectedGroup + ":" + context.getSelectedCipherSuite() + ":(CERT-GROUP:" + certificateGroup
+                        + ":SIG-GROUP" + ((certificateSigGroup == null) ? "NO_SIG" : certificateSigGroup) + ")");
 
                 namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup, null,
                         certificateSigGroup));
