@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -30,6 +31,7 @@ import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.ActionOption;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -60,7 +62,7 @@ public class InvalidCurveProbe extends TlsProbe {
     /**
      * Defines the error probability for each test vector
      */
-    private final double ERROR_PROBABILITY = 0.001; // increase if needed
+    private final double ERROR_PROBABILITY = 0.0001; // increase if needed
 
     private final int LARGE_ORDER_ITERATIONS = 40;
 
@@ -292,7 +294,7 @@ public class InvalidCurveProbe extends TlsProbe {
             attacker.getTlsConfig().getDefaultClientNamedGroups().addAll(ecdsaRequiredGroups);
         }
 
-        if (supportsSecureRenegotiation == TestResult.FALSE && supportsRenegotiation == true) {
+        if (supportsSecureRenegotiation == TestResult.FALSE && supportsRenegotiation) {
             attacker.getTlsConfig().setAddRenegotiationInfoExtension(false);
         } else {
             attacker.getTlsConfig().setAddRenegotiationInfoExtension(true);
@@ -875,4 +877,4 @@ public class InvalidCurveProbe extends TlsProbe {
             }
         }
     }
-}
+            }

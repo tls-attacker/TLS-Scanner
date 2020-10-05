@@ -161,6 +161,15 @@ public class NamedCurvesProbe extends TlsProbe {
                     selectedGroup = context.getSelectedGroup();
                     certificateGroup = context.getEcCertificateCurve();
                     certificateSigGroup = context.getEcCertificateSignatureCurve();
+                    
+                    //remove groups that are not required by the server even
+                    //if they are used for the certificate or KEX signature
+                    if(!toTestList.contains(certificateGroup)) {
+                        certificateGroup = null;
+                    }
+                    if(!toTestList.contains(certificateSigGroup)) {
+                        certificateSigGroup = null;
+                    }
 
                     if (!toTestList.contains(selectedGroup)) {
                         LOGGER.debug("Server chose a Curve we did not offer!");
@@ -332,7 +341,7 @@ public class NamedCurvesProbe extends TlsProbe {
 
     public void placeRequiredGroupsLast(List<NamedGroup> groupList, List<NamedGroup> sigGroups) {
         for (int i = 0; i < groupList.size(); i++) {
-            if (sigGroups.contains(groupList.get(0))) {
+            if (sigGroups.contains(groupList.get(i))) {
                 groupList.remove(i);
                 i--;
             }
