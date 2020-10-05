@@ -857,7 +857,9 @@ public class InvalidCurveProbe extends TlsProbe {
                 initialTest.extendTestWithVectorResponses(extendedResponse.getVectorResponses());
                 initialResponse.mergeResponse(extendedResponse);
 
-                if (initialTest.isSignificantDistinctAnswers() == false) {
+                if (initialTest.isSignificantDistinctAnswers() == false
+                        && initialResponse.getVectorResponses().size() >= (initialResponse.getFingerprintSecretPairs()
+                                .size() / 2)) {
                     if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
                         // perform second test immediately
                         InvalidCurveResponse redundantResponse = executeSingleScan(vector,
