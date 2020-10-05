@@ -291,7 +291,6 @@ public class InvalidCurveProbe extends TlsProbe {
         // avoid cases where the server requires an additional group
         // to sign a PK of our testgroup using ECDSA
         if (!ecdsaRequiredGroups.isEmpty()) {
-            ecdsaRequiredGroups.remove(group);
             attacker.getTlsConfig().getDefaultClientNamedGroups().addAll(ecdsaRequiredGroups);
         }
 
@@ -689,7 +688,8 @@ public class InvalidCurveProbe extends TlsProbe {
         } else {
             // RSA ciphersuites don't require any additional groups
             if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
-                if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != testGroup) {
+                if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != null &&
+                        namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != testGroup) {
                     requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral());
                 }
                 if (namedCurveWitnesses.get(testGroup).getEcdsaSigGroupEphemeral() != null
@@ -697,7 +697,8 @@ public class InvalidCurveProbe extends TlsProbe {
                     requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaSigGroupEphemeral());
                 }
             } else if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher) == KeyExchangeAlgorithm.ECDH_ECDSA) {
-                if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupStatic() != testGroup) {
+                if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupStatic() != null &&
+                        namedCurveWitnesses.get(testGroup).getEcdsaPkGroupStatic() != testGroup) {
                     requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaPkGroupStatic());
                 }
                 if (namedCurveWitnesses.get(testGroup).getEcdsaSigGroupStatic() != null
