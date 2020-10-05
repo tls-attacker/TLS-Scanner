@@ -161,13 +161,13 @@ public class NamedCurvesProbe extends TlsProbe {
                     selectedGroup = context.getSelectedGroup();
                     certificateGroup = context.getEcCertificateCurve();
                     certificateSigGroup = context.getEcCertificateSignatureCurve();
-                    
-                    //remove groups that are not required by the server even
-                    //if they are used for the certificate or KEX signature
-                    if(!toTestList.contains(certificateGroup)) {
+
+                    // remove groups that are not required by the server even
+                    // if they are used for the certificate or KEX signature
+                    if (!toTestList.contains(certificateGroup)) {
                         certificateGroup = null;
                     }
-                    if(!toTestList.contains(certificateSigGroup)) {
+                    if (!toTestList.contains(certificateSigGroup)) {
                         certificateSigGroup = null;
                     }
 
@@ -376,6 +376,15 @@ public class NamedCurvesProbe extends TlsProbe {
                 selectedGroup = context.getSelectedGroup();
                 certificateGroup = context.getEcCertificateCurve();
                 certificateSigGroup = context.getEcCertificateSignatureCurve();
+
+                if (!toTestList.contains(certificateGroup)) {
+                    certificateGroup = null;
+                }
+
+                if (!toTestList.contains(certificateSigGroup)) {
+                    certificateSigGroup = null;
+                }
+
                 if (!toTestList.contains(selectedGroup)) {
                     LOGGER.warn("Server chose a group we did not offer:" + selectedGroup);
                     // TODO add to site report
@@ -402,8 +411,7 @@ public class NamedCurvesProbe extends TlsProbe {
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
         tlsConfig.setDefaultClientNamedGroups(groups);
-        List<NamedGroup> keyShareGroups = new ArrayList<>();
-        tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroups);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(groups);
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
