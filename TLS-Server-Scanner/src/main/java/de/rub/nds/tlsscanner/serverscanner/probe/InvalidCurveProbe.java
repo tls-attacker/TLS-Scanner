@@ -291,6 +291,7 @@ public class InvalidCurveProbe extends TlsProbe {
         // avoid cases where the server requires an additional group
         // to sign a PK of our testgroup using ECDSA
         if (!ecdsaRequiredGroups.isEmpty()) {
+            ecdsaRequiredGroups.remove(group);
             attacker.getTlsConfig().getDefaultClientNamedGroups().addAll(ecdsaRequiredGroups);
         }
 
@@ -877,4 +878,4 @@ public class InvalidCurveProbe extends TlsProbe {
             }
         }
     }
-            }
+}
