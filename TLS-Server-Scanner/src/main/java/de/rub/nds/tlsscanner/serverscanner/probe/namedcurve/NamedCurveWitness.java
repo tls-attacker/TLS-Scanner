@@ -8,13 +8,17 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.namedcurve;
 
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
+import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import java.util.HashSet;
+import java.util.Set;
 
 public class NamedCurveWitness {
-    private boolean foundUsingRsaCipher = false;
-    private boolean foundUsingEcdsaStaticCipher = false;
-    private boolean foundUsingEcdsaEphemeralCipher = false;
+
+    private Set<CipherSuite> cipherSuites;
 
     // the curves used to generate an ecdsa sig inside the key ex. message
     private NamedGroup ecdsaPkGroupStatic;
@@ -25,15 +29,22 @@ public class NamedCurveWitness {
     private NamedGroup ecdsaSigGroupEphemeral;
 
     public NamedCurveWitness() {
-
+        cipherSuites = new HashSet<>();
     }
 
     public NamedCurveWitness(NamedGroup ecdsaPkGroupStatic, NamedGroup ecdsaPkGroupEphemeral,
-            NamedGroup ecdsaSigGroupStatic, NamedGroup ecdsaSigGroupEphemeral) {
+            NamedGroup ecdsaSigGroupStatic, NamedGroup ecdsaSigGroupEphemeral, CipherSuite cipherSuite) {
         this.ecdsaPkGroupStatic = ecdsaPkGroupStatic;
         this.ecdsaPkGroupEphemeral = ecdsaPkGroupEphemeral;
         this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
         this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
+        cipherSuites = new HashSet<>();
+        cipherSuites.add(cipherSuite);
+    }
+
+    public NamedCurveWitness(CipherSuite cipherSuite) {
+        cipherSuites = new HashSet<>();
+        cipherSuites.add(cipherSuite);
     }
 
     public NamedGroup getEcdsaPkGroupStatic() {
@@ -53,27 +64,30 @@ public class NamedCurveWitness {
     }
 
     public boolean isFoundUsingRsaCipher() {
-        return foundUsingRsaCipher;
-    }
-
-    public void setFoundUsingRsaCipher(boolean foundUsingRsaCipher) {
-        this.foundUsingRsaCipher = foundUsingRsaCipher;
+        for (CipherSuite cipherSuite : cipherSuites) {
+            if (AlgorithmResolver.getCertificateKeyType(cipherSuite) == CertificateKeyType.RSA) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isFoundUsingEcdsaStaticCipher() {
-        return foundUsingEcdsaStaticCipher;
-    }
-
-    public void setFoundUsingEcdsaStaticCipher(boolean foundUsingEcdsaStaticCipher) {
-        this.foundUsingEcdsaStaticCipher = foundUsingEcdsaStaticCipher;
+        for (CipherSuite cipherSuite : cipherSuites) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDH_ECDSA) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isFoundUsingEcdsaEphemeralCipher() {
-        return foundUsingEcdsaEphemeralCipher;
-    }
-
-    public void setFoundUsingEcdsaEphemeralCipher(boolean foundUsingEcdsaEphemeralCipher) {
-        this.foundUsingEcdsaEphemeralCipher = foundUsingEcdsaEphemeralCipher;
+        for (CipherSuite cipherSuite : cipherSuites) {
+            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setEcdsaPkGroupStatic(NamedGroup ecdsaPkGroupStatic) {
@@ -90,6 +104,14 @@ public class NamedCurveWitness {
 
     public void setEcdsaSigGroupEphemeral(NamedGroup ecdsaSigGroupEphemeral) {
         this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
+    }
+
+    public Set<CipherSuite> getCipherSuites() {
+        return cipherSuites;
+    }
+
+    public void setCipherSuites(Set<CipherSuite> cipherSuites) {
+        this.cipherSuites = cipherSuites;
     }
 
 }

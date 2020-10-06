@@ -40,6 +40,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.serverscanner.rating.PropertyResultRatingInfluencer;
@@ -68,6 +69,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
@@ -1572,7 +1574,32 @@ public class SiteReportPrinter {
             prettyAppendHeading(builder, "Supported Named Groups");
             if (report.getSupportedNamedGroups().size() > 0) {
                 for (NamedGroup group : report.getSupportedNamedGroups()) {
-                    builder.append(group.name()).append("\n");
+                    builder.append(group.name());
+                    if (detail == ScannerDetail.ALL) {
+                        builder.append("\n  Found using:");
+                        NamedCurveWitness witness = report.getSupportedNamedGroupsWitnesses().get(group);
+                        for (CipherSuite cipher : witness.getCipherSuites()) {
+                            builder.append("\n    ").append(cipher.toString());
+                        }
+                        builder.append("\n  ECDSA Required Groups:");
+                        if (witness.getEcdsaPkGroupEphemeral() != null && witness.getEcdsaPkGroupEphemeral() != group) {
+                            builder.append("\n    ").append(witness.getEcdsaPkGroupEphemeral())
+                                    .append(" (Ephemeral Certificate Public Key)");
+                        }
+                        if (witness.getEcdsaSigGroupEphemeral() != null && witness.getEcdsaSigGroupEphemeral() != group) {
+                            builder.append("\n    ").append(witness.getEcdsaSigGroupEphemeral())
+                                    .append(" (Ephemeral Certificate Signature)");
+                        }
+                        if (witness.getEcdsaPkGroupStatic() != null && witness.getEcdsaPkGroupStatic() != group) {
+                            builder.append("\n    ").append(witness.getEcdsaPkGroupStatic())
+                                    .append(" (Static Certificate Public Key)");
+                        }
+                        if (witness.getEcdsaSigGroupStatic() != null && witness.getEcdsaSigGroupStatic() != group) {
+                            builder.append("\n    ").append(witness.getEcdsaSigGroupStatic())
+                                    .append(" (Static Certificate Signature)");
+                        }
+                    }
+                    builder.append("\n");
                 }
                 if (report.getResult(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER) == TestResult.TRUE) {
                     prettyAppend(builder, "Not all Groups are supported for all Cipher Suites");
