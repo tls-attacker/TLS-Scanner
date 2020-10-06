@@ -65,7 +65,8 @@ public class NamedCurveWitness {
 
     public boolean isFoundUsingRsaCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
-            if (AlgorithmResolver.getCertificateKeyType(cipherSuite) == CertificateKeyType.RSA) {
+            if (!cipherSuite.isTLS13()
+                    && AlgorithmResolver.getCertificateKeyType(cipherSuite) == CertificateKeyType.RSA) {
                 return true;
             }
         }
@@ -74,7 +75,8 @@ public class NamedCurveWitness {
 
     public boolean isFoundUsingEcdsaStaticCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDH_ECDSA) {
+            if (!cipherSuite.isTLS13()
+                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDH_ECDSA) {
                 return true;
             }
         }
@@ -83,7 +85,8 @@ public class NamedCurveWitness {
 
     public boolean isFoundUsingEcdsaEphemeralCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
+            if (!cipherSuite.isTLS13()
+                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
                 return true;
             }
         }
