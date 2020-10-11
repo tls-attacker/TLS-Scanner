@@ -221,9 +221,13 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     @Override
     public void clean(String database, String workspace) {
+
+    }
+
+    @Override
+    public DistinctIterable findDistinctValues(String database, String workspace, Bson filter, String fieldName, Class resultClass) {
         this.init(database, workspace);
-        BsonDocument updateDocument = new BsonDocument("$unset", new BsonDocument("result.report.supportedTls13CipherSuites", new BsonNull()));
-        collection.updateMany(new BsonDocument(), updateDocument);
+        return collection.distinct(fieldName, filter, resultClass);
     }
 
     /**
