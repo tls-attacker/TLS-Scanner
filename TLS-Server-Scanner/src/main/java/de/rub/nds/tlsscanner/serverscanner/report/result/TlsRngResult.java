@@ -9,14 +9,12 @@
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 import java.util.LinkedList;
-import java.util.List;
 
 public class TlsRngResult extends ProbeResult {
 

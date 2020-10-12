@@ -50,7 +50,7 @@ public class ScannerConfig extends TLSDelegateConfig {
     private int timeout = 1000;
 
     @Parameter(names = "-testRng", required = false, description = "Collect Randomness and test for faults")
-    private boolean collectRng = true;
+    private boolean collectRng = false;
 
     @ParametersDelegate
     private CcaDelegate ccaDelegate;

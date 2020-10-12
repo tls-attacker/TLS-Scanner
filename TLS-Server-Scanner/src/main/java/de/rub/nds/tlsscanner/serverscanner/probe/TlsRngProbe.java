@@ -60,13 +60,19 @@ public class TlsRngProbe extends TlsProbe {
     private LinkedList<ComparableByteArray> extractedSessionIDList;
     private boolean prematureStop = false;
     private final int SERVER_RANDOM_SIZE = 32;
+    // When removing UNIX Time prefix
     private final double TIMELESS_SERVER_RANDOM_SIZE = 28.0;
     private final int IV_SIZE = 16;
+    // Fixed Amount of required Handshakes
     private final int NUMBER_OF_HANDSHAKES = 600;
+    // First ClientHello random value
     private final int CLIENT_RANDOM_START = 1;
+    // Amount of IV Blocks required to collect
     private final int IV_BLOCKS = 4000;
+    // How much the time is allowed to deviate between two handshakes when viewed using UNIX time prefix
     private final int UNIX_TIME_ALLOWED_DEVIATION = 5;
     private boolean usesUnixTime = false;
+    // Maximum amount of TLS Handshakes allowed
     private int TLS_CONNECTIONS_UPPER_LIMIT = 1000;
     private int TLS_CONNECTION_COUNTER = 0;
     private int UNIX_TIME_MAXIMUM_RETRIES = 20;
@@ -107,10 +113,12 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         // ////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Set ClientHello random to last-value sent + 50 to be safe
         collectIV(IV_BLOCKS, CLIENT_RANDOM_START + NUMBER_OF_HANDSHAKES + 50);
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // TODO: Implement this right.
+        // If we reached this point we collected some amount of data. ExtractRandomnessProbe will determine if this
+        // is enough.
         boolean successfulHandshake = true;
 
         TlsRngResult rng_extract = new TlsRngResult(successfulHandshake, extractedIVList, extractedRandomList,
@@ -261,7 +269,7 @@ public class TlsRngProbe extends TlsProbe {
 
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
-            if (TLS_CONNECTION_COUNTER >= 1000) {
+            if (TLS_CONNECTION_COUNTER >= TLS_CONNECTIONS_UPPER_LIMIT) {
                 LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                 prematureStop = true;
                 return;
@@ -279,6 +287,7 @@ public class TlsRngProbe extends TlsProbe {
             byte[] completeServerRandom = null;
 
             if (!(serverRandom == null)) {
+                // Only take the first 32 bytes even when using extended Random
                 completeServerRandom = Arrays.copyOfRange(serverRandom, 0, 32);
             }
             
@@ -365,7 +374,7 @@ public class TlsRngProbe extends TlsProbe {
 
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
-            if (TLS_CONNECTION_COUNTER >= 1000) {
+            if (TLS_CONNECTION_COUNTER >= TLS_CONNECTIONS_UPPER_LIMIT) {
                 LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                 prematureStop = true;
                 return;
@@ -383,6 +392,7 @@ public class TlsRngProbe extends TlsProbe {
             byte[] completeServerRandom = null;
 
             if (!(serverRandom == null)) {
+                // Only take the first 32 bytes even when using extended Random
                 completeServerRandom = Arrays.copyOfRange(serverRandom, 0, 32);
             }
             
@@ -504,7 +514,7 @@ public class TlsRngProbe extends TlsProbe {
                 handshakeCounter++;
                 iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
                 iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
-                if (TLS_CONNECTION_COUNTER >= 1000) {
+                if (TLS_CONNECTION_COUNTER >= TLS_CONNECTIONS_UPPER_LIMIT) {
                     LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                     prematureStop = true;
                     return;
@@ -513,7 +523,7 @@ public class TlsRngProbe extends TlsProbe {
                 try {
                     if ((collectState == null) || collectState.getTlsContext().getTransportHandler().isClosed()) {
                         LOGGER.debug("Trying again for new Connection.");
-                        if (TLS_CONNECTION_COUNTER >= 1000) {
+                        if (TLS_CONNECTION_COUNTER >= TLS_CONNECTIONS_UPPER_LIMIT) {
                             LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                             prematureStop = true;
                             return;

@@ -14,6 +14,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.constants.RngConstants;
 
 import java.util.*;
 
@@ -33,57 +34,32 @@ import java.util.regex.Pattern;
 import static java.lang.Math.*;
 import static org.apache.commons.math3.special.Erf.erfc;
 
+/**
+ *
+ * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
+ */
 public class ExtractRandomnessProbe extends AfterProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Minimum 32 000 Bytes ~ 1000 ServerHelloRandoms
     private final int MINIMUM_AMOUNT_OF_BYTES = 32000;
+    // Standard value for cryptographic applications (see NIST SP 800-22 Document)
     private final double MINIMUM_P_VALUE = 0.01;
 
+    // Deprecated as we use Fischer's Method to combine all P-Values of the Template test into one P-Value
     // private final double TEMPLATE_TEST_MAXIMUM_FAILED_TESTS = 0.5;
 
+    // For differentiating the test_result using Fischer's method and the percentage of failed templates of the
+    // Template test
     private enum templateConstants {
         TEST_RESULT,
         PERCENTAGE
     }
 
+    // TLS 1.3 specific message requesting to send a new ClientHello
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
             .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
-
-    // See NIST SP 800-22 2.4.4 (3)
-    private final static int[][] LONGEST_RUN_VALUES = { { 8, 3, 16 }, { 128, 5, 49 }, { 10000, 6, 75 } };
-    private final static int[][] LONGEST_RUN_EXPECTATION = { { 1, 2, 3, 4 }, { 4, 5, 6, 7, 8, 9 },
-            { 10, 11, 12, 13, 14, 15, 16 } };
-    private final static double[][] LONGEST_RUN_PROBABILITIES = { { 0.2148, 0.3672, 0.2305, 0.1875 },
-            { 0.1174, 0.2430, 0.2493, 0.1752, 0.1027, 0.1124 },
-            { 0.0882, 0.2092, 0.2483, 0.1933, 0.1208, 0.0675, 0.0727 } };
-    private final static String[][] TEMPLATE_NINE = { { "000000001" }, { "000000011" }, { "000000101" },
-            { "000000111" }, { "000001001" }, { "000001011" }, { "000001101" }, { "000001111" }, { "000010001" },
-            { "000010011" }, { "000010101" }, { "000010111" }, { "000011001" }, { "000011011" }, { "000011101" },
-            { "000011111" }, { "000100011" }, { "000100101" }, { "000100111" }, { "000101001" }, { "000101011" },
-            { "000101101" }, { "000101111" }, { "000110011" }, { "000110101" }, { "000110111" }, { "000111001" },
-            { "000111011" }, { "000111101" }, { "000111111" }, { "001000011" }, { "001000101" }, { "001000111" },
-            { "001001011" }, { "001001101" }, { "001001111" }, { "001010011" }, { "001010101" }, { "001010111" },
-            { "001011011" }, { "001011101" }, { "001011111" }, { "001100101" }, { "001100111" }, { "001101011" },
-            { "001101101" }, { "001101111" }, { "001110101" }, { "001110111" }, { "001111011" }, { "001111101" },
-            { "001111111" }, { "010000011" }, { "010000111" }, { "010001011" }, { "010001111" }, { "010010011" },
-            { "010010111" }, { "010011011" }, { "010011111" }, { "010100011" }, { "010100111" }, { "010101011" },
-            { "010101111" }, { "010110011" }, { "010110111" }, { "010111011" }, { "010111111" }, { "011000111" },
-            { "011001111" }, { "011010111" }, { "011011111" }, { "011101111" }, { "011111111" }, { "100000000" },
-            { "100010000" }, { "100100000" }, { "100101000" }, { "100110000" }, { "100111000" }, { "101000000" },
-            { "101000100" }, { "101001000" }, { "101001100" }, { "101010000" }, { "101010100" }, { "101011000" },
-            { "101011100" }, { "101100000" }, { "101100100" }, { "101101000" }, { "101101100" }, { "101110000" },
-            { "101110100" }, { "101111000" }, { "101111100" }, { "110000000" }, { "110000010" }, { "110000100" },
-            { "110001000" }, { "110001010" }, { "110010000" }, { "110010010" }, { "110010100" }, { "110011000" },
-            { "110011010" }, { "110100000" }, { "110100010" }, { "110100100" }, { "110101000" }, { "110101010" },
-            { "110101100" }, { "110110000" }, { "110110010" }, { "110110100" }, { "110111000" }, { "110111010" },
-            { "110111100" }, { "111000000" }, { "111000010" }, { "111000100" }, { "111000110" }, { "111001000" },
-            { "111001010" }, { "111001100" }, { "111010000" }, { "111010010" }, { "111010100" }, { "111010110" },
-            { "111011000" }, { "111011010" }, { "111011100" }, { "111100000" }, { "111100010" }, { "111100100" },
-            { "111100110" }, { "111101000" }, { "111101010" }, { "111101100" }, { "111101110" }, { "111110000" },
-            { "111110010" }, { "111110100" }, { "111110110" }, { "111111000" }, { "111111010" }, { "111111100" },
-            { "111111110" } };
 
     @Override
     public void analyze(SiteReport report) {
@@ -110,48 +86,14 @@ public class ExtractRandomnessProbe extends AfterProbe {
             }
         }
 
-        // String host_name_full = report.getHost();
-        // String rng_file = host_name_full.substring(0, host_name_full.length()
-        // - 4);
         List<Byte> fullByteSequence = new ArrayList();
-
-        /*
-         * try { PrintStream random_file = new PrintStream(rng_file); // Extract
-         * Server Hello Random Bytes random_file.println("SERVER RANDOM"); if
-         * (!extractedRandomList.isEmpty()) { for (ComparableByteArray random :
-         * extractedRandomList) { String random_bytes = ""; for (byte b :
-         * random.getArray()) { random_bytes = random_bytes +
-         * String.format("%02X", b); } random_file.println(random_bytes); } } //
-         * Extract Server Hello Session ID random_file.println("SESSION ID"); if
-         * (!extractedSessionIdList.isEmpty()) { for (ComparableByteArray
-         * sessionId : extractedSessionIdList) { String random_bytes = ""; for
-         * (byte b : sessionId.getArray()) { random_bytes = random_bytes +
-         * String.format("%02X", b); } random_file.println(random_bytes); } } //
-         * Extract Application IV random_file.println("IV"); if
-         * (!extractedIVList.isEmpty()) { for (ComparableByteArray iVector :
-         * extractedIVList) { String random_bytes = ""; for (byte b :
-         * iVector.getArray()) { random_bytes = random_bytes +
-         * String.format("%02X", b); } random_file.println(random_bytes); } }
-         * random_file.close(); } catch (IOException e) {
-         * LOGGER.debug("IOEXCEPTION!"); LOGGER.debug(e.toString()); }
-         */
-
-        // String test =
-        // "1100100100001111110110101010001000100001011010001100001000110100110001001100011001100010100010111000";
-        // byte[] test1 = new BigInteger(test, 2).toByteArray();
-        // ComparableByteArray test2 = new ComparableByteArray(test1);
-        // ComparableByteArray[] test3 = new ComparableByteArray[] { test2 };
-        // LOGGER.warn(frequencyTest(test3, 10));
-
-        // full_byte_sequence
-        // Structure: ServerRandom + SessionID for every Handshake
-        // Then at the end all IV from the HTTP GET.
-        // This will result in a few holes logically when compared
-        // to the real full byte sequence but is close enough.
 
         int serverRandomCounter = 0;
         int sessionIdCounter = 0;
         int iVCounter = 0;
+
+        // Counting extracted Random-Types and building complete Sequence consisting of
+        // (ServerHello randoms + SessionIDs) || IVs
 
         for (int i = 0; i < max(extractedRandomList.size(), extractedSessionIdList.size()); i++) {
             if (i < extractedRandomList.size()) {
@@ -211,6 +153,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         Map<RandomType, Double> nonOverlappingTemplatePercentagesMap = new HashMap<>();
         LinkedList<RandomType> nonOverlappingTemplateList = new LinkedList<>();
         LinkedList<RandomType> entropyList = new LinkedList<>();
+        // Deactivated due to performance hit - May be activated again in the future
         // LinkedList<RandomType> serialList = new LinkedList<>();
         // LinkedList<RandomType> cuSumList = new LinkedList<>();
         // LinkedList<RandomType> cuSumReverseList = new LinkedList<>();
@@ -439,11 +382,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putTemplateResult(nonOverlappingTemplateList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
-        // LOGGER.warn("Average P-Value returned by Serial Test : " +
         // serialTest(testSequence, 16));
-        // Takes longest time of all Tests
         LOGGER.debug("Serial Test currently deactivated.");
         LOGGER.debug("============================================================================================");
+        // ////////////////////////////////////////////////
         if (approximateEntropyTest(extractedRandomArray, 10) <= MINIMUM_P_VALUE) {
             LOGGER.debug("ENTROPY_TEST ServerHelloRandom : FAILED");
             entropyList.add(RandomType.RANDOM);
@@ -473,19 +415,18 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putEntropyResult(entropyList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
-        // Takes longest time of all Tests ( besides serialTest)
-        // LOGGER.warn("P-Value of Cumulative Sums Test : " +
-        // cusumTest(testSequence, true));
-        // LOGGER.warn("P-Value of Cumulative Sums (REVERSE) Test :" +
-        // cusumTest(testSequence, false));
+        // cusumTest(testSequence, true)); // Forward
+        // cusumTest(testSequence, false)); // Reverse
         LOGGER.debug("Cusum Test currently deactivated.");
         LOGGER.debug("============================================================================================");
+        // ////////////////////////////////////////////////
     }
 
     /**
-     * 
-     * @param byteSequence
-     * @return
+     * Simple Test creating a hash-set of random-values and checks for every random if it is already inserted.
+     * If no collision was found then no duplicates are present.
+     * @param byteSequence Array of random byte sequences
+     * @return TRUE if duplicates were found
      */
     private boolean testForDuplicates(ComparableByteArray[] byteSequence) {
         Set<ComparableByteArray> entryList = new HashSet<ComparableByteArray>();
@@ -498,6 +439,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
         return false;
     }
 
+    /**
+     * Test checking for increasing cumulative sums when mapping 0 to -1 and 1, comparing the results to the expectation.
+     * @param byteSequence Array of random byte sequences
+     * @param forwardMode TRUE if forward-mode should be used, FALSE if backwards-mode should be used
+     * @return P-Value of the test
+     */
     private Double cusumTest(ComparableByteArray[] byteSequence, boolean forwardMode) {
         double pValue = 0.0;
         String fullSequence = "";
@@ -568,14 +515,15 @@ public class ExtractRandomnessProbe extends AfterProbe {
     }
 
     /***
-     *
-     * @param byteSequence
-     * @param blockLength
-     * @return
+     * Test to check the frequency of all possible bit-patterns of size blockLength, comparing them to the expectation.
+     * @param byteSequence array of random byte values
+     * @param blockLength length of bit-patterns to check
+     * @return P-Value of the test
      */
     private Double approximateEntropyTest(ComparableByteArray[] byteSequence, int blockLength) {
         // TODO: Select m and n such that m < log_2)(n) - 5
         // TODO: ie. for 1096 recommend is blockLength of 5
+        // TODO: currently set to the value best fit for the expected amount of bytes of a scan.
         double pValue = 0.0;
         String fullSequence = "";
 
@@ -632,10 +580,11 @@ public class ExtractRandomnessProbe extends AfterProbe {
     }
 
     /***
-     *
-     * @param byteSequence
-     * @param blockLength
-     * @return
+     * Test to check the frequency of all possible overlapping bit patterns of length blockLength, checking it
+     * against the expectation.
+     * @param byteSequence array of random byte values
+     * @param blockLength length of bit-patterns to check
+     * @return P-Value of the test
      */
     private Double serialTest(ComparableByteArray[] byteSequence, int blockLength) {
         double pValue = 0.0;
@@ -800,7 +749,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         double theoVar = blockSize
                 * ((1.0 / pow(2, templateSize)) - (2.0 * templateSize - 1.0) / pow(2, 2.0 * templateSize));
 
-        for (int currentTemplate = 0; currentTemplate < TEMPLATE_NINE.length; currentTemplate++) {
+        for (int currentTemplate = 0; currentTemplate < RngConstants.TEMPLATE_NINE.length; currentTemplate++) {
             int[] templateCount = new int[NUMBER_OF_BLOCKS];
             Matcher m = Pattern.compile(".{1," + blockSize + "}").matcher(fullSequence);
 
@@ -812,7 +761,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
                 // block
                 while (currentIndex <= (currentBlock.length() - templateSize)) {
                     String window = currentBlock.substring(currentIndex, currentIndex + templateSize);
-                    if (window.equals(TEMPLATE_NINE[currentTemplate][0])) {
+                    if (window.equals(RngConstants.TEMPLATE_NINE[currentTemplate][0])) {
                         currentTemplateCount++;
                         currentIndex = currentIndex + templateSize;
                     } else {
@@ -850,12 +799,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
         } else {
             // Using Fishers Method we get Chi Square Distribution with
             // TEMPLATE_NINE.length * 2 degrees of Freedom.
-            pValue = Gamma.regularizedGammaQ(TEMPLATE_NINE.length, fisherResult / 2.0);
+            pValue = Gamma.regularizedGammaQ(RngConstants.TEMPLATE_NINE.length, fisherResult / 2.0);
             LOGGER.debug("P Value is : " + pValue);
         }
         LOGGER.debug("Failed Tests : " + failedTests);
 
-        double failurePercent = (double) failedTests / TEMPLATE_NINE.length;
+        double failurePercent = (double) failedTests / RngConstants.TEMPLATE_NINE.length;
         // Use 0 and 1 to represent False and True to use the Map
         double testPassed = 0;
         if (pValue >= MINIMUM_P_VALUE) {
@@ -870,10 +819,11 @@ public class ExtractRandomnessProbe extends AfterProbe {
     /***
      * Test which uses the discrete Fourier Transformation to detect periodic
      * features of the sequence which would indicate a deviation from assumed
-     * randomness. Recommended input size is 1000 bits. Shamelessly stolen from
+     * randomness. Recommended input size is 1000 bits.
+     *
+     * Shamelessly stolen from
      * https://github.com/stamfest/randomtests/blob/master/src/main/java/net/
-     * stamfest/randomtests/nist/DiscreteFourierTransform.java TODO: Even if its
-     * "stolen" --> refactor it!!
+     * stamfest/randomtests/nist/DiscreteFourierTransform.java
      * 
      * @param byteSequence
      *            The random byte sequence as a ComparableByteArray array
@@ -963,21 +913,21 @@ public class ExtractRandomnessProbe extends AfterProbe {
             return 0.0;
         }
 
-        if (blockLength == LONGEST_RUN_VALUES[0][0]) {
+        if (blockLength == RngConstants.LONGEST_RUN_VALUES[0][0]) {
             category = 0;
             if (fullSequence.length() < 128) {
                 LOGGER.debug("Sequence is too short for this block size");
                 return pValue;
             }
         }
-        if (blockLength == LONGEST_RUN_VALUES[1][0]) {
+        if (blockLength == RngConstants.LONGEST_RUN_VALUES[1][0]) {
             category = 1;
             if (fullSequence.length() < 6272) {
                 LOGGER.debug("Sequence is too short for this block size");
                 return pValue;
             }
         }
-        if (blockLength == LONGEST_RUN_VALUES[2][0]) {
+        if (blockLength == RngConstants.LONGEST_RUN_VALUES[2][0]) {
             category = 2;
             if (fullSequence.length() < 750000) {
                 LOGGER.debug("Sequence is too short for this block size");
@@ -1023,10 +973,10 @@ public class ExtractRandomnessProbe extends AfterProbe {
             }
 
             // Count how many runs of certain length appear in blocks
-            int k = LONGEST_RUN_VALUES[category][1];
+            int k = RngConstants.LONGEST_RUN_VALUES[category][1];
             int[][] categoryCount = new int[k + 1][2];
             for (int i = 0; i <= k; i++) {
-                categoryCount[i][0] = LONGEST_RUN_EXPECTATION[category][i];
+                categoryCount[i][0] = RngConstants.LONGEST_RUN_EXPECTATION[category][i];
                 categoryCount[i][1] = 0;
             }
 
@@ -1048,8 +998,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
             }
 
             // Chi-square fitting
-            double[] categoryProbabilities = LONGEST_RUN_PROBABILITIES[category];
-            int[] categoryExpectation = LONGEST_RUN_EXPECTATION[category];
+            double[] categoryProbabilities = RngConstants.LONGEST_RUN_PROBABILITIES[category];
+            int[] categoryExpectation = RngConstants.LONGEST_RUN_EXPECTATION[category];
             double numerator;
             double denominator;
             int currentCountIndex = 0;
