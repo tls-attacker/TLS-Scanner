@@ -7,6 +7,7 @@ package de.rub.nds.tlscrawler.config;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
 
 /**
@@ -39,10 +40,18 @@ public class MasterCommandConfig {
     @ParametersDelegate
     private RedisDelegate redisDelegate;
 
+    @ParametersDelegate
+    private StarttlsDelegate starttlsDelegate;
+
     public MasterCommandConfig() {
         redisDelegate = new RedisDelegate();
+        starttlsDelegate = new StarttlsDelegate();
     }
 
+    public StarttlsDelegate getStarttlsDelegate() {
+        return starttlsDelegate;
+    }
+    
     public int getPort() {
         return port;
     }

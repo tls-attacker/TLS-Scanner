@@ -7,6 +7,7 @@
  */
 package de.rub.nds.tlscrawler.core;
 
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlscrawler.data.PersistenceProviderStats;
 import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
@@ -34,7 +35,7 @@ public class TlsCrawlerTest {
 
     @Before
     public void setUp() {
-        testJob = new ScanJob("name", "workspace", "scan", 0, 0, 0);
+        testJob = new ScanJob("name", "workspace", "scan", 0, 0, 0, StarttlsType.NONE);
         List<ScanJob> scanJobList = new LinkedList<>();
         scanJobList.add(testJob);
         IPersistenceProvider pp = mock(IPersistenceProvider.class);

@@ -39,7 +39,7 @@ public class Master {
         int counter = 0;
         do {
             LOGGER.info("Initializing ScanJob");
-            ScanJob job = new ScanJob(config.getScanName(), config.getScanName() + "-" + counter, "tls", config.getPort(), config.getReexecutions(), config.getScannerTimeout());
+            ScanJob job = new ScanJob(config.getScanName(), config.getScanName() + "-" + counter, "tls", config.getPort(), config.getReexecutions(), config.getScannerTimeout(), config.getStarttlsDelegate().getStarttlsType());
             addFreshScanTasks(job);
             LOGGER.info("Pushing ScanJob");
             orchestrationProvider.putScanJob(job);

@@ -42,38 +42,43 @@ public class SlaveWorkerThread extends Thread {
 
     @Override
     public void run() {
-        for (;;) {
-            ScanTask todo = this.synchronizedTaskRouter.getTodo();
+        try {
+            for (;;) {
+                ScanTask todo = this.synchronizedTaskRouter.getTodo();
 
-            if (todo != null) {
-                LOG.trace("Started work on {}.", todo.getId());
-                this.setName("Thread - " + todo.getScanTarget());
+                if (todo != null) {
+                    LOG.trace("Started work on {}.", todo.getId());
+                    this.setName("Thread - " + todo.getScanTarget());
 
-                Document result;
+                    Document result;
 
-                try {
-                    IScan scanInstance = this.scanProvider.getCurrentScan();
-                    
-                    result = scanInstance.scan(todo.getScanTarget());
-                } catch (Exception e) {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    e.printStackTrace(new PrintStream(out));
-                    String str = new String(out.toByteArray());
-                    result = new Document("failedWithException", str);
-                }
+                    try {
+                        IScan scanInstance = this.scanProvider.getCurrentScan();
 
-                todo.setResult(result);
+                        result = scanInstance.scan(todo.getScanTarget());
+                    } catch (Exception e) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        e.printStackTrace(new PrintStream(out));
+                        String str = new String(out.toByteArray());
+                        result = new Document("failedWithException", str);
+                    }
 
-                todo.setCompletedTimestamp(Instant.now());
+                    todo.setResult(result);
 
-                this.synchronizedTaskRouter.addFinished(todo);
-            } else {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    // Suffer quietly.
+                    todo.setCompletedTimestamp(Instant.now());
+
+                    this.synchronizedTaskRouter.addFinished(todo);
+                } else {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        // Suffer quietly.
+                    }
                 }
             }
+        } catch (Exception E) {
+            LOG.error("SlaveWorkerThread died");
+
         }
     }
 }

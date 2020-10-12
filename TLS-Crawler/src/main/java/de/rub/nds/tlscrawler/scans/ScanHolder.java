@@ -7,6 +7,8 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
+
 /**
  * Factory class to provide scans.
  *
@@ -19,10 +21,10 @@ public class ScanHolder {
     private ScanHolder() {
     }
 
-    public static IScan createScan(String name, int timeout, int parallelThreads, int reexecutions) {
+    public static IScan createScan(String name, int timeout, int parallelThreads, int reexecutions, StarttlsType starttlsType) {
         switch (name) {
             case "tls":
-                return new TlsScan(timeout, parallelThreads, reexecutions);
+                return new TlsScan(timeout, parallelThreads, reexecutions, starttlsType);
             case "ping":
                 return new PingScan();
             case "null":

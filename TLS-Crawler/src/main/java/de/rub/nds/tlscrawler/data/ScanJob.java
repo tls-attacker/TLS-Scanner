@@ -5,6 +5,7 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlscrawler.config.SlaveCommandConfig;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.NullScan;
@@ -26,16 +27,27 @@ public class ScanJob implements Serializable {
 
     private int timeout;
 
+    private StarttlsType starttlsType;
+
     private ScanJob() {
     }
 
-    public ScanJob(String scanName, String workspace, String scan, int port, int reexecutions, int timeout) {
+    public ScanJob(String scanName, String workspace, String scan, int port, int reexecutions, int timeout, StarttlsType starttlsType) {
         this.scanName = scanName;
         this.workspace = workspace;
         this.scan = scan;
         this.reexecutions = reexecutions;
         this.timeout = timeout;
         this.port = port;
+        this.starttlsType = starttlsType;
+    }
+
+    public StarttlsType getStarttlsType() {
+        return starttlsType;
+    }
+
+    public void setStarttlsType(StarttlsType starttlsType) {
+        this.starttlsType = starttlsType;
     }
 
     public String getScanName() {
@@ -65,7 +77,7 @@ public class ScanJob implements Serializable {
     public IScan createIScanObject(SlaveCommandConfig config) {
         switch (getScan()) {
             case "tls":
-                return new TlsScan(getTimeout(), config.getParallelProbeThreads(), getReexecutions());
+                return new TlsScan(getTimeout(), config.getParallelProbeThreads(), getReexecutions(), starttlsType);
             case "ping":
                 return new PingScan();
             case "null":

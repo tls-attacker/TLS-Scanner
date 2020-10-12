@@ -8,6 +8,7 @@
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlscrawler.data.ScanTarget;
 import de.rub.nds.tlsscanner.serverscanner.TlsScanner;
@@ -33,10 +34,13 @@ public class TlsScan implements IScan {
     private final ParallelExecutor parallelExecutor;
 
     private final int timeout;
+    
+    private final StarttlsType starttlsType;
 
-    public TlsScan(int timeout, int parallelExecutorThreads, int reexecutions) {
+    public TlsScan(int timeout, int parallelExecutorThreads, int reexecutions, StarttlsType starttlsType) {
         parallelExecutor = new ParallelExecutor(parallelExecutorThreads, reexecutions);
         this.timeout = timeout;
+        this.starttlsType = starttlsType;
     }
 
     @Override
@@ -59,6 +63,7 @@ public class TlsScan implements IScan {
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
         config.getClientDelegate().setSniHostname(target.getHostname());
         config.setScanDetail(ScannerDetail.QUICK);
+        config.getStarttlsDelegate().setStarttlsType(starttlsType);
         TlsScanner scanner = new TlsScanner(config, parallelExecutor);
         scanner.setCloseAfterFinishParallel(false);
         if (target.getHostname() != null) {
