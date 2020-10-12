@@ -1,7 +1,5 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -22,18 +20,24 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.BaseDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.ReverseIterator;
 
-public abstract class BaseProbe extends BaseDispatcher implements IProbe, Callable<ClientProbeResult> {
+public abstract class BaseProbe extends BaseDispatcher implements IProbe {
     protected static String PROBE_NAMESPACE = BaseProbe.class.getPackage().getName() + '.';
     private IOrchestrator orchestrator;
+    private ProbeRequirements requirementsCache = null;
+    private boolean areRequirementsChached = false;
 
     public BaseProbe(IOrchestrator orchestrator) {
         this.orchestrator = orchestrator;
     }
 
+    // #region orchestrating side
     protected String getHostnamePrefix() {
+        // hostname from class path
         String prefix = getClass().getName();
         if (prefix.startsWith(PROBE_NAMESPACE)) {
             prefix = prefix.substring(PROBE_NAMESPACE.length());
@@ -44,22 +48,46 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe, Callab
         return prefix;
     }
 
-    protected ClientProbeResult callInternal() throws InterruptedException, ExecutionException {
-        return orchestrator.runProbe(this, getHostnamePrefix());
+    protected ClientProbeResult callInternal(ClientReport report, String hostnamePrefix) throws InterruptedException, ExecutionException {
+        return orchestrator.runProbe(this, hostnamePrefix, report.uid, report);
     }
 
-    @Override
-    public ClientProbeResult call() throws InterruptedException, ExecutionException {
+    public final ClientProbeResult call(ClientReport report) throws InterruptedException, ExecutionException {
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(getClass().getSimpleName())) {
-            return callInternal();
+            return callInternal(report, getHostnamePrefix());
         }
     }
 
     @Override
     public Callable<ClientProbeResult> getCallable(ClientReport report) {
-        return this;
+        return () -> call(report);
     }
 
+    protected abstract ProbeRequirements getRequirements();
+
+    protected ProbeRequirements getRequirementsCacheControlled() {
+        if (!areRequirementsChached) {
+            requirementsCache = getRequirements();
+            if (requirementsCache == null) {
+                requirementsCache = ProbeRequirements.TRUE();
+            }
+            areRequirementsChached = true;
+        }
+        return requirementsCache;
+    }
+
+    @Override
+    public boolean canBeExecuted(ClientReport report) {
+        return getRequirementsCacheControlled().evaluateRequirementsMet(report);
+    }
+
+    @Override
+    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
+        return getRequirementsCacheControlled().evaluateWhyRequirementsNotMet(getClass(), report);
+    }
+    // #endregion
+
+    // #region helper functions
     private void assertActionIsEqual(MessageAction aAction, MessageAction bAction) {
         List<ProtocolMessage> entryMsgs;
         List<ProtocolMessage> appendMsgs;
@@ -111,4 +139,5 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe, Callab
         extendWorkflowTrace(traceWithCHLO, WorkflowTraceType.HTTPS, config);
         config.setHttpsParsingEnabled(true);
     }
+    // #endregion
 }

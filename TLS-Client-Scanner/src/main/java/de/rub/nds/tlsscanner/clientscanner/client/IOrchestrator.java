@@ -15,6 +15,6 @@ public interface IOrchestrator {
 
     public void postProcessing(ClientReport report);
 
-    public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix)
+    public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix, String uid, ClientReport report)
             throws InterruptedException, ExecutionException;
 }

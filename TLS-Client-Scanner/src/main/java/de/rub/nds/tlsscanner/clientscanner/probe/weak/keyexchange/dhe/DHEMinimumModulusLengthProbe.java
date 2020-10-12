@@ -1,7 +1,6 @@
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Random;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -11,51 +10,54 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHMinimumModulusLengthProbe.DHWeakModulusState;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHEMinimumModulusLengthProbe.DHEWeakModulusState;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
-public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModulusState> {
-    private static final int BITLENGTH_CUTOFF_LB = 2; // BigInt cannot handle bitLength<2
+//cf. logjam
+public class DHEMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHEWeakModulusState> {
+    private static final int BITLENGTH_CUTOFF_LB = 2; // Primes with less than two bits (i.e. less than two) are quite rare
     private static final int BITLENGTH_CUTOFF_UB = 4096; // Performance gets too slow
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public DHMinimumModulusLengthProbe(IOrchestrator orchestrator) {
+    private Random rnd = new Random();
+
+    public DHEMinimumModulusLengthProbe(IOrchestrator orchestrator) {
         super(orchestrator, false, false, true);
     }
 
     @Override
-    protected DHWeakModulusState getDefaultState(DispatchInformation dispatchInformation) {
-        return new DHWeakModulusState(1024);
+    protected DHEWeakModulusState getDefaultState() {
+        return new DHEWeakModulusState(1024);
     }
 
     @Override
-    protected DHWeakModulusState execute(State state, DispatchInformation dispatchInformation, DHWeakModulusState internalState) {
+    protected DHEWeakModulusState execute(State state, DispatchInformation dispatchInformation, DHEWeakModulusState internalState) throws DispatchException {
         Config config = state.getConfig();
         Integer toTest = internalState.getNext();
         LOGGER.debug("Testing {}", toTest);
         prepareConfig(config);
         config.setDefaultApplicationMessageData("Keysize: " + toTest);
-        config.setDefaultServerDhModulus(new BigInteger(toTest, 10, new Random()));
+        config.setDefaultServerDhModulus(new BigInteger(toTest, 10, rnd));
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
         executeState(state, dispatchInformation);
         internalState.put(toTest, state);
         return internalState;
     }
 
-    public static class DHWeakModulusState implements BaseStatefulProbe.InternalProbeState {
+    public static class DHEWeakModulusState implements BaseStatefulProbe.InternalProbeState {
         private boolean wasGreedy = false;
 
         private Integer highestRejected;
         private Integer lowestAccepted;
         private final int startingPoint;
 
-        public DHWeakModulusState(int startingPoint) {
+        public DHEWeakModulusState(int startingPoint) {
             this.startingPoint = startingPoint;
         }
 
@@ -126,8 +128,8 @@ public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModu
 
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class DHMinimumModulusLengthResult extends ClientProbeResult {
-        private final Integer lowestBitlengthAccepted;
-        private final boolean cutoffKickedIn;
+        public final Integer lowestBitlengthAccepted;
+        public final boolean cutoffKickedIn;
 
         public DHMinimumModulusLengthResult(Integer result, boolean cutoffKickedIn) {
             this.lowestBitlengthAccepted = result;
@@ -136,7 +138,7 @@ public class DHMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHWeakModu
 
         @Override
         public void merge(ClientReport report) {
-            report.putResult(DHMinimumModulusLengthProbe.class, this);
+            report.putResult(DHEMinimumModulusLengthProbe.class, this);
         }
 
     }

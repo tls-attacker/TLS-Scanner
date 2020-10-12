@@ -55,15 +55,19 @@ public class ClientScanExecutor implements Observer {
 
     protected ClientReport executeInternal(ClientInfo clientInfo) {
         ClientReport report = new ClientReport(clientInfo);
-        LOGGER.info("Starting scan");
-        checkForExecutableProbes(report);
-        executeProbesTillNoneCanBeExecuted(report);
-        updateClientReporttWithNotExecutedProbes(report);
-        reportAboutNotExecutedProbes();
-        collectStatistics(report);
-        executeAfterProbes(report);
-        LOGGER.info("Finished scan");
-        return report;
+        try {
+            LOGGER.info("Starting scan");
+            checkForExecutableProbes(report);
+            executeProbesTillNoneCanBeExecuted(report);
+            updateClientReporttWithNotExecutedProbes(report);
+            reportAboutNotExecutedProbes();
+            collectStatistics(report);
+            executeAfterProbes(report);
+            LOGGER.info("Finished scan");
+            return report;
+        } finally {
+            report.finalizeReport();
+        }
     }
 
     private void checkForExecutableProbes(ClientReport report) {

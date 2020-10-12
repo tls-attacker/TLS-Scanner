@@ -2,141 +2,93 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ParametrizedClientProbeResult;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
-import de.rub.nds.tlsscanner.clientscanner.util.MapUtil;
-
-public class VersionProbe extends BaseStatefulProbe<VersionProbe.VersionProbeState> {
-
+public class VersionProbe extends BaseProbe {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Collection<ProtocolVersion> versionsToTest;
 
-    public VersionProbe(IOrchestrator orchestrator, Collection<ProtocolVersion> versionsToTest) {
+    private static final List<CipherSuite> suites13;
+    private static final List<CipherSuite> suitesPre13;
+    static {
+        suitesPre13 = CipherSuite.getImplemented();
+        suitesPre13.removeIf((suite) -> suite.isTLS13());
+        suites13 = CipherSuite.getImplemented();
+        suites13.removeIf((suite) -> !suite.isTLS13());
+    }
+
+    public static Collection<VersionProbe> getDefaultProbes(IOrchestrator orchestrator) {
+        return Arrays.asList(
+                new VersionProbe(orchestrator, ProtocolVersion.SSL2),
+                new VersionProbe(orchestrator, ProtocolVersion.SSL3),
+                new VersionProbe(orchestrator, ProtocolVersion.TLS10),
+                new VersionProbe(orchestrator, ProtocolVersion.TLS11),
+                new VersionProbe(orchestrator, ProtocolVersion.TLS12),
+                new VersionProbe(orchestrator, ProtocolVersion.TLS13));
+    }
+
+    private final ProtocolVersion versionToTest;
+
+    public VersionProbe(IOrchestrator orchestrator, ProtocolVersion versionToTest) {
         super(orchestrator);
-        this.versionsToTest = versionsToTest;
+        this.versionToTest = versionToTest;
     }
 
     @Override
-    protected VersionProbeState getDefaultState(DispatchInformation dispatchInformation) {
-        return new VersionProbeState(versionsToTest);
-    }
-
-    public VersionProbe(IOrchestrator orchestrator) {
-        this(orchestrator, Arrays.asList(ProtocolVersion.values()));
+    protected String getHostnamePrefix() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.versionToTest.name());
+        sb.append('.');
+        sb.append(super.getHostnamePrefix());
+        return sb.toString();
     }
 
     @Override
-    protected VersionProbeState execute(State state,
-            DispatchInformation dispatchInformation, VersionProbeState internalState) {
-        ProtocolVersion toTest = internalState.getNext();
-        LOGGER.debug("Testing version {}", toTest);
+    protected ProbeRequirements getRequirements() {
+        return null;
+    }
+
+    @Override
+    public ParametrizedClientProbeResult<ProtocolVersion, Boolean> execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+        LOGGER.debug("Testing version {}", versionToTest);
         Config config = state.getConfig();
-        config.setHighestProtocolVersion(toTest);
-        config.setDefaultSelectedProtocolVersion(toTest);
-        config.setDefaultApplicationMessageData("TLS Version: " + toTest);
+        config.setHighestProtocolVersion(versionToTest);
+        config.setDefaultSelectedProtocolVersion(versionToTest);
+        config.setDefaultApplicationMessageData("TLS Version: " + versionToTest);
+        if (versionToTest == ProtocolVersion.TLS13) {
+            // cf TLS-Attacker/resources/configs/tls13.config
+            config.setDefaultServerSupportedCiphersuites(suites13);
+            config.setAddECPointFormatExtension(false);
+            config.setAddEllipticCurveExtension(true);
+            config.setAddSignatureAndHashAlgorithmsExtension(true);
+            config.setAddSupportedVersionsExtension(true);
+            config.setAddKeyShareExtension(true);
+
+            config.setAddRenegotiationInfoExtension(false);
+            // config.setDefaultServerSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm.RSA_SHA256);
+        }
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
         ClientAdapterResult cres = executeState(state, dispatchInformation);
-        internalState.addResult(toTest, state, cres);
-        return internalState;
-    }
-
-    @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
-        return null;
-    }
-
-    public static class VersionProbeState implements BaseStatefulProbe.InternalProbeState {
-        private final Map<ProtocolVersion, State> states;
-        private final Map<ProtocolVersion, ClientAdapterResult> clientResults;
-        private final List<ProtocolVersion> leftToTest;
-        private ProtocolVersion lastTested = null;
-
-        public VersionProbeState(Collection<ProtocolVersion> toTest) {
-            states = new HashMap<>();
-            clientResults = new HashMap<>();
-            leftToTest = new LinkedList<>(toTest);
-        }
-
-        public boolean hasChecked(ProtocolVersion v) {
-            return states.containsKey(v);
-        }
-
-        public ProtocolVersion getNext() {
-            return leftToTest.remove(0);
-        }
-
-        public void addResult(ProtocolVersion v, State state, ClientAdapterResult cres) {
-            states.put(v, state);
-        }
-
-        @Override
-        public boolean isDone() {
-            return leftToTest.isEmpty();
-        }
-
-        @Override
-        public ClientProbeResult toResult() {
-            return new VersionProbeResult(states);
-        }
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class VersionProbeResult extends ClientProbeResult {
-        private final Map<ProtocolVersion, Boolean> versionSupport;
-
-        public VersionProbeResult(Map<ProtocolVersion, State> states) {
-            versionSupport = new HashMap<>();
-            for (Map.Entry<ProtocolVersion, State> kv : states.entrySet()) {
-                versionSupport.put(kv.getKey(), checkSupported(kv.getKey(), kv.getValue()));
-            }
-        }
-
-        private Boolean checkSupported(ProtocolVersion v, State s) {
-            // TODO maybe we need a better check...
-            return s.getTlsContext().getSelectedProtocolVersion() == v && s.getWorkflowTrace().executedAsPlanned();
-        }
-
-        @Override
-        public void merge(ClientReport report) {
-            // TODO synchronization?
-            if (report.hasResult(VersionProbe.class)) {
-                // merge
-                VersionProbeResult other = (VersionProbeResult) report.getResult(VersionProbe.class);
-                MapUtil.mergeIntoFirst(other.versionSupport, versionSupport);
-                report.markAsChangedAndNotify();
-            } else {
-                report.putResult(VersionProbe.class, this);
-            }
-        }
+        // TODO use cres to evaluate further
+        boolean res = state.getTlsContext().getSelectedProtocolVersion() == versionToTest && state.getWorkflowTrace().executedAsPlanned();
+        return new ParametrizedClientProbeResult<>(getClass(), versionToTest, res);
     }
 
 }

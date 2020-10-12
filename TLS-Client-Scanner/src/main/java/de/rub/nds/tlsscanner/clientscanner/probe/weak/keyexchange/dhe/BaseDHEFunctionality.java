@@ -9,6 +9,7 @@ import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe.SupportedCipherSuitesResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 
@@ -39,23 +40,13 @@ class BaseDHEFunctionality {
         }
     }
 
-    public static boolean canBeExecuted(ClientReport report, boolean tls13, boolean ec, boolean ff) {
-        if (!report.hasResult(SupportedCipherSuitesProbe.class)) {
-            return false;
-        }
-        SupportedCipherSuitesResult res = report.getResult(SupportedCipherSuitesProbe.class, SupportedCipherSuitesResult.class);
-        return res.supportsKeyExchangeDHE(tls13, ec, ff);
-    }
-
-    public static ClientProbeResult getCouldNotExecuteResult(Class<? extends IProbe> clazz, ClientReport report, boolean tls13, boolean ec, boolean ff) {
-        if (!report.hasResult(SupportedCipherSuitesProbe.class)) {
-            return new NotExecutedResult(clazz, "Missing result for CipherSuiteReconProbe");
-        }
-        SupportedCipherSuitesResult res = report.getResult(SupportedCipherSuitesProbe.class, SupportedCipherSuitesResult.class);
-        if (!res.supportsKeyExchangeDHE(tls13, ec, ff)) {
-            return new NotExecutedResult(clazz, "Client does not support DHE");
-        }
-        return new NotExecutedResult(clazz, "Internal scheduling error");
+    public static ProbeRequirements getRequirements(boolean tls13, boolean ec, boolean ff) {
+        return ProbeRequirements.TRUE()
+                .needResultOfTypeMatching(
+                        SupportedCipherSuitesProbe.class,
+                        SupportedCipherSuitesResult.class,
+                        r -> r.supportsKeyExchangeDHE(tls13, ec, ff),
+                        "Client does not support DHE key exchange");
     }
 
     public static void prepareConfig(Config config, boolean tls13, boolean ec, boolean ff) {

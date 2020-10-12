@@ -9,6 +9,7 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class HelloReconProbe extends BaseProbe {
@@ -18,12 +19,7 @@ public class HelloReconProbe extends BaseProbe {
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
+    protected ProbeRequirements getRequirements() {
         return null;
     }
 

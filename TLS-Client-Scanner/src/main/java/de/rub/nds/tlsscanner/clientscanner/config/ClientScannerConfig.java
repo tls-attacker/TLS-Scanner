@@ -20,6 +20,9 @@ public class ClientScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
 
+    @Parameter(names = "-file", required = false, description = "File to write the report to as xml")
+    private String reportFile = null;
+
     public ClientScannerConfig(GeneralDelegate delegate) {
         super(delegate);
         this.generalDelegate = delegate;
@@ -39,11 +42,7 @@ public class ClientScannerConfig extends TLSDelegateConfig {
         return config;
     }
 
-    public int getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
+    public String getReportFile() {
+        return reportFile;
     }
 }

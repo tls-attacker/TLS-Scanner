@@ -34,9 +34,9 @@ public abstract class BaseAnalyzingProbe implements IProbe {
     @Override
     public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
         if (!report.hasResult(HelloReconProbe.class)) {
-            return new NotExecutedResult(getClass(), "HelloReconProbe was not executed");
+            return NotExecutedResult.MISSING_DEPENDENT_RESULT(getClass(), HelloReconProbe.class);
         }
-        return null;
+        return NotExecutedResult.UNKNOWN_ERROR(getClass());
     }
 
     public static class NotDispatchableException extends DispatchException {

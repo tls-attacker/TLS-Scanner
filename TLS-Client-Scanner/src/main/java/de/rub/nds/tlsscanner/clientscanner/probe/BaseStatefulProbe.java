@@ -2,15 +2,27 @@ package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+
+import javax.naming.OperationNotSupportedException;
+
+import org.bouncycastle.asn1.eac.BidirectionalMap;
 
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher.UidInformation;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProbeState> extends BaseProbe {
-
+    private static final Logger LOGGER = LogManager.getLogger();
+    // map UID to state
     private Map<String, T> previousStateCache;
 
     public BaseStatefulProbe(IOrchestrator orchestrator) {
@@ -18,52 +30,78 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
         previousStateCache = new HashMap<>();
     }
 
-    protected abstract T getDefaultState(DispatchInformation dispatchInformation);
+    // #region serving side
 
-    protected T getPreviousState(String raddr, DispatchInformation dispatchInformation) {
+    protected abstract T getDefaultState();
+
+    protected T getPreviousState(String uid) {
         synchronized (previousStateCache) {
-            if (previousStateCache.containsKey(raddr)) {
-                return previousStateCache.get(raddr);
+            if (previousStateCache.containsKey(uid)) {
+                return previousStateCache.get(uid);
             } else {
-                return getDefaultState(dispatchInformation);
+                return getDefaultState();
             }
         }
     }
 
-    protected void setPreviousState(String raddr, T state) {
+    protected void setPreviousState(String uid, T state) {
         synchronized (previousStateCache) {
-            previousStateCache.put(raddr, state);
+            previousStateCache.put(uid, state);
         }
     }
 
-    protected void removePreviousState(String raddr) {
+    protected void removePreviousState(String uid) {
         synchronized (previousStateCache) {
-            previousStateCache.remove(raddr);
+            previousStateCache.remove(uid);
         }
     }
 
     @Override
-    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) {
-        String raddr = state.getInboundTlsContexts().get(0).getConnection().getIp();
-        T previousState = getPreviousState(raddr, dispatchInformation);
+    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+        String uid;
+        if (dispatchInformation.additionalInformation.containsKey(SNIUidDispatcher.class)) {
+            uid = dispatchInformation.getAdditionalInformation(SNIUidDispatcher.class, UidInformation.class).uid;
+        } else {
+            String raddr = state.getInboundTlsContexts().get(0).getConnection().getIp();
+            // report only generates alphanumeric uids - we can simply include a non
+            // alphanum char (e.g. ':') to not interfere with them
+            uid = "RADDR:" + raddr;
+            if (!previousStateCache.containsKey(uid)) {
+                // issue warning only once (per addr and, unfortunately, probe)
+                LOGGER.warn("Could not find UID for remote address {} (most likely due to no SNI)", raddr);
+            }
+        }
+        T previousState = getPreviousState(uid);
         T ret = this.execute(state, dispatchInformation, previousState);
         if (ret.isDone()) {
-            removePreviousState(raddr);
-            return ret.toResult();
+            removePreviousState(uid);
+            ClientProbeResult res = ret.toResult();
+            if (res == null) {
+                throw new DispatchException("Got null result, even though probe said it was done");
+            }
+            return res;
         } else {
-            setPreviousState(raddr, ret);
+            setPreviousState(uid, ret);
             return null;
         }
     }
 
     protected abstract T execute(State state, DispatchInformation dispatchInformation,
-            T internalState);
+            T internalState) throws DispatchException;
 
+    // #endregion
+
+    // #region Orchestrating side
     @Override
-    public ClientProbeResult call() throws InterruptedException, ExecutionException {
+    @SuppressWarnings("squid:S4274") // sonarlint: use assert to check parameters
+    // in this case we do not care about the parameter at all. This is just to help
+    // check whether it was programmed correctly
+    public ClientProbeResult callInternal(ClientReport report, String nullString) throws InterruptedException, ExecutionException {
+        assert nullString == null;
         ClientProbeResult ret = null;
         while (ret == null) {
-            ret = super.call();
+            T internalState = getPreviousState(report.uid);
+            ret = super.callInternal(report, getHostnamePrefix(internalState));
         }
         return ret;
     }
@@ -73,4 +111,14 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
 
         ClientProbeResult toResult();
     }
+
+    @Override
+    protected final String getHostnamePrefix() {
+        return null;
+    }
+
+    protected String getHostnamePrefix(T internalState) {
+        return super.getHostnamePrefix();
+    }
+    // #endregion
 }

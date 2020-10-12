@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -22,6 +23,7 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
+import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
@@ -43,30 +45,22 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceNormalizer;
 import de.rub.nds.tlsattacker.transport.ConnectionEndType;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ControlledClientDispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
 public abstract class BaseDispatcher implements IDispatcher {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    protected void patchCertificate(State state, DispatchInformation dispatchInformation) throws IOException {
-        String hostname;
-        ServerNameIndicationExtensionMessage sni = SNIUtil.getSNIFromExtensions(dispatchInformation.chlo.getExtensions());
-        hostname = SNIUtil.getServerNameFromSNIExtension(sni);
-        if (hostname == null) {
-            hostname = state.getConfig().getDefaultServerConnection().getHostname();
-        }
+    // #region Certificate stuff
 
-        Config config = state.getConfig();
-        CertificateKeyPair kp = config.getDefaultExplicitCertificateKeyPair();
-        ByteArrayInputStream stream = new ByteArrayInputStream(kp.getCertificateBytes());
-        org.bouncycastle.asn1.x509.Certificate ca_cert = Certificate.parse(stream).getCertificateAt(0);
-        CustomPrivateKey ca_sk = kp.getPrivateKey();
-
+    protected CertificateKeyType determineCertificateKeyType(State state) {
         // stolen from server hello preparator
         // used to determine which kind of cert we need
+        final Config config = state.getConfig();
         CipherSuite selectedSuite = null;
-        if (state.getConfig().isEnforceSettings()) {
+        if (config.isEnforceSettings()) {
             selectedSuite = config.getDefaultSelectedCipherSuite();
         } else {
             for (CipherSuite suite : config.getDefaultServerSupportedCiphersuites()) {
@@ -79,9 +73,20 @@ public abstract class BaseDispatcher implements IDispatcher {
                 selectedSuite = config.getDefaultSelectedCipherSuite();
             }
         }
+
+        CertificateKeyType ckt;
+        if (selectedSuite.isTLS13()) {
+            // TODO look at clients prefered signature algorithms
+            ckt = CertificateKeyType.DSS;
+        } else {
+            ckt = AlgorithmResolver.getKeyExchangeAlgorithm(selectedSuite).getRequiredCertPublicKeyType();
+        }
+        return ckt;
+    }
+
+    protected KeyPair generateCertificateKeyPair(CertificateKeyType ckt) {
         String kpType = null;
         int keysize = 0;
-        CertificateKeyType ckt = AlgorithmResolver.getKeyExchangeAlgorithm(selectedSuite).getRequiredCertPublicKeyType();
         switch (ckt) {
             case DH:
                 kpType = "DiffieHellman";
@@ -110,13 +115,15 @@ public abstract class BaseDispatcher implements IDispatcher {
         try {
             kpg = KeyPairGenerator.getInstance(kpType);
             kpg.initialize(keysize);
-        } catch (NoSuchAlgorithmException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.error("Failed to create keyPair", e);
+            throw new RuntimeException("Failed to create keyPair", e);
         }
-        KeyPair ckp = kpg.generateKeyPair();
+        return kpg.genKeyPair();
+    }
 
-        X500Name issuer = ca_cert.getSubject();
+    protected X509v3CertificateBuilder generateInnerCertificate(String hostname, org.bouncycastle.asn1.x509.Certificate parent, PublicKey myPubKey) throws CertIOException {
+        X500Name issuer = parent.getSubject();
         BigInteger serial = BigInteger.valueOf(0);
         Calendar notBefore = new GregorianCalendar();
         notBefore.add(Calendar.DAY_OF_MONTH, -1);
@@ -131,33 +138,66 @@ public abstract class BaseDispatcher implements IDispatcher {
                 .addRDN(BCStyle.OU, "NDS")
                 .addRDN(BCStyle.CN, hostname)
                 .build();
-        X509v3CertificateBuilder cert_builder = new JcaX509v3CertificateBuilder(issuer, serial, notBefore.getTime(), notAfter.getTime(), subject, ckp.getPublic());
 
+        X509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(issuer, serial, notBefore.getTime(), notAfter.getTime(), subject, myPubKey);
+
+        // add SAN
         List<GeneralName> altNames = new ArrayList<>();
         altNames.add(new GeneralName(GeneralName.dNSName, hostname));
         GeneralNames subjectAltNames = GeneralNames.getInstance(new DERSequence(altNames.toArray(new GeneralName[] {})));
-        cert_builder = cert_builder.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);
-        try {
-            ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSAEncryption").build(ca_sk);
-            X509CertificateHolder cert = cert_builder.build(signer);
-            Certificate cert_lst = new Certificate(new org.bouncycastle.asn1.x509.Certificate[] { cert.toASN1Structure(), ca_cert });
-            CertificateKeyPair finalCert = new CertificateKeyPair(cert_lst, ckp.getPrivate(), ckp.getPublic());
-            config.setDefaultExplicitCertificateKeyPair(finalCert);
-            finalCert.adjustInConfig(config, ConnectionEndType.SERVER);
-        } catch (OperatorCreationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        certBuilder = certBuilder.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);
+
+        return certBuilder;
     }
 
-    protected ClientAdapterResult executeState(State state, DispatchInformation dispatchInformation) {
+    protected Certificate generateCertificateChain(State state, String hostname, PublicKey pubKey) throws OperatorCreationException, IOException {
+        CertificateKeyPair kp = state.getConfig().getDefaultExplicitCertificateKeyPair();
+        ByteArrayInputStream stream = new ByteArrayInputStream(kp.getCertificateBytes());
+        Certificate origCertChain = Certificate.parse(stream);
+        // TODO allow more complex chains
+        assert origCertChain.getLength() == 1;
+        org.bouncycastle.asn1.x509.Certificate parentCert = origCertChain.getCertificateAt(0);
+        CustomPrivateKey parentSk = kp.getPrivateKey();
+
+        X509v3CertificateBuilder certBuilder = generateInnerCertificate(hostname, parentCert, pubKey);
+
+        ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSAEncryption").build(parentSk);
+        X509CertificateHolder cert = certBuilder.build(signer);
+        return new Certificate(new org.bouncycastle.asn1.x509.Certificate[] { cert.toASN1Structure(), parentCert });
+    }
+
+    protected void patchCertificate(State state, DispatchInformation dispatchInformation) throws IOException, OperatorCreationException {
+        String hostname;
+        ServerNameIndicationExtensionMessage sni = SNIUtil.getSNIFromExtensions(dispatchInformation.chlo.getExtensions());
+        hostname = SNIUtil.getServerNameFromSNIExtension(sni);
+        if (hostname == null) {
+            hostname = state.getConfig().getDefaultServerConnection().getHostname();
+        }
+        if (hostname == null) {
+            LOGGER.warn("No hostname given by client and none found in config, falling back to localhost");
+            hostname = "localhost";
+        }
+        final Config config = state.getConfig();
+
+        // generate keys
+        CertificateKeyType ckt = determineCertificateKeyType(state);
+        KeyPair ckp = generateCertificateKeyPair(ckt);
+
+        Certificate cert_lst = generateCertificateChain(state, hostname, ckp.getPublic());
+        CertificateKeyPair finalCert = new CertificateKeyPair(cert_lst, ckp.getPrivate(), ckp.getPublic());
+        config.setDefaultExplicitCertificateKeyPair(finalCert);
+        finalCert.adjustInConfig(config, ConnectionEndType.SERVER);
+    }
+
+    // #endregion
+
+    protected ClientAdapterResult executeState(State state, DispatchInformation dispatchInformation) throws PatchCertificateException {
         WorkflowTrace trace = state.getWorkflowTrace();
         try {
             patchCertificate(state, dispatchInformation);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            LOGGER.error("Failed to patch certificate", e);
+            throw new PatchCertificateException(e);
         }
 
         WorkflowTraceNormalizer normalizer = new WorkflowTraceNormalizer();
@@ -168,8 +208,8 @@ public abstract class BaseDispatcher implements IDispatcher {
         executor.executeWorkflow();
         if (state.getConfig().isWorkflowExecutorShouldClose() &&
                 dispatchInformation.additionalInformation.containsKey(ControlledClientDispatcher.class)) {
-            @SuppressWarnings("unchecked")
-            Future<ClientAdapterResult> cFuture = dispatchInformation.getAdditionalInformation(ControlledClientDispatcher.class, Future.class);
+            ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
+            Future<ClientAdapterResult> cFuture = ccInfo.clientFuture;
             try {
                 return cFuture.get();
             } catch (InterruptedException e) {
@@ -180,5 +220,12 @@ public abstract class BaseDispatcher implements IDispatcher {
             }
         }
         return null;
+    }
+
+    public static class PatchCertificateException extends DispatchException {
+
+        public PatchCertificateException(Exception e) {
+            super(e);
+        }
     }
 }

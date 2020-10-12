@@ -4,6 +4,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public abstract class BaseDHEProbe extends BaseProbe {
@@ -17,13 +18,8 @@ public abstract class BaseDHEProbe extends BaseProbe {
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return BaseDHEFunctionality.canBeExecuted(report, tls13, ec, ff);
-    }
-
-    @Override
-    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
-        return BaseDHEFunctionality.getCouldNotExecuteResult(getClass(), report, tls13, ec, ff);
+    protected ProbeRequirements getRequirements() {
+        return BaseDHEFunctionality.getRequirements(tls13, ec, ff);
     }
 
     public void prepareConfig(Config config) {

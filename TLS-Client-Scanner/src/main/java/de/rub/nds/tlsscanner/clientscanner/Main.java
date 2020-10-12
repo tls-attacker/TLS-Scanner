@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.clientscanner;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -35,17 +34,20 @@ import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.ThreadLocalOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.HelloWorldDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.probe.ForcedCompressionProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.downgrade.SendAlert;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.HelloReconProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SNIProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHMinimumModulusLengthProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHWeakPrivateKeyProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHECompositeModulusProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHEMinimumModulusLengthProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHESmallSubgroupProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHEWeakPrivateKeyProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class Main {
 
@@ -77,7 +79,7 @@ public class Main {
     }
 
     private static void runStandalone(ClientScannerConfig csConfig) {
-        Server s = new Server(csConfig, new HelloWorldDispatcher(), 8);
+        Server s = new Server(csConfig, new VersionProbe(null, ProtocolVersion.TLS13), 8);
         try {
             s.start();
             s.join();
@@ -89,37 +91,69 @@ public class Main {
         }
     }
 
+    private static List<IProbe> getProbes(IOrchestrator orchestrator) {
+        List<IProbe> probes = new ArrayList<>();
+        probes.addAll(VersionProbe.getDefaultProbes(orchestrator));
+        probes.add(new HelloReconProbe(orchestrator));
+        probes.add(new SNIProbe());
+        probes.add(new SupportedCipherSuitesProbe());
+        probes.add(new DHEMinimumModulusLengthProbe(orchestrator));
+        probes.addAll(DHEWeakPrivateKeyProbe.getDefaultProbes(orchestrator));
+        probes.addAll(DHECompositeModulusProbe.getDefaultProbes(orchestrator));
+        probes.addAll(DHESmallSubgroupProbe.getDefaultProbes(orchestrator));
+        probes.add(new FreakProbe(orchestrator));
+        probes.add(new ForcedCompressionProbe(orchestrator));
+        probes.addAll(SendAlert.getDefaultProbes(orchestrator));
+        // probes that are on todo
+        if (false) {
+            probes.clear();
+            probes.add(new HelloReconProbe(orchestrator));
+            probes.add(new SNIProbe());
+            probes.add(new SupportedCipherSuitesProbe());
+            probes.add(new PaddingOracleProbe(orchestrator));
+        }
+        if (false) {
+            probes.clear();
+            probes.add(new VersionProbe(orchestrator, ProtocolVersion.TLS13));
+        }
+        // quick scan with only the probes I am interested in right now
+        if (!false) {
+            probes.clear();
+            probes.add(new HelloReconProbe(orchestrator));
+            probes.add(new SNIProbe());
+            probes.add(new SupportedCipherSuitesProbe());
+            probes.add(new DHEMinimumModulusLengthProbe(orchestrator));
+            probes.addAll(DHEWeakPrivateKeyProbe.getDefaultProbes(orchestrator));
+            probes.addAll(DHECompositeModulusProbe.getDefaultProbes(orchestrator));
+            probes.addAll(DHESmallSubgroupProbe.getDefaultProbes(orchestrator));
+        }
+        return probes;
+    }
+
     private static void runScan(ClientScannerConfig csConfig) {
         csConfig.serverDelegate.setPort(0); // use any free port
         IOrchestrator orchestrator = new ThreadLocalOrchestrator(csConfig);
         int threads = 1;
         ThreadPoolExecutor pool = new ThreadPoolExecutor(threads, threads, 1, TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-probe-runner"));
-        List<IProbe> probes = new ArrayList<>();
-        probes.add(new VersionProbe(orchestrator,
-                Arrays.asList(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
-                        ProtocolVersion.TLS11, ProtocolVersion.TLS12, ProtocolVersion.TLS13)));
-        probes.add(new HelloReconProbe(orchestrator));
-        probes.add(new SNIProbe());
-        probes.add(new SupportedCipherSuitesProbe());
-        probes.add(new DHMinimumModulusLengthProbe(orchestrator));
-        probes.add(new DHWeakPrivateKeyProbe(orchestrator));
-        probes.addAll(SendAlert.getDefaultProbes(orchestrator));
-        if (false) {
-            probes.clear();
-            probes.add(new VersionProbe(orchestrator, Arrays.asList(ProtocolVersion.TLS13)));
-        }
-        ClientScanExecutor exec = new ClientScanExecutor(probes, null, orchestrator, pool);
-        ClientReport rep = exec.execute();
+
+        ClientScanExecutor executor = new ClientScanExecutor(getProbes(orchestrator), null, orchestrator, pool);
+        ClientReport rep = executor.execute();
         pool.shutdown();
+
         try {
-            File file = new File("./report.xml");
+            File file = null;
+            if (csConfig.getReportFile() != null) {
+                file = new File(csConfig.getReportFile());
+            }
             JAXBContext ctx;
             ctx = JAXBContext.newInstance(ClientReport.class);
             Marshaller marsh = ctx.createMarshaller();
             marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marsh.marshal(rep, System.out);
-            marsh.marshal(rep, file);
+            if (file != null) {
+                marsh.marshal(rep, file);
+            }
         } catch (JAXBException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -11,8 +11,6 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
@@ -21,11 +19,12 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
-import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.MapUtil;
 
@@ -69,33 +68,28 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
+    protected ProbeRequirements getRequirements() {
         return null;
     }
 
     @Override
-    protected AlertDowngradeInternalState getDefaultState(DispatchInformation dispatchInformation) {
+    protected AlertDowngradeInternalState getDefaultState() {
         return new AlertDowngradeInternalState(getClass(), alertLevel, alertDesc);
     }
 
     @Override
-    protected String getHostnamePrefix() {
+    protected String getHostnamePrefix(AlertDowngradeInternalState internalState) {
         StringBuilder sb = new StringBuilder();
         sb.append(this.alertLevel.name());
         sb.append('.');
         sb.append(this.alertDesc.name());
         sb.append('.');
-        sb.append(super.getHostnamePrefix());
+        sb.append(super.getHostnamePrefix(internalState));
         return sb.toString();
     }
 
     @Override
-    protected AlertDowngradeInternalState execute(State state, DispatchInformation dispatchInformation, AlertDowngradeInternalState internalState) {
+    protected AlertDowngradeInternalState execute(State state, DispatchInformation dispatchInformation, AlertDowngradeInternalState internalState) throws DispatchException {
         // only analyze chlo
         if (!internalState.isFirstDone()) {
             WorkflowTrace trace = state.getWorkflowTrace();

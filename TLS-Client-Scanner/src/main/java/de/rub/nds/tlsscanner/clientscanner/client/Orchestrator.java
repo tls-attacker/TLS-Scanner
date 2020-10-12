@@ -1,8 +1,13 @@
 package de.rub.nds.tlsscanner.clientscanner.client;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.sql.rowset.spi.SyncResolver;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +19,10 @@ import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ClientProbeResultFuture;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIFallingBackDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
@@ -23,6 +32,7 @@ import de.rub.nds.tlsscanner.clientscanner.util.helper.BaseFuture;
 public class Orchestrator implements IOrchestrator {
     private static final int CLIENT_RETRY_COUNT = 3;
     private static final Logger LOGGER = LogManager.getLogger();
+
     protected final IClientAdapter clientAdapter;
     protected final Server server;
     protected final ControlledClientDispatcher dispatcher;
@@ -37,6 +47,8 @@ public class Orchestrator implements IOrchestrator {
         // if no sni we pass null as expected hostname to dispatcher, possibly also
         // disable multithreading...
         // clientAdapter = new CurlAdapter(new LocalCommandExecutor())
+        // 7.72.0--openssl-client:1.0.1
+        // 7.72.0--openssl-client:1.0.2
         // 7.72.0--openssl-client:1.1.1g
         // 7.72.0--boringssl-client:master
         clientAdapter = new DockerLibAdapter(TlsImplementationType.CURL, "7.72.0--openssl-client:1.1.1g");
@@ -45,8 +57,12 @@ public class Orchestrator implements IOrchestrator {
             // TODO move baseHostname into config
         }
 
+        SNIDispatcher snid = new SNIDispatcher();
         dispatcher = new ControlledClientDispatcher();
-        server = new Server(csConfig, dispatcher, 1);
+        snid.registerRule(baseHostname, new SNINopDispatcher());
+        snid.registerRule("uid", new SNIUidDispatcher());
+        snid.registerRule("cc", dispatcher);
+        server = new Server(csConfig, new SNIFallingBackDispatcher(snid, dispatcher), 1);
     }
 
     @Override
@@ -75,7 +91,7 @@ public class Orchestrator implements IOrchestrator {
     }
 
     @Override
-    public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix)
+    public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix, String uid, ClientReport report)
             throws InterruptedException, ExecutionException {
         // keep track of multithreading to possibly issue warning
         if (!wasCalledWithMultithreading) {
@@ -86,16 +102,20 @@ public class Orchestrator implements IOrchestrator {
             }
         }
 
-        String hostname = String.format("%s.%s", hostnamePrefix, baseHostname);
+        String hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, uid, baseHostname);
         FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
         // enqueue probe on serverside
-        ClientProbeResultFuture serverResultFuture = dispatcher.enqueueProbe(probe, hostname, clientResultHolder);
+        ClientProbeResultFuture serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, uid, clientResultHolder, report);
 
         // tell client to connect and get its result
         ClientAdapterResult clientResult = null;
         int tryNo = 0;
         try {
             while (!serverResultFuture.isGotConnection()) {
+                if (tryNo > 0) {
+                    // sleep a bit
+                    Thread.sleep(1000);
+                }
                 if (tryNo++ >= CLIENT_RETRY_COUNT) {
                     LOGGER.warn("Failed to get connection from client after {} tries", CLIENT_RETRY_COUNT);
                     break;

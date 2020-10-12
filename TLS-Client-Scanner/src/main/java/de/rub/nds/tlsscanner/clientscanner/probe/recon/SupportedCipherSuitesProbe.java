@@ -6,7 +6,9 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.CipherType;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.HelloReconProbe.HelloReconResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
@@ -48,6 +50,25 @@ public class SupportedCipherSuitesProbe extends BaseAnalyzingProbe {
                     if (ec && cs.name().contains("_ECDHE_")) {
                         return true;
                     }
+                }
+            }
+            return false;
+        }
+
+        public boolean supportsKeyExchangeRSA() {
+            for (CipherSuite cs : supportedSuites) {
+                if (cs.name().startsWith("TLS_RSA_")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public boolean supportsBlockCiphers() {
+            for (CipherSuite cs : supportedSuites) {
+                CipherType cipherType = AlgorithmResolver.getCipherType(cs);
+                if (cipherType == CipherType.BLOCK) {
+                    return true;
                 }
             }
             return false;

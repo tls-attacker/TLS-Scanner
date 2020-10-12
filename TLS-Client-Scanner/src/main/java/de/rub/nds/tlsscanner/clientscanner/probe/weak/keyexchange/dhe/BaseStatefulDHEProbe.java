@@ -3,8 +3,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 
 public abstract class BaseStatefulDHEProbe<T extends BaseStatefulProbe.InternalProbeState> extends BaseStatefulProbe<T> {
     private final boolean tls13, ec, ff;
@@ -17,13 +16,8 @@ public abstract class BaseStatefulDHEProbe<T extends BaseStatefulProbe.InternalP
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return BaseDHEFunctionality.canBeExecuted(report, tls13, ec, ff);
-    }
-
-    @Override
-    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
-        return BaseDHEFunctionality.getCouldNotExecuteResult(getClass(), report, tls13, ec, ff);
+    protected ProbeRequirements getRequirements() {
+        return BaseDHEFunctionality.getRequirements(tls13, ec, ff);
     }
 
     public void prepareConfig(Config config) {

@@ -1,12 +1,11 @@
 package de.rub.nds.tlsscanner.clientscanner.probe.downgrade;
 
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 
 public class DropConnection extends BaseStatefulProbe<DowngradeInternalState> {
 
@@ -15,22 +14,17 @@ public class DropConnection extends BaseStatefulProbe<DowngradeInternalState> {
     }
 
     @Override
-    public boolean canBeExecuted(ClientReport report) {
-        return true;
-    }
-
-    @Override
-    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
+    protected ProbeRequirements getRequirements() {
         return null;
     }
 
     @Override
-    protected DowngradeInternalState getDefaultState(DispatchInformation dispatchInformation) {
+    protected DowngradeInternalState getDefaultState() {
         return new DowngradeInternalState(getClass());
     }
 
     @Override
-    protected DowngradeInternalState execute(State state, DispatchInformation dispatchInformation, DowngradeInternalState internalState) {
+    protected DowngradeInternalState execute(State state, DispatchInformation dispatchInformation, DowngradeInternalState internalState) throws DispatchException {
         // only analyze chlo
         internalState.putCHLO(dispatchInformation.chlo);
         executeState(state, dispatchInformation);
