@@ -76,7 +76,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             return new DirectRaccoonResult(testResultList);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DirectRaccoonResult(null);
+            return new DirectRaccoonResult(TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -189,6 +189,6 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DirectRaccoonResult(null);
+        return new DirectRaccoonResult(TestResult.COULD_NOT_TEST);
     }
 }

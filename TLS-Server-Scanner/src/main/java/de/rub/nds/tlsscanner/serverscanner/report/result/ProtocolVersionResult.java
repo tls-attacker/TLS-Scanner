@@ -52,6 +52,9 @@ public class ProtocolVersionResult extends ProbeResult {
                 if (version == ProtocolVersion.TLS12) {
                     report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResult.TRUE);
                 }
+                if (version == ProtocolVersion.TLS13) {
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
+                }
             }
 
             for (ProtocolVersion version : unsupportedProtocolVersions) {
@@ -70,6 +73,9 @@ public class ProtocolVersionResult extends ProbeResult {
                 if (version == ProtocolVersion.TLS12) {
                     report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResult.FALSE);
                 }
+                if (version == ProtocolVersion.TLS13) {
+                    report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.FALSE);
+                }
             }
         } else {
             report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResult.COULD_NOT_TEST);
@@ -77,6 +83,7 @@ public class ProtocolVersionResult extends ProbeResult {
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_0, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_1, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResult.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.COULD_NOT_TEST);
         }
         report.setVersions(supportedProtocolVersions);
     }

@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -23,6 +24,8 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CiphersuiteProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -39,10 +42,6 @@ public class CiphersuiteProbe extends TlsProbe {
     public CiphersuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CIPHERSUITE, config);
         protocolVersions = new LinkedList<>();
-        protocolVersions.add(ProtocolVersion.SSL3);
-        protocolVersions.add(ProtocolVersion.TLS10);
-        protocolVersions.add(ProtocolVersion.TLS11);
-        protocolVersions.add(ProtocolVersion.TLS12);
     }
 
     @Override
@@ -51,30 +50,94 @@ public class CiphersuiteProbe extends TlsProbe {
             List<VersionSuiteListPair> pairLists = new LinkedList<>();
             for (ProtocolVersion version : protocolVersions) {
                 LOGGER.debug("Testing:" + version.name());
-                List<CipherSuite> toTestList = new LinkedList<>();
-                List<CipherSuite> versionSupportedSuites = new LinkedList<>();
-                if (version == ProtocolVersion.SSL3) {
-                    toTestList.addAll(CipherSuite.SSL3_SUPPORTED_CIPHERSUITES);
-                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
+                if (version.isTLS13()) {
+                    pairLists.add(new VersionSuiteListPair(version, getSupportedCiphersuites()));
                 } else {
-                    toTestList.addAll(Arrays.asList(CipherSuite.values()));
-                    toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-                    toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-                    if (versionSupportedSuites.isEmpty()) {
-                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
+                    List<CipherSuite> toTestList = new LinkedList<>();
+                    List<CipherSuite> versionSupportedSuites = new LinkedList<>();
+                    if (version == ProtocolVersion.SSL3) {
+                        toTestList.addAll(CipherSuite.SSL3_SUPPORTED_CIPHERSUITES);
+                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
+                    } else {
+                        toTestList.addAll(Arrays.asList(CipherSuite.values()));
+                        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+                        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
+                        if (versionSupportedSuites.isEmpty()) {
+                            versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
+                        }
+                    }
+                    if (versionSupportedSuites.size() > 0) {
+                        pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
                     }
                 }
-                if (versionSupportedSuites.size() > 0) {
-                    pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
-                }
-
             }
-
             return new CiphersuiteProbeResult(pairLists);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new CiphersuiteProbeResult(null);
+        }
+    }
+
+    private List<CipherSuite> getSupportedCiphersuites() {
+        CipherSuite selectedSuite = null;
+        List<CipherSuite> toTestList = new LinkedList<>();
+        List<CipherSuite> supportedSuits = new LinkedList<>();
+        for (CipherSuite suite : CipherSuite.values()) {
+            if (suite.isTLS13()) {
+                toTestList.add(suite);
+            }
+        }
+        do {
+            selectedSuite = getSelectedCiphersuite(toTestList);
+
+            if (selectedSuite != null) {
+                if (!toTestList.contains(selectedSuite)) {
+                    LOGGER.warn("Server chose a CipherSuite we did not propose!");
+                    // TODO write to sitereport
+                    break;
+                }
+                supportedSuits.add(selectedSuite);
+                toTestList.remove(selectedSuite);
+            }
+        } while (selectedSuite != null && !toTestList.isEmpty());
+        return supportedSuits;
+    }
+
+    private CipherSuite getSelectedCiphersuite(List<CipherSuite> toTestList) {
+        Config tlsConfig = getScannerConfig().createConfig();
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
+        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
+        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
+        tlsConfig.setAddECPointFormatExtension(false);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddCertificateStatusRequestExtension(true);
+        tlsConfig.setUseFreshRandom(true);
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
+                .getTls13SignatureAndHashAlgorithms());
+
+        State state = new State(tlsConfig);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            return state.getTlsContext().getSelectedCipherSuite();
+        } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST,
+                state.getWorkflowTrace())) {
+            return state.getTlsContext().getSelectedCipherSuite();
+        } else {
+            LOGGER.debug("Did not receive ServerHello Message");
+            LOGGER.debug(state.getWorkflowTrace().toString());
+            return null;
         }
     }
 
@@ -149,11 +212,30 @@ public class CiphersuiteProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
+        if (report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.SSL3);
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.TLS10);
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.TLS11);
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.TLS12);
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.TLS13);
+        }
     }
 
     @Override

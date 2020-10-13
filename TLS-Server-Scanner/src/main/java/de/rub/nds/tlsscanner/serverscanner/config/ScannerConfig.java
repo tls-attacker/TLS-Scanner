@@ -41,7 +41,7 @@ public class ScannerConfig extends TLSDelegateConfig {
     private ScannerDetail scanDetail = ScannerDetail.NORMAL;
 
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
-    private ScannerDetail reportDetail = ScannerDetail.ALL;
+    private ScannerDetail reportDetail = ScannerDetail.NORMAL;
 
     @Parameter(names = "-threads", required = false, description = "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed server.")
     private int overallThreads = 1;

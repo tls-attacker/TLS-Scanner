@@ -137,7 +137,7 @@ public class SiteReportPrinter {
         appendInvalidCurveResults(builder);
         appendRaccoonAttackDetails(builder);
         // appendGcm(builder);
-        appendRfc(builder);
+        // appendRfc(builder);
         appendCertificate(builder);
         appendOcsp(builder);
         appendSession(builder);
@@ -425,7 +425,7 @@ public class SiteReportPrinter {
     }
 
     public StringBuilder appendRfc(StringBuilder builder) {
-        prettyAppendHeading(builder, "RFC");
+        prettyAppendHeading(builder, "RFC (Experimental)");
         prettyAppendCheckPattern(builder, "Checks MAC (AppData)", report.getMacCheckPatternAppData());
         prettyAppendCheckPattern(builder, "Checks MAC (Finished)", report.getMacCheckPatternFinished());
         prettyAppendCheckPattern(builder, "Checks VerifyData", report.getVerifyCheckPattern());
@@ -781,8 +781,11 @@ public class SiteReportPrinter {
     public StringBuilder appendRaccoonAttackDetails(StringBuilder builder) {
         DecimalFormat decimalFormat = new DecimalFormat();
         decimalFormat.setMaximumFractionDigits(24);
-        if (report.getRaccoonAttackProbabilities() != null) {
+        if ((report.getResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK) == TestResult.TRUE || detail
+                .isGreaterEqualTo(ScannerDetail.DETAILED)) && report.getRaccoonAttackProbabilities() != null) {
             prettyAppendHeading(builder, "Raccoon Attack Details");
+            prettyAppend(builder,
+                    "Here we are calculating how likely it is that the attack can reach a critical block border.");
             prettyAppend(builder, "Available Injection points:", (long) report.getRaccoonAttackProbabilities().size());
             if (report.getRaccoonAttackProbabilities().size() > 0) {
                 prettyAppendSubheading(builder, "Probabilties");
@@ -830,19 +833,25 @@ public class SiteReportPrinter {
                 }
                 String resultString = testResult.getTestInfo().getPrintableName();
                 if (testResult.getpValue() < 0.01) {
-                    prettyAppend(builder, resultString + "\t | "
-                            + padToLength(testResult.getEqualityError().name(), 25) + padToLength("| VULNERABLE", 25)
-                            + "| P: " + pValue, AnsiColor.RED);
+                    prettyAppend(
+                            builder,
+                            padToLength(resultString, 80) + " | "
+                                    + padToLength(testResult.getEqualityError().name(), 25)
+                                    + padToLength("| VULNERABLE", 25) + "| P: " + pValue, AnsiColor.RED);
                 } else if (testResult.getpValue() < 0.05) {
-                    prettyAppend(builder,
-                            resultString + "\t | " + padToLength(testResult.getEqualityError().name(), 25)
+                    prettyAppend(
+                            builder,
+                            padToLength(resultString, 80) + " | "
+                                    + padToLength(testResult.getEqualityError().name(), 25)
                                     + padToLength("| PROBABLY VULNERABLE", 25) + "| P: " + pValue, AnsiColor.YELLOW);
                 } else if (testResult.getpValue() < 1) {
-                    prettyAppend(builder, resultString + "\t | " + padToLength("No significant difference", 25)
-                            + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
+                    prettyAppend(builder,
+                            padToLength(resultString, 80) + " | " + padToLength("No significant difference", 25)
+                                    + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
                 } else {
-                    prettyAppend(builder, resultString + "\t | " + padToLength("No behavior difference", 25)
-                            + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
+                    prettyAppend(builder,
+                            padToLength(resultString, 80) + " | " + padToLength("No behavior difference", 25)
+                                    + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
                 }
 
                 if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isSignificantDistinctAnswers(),
@@ -899,6 +908,8 @@ public class SiteReportPrinter {
             if (report.getPaddingOracleTestResultList() == null || report.getPaddingOracleTestResultList().isEmpty()) {
                 prettyAppend(builder, "No Testresults");
             } else {
+                prettyAppend(builder, "No vulnerability present to identify");
+
                 // TODO this recopying is weired
                 List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
                 informationLeakTestList.addAll(report.getPaddingOracleTestResultList());
@@ -981,7 +992,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Uncompressed", AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT);
         prettyAppend(builder, "ANSIX962 Prime", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME);
         prettyAppend(builder, "ANSIX962 Char2", AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2);
-        prettyAppend(builder, "TLS 1.3 ANSIX962  SECP", AnalyzedProperty.SUPPORTS_SECP_COMPRESSION_TLS13);
+        prettyAppend(builder, "TLS 1.3 ANSIX962  SECP", AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION);
         return builder;
     }
 
