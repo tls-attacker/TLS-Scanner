@@ -93,6 +93,7 @@ public class TlsScanner {
         probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
         probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
         probeList.add(new ExtensionProbe(config, parallelExecutor));
+        probeList.add(new EsniProbe(config, parallelExecutor));
         probeList.add(new Tls13Probe(config, parallelExecutor));
         probeList.add(new TokenbindingProbe(config, parallelExecutor));
         probeList.add(new HttpHeaderProbe(config, parallelExecutor));
