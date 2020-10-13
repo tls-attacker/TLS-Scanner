@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2020 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -35,9 +35,11 @@ import static java.lang.Math.*;
 import static org.apache.commons.math3.special.Erf.erfc;
 
 /**
- * AfterProbe which analyses the random material extracted using the TLS RNG Probe by employing statistical tests
- * defined by NIST SP 800-22. The test results are then passed onto the SiteReport, displaying them at the end of the
- * scan procedure.
+ * AfterProbe which analyses the random material extracted using the TLS RNG
+ * Probe by employing statistical tests defined by NIST SP 800-22. The test
+ * results are then passed onto the SiteReport, displaying them at the end of
+ * the scan procedure.
+ * 
  * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
  */
 public class ExtractRandomnessProbe extends AfterProbe {
@@ -46,7 +48,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
 
     // Minimum 32 000 Bytes ~ 1000 ServerHelloRandoms
     private final int MINIMUM_AMOUNT_OF_BYTES = 32000;
-    // Standard value for cryptographic applications (see NIST SP 800-22 Document)
+    // Standard value for cryptographic applications (see NIST SP 800-22
+    // Document)
     private final double MINIMUM_P_VALUE = 0.01;
     private final int MONOBIT_TEST_BLOCK_SIZE = 1;
     private final int FREQUENCY_TEST_BLOCK_SIZE = 128;
@@ -54,7 +57,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
     private final int TEMPLATE_TEST_BLOCK_SIZE = 9;
     private final int ENTROPY_TEST_BLOCK_SIZE = 10;
 
-    // For differentiating the test_result using Fischer's method and the percentage of failed templates of the
+    // For differentiating the test_result using Fischer's method and the
+    // percentage of failed templates of the
     // Template test
     private enum templateConstants {
         TEST_RESULT,
@@ -84,7 +88,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             for (ComparableByteArray random : extractedRandomList) {
                 if (random.equals(HELLO_RETRY_REQUEST_CONST)) {
-                    // Remove HELLO RETRY REQUEST "randoms" produced by parsing the Hello Retry Messages as a
+                    // Remove HELLO RETRY REQUEST "randoms" produced by parsing
+                    // the Hello Retry Messages as a
                     // normal ServerHello message
                     extractedRandomList.remove(random);
                 }
@@ -97,7 +102,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
         int sessionIdCounter = 0;
         int iVCounter = 0;
 
-        // Counting extracted Random-Types and building complete Sequence consisting of
+        // Counting extracted Random-Types and building complete Sequence
+        // consisting of
         // (ServerHello randoms + SessionIDs) || IVs
 
         for (int i = 0; i < max(extractedRandomList.size(), extractedSessionIdList.size()); i++) {
@@ -158,7 +164,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
         Map<RandomType, Double> nonOverlappingTemplatePercentagesMap = new HashMap<>();
         LinkedList<RandomType> nonOverlappingTemplateList = new LinkedList<>();
         LinkedList<RandomType> entropyList = new LinkedList<>();
-        // Deactivated due to performance hit - May be activated again in the future
+        // Deactivated due to performance hit - May be activated again in the
+        // future
         // LinkedList<RandomType> serialList = new LinkedList<>();
         // LinkedList<RandomType> cuSumList = new LinkedList<>();
         // LinkedList<RandomType> cuSumReverseList = new LinkedList<>();
@@ -201,13 +208,15 @@ public class ExtractRandomnessProbe extends AfterProbe {
         } else {
             LOGGER.debug("MONOBIT_TEST ServerHelloRandom : PASSED");
         }
-        if (!(extractedSessionIdArray.length == 0) && frequencyTest(extractedSessionIdArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+        if (!(extractedSessionIdArray.length == 0)
+                && frequencyTest(extractedSessionIdArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("MONOBIT_TEST SessionID : FAILED");
             monoBitList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("MONOBIT_TEST SessionID : PASSED");
         }
-        if (!(extractedIvArray.length == 0) && frequencyTest(extractedIvArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+        if (!(extractedIvArray.length == 0)
+                && frequencyTest(extractedIvArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("MONOBIT_TEST IV : FAILED");
             monoBitList.add(RandomType.IV);
         } else {
@@ -230,13 +239,15 @@ public class ExtractRandomnessProbe extends AfterProbe {
         } else {
             LOGGER.debug("FREQUENCY_TEST ServerHelloRandom : PASSED");
         }
-        if (!(extractedSessionIdArray.length == 0) && frequencyTest(extractedSessionIdArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+        if (!(extractedSessionIdArray.length == 0)
+                && frequencyTest(extractedSessionIdArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("FREQUENCY_TEST SessionID : FAILED");
             frequencyList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("FREQUENCY_TEST SessionID : PASSED");
         }
-        if (!(extractedIvArray.length == 0) && frequencyTest(extractedIvArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+        if (!(extractedIvArray.length == 0)
+                && frequencyTest(extractedIvArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("FREQUENCY_TEST IV : FAILED");
             frequencyList.add(RandomType.IV);
         } else {
@@ -295,7 +306,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
         } else {
             LOGGER.debug("LONGEST_RUN_TEST SessionID : PASSED");
         }
-        if (!(extractedIvArray.length == 0) && longestRunWithinBlock(extractedIvArray, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+        if (!(extractedIvArray.length == 0)
+                && longestRunWithinBlock(extractedIvArray, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("LONGEST_RUN_TEST IV : FAILED");
             longestRunBlockList.add(RandomType.IV);
         } else {
@@ -412,7 +424,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
         } else {
             LOGGER.debug("ENTROPY_TEST SessionID : PASSED");
         }
-        if (!(extractedIvArray.length == 0) && approximateEntropyTest(extractedIvArray, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+        if (!(extractedIvArray.length == 0)
+                && approximateEntropyTest(extractedIvArray, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("ENTROPY_TEST IV : FAILED");
             entropyList.add(RandomType.IV);
         } else {
@@ -438,9 +451,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
     }
 
     /**
-     * Simple Test creating a hash-set of random-values and checks for every random if it is already inserted.
-     * If no collision was found then no duplicates are present.
-     * @param byteSequence Array of random byte sequences
+     * Simple Test creating a hash-set of random-values and checks for every
+     * random if it is already inserted. If no collision was found then no
+     * duplicates are present.
+     * 
+     * @param byteSequence
+     *            Array of random byte sequences
      * @return TRUE if duplicates were found
      */
     private boolean testForDuplicates(ComparableByteArray[] byteSequence) {
@@ -455,9 +471,14 @@ public class ExtractRandomnessProbe extends AfterProbe {
     }
 
     /**
-     * Test checking for increasing cumulative sums when mapping 0 to -1 and 1, comparing the results to the expectation.
-     * @param byteSequence Array of random byte sequences
-     * @param forwardMode TRUE if forward-mode should be used, FALSE if backwards-mode should be used
+     * Test checking for increasing cumulative sums when mapping 0 to -1 and 1,
+     * comparing the results to the expectation.
+     * 
+     * @param byteSequence
+     *            Array of random byte sequences
+     * @param forwardMode
+     *            TRUE if forward-mode should be used, FALSE if backwards-mode
+     *            should be used
      * @return P-Value of the test
      */
     private Double cusumTest(ComparableByteArray[] byteSequence, boolean forwardMode) {
@@ -530,15 +551,20 @@ public class ExtractRandomnessProbe extends AfterProbe {
     }
 
     /***
-     * Test to check the frequency of all possible bit-patterns of size blockLength, comparing them to the expectation.
-     * @param byteSequence array of random byte values
-     * @param blockLength length of bit-patterns to check
+     * Test to check the frequency of all possible bit-patterns of size
+     * blockLength, comparing them to the expectation.
+     * 
+     * @param byteSequence
+     *            array of random byte values
+     * @param blockLength
+     *            length of bit-patterns to check
      * @return P-Value of the test
      */
     private Double approximateEntropyTest(ComparableByteArray[] byteSequence, int blockLength) {
         // TODO: Select m and n such that m < log_2)(n) - 5
         // TODO: ie. for 1096 recommend is blockLength of 5
-        // TODO: currently set to the value best fit for the expected amount of bytes of a scan.
+        // TODO: currently set to the value best fit for the expected amount of
+        // bytes of a scan.
         double pValue = 0.0;
         String fullSequence = "";
 
@@ -595,10 +621,13 @@ public class ExtractRandomnessProbe extends AfterProbe {
     }
 
     /***
-     * Test to check the frequency of all possible overlapping bit patterns of length blockLength, checking it
-     * against the expectation.
-     * @param byteSequence array of random byte values
-     * @param blockLength length of bit-patterns to check
+     * Test to check the frequency of all possible overlapping bit patterns of
+     * length blockLength, checking it against the expectation.
+     * 
+     * @param byteSequence
+     *            array of random byte values
+     * @param blockLength
+     *            length of bit-patterns to check
      * @return P-Value of the test
      */
     private Double serialTest(ComparableByteArray[] byteSequence, int blockLength) {

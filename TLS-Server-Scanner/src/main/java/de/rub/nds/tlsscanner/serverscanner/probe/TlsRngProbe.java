@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2020 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -48,7 +48,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A probe which samples random material from the target host using ServerHello randoms, SessionIDs and IVs.
+ * A probe which samples random material from the target host using ServerHello
+ * randoms, SessionIDs and IVs.
+ * 
  * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
  */
 public class TlsRngProbe extends TlsProbe {
@@ -69,17 +71,21 @@ public class TlsRngProbe extends TlsProbe {
     private final int IV_BLOCKS = 4000;
     private final int IV_MAXIMUM_RECEIVE_FAILURES = 2;
     private final int IV_MAXIMUM_CONNECTION_FAILURES = 3;
-    // How much the time is allowed to deviate between two handshakes when viewed using UNIX time prefix
+    // How much the time is allowed to deviate between two handshakes when
+    // viewed using UNIX time prefix
     private final int UNIX_TIME_ALLOWED_DEVIATION = 5;
     private boolean usesUnixTime = false;
     // Maximum amount of TLS Handshakes allowed
     private final int TLS_CONNECTIONS_UPPER_LIMIT = 1000;
     private int tlsConnectionCounter = 0;
-    // Amount of retries allowed when failing to receive ServerHello messages in the Unix Time test
+    // Amount of retries allowed when failing to receive ServerHello messages in
+    // the Unix Time test
     private final int UNIX_TIME_MAXIMUM_RETRIES = 20;
-    // When removing UNIX Time prefix (Double is used due to calculations in some methods)
+    // When removing UNIX Time prefix (Double is used due to calculations in
+    // some methods)
     private final double TIMELESS_SERVER_RANDOM_SIZE = 28.0;
-    // How many of the 10 ServerHello randoms should pass the Unix Time test at minimum.
+    // How many of the 10 ServerHello randoms should pass the Unix Time test at
+    // minimum.
     private final int MINIMUM_MATCH_COUNTER = 10;
     // ClientHello random to be sent when trying to determine Unix Time usage.
     private final int UNIX_TIME_RANDOM_VALUE = 9999;
@@ -125,7 +131,8 @@ public class TlsRngProbe extends TlsProbe {
         collectIV(IV_BLOCKS, CLIENT_RANDOM_START + NUMBER_OF_HANDSHAKES + 50);
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // If we reached this point we collected some amount of data. ExtractRandomnessProbe will determine if this
+        // If we reached this point we collected some amount of data.
+        // ExtractRandomnessProbe will determine if this
         // is enough.
         boolean successfulHandshake = true;
 
@@ -164,10 +171,13 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     /**
-     * Generates a TLS-Config used to scan for random data. This method is employed as the Handshakes conducted in this
-     * probe share numerous parameters, requiring it only to invoke this method before creating a new connection
-     * instead of defining a new Config for every new connection.
-     * @param clientRandom The random of the ClientHello to be sent
+     * Generates a TLS-Config used to scan for random data. This method is
+     * employed as the Handshakes conducted in this probe share numerous
+     * parameters, requiring it only to invoke this method before creating a new
+     * connection instead of defining a new Config for every new connection.
+     * 
+     * @param clientRandom
+     *            The random of the ClientHello to be sent
      * @return TLS-Config ready for establishing a new connection
      */
     private Config generateTestConfig(byte[] clientRandom) {
@@ -204,7 +214,9 @@ public class TlsRngProbe extends TlsProbe {
 
     /**
      * Same as generateTestConfig but adapted for TLS 1.3 Handshakes.
-     * @param clientRandom The random of the ClientHello to be sent
+     * 
+     * @param clientRandom
+     *            The random of the ClientHello to be sent
      * @return TLS-Config ready for establishing a new connection
      */
     private Config generateTls13Config(byte[] clientRandom) {
@@ -255,10 +267,14 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     /**
-     * Same as collectServerRandom but adapted for TLS 1.3. This limits the number of cipher suites available and the
-     * messages to be sent.
-     * @param numberOfHandshakes The amount of handshakes this method should conduct.
-     * @param clientRandomInit The first clientHello random to be sent, incrementing this value for each Handshake.
+     * Same as collectServerRandom but adapted for TLS 1.3. This limits the
+     * number of cipher suites available and the messages to be sent.
+     * 
+     * @param numberOfHandshakes
+     *            The amount of handshakes this method should conduct.
+     * @param clientRandomInit
+     *            The first clientHello random to be sent, incrementing this
+     *            value for each Handshake.
      */
     private void collectServerRandomTls13(int numberOfHandshakes, int clientRandomInit) {
         CipherSuite[] supportedSuites = null;
@@ -305,9 +321,10 @@ public class TlsRngProbe extends TlsProbe {
 
             LOGGER.debug("=========================================================================================");
 
-            // Extended Random is automatically appended by a Handler of TLS-Attacker
+            // Extended Random is automatically appended by a Handler of
+            // TLS-Attacker
             byte[] completeServerRandom = test_state.getTlsContext().getServerRandom();
-            
+
             if (!(completeServerRandom == null) && !(completeServerRandom.length == 0)) {
                 if (usesUnixTime) {
                     byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, UNIX_TIME_PREFIX_SIZE,
@@ -333,12 +350,18 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     /**
-     * Method employed to collect SessionIDs and ServerHello randoms. This method will first select the appropriate
-     * cipher suite for maximum randomness "yield". Depending on if the host supports ExtendedRandom or uses
-     * Unix Time prefixes, the resulting randomness data will be extracted and saved to two list of byteArrays
-     * representing the SessionIDs and ServerHello randoms.
-     * @param numberOfHandshakes The amount of handshakes this method should conduct.
-     * @param clientRandomInit The first clientHello random to be sent, incrementing this value for each Handshake.
+     * Method employed to collect SessionIDs and ServerHello randoms. This
+     * method will first select the appropriate cipher suite for maximum
+     * randomness "yield". Depending on if the host supports ExtendedRandom or
+     * uses Unix Time prefixes, the resulting randomness data will be extracted
+     * and saved to two list of byteArrays representing the SessionIDs and
+     * ServerHello randoms.
+     * 
+     * @param numberOfHandshakes
+     *            The amount of handshakes this method should conduct.
+     * @param clientRandomInit
+     *            The first clientHello random to be sent, incrementing this
+     *            value for each Handshake.
      */
     private void collectServerRandom(int numberOfHandshakes, int clientRandomInit) {
         // Use preferred Ciphersuites if supported
@@ -409,7 +432,8 @@ public class TlsRngProbe extends TlsProbe {
 
             LOGGER.debug("========================================================================================");
 
-            // Extended Random is automatically appended by a Handler of TLS-Attacker
+            // Extended Random is automatically appended by a Handler of
+            // TLS-Attacker
             byte[] completeServerRandom = test_state.getTlsContext().getServerRandom();
 
             LOGGER.debug("CLIENT RANDOM: "
@@ -441,14 +465,22 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     /**
-     * Method employed to collect the numberOfBlocks amount of IV blocks (assuming the optimum of 16 bytes per block). The
-     * most appropriate cipher suite is determined and a new connection is opened using this cipher suite. The
-     * resulting connection is then utilized to collect IV blocks by sending encrypted HTTP GETs to the Server,
-     * collecting the IV blocks used to encrypt the responses. Multiple schemes are employed to ensure that the
-     * required amount of data is collected, including creating new connections, stopping after too many failures and
-     * a fallback mechanism to collect more ServerHello randoms when the collection of IVs is prematurely stopped.
-     * @param numberOfBlocks amount of blocks required to collect
-     * @param clientRandomInit the initial ClientHello random sent to the Server when opening a new Connection.
+     * Method employed to collect the numberOfBlocks amount of IV blocks
+     * (assuming the optimum of 16 bytes per block). The most appropriate cipher
+     * suite is determined and a new connection is opened using this cipher
+     * suite. The resulting connection is then utilized to collect IV blocks by
+     * sending encrypted HTTP GETs to the Server, collecting the IV blocks used
+     * to encrypt the responses. Multiple schemes are employed to ensure that
+     * the required amount of data is collected, including creating new
+     * connections, stopping after too many failures and a fallback mechanism to
+     * collect more ServerHello randoms when the collection of IVs is
+     * prematurely stopped.
+     * 
+     * @param numberOfBlocks
+     *            amount of blocks required to collect
+     * @param clientRandomInit
+     *            the initial ClientHello random sent to the Server when opening
+     *            a new Connection.
      */
     private void collectIV(int numberOfBlocks, int clientRandomInit) {
         // Collect IV
@@ -633,8 +665,9 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     /**
-     * Checks if the Host utilities Unix time or similar counters for Server Randoms. This is done by examining
-     * 10 ServerHello randoms.
+     * Checks if the Host utilities Unix time or similar counters for Server
+     * Randoms. This is done by examining 10 ServerHello randoms.
+     * 
      * @return TRUE if a counter has been detected.
      */
     private boolean checkForUnixTime() {
@@ -723,7 +756,9 @@ public class TlsRngProbe extends TlsProbe {
 
     /**
      * Generates a new TLS 1.2 Connection for IV-Collection.
-     * @param config The TLS Config employed in the new Connection
+     * 
+     * @param config
+     *            The TLS Config employed in the new Connection
      * @return State representing the newly opened TLS Connection
      */
     private State generateOpenConnection(Config config) {
@@ -749,8 +784,11 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     /**
-     * Simple method to cast an int to a 32 byte byteArray for setting the ClientHello Random
-     * @param number number to be cast to 32 byte byteArray
+     * Simple method to cast an int to a 32 byte byteArray for setting the
+     * ClientHello Random
+     * 
+     * @param number
+     *            number to be cast to 32 byte byteArray
      * @return number as 32 byte byteArray padded with zeroes.
      */
     private byte[] intToByteArray(int number) {
