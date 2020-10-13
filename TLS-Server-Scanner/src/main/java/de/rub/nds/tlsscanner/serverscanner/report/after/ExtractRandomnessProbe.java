@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -35,7 +35,9 @@ import static java.lang.Math.*;
 import static org.apache.commons.math3.special.Erf.erfc;
 
 /**
- *
+ * AfterProbe which analyses the random material extracted using the TLS RNG Probe by employing statistical tests
+ * defined by NIST SP 800-22. The test results are then passed onto the SiteReport, displaying them at the end of the
+ * scan procedure.
  * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
  */
 public class ExtractRandomnessProbe extends AfterProbe {
@@ -46,9 +48,11 @@ public class ExtractRandomnessProbe extends AfterProbe {
     private final int MINIMUM_AMOUNT_OF_BYTES = 32000;
     // Standard value for cryptographic applications (see NIST SP 800-22 Document)
     private final double MINIMUM_P_VALUE = 0.01;
-
-    // Deprecated as we use Fischer's Method to combine all P-Values of the Template test into one P-Value
-    // private final double TEMPLATE_TEST_MAXIMUM_FAILED_TESTS = 0.5;
+    private final int MONOBIT_TEST_BLOCK_SIZE = 1;
+    private final int FREQUENCY_TEST_BLOCK_SIZE = 128;
+    private final int LONGEST_RUN_BLOCK_SIZE = 8;
+    private final int TEMPLATE_TEST_BLOCK_SIZE = 9;
+    private final int ENTROPY_TEST_BLOCK_SIZE = 10;
 
     // For differentiating the test_result using Fischer's method and the percentage of failed templates of the
     // Template test
@@ -80,7 +84,8 @@ public class ExtractRandomnessProbe extends AfterProbe {
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             for (ComparableByteArray random : extractedRandomList) {
                 if (random.equals(HELLO_RETRY_REQUEST_CONST)) {
-                    // Remove HELLO RETRY REQUEST "randoms"
+                    // Remove HELLO RETRY REQUEST "randoms" produced by parsing the Hello Retry Messages as a
+                    // normal ServerHello message
                     extractedRandomList.remove(random);
                 }
             }
@@ -189,25 +194,26 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putRandomDuplicatesResult(duplicateList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
-        if (frequencyTest(extractedRandomArray, 1) <= MINIMUM_P_VALUE) {
+
+        if (frequencyTest(extractedRandomArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("MONOBIT_TEST ServerHelloRandom : FAILED");
             monoBitList.add(RandomType.RANDOM);
         } else {
             LOGGER.debug("MONOBIT_TEST ServerHelloRandom : PASSED");
         }
-        if (!(extractedSessionIdArray.length == 0) && frequencyTest(extractedSessionIdArray, 1) <= MINIMUM_P_VALUE) {
+        if (!(extractedSessionIdArray.length == 0) && frequencyTest(extractedSessionIdArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("MONOBIT_TEST SessionID : FAILED");
             monoBitList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("MONOBIT_TEST SessionID : PASSED");
         }
-        if (!(extractedIvArray.length == 0) && frequencyTest(extractedIvArray, 1) <= MINIMUM_P_VALUE) {
+        if (!(extractedIvArray.length == 0) && frequencyTest(extractedIvArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("MONOBIT_TEST IV : FAILED");
             monoBitList.add(RandomType.IV);
         } else {
             LOGGER.debug("MONOBIT_TEST IV : PASSED");
         }
-        if (frequencyTest(testSequence, 1) <= MINIMUM_P_VALUE) {
+        if (frequencyTest(testSequence, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("MONOBIT_TEST FullSequence : FAILED");
             monoBitList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
@@ -217,25 +223,26 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putMonoBitResult(monoBitList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
-        if (frequencyTest(extractedRandomArray, 128) <= MINIMUM_P_VALUE) {
+
+        if (frequencyTest(extractedRandomArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("FREQUENCY_TEST ServerHelloRandom : FAILED");
             frequencyList.add(RandomType.RANDOM);
         } else {
             LOGGER.debug("FREQUENCY_TEST ServerHelloRandom : PASSED");
         }
-        if (!(extractedSessionIdArray.length == 0) && frequencyTest(extractedSessionIdArray, 128) <= MINIMUM_P_VALUE) {
+        if (!(extractedSessionIdArray.length == 0) && frequencyTest(extractedSessionIdArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("FREQUENCY_TEST SessionID : FAILED");
             frequencyList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("FREQUENCY_TEST SessionID : PASSED");
         }
-        if (!(extractedIvArray.length == 0) && frequencyTest(extractedIvArray, 128) <= MINIMUM_P_VALUE) {
+        if (!(extractedIvArray.length == 0) && frequencyTest(extractedIvArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("FREQUENCY_TEST IV : FAILED");
             frequencyList.add(RandomType.IV);
         } else {
             LOGGER.debug("FREQUENCY_TEST IV : PASSED");
         }
-        if (frequencyTest(testSequence, 128) <= MINIMUM_P_VALUE) {
+        if (frequencyTest(testSequence, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("FREQUENCY_TEST FullSequence : FAILED");
             frequencyList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
@@ -245,6 +252,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putFrequencyResult(frequencyList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
+
         if (runsTest(extractedRandomArray) <= MINIMUM_P_VALUE) {
             LOGGER.debug("RUNS_TEST ServerHelloRandom : FAILED");
             runsList.add(RandomType.RANDOM);
@@ -273,26 +281,27 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putRunsResult(runsList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
-        if (longestRunWithinBlock(extractedRandomArray, 8) <= MINIMUM_P_VALUE) {
+
+        if (longestRunWithinBlock(extractedRandomArray, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("LONGEST_RUN_TEST ServerHelloRandom : FAILED");
             longestRunBlockList.add(RandomType.RANDOM);
         } else {
             LOGGER.debug("LONGEST_RUN_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0)
-                && longestRunWithinBlock(extractedSessionIdArray, 8) <= MINIMUM_P_VALUE) {
+                && longestRunWithinBlock(extractedSessionIdArray, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("LONGEST_RUN_TEST SessionID : FAILED");
             longestRunBlockList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("LONGEST_RUN_TEST SessionID : PASSED");
         }
-        if (!(extractedIvArray.length == 0) && longestRunWithinBlock(extractedIvArray, 8) <= MINIMUM_P_VALUE) {
+        if (!(extractedIvArray.length == 0) && longestRunWithinBlock(extractedIvArray, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("LONGEST_RUN_TEST IV : FAILED");
             longestRunBlockList.add(RandomType.IV);
         } else {
             LOGGER.debug("LONGEST_RUN_TEST IV : PASSED");
         }
-        if (longestRunWithinBlock(testSequence, 8) <= MINIMUM_P_VALUE) {
+        if (longestRunWithinBlock(testSequence, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("LONGEST_RUN_TEST FullSequence : FAILED");
             longestRunBlockList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
@@ -302,6 +311,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putLongestRunBlockResult(longestRunBlockList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
+
         if (discreteFourierTest(extractedRandomArray) <= MINIMUM_P_VALUE) {
             LOGGER.debug("FOURIER_TEST ServerHelloRandom : FAILED");
             fourierList.add(RandomType.RANDOM);
@@ -330,10 +340,11 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putFourierResult(fourierList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
+
         Map<templateConstants, Double> templateResult;
         double templateFailedPercentage;
 
-        templateResult = nonOverlappingTemplateTest(extractedRandomArray, 9);
+        templateResult = nonOverlappingTemplateTest(extractedRandomArray, TEMPLATE_TEST_BLOCK_SIZE);
         if (templateResult.get(templateConstants.TEST_RESULT) == 0) {
             LOGGER.debug("TEMPLATE_TEST ServerHelloRandom : FAILED");
             nonOverlappingTemplateList.add(RandomType.RANDOM);
@@ -344,7 +355,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LOGGER.debug("TEMPLATE_TEST ServerHelloRandom Failed Test Percentage : " + (templateFailedPercentage * 100));
         nonOverlappingTemplatePercentagesMap.put(RandomType.RANDOM, templateFailedPercentage);
 
-        templateResult = nonOverlappingTemplateTest(extractedSessionIdArray, 9);
+        templateResult = nonOverlappingTemplateTest(extractedSessionIdArray, TEMPLATE_TEST_BLOCK_SIZE);
         if (templateResult.get(templateConstants.TEST_RESULT) == 0) {
             LOGGER.debug("TEMPLATE_TEST SessionID : FAILED");
             nonOverlappingTemplateList.add(RandomType.SESSION_ID);
@@ -355,7 +366,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LOGGER.debug("TEMPLATE_TEST SessionID Failed Test Percentage : " + (templateFailedPercentage * 100));
         nonOverlappingTemplatePercentagesMap.put(RandomType.SESSION_ID, templateFailedPercentage);
 
-        templateResult = nonOverlappingTemplateTest(extractedIvArray, 9);
+        templateResult = nonOverlappingTemplateTest(extractedIvArray, TEMPLATE_TEST_BLOCK_SIZE);
         if (templateResult.get(templateConstants.TEST_RESULT) == 0) {
             LOGGER.debug("TEMPLATE_TEST IV : FAILED");
             nonOverlappingTemplateList.add(RandomType.IV);
@@ -366,7 +377,7 @@ public class ExtractRandomnessProbe extends AfterProbe {
         LOGGER.debug("TEMPLATE_TEST IV Failed Test Percentage : " + (templateFailedPercentage * 100));
         nonOverlappingTemplatePercentagesMap.put(RandomType.IV, templateFailedPercentage);
 
-        templateResult = nonOverlappingTemplateTest(testSequence, 9);
+        templateResult = nonOverlappingTemplateTest(testSequence, TEMPLATE_TEST_BLOCK_SIZE);
         if (templateResult.get(templateConstants.TEST_RESULT) == 0) {
             LOGGER.debug("TEMPLATE_TEST FullSequence : FAILED");
             nonOverlappingTemplateList.add(RandomType.COMPLETE_SEQUENCE);
@@ -382,30 +393,32 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putTemplateResult(nonOverlappingTemplateList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
+
         // serialTest(testSequence, 16));
         LOGGER.debug("Serial Test currently deactivated.");
         LOGGER.debug("============================================================================================");
+
         // ////////////////////////////////////////////////
-        if (approximateEntropyTest(extractedRandomArray, 10) <= MINIMUM_P_VALUE) {
+        if (approximateEntropyTest(extractedRandomArray, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("ENTROPY_TEST ServerHelloRandom : FAILED");
             entropyList.add(RandomType.RANDOM);
         } else {
             LOGGER.debug("ENTROPY_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0)
-                && approximateEntropyTest(extractedSessionIdArray, 10) <= MINIMUM_P_VALUE) {
+                && approximateEntropyTest(extractedSessionIdArray, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("ENTROPY_TEST SessionID : FAILED");
             entropyList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("ENTROPY_TEST SessionID : PASSED");
         }
-        if (!(extractedIvArray.length == 0) && approximateEntropyTest(extractedIvArray, 10) <= MINIMUM_P_VALUE) {
+        if (!(extractedIvArray.length == 0) && approximateEntropyTest(extractedIvArray, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("ENTROPY_TEST IV : FAILED");
             entropyList.add(RandomType.IV);
         } else {
             LOGGER.debug("ENTROPY_TEST IV : PASSED");
         }
-        if (approximateEntropyTest(testSequence, 10) <= MINIMUM_P_VALUE) {
+        if (approximateEntropyTest(testSequence, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("ENTROPY_TEST FullSequence : FAILED");
             entropyList.add(RandomType.COMPLETE_SEQUENCE);
         } else {
@@ -415,10 +428,12 @@ public class ExtractRandomnessProbe extends AfterProbe {
         report.putEntropyResult(entropyList);
         // ////////////////////////////////////////////////
         LOGGER.debug("============================================================================================");
+
         // cusumTest(testSequence, true)); // Forward
         // cusumTest(testSequence, false)); // Reverse
         LOGGER.debug("Cusum Test currently deactivated.");
         LOGGER.debug("============================================================================================");
+
         // ////////////////////////////////////////////////
     }
 

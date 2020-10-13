@@ -1,5 +1,8 @@
 package de.rub.nds.tlsscanner.serverscanner.constants;
 
+/***
+ * Constants used by the statistical tests employed by the ExtractRandomnessProbe
+ */
 public class RngConstants {
 
     // See NIST SP 800-22 2.4.4 (3)

@@ -1,7 +1,7 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum / Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -48,7 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * A probe which samples random material from the target host using ServerHello randoms, SessionIDs and IVs.
  * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
  */
 public class TlsRngProbe extends TlsProbe {
@@ -60,8 +60,6 @@ public class TlsRngProbe extends TlsProbe {
     private LinkedList<ComparableByteArray> extractedSessionIDList;
     private boolean prematureStop = false;
     private final int SERVER_RANDOM_SIZE = 32;
-    // When removing UNIX Time prefix
-    private final double TIMELESS_SERVER_RANDOM_SIZE = 28.0;
     private final int IV_SIZE = 16;
     // Fixed Amount of required Handshakes
     private final int NUMBER_OF_HANDSHAKES = 600;
@@ -69,13 +67,23 @@ public class TlsRngProbe extends TlsProbe {
     private final int CLIENT_RANDOM_START = 1;
     // Amount of IV Blocks required to collect
     private final int IV_BLOCKS = 4000;
+    private final int IV_MAXIMUM_RECEIVE_FAILURES = 2;
+    private final int IV_MAXIMUM_CONNECTION_FAILURES = 3;
     // How much the time is allowed to deviate between two handshakes when viewed using UNIX time prefix
     private final int UNIX_TIME_ALLOWED_DEVIATION = 5;
     private boolean usesUnixTime = false;
     // Maximum amount of TLS Handshakes allowed
-    private int TLS_CONNECTIONS_UPPER_LIMIT = 1000;
-    private int TLS_CONNECTION_COUNTER = 0;
-    private int UNIX_TIME_MAXIMUM_RETRIES = 20;
+    private final int TLS_CONNECTIONS_UPPER_LIMIT = 1000;
+    private int tlsConnectionCounter = 0;
+    // Amount of retries allowed when failing to receive ServerHello messages in the Unix Time test
+    private final int UNIX_TIME_MAXIMUM_RETRIES = 20;
+    // When removing UNIX Time prefix (Double is used due to calculations in some methods)
+    private final double TIMELESS_SERVER_RANDOM_SIZE = 28.0;
+    // How many of the 10 ServerHello randoms should pass the Unix Time test at minimum.
+    private final int MINIMUM_MATCH_COUNTER = 10;
+    // ClientHello random to be sent when trying to determine Unix Time usage.
+    private final int UNIX_TIME_RANDOM_VALUE = 9999;
+    private final int UNIX_TIME_PREFIX_SIZE = (int) (SERVER_RANDOM_SIZE - TIMELESS_SERVER_RANDOM_SIZE);
 
     public TlsRngProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RNG, config);
@@ -155,6 +163,13 @@ public class TlsRngProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
     }
 
+    /**
+     * Generates a TLS-Config used to scan for random data. This method is employed as the Handshakes conducted in this
+     * probe share numerous parameters, requiring it only to invoke this method before creating a new connection
+     * instead of defining a new Config for every new connection.
+     * @param clientRandom The random of the ClientHello to be sent
+     * @return TLS-Config ready for establishing a new connection
+     */
     private Config generateTestConfig(byte[] clientRandom) {
         Config testConf = getScannerConfig().createConfig();
 
@@ -187,6 +202,11 @@ public class TlsRngProbe extends TlsProbe {
         return testConf;
     }
 
+    /**
+     * Same as generateTestConfig but adapted for TLS 1.3 Handshakes.
+     * @param clientRandom The random of the ClientHello to be sent
+     * @return TLS-Config ready for establishing a new connection
+     */
     private Config generateTls13Config(byte[] clientRandom) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
@@ -234,6 +254,12 @@ public class TlsRngProbe extends TlsProbe {
         return tlsConfig;
     }
 
+    /**
+     * Same as collectServerRandom but adapted for TLS 1.3. This limits the number of cipher suites available and the
+     * messages to be sent.
+     * @param numberOfHandshakes The amount of handshakes this method should conduct.
+     * @param clientRandomInit The first clientHello random to be sent, incrementing this value for each Handshake.
+     */
     private void collectServerRandomTls13(int numberOfHandshakes, int clientRandomInit) {
         CipherSuite[] supportedSuites = null;
         for (VersionSuiteListPair versionSuitePair : latestReport.getVersionSuitePairs()) {
@@ -242,8 +268,6 @@ public class TlsRngProbe extends TlsProbe {
                 versionSuitePair.getCiphersuiteList().toArray(supportedSuites);
             }
         }
-        byte[] serverRandom = null;
-        byte[] serverExtendedRandom = null;
 
         boolean supportsExtendedRandom = latestReport.getSupportedExtensions().contains(ExtensionType.EXTENDED_RANDOM);
 
@@ -269,7 +293,7 @@ public class TlsRngProbe extends TlsProbe {
 
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
-            if (TLS_CONNECTION_COUNTER >= TLS_CONNECTIONS_UPPER_LIMIT) {
+            if (tlsConnectionCounter >= TLS_CONNECTIONS_UPPER_LIMIT) {
                 LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                 prematureStop = true;
                 return;
@@ -277,15 +301,16 @@ public class TlsRngProbe extends TlsProbe {
 
             State test_state = new State(serverHelloConfig);
             executeState(test_state);
-            TLS_CONNECTION_COUNTER++;
+            tlsConnectionCounter++;
 
-            LOGGER.debug("===========================================================================================");
+            LOGGER.debug("=========================================================================================");
 
+            // Extended Random is automatically appended by a Handler of TLS-Attacker
             byte[] completeServerRandom = test_state.getTlsContext().getServerRandom();
             
             if (!(completeServerRandom == null) && !(completeServerRandom.length == 0)) {
                 if (usesUnixTime) {
-                    byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, 4,
+                    byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, UNIX_TIME_PREFIX_SIZE,
                             completeServerRandom.length);
                     LOGGER.debug("TIMELESS SERVER RANDOM : " + ArrayConverter.bytesToHexString(timeLessServerRandom));
                     extractedRandomList.add(new ComparableByteArray(timeLessServerRandom));
@@ -302,11 +327,19 @@ public class TlsRngProbe extends TlsProbe {
             LOGGER.debug(test_state.getTlsContext().getSelectedProtocolVersion());
             LOGGER.debug(test_state.getTlsContext().getSelectedCipherSuite());
             LOGGER.debug(test_state.getWorkflowTrace());
-            LOGGER.debug("===========================================================================================");
+            LOGGER.debug("=========================================================================================");
         }
 
     }
 
+    /**
+     * Method employed to collect SessionIDs and ServerHello randoms. This method will first select the appropriate
+     * cipher suite for maximum randomness "yield". Depending on if the host supports ExtendedRandom or uses
+     * Unix Time prefixes, the resulting randomness data will be extracted and saved to two list of byteArrays
+     * representing the SessionIDs and ServerHello randoms.
+     * @param numberOfHandshakes The amount of handshakes this method should conduct.
+     * @param clientRandomInit The first clientHello random to be sent, incrementing this value for each Handshake.
+     */
     private void collectServerRandom(int numberOfHandshakes, int clientRandomInit) {
         // Use preferred Ciphersuites if supported
         List<CipherSuite> serverHelloCollectSuites = new LinkedList<>();
@@ -343,8 +376,6 @@ public class TlsRngProbe extends TlsProbe {
 
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config serverHelloConfig = generateTestConfig(intToByteArray(clientRandomInit + i));
-            byte[] serverRandom = null;
-            byte[] serverExtendedRandom = null;
             byte[] sessionID = null;
 
             if (supportsExtendedRandom) {
@@ -366,7 +397,7 @@ public class TlsRngProbe extends TlsProbe {
 
             serverHelloConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
-            if (TLS_CONNECTION_COUNTER >= TLS_CONNECTIONS_UPPER_LIMIT) {
+            if (tlsConnectionCounter >= TLS_CONNECTIONS_UPPER_LIMIT) {
                 LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                 prematureStop = true;
                 return;
@@ -374,10 +405,11 @@ public class TlsRngProbe extends TlsProbe {
 
             State test_state = new State(serverHelloConfig);
             executeState(test_state);
-            TLS_CONNECTION_COUNTER++;
+            tlsConnectionCounter++;
 
-            LOGGER.debug("===========================================================================================");
+            LOGGER.debug("========================================================================================");
 
+            // Extended Random is automatically appended by a Handler of TLS-Attacker
             byte[] completeServerRandom = test_state.getTlsContext().getServerRandom();
 
             LOGGER.debug("CLIENT RANDOM: "
@@ -387,7 +419,7 @@ public class TlsRngProbe extends TlsProbe {
 
             if (!(completeServerRandom == null) && !(completeServerRandom.length == 0)) {
                 if (usesUnixTime) {
-                    byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, 4,
+                    byte[] timeLessServerRandom = Arrays.copyOfRange(completeServerRandom, UNIX_TIME_PREFIX_SIZE,
                             completeServerRandom.length);
                     LOGGER.debug("TIMELESS SERVER RANDOM : " + ArrayConverter.bytesToHexString(timeLessServerRandom));
                     extractedRandomList.add(new ComparableByteArray(timeLessServerRandom));
@@ -404,10 +436,20 @@ public class TlsRngProbe extends TlsProbe {
             LOGGER.debug(test_state.getTlsContext().getSelectedProtocolVersion());
             LOGGER.debug(test_state.getTlsContext().getSelectedCipherSuite());
             LOGGER.debug(test_state.getWorkflowTrace());
-            LOGGER.debug("===========================================================================================");
+            LOGGER.debug("========================================================================================");
         }
     }
 
+    /**
+     * Method employed to collect the numberOfBlocks amount of IV blocks (assuming the optimum of 16 bytes per block). The
+     * most appropriate cipher suite is determined and a new connection is opened using this cipher suite. The
+     * resulting connection is then utilized to collect IV blocks by sending encrypted HTTP GETs to the Server,
+     * collecting the IV blocks used to encrypt the responses. Multiple schemes are employed to ensure that the
+     * required amount of data is collected, including creating new connections, stopping after too many failures and
+     * a fallback mechanism to collect more ServerHello randoms when the collection of IVs is prematurely stopped.
+     * @param numberOfBlocks amount of blocks required to collect
+     * @param clientRandomInit the initial ClientHello random sent to the Server when opening a new Connection.
+     */
     private void collectIV(int numberOfBlocks, int clientRandomInit) {
         // Collect IV
         // Here it is not important which ciphersuite we use for key-exchange,
@@ -470,13 +512,6 @@ public class TlsRngProbe extends TlsProbe {
         List<HttpsHeader> header = new LinkedList<>();
         header.add(new HostHeader());
         httpGet.setHeader(header);
-        // HTTP HEAD REQUEST --> Currently HTTP GET better because we get more
-        // blocks per request
-        // ModifiableString modifiableString = new ModifiableString();
-        // modifiableString.setModification(StringModificationFactory.explicitValue("HEAD"));
-        // When possible use this :
-        // httpGet.setRequestType(Modifiable.explicit("HEAD"));
-        // httpGet.setRequestType(modifiableString);
         List<AbstractRecord> records = new ArrayList<>();
         List<ProtocolMessage> messages = new ArrayList<>();
         MessageActionResult result = null;
@@ -488,16 +523,16 @@ public class TlsRngProbe extends TlsProbe {
         int receivedBlocksCounter = 0;
         while (receivedBlocksCounter < numberOfBlocks) {
 
-            if (receiveFailures > 2) {
+            if (receiveFailures > IV_MAXIMUM_RECEIVE_FAILURES) {
                 LOGGER.debug("Creating new connection for IV Collection.");
-                if (newConnectionCounter > 3) {
+                if (newConnectionCounter > IV_MAXIMUM_CONNECTION_FAILURES) {
                     LOGGER.debug("Too many new Connections without new messages. Quitting.");
                     break;
                 }
                 handshakeCounter++;
                 iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
                 iVCollectConfig.setDefaultClientSupportedCiphersuites(selectedSuites);
-                if (TLS_CONNECTION_COUNTER >= TLS_CONNECTIONS_UPPER_LIMIT) {
+                if (tlsConnectionCounter >= TLS_CONNECTIONS_UPPER_LIMIT) {
                     LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                     prematureStop = true;
                     return;
@@ -506,7 +541,7 @@ public class TlsRngProbe extends TlsProbe {
                 try {
                     if ((collectState == null) || collectState.getTlsContext().getTransportHandler().isClosed()) {
                         LOGGER.debug("Trying again for new Connection.");
-                        if (TLS_CONNECTION_COUNTER >= TLS_CONNECTIONS_UPPER_LIMIT) {
+                        if (tlsConnectionCounter >= TLS_CONNECTIONS_UPPER_LIMIT) {
                             LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
                             prematureStop = true;
                             return;
@@ -531,6 +566,7 @@ public class TlsRngProbe extends TlsProbe {
             messages = new ArrayList<>();
             messages.add(httpGet);
             records = null;
+            // Resetting result to null ensures we do not consider old results
             result = null;
             try {
                 sendMessageHelper.sendMessages(messages, records, tlsContext);
@@ -597,9 +633,9 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     /**
-     * Checks if the Host utilities Unix time for Server Randoms
-     * 
-     * @return
+     * Checks if the Host utilities Unix time or similar counters for Server Randoms. This is done by examining
+     * 10 ServerHello randoms.
+     * @return TRUE if a counter has been detected.
      */
     private boolean checkForUnixTime() {
         boolean usesUnixTime = false;
@@ -607,9 +643,9 @@ public class TlsRngProbe extends TlsProbe {
         int matchCounter = 0;
 
         if (highestVersion == ProtocolVersion.TLS13) {
-            unixConfig = generateTls13Config(intToByteArray(9999));
+            unixConfig = generateTls13Config(intToByteArray(UNIX_TIME_RANDOM_VALUE));
         } else {
-            unixConfig = generateTestConfig(intToByteArray(9999));
+            unixConfig = generateTestConfig(intToByteArray(UNIX_TIME_RANDOM_VALUE));
             CipherSuite[] supportedSuites = new CipherSuite[latestReport.getCipherSuites().toArray().length];
             supportedSuites = latestReport.getCipherSuites().toArray(supportedSuites);
             unixConfig.setDefaultClientSupportedCiphersuites(supportedSuites);
@@ -638,6 +674,7 @@ public class TlsRngProbe extends TlsProbe {
             executeState(unixState);
             long endTime = System.currentTimeMillis();
 
+            // current time is in milliseconds
             long duration = (endTime - startTime) / 1000;
 
             LOGGER.debug("UNIX_TIME_STAMP_TEST: SERVER RANDOM: "
@@ -674,7 +711,7 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         LOGGER.debug("MATCHCOUNTER: " + matchCounter);
-        if (matchCounter == 10) {
+        if (matchCounter == MINIMUM_MATCH_COUNTER) {
             LOGGER.debug("ServerRandom utilizes UnixTimestamps.");
             usesUnixTime = true;
         } else {
@@ -684,6 +721,11 @@ public class TlsRngProbe extends TlsProbe {
         return usesUnixTime;
     }
 
+    /**
+     * Generates a new TLS 1.2 Connection for IV-Collection.
+     * @param config The TLS Config employed in the new Connection
+     * @return State representing the newly opened TLS Connection
+     */
     private State generateOpenConnection(Config config) {
         config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
@@ -702,10 +744,15 @@ public class TlsRngProbe extends TlsProbe {
             LOGGER.debug(ex);
             return null;
         }
-        TLS_CONNECTION_COUNTER++;
+        tlsConnectionCounter++;
         return state;
     }
 
+    /**
+     * Simple method to cast an int to a 32 byte byteArray for setting the ClientHello Random
+     * @param number number to be cast to 32 byte byteArray
+     * @return number as 32 byte byteArray padded with zeroes.
+     */
     private byte[] intToByteArray(int number) {
         BigInteger bigNum = BigInteger.valueOf(number);
         byte[] bigNumArray = bigNum.toByteArray();
