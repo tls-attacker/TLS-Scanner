@@ -13,33 +13,41 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ParametrizedClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHEWeakPrivateKeyProbe.DHWeakPrivateKeyProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHEWeakPrivateKeyProbe.PrivateKeyType;
 
-public class DHEWeakPrivateKeyProbe extends BaseDHEProbe {
+public class DHEWeakPrivateKeyProbe extends BaseDHEParametrizedProbe<PrivateKeyType, DHWeakPrivateKeyProbeResult> {
+    enum PrivateKeyType {
+        ZERO,
+        ONE
+    }
 
     public static Collection<DHEWeakPrivateKeyProbe> getDefaultProbes(IOrchestrator orchestrator) {
         return Arrays.asList(
-                new DHEWeakPrivateKeyProbe(orchestrator, BigInteger.valueOf(0)),
-                new DHEWeakPrivateKeyProbe(orchestrator, BigInteger.valueOf(1)));
+                new DHEWeakPrivateKeyProbe(orchestrator, PrivateKeyType.ZERO),
+                new DHEWeakPrivateKeyProbe(orchestrator, PrivateKeyType.ONE));
     }
 
-    private final BigInteger keyToTest;
-
-    public DHEWeakPrivateKeyProbe(IOrchestrator orchestrator, BigInteger keyToTest) {
-        super(orchestrator, true, true, true);
-        this.keyToTest = keyToTest;
+    public DHEWeakPrivateKeyProbe(IOrchestrator orchestrator, PrivateKeyType keyType) {
+        // super(orchestrator, true, true, true, keyType);
+        super(orchestrator, false, false, true, keyType);
     }
 
     @Override
-    public ParametrizedClientProbeResult<String, DHWeakPrivateKeyProbeResult> execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+    public DHWeakPrivateKeyProbeResult executeInternal(State state, DispatchInformation dispatchInformation) throws DispatchException {
         Config config = state.getConfig();
         prepareConfig(config);
-        config.setDefaultServerDhPrivateKey(keyToTest);
+        switch (enumValue) {
+            case ZERO:
+                config.setDefaultServerDhPrivateKey(BigInteger.ZERO);
+                break;
+            case ONE:
+                config.setDefaultServerDhPrivateKey(BigInteger.ONE);
+                break;
+        }
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
         executeState(state, dispatchInformation);
-        return new ParametrizedClientProbeResult<>(getClass(),
-                keyToTest.toString(), new DHWeakPrivateKeyProbeResult(state));
+        return new DHWeakPrivateKeyProbeResult(state);
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

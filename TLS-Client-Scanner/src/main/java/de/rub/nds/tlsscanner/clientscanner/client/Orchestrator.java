@@ -30,7 +30,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.BaseFuture;
 
 public class Orchestrator implements IOrchestrator {
-    private static final int CLIENT_RETRY_COUNT = 3;
+    private static final int CLIENT_RETRY_COUNT = 5;
     private static final Logger LOGGER = LogManager.getLogger();
 
     protected final IClientAdapter clientAdapter;
@@ -112,10 +112,8 @@ public class Orchestrator implements IOrchestrator {
         int tryNo = 0;
         try {
             while (!serverResultFuture.isGotConnection()) {
-                if (tryNo > 0) {
-                    // sleep a bit
-                    Thread.sleep(1000);
-                }
+                // sleep a bit after fails
+                Thread.sleep(1000 * tryNo);
                 if (tryNo++ >= CLIENT_RETRY_COUNT) {
                     LOGGER.warn("Failed to get connection from client after {} tries", CLIENT_RETRY_COUNT);
                     break;

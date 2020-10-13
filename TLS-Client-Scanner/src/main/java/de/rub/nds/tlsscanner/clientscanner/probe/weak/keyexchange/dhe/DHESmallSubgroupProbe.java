@@ -14,11 +14,10 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ParametrizedClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHESmallSubgroupProbe.DHESmallSubgroupResult;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHESmallSubgroupProbe.SmallSubgroupType;
 
-public class DHESmallSubgroupProbe extends BaseDHEProbe {
-    private static Random random = new Random();
-
+public class DHESmallSubgroupProbe extends BaseDHEParametrizedProbe<SmallSubgroupType, DHESmallSubgroupResult> {
     enum SmallSubgroupType {
         ONE,
         MINUS_ONE
@@ -30,27 +29,15 @@ public class DHESmallSubgroupProbe extends BaseDHEProbe {
                 new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.MINUS_ONE));
     }
 
-    private final SmallSubgroupType groupType;
-
     public DHESmallSubgroupProbe(IOrchestrator orchestrator, SmallSubgroupType groupType) {
-        super(orchestrator, false, false, true);
-        this.groupType = groupType;
+        super(orchestrator, false, false, true, groupType);
     }
 
     @Override
-    protected String getHostnamePrefix() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.groupType.name());
-        sb.append('.');
-        sb.append(super.getHostnamePrefix());
-        return sb.toString();
-    }
-
-    @Override
-    public ParametrizedClientProbeResult<SmallSubgroupType, DHESmallSubgroupResult> execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+    public DHESmallSubgroupResult executeInternal(State state, DispatchInformation dispatchInformation) throws DispatchException {
         Config config = state.getConfig();
         prepareConfig(config);
-        switch (groupType) {
+        switch (enumValue) {
             case ONE:
                 config.setDefaultServerDhGenerator(BigInteger.ONE);
                 break;
@@ -58,12 +45,11 @@ public class DHESmallSubgroupProbe extends BaseDHEProbe {
                 config.setDefaultServerDhGenerator(config.getDefaultClientDhModulus().subtract(BigInteger.ONE));
                 break;
             default:
-                throw new DispatchException("Failed to generate generator; unknown type " + groupType);
+                throw new DispatchException("Failed to generate generator; unknown type " + enumValue);
         }
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
         executeState(state, dispatchInformation);
-        return new ParametrizedClientProbeResult<>(getClass(),
-                groupType, new DHESmallSubgroupResult(state));
+        return new DHESmallSubgroupResult(state);
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

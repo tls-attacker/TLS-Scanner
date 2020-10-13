@@ -19,7 +19,7 @@ import de.rub.nds.tlsscanner.clientscanner.util.helper.UpdatableXmlSeeAlso;
 public class ParametrizedClientProbeResult<K, V> extends ClientProbeResult {
     private static Set<Class<?>> seeAlso = UpdatableXmlSeeAlso.patch(ParametrizedClientProbeResult.class);
 
-    private final Class<? extends IProbe> clazz;
+    private final transient Class<? extends IProbe> clazz;
     @SuppressWarnings("squid:S1948")
     // sonarlint complains that K,V aren't serializable, but when they are, JAXB
     // complains that serializable is an interface... So rather make the linter

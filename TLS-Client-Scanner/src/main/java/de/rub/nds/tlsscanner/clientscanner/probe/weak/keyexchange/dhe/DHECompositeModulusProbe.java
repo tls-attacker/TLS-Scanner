@@ -16,11 +16,12 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ControlledClientDispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHECompositeModulusProbe.CompositeType;
+import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHECompositeModulusProbe.DHCompositeModulusProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHEMinimumModulusLengthProbe.DHMinimumModulusLengthResult;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ParametrizedClientProbeResult;
 
-public class DHECompositeModulusProbe extends BaseDHEProbe {
+public class DHECompositeModulusProbe extends BaseDHEParametrizedProbe<CompositeType, DHCompositeModulusProbeResult> {
     private static Random random = new Random();
 
     enum CompositeType {
@@ -34,20 +35,8 @@ public class DHECompositeModulusProbe extends BaseDHEProbe {
                 new DHECompositeModulusProbe(orchestrator, CompositeType.MOD3));
     }
 
-    private final CompositeType compType;
-
     public DHECompositeModulusProbe(IOrchestrator orchestrator, CompositeType compType) {
-        super(orchestrator, false, false, true);
-        this.compType = compType;
-    }
-
-    @Override
-    protected String getHostnamePrefix() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.compType.name());
-        sb.append('.');
-        sb.append(super.getHostnamePrefix());
-        return sb.toString();
+        super(orchestrator, false, false, true, compType);
     }
 
     @Override
@@ -60,7 +49,7 @@ public class DHECompositeModulusProbe extends BaseDHEProbe {
 
     protected BigInteger createModulus(int minBitLength) {
         BigInteger ret;
-        switch (compType) {
+        switch (enumValue) {
             case EVEN:
                 ret = BigInteger.probablePrime(minBitLength, random);
                 ret = ret.add(BigInteger.ONE);
@@ -72,11 +61,11 @@ public class DHECompositeModulusProbe extends BaseDHEProbe {
                 }
                 return ret;
         }
-        throw new RuntimeException("Unknown type " + compType);
+        throw new RuntimeException("Unknown type " + enumValue);
     }
 
     @Override
-    public ParametrizedClientProbeResult<CompositeType, DHCompositeModulusProbeResult> execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+    public DHCompositeModulusProbeResult executeInternal(State state, DispatchInformation dispatchInformation) throws DispatchException {
         Config config = state.getConfig();
         int keylength = 2048;
         ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
@@ -87,8 +76,7 @@ public class DHECompositeModulusProbe extends BaseDHEProbe {
         config.setDefaultServerDhModulus(createModulus(keylength));
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
         executeState(state, dispatchInformation);
-        return new ParametrizedClientProbeResult<>(getClass(),
-                compType, new DHCompositeModulusProbeResult(state));
+        return new DHCompositeModulusProbeResult(state);
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
