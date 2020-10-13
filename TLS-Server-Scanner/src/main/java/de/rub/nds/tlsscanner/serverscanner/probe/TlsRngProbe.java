@@ -285,11 +285,6 @@ public class TlsRngProbe extends TlsProbe {
             serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
             
             byte[] completeServerRandom = null;
-
-            if (!(serverRandom == null)) {
-                // Only take the first 32 bytes even when using extended Random
-                completeServerRandom = Arrays.copyOfRange(serverRandom, 0, 32);
-            }
             
             if (!(completeServerRandom == null) && !(completeServerRandom.length == 0)) {
                 if (usesUnixTime) {
@@ -390,12 +385,6 @@ public class TlsRngProbe extends TlsProbe {
             serverExtendedRandom = test_state.getTlsContext().getServerExtendedRandom();
             
             byte[] completeServerRandom = null;
-
-            if (!(serverRandom == null)) {
-                // Only take the first 32 bytes even when using extended Random
-                completeServerRandom = Arrays.copyOfRange(serverRandom, 0, 32);
-            }
-            
 
             LOGGER.debug("CLIENT RANDOM: "
                     + ArrayConverter.bytesToHexString(test_state.getTlsContext().getClientRandom()));
