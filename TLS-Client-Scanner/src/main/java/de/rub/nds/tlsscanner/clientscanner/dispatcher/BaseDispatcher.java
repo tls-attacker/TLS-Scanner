@@ -79,7 +79,7 @@ public abstract class BaseDispatcher implements IDispatcher {
             // TODO look at clients prefered signature algorithms
             ckt = CertificateKeyType.DSS;
         } else {
-            ckt = AlgorithmResolver.getKeyExchangeAlgorithm(selectedSuite).getRequiredCertPublicKeyType();
+            ckt = AlgorithmResolver.getCertificateKeyType(selectedSuite);
         }
         return ckt;
     }
