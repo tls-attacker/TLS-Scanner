@@ -692,6 +692,9 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Supports Session resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
         prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
         prettyAppend(builder, "Issues TLS 1.3 Session Tickets", AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+        prettyAppend(builder, "Supports TLS 1.3 PSK", AnalyzedProperty.SUPPORTS_TLS13_PSK);
+        prettyAppend(builder, "Supports TLS 1.3 PSK-DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+        prettyAppend(builder, "Supports 0-RTT", AnalyzedProperty.SUPPORTS_TLS13_0_RTT);
         // prettyAppend(builder, "Session Ticket Hint",
         // report.getSessionTicketLengthHint());
         // prettyAppendYellowOnFailure(builder, "Session Ticket Rotation",
