@@ -120,7 +120,6 @@ public class TlsScanner {
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
         afterList.add(new RaccoonAttackAfterProbe());
-        afterList.add(new EvaluateRandomnessAfterProbe());
     }
 
     public SiteReport scan() {
