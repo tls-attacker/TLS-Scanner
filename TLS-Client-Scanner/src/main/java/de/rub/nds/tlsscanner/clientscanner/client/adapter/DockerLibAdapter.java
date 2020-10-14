@@ -1,6 +1,9 @@
 package de.rub.nds.tlsscanner.clientscanner.client.adapter;
 
+import java.util.function.UnaryOperator;
+
 import com.github.dockerjava.api.exception.DockerException;
+import com.github.dockerjava.api.model.HostConfig;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,10 +20,16 @@ public class DockerLibAdapter implements IClientAdapter {
     private final TlsImplementationType type;
     private final String version;
     private TlsClientInstance client;
+    private final UnaryOperator<HostConfig> hostConfigHook;
 
-    public DockerLibAdapter(TlsImplementationType type, String version) {
+    public DockerLibAdapter(TlsImplementationType type, String version, UnaryOperator<HostConfig> hostConfigHook) {
         this.type = type;
         this.version = version;
+        this.hostConfigHook = hostConfigHook;
+    }
+
+    public DockerLibAdapter(TlsImplementationType type, String version) {
+        this(type, version, null);
     }
 
     @Override
@@ -31,6 +40,7 @@ public class DockerLibAdapter implements IClientAdapter {
                     .autoRemove(true)
                     .connectOnStartup(false)
                     .insecureConnection(false)
+                    .hostConfigHook(hostConfigHook)
                     .build();
         } catch (DockerException e) {
             LOGGER.error("Failed to create client", e);

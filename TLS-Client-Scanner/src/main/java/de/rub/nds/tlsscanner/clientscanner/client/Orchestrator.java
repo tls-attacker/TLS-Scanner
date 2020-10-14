@@ -1,13 +1,8 @@
 package de.rub.nds.tlsscanner.clientscanner.client;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.sql.rowset.spi.SyncResolver;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +11,10 @@ import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsscanner.clientscanner.Server;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.DockerLibAdapter;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.CurlAdapter;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ProxiedLocalCommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ClientProbeResultFuture;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
@@ -51,11 +49,10 @@ public class Orchestrator implements IOrchestrator {
         // 7.72.0--openssl-client:1.0.2
         // 7.72.0--openssl-client:1.1.1g
         // 7.72.0--boringssl-client:master
-        clientAdapter = new DockerLibAdapter(TlsImplementationType.CURL, "7.72.0--openssl-client:1.1.1g");
-        if (clientAdapter instanceof DockerLibAdapter) {
-            baseHostname = "192.168.65.2.xip.io"; // windows, for my machine
-            // TODO move baseHostname into config
-        }
+        ScanClientCommandConfig scanCfg = csConfig.getSelectedSubcommand(ScanClientCommandConfig.class);
+        clientAdapter = scanCfg.createClientAdapter();
+        baseHostname = csConfig.getServerBaseURL();
+        LOGGER.info("Using base hostname {}", baseHostname);
 
         SNIDispatcher snid = new SNIDispatcher();
         dispatcher = new ControlledClientDispatcher();

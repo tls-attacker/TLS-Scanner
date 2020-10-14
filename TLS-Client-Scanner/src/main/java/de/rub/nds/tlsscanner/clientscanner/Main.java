@@ -28,12 +28,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import de.rub.nds.tlsattacker.core.certificate.CertificateByteChooser;
+import de.rub.nds.tlsattacker.core.certificate.CertificateKeyPair;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.ThreadLocalOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.ForcedCompressionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
@@ -57,14 +61,23 @@ public class Main {
         Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
         Configurator.setAllLevels("de.rub.nds.tlsscanner.clientscanner", Level.DEBUG);
         Patcher.applyPatches();
+        {
+            // suppress warnings while loading CKPs
+            Level logLevel = LogManager.getLogger(CertificateKeyPair.class).getLevel();
+            Configurator.setAllLevels("de.rub.nds.tlsattacker.core.certificate.CertificateKeyPair", Level.ERROR);
+            CertificateByteChooser.getInstance();
+            Configurator.setAllLevels("de.rub.nds.tlsattacker.core.certificate.CertificateKeyPair", logLevel);
+        }
 
-        ClientScannerConfig csConfig = new ClientScannerConfig(new GeneralDelegate());
-        JCommander commander = new JCommander(csConfig);
+        GeneralDelegate generalDelegate = new GeneralDelegate();
+        ClientScannerConfig csConfig = new ClientScannerConfig(generalDelegate);
+        JCommander jc = csConfig.jCommander;
 
         try {
-            commander.parse(args);
+            jc.parse(args);
+            csConfig.setParsed();
             if (csConfig.getGeneralDelegate().isHelp()) {
-                commander.usage();
+                jc.usage();
                 return;
             }
             if (false) {
@@ -74,7 +87,7 @@ public class Main {
             }
         } catch (ParameterException E) {
             LOGGER.error("Could not parse provided parameters", E);
-            commander.usage();
+            jc.usage();
         }
     }
 
@@ -117,7 +130,7 @@ public class Main {
             probes.add(new VersionProbe(orchestrator, ProtocolVersion.TLS13));
         }
         // quick scan with only the probes I am interested in right now
-        if (!false) {
+        if (false) {
             probes.clear();
             probes.add(new HelloReconProbe(orchestrator));
             probes.add(new SNIProbe());
@@ -131,9 +144,8 @@ public class Main {
     }
 
     private static void runScan(ClientScannerConfig csConfig) {
-        csConfig.serverDelegate.setPort(0); // use any free port
         IOrchestrator orchestrator = new ThreadLocalOrchestrator(csConfig);
-        int threads = 1;
+        int threads = 8;
         ThreadPoolExecutor pool = new ThreadPoolExecutor(threads, threads, 1, TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-probe-runner"));
 
@@ -143,8 +155,9 @@ public class Main {
 
         try {
             File file = null;
-            if (csConfig.getReportFile() != null) {
-                file = new File(csConfig.getReportFile());
+            ScanClientCommandConfig scanCfg = csConfig.getSelectedSubcommand(ScanClientCommandConfig.class);
+            if (scanCfg.getReportFile() != null) {
+                file = new File(scanCfg.getReportFile());
             }
             JAXBContext ctx;
             ctx = JAXBContext.newInstance(ClientReport.class);

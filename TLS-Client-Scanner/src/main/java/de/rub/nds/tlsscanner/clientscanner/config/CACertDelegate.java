@@ -30,11 +30,8 @@ public class CACertDelegate extends Delegate {
             config.setDefaultExplicitCertificateKeyPair(new CertificateKeyPair(cert, privateKey));
             config.setAutoSelectCertificate(false);
         } catch (CertificateException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new ConfigurationException("Failed to set Certificate and key", e);
         }
-        // TODO Auto-generated method stub
-
     }
 
 }
