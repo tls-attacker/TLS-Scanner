@@ -16,21 +16,23 @@ import de.rub.nds.tlsattacker.core.exceptions.TransportHandlerConnectException;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
-import de.rub.nds.tlsattacker.core.protocol.message.*;
+import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.record.AbstractRecord;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.MessageActionResult;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.ReceiveMessageHelper;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.SendMessageHelper;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -222,23 +224,14 @@ public class TlsRngProbe extends TlsProbe {
     private Config generateTls13Config(byte[] clientRandom) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplementedTls13CipherSuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        List<NamedGroup> tls13Groups = new LinkedList<>();
-        for (NamedGroup group : NamedGroup.values()) {
-            if (group.isTls13() && !group.name().contains("FFDHE")
-                    && !group.name().contains(NamedGroup.ECDH_X25519.name())
-                    && !group.name().contains(NamedGroup.ECDH_X448.name())) {
-                tls13Groups.add(group);
-            }
-        }
-        if (!(tls13Groups.size() == 0)) {
-            tlsConfig.setDefaultClientNamedGroups(tls13Groups);
-        }
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
@@ -248,21 +241,9 @@ public class TlsRngProbe extends TlsProbe {
         tlsConfig.setUseFreshRandom(false);
         tlsConfig.setDefaultClientRandom(clientRandom);
 
-        List<SignatureAndHashAlgorithm> algos = new LinkedList<>();
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA512);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA256);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA384);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA512);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512);
-
+        List<SignatureAndHashAlgorithm> algos = SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms();
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(algos);
+
         return tlsConfig;
     }
 
@@ -296,8 +277,6 @@ public class TlsRngProbe extends TlsProbe {
 
         for (int i = 0; i < numberOfHandshakes; i++) {
             Config serverHelloConfig = generateTls13Config(intToByteArray(clientRandomInit + i));
-
-            serverHelloConfig.setDefaultClientSupportedCiphersuites(supportedSuites);
 
             if (supportsExtendedRandom) {
                 LOGGER.debug("Extended Random Supported!");
@@ -685,9 +664,11 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         unixConfig.setEnforceSettings(true);
+        // unixConfig.setDefaultSelectedProtocolVersion(highestVersion);
+        LOGGER.debug("unixConfig set highest Version to " + highestVersion);
         unixConfig.setHighestProtocolVersion(highestVersion);
         unixConfig.setSupportedVersions(highestVersion);
-        unixConfig.setUseFreshRandom(true);
+        unixConfig.setUseFreshRandom(false);
 
         unixConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
@@ -706,6 +687,9 @@ public class TlsRngProbe extends TlsProbe {
             State unixState = new State(unixConfig);
             executeState(unixState);
             long endTime = System.currentTimeMillis();
+
+            List<AbstractRecord> allReceivedMessages = WorkflowTraceUtil.getAllReceivedRecords(unixState
+                    .getWorkflowTrace());
 
             // current time is in milliseconds
             long duration = (endTime - startTime) / 1000;
