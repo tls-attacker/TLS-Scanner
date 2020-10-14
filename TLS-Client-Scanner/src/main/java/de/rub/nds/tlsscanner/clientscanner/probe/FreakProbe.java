@@ -1,15 +1,15 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
-import de.rub.nds.modifiablevariable.ModifiableVariableFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -34,10 +34,10 @@ import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProb
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
-import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 
 // see https://www.smacktls.com/smack.pdf section V-D
 public class FreakProbe extends BaseProbe {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final int P_LEN = 256;
     private static final int Q_LEN = 256;
     private static final int N_LEN = P_LEN + Q_LEN;
@@ -118,8 +118,16 @@ public class FreakProbe extends BaseProbe {
             BigInteger q1 = q.subtract(BigInteger.ONE);
             phi = phi.multiply(q1);
         } while (!e.gcd(phi).equals(BigInteger.ONE));
-        d = e.modInverse(N);
+        d = e.modInverse(phi);
         assert d.multiply(e).mod(phi).equals(BigInteger.ONE);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("p: {}", p);
+            LOGGER.debug("q: {}", q);
+            LOGGER.debug("N: {}", N);
+            LOGGER.debug("phi(N): {}", phi);
+            LOGGER.debug("e: {}", e);
+            LOGGER.debug("d: {}", d);
+        }
         config.setDefaultServerRSAModulus(N);
         config.setDefaultServerRSAPublicKey(e);
         config.setDefaultServerRSAPrivateKey(d);
@@ -133,10 +141,6 @@ public class FreakProbe extends BaseProbe {
 
         // for SKE we need the cert keys to do the signing
         // after that we need the export keys to do the decryption
-
-        // TODO I did not get decryption to work, even though it should
-        // This might be the client 's fault.
-        // Nonetheless, we can detect if a client misbehaves and sends a small CKE.
         TlsAction fixKeysAction = new ChangeRsaParametersAction(N, e, d);
         patchTrace(trace, ske, fixKeysAction);
         executeState(state, dispatchInformation);
