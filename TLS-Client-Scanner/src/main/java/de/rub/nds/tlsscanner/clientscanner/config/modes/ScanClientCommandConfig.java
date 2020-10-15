@@ -6,6 +6,7 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.connection.InboundConnection;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.DockerLibAdapterConfig;
@@ -24,7 +25,13 @@ public class ScanClientCommandConfig extends BaseSubcommand {
 
     @Override
     public void applyDelegate(Config config) {
-        // nothing to do
+        // use any port
+        InboundConnection inboundConnection = config.getDefaultServerConnection();
+        if (inboundConnection == null) {
+            config.setDefaultServerConnection(new InboundConnection(0));
+        } else {
+            inboundConnection.setPort(0);
+        }
     }
 
     public String getReportFile() {

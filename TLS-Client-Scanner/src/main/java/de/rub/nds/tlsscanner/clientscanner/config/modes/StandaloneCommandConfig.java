@@ -12,7 +12,7 @@ import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
 public class StandaloneCommandConfig extends BaseSubcommand {
 
     @Parameter(names = "-port", required = false, description = "Port to listen on")
-    protected Integer port = null;
+    protected Integer port = 0;
 
     public StandaloneCommandConfig() {
         super();
