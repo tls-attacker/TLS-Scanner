@@ -39,6 +39,7 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.ISubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
@@ -100,38 +101,6 @@ public class Main {
         }
     }
 
-    private static void runStandalone(ClientScannerConfig csConfig) {
-        SNIDispatcher disp = new SNIDispatcher();
-        LOGGER.info("Using base URL {}", csConfig.getServerBaseURL());
-        disp.registerRule(csConfig.getServerBaseURL(), new SNINopDispatcher());
-        List<IProbe> probes = getProbes(null);
-        for (IProbe p : probes) {
-            if (p instanceof BaseProbe) {
-                // TODO create some nice interface instead of expecting BaseProbe
-                // possibly also add some other form of configurability...
-                String prefix = ((BaseProbe) p).getHostnameForStandalone();
-                if (prefix != null) {
-                    disp.registerRule(prefix, p);
-                    LOGGER.info("Adding {} at prefix {}", p.getClass().getSimpleName(), prefix);
-                } else {
-                    LOGGER.debug("Not adding {} as it did not provide a hostname (returned null)", p.getClass().getSimpleName());
-                }
-            } else {
-                LOGGER.debug("Not adding {} as it is not extended from BaseProbe", p.getClass().getSimpleName());
-            }
-        }
-        Server s = new Server(csConfig, disp, 8);
-        try {
-            s.start();
-            s.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("Failed to wait for server exit due to interrupt", e);
-            Thread.currentThread().interrupt();
-        } finally {
-            s.kill();
-        }
-    }
-
     private static List<IProbe> getProbes(IOrchestrator orchestrator) {
         // TODO have probes be configurable from commandline
         List<IProbe> probes = new ArrayList<>();
@@ -170,6 +139,45 @@ public class Main {
             probes.addAll(DHESmallSubgroupProbe.getDefaultProbes(orchestrator));
         }
         return probes;
+    }
+
+    private static IDispatcher getStandaloneDispatcher(ClientScannerConfig csConfig) {
+        if (false) {
+            return new VersionProbe(null, ProtocolVersion.TLS13);
+        }
+        SNIDispatcher disp = new SNIDispatcher();
+        LOGGER.info("Using base URL {}", csConfig.getServerBaseURL());
+        disp.registerRule(csConfig.getServerBaseURL(), new SNINopDispatcher());
+        List<IProbe> probes = getProbes(null);
+        for (IProbe p : probes) {
+            if (p instanceof BaseProbe) {
+                // TODO create some nice interface instead of expecting BaseProbe
+                // possibly also add some other form of configurability...
+                String prefix = ((BaseProbe) p).getHostnameForStandalone();
+                if (prefix != null) {
+                    disp.registerRule(prefix, p);
+                    LOGGER.info("Adding {} at prefix {}", p.getClass().getSimpleName(), prefix);
+                } else {
+                    LOGGER.debug("Not adding {} as it did not provide a hostname (returned null)", p.getClass().getSimpleName());
+                }
+            } else {
+                LOGGER.debug("Not adding {} as it is not extended from BaseProbe", p.getClass().getSimpleName());
+            }
+        }
+        return disp;
+    }
+
+    private static void runStandalone(ClientScannerConfig csConfig) {
+        Server s = new Server(csConfig, getStandaloneDispatcher(csConfig), 8);
+        try {
+            s.start();
+            s.join();
+        } catch (InterruptedException e) {
+            LOGGER.error("Failed to wait for server exit due to interrupt", e);
+            Thread.currentThread().interrupt();
+        } finally {
+            s.kill();
+        }
     }
 
     private static void runScan(ClientScannerConfig csConfig) {
