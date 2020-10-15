@@ -70,6 +70,7 @@ public abstract class BaseDispatcher implements IDispatcher {
                 }
             }
             if (selectedSuite == null) {
+                LOGGER.warn("Could not find common Ciphersuite; falling back to default");
                 selectedSuite = config.getDefaultSelectedCipherSuite();
             }
         }
@@ -77,10 +78,13 @@ public abstract class BaseDispatcher implements IDispatcher {
         CertificateKeyType ckt;
         if (selectedSuite.isTLS13()) {
             // TODO look at clients prefered signature algorithms
-            ckt = CertificateKeyType.DSS;
+            ckt = CertificateKeyType.ECDSA;
         } else {
-            ckt = AlgorithmResolver.getCertificateKeyType(selectedSuite);
+            ckt = AlgorithmResolver.getKeyExchangeAlgorithm(selectedSuite).getRequiredCertPublicKeyType();
+            // after updating TLS-Attacker we need the following
+            // ckt = AlgorithmResolver.getCertificateKeyType(selectedSuite);
         }
+        LOGGER.debug("Determined cert key type {} (assuming CipherSuite {})", ckt, selectedSuite);
         return ckt;
     }
 
