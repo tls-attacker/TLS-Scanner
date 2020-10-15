@@ -36,8 +36,13 @@ import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.ThreadLocalOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.ISubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.ForcedCompressionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
@@ -58,7 +63,7 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) {
-        Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
+        Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.DEBUG);
         Configurator.setAllLevels("de.rub.nds.tlsscanner.clientscanner", Level.DEBUG);
         Patcher.applyPatches();
         {
@@ -80,10 +85,16 @@ public class Main {
                 jc.usage();
                 return;
             }
-            if (false) {
+            ISubcommand cmd = csConfig.getSelectedSubcommand();
+            // TODO outsource execution into commands themselves
+            // probably with an interface like IExecutableSubcommand which has a function
+            // execute(ClientScannerConfig)
+            if (cmd instanceof StandaloneCommandConfig) {
                 runStandalone(csConfig);
-            } else {
+            } else if (cmd instanceof ScanClientCommandConfig) {
                 runScan(csConfig);
+            } else {
+                throw new ParameterException("Failed to find method to execute for command " + cmd);
             }
         } catch (ParameterException E) {
             LOGGER.error("Could not parse provided parameters", E);
@@ -92,7 +103,26 @@ public class Main {
     }
 
     private static void runStandalone(ClientScannerConfig csConfig) {
-        Server s = new Server(csConfig, new VersionProbe(null, ProtocolVersion.TLS13), 8);
+        SNIDispatcher disp = new SNIDispatcher();
+        LOGGER.info("Using base URL {}", csConfig.getServerBaseURL());
+        disp.registerRule(csConfig.getServerBaseURL(), new SNINopDispatcher());
+        List<IProbe> probes = getProbes(null);
+        for (IProbe p : probes) {
+            if (p instanceof BaseProbe) {
+                // TODO create some nice interface instead of expecting BaseProbe
+                // possibly also add some other form of configurability...
+                String prefix = ((BaseProbe) p).getHostnameForStandalone();
+                if (prefix != null) {
+                    disp.registerRule(prefix, p);
+                    LOGGER.info("Adding {} at prefix {}", p.getClass().getSimpleName(), prefix);
+                } else {
+                    LOGGER.debug("Not adding {} as it did not provide a hostname (returned null)", p.getClass().getSimpleName());
+                }
+            } else {
+                LOGGER.debug("Not adding {} as it is not extended from BaseProbe", p.getClass().getSimpleName());
+            }
+        }
+        Server s = new Server(csConfig, disp, 8);
         try {
             s.start();
             s.join();
@@ -105,6 +135,7 @@ public class Main {
     }
 
     private static List<IProbe> getProbes(IOrchestrator orchestrator) {
+        // TODO have probes be configurable from commandline
         List<IProbe> probes = new ArrayList<>();
         probes.addAll(VersionProbe.getDefaultProbes(orchestrator));
         probes.add(new HelloReconProbe(orchestrator));

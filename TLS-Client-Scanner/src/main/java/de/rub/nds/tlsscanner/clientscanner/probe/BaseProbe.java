@@ -36,6 +36,10 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe {
     }
 
     // #region orchestrating side
+    public String getHostnameForStandalone() {
+        return getHostnamePrefix();
+    }
+
     protected String getHostnamePrefix() {
         // hostname from class path
         String prefix = getClass().getName();
