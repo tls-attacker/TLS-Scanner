@@ -4,21 +4,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ParametrizedClientProbeResult;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class VersionProbe extends BaseProbe {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -69,10 +68,11 @@ public class VersionProbe extends BaseProbe {
         Config config = state.getConfig();
         config.setHighestProtocolVersion(versionToTest);
         config.setDefaultSelectedProtocolVersion(versionToTest);
-        config.setDefaultApplicationMessageData("TLS Version: " + versionToTest);
+        config.setDefaultApplicationMessageData("TLS Version: " + versionToTest + "\n");
         if (versionToTest == ProtocolVersion.TLS13) {
             // cf TLS-Attacker/resources/configs/tls13.config
             config.setDefaultServerSupportedCiphersuites(suites13);
+            config.setDefaultSelectedCipherSuite(suites13.get(0));
             config.setAddECPointFormatExtension(false);
             config.setAddEllipticCurveExtension(true);
             config.setAddSignatureAndHashAlgorithmsExtension(true);
@@ -80,7 +80,8 @@ public class VersionProbe extends BaseProbe {
             config.setAddKeyShareExtension(true);
 
             config.setAddRenegotiationInfoExtension(false);
-            // config.setDefaultServerSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm.RSA_SHA256);
+            // this should already have the correct value
+            // config.setDefaultServerSupportedSignatureAndHashAlgorithms
         }
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);

@@ -3,6 +3,7 @@ package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 import java.util.concurrent.Future;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.logging.log4j.CloseableThreadContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,14 +35,21 @@ public class ControlledClientDispatcher implements IDispatcher {
 
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
-        SNIDispatchInformation SNI = dispatchInformation.getAdditionalInformation(SNIDispatcher.class, SNIDispatchInformation.class);
-        UidInformation uid = dispatchInformation.getAdditionalInformation(SNIUidDispatcher.class, UidInformation.class);
+        SNIDispatchInformation sniD = dispatchInformation.getAdditionalInformation(SNIDispatcher.class, SNIDispatchInformation.class);
+        UidInformation uidD = dispatchInformation.getAdditionalInformation(SNIUidDispatcher.class, UidInformation.class);
+        String sni = null, uid = null;
+        if (sniD != null) {
+            sni = sniD.remainingHostname;
+        }
+        if (uidD != null) {
+            uid = uidD.uid;
+        }
 
-        ClientProbeResultFuture task = getNextTask(SNI, uid);
+        ClientProbeResultFuture task = getNextTask(sni, uid);
         if (task == null) {
             throw new DispatchException("Did not find task");
         }
-        try {
+        try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(task.probe.getClass().getSimpleName())) {
             task.setGotConnection();
             dispatchInformation.additionalInformation.put(
                     getClass(),
@@ -53,18 +61,6 @@ public class ControlledClientDispatcher implements IDispatcher {
             task.setException(e);
             throw e;
         }
-    }
-
-    protected ClientProbeResultFuture getNextTask(SNIDispatchInformation pSni, UidInformation pUid) throws DispatchException {
-        String sni = null;
-        String uid = null;
-        if (pSni != null) {
-            sni = pSni.remainingHostname;
-        }
-        if (pUid != null) {
-            uid = pUid.uid;
-        }
-        return getNextTask(sni, uid);
     }
 
     protected ClientProbeResultFuture getNextTask(String sni, String uid) throws DispatchException {

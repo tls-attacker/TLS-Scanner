@@ -42,11 +42,9 @@ import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.ForcedCompressionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.downgrade.SendAlert;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.HelloReconProbe;
@@ -154,7 +152,7 @@ public class Main {
             probes.add(new HelloReconProbe(orchestrator));
             probes.add(new SNIProbe());
             probes.add(new SupportedCipherSuitesProbe());
-            probes.add(new PaddingOracleProbe(orchestrator));
+            // probes.add(new PaddingOracleProbe(orchestrator));
         }
         if (false) {
             probes.clear();
