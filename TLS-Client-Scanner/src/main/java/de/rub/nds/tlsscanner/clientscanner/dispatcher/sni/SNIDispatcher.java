@@ -46,18 +46,21 @@ public class SNIDispatcher implements IDispatcher {
 
     public RuleMatch lookupRule(String hostname) {
         LOGGER.trace("Trying to find rule for {}", hostname);
-        int index = hostname.lastIndexOf('.');
+        int index = hostname.length();
         while (index > -1) {
+            index = hostname.lastIndexOf('.', index - 1);
             String hostnameTry = hostname.substring(index + 1);
             IDispatcher next = forwardRules.get(hostnameTry);
             if (next != null) {
-                String hostnameRemaining = hostname.substring(0, index);
+                String hostnameRemaining = "";
+                if (index > -1) {
+                    hostnameRemaining = hostname.substring(0, index);
+                }
                 LOGGER.trace("Found rule for {} (remaining: {})", hostnameTry, hostnameRemaining);
                 return new RuleMatch(next, hostnameTry, hostnameRemaining);
             } else {
                 LOGGER.trace("Hostname {} did not match", hostnameTry);
             }
-            index = hostname.lastIndexOf('.', index - 1);
         }
         LOGGER.debug("Did not find rule for {}", hostname);
         return null;
