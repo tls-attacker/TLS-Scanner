@@ -215,7 +215,11 @@ public abstract class BaseDispatcher implements IDispatcher {
             ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
             Future<ClientAdapterResult> cFuture = ccInfo.clientFuture;
             try {
-                return cFuture.get();
+                ClientAdapterResult res = cFuture.get();
+                if (res == null) {
+                    LOGGER.warn("Got null result from client");
+                }
+                return res;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException("Interrupted", e);

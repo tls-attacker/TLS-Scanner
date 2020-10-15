@@ -5,9 +5,17 @@ public abstract class ClientAdapterResult {
         SHOWN,
         SHOWN_WITH_WARNING,
         SHOWN_AFTER_DISMISSING_WARNING,
-        ERROR,
+        ERROR;
+
+        public boolean wasShown() {
+            return !this.equals(ERROR);
+        }
     }
 
-    private EContentShown contentShown;
+    public final EContentShown contentShown;
+
+    public ClientAdapterResult(EContentShown contentShown) {
+        this.contentShown = contentShown;
+    }
 
 }

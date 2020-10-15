@@ -13,7 +13,9 @@ import de.rub.nds.tls.subject.docker.DockerExecInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.instance.TlsClientInstance;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
+import de.rub.nds.tlsscanner.clientscanner.report.result.BasicClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult.EContentShown;
 
 public class DockerLibAdapter implements IClientAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -73,7 +75,8 @@ public class DockerLibAdapter implements IClientAdapter {
                     LOGGER.debug(ln);
                 }
             }
-            return null;
+            // TODO distinguish further details...
+            return new BasicClientAdapterResult(ei.getExitCode() == 0 ? EContentShown.SHOWN : EContentShown.ERROR);
         } catch (DockerException e) {
             throw new RuntimeException("Failed to have client connect to target", e);
         }
