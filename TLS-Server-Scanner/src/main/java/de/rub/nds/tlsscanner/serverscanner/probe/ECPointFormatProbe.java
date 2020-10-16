@@ -163,8 +163,9 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE
-                && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION);
+        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
+                && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report
+                        .getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
     }
 
     @Override
