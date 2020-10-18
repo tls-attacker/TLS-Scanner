@@ -30,16 +30,23 @@ public class AlpacaResult extends ProbeResult {
 
     @Override
     protected void mergeData(SiteReport report) {
-        TestResult alpacaMitigated;
-        if (strictAlpn == TestResult.TRUE && strictSni == TestResult.TRUE) {
-            alpacaMitigated = TestResult.TRUE;
-        } else if (strictAlpn == TestResult.TRUE || strictSni == TestResult.TRUE) {
-            alpacaMitigated = TestResult.PARTIALLY;
+        if ((strictSni == TestResult.TRUE || strictSni == TestResult.FALSE) && (strictAlpn == TestResult.TRUE || strictAlpn == TestResult.FALSE)) {
+
+            TestResult alpacaMitigated;
+            if (strictAlpn == TestResult.TRUE && strictSni == TestResult.TRUE) {
+                alpacaMitigated = TestResult.TRUE;
+            } else if (strictAlpn == TestResult.TRUE || strictSni == TestResult.TRUE) {
+                alpacaMitigated = TestResult.PARTIALLY;
+            } else {
+                alpacaMitigated = TestResult.FALSE;
+            }
+            report.putResult(AnalyzedProperty.STRICT_SNI, strictSni);
+            report.putResult(AnalyzedProperty.STRICT_ALPN, strictAlpn);
+            report.putResult(AnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
         } else {
-            alpacaMitigated = TestResult.FALSE;
+            report.putResult(AnalyzedProperty.STRICT_SNI, strictSni);
+            report.putResult(AnalyzedProperty.STRICT_ALPN, strictAlpn);
+            report.putResult(AnalyzedProperty.ALPACA_MITIGATED, TestResult.UNCERTAIN);
         }
-        report.putResult(AnalyzedProperty.STRICT_SNI, strictSni);
-        report.putResult(AnalyzedProperty.STRICT_ALPN, strictAlpn);
-        report.putResult(AnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
     }
 }
