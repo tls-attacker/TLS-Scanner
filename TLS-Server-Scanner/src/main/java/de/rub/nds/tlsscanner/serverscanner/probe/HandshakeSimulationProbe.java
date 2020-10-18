@@ -90,9 +90,9 @@ public class HandshakeSimulationProbe extends TlsProbe {
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
         simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
         if (config.isAddAlpnExtension()) {
-            simulatedClient.setAlpnAnnouncedProtocols(Arrays.toString(config.getAlpnAnnouncedProtocols()));
+            simulatedClient.setAlpnAnnouncedProtocols(config.getDefaultProposedAlpnProtocols());
         } else {
-            simulatedClient.setAlpnAnnouncedProtocols("-");
+            simulatedClient.setAlpnAnnouncedProtocols(new LinkedList<>());
         }
         simulatedClient.setSupportedVersionList(simulatedClient.getTlsClientConfig().getSupportedVersionList());
         simulatedClient.setVersionAcceptForbiddenCiphersuiteList(simulatedClient.getTlsClientConfig()

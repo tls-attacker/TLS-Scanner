@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsattacker.core.protocol.message.extension.statusrequestv2.RequestItemV2;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -22,93 +21,85 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
+import de.rub.nds.tlsscanner.serverscanner.report.AlpnProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - robert.merget@rub.de
- */
-public class ExtensionProbe extends TlsProbe {
+public class AlpnProbe extends TlsProbe {
 
-    public ExtensionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EXTENSIONS, config);
+    public AlpnProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
+        super(parallelExecutor, ProbeType.ALPN, scannerConfig);
     }
 
     @Override
     public ProbeResult executeTest() {
         try {
-            List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
-            return new ExtensionResult(allSupportedExtensions);
-
+            List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
+            return new AlpnProbeResult(supportedAlpnProtocols);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
+            return new AlpnProbeResult(null);
         }
-        return new ExtensionResult(null);
     }
 
-    public List<ExtensionType> getSupportedExtensions() {
-        List<ExtensionType> allSupportedExtensions = new LinkedList<>();
-        List<ExtensionType> commonExtensions = getCommonExtension();
-        if (commonExtensions != null) {
-            allSupportedExtensions.addAll(commonExtensions);
-        }
-        return allSupportedExtensions;
-    }
-
-    private List<ExtensionType> getCommonExtension() {
+    private List<String> getSupportedAlpnProtocols() {
         Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+        List<CipherSuite> ciphersuites = new LinkedList<>();
+        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
+        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        // Dont send extensions if we are in sslv2
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddHeartbeatExtension(true);
-        tlsConfig.setAddMaxFragmentLengthExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
         tlsConfig.setAddAlpnExtension(true);
         List<String> alpnProtocols = new LinkedList<>();
         for (AlpnProtocol protocol : AlpnProtocol.values()) {
             alpnProtocols.add(protocol.getConstant());
         }
         tlsConfig.setDefaultProposedAlpnProtocols(alpnProtocols);
-        tlsConfig.setAddEncryptThenMacExtension(true);
-        tlsConfig.setAddExtendedMasterSecretExtension(true);
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        tlsConfig.setAddSessionTicketTLSExtension(true);
-        tlsConfig.setAddTruncatedHmacExtension(true);
-        tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setAddCertificateStatusRequestExtension(true);
 
-        // Certificate Status v2 shenanigans
-        RequestItemV2 emptyRequest = new RequestItemV2(2, 0, 0, 0, new byte[0]);
-        List<RequestItemV2> requestV2List = new LinkedList<>();
-        requestV2List.add(emptyRequest);
-        tlsConfig.setStatusRequestV2RequestList(requestV2List);
-        tlsConfig.setAddCertificateStatusRequestV2Extension(true);
+        String selectedAlpnProtocol;
+        List<String> supportedAlpnProtocols = new LinkedList<>();
+        List<String> toTestList = new LinkedList<>();
+        for (AlpnProtocol protocol : AlpnProtocol.values()) {
+            toTestList.add(protocol.getConstant());
+        }
+        do {
+            selectedAlpnProtocol = testAlpns(toTestList, tlsConfig);
+            if (!toTestList.contains(selectedAlpnProtocol)) {
+                LOGGER.debug("Server chose a protocol we did not offer!");
+                break;
+            }
+            if (selectedAlpnProtocol != null) {
+                supportedAlpnProtocols.add(selectedAlpnProtocol);
+                toTestList.remove(selectedAlpnProtocol);
+            }
+        } while (selectedAlpnProtocol != null || toTestList.size() > 0);
+        return supportedAlpnProtocols;
+    }
 
-        List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
-        tlsConfig.setDefaultClientNamedGroups(nameGroups);
+    private String testAlpns(List<String> alpnList, Config tlsConfig) {
+        tlsConfig.setDefaultProposedAlpnProtocols(alpnList);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return new ArrayList(state.getTlsContext().getNegotiatedExtensionSet());
+            return state.getTlsContext().getSelectedAlpnProtocol();
         } else {
             LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
@@ -117,15 +108,17 @@ public class ExtensionProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
-    }
+        return report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)
+                && report.getSupportedExtensions().contains(ExtensionType.ALPN);
 
-    @Override
-    public void adjustConfig(SiteReport report) {
     }
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new ExtensionResult(null);
+        return new AlpnProbeResult(new LinkedList<>());
+    }
+
+    @Override
+    public void adjustConfig(SiteReport report) {
     }
 }

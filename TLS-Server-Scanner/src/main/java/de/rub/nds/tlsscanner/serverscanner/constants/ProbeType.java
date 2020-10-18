@@ -13,6 +13,7 @@ package de.rub.nds.tlsscanner.serverscanner.constants;
  * @author Robert Merget - robert.merget@rub.de
  */
 public enum ProbeType {
+    ALPN,
     ESNI,
     CERTIFICATE,
     OCSP,
