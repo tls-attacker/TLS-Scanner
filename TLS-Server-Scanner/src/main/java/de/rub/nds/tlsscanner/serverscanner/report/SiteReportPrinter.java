@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
+import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -127,6 +128,7 @@ public class SiteReportPrinter {
         appendExtensions(builder);
         appendCompressions(builder);
         appendEcPointFormats(builder);
+        appendAlpn(builder);
         appendIntolerances(builder);
         appendAttackVulnerabilities(builder);
         appendBleichenbacherResults(builder);
@@ -418,7 +420,7 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "Selected Compression Method", tmp);
             }
             prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
-            prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
+            // prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
         }
         return builder;
     }
@@ -835,22 +837,22 @@ public class SiteReportPrinter {
                     prettyAppend(
                             builder,
                             padToLength(resultString, 80) + " | "
-                                    + padToLength(testResult.getEqualityError().name(), 25)
-                                    + padToLength("| VULNERABLE", 25) + "| P: " + pValue, AnsiColor.RED);
+                            + padToLength(testResult.getEqualityError().name(), 25)
+                            + padToLength("| VULNERABLE", 25) + "| P: " + pValue, AnsiColor.RED);
                 } else if (testResult.getpValue() < 0.05) {
                     prettyAppend(
                             builder,
                             padToLength(resultString, 80) + " | "
-                                    + padToLength(testResult.getEqualityError().name(), 25)
-                                    + padToLength("| PROBABLY VULNERABLE", 25) + "| P: " + pValue, AnsiColor.YELLOW);
+                            + padToLength(testResult.getEqualityError().name(), 25)
+                            + padToLength("| PROBABLY VULNERABLE", 25) + "| P: " + pValue, AnsiColor.YELLOW);
                 } else if (testResult.getpValue() < 1) {
                     prettyAppend(builder,
                             padToLength(resultString, 80) + " | " + padToLength("No significant difference", 25)
-                                    + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
+                            + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
                 } else {
                     prettyAppend(builder,
                             padToLength(resultString, 80) + " | " + padToLength("No behavior difference", 25)
-                                    + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
+                            + padToLength("| NOT VULNERABLE", 25) + "| P: " + pValue, AnsiColor.GREEN);
                 }
 
                 if ((detail == ScannerDetail.DETAILED && Objects.equals(testResult.isSignificantDistinctAnswers(),
@@ -935,8 +937,8 @@ public class SiteReportPrinter {
                     prettyAppend(
                             builder,
                             "\t\t" + padToLength((counter.getFingerprint().toHumanReadable()), 40)
-                                    + counter.getCounter() + "/" + counter.getTotal() + " ("
-                                    + String.format("%.2f", counter.getProbability() * 100) + "%)", color);
+                            + counter.getCounter() + "/" + counter.getTotal() + " ("
+                            + String.format("%.2f", counter.getProbability() * 100) + "%)", color);
 
                 }
             }
@@ -971,7 +973,7 @@ public class SiteReportPrinter {
                                 for (VectorResponse vectorFingerPrintPair : testResult.getVectorFingerPrintPairList()) {
                                     prettyAppend(builder,
                                             padToLength("\t" + vectorFingerPrintPair.getVector().getName(), 60)
-                                                    + vectorFingerPrintPair.getFingerprint().toHumanReadable());
+                                            + vectorFingerPrintPair.getFingerprint().toHumanReadable());
                                 }
                             } else {
                                 prettyAppend(builder, "\tNULL");
@@ -1019,7 +1021,7 @@ public class SiteReportPrinter {
                 if ((response.getShowsVulnerability() == TestResult.TRUE && detail
                         .isGreaterEqualTo(ScannerDetail.NORMAL))
                         || (response.getShowsPointsAreNotValidated() == TestResult.TRUE && detail
-                                .isGreaterEqualTo(ScannerDetail.DETAILED)) || detail == ScannerDetail.ALL) {
+                        .isGreaterEqualTo(ScannerDetail.DETAILED)) || detail == ScannerDetail.ALL) {
                     prettyAppend(builder, response.getParameterSet().toString());
                     switch (response.getShowsPointsAreNotValidated()) {
                         case TRUE:
@@ -1135,9 +1137,9 @@ public class SiteReportPrinter {
                     prettyAppendHeading(
                             builder,
                             "Supported in "
-                                    + toHumanReadable(versionSuitePair.getVersion())
-                                    + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
-                                            : ""));
+                            + toHumanReadable(versionSuitePair.getVersion())
+                            + (report.getResult(AnalyzedProperty.ENFOCRES_CS_ORDERING) == TestResult.TRUE ? "(server order)"
+                            : ""));
                     for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
                         builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
                     }
@@ -1343,6 +1345,25 @@ public class SiteReportPrinter {
         appendTls13Groups(builder);
         appendCurves(builder);
         appendSignatureAndHashAlgorithms(builder);
+        return builder;
+    }
+
+    public StringBuilder appendAlpn(StringBuilder builder) {
+        if (report.getSupportedExtensions().contains(ExtensionType.ALPN)) {
+            prettyAppendHeading(builder, "ALPN");
+            for (AlpnProtocol alpnProtocol : AlpnProtocol.values()) {
+                if (alpnProtocol.isGrease()) {
+                    continue;
+                }
+                if (report.getSupportedAlpns().contains(alpnProtocol.getConstant())) {
+                    prettyAppend(builder, alpnProtocol.getPrintableName(), true);
+                } else {
+                    if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        prettyAppend(builder, alpnProtocol.getPrintableName(), false);
+                    }
+                }
+            }
+        }
         return builder;
     }
 

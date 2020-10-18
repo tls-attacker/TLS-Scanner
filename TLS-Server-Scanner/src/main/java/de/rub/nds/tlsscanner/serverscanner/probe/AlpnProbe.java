@@ -31,7 +31,7 @@ import java.util.List;
 
 public class AlpnProbe extends TlsProbe {
 
-    public AlpnProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
+    public AlpnProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.ALPN, scannerConfig);
     }
 
@@ -70,7 +70,9 @@ public class AlpnProbe extends TlsProbe {
         tlsConfig.setAddAlpnExtension(true);
         List<String> alpnProtocols = new LinkedList<>();
         for (AlpnProtocol protocol : AlpnProtocol.values()) {
-            alpnProtocols.add(protocol.getConstant());
+            if (!protocol.isGrease()) {
+                alpnProtocols.add(protocol.getConstant());
+            }
         }
         tlsConfig.setDefaultProposedAlpnProtocols(alpnProtocols);
 
