@@ -47,5 +47,6 @@ public enum ProbeType {
     CCA,
     DIRECT_RACCOON,
     EC_POINT_FORMAT,
-    RACCOON_ATTACK
+    RACCOON_ATTACK,
+    CROSS_PROTOCOL_ALPACA
 }
