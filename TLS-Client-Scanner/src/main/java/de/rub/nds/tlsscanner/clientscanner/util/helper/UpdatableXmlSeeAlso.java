@@ -3,21 +3,19 @@ package de.rub.nds.tlsscanner.clientscanner.util.helper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 public class UpdatableXmlSeeAlso implements XmlSeeAlso {
-    private static final Class[] EMPTY_CLS_ARR = new Class[] {};
+    private static final Class<?>[] EMPTY_CLS_ARR = new Class<?>[] {};
 
     public static Set<Class<?>> patch(Class<?> clazz) {
         XmlSeeAlso origAnnotation = clazz.getAnnotation(XmlSeeAlso.class);
         UpdatableXmlSeeAlso ourAnnotation = new UpdatableXmlSeeAlso(origAnnotation);
-
-        Object x = clazz.getClass().getDeclaredFields();
         try {
             Field annotationDataField = Class.class.getDeclaredField("annotationData");
             boolean wasAccessible = annotationDataField.isAccessible();
@@ -45,7 +43,8 @@ public class UpdatableXmlSeeAlso implements XmlSeeAlso {
     private Class<? extends Annotation> annotationType;
 
     private UpdatableXmlSeeAlso(XmlSeeAlso orig) {
-        value = new HashSet<>(Arrays.asList(orig.value()));
+        List<Class<?>> lst = Arrays.asList(orig.value());
+        value = new HashSet<>(lst);
         annotationType = orig.annotationType();
     }
 

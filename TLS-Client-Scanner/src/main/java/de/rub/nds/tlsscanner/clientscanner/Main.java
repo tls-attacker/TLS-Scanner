@@ -123,10 +123,6 @@ public class Main {
             probes.add(new SupportedCipherSuitesProbe());
             // probes.add(new PaddingOracleProbe(orchestrator));
         }
-        if (false) {
-            probes.clear();
-            probes.add(new VersionProbe(orchestrator, ProtocolVersion.TLS13));
-        }
         // quick scan with only the probes I am interested in right now
         if (false) {
             probes.clear();
@@ -142,9 +138,6 @@ public class Main {
     }
 
     private static IDispatcher getStandaloneDispatcher(ClientScannerConfig csConfig) {
-        if (false) {
-            return new VersionProbe(null, ProtocolVersion.TLS13);
-        }
         SNIDispatcher disp = new SNIDispatcher();
         LOGGER.info("Using base URL {}", csConfig.getServerBaseURL());
         disp.registerRule(csConfig.getServerBaseURL(), new SNINopDispatcher());
