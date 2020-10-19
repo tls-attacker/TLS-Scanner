@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.report.result;
 
 import java.io.Serializable;
@@ -24,8 +32,11 @@ public class NotExecutedResult extends ClientProbeResult {
         return new NotExecutedResult(probe, "An unknown error caused this probe to not be executed.");
     }
 
-    public static NotExecutedResult MISSING_DEPENDENT_RESULT(Class<? extends IProbe> probe, Class<? extends IProbe> missingProbe) {
-        return new NotExecutedResult(probe, "This Probe could not be executed, as it depends on the result of the following probe (which is missing): " + missingProbe.getName());
+    public static NotExecutedResult MISSING_DEPENDENT_RESULT(Class<? extends IProbe> probe,
+            Class<? extends IProbe> missingProbe) {
+        return new NotExecutedResult(probe,
+                "This Probe could not be executed, as it depends on the result of the following probe (which is missing): "
+                        + missingProbe.getName());
     }
 
     @Override

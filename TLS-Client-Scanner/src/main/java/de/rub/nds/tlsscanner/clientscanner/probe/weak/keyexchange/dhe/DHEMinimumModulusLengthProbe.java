@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import java.math.BigInteger;
@@ -21,8 +29,10 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 //cf. logjam
 public class DHEMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHEWeakModulusState> {
-    private static final int BITLENGTH_CUTOFF_LB = 2; // Primes with less than two bits (i.e. less than two) are quite rare
-    private static final int BITLENGTH_CUTOFF_UB = 4096; // Performance gets too slow
+    // Primes with less than two bits (i.e. less than two) are quite "rare"
+    private static final int BITLENGTH_CUTOFF_LB = 2;
+    // Performance gets too slow
+    private static final int BITLENGTH_CUTOFF_UB = 4096;
     private static final Logger LOGGER = LogManager.getLogger();
 
     private Random rnd = new Random();
@@ -37,7 +47,8 @@ public class DHEMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHEWeakMo
     }
 
     @Override
-    protected DHEWeakModulusState execute(State state, DispatchInformation dispatchInformation, DHEWeakModulusState internalState) throws DispatchException {
+    protected DHEWeakModulusState execute(State state, DispatchInformation dispatchInformation,
+            DHEWeakModulusState internalState) throws DispatchException {
         Config config = state.getConfig();
         Integer toTest = internalState.getNext();
         LOGGER.debug("Testing {}", toTest);
@@ -66,7 +77,8 @@ public class DHEMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHEWeakMo
                 return startingPoint;
             }
             if (lowestAccepted == null) {
-                // we have no upper bound, i.e. we were always rejected -> try to double
+                // we have no upper bound, i.e. we were always rejected -> try
+                // to double
                 return highestRejected * 2;
             } else {
                 // we have an upper bound (and lower bound is at least 0)

@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import java.io.Serializable;
@@ -65,10 +73,12 @@ public class DHECompositeModulusProbe extends BaseDHEParametrizedProbe<Composite
     }
 
     @Override
-    public DHCompositeModulusProbeResult executeInternal(State state, DispatchInformation dispatchInformation) throws DispatchException {
+    public DHCompositeModulusProbeResult executeInternal(State state, DispatchInformation dispatchInformation)
+            throws DispatchException {
         Config config = state.getConfig();
         int keylength = 2048;
-        ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
+        ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(
+                ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
         if (ccInfo != null) {
             keylength = ccInfo.report.getResult(DHEMinimumModulusLengthProbe.class, DHMinimumModulusLengthResult.class).lowestBitlengthAccepted;
         }

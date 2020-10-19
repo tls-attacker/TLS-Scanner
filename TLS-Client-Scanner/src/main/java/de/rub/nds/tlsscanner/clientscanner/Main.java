@@ -86,7 +86,8 @@ public class Main {
             }
             ISubcommand cmd = csConfig.getSelectedSubcommand();
             // TODO outsource execution into commands themselves
-            // probably with an interface like IExecutableSubcommand which has a function
+            // probably with an interface like IExecutableSubcommand which has a
+            // function
             // execute(ClientScannerConfig)
             if (cmd instanceof StandaloneCommandConfig) {
                 runStandalone(csConfig);
@@ -144,14 +145,16 @@ public class Main {
         List<IProbe> probes = getProbes(null);
         for (IProbe p : probes) {
             if (p instanceof BaseProbe) {
-                // TODO create some nice interface instead of expecting BaseProbe
+                // TODO create some nice interface instead of expecting
+                // BaseProbe
                 // possibly also add some other form of configurability...
                 String prefix = ((BaseProbe) p).getHostnameForStandalone();
                 if (prefix != null) {
                     disp.registerRule(prefix, p);
                     LOGGER.info("Adding {} at prefix {}", p.getClass().getSimpleName(), prefix);
                 } else {
-                    LOGGER.debug("Not adding {} as it did not provide a hostname (returned null)", p.getClass().getSimpleName());
+                    LOGGER.debug("Not adding {} as it did not provide a hostname (returned null)", p.getClass()
+                            .getSimpleName());
                 }
             } else {
                 LOGGER.debug("Not adding {} as it is not extended from BaseProbe", p.getClass().getSimpleName());
@@ -176,7 +179,8 @@ public class Main {
     private static void runScan(ClientScannerConfig csConfig) {
         IOrchestrator orchestrator = new ThreadLocalOrchestrator(csConfig);
         int threads = 8;
-        ThreadPoolExecutor pool = new ThreadPoolExecutor(threads, threads, 1, TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(threads, threads, 1, TimeUnit.MINUTES,
+                new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-probe-runner"));
 
         ClientScanExecutor executor = new ClientScanExecutor(getProbes(orchestrator), null, orchestrator, pool);

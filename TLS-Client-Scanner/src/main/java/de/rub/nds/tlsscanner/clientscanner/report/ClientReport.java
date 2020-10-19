@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
 import java.io.Serializable;
@@ -23,7 +31,8 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 public class ClientReport extends Observable implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final char[] UID_ALPH = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static final int UID_LEN = 10; // 36^10 > 2^50; that should be large enough
+    private static final int UID_LEN = 10; // 36^10 > 2^50; that should be large
+                                           // enough
     private static final Set<String> usedUIDs = new HashSet<>();
     private static final Random uidRandom = new Random();
 

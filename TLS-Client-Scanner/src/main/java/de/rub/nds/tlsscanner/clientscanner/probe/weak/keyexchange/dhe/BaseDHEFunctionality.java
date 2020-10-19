@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import java.util.ArrayList;
@@ -57,7 +65,8 @@ class BaseDHEFunctionality {
         if (ff) {
             suites.addAll(ffdhe_suites);
         }
-        // if we add tls13 suites first, the ServerHelloPreparator will try to choose
+        // if we add tls13 suites first, the ServerHelloPreparator will try to
+        // choose
         // these first. But these suites are invalid in 1.2
         if (tls13) {
             suites.addAll(tls13_suites);

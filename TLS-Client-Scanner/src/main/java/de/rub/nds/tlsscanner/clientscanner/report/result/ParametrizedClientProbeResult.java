@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.report.result;
 
 import java.io.Serializable;
@@ -14,7 +22,8 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.util.MapUtil;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.UpdatableXmlSeeAlso;
 
-@XmlSeeAlso({}) // this is automated via UpdatableXmlSeeAlso
+@XmlSeeAlso({})
+// this is automated via UpdatableXmlSeeAlso
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ParametrizedClientProbeResult<K, V> extends ClientProbeResult {
     private static Set<Class<?>> seeAlso = UpdatableXmlSeeAlso.patch(ParametrizedClientProbeResult.class);

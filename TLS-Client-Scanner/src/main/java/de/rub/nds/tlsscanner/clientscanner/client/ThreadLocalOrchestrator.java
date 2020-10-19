@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.client;
 
 import java.util.ArrayList;
@@ -15,15 +23,17 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
     private boolean isCleanedUp = false;
 
     private Orchestrator unassignedOrchestrator = null;
-    @SuppressWarnings("squid:S5164") // sonarlint: Call "remove()" on "localOrchestrator".
+    @SuppressWarnings("squid:S5164")
+    // sonarlint: Call "remove()" on "localOrchestrator".
     // We cannot get each thread from the pool executor to call remove
-    // Our solution is to cleanup each Orchestrator (using allOrchestrators) one by
-    // one and setting localOrchestrator to null. This is by no means perfect and is
-    // a memory leak for each thread, as we do not remove our threadLocal from each
-    // Thread.threadLocals. But as the threads *should* not live much longer anyway,
-    // this *should* not be a problem.
-    // If this turns out to be a problem, I guess we should use reflection to access
-    // each threads threadLocals and remove our localOrchestrator from there
+    // Our solution is to cleanup each Orchestrator (using allOrchestrators) one
+    // by one and setting localOrchestrator to null. This is by no means perfect
+    // and is a memory leak for each thread, as we do not remove our threadLocal
+    // from each Thread.threadLocals. But as the threads *should* not live much
+    // longer anyway, this *should* not be a problem.
+    // If this turns out to be a problem, I guess we should use reflection to
+    // access each threads threadLocals and remove our localOrchestrator from
+    // there
     private ThreadLocal<Orchestrator> localOrchestrator;
     private final List<Orchestrator> allOrchestrators = new ArrayList<>();
 

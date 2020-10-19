@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.config;
 
 import java.util.ArrayList;
@@ -98,7 +106,8 @@ public class ClientScannerConfig extends TLSDelegateConfig {
         return selectedSubcommand;
     }
 
-    @SuppressWarnings({ "unchecked", "squid:S1172" }) // unused parameter
+    @SuppressWarnings({ "unchecked", "squid:S1172" })
+    // unused parameter
     public <T> T getSelectedSubcommand(Class<T> expectedType) {
         return (T) selectedSubcommand;
     }

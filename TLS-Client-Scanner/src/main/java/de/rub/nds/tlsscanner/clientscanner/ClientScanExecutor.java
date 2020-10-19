@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner;
 
 import java.util.ArrayList;
@@ -33,7 +41,8 @@ public class ClientScanExecutor implements Observer {
     private final ExecutorService executor;
     private final IOrchestrator orchestrator;
 
-    public ClientScanExecutor(Collection<IProbe> probesToRun, Collection<IAfterProbe> afterProbesToRun, IOrchestrator orchestrator, ExecutorService executor) {
+    public ClientScanExecutor(Collection<IProbe> probesToRun, Collection<IAfterProbe> afterProbesToRun,
+            IOrchestrator orchestrator, ExecutorService executor) {
         this.notScheduledTasks = new ArrayList<>(probesToRun);
         this.afterProbes = afterProbesToRun;
         this.futureResults = new LinkedList<>();
@@ -74,7 +83,8 @@ public class ClientScanExecutor implements Observer {
         update(report, null);
     }
 
-    @SuppressWarnings("squid:S3776") // sonarlint: Cognitive Complexity of methods should not be too high
+    @SuppressWarnings("squid:S3776")
+    // sonarlint: Cognitive Complexity of methods should not be too high
     private void executeProbesTillNoneCanBeExecuted(ClientReport report) {
         do {
             long lastMerge = System.currentTimeMillis();
@@ -86,7 +96,8 @@ public class ClientScanExecutor implements Observer {
                     try {
                         ClientProbeResult probeResult = result.get();
                         finishedFutures.add(probeAndResultFuture);
-                        // TODO report.markProbeAsExecuted(result.get().getType())
+                        // TODO
+                        // report.markProbeAsExecuted(result.get().getType())
                         if (probeResult != null) {
                             LOGGER.info("+++ {} executed", probeAndResultFuture.probe);
                             probeResult.merge(report);

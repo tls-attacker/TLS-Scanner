@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.dispatcher.sni;
 
 import java.util.HashMap;
@@ -66,15 +74,18 @@ public class SNIDispatcher implements IDispatcher {
         return null;
     }
 
-    public ClientProbeResult dispatch(State state, DispatchInformation dispatchInformation, String hostname) throws DispatchException {
+    public ClientProbeResult dispatch(State state, DispatchInformation dispatchInformation, String hostname)
+            throws DispatchException {
         RuleMatch next = lookupRule(hostname);
         if (next == null) {
             throw new UnknownSNINameException();
         }
         synchronized (dispatchInformation.additionalInformation) {
             dispatchInformation.additionalInformation.put(
-                    SNIDispatcher.class, new SNIDispatchInformation(
-                            dispatchInformation.getAdditionalInformation(SNIDispatcher.class, SNIDispatchInformation.class),
+                    SNIDispatcher.class,
+                    new SNIDispatchInformation(
+                            dispatchInformation.getAdditionalInformation(SNIDispatcher.class,
+                                    SNIDispatchInformation.class),
                             this, next.matchedHostnameSuffix, next.remainingHostnamePrefix));
         }
         return next.nextDispatcher.execute(state, dispatchInformation);
@@ -102,7 +113,8 @@ public class SNIDispatcher implements IDispatcher {
         public final String handledHostname;
         public final String remainingHostname;
 
-        public SNIDispatchInformation(SNIDispatchInformation previous, SNIDispatcher dispatcher, String handledHostname, String remainingHostname) {
+        public SNIDispatchInformation(SNIDispatchInformation previous, SNIDispatcher dispatcher,
+                String handledHostname, String remainingHostname) {
             this.previous = previous;
             this.dispatcher = dispatcher;
             this.handledHostname = handledHostname;

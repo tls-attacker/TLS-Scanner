@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.util.helper;
 
 import java.util.HashMap;
@@ -18,8 +26,8 @@ public class SingleMapQ<K, V> {
                 q = new LinkedList<>();
                 mapQ.put(k, q);
             }
-            // adding the element is still synced, as we do not want q to possibly be
-            // removed from mapQ
+            // adding the element is still synced, as we do not want q to
+            // possibly be removed from mapQ
             q.add(v);
         }
     }

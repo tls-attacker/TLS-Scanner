@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.util.helper;
 
 import java.lang.annotation.Annotation;
@@ -27,7 +35,8 @@ public class UpdatableXmlSeeAlso implements XmlSeeAlso {
             wasAccessible = annotationsField.isAccessible();
             annotationsField.setAccessible(true);
             @SuppressWarnings("unchecked")
-            Map<Class<? extends Annotation>, Annotation> annotations = (Map<Class<? extends Annotation>, Annotation>) annotationsField.get(annotationData);
+            Map<Class<? extends Annotation>, Annotation> annotations = (Map<Class<? extends Annotation>, Annotation>) annotationsField
+                    .get(annotationData);
             annotationsField.setAccessible(wasAccessible);
 
             annotations.put(XmlSeeAlso.class, ourAnnotation);

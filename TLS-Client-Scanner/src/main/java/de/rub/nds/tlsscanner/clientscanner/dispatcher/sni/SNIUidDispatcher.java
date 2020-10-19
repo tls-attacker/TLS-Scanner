@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.dispatcher.sni;
 
 import de.rub.nds.tlsattacker.core.state.State;
@@ -14,9 +22,11 @@ public class SNIUidDispatcher implements IDispatcher {
 
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
-        SNIDispatchInformation info = dispatchInformation.getAdditionalInformation(SNIDispatcher.class, SNIDispatchInformation.class);
+        SNIDispatchInformation info = dispatchInformation.getAdditionalInformation(SNIDispatcher.class,
+                SNIDispatchInformation.class);
         if (!info.handledHostname.equalsIgnoreCase("uid")) {
-            throw new DispatchException("SNI UID dispatcher expects previous hostname to be \"uid\", got: " + info.handledHostname);
+            throw new DispatchException("SNI UID dispatcher expects previous hostname to be \"uid\", got: "
+                    + info.handledHostname);
         }
         int splitIndex = info.remainingHostname.lastIndexOf('.');
         String uid = info.remainingHostname.substring(splitIndex + 1);

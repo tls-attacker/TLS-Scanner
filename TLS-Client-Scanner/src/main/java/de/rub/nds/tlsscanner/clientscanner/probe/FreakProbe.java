@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.math.BigInteger;
@@ -63,9 +71,12 @@ public class FreakProbe extends BaseProbe {
                         "Client does not support RSA key exchange");
     }
 
-    @SuppressWarnings("squid:S3776") // sonarlint says this function is too complex...
-    private void patchTrace(WorkflowTrace trace, ServerKeyExchangeMessage ske, TlsAction fixKeysAction) throws DispatchException {
-        // patch send action (which sends SH, CERT, SHD) to include SKE after CERT
+    @SuppressWarnings("squid:S3776")
+    // sonarlint says this function is too complex...
+    private void patchTrace(WorkflowTrace trace, ServerKeyExchangeMessage ske, TlsAction fixKeysAction)
+            throws DispatchException {
+        // patch send action (which sends SH, CERT, SHD) to include SKE after
+        // CERT
         boolean done = false;
         for (TlsAction a : trace.getTlsActions()) {
             if (a instanceof SendAction) {
@@ -102,7 +113,8 @@ public class FreakProbe extends BaseProbe {
         Config config = state.getConfig();
         WorkflowTrace trace = state.getWorkflowTrace();
         config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS12);
-        config.setSupportedVersions(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10, ProtocolVersion.TLS11, ProtocolVersion.TLS12);
+        config.setSupportedVersions(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
+                ProtocolVersion.TLS11, ProtocolVersion.TLS12);
         config.setDefaultSelectedCipherSuite(RSA_SUITES.get(0));
         config.setDefaultServerSupportedCiphersuites(RSA_SUITES);
         extendWorkflowTraceToApplication(trace, config);

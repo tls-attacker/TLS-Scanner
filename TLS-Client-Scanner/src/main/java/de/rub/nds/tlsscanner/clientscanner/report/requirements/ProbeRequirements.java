@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.report.requirements;
 
 import java.io.Serializable;
@@ -21,17 +29,20 @@ public abstract class ProbeRequirements {
         return new NeedResult(this, requiredClass);
     }
 
-    public ProbeRequirements needResultOfType(Class<? extends IProbe> requiredClass, Class<? extends Serializable> resType) {
+    public ProbeRequirements needResultOfType(Class<? extends IProbe> requiredClass,
+            Class<? extends Serializable> resType) {
         return new NeedResultOfType(this, requiredClass, resType);
     }
 
-    public <T extends Serializable> ProbeRequirements needResultOfTypeMatching(Class<? extends IProbe> requiredClass, Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
+    public <T extends Serializable> ProbeRequirements needResultOfTypeMatching(Class<? extends IProbe> requiredClass,
+            Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
         return new NeedResultOfTypeMatching<>(this, requiredClass, resType, predicate, notMatchedDescription);
     }
 
     public abstract boolean evaluateRequirementsMet(ClientReport report);
 
-    protected abstract NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe, ClientReport report);
+    protected abstract NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+            ClientReport report);
 
     public final NotExecutedResult evaluateWhyRequirementsNotMet(Class<? extends IProbe> probe, ClientReport report) {
         NotExecutedResult res = evaluateWhyRequirementsNotMetInternal(probe, report);
@@ -54,7 +65,8 @@ public abstract class ProbeRequirements {
         }
 
         @Override
-        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe, ClientReport report) {
+        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+                ClientReport report) {
             if (previous == null) {
                 return null;
             }
@@ -76,7 +88,8 @@ public abstract class ProbeRequirements {
         }
 
         @Override
-        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe, ClientReport report) {
+        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+                ClientReport report) {
             NotExecutedResult ret = super.evaluateWhyRequirementsNotMetInternal(probe, report);
             if (ret != null) {
                 return ret;
@@ -91,27 +104,32 @@ public abstract class ProbeRequirements {
     public static class NeedResultOfType extends NeedResult {
         protected final Class<? extends Serializable> requiredResultType;
 
-        protected NeedResultOfType(ProbeRequirements previous, Class<? extends IProbe> requiredClass, Class<? extends Serializable> resType) {
+        protected NeedResultOfType(ProbeRequirements previous, Class<? extends IProbe> requiredClass,
+                Class<? extends Serializable> resType) {
             super(previous, requiredClass);
             this.requiredResultType = resType;
         }
 
         @Override
         public boolean evaluateRequirementsMet(ClientReport report) {
-            return super.evaluateRequirementsMet(report) && requiredResultType.isInstance(report.getResult(requiredClass));
+            return super.evaluateRequirementsMet(report)
+                    && requiredResultType.isInstance(report.getResult(requiredClass));
         }
 
         @Override
-        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe, ClientReport report) {
+        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+                ClientReport report) {
             NotExecutedResult ret = super.evaluateWhyRequirementsNotMetInternal(probe, report);
             if (ret != null) {
                 return ret;
             }
             Object res = report.getResult(requiredClass);
             if (!requiredResultType.isInstance(res)) {
-                return new NotExecutedResult(probe, String.format(
-                        "This probe could not be executed, as it depends on the result of the probe '%s' with type '%s' but type '%s' was found",
-                        requiredClass.getName(), requiredResultType.getName(), res.getClass().getName()));
+                return new NotExecutedResult(
+                        probe,
+                        String.format(
+                                "This probe could not be executed, as it depends on the result of the probe '%s' with type '%s' but type '%s' was found",
+                                requiredClass.getName(), requiredResultType.getName(), res.getClass().getName()));
             }
             return null;
         }
@@ -121,7 +139,8 @@ public abstract class ProbeRequirements {
         protected final Predicate<T> predicate;
         protected final String notMatchedDescription;
 
-        protected NeedResultOfTypeMatching(ProbeRequirements previous, Class<? extends IProbe> requiredClass, Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
+        protected NeedResultOfTypeMatching(ProbeRequirements previous, Class<? extends IProbe> requiredClass,
+                Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
             super(previous, requiredClass, resType);
             this.predicate = predicate;
             this.notMatchedDescription = notMatchedDescription;
@@ -138,7 +157,8 @@ public abstract class ProbeRequirements {
         }
 
         @Override
-        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe, ClientReport report) {
+        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+                ClientReport report) {
             NotExecutedResult ret = super.evaluateWhyRequirementsNotMetInternal(probe, report);
             if (ret != null) {
                 return ret;

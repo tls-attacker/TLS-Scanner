@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.dispatcher.sni;
 
 import de.rub.nds.tlsattacker.core.state.State;
@@ -24,7 +32,8 @@ public class SNIFallingBackDispatcher implements IDispatcher {
         this(next, fallback, fallback, fallback, fallback);
     }
 
-    public SNIFallingBackDispatcher(IDispatcher next, IDispatcher fallbackNoSNI, IDispatcher fallbackNoSNIName, IDispatcher fallbackUnknownSNIName, IDispatcher fallbackOtherSNIException) {
+    public SNIFallingBackDispatcher(IDispatcher next, IDispatcher fallbackNoSNI, IDispatcher fallbackNoSNIName,
+            IDispatcher fallbackUnknownSNIName, IDispatcher fallbackOtherSNIException) {
         this.next = next;
         this.fallbackNoSNI = fallbackNoSNI;
         this.fallbackNoSNIName = fallbackNoSNIName;
@@ -32,7 +41,8 @@ public class SNIFallingBackDispatcher implements IDispatcher {
         this.fallbackOtherSNIException = fallbackOtherSNIException;
     }
 
-    private ClientProbeResult fallback(SNIDispatchException ex, State state, DispatchInformation dispatchInformation) throws DispatchException {
+    private ClientProbeResult fallback(SNIDispatchException ex, State state, DispatchInformation dispatchInformation)
+            throws DispatchException {
         IDispatcher fallback = fallbackOtherSNIException;
         LOGGER.debug("Falling back, got Exception {}", ex.getClass().getSimpleName());
         if (ex instanceof NoSNIExtensionException) {

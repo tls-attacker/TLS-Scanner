@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 
 import java.io.ByteArrayInputStream;
@@ -126,7 +134,8 @@ public abstract class BaseDispatcher implements IDispatcher {
         return kpg.genKeyPair();
     }
 
-    protected X509v3CertificateBuilder generateInnerCertificate(String hostname, org.bouncycastle.asn1.x509.Certificate parent, PublicKey myPubKey) throws CertIOException {
+    protected X509v3CertificateBuilder generateInnerCertificate(String hostname,
+            org.bouncycastle.asn1.x509.Certificate parent, PublicKey myPubKey) throws CertIOException {
         X500Name issuer = parent.getSubject();
         BigInteger serial = BigInteger.valueOf(0);
         Calendar notBefore = new GregorianCalendar();
@@ -143,18 +152,21 @@ public abstract class BaseDispatcher implements IDispatcher {
                 .addRDN(BCStyle.CN, hostname)
                 .build();
 
-        X509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(issuer, serial, notBefore.getTime(), notAfter.getTime(), subject, myPubKey);
+        X509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(issuer, serial, notBefore.getTime(),
+                notAfter.getTime(), subject, myPubKey);
 
         // add SAN
         List<GeneralName> altNames = new ArrayList<>();
         altNames.add(new GeneralName(GeneralName.dNSName, hostname));
-        GeneralNames subjectAltNames = GeneralNames.getInstance(new DERSequence(altNames.toArray(new GeneralName[] {})));
+        GeneralNames subjectAltNames = GeneralNames
+                .getInstance(new DERSequence(altNames.toArray(new GeneralName[] {})));
         certBuilder = certBuilder.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);
 
         return certBuilder;
     }
 
-    protected Certificate generateCertificateChain(State state, String hostname, PublicKey pubKey) throws OperatorCreationException, IOException {
+    protected Certificate generateCertificateChain(State state, String hostname, PublicKey pubKey)
+            throws OperatorCreationException, IOException {
         CertificateKeyPair kp = state.getConfig().getDefaultExplicitCertificateKeyPair();
         ByteArrayInputStream stream = new ByteArrayInputStream(kp.getCertificateBytes());
         Certificate origCertChain = Certificate.parse(stream);
@@ -170,9 +182,11 @@ public abstract class BaseDispatcher implements IDispatcher {
         return new Certificate(new org.bouncycastle.asn1.x509.Certificate[] { cert.toASN1Structure(), parentCert });
     }
 
-    protected void patchCertificate(State state, DispatchInformation dispatchInformation) throws IOException, OperatorCreationException {
+    protected void patchCertificate(State state, DispatchInformation dispatchInformation) throws IOException,
+            OperatorCreationException {
         String hostname;
-        ServerNameIndicationExtensionMessage sni = SNIUtil.getSNIFromExtensions(dispatchInformation.chlo.getExtensions());
+        ServerNameIndicationExtensionMessage sni = SNIUtil.getSNIFromExtensions(dispatchInformation.chlo
+                .getExtensions());
         hostname = SNIUtil.getServerNameFromSNIExtension(sni);
         if (hostname == null) {
             hostname = state.getConfig().getDefaultServerConnection().getHostname();
@@ -195,7 +209,8 @@ public abstract class BaseDispatcher implements IDispatcher {
 
     // #endregion
 
-    protected ClientAdapterResult executeState(State state, DispatchInformation dispatchInformation) throws PatchCertificateException {
+    protected ClientAdapterResult executeState(State state, DispatchInformation dispatchInformation)
+            throws PatchCertificateException {
         WorkflowTrace trace = state.getWorkflowTrace();
         try {
             patchCertificate(state, dispatchInformation);
@@ -212,7 +227,8 @@ public abstract class BaseDispatcher implements IDispatcher {
         executor.executeWorkflow();
         if (state.getConfig().isWorkflowExecutorShouldClose() &&
                 dispatchInformation.additionalInformation.containsKey(ControlledClientDispatcher.class)) {
-            ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
+            ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(
+                    ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
             Future<ClientAdapterResult> cFuture = ccInfo.clientFuture;
             try {
                 ClientAdapterResult res = cFuture.get();

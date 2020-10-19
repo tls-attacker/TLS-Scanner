@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.client;
 
 import java.util.concurrent.ExecutionException;
@@ -42,8 +50,8 @@ public class Orchestrator implements IOrchestrator {
     public Orchestrator(ClientScannerConfig csConfig) {
         // TODO (create and) handle SNI flag in config
         // if sni do as it is now
-        // if no sni we pass null as expected hostname to dispatcher, possibly also
-        // disable multithreading...
+        // if no sni we pass null as expected hostname to dispatcher, possibly
+        // also disable multithreading...
         // clientAdapter = new CurlAdapter(new LocalCommandExecutor())
         // 7.72.0--openssl-client:1.0.1
         // 7.72.0--openssl-client:1.0.2
@@ -102,7 +110,8 @@ public class Orchestrator implements IOrchestrator {
         String hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, uid, baseHostname);
         FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
         // enqueue probe on serverside
-        ClientProbeResultFuture serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, uid, clientResultHolder, report);
+        ClientProbeResultFuture serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, uid,
+                clientResultHolder, report);
 
         // tell client to connect and get its result
         ClientAdapterResult clientResult = null;
@@ -130,7 +139,8 @@ public class Orchestrator implements IOrchestrator {
             // wait indefinitely
             res = serverResultFuture.get();
         } else {
-            // we did not get a connection yet, let's just give it the benefit of the doubt
+            // we did not get a connection yet, let's just give it the benefit
+            // of the doubt
             // and wait for 10 more seconds
             try {
                 res = serverResultFuture.get(10, TimeUnit.SECONDS);

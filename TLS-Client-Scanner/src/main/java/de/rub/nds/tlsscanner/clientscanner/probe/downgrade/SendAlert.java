@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.probe.downgrade;
 
 import java.io.Serializable;
@@ -89,7 +97,8 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
     }
 
     @Override
-    protected AlertDowngradeInternalState execute(State state, DispatchInformation dispatchInformation, AlertDowngradeInternalState internalState) throws DispatchException {
+    protected AlertDowngradeInternalState execute(State state, DispatchInformation dispatchInformation,
+            AlertDowngradeInternalState internalState) throws DispatchException {
         // only analyze chlo
         if (!internalState.isFirstDone()) {
             WorkflowTrace trace = state.getWorkflowTrace();
@@ -106,7 +115,8 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
         private final AlertLevel alertLevel;
         private final AlertDescription alertDesc;
 
-        public AlertDowngradeInternalState(Class<? extends IProbe> clazz, AlertLevel alertLevel, AlertDescription alertDesc) {
+        public AlertDowngradeInternalState(Class<? extends IProbe> clazz, AlertLevel alertLevel,
+                AlertDescription alertDesc) {
             super(clazz);
             this.alertLevel = alertLevel;
             this.alertDesc = alertDesc;
@@ -133,13 +143,15 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
     public static class AlertDowngradeResult extends ClientProbeResult {
         private final Map<RfcAlert, DowngradeResult> resultMap;
 
-        public AlertDowngradeResult(Class<? extends IProbe> clazz, ClientHelloMessage chlo1, ClientHelloMessage chlo2, AlertLevel alertLevel, AlertDescription alertDesc) {
+        public AlertDowngradeResult(Class<? extends IProbe> clazz, ClientHelloMessage chlo1, ClientHelloMessage chlo2,
+                AlertLevel alertLevel, AlertDescription alertDesc) {
             resultMap = new HashMap<>();
             resultMap.put(new RfcAlert(alertLevel, alertDesc), new DowngradeResult(clazz, chlo1, chlo2));
         }
 
         @Override
-        @SuppressWarnings("squid:S2445") // sonarlint: Blocks should be synchronized on "private final" fields
+        @SuppressWarnings("squid:S2445")
+        // sonarlint: Blocks should be synchronized on "private final" fields
         public void merge(ClientReport report) {
             synchronized (report) {
                 if (report.hasResult(SendAlert.class)) {

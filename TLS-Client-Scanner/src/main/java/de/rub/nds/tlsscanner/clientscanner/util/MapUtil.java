@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.util;
 
 import java.util.Map;
@@ -7,8 +15,10 @@ public class MapUtil {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    @SuppressWarnings("squid:S2445") // sonarlint: Blocks should be synchronized on "private final" fields
-    // we want to synchronize with "a", such that we don't merge "a" concurrently
+    @SuppressWarnings("squid:S2445")
+    // sonarlint: Blocks should be synchronized on "private final" fields
+    // we want to synchronize with "a", such that we don't merge "a"
+    // concurrently
     public static <K, V> void mergeIntoFirst(Map<K, V> a, Map<K, V> b) {
         synchronized (a) {
             for (Map.Entry<K, V> kv : b.entrySet()) {

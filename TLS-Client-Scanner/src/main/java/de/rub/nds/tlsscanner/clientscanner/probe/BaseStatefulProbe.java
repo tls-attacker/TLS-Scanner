@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.HashMap;
@@ -63,7 +71,8 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
             uid = dispatchInformation.getAdditionalInformation(SNIUidDispatcher.class, UidInformation.class).uid;
         } else {
             String raddr = state.getInboundTlsContexts().get(0).getConnection().getIp();
-            // report only generates alphanumeric uids - we can simply include a non
+            // report only generates alphanumeric uids - we can simply include a
+            // non
             // alphanum char (e.g. ':') to not interfere with them
             uid = "RADDR:" + raddr;
             if (!previousStateCache.containsKey(uid)) {
@@ -93,10 +102,13 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
 
     // #region Orchestrating side
     @Override
-    @SuppressWarnings("squid:S4274") // sonarlint: use assert to check parameters
-    // in this case we do not care about the parameter at all. This is just to help
+    @SuppressWarnings("squid:S4274")
+    // sonarlint: use assert to check parameters
+    // in this case we do not care about the parameter at all. This is just to
+    // help
     // check whether it was programmed correctly
-    public ClientProbeResult callInternal(ClientReport report, String nullString) throws InterruptedException, ExecutionException {
+    public ClientProbeResult callInternal(ClientReport report, String nullString) throws InterruptedException,
+            ExecutionException {
         assert nullString == null;
         ClientProbeResult ret = null;
         while (ret == null) {

@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.ArrayList;
@@ -69,7 +77,8 @@ public class VersionProbe extends BaseProbe {
         return null;
     }
 
-    @SuppressWarnings("squid:S3776") // sonarlint says this function is too complex
+    @SuppressWarnings("squid:S3776")
+    // sonarlint says this function is too complex
     // while I don't necessarily disagree, I feel that it is still okay-ish
     protected void patchTogetherFinAndApp(WorkflowTrace trace) {
         ReceiveAction recvFin = null, recvApp = null;
@@ -110,7 +119,8 @@ public class VersionProbe extends BaseProbe {
     }
 
     @Override
-    public ParametrizedClientProbeResult<ProtocolVersion, Boolean> execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+    public ParametrizedClientProbeResult<ProtocolVersion, Boolean> execute(State state,
+            DispatchInformation dispatchInformation) throws DispatchException {
         LOGGER.debug("Testing version {}", versionToTest);
         Config config = state.getConfig();
         WorkflowTrace trace = state.getWorkflowTrace();
@@ -138,7 +148,8 @@ public class VersionProbe extends BaseProbe {
             patchTogetherFinAndApp(trace);
         }
         ClientAdapterResult cres = executeState(state, dispatchInformation);
-        boolean res = state.getTlsContext().getSelectedProtocolVersion() == versionToTest && state.getWorkflowTrace().executedAsPlanned();
+        boolean res = state.getTlsContext().getSelectedProtocolVersion() == versionToTest
+                && state.getWorkflowTrace().executedAsPlanned();
         if (cres != null) {
             res = res && cres.contentShown.wasShown();
         }

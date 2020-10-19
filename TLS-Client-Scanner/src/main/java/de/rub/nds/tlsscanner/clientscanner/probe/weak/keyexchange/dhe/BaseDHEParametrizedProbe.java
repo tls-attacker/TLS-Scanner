@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import de.rub.nds.tlsattacker.core.state.State;
@@ -25,7 +33,8 @@ public abstract class BaseDHEParametrizedProbe<T extends Enum<T>, R> extends Bas
     }
 
     @Override
-    public final ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+    public final ClientProbeResult execute(State state, DispatchInformation dispatchInformation)
+            throws DispatchException {
         R res = executeInternal(state, dispatchInformation);
         return new ParametrizedClientProbeResult<T, R>(getClass(), enumValue, res);
     }

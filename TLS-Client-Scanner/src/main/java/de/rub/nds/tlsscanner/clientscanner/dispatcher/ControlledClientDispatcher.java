@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 
 import java.util.concurrent.Future;
@@ -35,8 +43,10 @@ public class ControlledClientDispatcher implements IDispatcher {
 
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
-        SNIDispatchInformation sniD = dispatchInformation.getAdditionalInformation(SNIDispatcher.class, SNIDispatchInformation.class);
-        UidInformation uidD = dispatchInformation.getAdditionalInformation(SNIUidDispatcher.class, UidInformation.class);
+        SNIDispatchInformation sniD = dispatchInformation.getAdditionalInformation(SNIDispatcher.class,
+                SNIDispatchInformation.class);
+        UidInformation uidD = dispatchInformation
+                .getAdditionalInformation(SNIUidDispatcher.class, UidInformation.class);
         String sni = null, uid = null;
         if (sniD != null) {
             sni = sniD.remainingHostname;
@@ -49,7 +59,8 @@ public class ControlledClientDispatcher implements IDispatcher {
         if (task == null) {
             throw new DispatchException("Did not find task");
         }
-        try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(task.probe.getClass().getSimpleName())) {
+        try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(task.probe.getClass()
+                .getSimpleName())) {
             task.setGotConnection();
             dispatchInformation.additionalInformation.put(
                     getClass(),
@@ -66,7 +77,8 @@ public class ControlledClientDispatcher implements IDispatcher {
     protected ClientProbeResultFuture getNextTask(String sni, String uid) throws DispatchException {
         LOGGER.debug("Trying to find task for sni {} with uid {}", sni, uid);
         ClientProbeResultFuture task;
-        // we rely on the fact that either sni AND uid are present or none of them as
+        // we rely on the fact that either sni AND uid are present or none of
+        // them as
         // both rely on SNI extension
         if (sni == null && uid != null) {
             throw new DispatchException("Internal Error - SNI is null, but uid is not null");
@@ -98,7 +110,8 @@ public class ControlledClientDispatcher implements IDispatcher {
         return task;
     }
 
-    public ClientProbeResultFuture enqueueProbe(IProbe probe, String expectedHostname, String expectedUid, Future<ClientAdapterResult> clientResultHolder, ClientReport report) {
+    public ClientProbeResultFuture enqueueProbe(IProbe probe, String expectedHostname, String expectedUid,
+            Future<ClientAdapterResult> clientResultHolder, ClientReport report) {
         ClientProbeResultFuture ret = new ClientProbeResultFuture(probe, clientResultHolder, report);
         toRun.enqueue(expectedHostname, expectedUid, ret);
         return ret;

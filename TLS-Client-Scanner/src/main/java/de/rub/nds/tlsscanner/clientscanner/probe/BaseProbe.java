@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.List;
@@ -52,7 +60,8 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe {
         return prefix;
     }
 
-    protected ClientProbeResult callInternal(ClientReport report, String hostnamePrefix) throws InterruptedException, ExecutionException {
+    protected ClientProbeResult callInternal(ClientReport report, String hostnamePrefix) throws InterruptedException,
+            ExecutionException {
         return orchestrator.runProbe(this, hostnamePrefix, report.uid, report);
     }
 
@@ -89,6 +98,7 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe {
     public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
         return getRequirementsCacheControlled().evaluateWhyRequirementsNotMet(getClass(), report);
     }
+
     // #endregion
 
     // #region helper functions
@@ -105,13 +115,17 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe {
             throw new RuntimeException("[internal error] unknown MessageAction " + aAction);
         }
         if (entryMsgs.size() != appendMsgs.size()) {
-            throw new RuntimeException("[internal error] entryTrace and actions we want to append diverge (different message count in action)" + aAction + ", " + bAction);
+            throw new RuntimeException(
+                    "[internal error] entryTrace and actions we want to append diverge (different message count in action)"
+                            + aAction + ", " + bAction);
         }
         for (int i = 0; i < entryMsgs.size(); i++) {
             ProtocolMessage aMsg = entryMsgs.get(i);
             ProtocolMessage bMsg = appendMsgs.get(i);
             if (!aMsg.getProtocolMessageType().equals(bMsg.getProtocolMessageType())) {
-                throw new RuntimeException("[internal error] entryTrace and actions we want to append diverge (different message type)" + aMsg + ", " + bMsg);
+                throw new RuntimeException(
+                        "[internal error] entryTrace and actions we want to append diverge (different message type)"
+                                + aMsg + ", " + bMsg);
             }
         }
     }
@@ -120,7 +134,8 @@ public abstract class BaseProbe extends BaseDispatcher implements IProbe {
         for (TlsAction prefixAction : prefixTrace.getTlsActions()) {
             TlsAction otherAction = otherTrace.removeTlsAction(0);
             if (!prefixAction.getClass().equals(otherAction.getClass())) {
-                throw new RuntimeException("[internal error] entryTrace and actions we want to append diverge (different classes)");
+                throw new RuntimeException(
+                        "[internal error] entryTrace and actions we want to append diverge (different classes)");
             }
 
             if (prefixAction instanceof MessageAction) {
