@@ -49,9 +49,11 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.DistributionTest;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -675,7 +677,7 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     private List<NamedGroup> getRequiredGroups(NamedGroup testGroup, CipherSuite testCipher) {
-        List<NamedGroup> requiredGroups = new LinkedList<>();
+        Set<NamedGroup> requiredGroups = new HashSet<>();
         if (testCipher.isTLS13()) {
             if (namedCurveWitnessesTls13.get(testGroup).getEcdsaPkGroupEphemeral() != null
                     && namedCurveWitnessesTls13.get(testGroup).getEcdsaPkGroupEphemeral() != testGroup) {
@@ -688,8 +690,8 @@ public class InvalidCurveProbe extends TlsProbe {
         } else {
             // RSA ciphersuites don't require any additional groups
             if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
-                if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != null &&
-                        namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != testGroup) {
+                if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != null
+                        && namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != testGroup) {
                     requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral());
                 }
                 if (namedCurveWitnesses.get(testGroup).getEcdsaSigGroupEphemeral() != null
@@ -697,18 +699,13 @@ public class InvalidCurveProbe extends TlsProbe {
                     requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaSigGroupEphemeral());
                 }
             } else if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher) == KeyExchangeAlgorithm.ECDH_ECDSA) {
-                if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupStatic() != null &&
-                        namedCurveWitnesses.get(testGroup).getEcdsaPkGroupStatic() != testGroup) {
-                    requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaPkGroupStatic());
-                }
                 if (namedCurveWitnesses.get(testGroup).getEcdsaSigGroupStatic() != null
                         && namedCurveWitnesses.get(testGroup).getEcdsaSigGroupStatic() != testGroup) {
                     requiredGroups.add(namedCurveWitnesses.get(testGroup).getEcdsaSigGroupStatic());
                 }
             }
         }
-        return requiredGroups;
-
+        return new LinkedList<>(requiredGroups);
     }
 
     private boolean benignHandshakeSuccessfull(InvalidCurveVector vector) {

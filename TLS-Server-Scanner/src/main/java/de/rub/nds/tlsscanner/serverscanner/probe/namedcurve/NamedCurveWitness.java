@@ -21,7 +21,6 @@ public class NamedCurveWitness {
     private Set<CipherSuite> cipherSuites;
 
     // the curves used to generate an ecdsa sig inside the key ex. message
-    private NamedGroup ecdsaPkGroupStatic;
     private NamedGroup ecdsaPkGroupEphemeral;
 
     // the curve used to sign the cert that bears the server's signing key
@@ -32,9 +31,8 @@ public class NamedCurveWitness {
         cipherSuites = new HashSet<>();
     }
 
-    public NamedCurveWitness(NamedGroup ecdsaPkGroupStatic, NamedGroup ecdsaPkGroupEphemeral,
-            NamedGroup ecdsaSigGroupStatic, NamedGroup ecdsaSigGroupEphemeral, CipherSuite cipherSuite) {
-        this.ecdsaPkGroupStatic = ecdsaPkGroupStatic;
+    public NamedCurveWitness(NamedGroup ecdsaPkGroupEphemeral, NamedGroup ecdsaSigGroupStatic,
+            NamedGroup ecdsaSigGroupEphemeral, CipherSuite cipherSuite) {
         this.ecdsaPkGroupEphemeral = ecdsaPkGroupEphemeral;
         this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
         this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
@@ -45,10 +43,6 @@ public class NamedCurveWitness {
     public NamedCurveWitness(CipherSuite cipherSuite) {
         cipherSuites = new HashSet<>();
         cipherSuites.add(cipherSuite);
-    }
-
-    public NamedGroup getEcdsaPkGroupStatic() {
-        return ecdsaPkGroupStatic;
     }
 
     public NamedGroup getEcdsaPkGroupEphemeral() {
@@ -91,10 +85,6 @@ public class NamedCurveWitness {
             }
         }
         return false;
-    }
-
-    public void setEcdsaPkGroupStatic(NamedGroup ecdsaPkGroupStatic) {
-        this.ecdsaPkGroupStatic = ecdsaPkGroupStatic;
     }
 
     public void setEcdsaPkGroupEphemeral(NamedGroup ecdsaPkGroupEphemeral) {

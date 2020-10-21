@@ -30,16 +30,19 @@ public class NamedGroupResult extends ProbeResult {
     private final TestResult supportsExplicitPrime;
     private final TestResult supportsExplicitChar2;
     private final TestResult groupsDependOnCiphersuite;
+    private final TestResult ignoresEcdsaGroupDisparity;
 
     public NamedGroupResult(Map<NamedGroup, NamedCurveWitness> namedGroupsMap,
             Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13, TestResult supportsExplicitPrime,
-            TestResult supportsExplicitChar2, TestResult groupsDependOnCiphersuite) {
+            TestResult supportsExplicitChar2, TestResult groupsDependOnCiphersuite,
+            TestResult ignoresEcdsaGroupDisparity) {
         super(ProbeType.NAMED_GROUPS);
         this.namedGroupsMap = namedGroupsMap;
         this.namedGroupsMapTls13 = namedGroupsMapTls13;
         this.supportsExplicitPrime = supportsExplicitPrime;
         this.supportsExplicitChar2 = supportsExplicitChar2;
         this.groupsDependOnCiphersuite = groupsDependOnCiphersuite;
+        this.ignoresEcdsaGroupDisparity = ignoresEcdsaGroupDisparity;
     }
 
     @Override
@@ -61,6 +64,7 @@ public class NamedGroupResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE, supportsExplicitPrime);
         report.putResult(AnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, supportsExplicitChar2);
         report.putResult(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, groupsDependOnCiphersuite);
+        report.putResult(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, ignoresEcdsaGroupDisparity);
     }
 
 }

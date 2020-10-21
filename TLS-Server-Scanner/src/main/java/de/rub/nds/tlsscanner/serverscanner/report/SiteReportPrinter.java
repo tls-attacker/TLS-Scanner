@@ -1584,25 +1584,24 @@ public class SiteReportPrinter {
                         builder.append("\n  ECDSA Required Groups:");
                         if (witness.getEcdsaPkGroupEphemeral() != null && witness.getEcdsaPkGroupEphemeral() != group) {
                             builder.append("\n    ").append(witness.getEcdsaPkGroupEphemeral())
-                                    .append(" (Ephemeral Certificate Public Key)");
+                                    .append(" (Certificate Public Key - Ephemeral Cipher Suite)");
                         }
                         if (witness.getEcdsaSigGroupEphemeral() != null && witness.getEcdsaSigGroupEphemeral() != group) {
                             builder.append("\n    ").append(witness.getEcdsaSigGroupEphemeral())
-                                    .append(" (Ephemeral Certificate Signature)");
-                        }
-                        if (witness.getEcdsaPkGroupStatic() != null && witness.getEcdsaPkGroupStatic() != group) {
-                            builder.append("\n    ").append(witness.getEcdsaPkGroupStatic())
-                                    .append(" (Static Certificate Public Key)");
+                                    .append(" (Certificate Signature  - Ephemeral Cipher Suite)");
                         }
                         if (witness.getEcdsaSigGroupStatic() != null && witness.getEcdsaSigGroupStatic() != group) {
                             builder.append("\n    ").append(witness.getEcdsaSigGroupStatic())
-                                    .append(" (Static Certificate Signature)");
+                                    .append(" (Certificate Signature  - Static Cipher Suite)");
                         }
                     }
                     builder.append("\n");
                 }
                 if (report.getResult(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER) == TestResult.TRUE) {
                     prettyAppend(builder, "Not all Groups are supported for all Cipher Suites");
+                }
+                if (report.getResult(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY) == TestResult.TRUE) {
+                    prettyAppend(builder, "Groups required for ECDSA validation are not enforced", AnsiColor.YELLOW);
                 }
             } else {
                 builder.append("none\n");

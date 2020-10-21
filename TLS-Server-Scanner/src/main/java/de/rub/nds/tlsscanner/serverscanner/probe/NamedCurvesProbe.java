@@ -18,9 +18,6 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareStoreEntry;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -55,7 +52,6 @@ public class NamedCurvesProbe extends TlsProbe {
     private boolean testUsingTls13 = true;
 
     // curves used for ecdsa in key exchange
-    private List<NamedGroup> ecdsaPkGroupsStatic;
     private List<NamedGroup> ecdsaPkGroupsEphemeral;
     private List<NamedGroup> ecdsaPkGroupsTls13;
 
@@ -63,6 +59,8 @@ public class NamedCurvesProbe extends TlsProbe {
     private List<NamedGroup> ecdsaCertSigGroupsStatic;
     private List<NamedGroup> ecdsaCertSigGroupsEphemeral;
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
+
+    private TestResult ignoresEcdsaGroupDisparity = TestResult.FALSE;
 
     public NamedCurvesProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
@@ -83,7 +81,7 @@ public class NamedCurvesProbe extends TlsProbe {
                 groupsRsa = getSupportedNamedGroupsRsa();
             }
             if (testUsingEcdsaStatic) {
-                groupsEcdsaStatic = getSupportedNamedGroupsEcdsa(getEcdsaStaticCiphersuites(), ecdsaPkGroupsStatic,
+                groupsEcdsaStatic = getSupportedNamedGroupsEcdsa(getEcdsaStaticCiphersuites(), null,
                         ecdsaCertSigGroupsStatic);
             }
             if (testUsingEcdsaEphemeral) {
@@ -101,7 +99,7 @@ public class NamedCurvesProbe extends TlsProbe {
                     groupsEcdsaStatic, groupsEcdsaEphemeral);
 
             return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
-                    groupsDependOnCiphersuite);
+                    groupsDependOnCiphersuite, ignoresEcdsaGroupDisparity);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return getCouldNotExecuteResult();
@@ -140,54 +138,57 @@ public class NamedCurvesProbe extends TlsProbe {
         Config tlsConfig = getBasicConfig();
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         List<NamedGroup> toTestList = new ArrayList<>(Arrays.asList(NamedGroup.values()));
+
+        TlsContext context;
+        NamedGroup selectedGroup = null;
+        NamedGroup certificateGroup = null;
+        NamedGroup certificateSigGroup = null;
+        // place signing groups at the bottom of the list, the server should
+        // choose
+        // all other first
         if (pkGroups != null) {
-            TlsContext context;
-            NamedGroup selectedGroup = null;
-            NamedGroup certificateGroup = null;
-            NamedGroup certificateSigGroup = null;
-            // place signing groups at the bottom of the list, the server should
-            // choose
-            // all other first
             placeRequiredGroupsLast(toTestList, pkGroups);
-            if (sigGroups != null) {
-                placeRequiredGroupsLast(toTestList, sigGroups);
-            }
-
-            do {
-                context = testCurves(toTestList, tlsConfig);
-
-                if (context != null) {
-
-                    selectedGroup = context.getSelectedGroup();
-                    certificateGroup = context.getEcCertificateCurve();
-                    certificateSigGroup = context.getEcCertificateSignatureCurve();
-
-                    // remove groups that are not required by the server even
-                    // if they are used for the certificate or KEX signature
-                    if (!toTestList.contains(certificateGroup)) {
-                        certificateGroup = null;
-                    }
-                    if (!toTestList.contains(certificateSigGroup)) {
-                        certificateSigGroup = null;
-                    }
-
-                    if (!toTestList.contains(selectedGroup)) {
-                        LOGGER.debug("Server chose a Curve we did not offer!");
-                        break;
-                    }
-                    if (cipherSuites.get(0).isEphemeral()) {
-                        namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup, null,
-                                certificateSigGroup, context.getSelectedCipherSuite()));
-                    } else {
-                        namedCurveMap.put(selectedGroup, new NamedCurveWitness(certificateGroup, null,
-                                certificateSigGroup, null, context.getSelectedCipherSuite()));
-
-                    }
-
-                    toTestList.remove(selectedGroup);
-                }
-            } while (context != null && toTestList.size() > 0);
         }
+        if (sigGroups != null) {
+            placeRequiredGroupsLast(toTestList, sigGroups);
+        }
+
+        do {
+            context = testCurves(toTestList, tlsConfig);
+
+            if (context != null) {
+
+                selectedGroup = context.getSelectedGroup();
+                certificateGroup = context.getEcCertificateCurve();
+                certificateSigGroup = context.getEcCertificateSignatureCurve();
+
+                // remove groups that are not required by the server even
+                // if they are used for the certificate or KEX signature
+                if (!toTestList.contains(certificateGroup) && certificateSigGroup != null) {
+                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    certificateGroup = null;
+                }
+                if (!toTestList.contains(certificateSigGroup) && certificateSigGroup != null) {
+                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
+                    certificateSigGroup = null;
+                }
+
+                if (!toTestList.contains(selectedGroup)) {
+                    LOGGER.debug("Server chose a Curve we did not offer!");
+                    break;
+                }
+                if (cipherSuites.get(0).isEphemeral()) {
+                    namedCurveMap.put(selectedGroup, new NamedCurveWitness(certificateGroup, null, certificateSigGroup,
+                            context.getSelectedCipherSuite()));
+                } else {
+                    namedCurveMap.put(selectedGroup,
+                            new NamedCurveWitness(null, certificateSigGroup, null, context.getSelectedCipherSuite()));
+
+                }
+
+                toTestList.remove(selectedGroup);
+            }
+        } while (context != null && toTestList.size() > 0);
         return namedCurveMap;
     }
 
@@ -276,7 +277,6 @@ public class NamedCurvesProbe extends TlsProbe {
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
             testUsingTls13 = false;
         }
-        ecdsaPkGroupsStatic = report.getEcdsaPkGroupsStatic();
         ecdsaPkGroupsEphemeral = report.getEcdsaPkGroupsEphemeral();
         ecdsaPkGroupsTls13 = report.getEcdsaPkGroupsTls13();
 
@@ -288,7 +288,7 @@ public class NamedCurvesProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResult.COULD_NOT_TEST,
-                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 
     private TestResult getExplicitCurveSupport(EllipticCurveType curveType) {
@@ -377,11 +377,13 @@ public class NamedCurvesProbe extends TlsProbe {
                 certificateGroup = context.getEcCertificateCurve();
                 certificateSigGroup = context.getEcCertificateSignatureCurve();
 
-                if (!toTestList.contains(certificateGroup)) {
+                if (!toTestList.contains(certificateGroup) && certificateGroup != null) {
+                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
                     certificateGroup = null;
                 }
 
-                if (!toTestList.contains(certificateSigGroup)) {
+                if (!toTestList.contains(certificateSigGroup) && certificateSigGroup != null) {
+                    ignoresEcdsaGroupDisparity = TestResult.TRUE;
                     certificateSigGroup = null;
                 }
 
@@ -391,8 +393,8 @@ public class NamedCurvesProbe extends TlsProbe {
                     break;
                 }
 
-                namedCurveMap.put(selectedGroup, new NamedCurveWitness(null, certificateGroup, null,
-                        certificateSigGroup, context.getSelectedCipherSuite()));
+                namedCurveMap.put(selectedGroup, new NamedCurveWitness(certificateGroup, null, certificateSigGroup,
+                        context.getSelectedCipherSuite()));
                 toTestList.remove(selectedGroup);
             }
         } while (context != null && !toTestList.isEmpty());
@@ -461,7 +463,6 @@ public class NamedCurvesProbe extends TlsProbe {
             }
             if (groupsEcdsaStatic.containsKey(group)) {
                 witness.getCipherSuites().addAll(groupsEcdsaStatic.get(group).getCipherSuites());
-                witness.setEcdsaPkGroupStatic(groupsEcdsaStatic.get(group).getEcdsaPkGroupStatic());
                 witness.setEcdsaSigGroupStatic(groupsEcdsaStatic.get(group).getEcdsaSigGroupStatic());
             }
             if (groupsEcdsaEphemeral.containsKey(group)) {
