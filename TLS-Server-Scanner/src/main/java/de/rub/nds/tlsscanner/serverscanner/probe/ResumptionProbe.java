@@ -132,6 +132,12 @@ public class ResumptionProbe extends TlsProbe {
 
     private Config createConfig() {
         Config tlsConfig = getScannerConfig().createConfig();
+        List<NamedGroup> tls13Groups = new LinkedList<>();
+        for (NamedGroup group : NamedGroup.getImplemented()) {
+            if (group.isTls13()) {
+                tls13Groups.add(group);
+            }
+        }
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getTls13CipherSuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
@@ -147,6 +153,7 @@ public class ResumptionProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(tls13Groups);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);

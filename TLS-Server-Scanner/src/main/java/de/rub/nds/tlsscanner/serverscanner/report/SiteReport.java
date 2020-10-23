@@ -23,9 +23,10 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve.InvalidCurveResponse;
@@ -39,6 +40,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
+import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import java.io.Serializable;
@@ -79,6 +81,8 @@ public class SiteReport extends Observable implements Serializable {
     // Extensions
     private List<ExtensionType> supportedExtensions = null;
     private List<NamedGroup> supportedNamedGroups = null;
+    private Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses;
+    private Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13;
     private List<NamedGroup> supportedTls13Groups = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
@@ -93,14 +97,16 @@ public class SiteReport extends Observable implements Serializable {
     private CheckPattern verifyCheckPattern = null;
 
     // Certificate
-    private CertificateChain certificateChain;
+    private List<CertificateChain> certificateChainList;
+    private List<NamedGroup> ecdsaPkGroupsStatic;
+    private List<NamedGroup> ecdsaPkGroupsEphemeral;
+    private List<NamedGroup> ecdsaPkGroupsTls13;
+    private List<NamedGroup> ecdsaSigGroupsStatic;
+    private List<NamedGroup> ecdsaSigGroupsEphemeral;
+    private List<NamedGroup> ecdsaSigGroupsTls13;
 
     // OCSP
-    private OCSPResponse stapledOcspResponse = null;
-    private OCSPResponse firstOcspResponse = null;
-    private OCSPResponse secondOcspResponse = null;
-    private OCSPResponse httpGetOcspResponse = null;
-    private Long differenceHoursStapled = null;
+    private List<OcspCertificateResult> ocspResults;
 
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -279,12 +285,12 @@ public class SiteReport extends Observable implements Serializable {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
-    public synchronized CertificateChain getCertificateChain() {
-        return certificateChain;
+    public synchronized List<CertificateChain> getCertificateChainList() {
+        return certificateChainList;
     }
 
-    public synchronized void setCertificateChain(CertificateChain certificateChain) {
-        this.certificateChain = certificateChain;
+    public synchronized void setCertificateChainList(List<CertificateChain> certificateChainList) {
+        this.certificateChainList = certificateChainList;
     }
 
     public synchronized List<ProtocolVersion> getVersions() {
@@ -588,43 +594,77 @@ public class SiteReport extends Observable implements Serializable {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
     }
 
-    public synchronized OCSPResponse getStapledOcspResponse() {
-        return stapledOcspResponse;
+    public synchronized List<NamedGroup> getEcdsaPkGroupsStatic() {
+        return ecdsaPkGroupsStatic;
     }
 
-    public synchronized void setStapledOcspResponse(OCSPResponse stapledOcspResponse) {
-        this.stapledOcspResponse = stapledOcspResponse;
+    public synchronized void setEcdsaPkGroupsStatic(List<NamedGroup> ecdsaPkGroupsStatic) {
+        this.ecdsaPkGroupsStatic = ecdsaPkGroupsStatic;
     }
 
-    public synchronized OCSPResponse getFirstOcspResponse() {
-        return firstOcspResponse;
+    public synchronized List<NamedGroup> getEcdsaPkGroupsEphemeral() {
+        return ecdsaPkGroupsEphemeral;
     }
 
-    public synchronized void setFirstOcspResponse(OCSPResponse firstOcspResponse) {
-        this.firstOcspResponse = firstOcspResponse;
+    public synchronized void setEcdsaPkGroupsEphemeral(List<NamedGroup> ecdsaPkGroupsEphemeral) {
+        this.ecdsaPkGroupsEphemeral = ecdsaPkGroupsEphemeral;
     }
 
-    public synchronized OCSPResponse getSecondOcspResponse() {
-        return secondOcspResponse;
+    public synchronized Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsWitnesses() {
+        return supportedNamedGroupsWitnesses;
     }
 
-    public synchronized void setSecondOcspResponse(OCSPResponse secondOcspResponse) {
-        this.secondOcspResponse = secondOcspResponse;
+    public synchronized void setSupportedNamedGroupsWitnesses(
+            Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
+        this.supportedNamedGroupsWitnesses = supportedNamedGroupsWitnesses;
     }
 
-    public synchronized Long getDifferenceHoursStapled() {
-        return differenceHoursStapled;
+    public synchronized List<NamedGroup> getEcdsaSigGroupsStatic() {
+        return ecdsaSigGroupsStatic;
     }
 
-    public synchronized void setDifferenceHoursStapled(Long differenceHoursStapled) {
-        this.differenceHoursStapled = differenceHoursStapled;
+    public synchronized void setEcdsaSigGroupsStatic(List<NamedGroup> ecdsaSigGroupsStatic) {
+        this.ecdsaSigGroupsStatic = ecdsaSigGroupsStatic;
     }
 
-    public synchronized OCSPResponse getHttpGetOcspResponse() {
-        return httpGetOcspResponse;
+    public synchronized List<NamedGroup> getEcdsaSigGroupsEphemeral() {
+        return ecdsaSigGroupsEphemeral;
     }
 
-    public synchronized void setHttpGetOcspResponse(OCSPResponse httpGetOcspResponse) {
-        this.httpGetOcspResponse = httpGetOcspResponse;
+    public synchronized void setEcdsaSigGroupsEphemeral(List<NamedGroup> ecdsaSigGroupsEphemeral) {
+        this.ecdsaSigGroupsEphemeral = ecdsaSigGroupsEphemeral;
+    }
+
+    public synchronized List<NamedGroup> getEcdsaPkGroupsTls13() {
+        return ecdsaPkGroupsTls13;
+    }
+
+    public synchronized void setEcdsaPkGroupsTls13(List<NamedGroup> ecdsaPkGroupsTls13) {
+        this.ecdsaPkGroupsTls13 = ecdsaPkGroupsTls13;
+    }
+
+    public synchronized List<NamedGroup> getEcdsaSigGroupsTls13() {
+        return ecdsaSigGroupsTls13;
+    }
+
+    public synchronized void setEcdsaSigGroupsTls13(List<NamedGroup> ecdsaSigGroupsTls13) {
+        this.ecdsaSigGroupsTls13 = ecdsaSigGroupsTls13;
+    }
+
+    public synchronized Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsWitnessesTls13() {
+        return supportedNamedGroupsWitnessesTls13;
+    }
+
+    public synchronized void setSupportedNamedGroupsWitnessesTls13(
+            Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
+        this.supportedNamedGroupsWitnessesTls13 = supportedNamedGroupsWitnessesTls13;
+    }
+
+    public synchronized List<OcspCertificateResult> getOcspResults() {
+        return ocspResults;
+    }
+
+    public synchronized void setOcspResults(List<OcspCertificateResult> ocspResults) {
+        this.ocspResults = ocspResults;
     }
 }
