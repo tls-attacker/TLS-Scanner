@@ -124,7 +124,7 @@ public class ResumptionProbe extends TlsProbe {
             return TestResult.ERROR_DURING_TEST;
         }
     }
-
+    
     private TestResult getSupports0rtt() {
         try {
             Config tlsConfig = createConfig();
