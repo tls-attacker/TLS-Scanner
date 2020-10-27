@@ -15,8 +15,11 @@ import de.rub.nds.asn1.parser.ParserException;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
+import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
+import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLog;
+import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogList;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
@@ -62,7 +65,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
             return getCouldNotExecuteResult();
         }
 
-        getPrecertificateSCTs(serverCertChain);
+        getPrecertificateSCTs();
         getTlsHandshakeSCTs(tlsConfig);
         getOcspResponseScts();
 
@@ -90,9 +93,9 @@ public class CertificateTransparencyProbe extends TlsProbe {
         return tlsConfig;
     }
 
-    private void getPrecertificateSCTs(Certificate certChain) {
+    private void getPrecertificateSCTs() {
         supportsPrecertificateSCTs = false;
-        org.bouncycastle.asn1.x509.Certificate singleCert = certChain.getCertificateAt(0);
+        org.bouncycastle.asn1.x509.Certificate singleCert = serverCertChain.getCertificateAt(0);
         CertificateInformationExtractor certInformationExtractor = new CertificateInformationExtractor(singleCert);
         try {
             Asn1Sequence precertificateSctExtension = certInformationExtractor.getPrecertificateSCTs();
@@ -105,7 +108,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
                         outerContentEncapsulation.getChildren().get(0);
                 byte[] encodedSctList = innerContentEncapsulation.getValue();
 
-                precertificateSctList = SignedCertificateTimestampListParser.parseTimestampList(encodedSctList);
+                precertificateSctList = SignedCertificateTimestampListParser.parseTimestampList(encodedSctList,
+                        serverCertChain, true);
             }
         } catch (Exception e) {
             LOGGER.warn("Couldn't determine Signed Certificate Timestamp Extension in certificate.");
@@ -130,7 +134,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
                         SignedCertificateTimestampExtensionMessage sctExtensionMessage
                                 = serverHelloMessage.getExtension(SignedCertificateTimestampExtensionMessage.class);
                         byte[] signedCertificateTimestampList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
-                        handshakeSctList = SignedCertificateTimestampListParser.parseTimestampList(signedCertificateTimestampList);
+                        handshakeSctList = SignedCertificateTimestampListParser.parseTimestampList(signedCertificateTimestampList,
+                                serverCertChain, false);
 
                         supportsHandshakeSCTs = true;
                     }
