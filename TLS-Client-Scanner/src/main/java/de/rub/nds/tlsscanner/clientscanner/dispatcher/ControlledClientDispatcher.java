@@ -64,7 +64,7 @@ public class ControlledClientDispatcher implements IDispatcher {
             task.setGotConnection();
             dispatchInformation.additionalInformation.put(
                     getClass(),
-                    new ControlledClientDispatchInformation(task.clientResultFuture, task.report));
+                    new ControlledClientDispatchInformation(task));
             ClientProbeResult res = task.probe.execute(state, dispatchInformation);
             task.setResult(res);
             return res;
@@ -90,7 +90,9 @@ public class ControlledClientDispatcher implements IDispatcher {
         if (sni != null) {
             task = toRun.dequeue(sni, uid);
             if (task == null) {
-                LOGGER.warn("Got hostname which we do not have a task for {}", sni);
+                LOGGER.warn("Got hostname which we do not have a task for");
+            } else {
+                LOGGER.debug("Got task {}", task.probe.getClass().getSimpleName());
             }
         } else {
             if (!printedNoSNIWarning) {
@@ -104,15 +106,17 @@ public class ControlledClientDispatcher implements IDispatcher {
             if (task == null) {
                 LOGGER.warn("Got no tasks left (NO SNI)");
             } else {
-                LOGGER.debug("Chose task with sni {} and uid {} (NO SNI)", taskTriple.getLeft(), taskTriple.getMiddle());
+                LOGGER.debug("Chose task with sni {} and uid {} (NO SNI)", taskTriple.getLeft(),
+                        taskTriple.getMiddle());
             }
         }
         return task;
     }
 
-    public ClientProbeResultFuture enqueueProbe(IProbe probe, String expectedHostname, String expectedUid,
-            Future<ClientAdapterResult> clientResultHolder, ClientReport report) {
-        ClientProbeResultFuture ret = new ClientProbeResultFuture(probe, clientResultHolder, report);
+    public ClientProbeResultFuture enqueueProbe(IDispatcher probe, String expectedHostname, String expectedUid,
+            Future<ClientAdapterResult> clientResultHolder, ClientReport report, Object additionalParameters) {
+        ClientProbeResultFuture ret = new ClientProbeResultFuture(probe, clientResultHolder, report,
+                additionalParameters);
         toRun.enqueue(expectedHostname, expectedUid, ret);
         return ret;
     }
@@ -120,23 +124,28 @@ public class ControlledClientDispatcher implements IDispatcher {
     public static class ControlledClientDispatchInformation {
         public final Future<ClientAdapterResult> clientFuture;
         public final ClientReport report;
+        public final Object additionalParameters;
 
-        public ControlledClientDispatchInformation(Future<ClientAdapterResult> clientFuture, ClientReport report) {
-            this.clientFuture = clientFuture;
-            this.report = report;
+        public ControlledClientDispatchInformation(ClientProbeResultFuture task) {
+            this.clientFuture = task.clientResultFuture;
+            this.report = task.report;
+            this.additionalParameters = task.additionalParameters;
         }
     }
 
     public class ClientProbeResultFuture extends BaseFuture<ClientProbeResult> {
-        protected final IProbe probe;
+        protected final IDispatcher probe;
         protected final Future<ClientAdapterResult> clientResultFuture;
         protected final ClientReport report;
         protected boolean gotConnection = false;
+        protected final Object additionalParameters;
 
-        public ClientProbeResultFuture(IProbe probe, Future<ClientAdapterResult> clientResultFuture, ClientReport report) {
+        public ClientProbeResultFuture(IDispatcher probe, Future<ClientAdapterResult> clientResultFuture,
+                ClientReport report, Object additionalParameters) {
             this.probe = probe;
             this.report = report;
             this.clientResultFuture = clientResultFuture;
+            this.additionalParameters = additionalParameters;
         }
 
         protected synchronized void setGotConnection() {

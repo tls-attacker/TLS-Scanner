@@ -28,9 +28,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsattacker.core.certificate.CertificateByteChooser;
 import de.rub.nds.tlsattacker.core.certificate.CertificateKeyPair;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
@@ -46,6 +48,8 @@ import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.ForcedCompressionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe.PaddingOracleParameters;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.downgrade.SendAlert;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.HelloReconProbe;
@@ -62,7 +66,7 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) {
-        Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.DEBUG);
+        Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
         Configurator.setAllLevels("de.rub.nds.tlsscanner.clientscanner", Level.DEBUG);
         Patcher.applyPatches();
         {
@@ -117,12 +121,15 @@ public class Main {
         probes.add(new ForcedCompressionProbe(orchestrator));
         probes.addAll(SendAlert.getDefaultProbes(orchestrator));
         // probes that are on todo
-        if (false) {
+        if (!false) {
             probes.clear();
+            probes.addAll(VersionProbe.getDefaultProbes(orchestrator));
             probes.add(new HelloReconProbe(orchestrator));
             probes.add(new SNIProbe());
             probes.add(new SupportedCipherSuitesProbe());
-            // probes.add(new PaddingOracleProbe(orchestrator));
+            // probes.addAll(PaddingOracleProbe.getAll(orchestrator));
+            probes.add(new PaddingOracleProbe(orchestrator, new PaddingOracleParameters(ProtocolVersion.TLS12,
+                    CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, PaddingVectorGeneratorType.CLASSIC)));
         }
         // quick scan with only the probes I am interested in right now
         if (false) {
@@ -177,11 +184,11 @@ public class Main {
     }
 
     private static void runScan(ClientScannerConfig csConfig) {
-        IOrchestrator orchestrator = new ThreadLocalOrchestrator(csConfig);
-        int threads = 8;
+        int threads = 2;
         ThreadPoolExecutor pool = new ThreadPoolExecutor(threads, threads, 1, TimeUnit.MINUTES,
                 new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-probe-runner"));
+        IOrchestrator orchestrator = new ThreadLocalOrchestrator(csConfig, pool);
 
         ClientScanExecutor executor = new ClientScanExecutor(getProbes(orchestrator), null, orchestrator, pool);
         ClientReport rep = executor.execute();

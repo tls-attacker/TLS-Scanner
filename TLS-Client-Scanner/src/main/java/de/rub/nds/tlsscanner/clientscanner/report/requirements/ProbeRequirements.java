@@ -153,7 +153,11 @@ public abstract class ProbeRequirements {
             }
             @SuppressWarnings("unchecked")
             T t = (T) report.getResult(requiredClass);
-            return predicate.test(t);
+            try {
+                return predicate.test(t);
+            } catch (RuntimeException e) {
+                return false;
+            }
         }
 
         @Override
@@ -164,8 +168,13 @@ public abstract class ProbeRequirements {
                 return ret;
             }
             T res = (T) report.getResult(requiredClass);
-            if (!predicate.test(res)) {
-                return new NotExecutedResult(probe, notMatchedDescription);
+            try {
+                if (!predicate.test(res)) {
+                    return new NotExecutedResult(probe, notMatchedDescription);
+                }
+            } catch (RuntimeException e) {
+                return new NotExecutedResult(probe,
+                        String.format("Failed to evaluate predicate [%s] %s", notMatchedDescription, e));
             }
             return null;
         }

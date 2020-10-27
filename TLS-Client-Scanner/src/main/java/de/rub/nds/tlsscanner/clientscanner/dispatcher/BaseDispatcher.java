@@ -45,13 +45,22 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPrivateKey;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceNormalizer;
+import de.rub.nds.tlsattacker.core.workflow.action.MessageAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.transport.ConnectionEndType;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ControlledClientDispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
@@ -171,7 +180,10 @@ public abstract class BaseDispatcher implements IDispatcher {
         ByteArrayInputStream stream = new ByteArrayInputStream(kp.getCertificateBytes());
         Certificate origCertChain = Certificate.parse(stream);
         // TODO allow more complex chains
-        assert origCertChain.getLength() == 1;
+        if (origCertChain.getLength() != 1) {
+            throw new IllegalStateException(
+                    "Can only handle original cert chains of length 1, got " + origCertChain.getLength());
+        }
         org.bouncycastle.asn1.x509.Certificate parentCert = origCertChain.getCertificateAt(0);
         CustomPrivateKey parentSk = kp.getPrivateKey();
 
@@ -205,6 +217,84 @@ public abstract class BaseDispatcher implements IDispatcher {
         CertificateKeyPair finalCert = new CertificateKeyPair(cert_lst, ckp.getPrivate(), ckp.getPublic());
         config.setDefaultExplicitCertificateKeyPair(finalCert);
         finalCert.adjustInConfig(config, ConnectionEndType.SERVER);
+    }
+
+    // #endregion
+
+    // #region helper functions
+    private void assertActionIsEqual(MessageAction aAction, MessageAction bAction) {
+        List<ProtocolMessage> entryMsgs;
+        List<ProtocolMessage> appendMsgs;
+        if (aAction instanceof SendAction) {
+            entryMsgs = ((SendAction) aAction).getMessages();
+            appendMsgs = ((SendAction) bAction).getMessages();
+        } else if (aAction instanceof ReceiveAction) {
+            entryMsgs = ((ReceiveAction) aAction).getExpectedMessages();
+            appendMsgs = ((ReceiveAction) bAction).getExpectedMessages();
+        } else {
+            throw new RuntimeException("[internal error] unknown MessageAction " + aAction);
+        }
+        if (entryMsgs.size() != appendMsgs.size()) {
+            throw new RuntimeException(
+                    "[internal error] entryTrace and actions we want to append diverge (different message count in action):"
+                            + aAction + ", " + bAction);
+        }
+        for (int i = 0; i < entryMsgs.size(); i++) {
+            ProtocolMessage aMsg = entryMsgs.get(i);
+            ProtocolMessage bMsg = appendMsgs.get(i);
+            if (!aMsg.getProtocolMessageType().equals(bMsg.getProtocolMessageType())) {
+                throw new RuntimeException(
+                        "[internal error] entryTrace and actions we want to append diverge (different message type)"
+                                + aMsg + ", " + bMsg);
+            }
+        }
+    }
+
+    private void removePrefixAndAssertPrefixIsCorrect(WorkflowTrace prefixTrace, WorkflowTrace otherTrace) {
+        for (TlsAction prefixAction : prefixTrace.getTlsActions()) {
+            TlsAction otherAction = otherTrace.removeTlsAction(0);
+            if (!prefixAction.getClass().equals(otherAction.getClass())) {
+                throw new RuntimeException(
+                        "[internal error] entryTrace and actions we want to append diverge (different classes)");
+            }
+
+            if (prefixAction instanceof MessageAction) {
+                assertActionIsEqual((MessageAction) prefixAction, (MessageAction) otherAction);
+            }
+        }
+    }
+
+    protected void extendWorkflowTraceValidatingPrefix(WorkflowTrace traceToExtend, WorkflowTrace prefixTrace,
+            WorkflowTrace actionsToAppendWithPrefix) {
+        final List<TlsAction> prefixActions = prefixTrace.getTlsActions();
+        final List<TlsAction> appendActions = actionsToAppendWithPrefix.getTlsActions();
+        for (int i = 0; i < prefixActions.size(); i++) {
+            TlsAction prefixAction = prefixActions.get(i);
+            TlsAction appendAction = prefixActions.get(i);
+            if (!prefixAction.getClass().equals(appendAction.getClass())) {
+                throw new RuntimeException(
+                        "[internal error] prefixTrace and actions we want to append diverge (different classes)");
+            }
+
+            if (prefixAction instanceof MessageAction) {
+                assertActionIsEqual((MessageAction) prefixAction, (MessageAction) appendAction);
+            }
+        }
+        traceToExtend.addTlsActions(appendActions.subList(prefixActions.size(), appendActions.size()));
+    }
+
+    protected void extendWorkflowTrace(WorkflowTrace traceWithCHLO, WorkflowTraceType type, Config config) {
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
+        WorkflowTrace entryTrace = factory.createTlsEntryWorkflowtrace(config.getDefaultServerConnection());
+        entryTrace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        WorkflowTrace actionsToAppend = factory.createWorkflowTrace(type, RunningModeType.SERVER);
+        extendWorkflowTraceValidatingPrefix(traceWithCHLO, entryTrace, actionsToAppend);
+    }
+
+    protected void extendWorkflowTraceToApplication(WorkflowTrace traceWithCHLO, Config config) {
+        // TODO distinguish different application layers, for now only http(s)
+        extendWorkflowTrace(traceWithCHLO, WorkflowTraceType.HTTPS, config);
+        config.setHttpsParsingEnabled(true);
     }
 
     // #endregion

@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.config;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.beust.jcommander.JCommander;
@@ -19,6 +18,7 @@ import com.beust.jcommander.ParametersDelegate;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.connection.InboundConnection;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
@@ -30,6 +30,8 @@ public class ClientScannerConfig extends TLSDelegateConfig {
     public GeneralDelegate generalDelegate;
     @ParametersDelegate
     private CACertDelegate certificateDelegate;
+    @ParametersDelegate
+    private StarttlsDelegate startTlsDelegate;
 
     // #region Variables to be applied in Config
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
@@ -59,6 +61,9 @@ public class ClientScannerConfig extends TLSDelegateConfig {
 
         this.certificateDelegate = new CACertDelegate();
         addDelegate(certificateDelegate);
+
+        this.startTlsDelegate = new StarttlsDelegate();
+        addDelegate(startTlsDelegate);
     }
 
     protected void registerSubcommands() {

@@ -105,10 +105,11 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
     @SuppressWarnings("squid:S4274")
     // sonarlint: use assert to check parameters
     // in this case we do not care about the parameter at all. This is just to
-    // help
-    // check whether it was programmed correctly
-    public ClientProbeResult callInternal(ClientReport report, String nullString) throws InterruptedException,
+    // help check whether it was programmed correctly
+    protected ClientProbeResult callInternal(ClientReport report, String nullString) throws InterruptedException,
             ExecutionException {
+        // the nullString would be the getHostnamePrefix()
+        // but as we return null there, it shall be null
         assert nullString == null;
         ClientProbeResult ret = null;
         while (ret == null) {

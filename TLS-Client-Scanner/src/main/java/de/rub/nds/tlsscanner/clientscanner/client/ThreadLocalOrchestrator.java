@@ -11,9 +11,10 @@ package de.rub.nds.tlsscanner.clientscanner.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
@@ -36,13 +37,25 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
     // there
     private ThreadLocal<Orchestrator> localOrchestrator;
     private final List<Orchestrator> allOrchestrators = new ArrayList<>();
+    private final ExecutorService executor;
 
-    public ThreadLocalOrchestrator(ClientScannerConfig csConfig) {
+    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ExecutorService executor) {
         this.csConfig = csConfig;
+        this.executor = executor;
+    }
+
+    @Override
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    @Override
+    public ClientScannerConfig getCSConfig() {
+        return csConfig;
     }
 
     protected Orchestrator createOrchestrator() {
-        Orchestrator ret = new Orchestrator(csConfig);
+        Orchestrator ret = new Orchestrator(csConfig, executor);
         allOrchestrators.add(ret);
         if (isStarted) {
             ret.start();
@@ -126,8 +139,9 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
     }
 
     @Override
-    public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix, String uid, ClientReport report)
+    public ClientProbeResult runProbe(IDispatcher probe, String hostnamePrefix, String uid, ClientReport report,
+            Object additionalParameters)
             throws InterruptedException, ExecutionException {
-        return getLocalOrchestrator().runProbe(probe, hostnamePrefix, uid, report);
+        return getLocalOrchestrator().runProbe(probe, hostnamePrefix, uid, report, additionalParameters);
     }
 }

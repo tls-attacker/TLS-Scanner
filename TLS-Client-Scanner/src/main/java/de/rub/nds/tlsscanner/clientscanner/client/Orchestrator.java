@@ -9,21 +9,19 @@
 package de.rub.nds.tlsscanner.clientscanner.client;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsscanner.clientscanner.Server;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.DockerLibAdapter;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.CurlAdapter;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ProxiedLocalCommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ClientProbeResultFuture;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIFallingBackDispatcher;
@@ -42,12 +40,15 @@ public class Orchestrator implements IOrchestrator {
     protected final IClientAdapter clientAdapter;
     protected final Server server;
     protected final ControlledClientDispatcher dispatcher;
+    protected final ClientScannerConfig csConfig;
+    protected final ExecutorService executor;
 
     private Thread callingThread = null;
     private boolean wasCalledWithMultithreading = false;
     protected String baseHostname = "127.0.0.1.xip.io";
 
-    public Orchestrator(ClientScannerConfig csConfig) {
+    public Orchestrator(ClientScannerConfig csConfig, ExecutorService executor) {
+        this.csConfig = csConfig;
         // TODO (create and) handle SNI flag in config
         // if sni do as it is now
         // if no sni we pass null as expected hostname to dispatcher, possibly
@@ -68,6 +69,17 @@ public class Orchestrator implements IOrchestrator {
         snid.registerRule("uid", new SNIUidDispatcher());
         snid.registerRule("cc", dispatcher);
         server = new Server(csConfig, new SNIFallingBackDispatcher(snid, dispatcher), 1);
+        this.executor = executor;
+    }
+
+    @Override
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    @Override
+    public ClientScannerConfig getCSConfig() {
+        return csConfig;
     }
 
     @Override
@@ -96,7 +108,8 @@ public class Orchestrator implements IOrchestrator {
     }
 
     @Override
-    public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix, String uid, ClientReport report)
+    public ClientProbeResult runProbe(IDispatcher probe, String hostnamePrefix, String uid, ClientReport report,
+            Object additionalParameters)
             throws InterruptedException, ExecutionException {
         // keep track of multithreading to possibly issue warning
         if (!wasCalledWithMultithreading) {
@@ -111,7 +124,7 @@ public class Orchestrator implements IOrchestrator {
         FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
         // enqueue probe on serverside
         ClientProbeResultFuture serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, uid,
-                clientResultHolder, report);
+                clientResultHolder, report, additionalParameters);
 
         // tell client to connect and get its result
         ClientAdapterResult clientResult = null;

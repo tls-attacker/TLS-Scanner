@@ -9,20 +9,27 @@
 package de.rub.nds.tlsscanner.clientscanner.client;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public interface IOrchestrator {
-    public ClientInfo getReportInformation();
+    ClientScannerConfig getCSConfig();
 
-    public void start();
+    ClientInfo getReportInformation();
 
-    public void cleanup();
+    void start();
 
-    public void postProcessing(ClientReport report);
+    void cleanup();
 
-    public ClientProbeResult runProbe(IProbe probe, String hostnamePrefix, String uid, ClientReport report)
+    void postProcessing(ClientReport report);
+
+    ClientProbeResult runProbe(IDispatcher probe, String hostnamePrefix, String uid, ClientReport report,
+            Object additionalParameters)
             throws InterruptedException, ExecutionException;
+
+    ExecutorService getExecutor();
 }
