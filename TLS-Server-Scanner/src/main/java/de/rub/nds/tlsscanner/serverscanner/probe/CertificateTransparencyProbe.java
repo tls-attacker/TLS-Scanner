@@ -8,9 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.asn1.model.Asn1EncapsulatingOctetString;
-import de.rub.nds.asn1.model.Asn1PrimitiveOctetString;
-import de.rub.nds.asn1.model.Asn1Sequence;
+import de.rub.nds.asn1.model.*;
 import de.rub.nds.asn1.parser.ParserException;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 
@@ -20,6 +18,7 @@ import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTim
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLog;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogList;
+import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogListLoader;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
@@ -35,10 +34,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateTransparency
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import org.bouncycastle.crypto.tls.Certificate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.time.Duration;
+import java.util.*;
 
 public class CertificateTransparencyProbe extends TlsProbe {
 
@@ -48,6 +45,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
     private boolean supportsPrecertificateSCTs;
     private boolean supportsHandshakeSCTs;
     private boolean supportsOcspSCTs;
+    private boolean meetsChromeCTPolicy = false;
     private SignedCertificateTimestampList precertificateSctList;
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
@@ -68,9 +66,10 @@ public class CertificateTransparencyProbe extends TlsProbe {
         getPrecertificateSCTs();
         getTlsHandshakeSCTs(tlsConfig);
         getOcspResponseScts();
+        evaluateChromeCtPolicy();
 
         return new CertificateTransparencyResult(supportsPrecertificateSCTs, supportsHandshakeSCTs,
-                supportsOcspSCTs, precertificateSctList, handshakeSctList, ocspSctList);
+                supportsOcspSCTs, meetsChromeCTPolicy, precertificateSctList, handshakeSctList, ocspSctList);
     }
 
     private Config initTlsConfig() {
@@ -104,9 +103,21 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
                 Asn1EncapsulatingOctetString outerContentEncapsulation = (Asn1EncapsulatingOctetString)
                         precertificateSctExtension.getChildren().get(1);
-                Asn1PrimitiveOctetString innerContentEncapsulation = (Asn1PrimitiveOctetString)
-                        outerContentEncapsulation.getChildren().get(0);
-                byte[] encodedSctList = innerContentEncapsulation.getValue();
+
+
+                byte[] encodedSctList = null;
+
+                // Some CAs (e.g. DigiCert) embed the DER-encoded SCT in an Asn1EncapsulatingOctetString instead of an Asn1PrimitiveOctetString
+                Asn1Field innerContentEncapsulation = (Asn1Field) outerContentEncapsulation.getChildren().get(0);
+                if (innerContentEncapsulation instanceof Asn1PrimitiveOctetString) {
+                    Asn1PrimitiveOctetString innerPrimitiveOctetString =
+                            (Asn1PrimitiveOctetString) innerContentEncapsulation;
+                    encodedSctList = innerPrimitiveOctetString.getValue();
+                } else if (innerContentEncapsulation instanceof Asn1EncapsulatingOctetString) {
+                    Asn1EncapsulatingOctetString innerEncapsulatingOctetString =
+                            (Asn1EncapsulatingOctetString) innerContentEncapsulation;
+                    encodedSctList = innerEncapsulatingOctetString.getContent().getOriginalValue();
+                }
 
                 precertificateSctList = SignedCertificateTimestampListParser.parseTimestampList(encodedSctList,
                         serverCertChain, true);
@@ -151,6 +162,69 @@ public class CertificateTransparencyProbe extends TlsProbe {
         if (stapledOcspResponse != null) {
             // TODO: Implement this using stapledOcspResponse.
             //  The OCSPResponse class needs to modified to support OCSP extensions (primarily singleExtension)
+        }
+    }
+
+    /**
+     * Evaluates if Chrome's CT Policy is met.
+     * See https://github.com/chromium/ct-policy/blob/master/ct_policy.md for detailed information about Chrome's CT Policy.
+     *
+     * @return
+     */
+    private void evaluateChromeCtPolicy() {
+        CtLogList ctLogList = CtLogListLoader.loadLogList();
+
+        if (!supportsPrecertificateSCTs) {
+            boolean hasGoogleSct = false;
+            boolean hasNonGoogleSct = false;
+
+            List<SignedCertificateTimestamp> combinedSctList = new ArrayList<>();
+            if (supportsHandshakeSCTs) {
+                combinedSctList.addAll(handshakeSctList.getCertificateTimestampList());
+            }
+            if (supportsOcspSCTs) {
+                combinedSctList.addAll(ocspSctList.getCertificateTimestampList());
+            }
+            for (SignedCertificateTimestamp sct : combinedSctList) {
+                CtLog ctLog = ctLogList.getCtLog(sct.getLogId());
+                if ("Google".equals(ctLog.getOperator())) {
+                    hasGoogleSct = true;
+                } else {
+                    hasNonGoogleSct = true;
+                }
+            }
+            meetsChromeCTPolicy = hasGoogleSct && hasNonGoogleSct;
+        } else {
+            boolean hasGoogleSct = false;
+            boolean hasNonGoogleSct = false;
+
+            for (SignedCertificateTimestamp sct : precertificateSctList.getCertificateTimestampList()) {
+                CtLog ctLog = ctLogList.getCtLog(sct.getLogId());
+                if ("Google".equals(ctLog.getOperator())) {
+                    hasGoogleSct = true;
+                } else {
+                    hasNonGoogleSct = true;
+                }
+            }
+            Date endDate = serverCertChain.getCertificateAt(0).getEndDate().getDate();
+            Date startDate = serverCertChain.getCertificateAt(0).getStartDate().getDate();
+            Duration validityDuration = Duration.between(startDate.toInstant(), endDate.toInstant());
+
+            boolean hasEnoughPrecertificateSCTs = false;
+            if (validityDuration.minusDays(30 * 15).isNegative()) {
+                // Certificate is valid for 15 months or less, two embedded precertificate SCTs are required
+                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 2;
+            } else if (validityDuration.minusDays(30 * 27).isNegative()) {
+                // Certificate is valid for 15 to 27 months, three embedded precertificate SCTs are required
+                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 3;
+            } else if (validityDuration.minusDays(30 * 39).isNegative()) {
+                // Certificate is valid for 27 to 39 months, four embedded precertificate SCTs are required
+                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 4;
+            } else {
+                // Certificate is valid for more than 39 months, five embedded precertificate SCTs are required
+                hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 5;
+            }
+            meetsChromeCTPolicy = hasGoogleSct && hasNonGoogleSct && hasEnoughPrecertificateSCTs;
         }
     }
 

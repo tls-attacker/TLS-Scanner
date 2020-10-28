@@ -691,12 +691,10 @@ public class SiteReportPrinter {
 
     private StringBuilder appendCertificateTransparency(StringBuilder builder) {
         prettyAppendHeading(builder, "Certificate Transparency");
-        prettyAppend(builder, "Supports Precertificate SCTs ", AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE);
-        prettyAppend(builder, "Supports TLS Handshake SCTs ", AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE);
-        prettyAppend(builder, "Supports OCSP Response SCTs ", AnalyzedProperty.SUPPORTS_SCTS_OCSP);
-        // prettyAppend(builder, "Meets Chrome CT Policy ", AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
-        // TODO: Implement this: https://github.com/chromium/ct-policy and keep in mind that there is
-        //  an upcoming update to Chrome's CT Policy!
+        prettyAppend(builder, "Supports Precertificate SCTs", AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE);
+        prettyAppend(builder, "Supports TLS Handshake SCTs", AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE);
+        prettyAppend(builder, "Supports OCSP Response SCTs", AnalyzedProperty.SUPPORTS_SCTS_OCSP);
+        prettyAppend(builder, "Meets Chrome's CT Policy", AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY);
 
         if (report.getResult(AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE) == TestResult.TRUE) {
             prettyAppendSubheading(builder, "Precertificate SCTs");

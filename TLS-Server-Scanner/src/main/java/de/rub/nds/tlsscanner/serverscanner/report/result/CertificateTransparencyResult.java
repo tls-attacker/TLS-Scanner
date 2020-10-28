@@ -19,12 +19,14 @@ public class CertificateTransparencyResult extends ProbeResult {
     private boolean supportsPrecertificateSCTs;
     private boolean supportsHandshakeSCTs;
     private boolean supportsOcspSCTs;
+    private boolean meetsChromeCTPolicy;
     private SignedCertificateTimestampList precertificateSctList;
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
 
     public CertificateTransparencyResult(boolean supportsPrecertificateSCTs,
                                          boolean supportsHandshakeSCTs, boolean supportsOcspSCTs,
+                                         boolean meetsChromeCTPolicy,
                                          SignedCertificateTimestampList precertificateSctList,
                                          SignedCertificateTimestampList handshakeSctList,
                                          SignedCertificateTimestampList ocspSctList) {
@@ -32,6 +34,7 @@ public class CertificateTransparencyResult extends ProbeResult {
         this.supportsPrecertificateSCTs = supportsPrecertificateSCTs;
         this.supportsHandshakeSCTs = supportsHandshakeSCTs;
         this.supportsOcspSCTs = supportsOcspSCTs;
+        this.meetsChromeCTPolicy = meetsChromeCTPolicy;
         this.precertificateSctList = precertificateSctList;
         this.handshakeSctList = handshakeSctList;
         this.ocspSctList = ocspSctList;
@@ -47,5 +50,6 @@ public class CertificateTransparencyResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, supportsPrecertificateSCTs);
         report.putResult(AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, supportsHandshakeSCTs);
         report.putResult(AnalyzedProperty.SUPPORTS_SCTS_OCSP, supportsOcspSCTs);
+        report.putResult(AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, meetsChromeCTPolicy);
     }
 }
