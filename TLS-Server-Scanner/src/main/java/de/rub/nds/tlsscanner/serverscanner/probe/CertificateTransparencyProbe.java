@@ -107,7 +107,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
                 byte[] encodedSctList = null;
 
-                // Some CAs (e.g. DigiCert) embed the DER-encoded SCT in an Asn1EncapsulatingOctetString instead of an Asn1PrimitiveOctetString
+                // Some CAs (e.g. DigiCert) embed the DER-encoded SCT in an Asn1EncapsulatingOctetString
+                // instead of an Asn1PrimitiveOctetString
                 Asn1Field innerContentEncapsulation = (Asn1Field) outerContentEncapsulation.getChildren().get(0);
                 if (innerContentEncapsulation instanceof Asn1PrimitiveOctetString) {
                     Asn1PrimitiveOctetString innerPrimitiveOctetString =
@@ -167,17 +168,12 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
     /**
      * Evaluates if Chrome's CT Policy is met.
-     * See https://github.com/chromium/ct-policy/blob/master/ct_policy.md for detailed information about Chrome's CT Policy.
-     *
-     * @return
+     * See https://github.com/chromium/ct-policy/blob/master/ct_policy.md
+     * for detailed information about Chrome's CT Policy.
      */
     private void evaluateChromeCtPolicy() {
-        CtLogList ctLogList = CtLogListLoader.loadLogList();
 
         if (!supportsPrecertificateSCTs) {
-            boolean hasGoogleSct = false;
-            boolean hasNonGoogleSct = false;
-
             List<SignedCertificateTimestamp> combinedSctList = new ArrayList<>();
             if (supportsHandshakeSCTs) {
                 combinedSctList.addAll(handshakeSctList.getCertificateTimestampList());
@@ -185,27 +181,9 @@ public class CertificateTransparencyProbe extends TlsProbe {
             if (supportsOcspSCTs) {
                 combinedSctList.addAll(ocspSctList.getCertificateTimestampList());
             }
-            for (SignedCertificateTimestamp sct : combinedSctList) {
-                CtLog ctLog = ctLogList.getCtLog(sct.getLogId());
-                if ("Google".equals(ctLog.getOperator())) {
-                    hasGoogleSct = true;
-                } else {
-                    hasNonGoogleSct = true;
-                }
-            }
-            meetsChromeCTPolicy = hasGoogleSct && hasNonGoogleSct;
-        } else {
-            boolean hasGoogleSct = false;
-            boolean hasNonGoogleSct = false;
 
-            for (SignedCertificateTimestamp sct : precertificateSctList.getCertificateTimestampList()) {
-                CtLog ctLog = ctLogList.getCtLog(sct.getLogId());
-                if ("Google".equals(ctLog.getOperator())) {
-                    hasGoogleSct = true;
-                } else {
-                    hasNonGoogleSct = true;
-                }
-            }
+            meetsChromeCTPolicy = hasGoogleAndNonGoogleScts(combinedSctList);
+        } else {
             Date endDate = serverCertChain.getCertificateAt(0).getEndDate().getDate();
             Date startDate = serverCertChain.getCertificateAt(0).getStartDate().getDate();
             Duration validityDuration = Duration.between(startDate.toInstant(), endDate.toInstant());
@@ -224,9 +202,31 @@ public class CertificateTransparencyProbe extends TlsProbe {
                 // Certificate is valid for more than 39 months, five embedded precertificate SCTs are required
                 hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 5;
             }
-            meetsChromeCTPolicy = hasGoogleSct && hasNonGoogleSct && hasEnoughPrecertificateSCTs;
+
+            boolean hasGoogleAndNonGoogleScts = hasGoogleAndNonGoogleScts(
+                    precertificateSctList.getCertificateTimestampList());
+            meetsChromeCTPolicy = hasGoogleAndNonGoogleScts && hasEnoughPrecertificateSCTs;
         }
     }
+
+    private boolean hasGoogleAndNonGoogleScts(List<SignedCertificateTimestamp> sctList) {
+        CtLogList ctLogList = CtLogListLoader.loadLogList();
+
+        boolean hasGoogleSct = false;
+        boolean hasNonGoogleSct = false;
+
+        for (SignedCertificateTimestamp sct : sctList) {
+            CtLog ctLog = ctLogList.getCtLog(sct.getLogId());
+            if ("Google".equals(ctLog.getOperator())) {
+                hasGoogleSct = true;
+            } else {
+                hasNonGoogleSct = true;
+            }
+        }
+
+        return hasGoogleSct && hasNonGoogleSct;
+    }
+
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
@@ -235,7 +235,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return null;
+        return new CertificateTransparencyResult(false, false, false, false, null, null, null);
     }
 
     @Override
