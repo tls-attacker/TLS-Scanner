@@ -41,13 +41,13 @@ public class Orchestrator implements IOrchestrator {
     protected final Server server;
     protected final ControlledClientDispatcher dispatcher;
     protected final ClientScannerConfig csConfig;
-    protected final ExecutorService executor;
+    protected final ExecutorService secondaryExecutor;
 
     private Thread callingThread = null;
     private boolean wasCalledWithMultithreading = false;
     protected String baseHostname = "127.0.0.1.xip.io";
 
-    public Orchestrator(ClientScannerConfig csConfig, ExecutorService executor) {
+    public Orchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int serverThreads) {
         this.csConfig = csConfig;
         // TODO (create and) handle SNI flag in config
         // if sni do as it is now
@@ -68,13 +68,13 @@ public class Orchestrator implements IOrchestrator {
         snid.registerRule(baseHostname, new SNINopDispatcher());
         snid.registerRule("uid", new SNIUidDispatcher());
         snid.registerRule("cc", dispatcher);
-        server = new Server(csConfig, new SNIFallingBackDispatcher(snid, dispatcher), 1);
-        this.executor = executor;
+        server = new Server(csConfig, new SNIFallingBackDispatcher(snid, dispatcher), serverThreads);
+        this.secondaryExecutor = secondaryExecutor;
     }
 
     @Override
-    public ExecutorService getExecutor() {
-        return executor;
+    public ExecutorService getSecondaryExecutor() {
+        return secondaryExecutor;
     }
 
     @Override

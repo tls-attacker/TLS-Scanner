@@ -8,17 +8,19 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report.result;
 
-import java.io.Serializable;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NotExecutedResult extends ClientProbeResult {
+    private static final Logger LOGGER = LogManager.getLogger();
     @XmlTransient
     private final Class<? extends IProbe> probe;
     public final String message;
@@ -40,8 +42,16 @@ public class NotExecutedResult extends ClientProbeResult {
     }
 
     @Override
+    @SuppressWarnings("squid:S2445") // using parameter to synchronize
     public void merge(ClientReport report) {
-        report.putResult(probe, this);
+        synchronized (report) {
+            if (report.hasResult(probe)) {
+                LOGGER.warn("Did not merge NotExecuted Result, as report already has result for this probe {}: {}",
+                        probe, report.getResult(probe));
+            } else {
+                report.putResult(probe, this);
+            }
+        }
     }
 
 }

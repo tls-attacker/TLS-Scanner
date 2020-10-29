@@ -31,5 +31,5 @@ public interface IOrchestrator {
             Object additionalParameters)
             throws InterruptedException, ExecutionException;
 
-    ExecutorService getExecutor();
+    ExecutorService getSecondaryExecutor();
 }

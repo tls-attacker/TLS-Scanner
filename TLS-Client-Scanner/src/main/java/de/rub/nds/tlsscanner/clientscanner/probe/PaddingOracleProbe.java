@@ -48,19 +48,36 @@ public class PaddingOracleProbe extends BaseProbe {
             ProtocolVersion.TLS11,
             ProtocolVersion.TLS12
     };
+    // FINISHED_RESUMPTION is not supported, as we do not have means to force a
+    // client to resume the session (yet)
+    // don't use CLASSIC_DYNAMIC as it is slower and does not provide any benefit
+    // from the server side
     private static final PaddingVectorGeneratorType[] VECTOR_TYPES = {
-            PaddingVectorGeneratorType.CLASSIC_DYNAMIC,
+            PaddingVectorGeneratorType.CLASSIC,
             PaddingVectorGeneratorType.FINISHED,
             PaddingVectorGeneratorType.CLOSE_NOTIFY,
-            PaddingVectorGeneratorType.FINISHED_RESUMPTION
     };
+
+    public static Collection<PaddingOracleProbe> getDefault(IOrchestrator orchestrator) {
+        Collection<PaddingOracleProbe> ret = new ArrayList<>();
+        ProtocolVersion version = ProtocolVersion.TLS12;
+        PaddingVectorGeneratorType vectorGeneratorType = PaddingVectorGeneratorType.CLASSIC;
+        for (CipherSuite suite : CipherSuite.getImplemented()) {
+            if (suite.isSupportedInProtocol(version) && suite.isCBC()) {
+                PaddingOracleParameters params = new PaddingOracleParameters(version, suite,
+                        vectorGeneratorType);
+                ret.add(new PaddingOracleProbe(orchestrator, params));
+            }
+        }
+        return ret;
+    }
 
     public static Collection<PaddingOracleProbe> getAll(IOrchestrator orchestrator) {
         Collection<PaddingOracleProbe> ret = new ArrayList<>();
         for (ProtocolVersion version : VERSIONS_TO_TEST) {
             for (CipherSuite suite : CipherSuite.getImplemented()) {
-                for (PaddingVectorGeneratorType vectorGeneratorType : VECTOR_TYPES) {
-                    if (suite.isCBC()) {
+                if (suite.isSupportedInProtocol(version) && suite.isCBC()) {
+                    for (PaddingVectorGeneratorType vectorGeneratorType : VECTOR_TYPES) {
                         PaddingOracleParameters params = new PaddingOracleParameters(version, suite,
                                 vectorGeneratorType);
                         ret.add(new PaddingOracleProbe(orchestrator, params));

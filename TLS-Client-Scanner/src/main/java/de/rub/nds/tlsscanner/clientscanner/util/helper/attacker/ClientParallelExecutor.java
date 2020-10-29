@@ -23,7 +23,7 @@ public class ClientParallelExecutor extends ParallelExecutor {
     public final String hostnamePrefix;
 
     public ClientParallelExecutor(IOrchestrator orchestrator, ClientReport report, String uid, String hostnamePrefix) {
-        super(orchestrator.getExecutor(), 3);
+        super(orchestrator.getSecondaryExecutor(), 3);
         this.orchestrator = orchestrator;
         this.report = report;
         this.uid = uid;

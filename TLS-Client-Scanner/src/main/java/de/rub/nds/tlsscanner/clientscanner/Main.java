@@ -28,15 +28,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsattacker.core.certificate.CertificateByteChooser;
 import de.rub.nds.tlsattacker.core.certificate.CertificateKeyPair;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
-import de.rub.nds.tlsscanner.clientscanner.client.ThreadLocalOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.ISubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
@@ -49,7 +46,6 @@ import de.rub.nds.tlsscanner.clientscanner.probe.ForcedCompressionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe.PaddingOracleParameters;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.downgrade.SendAlert;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.HelloReconProbe;
@@ -67,7 +63,7 @@ public class Main {
 
     public static void main(String[] args) {
         Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
-        Configurator.setAllLevels("de.rub.nds.tlsscanner.clientscanner", Level.DEBUG);
+        Configurator.setAllLevels("de.rub.nds.tlsscanner.clientscanner", Level.INFO);
         Patcher.applyPatches();
         {
             // suppress warnings while loading CKPs
@@ -127,9 +123,7 @@ public class Main {
             probes.add(new HelloReconProbe(orchestrator));
             probes.add(new SNIProbe());
             probes.add(new SupportedCipherSuitesProbe());
-            // probes.addAll(PaddingOracleProbe.getAll(orchestrator));
-            probes.add(new PaddingOracleProbe(orchestrator, new PaddingOracleParameters(ProtocolVersion.TLS12,
-                    CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, PaddingVectorGeneratorType.CLASSIC)));
+            probes.addAll(PaddingOracleProbe.getDefault(orchestrator));
         }
         // quick scan with only the probes I am interested in right now
         if (false) {
@@ -184,14 +178,20 @@ public class Main {
     }
 
     private static void runScan(ClientScannerConfig csConfig) {
-        int threads = 2;
+        int threads = 8;
+        int secondaryThreads = 64 - threads;
         ThreadPoolExecutor pool = new ThreadPoolExecutor(threads, threads, 1, TimeUnit.MINUTES,
                 new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-probe-runner"));
-        IOrchestrator orchestrator = new ThreadLocalOrchestrator(csConfig, pool);
+        ThreadPoolExecutor secondaryPool = new ThreadPoolExecutor(0, secondaryThreads, 1,
+                TimeUnit.MINUTES,
+                new LinkedBlockingDeque<>(),
+                new NamedThreadFactory("cs-secondary-pool"));
+        IOrchestrator orchestrator = new Orchestrator(csConfig, secondaryPool, threads + secondaryThreads);
 
         ClientScanExecutor executor = new ClientScanExecutor(getProbes(orchestrator), null, orchestrator, pool);
         ClientReport rep = executor.execute();
+        secondaryPool.shutdown();
         pool.shutdown();
 
         try {

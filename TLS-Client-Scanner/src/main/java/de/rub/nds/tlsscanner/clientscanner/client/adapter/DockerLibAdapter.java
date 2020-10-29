@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.client.adapter;
 
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 import com.github.dockerjava.api.exception.DockerException;
@@ -16,9 +17,11 @@ import com.github.dockerjava.api.model.HostConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.docker.DockerExecInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
+import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
 import de.rub.nds.tls.subject.instance.TlsClientInstance;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 import de.rub.nds.tlsscanner.clientscanner.report.result.BasicClientAdapterResult;
@@ -57,6 +60,18 @@ public class DockerLibAdapter implements IClientAdapter {
             if (client != null) {
                 client.close();
             }
+        } catch (TlsVersionNotFoundException e) {
+            LOGGER.error("Could not find Version {} for Type {}", version, type);
+            if (LOGGER.isInfoEnabled()) {
+                List<String> versions = DockerTlsManagerFactory.getAvailableVersions(ConnectionRole.CLIENT, type);
+                LOGGER.info("Available Versions for {}", type);
+                for (String v : versions) {
+                    LOGGER.info(v);
+                }
+            } else {
+                LOGGER.error("Info logger is disabled - not printing available versions");
+            }
+            throw e;
         } catch (InterruptedException e) {
             LOGGER.error("Failed to create client (interrupt)", e);
             if (client != null) {
@@ -78,14 +93,15 @@ public class DockerLibAdapter implements IClientAdapter {
             DockerExecInstance ei = (DockerExecInstance) client.connect(hostname, port);
             ei.frameHandler.awaitStarted();
             ei.frameHandler.awaitCompletion();
+            long exitCode = ei.getExitCode();
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Exit code {}", ei.getExitCode());
+                LOGGER.debug("Exit code {}", exitCode);
                 for (String ln : ei.frameHandler.getLines()) {
                     LOGGER.debug(ln);
                 }
             }
             // TODO distinguish further details...
-            return new BasicClientAdapterResult(ei.getExitCode() == 0 ? EContentShown.SHOWN : EContentShown.ERROR);
+            return new BasicClientAdapterResult(exitCode == 0 ? EContentShown.SHOWN : EContentShown.ERROR);
         } catch (DockerException e) {
             throw new RuntimeException("Failed to have client connect to target", e);
         }

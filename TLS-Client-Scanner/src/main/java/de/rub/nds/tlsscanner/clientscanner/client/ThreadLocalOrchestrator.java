@@ -37,16 +37,16 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
     // there
     private ThreadLocal<Orchestrator> localOrchestrator;
     private final List<Orchestrator> allOrchestrators = new ArrayList<>();
-    private final ExecutorService executor;
+    protected final ExecutorService secondaryExecutor;
 
-    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ExecutorService executor) {
+    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor) {
         this.csConfig = csConfig;
-        this.executor = executor;
+        this.secondaryExecutor = secondaryExecutor;
     }
 
     @Override
-    public ExecutorService getExecutor() {
-        return executor;
+    public ExecutorService getSecondaryExecutor() {
+        return secondaryExecutor;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
     }
 
     protected Orchestrator createOrchestrator() {
-        Orchestrator ret = new Orchestrator(csConfig, executor);
+        Orchestrator ret = new Orchestrator(csConfig, secondaryExecutor, 2);
         allOrchestrators.add(ret);
         if (isStarted) {
             ret.start();
