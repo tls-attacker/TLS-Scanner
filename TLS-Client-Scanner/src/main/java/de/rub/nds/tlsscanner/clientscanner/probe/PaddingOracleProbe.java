@@ -188,7 +188,8 @@ public class PaddingOracleProbe extends BaseProbe {
     protected ClientProbeResult callInternal(ClientReport report, String hostnamePrefix)
             throws InterruptedException, ExecutionException {
         PaddingOracleCommandConfig paddingOracleConfig = createPaddingOracleCommandConfig();
-        ClientParallelExecutor executor = new ClientParallelExecutor(orchestrator, report, report.uid, hostnamePrefix);
+        ClientParallelExecutor executor = new ClientParallelExecutor(orchestrator, report, report.uid, hostnamePrefix,
+                false);
         InformationLeakTest<PaddingOracleTestInfo> res = getPaddingOracleInformationLeakTest(paddingOracleConfig,
                 executor);
         return new ParametrizedClientProbeResult<PaddingOracleParameters, PaddingOracleResult>(

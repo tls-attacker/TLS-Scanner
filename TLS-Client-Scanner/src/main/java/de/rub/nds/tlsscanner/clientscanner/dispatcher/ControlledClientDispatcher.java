@@ -57,11 +57,12 @@ public class ControlledClientDispatcher implements IDispatcher {
 
         ClientProbeResultFuture task = getNextTask(sni, uid);
         if (task == null) {
-            throw new DispatchException("Did not find task");
+            throw new DispatchException("Did not find task for sni:" + sni + " uid:" + uid);
         }
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(task.probe.getClass()
-                .getSimpleName())) {
+                .getSimpleName()).push(task.creatorThreadName)) {
             task.setGotConnection();
+            LOGGER.trace("Got connection for sni {} uid {}", sni, uid);
             dispatchInformation.additionalInformation.put(
                     getClass(),
                     new ControlledClientDispatchInformation(task));
@@ -90,9 +91,10 @@ public class ControlledClientDispatcher implements IDispatcher {
         if (sni != null) {
             task = toRun.dequeue(sni, uid);
             if (task == null) {
-                LOGGER.warn("Got hostname which we do not have a task for");
+                LOGGER.warn("Got hostname which we do not have a task for. sni={} uid={}", sni, uid);
             } else {
-                LOGGER.debug("Got task {}", task.probe.getClass().getSimpleName());
+                LOGGER.debug("Got task {} from thread {}", task.probe.getClass().getSimpleName(),
+                        task.creatorThreadName);
             }
         } else {
             if (!printedNoSNIWarning) {
@@ -106,8 +108,8 @@ public class ControlledClientDispatcher implements IDispatcher {
             if (task == null) {
                 LOGGER.warn("Got no tasks left (NO SNI)");
             } else {
-                LOGGER.debug("Chose task with sni {} and uid {} (NO SNI)", taskTriple.getLeft(),
-                        taskTriple.getMiddle());
+                LOGGER.debug("Chose task with sni {} and uid {} (NO SNI) from thread {}", taskTriple.getLeft(),
+                        taskTriple.getMiddle(), task.creatorThreadName);
             }
         }
         return task;
@@ -117,6 +119,7 @@ public class ControlledClientDispatcher implements IDispatcher {
             Future<ClientAdapterResult> clientResultHolder, ClientReport report, Object additionalParameters) {
         ClientProbeResultFuture ret = new ClientProbeResultFuture(probe, clientResultHolder, report,
                 additionalParameters);
+        LOGGER.trace("Adding entry for sni {} with uid {}", expectedHostname, expectedUid);
         toRun.enqueue(expectedHostname, expectedUid, ret);
         return ret;
     }
@@ -139,6 +142,7 @@ public class ControlledClientDispatcher implements IDispatcher {
         protected final ClientReport report;
         protected boolean gotConnection = false;
         protected final Object additionalParameters;
+        protected final String creatorThreadName;
 
         public ClientProbeResultFuture(IDispatcher probe, Future<ClientAdapterResult> clientResultFuture,
                 ClientReport report, Object additionalParameters) {
@@ -146,6 +150,7 @@ public class ControlledClientDispatcher implements IDispatcher {
             this.report = report;
             this.clientResultFuture = clientResultFuture;
             this.additionalParameters = additionalParameters;
+            this.creatorThreadName = Thread.currentThread().getName();
         }
 
         protected synchronized void setGotConnection() {

@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.util.RandString;
 
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -42,13 +43,9 @@ public class ClientReport extends Observable implements Serializable {
     public final transient String uid;
 
     private static String generateUID() {
-        char[] uidArr = new char[UID_LEN];
         String uid;
         do {
-            for (int i = 0; i < uidArr.length; i++) {
-                uidArr[i] = UID_ALPH[uidRandom.nextInt(UID_ALPH.length)];
-            }
-            uid = new String(uidArr);
+            uid = RandString.getRandomString(UID_LEN, UID_ALPH);
         } while (!usedUIDs.add(uid));
         return uid;
     }

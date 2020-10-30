@@ -21,13 +21,16 @@ public class ClientParallelExecutor extends ParallelExecutor {
     public final ClientReport report;
     public final String uid;
     public final String hostnamePrefix;
+    public final boolean exactHostname;
 
-    public ClientParallelExecutor(IOrchestrator orchestrator, ClientReport report, String uid, String hostnamePrefix) {
+    public ClientParallelExecutor(IOrchestrator orchestrator, ClientReport report, String uid, String hostnamePrefix,
+            boolean exactHostname) {
         super(orchestrator.getSecondaryExecutor(), 3);
         this.orchestrator = orchestrator;
         this.report = report;
         this.uid = uid;
         this.hostnamePrefix = hostnamePrefix;
+        this.exactHostname = exactHostname;
     }
 
     @Override

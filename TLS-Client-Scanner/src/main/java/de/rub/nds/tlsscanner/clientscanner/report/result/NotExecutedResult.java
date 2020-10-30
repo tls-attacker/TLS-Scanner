@@ -45,10 +45,7 @@ public class NotExecutedResult extends ClientProbeResult {
     @SuppressWarnings("squid:S2445") // using parameter to synchronize
     public void merge(ClientReport report) {
         synchronized (report) {
-            if (report.hasResult(probe)) {
-                LOGGER.warn("Did not merge NotExecuted Result, as report already has result for this probe {}: {}",
-                        probe, report.getResult(probe));
-            } else {
+            if (!report.hasResult(probe)) {
                 report.putResult(probe, this);
             }
         }

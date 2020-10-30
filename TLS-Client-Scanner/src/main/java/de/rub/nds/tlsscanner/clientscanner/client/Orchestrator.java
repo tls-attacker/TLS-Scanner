@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.logging.log4j.CloseableThreadContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,22 +22,24 @@ import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ClientProbeResultFuture;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIFallingBackDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher;
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.BaseFuture;
+import de.rub.nds.tlsscanner.clientscanner.util.helper.SyncObjectPool;
+import de.rub.nds.tlsscanner.clientscanner.util.helper.SyncObjectPool.SyncObject;
 
 public class Orchestrator implements IOrchestrator {
     private static final int CLIENT_RETRY_COUNT = 5;
     private static final Logger LOGGER = LogManager.getLogger();
 
+    protected final SyncObjectPool syncObjectPool = new SyncObjectPool();
     protected final IClientAdapter clientAdapter;
     protected final Server server;
     protected final ControlledClientDispatcher dispatcher;
@@ -107,43 +110,43 @@ public class Orchestrator implements IOrchestrator {
         }
     }
 
-    @Override
-    public ClientProbeResult runProbe(IDispatcher probe, String hostnamePrefix, String uid, ClientReport report,
-            Object additionalParameters)
+    private ClientProbeResult runProbe(IDispatcher probe, String hostnamePrefix, String uid, String hostname,
+            ClientReport report, Object additionalParameters)
             throws InterruptedException, ExecutionException {
-        // keep track of multithreading to possibly issue warning
-        if (!wasCalledWithMultithreading) {
-            if (callingThread == null) {
-                callingThread = Thread.currentThread();
-            } else if (callingThread != Thread.currentThread()) {
-                wasCalledWithMultithreading = true;
-            }
-        }
-
-        String hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, uid, baseHostname);
         FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
-        // enqueue probe on serverside
-        ClientProbeResultFuture serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, uid,
-                clientResultHolder, report, additionalParameters);
 
-        // tell client to connect and get its result
-        ClientAdapterResult clientResult = null;
-        int tryNo = 0;
-        try {
-            while (!serverResultFuture.isGotConnection()) {
-                // sleep a bit after fails
-                Thread.sleep(1000 * tryNo);
-                if (tryNo++ >= CLIENT_RETRY_COUNT) {
-                    LOGGER.warn("Failed to get connection from client after {} tries", CLIENT_RETRY_COUNT);
-                    break;
+        ClientProbeResultFuture serverResultFuture;
+        // we need to sync enqueueing and connecting per unique hostname
+        // TODO improve this, such that we can unsync as soon as we got a connection
+        // this requires us to change the client adapter interface unfortunately...
+        try (SyncObject _sync = syncObjectPool.get(hostname)) {
+            // enqueue probe on serverside
+            serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, uid,
+                    clientResultHolder, report, additionalParameters);
+
+            // tell client to connect and get its result
+            ClientAdapterResult clientResult = null;
+            int tryNo = 0;
+            try {
+                while (!serverResultFuture.isGotConnection()) {
+                    // sleep a bit after fails
+                    if (tryNo + 1 >= CLIENT_RETRY_COUNT) {
+                        LOGGER.warn("Failed to get connection from client after {} tries", CLIENT_RETRY_COUNT);
+                        break;
+                    }
+                    Thread.sleep(1000 * tryNo);
+                    tryNo++;
+                    // assume that connect runs synchronously
+                    LOGGER.trace("Running client probe (try: {})", tryNo);
+                    clientResult = clientAdapter.connect(hostname, server.getPort());
+                    LOGGER.trace("Client is done running probe - check whether server got connection");
                 }
-                // assume that connect runs synchronously
-                clientResult = clientAdapter.connect(hostname, server.getPort());
+                LOGGER.trace("Done running client");
+                clientResultHolder.setResult(clientResult);
+            } catch (Exception e) {
+                clientResultHolder.setException(e);
+                throw e;
             }
-            clientResultHolder.setResult(clientResult);
-        } catch (Exception e) {
-            clientResultHolder.setException(e);
-            throw e;
         }
 
         // wait for result from server
@@ -162,6 +165,25 @@ public class Orchestrator implements IOrchestrator {
             }
         }
         return res;
+    }
+
+    @Override
+    public ClientProbeResult runProbe(IDispatcher probe, String hostnamePrefix, String uid, ClientReport report,
+            Object additionalParameters)
+            throws InterruptedException, ExecutionException {
+        // keep track of multithreading to possibly issue warning
+        if (!wasCalledWithMultithreading) {
+            if (callingThread == null) {
+                callingThread = Thread.currentThread();
+            } else if (callingThread != Thread.currentThread()) {
+                wasCalledWithMultithreading = true;
+            }
+        }
+
+        String hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, uid, baseHostname);
+        try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(hostname)) {
+            return runProbe(probe, hostnamePrefix, uid, hostname, report, additionalParameters);
+        }
     }
 
     protected static class FutureClientAdapterResult extends BaseFuture<ClientAdapterResult> {

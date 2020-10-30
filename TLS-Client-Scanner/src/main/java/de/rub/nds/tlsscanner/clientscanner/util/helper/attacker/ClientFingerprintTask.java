@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.helper.ConfiguredTraceDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.helper.ConfiguredTraceDispatcher.ConfiguredTraceDispatcherParameter;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.helper.ConfiguredTraceDispatcher.ConfiguredTraceDispatcherResult;
+import de.rub.nds.tlsscanner.clientscanner.util.RandString;
 
 public class ClientFingerprintTask extends FingerPrintTask {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -34,11 +35,15 @@ public class ClientFingerprintTask extends FingerPrintTask {
     @Override
     public boolean execute() {
         ConfiguredTraceDispatcherResult res;
+        String hostnamePrefix = executorWithParameters.hostnamePrefix;
+        if (!executorWithParameters.exactHostname) {
+            hostnamePrefix = RandString.getRandomAlphaNumeric(10) + "." + hostnamePrefix;
+        }
         try {
             res = (ConfiguredTraceDispatcherResult) executorWithParameters.orchestrator
                     .runProbe(
                             ConfiguredTraceDispatcher.getInstance(),
-                            executorWithParameters.hostnamePrefix,
+                            hostnamePrefix,
                             executorWithParameters.uid,
                             executorWithParameters.report,
                             new ConfiguredTraceDispatcherParameter(inputState.getWorkflowTrace(),

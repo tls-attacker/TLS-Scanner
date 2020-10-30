@@ -10,14 +10,18 @@ package de.rub.nds.tlsscanner.clientscanner;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
 import org.apache.logging.log4j.CloseableThreadContext;
 import org.apache.logging.log4j.LogManager;
@@ -140,9 +144,14 @@ public class ClientScanExecutor implements Observer {
 
     private void reportAboutNotExecutedProbes() {
         if (LOGGER.isWarnEnabled() && !notScheduledTasks.isEmpty()) {
+            Map<Class<? extends IProbe>, Integer> notExecuted = new HashMap<>();
+            BiFunction<Class<? extends IProbe>, Integer, Integer> mapFunc = ((p, i) -> i == null ? 1 : i + 1);
             LOGGER.warn("Did not execute the following probes:");
             for (IProbe probe : notScheduledTasks) {
-                LOGGER.warn(probe.getClass().getName());
+                notExecuted.compute(probe.getClass(), mapFunc);
+            }
+            for (Entry<Class<? extends IProbe>, Integer> kvp : notExecuted.entrySet()) {
+                LOGGER.warn("{}x {}", kvp.getValue(), kvp.getKey().getName());
             }
         }
     }

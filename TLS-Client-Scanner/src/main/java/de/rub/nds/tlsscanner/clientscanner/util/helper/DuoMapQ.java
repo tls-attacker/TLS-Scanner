@@ -15,9 +15,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 public class DuoMapQ<K1, K2, V> {
-    private Map<K1, SingleMapQ<K2, V>> map = new HashMap<>();
+    private final Map<K1, SingleMapQ<K2, V>> map = new HashMap<>();
 
-    public Triple<K1, K2, V> dequeueAny() {
+    public synchronized Triple<K1, K2, V> dequeueAny() {
         for (K1 k : map.keySet()) {
             Pair<K2, V> ret = dequeueAnyWith(k);
             if (ret != null) {
@@ -27,49 +27,35 @@ public class DuoMapQ<K1, K2, V> {
         return null;
     }
 
-    public Pair<K2, V> dequeueAnyWith(K1 k1) {
+    public synchronized Pair<K2, V> dequeueAnyWith(K1 k1) {
         SingleMapQ<K2, V> internalMap;
         internalMap = map.get(k1);
         if (internalMap == null) {
             return null;
         }
         Pair<K2, V> ret = internalMap.dequeueAny();
-        synchronized (map) {
-            if (internalMap.isEmpty()) {
-                map.remove(k1);
-            }
+        if (internalMap.isEmpty()) {
+            map.remove(k1);
         }
         return ret;
     }
 
-    public V dequeue(K1 k1, K2 k2) {
+    public synchronized V dequeue(K1 k1, K2 k2) {
         SingleMapQ<K2, V> internalMap;
         internalMap = map.get(k1);
         if (internalMap == null) {
             return null;
         }
         V ret = internalMap.dequeue(k2);
-        synchronized (map) {
-            if (internalMap.isEmpty()) {
-                map.remove(k1);
-            }
+        if (internalMap.isEmpty()) {
+            map.remove(k1);
         }
         return ret;
     }
 
-    public void enqueue(K1 k1, K2 k2, V v) {
+    public synchronized void enqueue(K1 k1, K2 k2, V v) {
         SingleMapQ<K2, V> internalMap;
-        synchronized (map) {
-            internalMap = map.get(k1);
-            if (internalMap == null) {
-                internalMap = new SingleMapQ<>();
-                map.put(k1, internalMap);
-            }
-            // adding the element is still synced, as we do not want internalMap
-            // to possibly be removed from map
-            synchronized (internalMap) {
-                internalMap.enqueue(k2, v);
-            }
-        }
+        internalMap = map.computeIfAbsent(k1, _k -> new SingleMapQ<>());
+        internalMap.enqueue(k2, v);
     }
 }
