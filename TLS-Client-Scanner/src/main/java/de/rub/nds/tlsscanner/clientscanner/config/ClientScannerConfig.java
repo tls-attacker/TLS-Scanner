@@ -27,8 +27,6 @@ import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
 public class ClientScannerConfig extends TLSDelegateConfig {
 
     @ParametersDelegate
-    public GeneralDelegate generalDelegate;
-    @ParametersDelegate
     private CACertDelegate certificateDelegate;
     @ParametersDelegate
     private StarttlsDelegate startTlsDelegate;
@@ -55,9 +53,6 @@ public class ClientScannerConfig extends TLSDelegateConfig {
         jCommander = new JCommander();
         jCommander.addObject(this);
         registerSubcommands();
-
-        this.generalDelegate = delegate;
-        addDelegate(delegate);
 
         this.certificateDelegate = new CACertDelegate();
         addDelegate(certificateDelegate);

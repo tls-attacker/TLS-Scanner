@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.clientscanner.util.helper;
 
 import java.util.HashSet;
@@ -12,8 +20,8 @@ public class SyncObjectPool {
     private final Set<String> lockedKeys = new HashSet<>();
 
     @SuppressWarnings("squid:S2093")
-    // returning an AutoCloseable from within the try triggers that we should use a
-    // try with resources instead
+    // returning an AutoCloseable from within the try triggers that we should
+    // use a try with resources instead
     public SyncObject get(String key) {
         lock.lock();
         try {

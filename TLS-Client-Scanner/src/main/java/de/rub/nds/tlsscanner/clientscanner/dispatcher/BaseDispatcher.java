@@ -97,9 +97,7 @@ public abstract class BaseDispatcher implements IDispatcher {
             // TODO look at clients prefered signature algorithms
             ckt = CertificateKeyType.ECDSA;
         } else {
-            ckt = AlgorithmResolver.getKeyExchangeAlgorithm(selectedSuite).getRequiredCertPublicKeyType();
-            // after updating TLS-Attacker we need the following
-            // ckt = AlgorithmResolver.getCertificateKeyType(selectedSuite);
+            ckt = AlgorithmResolver.getCertificateKeyType(selectedSuite);
         }
         LOGGER.debug("Determined cert key type {} (assuming CipherSuite {})", ckt, selectedSuite);
         return ckt;
@@ -246,20 +244,6 @@ public abstract class BaseDispatcher implements IDispatcher {
                 throw new RuntimeException(
                         "[internal error] entryTrace and actions we want to append diverge (different message type)"
                                 + aMsg + ", " + bMsg);
-            }
-        }
-    }
-
-    private void removePrefixAndAssertPrefixIsCorrect(WorkflowTrace prefixTrace, WorkflowTrace otherTrace) {
-        for (TlsAction prefixAction : prefixTrace.getTlsActions()) {
-            TlsAction otherAction = otherTrace.removeTlsAction(0);
-            if (!prefixAction.getClass().equals(otherAction.getClass())) {
-                throw new RuntimeException(
-                        "[internal error] entryTrace and actions we want to append diverge (different classes)");
-            }
-
-            if (prefixAction instanceof MessageAction) {
-                assertActionIsEqual((MessageAction) prefixAction, (MessageAction) otherAction);
             }
         }
     }

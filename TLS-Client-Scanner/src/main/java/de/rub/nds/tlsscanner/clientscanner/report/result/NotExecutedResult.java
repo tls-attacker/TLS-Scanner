@@ -42,7 +42,8 @@ public class NotExecutedResult extends ClientProbeResult {
     }
 
     @Override
-    @SuppressWarnings("squid:S2445") // using parameter to synchronize
+    @SuppressWarnings("squid:S2445")
+    // using parameter to synchronize
     public void merge(ClientReport report) {
         synchronized (report) {
             if (!report.hasResult(probe)) {

@@ -38,8 +38,8 @@ import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ParametrizedClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.attacker.ClientParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.leak.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
 
 public class PaddingOracleProbe extends BaseProbe {
     // #region static
@@ -50,7 +50,8 @@ public class PaddingOracleProbe extends BaseProbe {
     };
     // FINISHED_RESUMPTION is not supported, as we do not have means to force a
     // client to resume the session (yet)
-    // don't use CLASSIC_DYNAMIC as it is slower and does not provide any benefit
+    // don't use CLASSIC_DYNAMIC as it is slower and does not provide any
+    // benefit
     // from the server side
     private static final PaddingVectorGeneratorType[] VECTOR_TYPES = {
             PaddingVectorGeneratorType.CLASSIC,
@@ -87,6 +88,7 @@ public class PaddingOracleProbe extends BaseProbe {
         }
         return ret;
     }
+
     // #endregion
 
     private final PaddingOracleParameters params;
@@ -140,6 +142,7 @@ public class PaddingOracleProbe extends BaseProbe {
         // one should be sufficient
         return super.getCouldNotExecuteResult(report);
     }
+
     // #endregion
 
     // #region helper functions
@@ -182,6 +185,7 @@ public class PaddingOracleProbe extends BaseProbe {
                         paddingOracleConfig.getRecordGeneratorType()),
                 attacker.getResponseMapList());
     }
+
     // #endregion
 
     @Override
