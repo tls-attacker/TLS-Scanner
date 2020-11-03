@@ -161,6 +161,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
     private void getOcspResponseScts() {
         supportsOcspSCTs = false;
         if (stapledOcspResponse != null) {
+
             // TODO: Implement this using stapledOcspResponse.
             //  The OCSPResponse class needs to modified to support OCSP extensions (primarily singleExtension)
         }
@@ -217,11 +218,14 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
         for (SignedCertificateTimestamp sct : sctList) {
             CtLog ctLog = ctLogList.getCtLog(sct.getLogId());
-            if ("Google".equals(ctLog.getOperator())) {
-                hasGoogleSct = true;
-            } else {
-                hasNonGoogleSct = true;
+            if (ctLog != null) {
+                if ("Google".equals(ctLog.getOperator())) {
+                    hasGoogleSct = true;
+                } else {
+                    hasNonGoogleSct = true;
+                }
             }
+
         }
 
         return hasGoogleSct && hasNonGoogleSct;
