@@ -14,6 +14,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
+import de.rub.nds.tlsscanner.serverscanner.config.delegate.DtlsDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
@@ -55,16 +56,21 @@ public class ScannerConfig extends TLSDelegateConfig {
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
 
+    @ParametersDelegate
+    private DtlsDelegate dtlsDelegate;
+
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
         this.generalDelegate = delegate;
         clientDelegate = new ClientDelegate();
         starttlsDelegate = new StarttlsDelegate();
         ccaDelegate = new CcaDelegate();
+        dtlsDelegate = new DtlsDelegate();
         addDelegate(clientDelegate);
         addDelegate(generalDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
+        addDelegate(dtlsDelegate);
     }
 
     public ScannerConfig(GeneralDelegate delegate, ClientDelegate clientDelegate) {
@@ -73,10 +79,12 @@ public class ScannerConfig extends TLSDelegateConfig {
         this.clientDelegate = clientDelegate;
         starttlsDelegate = new StarttlsDelegate();
         ccaDelegate = new CcaDelegate();
+        dtlsDelegate = new DtlsDelegate();
         addDelegate(clientDelegate);
         addDelegate(generalDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
+        addDelegate(dtlsDelegate);
     }
 
     public int getOverallThreads() {
@@ -101,6 +109,10 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public StarttlsDelegate getStarttlsDelegate() {
         return starttlsDelegate;
+    }
+
+    public DtlsDelegate getDtlsDelegate() {
+        return dtlsDelegate;
     }
 
     public boolean isNoColor() {
