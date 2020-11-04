@@ -34,7 +34,6 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
     private boolean noColor = false;
 
-
     @Parameter(names = "-scanDetail", required = false, description = "How detailed do you want to scan?")
     private ScannerDetail scanDetail = ScannerDetail.NORMAL;
 

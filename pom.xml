@@ -12,6 +12,16 @@
     </modules>
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>TLS-Core</artifactId>
             <version>3.6.0</version>
@@ -192,6 +202,7 @@
             <plugin>
                 <groupId>net.revelc.code</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
+                <version>0.5.2</version>
                 <configuration>
                     <configFile>${main.basedir}/maven-eclipse-codestyle.xml</configFile>
                     <lineEnding>LF</lineEnding>
