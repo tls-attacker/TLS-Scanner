@@ -1053,7 +1053,7 @@ public class SiteReportPrinter {
                 && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResult.FALSE
                 && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResult.FALSE
                 && detail != ScannerDetail.ALL) {
-            prettyAppend(builder, "No Vulnerabilities Found");
+            prettyAppend(builder, "No Vulnerabilities found");
         } else {
             for (InvalidCurveResponse response : report.getInvalidCurveResultList()) {
                 if (response.getChosenGroupReusesKey() == TestResult.COULD_NOT_TEST
