@@ -40,6 +40,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.Bleichen
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.CookieEvaluationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -64,6 +65,7 @@ public class SiteReport extends Observable implements Serializable {
 
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
+    private Boolean supportsDtls = null;
 
     // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
@@ -123,6 +125,9 @@ public class SiteReport extends Observable implements Serializable {
     // Randomness
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
     private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
+
+    // DTLS Cookie
+    private CookieEvaluationResult cookieEvaluationResult = CookieEvaluationResult.NOT_ANALYZED;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -368,6 +373,14 @@ public class SiteReport extends Observable implements Serializable {
         this.supportsSslTls = supportsSslTls;
     }
 
+    public synchronized Boolean getSupportsDtls() {
+        return supportsDtls;
+    }
+
+    public synchronized void setSupportsDtls(Boolean supportsDtls) {
+        this.supportsDtls = supportsDtls;
+    }
+
     public synchronized GcmPattern getGcmPattern() {
         return gcmPattern;
     }
@@ -522,6 +535,14 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
         this.randomEvaluationResult = randomEvaluationResult;
+    }
+
+    public synchronized CookieEvaluationResult getCookieEvaluationResult() {
+        return cookieEvaluationResult;
+    }
+
+    public synchronized void setCookieEvaluationResult(CookieEvaluationResult cookieEvaluationResult) {
+        this.cookieEvaluationResult = cookieEvaluationResult;
     }
 
     public synchronized Set<CommonDhValues> getUsedCommonDhValueList() {

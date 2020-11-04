@@ -6,16 +6,14 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.serverscanner.probe.stats;
+package de.rub.nds.tlsscanner.serverscanner.report.result.statistics;
 
 /**
  *
- * @author robert
+ * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public enum TrackableValueType {
-    COOKIE,
-    RANDOM,
-    DHE_PUBLICKEY,
-    ECDHE_PUBKEY,
-    GCM_NONCE_EXPLICIT,
+public enum CookieEvaluationResult {
+    NO_DUPLICATES,
+    DUPLICATES,
+    NOT_ANALYZED
 }

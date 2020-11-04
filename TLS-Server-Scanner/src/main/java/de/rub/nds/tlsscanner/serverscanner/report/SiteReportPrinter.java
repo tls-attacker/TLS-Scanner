@@ -55,6 +55,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.CookieEvaluationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.DUPLICATES;
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
@@ -121,6 +122,10 @@ public class SiteReportPrinter {
             builder.append("Server does not seem to support SSL / TLS on the scanned port");
             return builder.toString();
         }
+        if (report.getSupportsDtls() == Boolean.FALSE) {
+            builder.append("Server does not seem to support DTLS on the scanned port");
+            return builder.toString();
+        }
         //
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
@@ -144,6 +149,9 @@ public class SiteReportPrinter {
         appendHandshakeSimulation(builder);
         appendHttps(builder);
         appendRandom(builder);
+        if (report.getSupportsDtls() == Boolean.TRUE) {
+            appendCookie(builder);
+        }
         appendPublicKeyIssues(builder);
         appendClientAuthentication(builder);
         appendScoringResults(builder);
@@ -1195,6 +1203,8 @@ public class SiteReportPrinter {
     public StringBuilder appendProtocolVersions(StringBuilder builder) {
         if (report.getVersions() != null) {
             prettyAppendHeading(builder, "Versions");
+            prettyAppend(builder, "DTLS 1.0", AnalyzedProperty.SUPPORTS_DTLS_1_0);
+            prettyAppend(builder, "DTLS 1.2", AnalyzedProperty.SUPPORTS_DTLS_1_2);
             prettyAppend(builder, "SSL 2.0", AnalyzedProperty.SUPPORTS_SSL_2);
             prettyAppend(builder, "SSL 3.0", AnalyzedProperty.SUPPORTS_SSL_3);
             prettyAppend(builder, "TLS 1.0", AnalyzedProperty.SUPPORTS_TLS_1_0);
@@ -1349,6 +1359,11 @@ public class SiteReportPrinter {
     public void appendRandom(StringBuilder builder) {
         prettyAppendHeading(builder, "Nonce");
         prettyAppendRandom(builder, "Random", report.getRandomEvaluationResult());
+    }
+
+    public void appendCookie(StringBuilder builder) {
+        prettyAppendHeading(builder, "Cookie");
+        prettyAppendCookie(builder, "Cookie", report.getCookieEvaluationResult());
     }
 
     public void appendPublicKeyIssues(StringBuilder builder) {
@@ -1774,6 +1789,25 @@ public class SiteReportPrinter {
                 break;
             case UNIX_TIME:
                 prettyAppend(builder, testName, "contains unix time", AnsiColor.DEFAULT_COLOR);
+                break;
+            case NO_DUPLICATES:
+                prettyAppend(builder, testName, "no duplicates (wip)", AnsiColor.GREEN);
+                break;
+        }
+    }
+
+    private void prettyAppendCookie(StringBuilder builder, String testName,
+            CookieEvaluationResult cookieEvaluationResult) {
+        if (cookieEvaluationResult == null) {
+            prettyAppend(builder, testName, "unknown", AnsiColor.DEFAULT_COLOR);
+            return;
+        }
+        switch (cookieEvaluationResult) {
+            case DUPLICATES:
+                prettyAppend(builder, testName, "true - exploitable", AnsiColor.RED);
+                break;
+            case NOT_ANALYZED:
+                prettyAppend(builder, testName, "not analyzed", AnsiColor.DEFAULT_COLOR);
                 break;
             case NO_DUPLICATES:
                 prettyAppend(builder, testName, "no duplicates (wip)", AnsiColor.GREEN);

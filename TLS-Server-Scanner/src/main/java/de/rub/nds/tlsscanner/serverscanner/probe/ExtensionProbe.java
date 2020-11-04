@@ -68,12 +68,16 @@ public class ExtensionProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+        } else {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         // Dont send extensions if we are in sslv2
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
@@ -101,6 +105,13 @@ public class ExtensionProbe extends TlsProbe {
 
         List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(nameGroups);
+        // TODO: Prüfe, welche Flags gesetzt werden müssen
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setStopActionsAfterFatal(true);
+            tlsConfig.setStopActionsAfterIOException(true);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopReceivingAfterFatal(false);
+        }
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

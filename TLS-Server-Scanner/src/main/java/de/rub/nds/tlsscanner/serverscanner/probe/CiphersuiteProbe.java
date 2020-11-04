@@ -170,7 +170,7 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setAddECPointFormatExtension(containsEc);
             config.setAddSignatureAndHashAlgorithmsExtension(true);
             config.setAddRenegotiationInfoExtension(true);
-            config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+            config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
             config.setStopActionsAfterIOException(true);
@@ -178,6 +178,13 @@ public class CiphersuiteProbe extends TlsProbe {
             List<NamedGroup> namedGroup = new LinkedList<>();
             namedGroup.addAll(Arrays.asList(NamedGroup.values()));
             config.setDefaultClientNamedGroups(namedGroup);
+            // TODO: Prüfe, welche Flags gesetzt werden müssen
+            if (version.isDTLS()) {
+                config.setStopActionsAfterFatal(true);
+                config.setStopActionsAfterIOException(true);
+                config.setEarlyStop(true);
+                config.setStopReceivingAfterFatal(false);
+            }
             State state = new State(config);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -221,6 +228,12 @@ public class CiphersuiteProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.DTLS10);
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.DTLS12);
+        }
         if (report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.SSL3);
         }

@@ -57,19 +57,30 @@ public class CompressionsProbe extends TlsProbe {
         ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+        } else {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
+        // TODO: Prüfe, welche Flags gesetzt werden müssen
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setStopActionsAfterFatal(true);
+            tlsConfig.setStopActionsAfterIOException(true);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopReceivingAfterFatal(false);
+        }
         List<CompressionMethod> toTestList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
 
         CompressionMethod selectedCompressionMethod;

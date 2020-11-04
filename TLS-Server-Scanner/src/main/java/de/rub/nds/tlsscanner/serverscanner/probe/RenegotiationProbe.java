@@ -9,10 +9,13 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlertDescription;
+import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -75,7 +78,11 @@ public class RenegotiationProbe extends TlsProbe {
         // TODO this can fail in some rare occasions
         tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites.get(0));
         tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+        } else {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
@@ -89,9 +96,22 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
+        // TODO: Prüfe, welche Flags gesetzt werden müssen
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setStopActionsAfterFatal(true);
+            tlsConfig.setStopActionsAfterIOException(true);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopReceivingAfterFatal(false);
+        }
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
         WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
                 RunningModeType.CLIENT);
+        // TODO: Notwendig? Da bei mbedTLS ohne CloseNotify funktioniert
+        if (getScannerConfig().getDtlsDelegate().isDTLS() && tlsConfig.isFinishWithCloseNotify()) {
+            AlertMessage alert = new AlertMessage();
+            alert.setConfig(AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY);
+            trace.addTlsAction(new SendAction(alert));
+        }
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -108,7 +128,11 @@ public class RenegotiationProbe extends TlsProbe {
         List<CipherSuite> ciphersuites = new LinkedList<>();
         ciphersuites.addAll(supportedSuites);
         tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+        } else {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
@@ -122,9 +146,22 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
+        // TODO: Prüfe, welche Flags gesetzt werden müssen
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setStopActionsAfterFatal(true);
+            tlsConfig.setStopActionsAfterIOException(true);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopReceivingAfterFatal(false);
+        }
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
         WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
                 RunningModeType.CLIENT);
+        // TODO: Notwendig? Da bei mbedTLS ohne CloseNotify funktioniert
+        if (getScannerConfig().getDtlsDelegate().isDTLS() && tlsConfig.isFinishWithCloseNotify()) {
+            AlertMessage alert = new AlertMessage();
+            alert.setConfig(AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY);
+            trace.addTlsAction(new SendAction(alert));
+        }
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());

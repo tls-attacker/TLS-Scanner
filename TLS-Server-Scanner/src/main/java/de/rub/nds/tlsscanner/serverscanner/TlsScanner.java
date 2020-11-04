@@ -20,6 +20,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.EvaluateCookieAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.LogjamAfterprobe;
@@ -77,44 +78,48 @@ public class TlsScanner {
     }
 
     private void fillDefaultProbeLists() {
-        probeList.add(new CommonBugProbe(config, parallelExecutor));
-        probeList.add(new SniProbe(config, parallelExecutor));
-        probeList.add(new CompressionsProbe(config, parallelExecutor));
-        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
-        probeList.add(new CertificateProbe(config, parallelExecutor));
-        probeList.add(new OcspProbe(config, parallelExecutor));
         probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
         probeList.add(new CiphersuiteProbe(config, parallelExecutor));
-        probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
-        probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
         probeList.add(new ExtensionProbe(config, parallelExecutor));
-        probeList.add(new TokenbindingProbe(config, parallelExecutor));
-        probeList.add(new HttpHeaderProbe(config, parallelExecutor));
-        probeList.add(new ECPointFormatProbe(config, parallelExecutor));
-        probeList.add(new ResumptionProbe(config, parallelExecutor));
+        probeList.add(new CompressionsProbe(config, parallelExecutor));
         probeList.add(new RenegotiationProbe(config, parallelExecutor));
-        probeList.add(new SessionTicketZeroKeyProbe(config, parallelExecutor));
-        probeList.add(new HeartbleedProbe(config, parallelExecutor));
-        probeList.add(new PaddingOracleProbe(config, parallelExecutor));
-        probeList.add(new BleichenbacherProbe(config, parallelExecutor));
-        probeList.add(new TlsPoodleProbe(config, parallelExecutor));
-        probeList.add(new InvalidCurveProbe(config, parallelExecutor));
-        probeList.add(new DrownProbe(config, parallelExecutor));
-        probeList.add(new EarlyCcsProbe(config, parallelExecutor));
+        // TODO: Füge alle Probes die für DTLS nicht geeignet sind hier rein
+        if (!config.getDtlsDelegate().isDTLS()) {
+            probeList.add(new DrownProbe(config, parallelExecutor));
+        }
+        // probeList.add(new CommonBugProbe(config, parallelExecutor));
+        // probeList.add(new SniProbe(config, parallelExecutor));
+        // probeList.add(new NamedCurvesProbe(config, parallelExecutor));
+        // probeList.add(new CertificateProbe(config, parallelExecutor));
+        // probeList.add(new OcspProbe(config, parallelExecutor));
+        // probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
+        // probeList.add(new CiphersuiteOrderProbe(config, parallelExecutor));
+        // probeList.add(new TokenbindingProbe(config, parallelExecutor));
+        // probeList.add(new HttpHeaderProbe(config, parallelExecutor));
+        // probeList.add(new ECPointFormatProbe(config, parallelExecutor));
+        // probeList.add(new ResumptionProbe(config, parallelExecutor));
+        // probeList.add(new SessionTicketZeroKeyProbe(config,
+        // parallelExecutor));
+        // probeList.add(new HeartbleedProbe(config, parallelExecutor));
+        // probeList.add(new PaddingOracleProbe(config, parallelExecutor));
+        // probeList.add(new BleichenbacherProbe(config, parallelExecutor));
+        // probeList.add(new TlsPoodleProbe(config, parallelExecutor));
+        // probeList.add(new InvalidCurveProbe(config, parallelExecutor));
+        // probeList.add(new EarlyCcsProbe(config, parallelExecutor));
         // probeList.add(new MacProbe(config, parallelExecutor));
-        probeList.add(new CcaSupportProbe(config, parallelExecutor));
-        probeList.add(new CcaRequiredProbe(config, parallelExecutor));
-        probeList.add(new CcaProbe(config, parallelExecutor));
-        probeList.add(new EsniProbe(config, parallelExecutor));
-        afterList.add(new Sweet32AfterProbe());
-        afterList.add(new PoodleAfterProbe());
-        afterList.add(new FreakAfterProbe());
-        afterList.add(new LogjamAfterprobe());
-        afterList.add(new EvaluateRandomnessAfterProbe());
-        afterList.add(new EcPublicKeyAfterProbe());
-        afterList.add(new DhValueAfterProbe());
-        afterList.add(new PaddingOracleIdentificationAfterProbe());
-        afterList.add(new RaccoonAttackAfterProbe());
+        // probeList.add(new CcaSupportProbe(config, parallelExecutor));
+        // probeList.add(new CcaRequiredProbe(config, parallelExecutor));
+        // probeList.add(new CcaProbe(config, parallelExecutor));
+        // probeList.add(new EsniProbe(config, parallelExecutor));
+        // afterList.add(new Sweet32AfterProbe());
+        // afterList.add(new PoodleAfterProbe());
+        // afterList.add(new FreakAfterProbe());
+        // afterList.add(new LogjamAfterprobe());
+        // afterList.add(new EvaluateRandomnessAfterProbe());
+        // afterList.add(new EcPublicKeyAfterProbe());
+        // afterList.add(new DhValueAfterProbe());
+        // afterList.add(new PaddingOracleIdentificationAfterProbe());
+        // afterList.add(new RaccoonAttackAfterProbe());
     }
 
     public SiteReport scan() {
@@ -141,7 +146,11 @@ public class TlsScanner {
             }
             SiteReport report = new SiteReport(config.getClientDelegate().getHost());
             report.setServerIsAlive(isConnectable);
-            report.setSupportsSslTls(false);
+            if (config.getDtlsDelegate().isDTLS()) {
+                report.setSupportsDtls(false);
+            } else {
+                report.setSupportsSslTls(false);
+            }
             return report;
         } finally {
             if (executor != null) {
