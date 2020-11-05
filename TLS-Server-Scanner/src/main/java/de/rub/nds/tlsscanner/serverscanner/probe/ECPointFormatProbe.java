@@ -76,18 +76,29 @@ public class ECPointFormatProbe extends TlsProbe {
         groups.addAll(Arrays.asList(NamedGroup.values()));
         Config config = getScannerConfig().createConfig();
         config.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
-        config.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+        } else {
+            config.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        }
         config.setEnforceSettings(true);
         config.setAddServerNameIndicationExtension(true);
         config.setAddEllipticCurveExtension(true);
         config.setAddECPointFormatExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setAddRenegotiationInfoExtension(true);
-        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setQuickReceive(true);
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);
         config.setDefaultClientNamedGroups(groups);
+        // TODO: Prüfe, welche Flags gesetzt werden müssen
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            config.setStopActionsAfterFatal(true);
+            config.setStopActionsAfterIOException(true);
+            config.setEarlyStop(true);
+            config.setStopReceivingAfterFatal(false);
+        }
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -164,7 +175,9 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
+        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE
+                || report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
         shouldTestTls13 = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;

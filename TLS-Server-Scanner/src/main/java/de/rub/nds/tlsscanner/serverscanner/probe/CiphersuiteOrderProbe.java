@@ -59,17 +59,28 @@ public class CiphersuiteOrderProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+        } else {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        }
         tlsConfig.setEnforceSettings(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setStopActionsAfterFatal(true);
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
+        // TODO: Prüfe, welche Flags gesetzt werden müssen
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setStopActionsAfterFatal(true);
+            tlsConfig.setStopActionsAfterIOException(true);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopReceivingAfterFatal(false);
+        }
         State state = new State(tlsConfig);
         executeState(state);
         return state.getTlsContext().getSelectedCipherSuite();
