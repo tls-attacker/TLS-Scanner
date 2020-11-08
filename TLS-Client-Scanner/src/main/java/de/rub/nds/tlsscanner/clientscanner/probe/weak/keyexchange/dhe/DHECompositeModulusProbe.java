@@ -80,7 +80,8 @@ public class DHECompositeModulusProbe extends BaseDHEParametrizedProbe<Composite
         ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(
                 ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
         if (ccInfo != null) {
-            keylength = ccInfo.report.getResult(DHEMinimumModulusLengthProbe.class, DHMinimumModulusLengthResult.class).lowestBitlengthAccepted;
+            keylength = ccInfo.report.getResult(DHEMinimumModulusLengthProbe.class,
+                    DHMinimumModulusLengthResult.class).lowestBitlengthAccepted;
         }
         prepareConfig(config);
         config.setDefaultServerDhModulus(createModulus(keylength));

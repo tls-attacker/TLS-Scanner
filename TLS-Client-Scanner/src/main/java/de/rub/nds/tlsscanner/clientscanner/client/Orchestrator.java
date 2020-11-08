@@ -28,6 +28,8 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIFallingBackDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.probe.recon.SNIProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.recon.SNIProbe.SNIProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
@@ -52,15 +54,6 @@ public class Orchestrator implements IOrchestrator {
 
     public Orchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int serverThreads) {
         this.csConfig = csConfig;
-        // TODO (create and) handle SNI flag in config
-        // if sni do as it is now
-        // if no sni we pass null as expected hostname to dispatcher, possibly
-        // also disable multithreading...
-        // clientAdapter = new CurlAdapter(new LocalCommandExecutor())
-        // 7.72.0--openssl-client:1.0.1
-        // 7.72.0--openssl-client:1.0.2
-        // 7.72.0--openssl-client:1.1.1g
-        // 7.72.0--boringssl-client:master
         ScanClientCommandConfig scanCfg = csConfig.getSelectedSubcommand(ScanClientCommandConfig.class);
         clientAdapter = scanCfg.createClientAdapter();
         baseHostname = csConfig.getServerBaseURL();
@@ -117,11 +110,24 @@ public class Orchestrator implements IOrchestrator {
 
         ClientProbeResultFuture serverResultFuture;
         // we need to sync enqueueing and connecting per unique hostname
-        // TODO improve this, such that we can unsync as soon as we got a connection
-        // this requires us to change the client adapter interface unfortunately...
-        try (SyncObject _sync = syncObjectPool.get(hostname)) {
+        // TODO improve this, such that we can unsync as soon as we got a
+        // connection
+        // this requires us to change the client adapter interface
+        // unfortunately...
+        String syncHostname = null;
+        if (report.hasResult(SNIProbe.class) && report.getResult(SNIProbe.class, SNIProbeResult.class).supported) {
+            // if the client supports SNI we will only sync per hostname
+            // otherwise we sync on null - i.e. "globally" per Orchestrator
+            // TODO a "smart" orchestrator
+            // if we detect that SNI is not supported we should fall
+            // back to a thread local approach
+            // should:tm: be relatively easy to implement using the
+            // ThreadLocalOrchestrator and this Orchestrator class
+            syncHostname = hostname;
+        }
+        try (SyncObject _sync = syncObjectPool.get(syncHostname)) {
             // enqueue probe on serverside
-            serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, uid,
+            serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, uid, hostname,
                     clientResultHolder, report, additionalParameters);
 
             // tell client to connect and get its result

@@ -28,12 +28,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsattacker.core.certificate.CertificateByteChooser;
 import de.rub.nds.tlsattacker.core.certificate.CertificateKeyPair;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
@@ -50,7 +47,8 @@ import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe.PaddingOracleParameters;
+import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe13Random;
+import de.rub.nds.tlsscanner.clientscanner.probe.downgrade.DropConnection;
 import de.rub.nds.tlsscanner.clientscanner.probe.downgrade.SendAlert;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.HelloReconProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SNIProbe;
@@ -109,36 +107,37 @@ public class Main {
     private static List<IProbe> getProbes(IOrchestrator orchestrator) {
         // TODO have probes be configurable from commandline
         List<IProbe> probes = new ArrayList<>();
-        probes.addAll(VersionProbe.getDefaultProbes(orchestrator));
+        // .downgrade
+        probes.addAll(SendAlert.getDefaultProbes(orchestrator));
+        probes.add(new DropConnection(orchestrator));
+        // .recon
         probes.add(new HelloReconProbe(orchestrator));
         probes.add(new SNIProbe());
         probes.add(new SupportedCipherSuitesProbe());
+        // .weak.keyexchange.dhe
         probes.add(new DHEMinimumModulusLengthProbe(orchestrator));
         probes.addAll(DHEWeakPrivateKeyProbe.getDefaultProbes(orchestrator));
         probes.addAll(DHECompositeModulusProbe.getDefaultProbes(orchestrator));
         probes.addAll(DHESmallSubgroupProbe.getDefaultProbes(orchestrator));
-        probes.add(new FreakProbe(orchestrator));
+        // .
         probes.add(new ForcedCompressionProbe(orchestrator));
-        probes.addAll(SendAlert.getDefaultProbes(orchestrator));
+        probes.add(new FreakProbe(orchestrator));
+        probes.addAll(PaddingOracleProbe.getDefaultProbes(orchestrator));
+        probes.addAll(VersionProbe.getDefaultProbes(orchestrator));
+        probes.addAll(VersionProbe13Random.getDefaultProbes(orchestrator));
         // probes that are on todo
-        if (!false) {
+        if (false) {
             probes.clear();
             probes.addAll(VersionProbe.getDefaultProbes(orchestrator));
             probes.add(new HelloReconProbe(orchestrator));
             probes.add(new SNIProbe());
             probes.add(new SupportedCipherSuitesProbe());
-            probes.addAll(PaddingOracleProbe.getDefault(orchestrator));
+            probes.addAll(PaddingOracleProbe.getDefaultProbes(orchestrator));
         }
-        // quick scan with only the probes I am interested in right now
         if (false) {
             probes.clear();
-            probes.add(new HelloReconProbe(orchestrator));
-            probes.add(new SNIProbe());
-            probes.add(new SupportedCipherSuitesProbe());
-            probes.add(new DHEMinimumModulusLengthProbe(orchestrator));
-            probes.addAll(DHEWeakPrivateKeyProbe.getDefaultProbes(orchestrator));
-            probes.addAll(DHECompositeModulusProbe.getDefaultProbes(orchestrator));
-            probes.addAll(DHESmallSubgroupProbe.getDefaultProbes(orchestrator));
+            probes.addAll(VersionProbe.getDefaultProbes(orchestrator));
+            probes.addAll(VersionProbe13Random.getDefaultProbes(orchestrator));
         }
         return probes;
     }
@@ -182,7 +181,7 @@ public class Main {
     }
 
     private static void runScan(ClientScannerConfig csConfig) {
-        int threads = 8;
+        int threads = 1;
         int secondaryThreads = 8;
         ThreadPoolExecutor pool = new ThreadPoolExecutor(threads, threads, 1, TimeUnit.MINUTES,
                 new LinkedBlockingDeque<>(),
@@ -193,6 +192,7 @@ public class Main {
                 TimeUnit.MINUTES,
                 new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-secondary-pool"));
+        // Orchestrator types: Orchestrator and ThreadLocalOrchestrator
         IOrchestrator orchestrator = new Orchestrator(csConfig, secondaryPool, threads + secondaryThreads);
 
         ClientScanExecutor executor = new ClientScanExecutor(getProbes(orchestrator), null, orchestrator, pool);

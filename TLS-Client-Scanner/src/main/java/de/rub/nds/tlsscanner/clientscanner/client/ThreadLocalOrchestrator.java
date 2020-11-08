@@ -44,6 +44,11 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
         this.secondaryExecutor = secondaryExecutor;
     }
 
+    // just so we have the same signature as the normal Orchestrator
+    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int _ignoreed) {
+        this(csConfig, secondaryExecutor);
+    }
+
     @Override
     public ExecutorService getSecondaryExecutor() {
         return secondaryExecutor;

@@ -119,7 +119,7 @@ public class VersionProbe extends BaseProbe {
     }
 
     @Override
-    public ParametrizedClientProbeResult<ProtocolVersion, Boolean> execute(State state,
+    public VersionProbeResult execute(State state,
             DispatchInformation dispatchInformation) throws DispatchException {
         LOGGER.debug("Testing version {}", versionToTest);
         Config config = state.getConfig();
@@ -153,7 +153,23 @@ public class VersionProbe extends BaseProbe {
         if (cres != null) {
             res = res && cres.contentShown.wasShown();
         }
-        return new ParametrizedClientProbeResult<>(getClass(), versionToTest, res);
+        return new VersionProbeResult(versionToTest, res);
+    }
+
+    public static class VersionProbeResult extends ParametrizedClientProbeResult<ProtocolVersion, Boolean> {
+
+        public VersionProbeResult(ProtocolVersion resultKey, Boolean resultValue) {
+            super(VersionProbe.class, resultKey, resultValue);
+        }
+
+        public Boolean supportsVersion(ProtocolVersion version) {
+            return resultMap.getOrDefault(version, null);
+        }
+
+        public Boolean supportsVersion(ProtocolVersion version, boolean fallbackValue) {
+            return resultMap.getOrDefault(version, fallbackValue);
+        }
+
     }
 
 }

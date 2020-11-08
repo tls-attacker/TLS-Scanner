@@ -120,11 +120,12 @@ public abstract class BaseDispatcher implements IDispatcher {
                 keysize = 1024;
                 break;
             case ECDSA:
+            case ECDH:
                 kpType = "EC";
                 keysize = 256;
                 break;
             default:
-                LOGGER.warn("Unknown Cert Key Type {}", ckt);
+                LOGGER.error("Unknown Cert Key Type {} - Falling back to RSA", ckt);
                 kpType = "RSA";
                 keysize = 2048;
                 break;

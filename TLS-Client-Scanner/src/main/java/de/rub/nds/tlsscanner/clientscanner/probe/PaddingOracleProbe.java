@@ -31,6 +31,7 @@ import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
+import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe.VersionProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe.SupportedCipherSuitesResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -59,7 +60,7 @@ public class PaddingOracleProbe extends BaseProbe {
             PaddingVectorGeneratorType.CLOSE_NOTIFY,
     };
 
-    public static Collection<PaddingOracleProbe> getDefault(IOrchestrator orchestrator) {
+    public static Collection<PaddingOracleProbe> getDefaultProbes(IOrchestrator orchestrator) {
         Collection<PaddingOracleProbe> ret = new ArrayList<>();
         ProtocolVersion version = ProtocolVersion.TLS12;
         PaddingVectorGeneratorType vectorGeneratorType = PaddingVectorGeneratorType.CLASSIC;
@@ -73,7 +74,7 @@ public class PaddingOracleProbe extends BaseProbe {
         return ret;
     }
 
-    public static Collection<PaddingOracleProbe> getAll(IOrchestrator orchestrator) {
+    public static Collection<PaddingOracleProbe> getAllProbes(IOrchestrator orchestrator) {
         Collection<PaddingOracleProbe> ret = new ArrayList<>();
         for (ProtocolVersion version : VERSIONS_TO_TEST) {
             for (CipherSuite suite : CipherSuite.getImplemented()) {
@@ -125,9 +126,8 @@ public class PaddingOracleProbe extends BaseProbe {
                         "Client does not support block ciphers")
                 .needResultOfTypeMatching(
                         VersionProbe.class,
-                        ParametrizedClientProbeResult.class,
-                        res -> ((ParametrizedClientProbeResult<ProtocolVersion, Boolean>) res)
-                                .get(params.protocolVersion).booleanValue(),
+                        VersionProbeResult.class,
+                        res -> res.supportsVersion(params.protocolVersion, false),
                         "Client does not support ProtocolVersion " + params.protocolVersion)
                 .needResultOfTypeMatching(
                         SupportedCipherSuitesProbe.class,

@@ -21,7 +21,7 @@ public class DuoMapQ<K1, K2, V> {
         for (K1 k : map.keySet()) {
             Pair<K2, V> ret = dequeueAnyWith(k);
             if (ret != null) {
-                Triple.of(k, ret.getLeft(), ret.getRight());
+                return Triple.of(k, ret.getLeft(), ret.getRight());
             }
         }
         return null;

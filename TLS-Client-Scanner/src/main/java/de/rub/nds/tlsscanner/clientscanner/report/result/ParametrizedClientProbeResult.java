@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report.result;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,15 +24,16 @@ import de.rub.nds.tlsscanner.clientscanner.util.helper.UpdatableXmlSeeAlso;
 @XmlSeeAlso({})
 // this is automated via UpdatableXmlSeeAlso
 @XmlAccessorType(XmlAccessType.FIELD)
+// K,V not marked as serializable - see resultMap comment
 public class ParametrizedClientProbeResult<K, V> extends ClientProbeResult {
     private static Set<Class<?>> seeAlso = UpdatableXmlSeeAlso.patch(ParametrizedClientProbeResult.class);
 
-    private final transient Class<? extends IProbe> clazz;
+    protected final transient Class<? extends IProbe> clazz;
     @SuppressWarnings("squid:S1948")
     // sonarlint complains that K,V aren't serializable, but when they are, JAXB
     // complains that serializable is an interface... So rather make the linter
     // unhappy than our serialization lib
-    private final Map<K, V> resultMap;
+    protected final Map<K, V> resultMap;
 
     public ParametrizedClientProbeResult(Class<? extends IProbe> clazz, K resultKey, V resultValue) {
         this.clazz = clazz;

@@ -58,6 +58,9 @@ public class ControlledClientDispatcher implements IDispatcher {
         ClientProbeResultFuture task = getNextTask(sni, uid);
         if (task == null) {
             throw new DispatchException("Did not find task for sni:" + sni + " uid:" + uid);
+        } else if (sni == null) {
+            // patch config to have correct hostname
+            state.getConfig().getDefaultServerConnection().setHostname(task.expectedFullHostname);
         }
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(task.probe.getClass()
                 .getSimpleName()).push(task.creatorThreadName)) {
@@ -108,19 +111,23 @@ public class ControlledClientDispatcher implements IDispatcher {
             if (task == null) {
                 LOGGER.warn("Got no tasks left (NO SNI)");
             } else {
-                LOGGER.debug("Chose task with sni {} and uid {} (NO SNI) from thread {}", taskTriple.getLeft(),
-                        taskTriple.getMiddle(), task.creatorThreadName);
+                LOGGER.debug("Chose task with sni {} and uid {} (NO SNI) from thread {} (full HN: {})",
+                        taskTriple.getLeft(),
+                        taskTriple.getMiddle(), task.creatorThreadName, task.expectedFullHostname);
             }
         }
         return task;
     }
 
-    public ClientProbeResultFuture enqueueProbe(IDispatcher probe, String expectedHostname, String expectedUid,
+    public ClientProbeResultFuture enqueueProbe(IDispatcher probe, String expectedHostnamePrefix, String expectedUid,
+            String expectedFullHostname,
             Future<ClientAdapterResult> clientResultHolder, ClientReport report, Object additionalParameters) {
         ClientProbeResultFuture ret = new ClientProbeResultFuture(probe, clientResultHolder, report,
+                expectedFullHostname,
                 additionalParameters);
-        LOGGER.trace("Adding entry for sni {} with uid {}", expectedHostname, expectedUid);
-        toRun.enqueue(expectedHostname, expectedUid, ret);
+        LOGGER.trace("Adding entry for sni {} with uid {} (full Hostname: {})", expectedHostnamePrefix, expectedUid,
+                expectedFullHostname);
+        toRun.enqueue(expectedHostnamePrefix, expectedUid, ret);
         return ret;
     }
 
@@ -143,13 +150,15 @@ public class ControlledClientDispatcher implements IDispatcher {
         protected boolean gotConnection = false;
         protected final Object additionalParameters;
         protected final String creatorThreadName;
+        protected final String expectedFullHostname;
 
         public ClientProbeResultFuture(IDispatcher probe, Future<ClientAdapterResult> clientResultFuture,
-                ClientReport report, Object additionalParameters) {
+                ClientReport report, String expectedFullHostname, Object additionalParameters) {
             this.probe = probe;
             this.report = report;
             this.clientResultFuture = clientResultFuture;
             this.additionalParameters = additionalParameters;
+            this.expectedFullHostname = expectedFullHostname;
             this.creatorThreadName = Thread.currentThread().getName();
         }
 
