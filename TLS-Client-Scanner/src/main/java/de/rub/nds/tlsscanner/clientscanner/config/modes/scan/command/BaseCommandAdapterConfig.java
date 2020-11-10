@@ -14,7 +14,7 @@ import java.util.Collection;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ICommandExecutor;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.ISubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.IAdapterConfig;
@@ -40,7 +40,7 @@ public abstract class BaseCommandAdapterConfig extends BaseSubcommand implements
         }
     }
 
-    protected ICommandExecutor createCommandExecutor() {
+    protected CommandExecutor createCommandExecutor() {
         return ((IExecutorConfig) selectedSubcommand).createCommandExecutor();
     }
 

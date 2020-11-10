@@ -14,14 +14,16 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ICommandExecutor;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ICommandExecutor.ExecuteResult;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor.ExecuteResult;
+import de.rub.nds.tlsscanner.clientscanner.report.result.BasicClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult.EContentShown;
 
 public class CurlAdapter extends BaseCommandAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public CurlAdapter(ICommandExecutor executor) {
+    public CurlAdapter(CommandExecutor executor) {
         super(executor);
     }
 
@@ -41,6 +43,7 @@ public class CurlAdapter extends BaseCommandAdapter {
                     }
                 }
             }
+            return new BasicClientAdapterResult(res.exitCode == 0 ? EContentShown.SHOWN : EContentShown.ERROR);
         } catch (IOException e) {
             LOGGER.error(e);
         }

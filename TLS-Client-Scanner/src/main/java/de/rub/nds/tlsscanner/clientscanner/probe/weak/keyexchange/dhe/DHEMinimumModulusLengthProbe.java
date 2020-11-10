@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
@@ -37,7 +37,7 @@ public class DHEMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHEWeakMo
 
     private Random rnd = new Random();
 
-    public DHEMinimumModulusLengthProbe(IOrchestrator orchestrator) {
+    public DHEMinimumModulusLengthProbe(Orchestrator orchestrator) {
         super(orchestrator, false, false, true);
     }
 

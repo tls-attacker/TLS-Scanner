@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.config.modes.scan;
 
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
 
 public interface IAdapterConfig {
-    IClientAdapter createClientAdapter();
+    ClientAdapter createClientAdapter();
 }

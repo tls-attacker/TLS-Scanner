@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ControlledClientDispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
@@ -37,13 +37,13 @@ public class DHECompositeModulusProbe extends BaseDHEParametrizedProbe<Composite
         MOD3
     }
 
-    public static Collection<DHECompositeModulusProbe> getDefaultProbes(IOrchestrator orchestrator) {
+    public static Collection<DHECompositeModulusProbe> getDefaultProbes(Orchestrator orchestrator) {
         return Arrays.asList(
                 new DHECompositeModulusProbe(orchestrator, CompositeType.EVEN),
                 new DHECompositeModulusProbe(orchestrator, CompositeType.MOD3));
     }
 
-    public DHECompositeModulusProbe(IOrchestrator orchestrator, CompositeType compType) {
+    public DHECompositeModulusProbe(Orchestrator orchestrator, CompositeType compType) {
         super(orchestrator, false, false, true, compType);
     }
 

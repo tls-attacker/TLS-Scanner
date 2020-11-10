@@ -34,7 +34,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ChangeRsaParametersAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
@@ -57,7 +57,7 @@ public class FreakProbe extends BaseProbe {
 
     private Random rnd = new Random();
 
-    public FreakProbe(IOrchestrator orchestrator) {
+    public FreakProbe(Orchestrator orchestrator) {
         super(orchestrator);
     }
 

@@ -18,7 +18,7 @@ import javax.naming.OperationNotSupportedException;
 import org.bouncycastle.asn1.eac.BidirectionalMap;
 
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher;
@@ -33,7 +33,7 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
     // map UID to state
     private Map<String, T> previousStateCache;
 
-    public BaseStatefulProbe(IOrchestrator orchestrator) {
+    public BaseStatefulProbe(Orchestrator orchestrator) {
         super(orchestrator);
         previousStateCache = new HashMap<>();
     }
@@ -72,8 +72,7 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
         } else {
             String raddr = state.getInboundTlsContexts().get(0).getConnection().getIp();
             // report only generates alphanumeric uids - we can simply include a
-            // non
-            // alphanum char (e.g. ':') to not interfere with them
+            // non alphanum char (e.g. ':') to not interfere with them
             uid = "RADDR:" + raddr;
             if (!previousStateCache.containsKey(uid)) {
                 // issue warning only once (per addr and, unfortunately, probe)

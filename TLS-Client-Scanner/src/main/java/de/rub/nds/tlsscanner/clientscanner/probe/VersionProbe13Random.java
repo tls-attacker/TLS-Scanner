@@ -17,8 +17,6 @@ import java.util.Random;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
-import com.fasterxml.jackson.core.Version;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +26,7 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe.VersionProbeResult;
@@ -51,7 +49,7 @@ public class VersionProbe13Random extends BaseProbe {
         suites13.removeIf((suite) -> !suite.isTLS13());
     }
 
-    public static Collection<VersionProbe13Random> getDefaultProbes(IOrchestrator orchestrator) {
+    public static Collection<VersionProbe13Random> getDefaultProbes(Orchestrator orchestrator) {
         return Arrays.asList(
                 new VersionProbe13Random(orchestrator, ProtocolVersion.SSL2),
                 new VersionProbe13Random(orchestrator, ProtocolVersion.SSL3),
@@ -63,7 +61,7 @@ public class VersionProbe13Random extends BaseProbe {
     private final Random random = new Random();
     private final ProtocolVersion versionToTest;
 
-    public VersionProbe13Random(IOrchestrator orchestrator, ProtocolVersion versionToTest) {
+    public VersionProbe13Random(Orchestrator orchestrator, ProtocolVersion versionToTest) {
         super(orchestrator);
         this.versionToTest = versionToTest;
     }
@@ -121,7 +119,8 @@ public class VersionProbe13Random extends BaseProbe {
         extendWorkflowTraceToApplication(trace, config);
         ClientAdapterResult cres = executeState(state, dispatchInformation);
         boolean res = state.getTlsContext().getSelectedProtocolVersion() == versionToTest;
-        res = res && !state.getWorkflowTrace().executedAsPlanned(); // trace should be rejected
+        // trace should be rejected
+        res = res && !state.getWorkflowTrace().executedAsPlanned();
         if (cres != null) {
             res = res && !cres.contentShown.wasShown();
         }

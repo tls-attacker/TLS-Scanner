@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 
-public class LocalCommandExecutor implements ICommandExecutor {
+public class LocalCommandExecutor implements CommandExecutor {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override

@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 import java.io.Serializable;
 
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
@@ -20,7 +20,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ParametrizedClientProbe
 public abstract class BaseDHEParametrizedProbe<T extends Enum<T>, R extends Serializable> extends BaseDHEProbe {
     protected final T enumValue;
 
-    public BaseDHEParametrizedProbe(IOrchestrator orchestrator, boolean tls13, boolean ec, boolean ff, T value) {
+    public BaseDHEParametrizedProbe(Orchestrator orchestrator, boolean tls13, boolean ec, boolean ff, T value) {
         super(orchestrator, tls13, ec, ff);
         this.enumValue = value;
     }

@@ -28,7 +28,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.BasicClientAdapterResul
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult.EContentShown;
 
-public class DockerLibAdapter implements IClientAdapter {
+public class DockerLibAdapter implements ClientAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
     private final TlsImplementationType type;
     private final String version;

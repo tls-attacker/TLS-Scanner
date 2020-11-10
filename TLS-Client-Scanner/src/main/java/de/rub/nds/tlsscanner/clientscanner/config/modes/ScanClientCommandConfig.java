@@ -15,7 +15,7 @@ import com.beust.jcommander.Parameters;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.connection.InboundConnection;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.DockerLibAdapterConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.IAdapterConfig;
@@ -54,7 +54,7 @@ public class ScanClientCommandConfig extends BaseSubcommand {
         }
     }
 
-    public IClientAdapter createClientAdapter() {
+    public ClientAdapter createClientAdapter() {
         return ((IAdapterConfig) selectedSubcommand).createClientAdapter();
     }
 

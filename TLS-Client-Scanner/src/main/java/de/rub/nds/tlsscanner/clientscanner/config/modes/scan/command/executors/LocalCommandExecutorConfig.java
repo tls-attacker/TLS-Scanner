@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.executors;
 import com.beust.jcommander.Parameters;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ICommandExecutor;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.LocalCommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
 
@@ -23,7 +23,7 @@ public class LocalCommandExecutorConfig extends BaseSubcommand implements IExecu
     }
 
     @Override
-    public ICommandExecutor createCommandExecutor() {
+    public CommandExecutor createCommandExecutor() {
         return new LocalCommandExecutor();
     }
 

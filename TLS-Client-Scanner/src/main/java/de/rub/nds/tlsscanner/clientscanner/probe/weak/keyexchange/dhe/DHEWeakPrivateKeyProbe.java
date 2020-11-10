@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHEWeakPrivateKeyProbe.DHWeakPrivateKeyProbeResult;
@@ -30,13 +30,13 @@ public class DHEWeakPrivateKeyProbe extends BaseDHEParametrizedProbe<PrivateKeyT
         ONE
     }
 
-    public static Collection<DHEWeakPrivateKeyProbe> getDefaultProbes(IOrchestrator orchestrator) {
+    public static Collection<DHEWeakPrivateKeyProbe> getDefaultProbes(Orchestrator orchestrator) {
         return Arrays.asList(
                 new DHEWeakPrivateKeyProbe(orchestrator, PrivateKeyType.ZERO),
                 new DHEWeakPrivateKeyProbe(orchestrator, PrivateKeyType.ONE));
     }
 
-    public DHEWeakPrivateKeyProbe(IOrchestrator orchestrator, PrivateKeyType keyType) {
+    public DHEWeakPrivateKeyProbe(Orchestrator orchestrator, PrivateKeyType keyType) {
         // super(orchestrator, true, true, true, keyType);
         super(orchestrator, false, false, true, keyType);
     }

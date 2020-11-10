@@ -26,7 +26,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
@@ -40,7 +40,7 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
     private final AlertLevel alertLevel;
     private final AlertDescription alertDesc;
 
-    public static Collection<SendAlert> getDefaultProbes(IOrchestrator orchestrator) {
+    public static Collection<SendAlert> getDefaultProbes(Orchestrator orchestrator) {
         return Arrays.asList(
                 new SendAlert(orchestrator, AlertLevel.WARNING, AlertDescription.CLOSE_NOTIFY),
                 new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY),
@@ -59,7 +59,7 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
                 new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.NO_APPLICATION_PROTOCOL));
     }
 
-    public static Collection<SendAlert> getAllProbes(IOrchestrator orchestrator) {
+    public static Collection<SendAlert> getAllProbes(Orchestrator orchestrator) {
         List<SendAlert> ret = new ArrayList<>(AlertLevel.values().length * AlertDescription.values().length);
         for (AlertDescription desc : AlertDescription.values()) {
             for (AlertLevel level : AlertLevel.values()) {
@@ -69,7 +69,7 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
         return ret;
     }
 
-    public SendAlert(IOrchestrator orchestrator, AlertLevel alertLevel, AlertDescription alertDesc) {
+    public SendAlert(Orchestrator orchestrator, AlertLevel alertLevel, AlertDescription alertDesc) {
         super(orchestrator);
         this.alertLevel = alertLevel;
         this.alertDesc = alertDesc;

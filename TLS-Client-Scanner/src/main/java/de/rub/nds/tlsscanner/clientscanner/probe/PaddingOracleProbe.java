@@ -27,7 +27,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
@@ -60,7 +60,7 @@ public class PaddingOracleProbe extends BaseProbe {
             PaddingVectorGeneratorType.CLOSE_NOTIFY,
     };
 
-    public static Collection<PaddingOracleProbe> getDefaultProbes(IOrchestrator orchestrator) {
+    public static Collection<PaddingOracleProbe> getDefaultProbes(Orchestrator orchestrator) {
         Collection<PaddingOracleProbe> ret = new ArrayList<>();
         ProtocolVersion version = ProtocolVersion.TLS12;
         PaddingVectorGeneratorType vectorGeneratorType = PaddingVectorGeneratorType.CLASSIC;
@@ -74,7 +74,7 @@ public class PaddingOracleProbe extends BaseProbe {
         return ret;
     }
 
-    public static Collection<PaddingOracleProbe> getAllProbes(IOrchestrator orchestrator) {
+    public static Collection<PaddingOracleProbe> getAllProbes(Orchestrator orchestrator) {
         Collection<PaddingOracleProbe> ret = new ArrayList<>();
         for (ProtocolVersion version : VERSIONS_TO_TEST) {
             for (CipherSuite suite : CipherSuite.getImplemented()) {
@@ -94,7 +94,7 @@ public class PaddingOracleProbe extends BaseProbe {
 
     private final PaddingOracleParameters params;
 
-    public PaddingOracleProbe(IOrchestrator orchestrator, PaddingOracleParameters params) {
+    public PaddingOracleProbe(Orchestrator orchestrator, PaddingOracleParameters params) {
         super(orchestrator);
         this.params = params;
     }

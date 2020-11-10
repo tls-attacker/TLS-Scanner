@@ -18,12 +18,12 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
-public class ThreadLocalOrchestrator implements IOrchestrator {
+public class ThreadLocalOrchestrator implements Orchestrator {
     protected final ClientScannerConfig csConfig;
     private boolean isStarted = false;
     private boolean isCleanedUp = false;
 
-    private Orchestrator unassignedOrchestrator = null;
+    private DefaultOrchestrator unassignedOrchestrator = null;
     @SuppressWarnings("squid:S5164")
     // sonarlint: Call "remove()" on "localOrchestrator".
     // We cannot get each thread from the pool executor to call remove
@@ -35,8 +35,8 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
     // If this turns out to be a problem, I guess we should use reflection to
     // access each threads threadLocals and remove our localOrchestrator from
     // there
-    private ThreadLocal<Orchestrator> localOrchestrator;
-    private final List<Orchestrator> allOrchestrators = new ArrayList<>();
+    private ThreadLocal<DefaultOrchestrator> localOrchestrator;
+    private final List<DefaultOrchestrator> allOrchestrators = new ArrayList<>();
     protected final ExecutorService secondaryExecutor;
 
     public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor) {
@@ -59,8 +59,8 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
         return csConfig;
     }
 
-    protected Orchestrator createOrchestrator() {
-        Orchestrator ret = new Orchestrator(csConfig, secondaryExecutor, 2);
+    protected DefaultOrchestrator createOrchestrator() {
+        DefaultOrchestrator ret = new DefaultOrchestrator(csConfig, secondaryExecutor, 2);
         allOrchestrators.add(ret);
         if (isStarted) {
             ret.start();
@@ -71,8 +71,8 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
         return ret;
     }
 
-    protected Orchestrator getAnyOrchestrator() {
-        Orchestrator ret = null;
+    protected DefaultOrchestrator getAnyOrchestrator() {
+        DefaultOrchestrator ret = null;
         synchronized (this) {
             if (allOrchestrators.isEmpty()) {
                 unassignedOrchestrator = createOrchestrator();
@@ -84,8 +84,8 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
         return ret;
     }
 
-    protected Orchestrator getLocalOrchestrator() {
-        Orchestrator ret = localOrchestrator.get();
+    protected DefaultOrchestrator getLocalOrchestrator() {
+        DefaultOrchestrator ret = localOrchestrator.get();
         if (ret == null) {
             synchronized (this) {
                 // check if we have one unassigned orch which we can reuse
@@ -115,7 +115,7 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
         }
         isStarted = true;
         localOrchestrator = new ThreadLocal<>();
-        for (Orchestrator o : allOrchestrators) {
+        for (DefaultOrchestrator o : allOrchestrators) {
             o.start();
         }
     }
@@ -129,7 +129,7 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
             throw new IllegalStateException("Orchestrator is already cleaned up");
         }
         isCleanedUp = true;
-        for (Orchestrator o : new ArrayList<Orchestrator>(allOrchestrators)) {
+        for (DefaultOrchestrator o : new ArrayList<DefaultOrchestrator>(allOrchestrators)) {
             o.cleanup();
             allOrchestrators.remove(o);
         }
@@ -138,7 +138,7 @@ public class ThreadLocalOrchestrator implements IOrchestrator {
 
     @Override
     public void postProcessing(ClientReport report) {
-        for (Orchestrator o : allOrchestrators) {
+        for (DefaultOrchestrator o : allOrchestrators) {
             o.postProcessing(report);
         }
     }

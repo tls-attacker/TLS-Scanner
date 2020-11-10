@@ -14,14 +14,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.IClientAdapter;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ICommandExecutor;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor;
 
-public abstract class BaseCommandAdapter implements IClientAdapter {
+public abstract class BaseCommandAdapter implements ClientAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected final ICommandExecutor executor;
+    protected final CommandExecutor executor;
 
-    public BaseCommandAdapter(ICommandExecutor executor) {
+    public BaseCommandAdapter(CommandExecutor executor) {
         this.executor = executor;
     }
 

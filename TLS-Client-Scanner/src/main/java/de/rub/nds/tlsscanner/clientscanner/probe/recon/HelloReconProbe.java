@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
@@ -22,7 +22,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class HelloReconProbe extends BaseProbe {
 
-    public HelloReconProbe(IOrchestrator orchestrator) {
+    public HelloReconProbe(Orchestrator orchestrator) {
         super(orchestrator);
     }
 

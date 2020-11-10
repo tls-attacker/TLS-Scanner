@@ -15,7 +15,7 @@ import java.util.List;
 
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 
-public interface ICommandExecutor {
+public interface CommandExecutor {
     public void prepare(boolean clean);
 
     public default ExecuteResult executeCommand(String... command) throws IOException, InterruptedException {

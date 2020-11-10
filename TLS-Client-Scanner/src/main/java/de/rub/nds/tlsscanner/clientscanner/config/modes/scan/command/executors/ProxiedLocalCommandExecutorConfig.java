@@ -12,7 +12,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ICommandExecutor;
+import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ProxiedLocalCommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
 
@@ -27,7 +27,7 @@ public class ProxiedLocalCommandExecutorConfig extends BaseSubcommand implements
     }
 
     @Override
-    public ICommandExecutor createCommandExecutor() {
+    public CommandExecutor createCommandExecutor() {
         return new ProxiedLocalCommandExecutor(proxy.split(" "));
     }
 }

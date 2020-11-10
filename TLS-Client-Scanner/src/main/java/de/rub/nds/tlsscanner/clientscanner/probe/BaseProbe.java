@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.logging.log4j.CloseableThreadContext;
 
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.BaseDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
@@ -22,11 +22,11 @@ import de.rub.nds.tlsscanner.clientscanner.util.helper.ReverseIterator;
 
 public abstract class BaseProbe extends BaseDispatcher implements IProbe {
     protected static String PROBE_NAMESPACE = BaseProbe.class.getPackage().getName() + '.';
-    protected IOrchestrator orchestrator;
+    protected Orchestrator orchestrator;
     private ProbeRequirements requirementsCache = null;
     private boolean areRequirementsChached = false;
 
-    public BaseProbe(IOrchestrator orchestrator) {
+    public BaseProbe(Orchestrator orchestrator) {
         this.orchestrator = orchestrator;
     }
 

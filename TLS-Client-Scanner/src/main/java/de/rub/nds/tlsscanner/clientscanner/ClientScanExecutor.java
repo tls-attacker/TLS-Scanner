@@ -28,7 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.after.IAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
@@ -43,10 +43,10 @@ public class ClientScanExecutor implements Observer {
     private Collection<ProbeAndResultFuture> futureResults;
 
     private final ExecutorService executor;
-    private final IOrchestrator orchestrator;
+    private final Orchestrator orchestrator;
 
     public ClientScanExecutor(Collection<IProbe> probesToRun, Collection<IAfterProbe> afterProbesToRun,
-            IOrchestrator orchestrator, ExecutorService executor) {
+            Orchestrator orchestrator, ExecutorService executor) {
         this.notScheduledTasks = new ArrayList<>(probesToRun);
         this.afterProbes = afterProbesToRun;
         this.futureResults = new LinkedList<>();

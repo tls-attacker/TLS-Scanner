@@ -32,8 +32,8 @@ import de.rub.nds.tlsattacker.core.certificate.CertificateByteChooser;
 import de.rub.nds.tlsattacker.core.certificate.CertificateKeyPair;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.DefaultOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.ISubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
@@ -104,16 +104,16 @@ public class Main {
         }
     }
 
-    private static List<IProbe> getProbes(IOrchestrator orchestrator) {
+    private static List<IProbe> getProbes(Orchestrator orchestrator) {
         // TODO have probes be configurable from commandline
         List<IProbe> probes = new ArrayList<>();
-        // .downgrade
-        probes.addAll(SendAlert.getDefaultProbes(orchestrator));
-        probes.add(new DropConnection(orchestrator));
-        // .recon
+        // .recon (add first)
         probes.add(new HelloReconProbe(orchestrator));
         probes.add(new SNIProbe());
         probes.add(new SupportedCipherSuitesProbe());
+        // .downgrade
+        probes.addAll(SendAlert.getDefaultProbes(orchestrator));
+        probes.add(new DropConnection(orchestrator));
         // .weak.keyexchange.dhe
         probes.add(new DHEMinimumModulusLengthProbe(orchestrator));
         probes.addAll(DHEWeakPrivateKeyProbe.getDefaultProbes(orchestrator));
@@ -192,8 +192,8 @@ public class Main {
                 TimeUnit.MINUTES,
                 new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("cs-secondary-pool"));
-        // Orchestrator types: Orchestrator and ThreadLocalOrchestrator
-        IOrchestrator orchestrator = new Orchestrator(csConfig, secondaryPool, threads + secondaryThreads);
+        // Orchestrator types: DefaultOrchestrator and ThreadLocalOrchestrator
+        Orchestrator orchestrator = new DefaultOrchestrator(csConfig, secondaryPool, threads + secondaryThreads);
 
         ClientScanExecutor executor = new ClientScanExecutor(getProbes(orchestrator), null, orchestrator, pool);
         ClientReport rep = executor.execute();

@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHESmallSubgroupProbe.DHESmallSubgroupResult;
@@ -30,13 +30,13 @@ public class DHESmallSubgroupProbe extends BaseDHEParametrizedProbe<SmallSubgrou
         MINUS_ONE
     }
 
-    public static Collection<DHESmallSubgroupProbe> getDefaultProbes(IOrchestrator orchestrator) {
+    public static Collection<DHESmallSubgroupProbe> getDefaultProbes(Orchestrator orchestrator) {
         return Arrays.asList(
                 new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.ONE),
                 new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.MINUS_ONE));
     }
 
-    public DHESmallSubgroupProbe(IOrchestrator orchestrator, SmallSubgroupType groupType) {
+    public DHESmallSubgroupProbe(Orchestrator orchestrator, SmallSubgroupType groupType) {
         super(orchestrator, false, false, true, groupType);
     }
 
