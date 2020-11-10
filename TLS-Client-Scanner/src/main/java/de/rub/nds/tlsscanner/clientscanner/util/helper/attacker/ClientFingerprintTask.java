@@ -66,6 +66,7 @@ public class ClientFingerprintTask extends FingerPrintTask {
         originalTask.setState(outputState);
 
         if (!outputState.getWorkflowTrace().executedAsPlanned()) {
+            LOGGER.warn("WorkflowTrace was not executed as planned {}", outputState.getWorkflowTrace());
             return false;
         }
         fingerprint = ResponseExtractor.getFingerprint(outputState);

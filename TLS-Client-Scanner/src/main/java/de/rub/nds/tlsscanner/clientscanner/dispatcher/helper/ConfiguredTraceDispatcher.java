@@ -43,7 +43,10 @@ public class ConfiguredTraceDispatcher extends BaseDispatcher {
                     "Got invalid parameter of type " + info.additionalParameters.getClass().getName());
         }
         ConfiguredTraceDispatcherParameter tc = (ConfiguredTraceDispatcherParameter) info.additionalParameters;
-        state.setConfig(tc.config.createCopy());
+        Config origConfig = state.getConfig();
+        Config newConfig = tc.config.createCopy();
+        newConfig.getDefaultServerConnection().setHostname(origConfig.getDefaultServerConnection().getHostname());
+        state.setConfig(newConfig);
         Config config = state.getConfig();
         config.setResetTrace(false);
         config.setSkipExecutedActions(true);

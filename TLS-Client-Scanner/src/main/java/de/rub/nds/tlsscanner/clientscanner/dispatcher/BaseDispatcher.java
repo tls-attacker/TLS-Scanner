@@ -268,7 +268,7 @@ public abstract class BaseDispatcher implements IDispatcher {
         traceToExtend.addTlsActions(appendActions.subList(prefixActions.size(), appendActions.size()));
     }
 
-    protected void extendWorkflowTrace(WorkflowTrace traceWithCHLO, WorkflowTraceType type, Config config) {
+    private void extendWorkflowTrace(WorkflowTrace traceWithCHLO, WorkflowTraceType type, Config config) {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace entryTrace = factory.createTlsEntryWorkflowtrace(config.getDefaultServerConnection());
         entryTrace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
@@ -278,7 +278,7 @@ public abstract class BaseDispatcher implements IDispatcher {
 
     protected void extendWorkflowTraceToApplication(WorkflowTrace traceWithCHLO, Config config) {
         // TODO distinguish different application layers, for now only http(s)
-        extendWorkflowTrace(traceWithCHLO, WorkflowTraceType.HTTPS, config);
+        extendWorkflowTrace(traceWithCHLO, WorkflowTraceType.DYNAMIC_HTTPS, config);
         config.setHttpsParsingEnabled(true);
     }
 

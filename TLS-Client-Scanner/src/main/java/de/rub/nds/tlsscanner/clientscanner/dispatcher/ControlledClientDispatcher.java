@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.clientscanner.util.helper.BaseFuture;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.DuoMapQ;
 
 public class ControlledClientDispatcher implements IDispatcher {
+    // TODO utilize remote address in case of no sni...
     private static final Logger LOGGER = LogManager.getLogger();
     protected DuoMapQ<String, String, ClientProbeResultFuture> toRun;
     private boolean printedNoSNIWarning = false;
@@ -60,6 +61,7 @@ public class ControlledClientDispatcher implements IDispatcher {
             throw new DispatchException("Did not find task for sni:" + sni + " uid:" + uid);
         } else if (sni == null) {
             // patch config to have correct hostname
+            LOGGER.debug("Patching HN to {}", task.expectedFullHostname);
             state.getConfig().getDefaultServerConnection().setHostname(task.expectedFullHostname);
         }
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(task.probe.getClass()

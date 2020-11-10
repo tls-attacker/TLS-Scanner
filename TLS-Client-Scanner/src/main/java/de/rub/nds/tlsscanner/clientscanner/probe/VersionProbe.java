@@ -21,13 +21,14 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
-import de.rub.nds.tlsscanner.clientscanner.client.IOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
@@ -46,7 +47,7 @@ public class VersionProbe extends BaseProbe {
         suites13.removeIf((suite) -> !suite.isTLS13());
     }
 
-    public static Collection<VersionProbe> getDefaultProbes(IOrchestrator orchestrator) {
+    public static Collection<VersionProbe> getDefaultProbes(Orchestrator orchestrator) {
         return Arrays.asList(
                 new VersionProbe(orchestrator, ProtocolVersion.SSL2),
                 new VersionProbe(orchestrator, ProtocolVersion.SSL3),
@@ -58,7 +59,7 @@ public class VersionProbe extends BaseProbe {
 
     private final ProtocolVersion versionToTest;
 
-    public VersionProbe(IOrchestrator orchestrator, ProtocolVersion versionToTest) {
+    public VersionProbe(Orchestrator orchestrator, ProtocolVersion versionToTest) {
         super(orchestrator);
         this.versionToTest = versionToTest;
     }
@@ -80,7 +81,7 @@ public class VersionProbe extends BaseProbe {
     @SuppressWarnings("squid:S3776")
     // sonarlint says this function is too complex
     // while I don't necessarily disagree, I feel that it is still okay-ish
-    protected void patchTogetherFinAndApp(WorkflowTrace trace) {
+    protected void patchTogetherFinAndApp(WorkflowTrace trace, Config config) {
         ReceiveAction recvFin = null, recvApp = null;
         for (TlsAction x : trace.getTlsActions()) {
             if (x instanceof ReceiveAction) {
@@ -93,22 +94,31 @@ public class VersionProbe extends BaseProbe {
                             break;
                         }
                     }
-                } else {
-                    // check if we recieve APP here
-                    for (ProtocolMessage msg : ra.getExpectedMessages()) {
-                        if (msg instanceof HttpsRequestMessage || msg instanceof ApplicationMessage) {
-                            recvApp = ra;
-                            break;
-                        }
-                    }
-                    if (recvApp != null) {
+                }
+                // check if we recieve APP here
+                for (ProtocolMessage msg : ra.getExpectedMessages()) {
+                    if (msg instanceof HttpsRequestMessage || msg instanceof ApplicationMessage) {
+                        recvApp = ra;
                         break;
                     }
+                }
+                if (recvApp != null) {
+                    break;
                 }
             }
         }
         if (recvApp == null) {
-            LOGGER.warn("[{}] Did not find app message in trace - results might be inaccurate", versionToTest);
+            LOGGER.warn("[{}] Did not find app message in trace - results might be inaccurate; {}", versionToTest,
+                    trace);
+        } else if (recvFin == null) {
+            // dynamic handshake does not add clients CCS/FIN if we use tls1.3, because
+            // reasons
+            LOGGER.debug("[{}] Did not find ccs/fin message in trace - adding them now", versionToTest);
+            List<ProtocolMessage> msgs = new ArrayList<>(recvApp.getExpectedMessages());
+            ChangeCipherSpecMessage ccs = new ChangeCipherSpecMessage(config);
+            ccs.setRequired(false);
+            msgs.add(0, ccs);
+            msgs.add(1, new FinishedMessage(config));
         } else {
             List<ProtocolMessage> msgs = new ArrayList<>();
             msgs.addAll(recvFin.getExpectedMessages());
@@ -145,7 +155,7 @@ public class VersionProbe extends BaseProbe {
         config.setStopActionsAfterIOException(true);
         extendWorkflowTraceToApplication(trace, config);
         if (versionToTest == ProtocolVersion.TLS13) {
-            patchTogetherFinAndApp(trace);
+            patchTogetherFinAndApp(trace, config);
         }
         ClientAdapterResult cres = executeState(state, dispatchInformation);
         boolean res = state.getTlsContext().getSelectedProtocolVersion() == versionToTest
