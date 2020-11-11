@@ -868,7 +868,7 @@ public class SiteReportPrinter {
     public StringBuilder appendInformationLeakTestList(StringBuilder builder,
             List<InformationLeakTest> informationLeakTestList, String heading) {
         prettyAppendHeading(builder, heading);
-        if (report.getDirectRaccoonResultList() == null || report.getDirectRaccoonResultList().isEmpty()) {
+        if (informationLeakTestList == null || informationLeakTestList.isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
             for (InformationLeakTest testResult : informationLeakTestList) {
@@ -1056,7 +1056,7 @@ public class SiteReportPrinter {
                 && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL) == TestResult.FALSE
                 && report.getResult(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST) == TestResult.FALSE
                 && detail != ScannerDetail.ALL) {
-            prettyAppend(builder, "No Vulnerabilities Found");
+            prettyAppend(builder, "No Vulnerabilities found");
         } else {
             for (InvalidCurveResponse response : report.getInvalidCurveResultList()) {
                 if (response.getChosenGroupReusesKey() == TestResult.COULD_NOT_TEST
