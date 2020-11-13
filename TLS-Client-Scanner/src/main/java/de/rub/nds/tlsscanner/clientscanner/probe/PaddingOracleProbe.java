@@ -31,6 +31,7 @@ import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.NotDispatchableException;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe.VersionProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe.SupportedCipherSuitesResult;
@@ -136,13 +137,6 @@ public class PaddingOracleProbe extends BaseProbe {
                         "Client does not support CipherSuite " + params.cipherSuite);
     }
 
-    @Override
-    public ClientProbeResult getCouldNotExecuteResult(ClientReport report) {
-        // TODO do not merge all could not execute results
-        // one should be sufficient
-        return super.getCouldNotExecuteResult(report);
-    }
-
     // #endregion
 
     // #region helper functions
@@ -204,7 +198,7 @@ public class PaddingOracleProbe extends BaseProbe {
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
         // handled by ConfiguredTraceDispatcher
-        return null;
+        throw new NotDispatchableException();
     }
 
     // #region helping classes

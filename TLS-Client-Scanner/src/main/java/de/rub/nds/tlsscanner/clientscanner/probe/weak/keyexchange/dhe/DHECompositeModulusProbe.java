@@ -85,7 +85,7 @@ public class DHECompositeModulusProbe extends BaseDHEParametrizedProbe<Composite
         }
         prepareConfig(config);
         config.setDefaultServerDhModulus(createModulus(keylength));
-        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
+        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config, false);
         executeState(state, dispatchInformation);
         return new DHCompositeModulusProbeResult(state);
     }

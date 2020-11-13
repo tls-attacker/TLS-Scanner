@@ -116,7 +116,7 @@ public class VersionProbe13Random extends BaseProbe {
         System.arraycopy(serverRandomPostfix, 0, serverRandom, serverRandomPrefix.length, serverRandomPostfix.length);
         config.setDefaultServerRandom(serverRandom);
         config.setUseFreshRandom(false);
-        extendWorkflowTraceToApplication(trace, config);
+        extendWorkflowTraceToApplication(trace, config, true);
         ClientAdapterResult cres = executeState(state, dispatchInformation);
         boolean res = state.getTlsContext().getSelectedProtocolVersion() == versionToTest;
         // trace should be rejected

@@ -122,7 +122,7 @@ public class Main {
         // .
         probes.add(new ForcedCompressionProbe(orchestrator));
         probes.add(new FreakProbe(orchestrator));
-        probes.addAll(PaddingOracleProbe.getDefaultProbes(orchestrator));
+        // probes.addAll(PaddingOracleProbe.getDefaultProbes(orchestrator));
         probes.addAll(VersionProbe.getDefaultProbes(orchestrator));
         probes.addAll(VersionProbe13Random.getDefaultProbes(orchestrator));
         // probes that are on todo
@@ -148,13 +148,13 @@ public class Main {
         disp.registerRule(csConfig.getServerBaseURL(), new SNINopDispatcher());
         List<IProbe> probes = getProbes(null);
         for (IProbe p : probes) {
-            if (p instanceof BaseProbe) {
+            if (p instanceof BaseProbe && p instanceof IDispatcher) {
                 // TODO create some nice interface instead of expecting
                 // BaseProbe
                 // possibly also add some other form of configurability...
                 String prefix = ((BaseProbe) p).getHostnameForStandalone();
                 if (prefix != null) {
-                    disp.registerRule(prefix, p);
+                    disp.registerRule(prefix, (IDispatcher) p);
                     LOGGER.info("Adding {} at prefix {}", p.getClass().getSimpleName(), prefix);
                 } else {
                     LOGGER.debug("Not adding {} as it did not provide a hostname (returned null)", p.getClass()

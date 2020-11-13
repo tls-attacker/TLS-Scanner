@@ -55,7 +55,7 @@ public class DHESmallSubgroupProbe extends BaseDHEParametrizedProbe<SmallSubgrou
             default:
                 throw new DispatchException("Failed to generate generator; unknown type " + enumValue);
         }
-        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
+        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config, false);
         executeState(state, dispatchInformation);
         return new DHESmallSubgroupResult(state);
     }

@@ -104,7 +104,7 @@ public class FreakProbe extends BaseProbe {
             }
         }
         if (!done) {
-            throw new DispatchException("Did not find CH, CERT");
+            throw new DispatchException("Did not find SH, CERT");
         }
     }
 
@@ -117,7 +117,7 @@ public class FreakProbe extends BaseProbe {
                 ProtocolVersion.TLS11, ProtocolVersion.TLS12);
         config.setDefaultSelectedCipherSuite(RSA_SUITES.get(0));
         config.setDefaultServerSupportedCiphersuites(RSA_SUITES);
-        extendWorkflowTraceToApplication(trace, config);
+        extendWorkflowTraceToApplication(trace, config, false);
 
         BigInteger p, q, N, e, d, phi;
         e = BigInteger.valueOf(65537);

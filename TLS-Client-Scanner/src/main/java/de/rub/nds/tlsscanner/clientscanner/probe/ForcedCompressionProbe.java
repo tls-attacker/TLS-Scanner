@@ -38,7 +38,7 @@ public class ForcedCompressionProbe extends BaseProbe {
         state.getTlsContext().setSelectedCompressionMethod(CompressionMethod.NULL);
         config.setDefaultServerSupportedCompressionMethods(CompressionMethod.DEFLATE, CompressionMethod.LZS);
         config.setDefaultSelectedCompressionMethod(CompressionMethod.DEFLATE);
-        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
+        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config, true);
         executeState(state, dispatchInformation);
         if (state.getTlsContext().getSelectedCompressionMethod() == CompressionMethod.NULL) {
             throw new DispatchException("Failed to set compression method; NULL got set...");

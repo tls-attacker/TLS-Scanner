@@ -55,6 +55,7 @@ public class Server extends Thread {
         return this.executor.getBoundPort();
     }
 
+    @Override
     public void run() {
         try {
             this.executor.executeWorkflow();

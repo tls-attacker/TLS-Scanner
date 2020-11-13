@@ -55,7 +55,7 @@ public class DHEMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHEWeakMo
         prepareConfig(config);
         config.setDefaultApplicationMessageData("Keysize: " + toTest);
         config.setDefaultServerDhModulus(new BigInteger(toTest, 10, rnd));
-        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
+        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config, false);
         executeState(state, dispatchInformation);
         internalState.put(toTest, state);
         return internalState;

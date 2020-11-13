@@ -276,9 +276,9 @@ public abstract class BaseDispatcher implements IDispatcher {
         extendWorkflowTraceValidatingPrefix(traceWithCHLO, entryTrace, actionsToAppend);
     }
 
-    protected void extendWorkflowTraceToApplication(WorkflowTrace traceWithCHLO, Config config) {
+    protected void extendWorkflowTraceToApplication(WorkflowTrace traceWithCHLO, Config config, boolean dynamic) {
         // TODO distinguish different application layers, for now only http(s)
-        extendWorkflowTrace(traceWithCHLO, WorkflowTraceType.DYNAMIC_HTTPS, config);
+        extendWorkflowTrace(traceWithCHLO, dynamic ? WorkflowTraceType.DYNAMIC_HTTPS : WorkflowTraceType.HTTPS, config);
         config.setHttpsParsingEnabled(true);
     }
 

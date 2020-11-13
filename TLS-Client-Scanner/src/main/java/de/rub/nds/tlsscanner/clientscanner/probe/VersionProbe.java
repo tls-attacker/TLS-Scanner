@@ -153,7 +153,7 @@ public class VersionProbe extends BaseProbe {
         }
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
-        extendWorkflowTraceToApplication(trace, config);
+        extendWorkflowTraceToApplication(trace, config, true);
         if (versionToTest == ProtocolVersion.TLS13) {
             patchTogetherFinAndApp(trace, config);
         }

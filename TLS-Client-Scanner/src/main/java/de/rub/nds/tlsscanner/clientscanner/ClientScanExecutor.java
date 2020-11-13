@@ -33,6 +33,7 @@ import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.after.IAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 
 public class ClientScanExecutor implements Observer {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -73,7 +74,7 @@ public class ClientScanExecutor implements Observer {
             checkForExecutableProbes(report);
             executeProbesTillNoneCanBeExecuted(report);
             updateClientReporttWithNotExecutedProbes(report);
-            reportAboutNotExecutedProbes();
+            reportAboutNotExecutedProbes(report);
             collectStatistics(report);
             executeAfterProbes(report);
             LOGGER.info("Finished scan");
@@ -142,16 +143,38 @@ public class ClientScanExecutor implements Observer {
         }
     }
 
-    private void reportAboutNotExecutedProbes() {
+    @SuppressWarnings("squid:S3776")
+    // sonarlint says this function is too complicated
+    // this is mostly due to the nesting introduced by the outermost if
+    private void reportAboutNotExecutedProbes(ClientReport report) {
         if (LOGGER.isWarnEnabled() && !notScheduledTasks.isEmpty()) {
+            final int LIMIT_REASONS_NUM = 10;
+            Map<Class<? extends IProbe>, List<NotExecutedResult>> neReasons = new HashMap<>();
             Map<Class<? extends IProbe>, Integer> notExecuted = new HashMap<>();
+
             BiFunction<Class<? extends IProbe>, Integer, Integer> mapFunc = ((p, i) -> i == null ? 1 : i + 1);
-            LOGGER.warn("Did not execute the following probes:");
+
             for (IProbe probe : notScheduledTasks) {
-                notExecuted.compute(probe.getClass(), mapFunc);
+                Class<? extends IProbe> clazz = probe.getClass();
+                int num = notExecuted.compute(clazz, mapFunc);
+                if (num == 1) {
+                    neReasons.computeIfAbsent(clazz, k -> new LinkedList<>());
+                }
+                if (neReasons.get(clazz).size() < LIMIT_REASONS_NUM) {
+                    ClientProbeResult res = probe.getCouldNotExecuteResult(report);
+                    if (res instanceof NotExecutedResult) {
+                        neReasons.get(clazz).add((NotExecutedResult) res);
+                    }
+                }
             }
+
+            LOGGER.warn("Did not execute the following probes:");
             for (Entry<Class<? extends IProbe>, Integer> kvp : notExecuted.entrySet()) {
                 LOGGER.warn("{}x {}", kvp.getValue(), kvp.getKey().getName());
+                LOGGER.warn("Reasons (limited to {}):", LIMIT_REASONS_NUM);
+                for (NotExecutedResult res : neReasons.get(kvp.getKey())) {
+                    LOGGER.warn("Reason {}", res.message);
+                }
             }
         }
     }

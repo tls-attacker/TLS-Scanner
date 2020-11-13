@@ -54,7 +54,7 @@ public class DHEWeakPrivateKeyProbe extends BaseDHEParametrizedProbe<PrivateKeyT
                 config.setDefaultServerDhPrivateKey(BigInteger.ONE);
                 break;
         }
-        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config);
+        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config, false);
         executeState(state, dispatchInformation);
         return new DHWeakPrivateKeyProbeResult(state);
     }

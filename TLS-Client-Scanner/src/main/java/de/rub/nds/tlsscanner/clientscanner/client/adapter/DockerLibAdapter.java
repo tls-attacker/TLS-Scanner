@@ -60,6 +60,7 @@ public class DockerLibAdapter implements ClientAdapter {
             if (client != null) {
                 client.close();
             }
+            throw new RuntimeException(e);
         } catch (TlsVersionNotFoundException e) {
             LOGGER.error("Could not find Version {} for Type {}", version, type);
             if (LOGGER.isInfoEnabled()) {
