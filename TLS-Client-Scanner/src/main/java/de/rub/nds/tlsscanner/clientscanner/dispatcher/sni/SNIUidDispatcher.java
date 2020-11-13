@@ -10,14 +10,14 @@ package de.rub.nds.tlsscanner.clientscanner.dispatcher.sni;
 
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher.SNIDispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SNIUidDispatcher implements IDispatcher {
+public class SNIUidDispatcher implements Dispatcher {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override

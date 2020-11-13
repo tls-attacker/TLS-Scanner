@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.util.MapUtil;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.UpdatableXmlSeeAlso;
@@ -28,14 +28,14 @@ import de.rub.nds.tlsscanner.clientscanner.util.helper.UpdatableXmlSeeAlso;
 public class ParametrizedClientProbeResult<K, V> extends ClientProbeResult {
     private static Set<Class<?>> seeAlso = UpdatableXmlSeeAlso.patch(ParametrizedClientProbeResult.class);
 
-    protected final transient Class<? extends IProbe> clazz;
+    protected final transient Class<? extends Probe> clazz;
     @SuppressWarnings("squid:S1948")
     // sonarlint complains that K,V aren't serializable, but when they are, JAXB
     // complains that serializable is an interface... So rather make the linter
     // unhappy than our serialization lib
     protected final Map<K, V> resultMap;
 
-    public ParametrizedClientProbeResult(Class<? extends IProbe> clazz, K resultKey, V resultValue) {
+    public ParametrizedClientProbeResult(Class<? extends Probe> clazz, K resultKey, V resultValue) {
         this.clazz = clazz;
         resultMap = new HashMap<>();
         resultMap.put(resultKey, resultValue);

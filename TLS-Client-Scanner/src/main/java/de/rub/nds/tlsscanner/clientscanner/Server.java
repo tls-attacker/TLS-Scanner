@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ThreadedServerWorkflowExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.workflow.CSWorkflowExecutor;
 
 public class Server extends Thread {
@@ -30,7 +30,7 @@ public class Server extends Thread {
 
     private final CSWorkflowExecutor executor;
 
-    public Server(ClientScannerConfig csconfig, IDispatcher rootDispatcher, int poolSize) {
+    public Server(ClientScannerConfig csconfig, Dispatcher rootDispatcher, int poolSize) {
         int i = serverCounter++;
         setName("Server-" + i);
         int corePoolSize = Math.max(poolSize / 2, 2);

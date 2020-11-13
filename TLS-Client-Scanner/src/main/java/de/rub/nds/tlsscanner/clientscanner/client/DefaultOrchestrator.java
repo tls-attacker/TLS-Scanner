@@ -23,7 +23,7 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ClientProbeResultFuture;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIFallingBackDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
@@ -103,7 +103,7 @@ public class DefaultOrchestrator implements Orchestrator {
         }
     }
 
-    private ClientProbeResult runProbe(IDispatcher probe, String hostnamePrefix, String uid, String hostname,
+    private ClientProbeResult runProbe(Dispatcher probe, String hostnamePrefix, String uid, String hostname,
             ClientReport report, Object additionalParameters)
             throws InterruptedException, ExecutionException {
         FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
@@ -174,7 +174,7 @@ public class DefaultOrchestrator implements Orchestrator {
     }
 
     @Override
-    public ClientProbeResult runProbe(IDispatcher probe, String hostnamePrefix, String uid, ClientReport report,
+    public ClientProbeResult runProbe(Dispatcher probe, String hostnamePrefix, String uid, ClientReport report,
             Object additionalParameters)
             throws InterruptedException, ExecutionException {
         // keep track of multithreading to possibly issue warning

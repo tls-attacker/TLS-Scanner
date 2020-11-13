@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.RandString;
 
@@ -37,7 +37,7 @@ public class ClientReport extends Observable implements Serializable {
     private static final Set<String> usedUIDs = new HashSet<>();
     private static final Random uidRandom = new Random();
 
-    private final Map<Class<? extends IProbe>, ClientProbeResult> resultMap;
+    private final Map<Class<? extends Probe>, ClientProbeResult> resultMap;
     private final Collection<String> genericWarnings;
     private final ClientInfo clientInfo;
     public final transient String uid;
@@ -69,19 +69,19 @@ public class ClientReport extends Observable implements Serializable {
         usedUIDs.remove(uid);
     }
 
-    public Map<Class<? extends IProbe>, ClientProbeResult> getResultMap() {
+    public Map<Class<? extends Probe>, ClientProbeResult> getResultMap() {
         return resultMap;
     }
 
-    public boolean hasResult(Class<? extends IProbe> clazz) {
+    public boolean hasResult(Class<? extends Probe> clazz) {
         return resultMap.containsKey(clazz);
     }
 
-    public ClientProbeResult getResult(Class<? extends IProbe> clazz) {
+    public ClientProbeResult getResult(Class<? extends Probe> clazz) {
         return resultMap.get(clazz);
     }
 
-    public <T extends ClientProbeResult> T getResult(Class<? extends IProbe> clazz, Class<T> expectedReturnType) {
+    public <T extends ClientProbeResult> T getResult(Class<? extends Probe> clazz, Class<T> expectedReturnType) {
         // convenience function
         try {
             return expectedReturnType.cast(getResult(clazz));
@@ -90,7 +90,7 @@ public class ClientReport extends Observable implements Serializable {
         }
     }
 
-    public ClientProbeResult putResult(Class<? extends IProbe> clazz, ClientProbeResult result) {
+    public ClientProbeResult putResult(Class<? extends Probe> clazz, ClientProbeResult result) {
         ClientProbeResult ret = resultMap.put(clazz, result);
         markAsChangedAndNotify();
         return ret;

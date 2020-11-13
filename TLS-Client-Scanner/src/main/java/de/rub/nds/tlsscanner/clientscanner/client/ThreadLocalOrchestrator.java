@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
@@ -144,7 +144,7 @@ public class ThreadLocalOrchestrator implements Orchestrator {
     }
 
     @Override
-    public ClientProbeResult runProbe(IDispatcher probe, String hostnamePrefix, String uid, ClientReport report,
+    public ClientProbeResult runProbe(Dispatcher probe, String hostnamePrefix, String uid, ClientReport report,
             Object additionalParameters)
             throws InterruptedException, ExecutionException {
         return getLocalOrchestrator().runProbe(probe, hostnamePrefix, uid, report, additionalParameters);

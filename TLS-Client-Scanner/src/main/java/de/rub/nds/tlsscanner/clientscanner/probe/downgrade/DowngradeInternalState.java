@@ -10,15 +10,15 @@ package de.rub.nds.tlsscanner.clientscanner.probe.downgrade;
 
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public class DowngradeInternalState implements BaseStatefulProbe.InternalProbeState {
     protected ClientHelloMessage firstCHLO;
     protected ClientHelloMessage secondCHLO;
-    protected final Class<? extends IProbe> clazz;
+    protected final Class<? extends Probe> clazz;
 
-    public DowngradeInternalState(Class<? extends IProbe> clazz) {
+    public DowngradeInternalState(Class<? extends Probe> clazz) {
         this.clazz = clazz;
     }
 

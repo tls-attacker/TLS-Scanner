@@ -28,16 +28,16 @@ import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 
 public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected final IDispatcher rootDispatcher;
+    protected final Dispatcher rootDispatcher;
     protected final ClientScannerConfig csConfig;
 
     public CSWorkflowExecutorRunnable(ClientScannerConfig csConfig, Socket socket,
-            ThreadedServerWorkflowExecutor parent, IDispatcher rootDispatcher) {
+            ThreadedServerWorkflowExecutor parent, Dispatcher rootDispatcher) {
         super(null, socket, parent);
         this.rootDispatcher = rootDispatcher;
         this.csConfig = csConfig;

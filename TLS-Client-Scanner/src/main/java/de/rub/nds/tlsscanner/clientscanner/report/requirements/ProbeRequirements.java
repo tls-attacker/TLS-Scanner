@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.report.requirements;
 import java.io.Serializable;
 import java.util.function.Predicate;
 
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 
@@ -25,26 +25,26 @@ public abstract class ProbeRequirements {
         return TRUE;
     }
 
-    public ProbeRequirements needResult(Class<? extends IProbe> requiredClass) {
+    public ProbeRequirements needResult(Class<? extends Probe> requiredClass) {
         return new NeedResult(this, requiredClass);
     }
 
-    public ProbeRequirements needResultOfType(Class<? extends IProbe> requiredClass,
+    public ProbeRequirements needResultOfType(Class<? extends Probe> requiredClass,
             Class<? extends Serializable> resType) {
         return new NeedResultOfType(this, requiredClass, resType);
     }
 
-    public <T extends Serializable> ProbeRequirements needResultOfTypeMatching(Class<? extends IProbe> requiredClass,
+    public <T extends Serializable> ProbeRequirements needResultOfTypeMatching(Class<? extends Probe> requiredClass,
             Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
         return new NeedResultOfTypeMatching<>(this, requiredClass, resType, predicate, notMatchedDescription);
     }
 
     public abstract boolean evaluateRequirementsMet(ClientReport report);
 
-    protected abstract NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+    protected abstract NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
             ClientReport report);
 
-    public final NotExecutedResult evaluateWhyRequirementsNotMet(Class<? extends IProbe> probe, ClientReport report) {
+    public final NotExecutedResult evaluateWhyRequirementsNotMet(Class<? extends Probe> probe, ClientReport report) {
         NotExecutedResult res = evaluateWhyRequirementsNotMetInternal(probe, report);
         if (res != null) {
             return res;
@@ -65,7 +65,7 @@ public abstract class ProbeRequirements {
         }
 
         @Override
-        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
                 ClientReport report) {
             if (previous == null) {
                 return null;
@@ -75,9 +75,9 @@ public abstract class ProbeRequirements {
     }
 
     public static class NeedResult extends True {
-        protected final Class<? extends IProbe> requiredClass;
+        protected final Class<? extends Probe> requiredClass;
 
-        protected NeedResult(ProbeRequirements previous, Class<? extends IProbe> requiredClass) {
+        protected NeedResult(ProbeRequirements previous, Class<? extends Probe> requiredClass) {
             super(previous);
             this.requiredClass = requiredClass;
         }
@@ -88,7 +88,7 @@ public abstract class ProbeRequirements {
         }
 
         @Override
-        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
                 ClientReport report) {
             NotExecutedResult ret = super.evaluateWhyRequirementsNotMetInternal(probe, report);
             if (ret != null) {
@@ -104,7 +104,7 @@ public abstract class ProbeRequirements {
     public static class NeedResultOfType extends NeedResult {
         protected final Class<? extends Serializable> requiredResultType;
 
-        protected NeedResultOfType(ProbeRequirements previous, Class<? extends IProbe> requiredClass,
+        protected NeedResultOfType(ProbeRequirements previous, Class<? extends Probe> requiredClass,
                 Class<? extends Serializable> resType) {
             super(previous, requiredClass);
             this.requiredResultType = resType;
@@ -117,7 +117,7 @@ public abstract class ProbeRequirements {
         }
 
         @Override
-        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
                 ClientReport report) {
             NotExecutedResult ret = super.evaluateWhyRequirementsNotMetInternal(probe, report);
             if (ret != null) {
@@ -139,7 +139,7 @@ public abstract class ProbeRequirements {
         protected final Predicate<T> predicate;
         protected final String notMatchedDescription;
 
-        protected NeedResultOfTypeMatching(ProbeRequirements previous, Class<? extends IProbe> requiredClass,
+        protected NeedResultOfTypeMatching(ProbeRequirements previous, Class<? extends Probe> requiredClass,
                 Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
             super(previous, requiredClass, resType);
             this.predicate = predicate;
@@ -161,7 +161,7 @@ public abstract class ProbeRequirements {
         }
 
         @Override
-        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends IProbe> probe,
+        public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
                 ClientReport report) {
             NotExecutedResult ret = super.evaluateWhyRequirementsNotMetInternal(probe, report);
             if (ret != null) {

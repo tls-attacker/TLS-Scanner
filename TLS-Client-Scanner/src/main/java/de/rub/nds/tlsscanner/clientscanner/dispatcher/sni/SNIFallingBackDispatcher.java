@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.clientscanner.dispatcher.sni;
 
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher.NoSNIExtensionException;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher.NoSNINameException;
@@ -20,20 +20,20 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SNIFallingBackDispatcher implements IDispatcher {
+public class SNIFallingBackDispatcher implements Dispatcher {
     private static final Logger LOGGER = LogManager.getLogger();
-    public final IDispatcher next;
-    public final IDispatcher fallbackNoSNI;
-    public final IDispatcher fallbackNoSNIName;
-    public final IDispatcher fallbackUnknownSNIName;
-    public final IDispatcher fallbackOtherSNIException;
+    public final Dispatcher next;
+    public final Dispatcher fallbackNoSNI;
+    public final Dispatcher fallbackNoSNIName;
+    public final Dispatcher fallbackUnknownSNIName;
+    public final Dispatcher fallbackOtherSNIException;
 
-    public SNIFallingBackDispatcher(IDispatcher next, IDispatcher fallback) {
+    public SNIFallingBackDispatcher(Dispatcher next, Dispatcher fallback) {
         this(next, fallback, fallback, fallback, fallback);
     }
 
-    public SNIFallingBackDispatcher(IDispatcher next, IDispatcher fallbackNoSNI, IDispatcher fallbackNoSNIName,
-            IDispatcher fallbackUnknownSNIName, IDispatcher fallbackOtherSNIException) {
+    public SNIFallingBackDispatcher(Dispatcher next, Dispatcher fallbackNoSNI, Dispatcher fallbackNoSNIName,
+            Dispatcher fallbackUnknownSNIName, Dispatcher fallbackOtherSNIException) {
         this.next = next;
         this.fallbackNoSNI = fallbackNoSNI;
         this.fallbackNoSNIName = fallbackNoSNIName;
@@ -43,7 +43,7 @@ public class SNIFallingBackDispatcher implements IDispatcher {
 
     private ClientProbeResult fallback(SNIDispatchException ex, State state, DispatchInformation dispatchInformation)
             throws DispatchException {
-        IDispatcher fallback = fallbackOtherSNIException;
+        Dispatcher fallback = fallbackOtherSNIException;
         LOGGER.debug("Falling back, got Exception {}", ex.getClass().getSimpleName());
         if (ex instanceof NoSNIExtensionException) {
             fallback = fallbackNoSNI;

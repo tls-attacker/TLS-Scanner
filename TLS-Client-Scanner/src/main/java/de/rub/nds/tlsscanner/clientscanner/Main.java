@@ -38,13 +38,13 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.ISubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.ForcedCompressionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe13Random;
@@ -104,9 +104,9 @@ public class Main {
         }
     }
 
-    private static List<IProbe> getProbes(Orchestrator orchestrator) {
+    private static List<Probe> getProbes(Orchestrator orchestrator) {
         // TODO have probes be configurable from commandline
-        List<IProbe> probes = new ArrayList<>();
+        List<Probe> probes = new ArrayList<>();
         // .recon (add first)
         probes.add(new HelloReconProbe(orchestrator));
         probes.add(new SNIProbe());
@@ -142,19 +142,19 @@ public class Main {
         return probes;
     }
 
-    private static IDispatcher getStandaloneDispatcher(ClientScannerConfig csConfig) {
+    private static Dispatcher getStandaloneDispatcher(ClientScannerConfig csConfig) {
         SNIDispatcher disp = new SNIDispatcher();
         LOGGER.info("Using base URL {}", csConfig.getServerBaseURL());
         disp.registerRule(csConfig.getServerBaseURL(), new SNINopDispatcher());
-        List<IProbe> probes = getProbes(null);
-        for (IProbe p : probes) {
-            if (p instanceof BaseProbe && p instanceof IDispatcher) {
+        List<Probe> probes = getProbes(null);
+        for (Probe p : probes) {
+            if (p instanceof BaseProbe && p instanceof Dispatcher) {
                 // TODO create some nice interface instead of expecting
                 // BaseProbe
                 // possibly also add some other form of configurability...
                 String prefix = ((BaseProbe) p).getHostnameForStandalone();
                 if (prefix != null) {
-                    disp.registerRule(prefix, (IDispatcher) p);
+                    disp.registerRule(prefix, (Dispatcher) p);
                     LOGGER.info("Adding {} at prefix {}", p.getClass().getSimpleName(), prefix);
                 } else {
                     LOGGER.debug("Not adding {} as it did not provide a hostname (returned null)", p.getClass()

@@ -12,6 +12,6 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
-public interface IDispatcher {
+public interface Dispatcher {
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException;
 }

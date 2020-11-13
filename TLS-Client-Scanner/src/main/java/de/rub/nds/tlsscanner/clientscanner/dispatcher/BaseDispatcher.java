@@ -67,7 +67,7 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchExceptio
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
-public abstract class BaseDispatcher implements IDispatcher {
+public abstract class BaseDispatcher implements Dispatcher {
     private static final Logger LOGGER = LogManager.getLogger();
 
     // #region Certificate stuff

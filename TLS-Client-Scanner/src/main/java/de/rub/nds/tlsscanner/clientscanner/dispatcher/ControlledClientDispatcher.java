@@ -21,14 +21,14 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher.SNIDispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher.UidInformation;
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.BaseFuture;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.DuoMapQ;
 
-public class ControlledClientDispatcher implements IDispatcher {
+public class ControlledClientDispatcher implements Dispatcher {
     // TODO utilize remote address in case of no sni...
     private static final Logger LOGGER = LogManager.getLogger();
     protected DuoMapQ<String, String, ClientProbeResultFuture> toRun;
@@ -121,7 +121,7 @@ public class ControlledClientDispatcher implements IDispatcher {
         return task;
     }
 
-    public ClientProbeResultFuture enqueueProbe(IDispatcher probe, String expectedHostnamePrefix, String expectedUid,
+    public ClientProbeResultFuture enqueueProbe(Dispatcher probe, String expectedHostnamePrefix, String expectedUid,
             String expectedFullHostname,
             Future<ClientAdapterResult> clientResultHolder, ClientReport report, Object additionalParameters) {
         ClientProbeResultFuture ret = new ClientProbeResultFuture(probe, clientResultHolder, report,
@@ -146,7 +146,7 @@ public class ControlledClientDispatcher implements IDispatcher {
     }
 
     public class ClientProbeResultFuture extends BaseFuture<ClientProbeResult> {
-        protected final IDispatcher probe;
+        protected final Dispatcher probe;
         protected final Future<ClientAdapterResult> clientResultFuture;
         protected final ClientReport report;
         protected boolean gotConnection = false;
@@ -154,7 +154,7 @@ public class ControlledClientDispatcher implements IDispatcher {
         protected final String creatorThreadName;
         protected final String expectedFullHostname;
 
-        public ClientProbeResultFuture(IDispatcher probe, Future<ClientAdapterResult> clientResultFuture,
+        public ClientProbeResultFuture(Dispatcher probe, Future<ClientAdapterResult> clientResultFuture,
                 ClientReport report, String expectedFullHostname, Object additionalParameters) {
             this.probe = probe;
             this.report = report;

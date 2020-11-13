@@ -10,13 +10,13 @@ package de.rub.nds.tlsscanner.clientscanner.probe.recon;
 
 import java.util.concurrent.Callable;
 
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.HelloReconProbe.HelloReconResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 
-public abstract class BaseAnalyzingProbe implements IProbe {
+public abstract class BaseAnalyzingProbe implements Probe {
     abstract ClientProbeResult analyzeChlo(ClientReport report, HelloReconResult chloResult);
 
     @Override

@@ -30,7 +30,7 @@ import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseStatefulProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
@@ -115,7 +115,7 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
         private final AlertLevel alertLevel;
         private final AlertDescription alertDesc;
 
-        public AlertDowngradeInternalState(Class<? extends IProbe> clazz, AlertLevel alertLevel,
+        public AlertDowngradeInternalState(Class<? extends Probe> clazz, AlertLevel alertLevel,
                 AlertDescription alertDesc) {
             super(clazz);
             this.alertLevel = alertLevel;
@@ -143,7 +143,7 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
     public static class AlertDowngradeResult extends ClientProbeResult {
         private final Map<RfcAlert, DowngradeResult> resultMap;
 
-        public AlertDowngradeResult(Class<? extends IProbe> clazz, ClientHelloMessage chlo1, ClientHelloMessage chlo2,
+        public AlertDowngradeResult(Class<? extends Probe> clazz, ClientHelloMessage chlo1, ClientHelloMessage chlo2,
                 AlertLevel alertLevel, AlertDescription alertDesc) {
             resultMap = new HashMap<>();
             resultMap.put(new RfcAlert(alertLevel, alertDesc), new DowngradeResult(clazz, chlo1, chlo2));

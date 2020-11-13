@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
-import de.rub.nds.tlsscanner.clientscanner.probe.IProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.probe.after.IAfterProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
@@ -38,7 +38,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 public class ClientScanExecutor implements Observer {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private Collection<IProbe> notScheduledTasks;
+    private Collection<Probe> notScheduledTasks;
     private Collection<IAfterProbe> afterProbes;
 
     private Collection<ProbeAndResultFuture> futureResults;
@@ -46,7 +46,7 @@ public class ClientScanExecutor implements Observer {
     private final ExecutorService executor;
     private final Orchestrator orchestrator;
 
-    public ClientScanExecutor(Collection<IProbe> probesToRun, Collection<IAfterProbe> afterProbesToRun,
+    public ClientScanExecutor(Collection<Probe> probesToRun, Collection<IAfterProbe> afterProbesToRun,
             Orchestrator orchestrator, ExecutorService executor) {
         this.notScheduledTasks = new ArrayList<>(probesToRun);
         this.afterProbes = afterProbesToRun;
@@ -138,7 +138,7 @@ public class ClientScanExecutor implements Observer {
     }
 
     private void updateClientReporttWithNotExecutedProbes(ClientReport report) {
-        for (IProbe probe : notScheduledTasks) {
+        for (Probe probe : notScheduledTasks) {
             probe.getCouldNotExecuteResult(report).merge(report);
         }
     }
@@ -149,13 +149,13 @@ public class ClientScanExecutor implements Observer {
     private void reportAboutNotExecutedProbes(ClientReport report) {
         if (LOGGER.isWarnEnabled() && !notScheduledTasks.isEmpty()) {
             final int LIMIT_REASONS_NUM = 10;
-            Map<Class<? extends IProbe>, List<NotExecutedResult>> neReasons = new HashMap<>();
-            Map<Class<? extends IProbe>, Integer> notExecuted = new HashMap<>();
+            Map<Class<? extends Probe>, List<NotExecutedResult>> neReasons = new HashMap<>();
+            Map<Class<? extends Probe>, Integer> notExecuted = new HashMap<>();
 
-            BiFunction<Class<? extends IProbe>, Integer, Integer> mapFunc = ((p, i) -> i == null ? 1 : i + 1);
+            BiFunction<Class<? extends Probe>, Integer, Integer> mapFunc = ((p, i) -> i == null ? 1 : i + 1);
 
-            for (IProbe probe : notScheduledTasks) {
-                Class<? extends IProbe> clazz = probe.getClass();
+            for (Probe probe : notScheduledTasks) {
+                Class<? extends Probe> clazz = probe.getClass();
                 int num = notExecuted.compute(clazz, mapFunc);
                 if (num == 1) {
                     neReasons.computeIfAbsent(clazz, k -> new LinkedList<>());
@@ -169,7 +169,7 @@ public class ClientScanExecutor implements Observer {
             }
 
             LOGGER.warn("Did not execute the following probes:");
-            for (Entry<Class<? extends IProbe>, Integer> kvp : notExecuted.entrySet()) {
+            for (Entry<Class<? extends Probe>, Integer> kvp : notExecuted.entrySet()) {
                 LOGGER.warn("{}x {}", kvp.getValue(), kvp.getKey().getName());
                 LOGGER.warn("Reasons (limited to {}):", LIMIT_REASONS_NUM);
                 for (NotExecutedResult res : neReasons.get(kvp.getKey())) {
@@ -198,7 +198,7 @@ public class ClientScanExecutor implements Observer {
         if (o != null && o instanceof ClientReport) {
             ClientReport report = (ClientReport) o;
             // iterate over a copy of the list, as we might remove elements
-            for (IProbe probe : new ArrayList<>(notScheduledTasks)) {
+            for (Probe probe : new ArrayList<>(notScheduledTasks)) {
                 if (probe.canBeExecuted(report)) {
                     notScheduledTasks.remove(probe);
                     Callable<ClientProbeResult> callable = probe.getCallable(report);
@@ -212,10 +212,10 @@ public class ClientScanExecutor implements Observer {
     }
 
     protected static class ProbeAndResultFuture {
-        public final IProbe probe;
+        public final Probe probe;
         public final Future<ClientProbeResult> future;
 
-        public ProbeAndResultFuture(IProbe probe, Future<ClientProbeResult> future) {
+        public ProbeAndResultFuture(Probe probe, Future<ClientProbeResult> future) {
             this.probe = probe;
             this.future = future;
         }

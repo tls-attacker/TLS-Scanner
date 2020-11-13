@@ -17,17 +17,17 @@ import org.apache.logging.log4j.Logger;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.IDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
-public class SNIDispatcher implements IDispatcher {
+public class SNIDispatcher implements Dispatcher {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private Map<String, IDispatcher> forwardRules;
+    private Map<String, Dispatcher> forwardRules;
 
-    public SNIDispatcher(Map<String, IDispatcher> rules) {
+    public SNIDispatcher(Map<String, Dispatcher> rules) {
         forwardRules = new HashMap<>(rules);
     }
 
@@ -58,7 +58,7 @@ public class SNIDispatcher implements IDispatcher {
         while (index > -1) {
             index = hostname.lastIndexOf('.', index - 1);
             String hostnameTry = hostname.substring(index + 1);
-            IDispatcher next = forwardRules.get(hostnameTry);
+            Dispatcher next = forwardRules.get(hostnameTry);
             if (next != null) {
                 String hostnameRemaining = "";
                 if (index > -1) {
@@ -91,16 +91,16 @@ public class SNIDispatcher implements IDispatcher {
         return next.nextDispatcher.execute(state, dispatchInformation);
     }
 
-    public void registerRule(String suffix, IDispatcher dispatcher) {
+    public void registerRule(String suffix, Dispatcher dispatcher) {
         forwardRules.put(suffix, dispatcher);
     }
 
     public static class RuleMatch {
-        public final IDispatcher nextDispatcher;
+        public final Dispatcher nextDispatcher;
         public final String matchedHostnameSuffix;
         public final String remainingHostnamePrefix;
 
-        public RuleMatch(IDispatcher nextDispatcher, String matchedHostnameSuffix, String remainingHostnamePrefix) {
+        public RuleMatch(Dispatcher nextDispatcher, String matchedHostnameSuffix, String remainingHostnamePrefix) {
             this.nextDispatcher = nextDispatcher;
             this.matchedHostnameSuffix = matchedHostnameSuffix;
             this.remainingHostnamePrefix = remainingHostnamePrefix;

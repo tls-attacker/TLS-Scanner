@@ -20,7 +20,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.ReverseIterator;
 
-public abstract class BaseProbe extends BaseDispatcher implements IProbe {
+public abstract class BaseProbe extends BaseDispatcher implements Probe {
     protected static String PROBE_NAMESPACE = BaseProbe.class.getPackage().getName() + '.';
     protected Orchestrator orchestrator;
     private ProbeRequirements requirementsCache = null;
