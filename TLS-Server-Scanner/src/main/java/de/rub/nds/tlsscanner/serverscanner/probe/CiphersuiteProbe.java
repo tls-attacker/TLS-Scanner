@@ -170,7 +170,7 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setAddECPointFormatExtension(containsEc);
             config.setAddSignatureAndHashAlgorithmsExtension(true);
             config.setAddRenegotiationInfoExtension(true);
-            config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+            config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
             config.setStopActionsAfterIOException(true);

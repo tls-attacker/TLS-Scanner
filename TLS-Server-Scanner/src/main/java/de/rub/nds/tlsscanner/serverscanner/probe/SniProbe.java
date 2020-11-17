@@ -64,7 +64,7 @@ public class SniProbe extends TlsProbe {
                 config.setStopReceivingAfterFatal(false);
             }
             WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                    WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+                    WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
             State state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
