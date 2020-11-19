@@ -205,7 +205,7 @@
                 <version>0.5.2</version>
                 <configuration>
                     <configFile>${main.basedir}/maven-eclipse-codestyle.xml</configFile>
-                    <lineEnding>LF</lineEnding>
+                    <lineEnding>CRLF</lineEnding>
                 </configuration>
                 <executions>
                     <execution>
