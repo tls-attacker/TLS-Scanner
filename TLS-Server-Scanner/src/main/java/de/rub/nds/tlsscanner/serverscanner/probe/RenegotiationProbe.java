@@ -106,12 +106,6 @@ public class RenegotiationProbe extends TlsProbe {
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
         WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
                 RunningModeType.CLIENT);
-        // TODO: Notwendig? Da bei mbedTLS ohne CloseNotify funktioniert
-        if (getScannerConfig().getDtlsDelegate().isDTLS() && tlsConfig.isFinishWithCloseNotify()) {
-            AlertMessage alert = new AlertMessage();
-            alert.setConfig(AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY);
-            trace.addTlsAction(new SendAction(alert));
-        }
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -156,12 +150,6 @@ public class RenegotiationProbe extends TlsProbe {
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
         WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
                 RunningModeType.CLIENT);
-        // TODO: Notwendig? Da bei mbedTLS ohne CloseNotify funktioniert
-        if (getScannerConfig().getDtlsDelegate().isDTLS() && tlsConfig.isFinishWithCloseNotify()) {
-            AlertMessage alert = new AlertMessage();
-            alert.setConfig(AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY);
-            trace.addTlsAction(new SendAction(alert));
-        }
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
