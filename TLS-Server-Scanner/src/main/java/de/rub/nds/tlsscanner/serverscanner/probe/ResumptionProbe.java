@@ -51,7 +51,12 @@ public class ResumptionProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(), getSupportsTls13PskDhe());
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                return new ResumptionResult(getSessionResumption(), TestResult.NOT_TESTED_YET,
+                        TestResult.NOT_TESTED_YET);
+            } else {
+                return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(), getSupportsTls13PskDhe());
+            }
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
@@ -68,7 +73,11 @@ public class ResumptionProbe extends TlsProbe {
             // TODO this can fail in some rare occasions
             tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites.get(0));
             tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+            } else {
+                tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+            }
             tlsConfig.setEnforceSettings(false);
             tlsConfig.setEarlyStop(true);
             tlsConfig.setStopActionsAfterIOException(true);
@@ -81,6 +90,13 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setAddRenegotiationInfoExtension(true);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
+            // TODO: Prüfe, welche Flags gesetzt werden müssen
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                tlsConfig.setStopActionsAfterFatal(true);
+                tlsConfig.setStopActionsAfterIOException(true);
+                tlsConfig.setEarlyStop(true);
+                tlsConfig.setStopReceivingAfterFatal(false);
+            }
             State state = new State(tlsConfig);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
