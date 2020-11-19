@@ -12,6 +12,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack;
 
 import java.math.BigDecimal;
@@ -34,8 +35,8 @@ public class RaccoonAttackProbabilities {
     }
 
     public RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition position,
-            int zeroBitsRequiredToNextBlockBorder, BigDecimal chanceForEquation,
-            List<RaccoonAttackPskProbabilities> pskProbabilityList, BigInteger modulus) {
+        int zeroBitsRequiredToNextBlockBorder, BigDecimal chanceForEquation,
+        List<RaccoonAttackPskProbabilities> pskProbabilityList, BigInteger modulus) {
         this.position = position;
         this.bitsLeaked = zeroBitsRequiredToNextBlockBorder;
         this.chanceForEquation = chanceForEquation;

@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation;
 
 import de.rub.nds.modifiablevariable.util.ByteArrayAdapter;
@@ -143,7 +144,7 @@ public class TlsClientConfig implements Serializable {
     public ClientHelloMessage createClientHello() {
         ClientHelloMessage hello = new ClientHelloMessage(config);
         hello.setExtensions(((ClientHelloMessage) trace.getLastReceivingAction().getReceivedMessages().get(0))
-                .getExtensions());
+            .getExtensions());
         State s = new State(config);
         s.getTlsContext().setRecordLayer(new TlsRecordLayer(s.getTlsContext()));
         ClientHelloHandler handler = new ClientHelloHandler(s.getTlsContext());

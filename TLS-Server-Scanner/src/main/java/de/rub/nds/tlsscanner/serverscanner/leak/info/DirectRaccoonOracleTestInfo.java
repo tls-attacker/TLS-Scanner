@@ -12,6 +12,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -32,7 +33,7 @@ public class DirectRaccoonOracleTestInfo extends TestInfo {
     private final DirectRaccoonWorkflowType directWorkflowType;
 
     public DirectRaccoonOracleTestInfo(CipherSuite suite, ProtocolVersion version,
-            DirectRaccoonWorkflowType directWorkflowType) {
+        DirectRaccoonWorkflowType directWorkflowType) {
         this.cipherSuite = suite;
         this.version = version;
         this.directWorkflowType = directWorkflowType;

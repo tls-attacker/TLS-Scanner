@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -34,9 +35,8 @@ public class NamedGroupResult extends ProbeResult {
     private final TestResult ignoresEcdsaGroupDisparity;
 
     public NamedGroupResult(Map<NamedGroup, NamedCurveWitness> namedGroupsMap,
-            Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13, TestResult supportsExplicitPrime,
-            TestResult supportsExplicitChar2, TestResult groupsDependOnCiphersuite,
-            TestResult ignoresEcdsaGroupDisparity) {
+        Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13, TestResult supportsExplicitPrime,
+        TestResult supportsExplicitChar2, TestResult groupsDependOnCiphersuite, TestResult ignoresEcdsaGroupDisparity) {
         super(ProbeType.NAMED_GROUPS);
         this.namedGroupsMap = namedGroupsMap;
         this.namedGroupsMapTls13 = namedGroupsMapTls13;

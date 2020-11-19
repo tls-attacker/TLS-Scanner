@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -56,7 +57,7 @@ public class ResumptionProbe extends TlsProbe {
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                    TestResult.ERROR_DURING_TEST);
+                TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -102,12 +103,13 @@ public class ResumptionProbe extends TlsProbe {
             WorkflowTrace trace = state.getWorkflowTrace();
 
             trace.addTlsAction(new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
-                    new NewSessionTicketMessage(false)));
+                new NewSessionTicketMessage(false)));
             trace.addTlsAction(new ResetConnectionAction(tlsConfig.getDefaultClientConnection().getAlias()));
 
             tlsConfig.setAddPreSharedKeyExtension(Boolean.TRUE);
-            WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
-                    WorkflowTraceType.HANDSHAKE, RunningModeType.CLIENT);
+            WorkflowTrace secondHandshake =
+                new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+                    RunningModeType.CLIENT);
 
             // remove certificate messages from 2nd handshake
             ReceiveAction firstServerMsgs = (ReceiveAction) secondHandshake.getTlsActions().get(1);
@@ -159,7 +161,7 @@ public class ResumptionProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+            .getTls13SignatureAndHashAlgorithms());
         tlsConfig.setTls13BackwardsCompatibilityMode(Boolean.TRUE);
         return tlsConfig;
     }
@@ -173,9 +175,10 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setPSKKeyExchangeModes(pskKex);
             tlsConfig.setAddPSKKeyExchangeModesExtension(true);
             State state = new State(tlsConfig);
-            state.getWorkflowTrace().addTlsAction(
+            state.getWorkflowTrace()
+                .addTlsAction(
                     new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(), new NewSessionTicketMessage(
-                            false)));
+                        false)));
 
             executeState(state);
             if (state.getWorkflowTrace().getLastMessageAction().executedAsPlanned()) {

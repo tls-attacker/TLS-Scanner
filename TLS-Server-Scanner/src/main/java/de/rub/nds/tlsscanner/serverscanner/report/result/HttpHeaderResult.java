@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
@@ -102,8 +103,8 @@ public class HttpHeaderResult extends ProbeResult {
                         }
                         try {
                             String[] pinString = value.split("=");
-                            HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(
-                                    pinString[1].replace("\"", "")));
+                            HpkpPin pin =
+                                new HpkpPin(pinString[0], Base64.getDecoder().decode(pinString[1].replace("\"", "")));
                             pinList.add(pin);
                         } catch (Exception E) {
                             LOGGER.warn("HPKP was not parseable", E);
@@ -134,8 +135,9 @@ public class HttpHeaderResult extends ProbeResult {
                         if (value.trim().startsWith("pin-")) {
                             try {
                                 String[] pinString = value.split("=");
-                                HpkpPin pin = new HpkpPin(pinString[0], Base64.getDecoder().decode(
-                                        pinString[1].replace("\"", "")));
+                                HpkpPin pin =
+                                    new HpkpPin(pinString[0], Base64.getDecoder()
+                                        .decode(pinString[1].replace("\"", "")));
                                 reportOnlyPinList.add(pin);
                             } catch (Exception E) {
                                 LOGGER.warn("HPKP was not parseable", E);
@@ -146,8 +148,8 @@ public class HttpHeaderResult extends ProbeResult {
                 }
                 if (header.getHeaderName().getValue().equals("Content-Encoding")) {
                     String compressionHeaderValue = header.getHeaderValue().getValue();
-                    String[] compressionAlgorithms = { "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma",
-                            "xz" };
+                    String[] compressionAlgorithms =
+                        { "compress", "deflate", "exi", "gzip", "br", "bzip2", "lzma", "xz" };
                     for (String compression : compressionAlgorithms) {
                         if (compressionHeaderValue.contains(compression)) {
                             vulnerableBreach = TestResult.TRUE;

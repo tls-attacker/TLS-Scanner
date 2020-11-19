@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
@@ -89,7 +90,7 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
         for (int i = 0; i < unsorted.size(); i++) {
             for (ResponseCounter toCompare : unsorted) {
                 if (!sorted.contains(toCompare)
-                        && (highestCounter == null || highestCounter.getCounter() < toCompare.getCounter())) {
+                    && (highestCounter == null || highestCounter.getCounter() < toCompare.getCounter())) {
                     highestCounter = toCompare;
                 }
             }

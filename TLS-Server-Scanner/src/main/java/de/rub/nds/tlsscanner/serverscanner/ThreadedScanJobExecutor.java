@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner;
 
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
@@ -51,7 +52,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     private final ThreadPoolExecutor executor;
 
     public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
-        executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
+        executor =
+            new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
                 new NamedThreadFactory(prefix));
         this.config = config;
         this.scanJob = scanJob;
@@ -108,14 +110,16 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                         }
 
                     } catch (InterruptedException | ExecutionException ex) {
-                        LOGGER.error("Encountered an exception before we could merge the result. Killing the task.", ex);
+                        LOGGER
+                            .error("Encountered an exception before we could merge the result. Killing the task.", ex);
                         result.cancel(true);
                         finishedFutures.add(result);
                     }
                 }
 
                 if (lastMerge + 1000 * 60 * 30 < System.currentTimeMillis()) {
-                    LOGGER.error("Last result merge is more than 30 minutes ago. Starting to kill threads to unblock...");
+                    LOGGER
+                        .error("Last result merge is more than 30 minutes ago. Starting to kill threads to unblock...");
                     try {
                         ProbeResult probeResult = result.get(1, TimeUnit.MINUTES);
                         finishedFutures.add(result);
@@ -149,7 +153,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
             for (ExtractedValueContainer tempContainer : tempContainerList) {
                 if (containerMap.containsKey(tempContainer.getType())) {
                     containerMap.get(tempContainer.getType()).getExtractedValueList()
-                            .addAll(tempContainer.getExtractedValueList());
+                        .addAll(tempContainer.getExtractedValueList());
                 } else {
                     containerMap.put(tempContainer.getType(), tempContainer);
                 }

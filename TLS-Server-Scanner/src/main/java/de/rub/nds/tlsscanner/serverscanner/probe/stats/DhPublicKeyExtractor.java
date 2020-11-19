@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.stats;
 
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
@@ -28,14 +29,13 @@ public class DhPublicKeyExtractor extends StatExtractor<CustomDhPublicKey> {
     @Override
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
-        List<ProtocolMessage> allReceivedMessages = WorkflowTraceUtil.getAllReceivedMessages(trace,
-                ProtocolMessageType.HANDSHAKE);
+        List<ProtocolMessage> allReceivedMessages =
+            WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
         for (ProtocolMessage message : allReceivedMessages) {
             if (message instanceof DHEServerKeyExchangeMessage) {
                 put(new CustomDhPublicKey(new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getModulus()
-                        .getValue()), new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getGenerator()
-                        .getValue()), new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getPublicKey()
-                        .getValue())));
+                    .getValue()), new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getGenerator().getValue()),
+                    new BigInteger(1, ((DHEServerKeyExchangeMessage) message).getPublicKey().getValue())));
             }
         }
     }

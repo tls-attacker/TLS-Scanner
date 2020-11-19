@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
@@ -213,8 +214,8 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
         this.putResult(property,
-                Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
-                        : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
+            Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE : Objects.equals(result, Boolean.FALSE)
+                ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
     public synchronized void putResult(DrownVulnerabilityType result) {
@@ -282,7 +283,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedTokenBindingKeyParameters(
-            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
+        List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
@@ -331,7 +332,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedSignatureAndHashAlgorithms(
-            List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
     }
 
@@ -461,7 +462,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setPaddingOracleTestResultList(
-            List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
+        List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 
@@ -470,7 +471,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setDirectRaccoonResultList(
-            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
+        List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
         this.directRaccoonResultList = directRaccoonResultList;
     }
 
@@ -519,7 +520,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setExtractedValueContainerList(
-            Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
+        Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
@@ -551,7 +552,8 @@ public class SiteReport extends Observable implements Serializable {
         return bleichenbacherTestResultList;
     }
 
-    public synchronized void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
+    public synchronized void
+        setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
         this.bleichenbacherTestResultList = bleichenbacherTestResultList;
     }
 
@@ -616,7 +618,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedNamedGroupsWitnesses(
-            Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
+        Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
         this.supportedNamedGroupsWitnesses = supportedNamedGroupsWitnesses;
     }
 
@@ -657,7 +659,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedNamedGroupsWitnessesTls13(
-            Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
+        Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
         this.supportedNamedGroupsWitnessesTls13 = supportedNamedGroupsWitnessesTls13;
     }
 

@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
@@ -37,7 +38,7 @@ public class OcspResult extends ProbeResult {
     private final List<CertificateStatusRequestExtensionMessage> tls13CertStatus;
 
     public OcspResult(List<OcspCertificateResult> certResults,
-            List<CertificateStatusRequestExtensionMessage> tls13CertStatus) {
+        List<CertificateStatusRequestExtensionMessage> tls13CertStatus) {
         super(ProbeType.OCSP);
         this.certResults = certResults;
         this.tls13CertStatus = tls13CertStatus;

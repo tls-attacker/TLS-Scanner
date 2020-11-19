@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -38,7 +39,7 @@ public class ConfigSelector {
         sigHashList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashList);
         config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL, CompressionMethod.LZS,
-                CompressionMethod.DEFLATE);
+            CompressionMethod.DEFLATE);
         config.setQuickReceive(true);
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);

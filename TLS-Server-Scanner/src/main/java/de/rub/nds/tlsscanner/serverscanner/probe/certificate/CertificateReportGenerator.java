@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
@@ -155,7 +156,7 @@ public class CertificateReportGenerator {
     }
 
     private static void setSignatureAndHashAlgorithm(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+        org.bouncycastle.asn1.x509.Certificate cert) {
         String sigAndHashString = null;
         try {
             X509CertificateObject x509Cert = new X509CertificateObject(cert);
@@ -177,8 +178,8 @@ public class CertificateReportGenerator {
                     LOGGER.warn("Parsed an unknown SignatureAlgorithm");
                     return;
                 }
-                SignatureAndHashAlgorithm sigHashAlgo = SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(
-                        signatureAlgorithm, hashAlgorithm);
+                SignatureAndHashAlgorithm sigHashAlgo =
+                    SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
                 report.setSignatureAndHashAlgorithm(sigHashAlgo);
             }
         } catch (Exception E) {
@@ -190,7 +191,8 @@ public class CertificateReportGenerator {
 
     }
 
-    private static void setCeritifcateTransparency(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void
+        setCeritifcateTransparency(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
     private static void setOcspMustStaple(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
@@ -246,7 +248,8 @@ public class CertificateReportGenerator {
                     x509cert = new X509CertificateObject(cert);
                     issuerCert = trustAnchorManager.getTrustAnchorCertificate(x509cert.getIssuerX500Principal());
                 } catch (CertificateParsingException exp) {
-                    LOGGER.error("Certificate conversion to X509CertificateObject failed. Aborting OCSP revocation check.");
+                    LOGGER
+                        .error("Certificate conversion to X509CertificateObject failed. Aborting OCSP revocation check.");
                     return;
                 }
             }
@@ -275,7 +278,7 @@ public class CertificateReportGenerator {
     private static void setSha256Hash(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         try {
             report.setSha256Fingerprint(DatatypeConverter.printHexBinary(
-                    MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
+                MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
         } catch (IOException | NoSuchAlgorithmException e) {
             LOGGER.warn("Could not create SHA-256 Hash", e);
         }

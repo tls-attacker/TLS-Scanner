@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.config.TLSPoodleCommandConfig;
@@ -35,13 +36,13 @@ public class TlsPoodleProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            TLSPoodleCommandConfig poodleCommandConfig = new TLSPoodleCommandConfig(getScannerConfig()
-                    .getGeneralDelegate());
+            TLSPoodleCommandConfig poodleCommandConfig =
+                new TLSPoodleCommandConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) poodleCommandConfig
-                    .getDelegate(StarttlsDelegate.class);
+            StarttlsDelegate starttlsDelegate =
+                (StarttlsDelegate) poodleCommandConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
             TLSPoodleAttacker attacker = new TLSPoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
             Boolean vulnerable = attacker.isVulnerable();

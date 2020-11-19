@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.cca.*;
@@ -42,8 +43,9 @@ public class CcaRequiredProbe extends TlsProbe {
         CcaCertificateType ccaCertificateType = CcaCertificateType.EMPTY;
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
 
-        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager, ccaWorkflowType,
-                ccaCertificateType);
+        WorkflowTrace trace =
+            CcaWorkflowGenerator
+                .generateWorkflow(tlsConfig, ccaCertificateManager, ccaWorkflowType, ccaCertificateType);
         State state = new State(tlsConfig, trace);
         try {
             executeState(state);

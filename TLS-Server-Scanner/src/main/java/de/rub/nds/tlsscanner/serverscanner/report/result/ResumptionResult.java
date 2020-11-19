@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -25,7 +26,7 @@ public class ResumptionResult extends ProbeResult {
     private final TestResult supportsTls13PskDhe;
 
     public ResumptionResult(TestResult supportsResumption, TestResult supportsTls13SessionTicket,
-            TestResult supportsTls13PskDhe) {
+        TestResult supportsTls13PskDhe) {
         super(ProbeType.RESUMPTION);
         this.supportsResumption = supportsResumption;
         this.supportsTls13SessionTicket = supportsTls13SessionTicket;

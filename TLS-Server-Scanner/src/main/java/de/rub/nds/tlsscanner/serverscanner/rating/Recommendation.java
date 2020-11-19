@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -18,7 +19,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder = { "analyzedProperty", "shortName", "shortDescription", "detailedDescription", "testDocumentation",
-        "links", "propertyRecommendations" })
+    "links", "propertyRecommendations" })
 public class Recommendation {
 
     static final String NO_INFORMATION_FOUND = "No detailed information available";
@@ -55,7 +56,7 @@ public class Recommendation {
     }
 
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
-            String detailedDescription, String... links) {
+        String detailedDescription, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
@@ -65,7 +66,7 @@ public class Recommendation {
     }
 
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
-            PropertyResultRecommendation propertyRecommendation, String... links) {
+        PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
@@ -75,7 +76,7 @@ public class Recommendation {
     }
 
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
-            String detailedDescription, PropertyResultRecommendation propertyRecommendation, String... links) {
+        String detailedDescription, PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
@@ -86,8 +87,8 @@ public class Recommendation {
     }
 
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
-            String detailedDescription, String testDocumentation, List<String> links,
-            List<PropertyResultRecommendation> propertyRecommendations) {
+        String detailedDescription, String testDocumentation, List<String> links,
+        List<PropertyResultRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
         this.shortDescription = shortDescription;

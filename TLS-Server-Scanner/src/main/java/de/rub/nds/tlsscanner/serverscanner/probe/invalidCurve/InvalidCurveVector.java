@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
@@ -34,8 +35,8 @@ public class InvalidCurveVector implements Vector {
     }
 
     public InvalidCurveVector(ProtocolVersion protocolVersion, CipherSuite cipherSuite, NamedGroup namedGroup,
-            ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation,
-            List<NamedGroup> ecdsaRequiredGroups) {
+        ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation,
+        List<NamedGroup> ecdsaRequiredGroups) {
 
         this.protocolVersion = protocolVersion;
         this.cipherSuite = cipherSuite;
@@ -93,7 +94,8 @@ public class InvalidCurveVector implements Vector {
         String parameter = ">";
         parameter = parameter + cipherSuite.toString();
 
-        parameter = protocolVersion.toString() + ">" + namedGroup.toString() + ">"
+        parameter =
+            protocolVersion.toString() + ">" + namedGroup.toString() + ">"
                 + (attackInRenegotiation ? "Renegotiation>" : "") + pointFormat.toString() + parameter
                 + (twistAttack ? ">CurveTwist" : "");
         return parameter;
@@ -108,7 +110,7 @@ public class InvalidCurveVector implements Vector {
 
     /**
      * @param attackInRenegotiation
-     *            the attackInRenegotiation to set
+     * the attackInRenegotiation to set
      */
     public void setAttackInRenegotiation(boolean attackInRenegotiation) {
         this.attackInRenegotiation = attackInRenegotiation;
@@ -125,10 +127,9 @@ public class InvalidCurveVector implements Vector {
 
     public boolean equals(InvalidCurveVector toCompare) {
         if (protocolVersion != toCompare.getProtocolVersion() || cipherSuite != toCompare.getCipherSuite()
-                || namedGroup != toCompare.getNamedGroup() || pointFormat != toCompare.getPointFormat()
-                || twistAttack != toCompare.isTwistAttack()
-                || attackInRenegotiation != toCompare.isAttackInRenegotiation()
-                || !ecdsaRequiredGroups.equals(toCompare.getEcdsaRequiredGroups())) {
+            || namedGroup != toCompare.getNamedGroup() || pointFormat != toCompare.getPointFormat()
+            || twistAttack != toCompare.isTwistAttack() || attackInRenegotiation != toCompare.isAttackInRenegotiation()
+            || !ecdsaRequiredGroups.equals(toCompare.getEcdsaRequiredGroups())) {
             return false;
         }
 

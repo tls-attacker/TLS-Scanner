@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result.ocsp;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
@@ -38,8 +39,8 @@ public class OcspCertificateResult {
     }
 
     public OcspCertificateResult(CertificateChain certificate, Boolean supportsOcsp, boolean supportsStapling,
-            boolean mustStaple, boolean supportsNonce, OCSPResponse stapledResponse, OCSPResponse firstResponse,
-            OCSPResponse secondResponse, OCSPResponse httpGetResponse) {
+        boolean mustStaple, boolean supportsNonce, OCSPResponse stapledResponse, OCSPResponse firstResponse,
+        OCSPResponse secondResponse, OCSPResponse httpGetResponse) {
         this.certificate = certificate;
         this.supportsOcsp = supportsOcsp;
         this.supportsStapling = supportsStapling;
@@ -126,8 +127,8 @@ public class OcspCertificateResult {
 
                 // Check if status is actually outdated and not valid anymore
                 CertificateStatus certificateStatus = stapledResponse.getCertificateStatusList().get(0);
-                LocalDateTime certificateStatusUpdateValidTill = LocalDateTime.parse(
-                        certificateStatus.getTimeOfNextUpdate(), inputFormatter);
+                LocalDateTime certificateStatusUpdateValidTill =
+                    LocalDateTime.parse(certificateStatus.getTimeOfNextUpdate(), inputFormatter);
                 LocalDateTime currentTime = LocalDateTime.now();
 
                 if (certificateStatusUpdateValidTill.isBefore(currentTime)) {

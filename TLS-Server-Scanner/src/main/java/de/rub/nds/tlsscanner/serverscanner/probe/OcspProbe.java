@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.asn1.Asn1Encodable;
@@ -120,7 +121,8 @@ public class OcspProbe extends TlsProbe {
         if (supportedExtensions.contains(ExtensionType.STATUS_REQUEST)) {
             certResult.setSupportsStapling(true);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace())) {
-                certificateStatusMessage = (CertificateStatusMessage) WorkflowTraceUtil.getFirstReceivedMessage(
+                certificateStatusMessage =
+                    (CertificateStatusMessage) WorkflowTraceUtil.getFirstReceivedMessage(
                         HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace());
             }
         } else {
@@ -130,7 +132,7 @@ public class OcspProbe extends TlsProbe {
         if (certificateStatusMessage != null) {
             try {
                 certResult.setStapledResponse(OCSPResponseParser.parseResponse(certificateStatusMessage
-                        .getOcspResponseBytes().getValue()));
+                    .getOcspResponseBytes().getValue()));
             } catch (Exception e) {
                 LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
             }
@@ -139,8 +141,8 @@ public class OcspProbe extends TlsProbe {
 
     private void performRequest(Certificate serverCertificateChain, OcspCertificateResult certResult) {
         try {
-            CertificateInformationExtractor mainCertExtractor = new CertificateInformationExtractor(
-                    serverCertificateChain.getCertificateAt(0));
+            CertificateInformationExtractor mainCertExtractor =
+                new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
             URL ocspResponderUrl;
 
             // Check if leaf certificate supports OCSP
@@ -148,7 +150,8 @@ public class OcspProbe extends TlsProbe {
                 ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
                 certResult.setSupportsOcsp(true);
             } catch (NoSuchFieldException ex) {
-                LOGGER.debug("Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
+                LOGGER
+                    .debug("Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
                 certResult.setSupportsOcsp(false);
                 return;
             } catch (Exception ex) {
@@ -236,7 +239,7 @@ public class OcspProbe extends TlsProbe {
     public boolean canBeExecuted(SiteReport report) {
         // We also need the tls13 groups to perform a tls13 handshake
         return report.getCertificateChainList() != null && !report.getCertificateChainList().isEmpty()
-                && report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS);
+            && report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS);
     }
 
     @Override
@@ -271,7 +274,7 @@ public class OcspProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+            .getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         List<PskKeyExchangeMode> pskKex = new LinkedList<>();
         pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
@@ -280,8 +283,9 @@ public class OcspProbe extends TlsProbe {
         tlsConfig.setAddPSKKeyExchangeModesExtension(true);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
-            CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil.getFirstReceivedMessage(
-                    HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
+            CertificateMessage certificateMessage =
+                (CertificateMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE,
+                    state.getWorkflowTrace());
             List<CertificateEntry> certificateEntries = certificateMessage.getCertificatesListAsEntry();
             for (CertificateEntry certificateEntry : certificateEntries) {
                 for (ExtensionMessage extensionMessage : certificateEntry.getExtensions()) {

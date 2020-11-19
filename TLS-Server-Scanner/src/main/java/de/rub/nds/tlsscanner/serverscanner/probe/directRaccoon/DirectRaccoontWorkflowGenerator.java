@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -29,8 +30,9 @@ import java.math.BigInteger;
 public class DirectRaccoontWorkflowGenerator {
 
     public static WorkflowTrace generateWorkflow(Config tlsConfig, DirectRaccoonWorkflowType type,
-            BigInteger initialDhSecret, boolean withNullByte) {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig
+        BigInteger initialDhSecret, boolean withNullByte) {
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig
                 .getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
@@ -44,7 +46,7 @@ public class DirectRaccoontWorkflowGenerator {
                     break;
                 case CKE_CCS_FIN:
                     trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(tlsConfig), new FinishedMessage(
-                            tlsConfig)));
+                        tlsConfig)));
                     break;
                 default:
                     break;

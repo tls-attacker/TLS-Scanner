@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.stats;
 
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -29,12 +30,12 @@ public class EcPublicKeyExtractor extends StatExtractor<Point> {
     @Override
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
-        List<ProtocolMessage> allReceivedMessages = WorkflowTraceUtil.getAllReceivedMessages(trace,
-                ProtocolMessageType.HANDSHAKE);
+        List<ProtocolMessage> allReceivedMessages =
+            WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
         for (ProtocolMessage message : allReceivedMessages) {
             if (message instanceof ECDHEServerKeyExchangeMessage) {
-                NamedGroup group = NamedGroup.getNamedGroup(((ECDHEServerKeyExchangeMessage) message).getNamedGroup()
-                        .getValue());
+                NamedGroup group =
+                    NamedGroup.getNamedGroup(((ECDHEServerKeyExchangeMessage) message).getNamedGroup().getValue());
                 byte[] pointBytes = ((ECDHEServerKeyExchangeMessage) message).getPublicKey().getValue();
                 put(PointFormatter.formatFromByteArray(group, pointBytes));
             }

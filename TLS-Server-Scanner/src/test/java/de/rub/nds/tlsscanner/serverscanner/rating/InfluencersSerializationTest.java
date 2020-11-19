@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -75,7 +76,7 @@ public class InfluencersSerializationTest {
         result = (RatingInfluencers) um.unmarshal(new StringReader(xmlString));
 
         assertEquals("Influencer length check.", original.getRatingInfluencers().size(), result.getRatingInfluencers()
-                .size());
+            .size());
 
         RatingInfluencer oInfluencer = original.getRatingInfluencers().get(0);
         RatingInfluencer rInfluencer = result.getRatingInfluencers().get(0);

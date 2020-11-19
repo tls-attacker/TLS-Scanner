@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -26,13 +27,13 @@ public class RatingInfluencer {
     }
 
     public RatingInfluencer(AnalyzedProperty influencerConstant,
-            List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
+        List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
 
     public RatingInfluencer(AnalyzedProperty influencerConstant,
-            PropertyResultRatingInfluencer... propertyRatingInfluencers) {
+        PropertyResultRatingInfluencer... propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = Arrays.asList(propertyRatingInfluencers);
     }

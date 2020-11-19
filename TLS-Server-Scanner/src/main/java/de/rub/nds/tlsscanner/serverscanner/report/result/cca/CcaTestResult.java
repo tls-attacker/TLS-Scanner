@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result.cca;
 
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
@@ -23,7 +24,7 @@ public class CcaTestResult {
     private final CipherSuite cipherSuite;
 
     public CcaTestResult(Boolean succeeded, CcaWorkflowType workflowType, CcaCertificateType certificateType,
-            ProtocolVersion protocolVersion, CipherSuite cipherSuite) {
+        ProtocolVersion protocolVersion, CipherSuite cipherSuite) {
         this.succeeded = succeeded;
         this.workflowType = workflowType;
         this.certificateType = certificateType;

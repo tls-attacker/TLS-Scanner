@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
@@ -35,11 +36,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import sun.security.util.HostnameChecker;
 
 /**
- * Note: Please do not copy from this code - (or any other certificate related
- * code (or any TLS code)). This code is not meant for productive usage and is
- * very very likely doing things which are terribly bad in any real system. This
- * code is only built for security analysis purposes. Do not use it for anything
- * but this!
+ * Note: Please do not copy from this code - (or any other certificate related code (or any TLS code)). This code is not
+ * meant for productive usage and is very very likely doing things which are terribly bad in any real system. This code
+ * is only built for security analysis purposes. Do not use it for anything but this!
  *
  * @author ic0ns
  */
@@ -119,7 +118,7 @@ public class CertificateChain {
 
         if (leafReport != null) {
             if (certificateReportList.isEmpty()
-                    || !certificateReportList.get(0).getSHA256Fingerprint().equals(leafReport.getSHA256Fingerprint())) {
+                || !certificateReportList.get(0).getSHA256Fingerprint().equals(leafReport.getSHA256Fingerprint())) {
                 chainIsOrdered = false;
             } else {
                 chainIsOrdered = checkCertifiteChainIsOrdered(certificateReportList);
@@ -145,16 +144,16 @@ public class CertificateChain {
                     // the trust store
                     if (TrustAnchorManager.getInstance().isInitialized()) {
                         if (TrustAnchorManager.getInstance().isTrustAnchor(
-                                tempCertificate.convertToX509Certificate().getIssuerX500Principal())) {
+                            tempCertificate.convertToX509Certificate().getIssuerX500Principal())) {
                             // Certificate is issued by trust anchor
                             LOGGER.debug("Could find issuer");
                             chainIsComplete = true;
-                            org.bouncycastle.asn1.x509.Certificate trustAnchorCertificate = TrustAnchorManager
-                                    .getInstance().getTrustAnchorCertificate(
-                                            tempCertificate.convertToX509Certificate().getIssuerX500Principal());
+                            org.bouncycastle.asn1.x509.Certificate trustAnchorCertificate =
+                                TrustAnchorManager.getInstance().getTrustAnchorCertificate(
+                                    tempCertificate.convertToX509Certificate().getIssuerX500Principal());
                             if (trustAnchorCertificate != null) {
-                                CertificateReport trustAnchorReport = CertificateReportGenerator
-                                        .generateReport(trustAnchorCertificate);
+                                CertificateReport trustAnchorReport =
+                                    CertificateReportGenerator.generateReport(trustAnchorCertificate);
                                 orderedCertificateChain.add(trustAnchorReport);
                                 trustAnchorReport.setTrustAnchor(true);
                                 trustAnchor = trustAnchorReport;
@@ -185,16 +184,16 @@ public class CertificateChain {
                 containsExpired = true;
             }
             if (Objects.equals(report.isTrustAnchor(), Boolean.FALSE)
-                    && Objects.equals(report.getSelfSigned(), Boolean.FALSE)
-                    && report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5
-                    || report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1) {
+                && Objects.equals(report.getSelfSigned(), Boolean.FALSE)
+                && report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5
+                || report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1) {
                 containsWeakSignedNonTruststoresCertificates = true;
             }
         }
         for (CertificateReport report : certificateReportList) {
             if (Objects.equals(report.isTrustAnchor(), Boolean.FALSE)
-                    && Objects.equals(report.getSelfSigned(), Boolean.TRUE)
-                    && Objects.equals(report.getLeafCertificate(), Boolean.TRUE)) {
+                && Objects.equals(report.getSelfSigned(), Boolean.TRUE)
+                && Objects.equals(report.getLeafCertificate(), Boolean.TRUE)) {
                 certificateIssues.add(CertificateIssue.SELF_SIGNED);
                 break;
             }
@@ -218,7 +217,7 @@ public class CertificateChain {
             certificateIssues.add(CertificateIssue.WEAK_SIGNATURE_OR_HASH_ALGORITHM);
         }
         if (Objects.equals(chainIsComplete, Boolean.TRUE) && Objects.equals(containsValidLeaf, Boolean.TRUE)
-                && Objects.equals(containsExpired, Boolean.FALSE) && Objects.equals(containsNotYetValid, Boolean.FALSE)) {
+            && Objects.equals(containsExpired, Boolean.FALSE) && Objects.equals(containsNotYetValid, Boolean.FALSE)) {
             CertPathValidationResult certPathValidationResult = evaluateGeneralTrust(orderedCertificateChain);
             generallyTrusted = certPathValidationResult.isValid();
             if (!generallyTrusted) {
@@ -360,10 +359,11 @@ public class CertificateChain {
             certPath[i] = new X509CertificateHolder(orderedCertificateChain.get(i).getCertificate());
         }
         CertPath path = new CertPath(certPath);
-        X509ContentVerifierProviderBuilder verifier = new JcaX509ContentVerifierProviderBuilder()
-                .setProvider(BouncyCastleProvider.PROVIDER_NAME);
-        CertPathValidationResult result = path.validate(new CertPathValidation[] {
-                new ParentCertIssuedValidation(verifier), new BasicConstraintsValidation(), new KeyUsageValidation() });
+        X509ContentVerifierProviderBuilder verifier =
+            new JcaX509ContentVerifierProviderBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME);
+        CertPathValidationResult result =
+            path.validate(new CertPathValidation[] { new ParentCertIssuedValidation(verifier),
+                new BasicConstraintsValidation(), new KeyUsageValidation() });
 
         return result;
     }
@@ -381,16 +381,16 @@ public class CertificateChain {
         }
         final CertificateChain otherCert = (CertificateChain) obj;
         if (certificateReportList.size() != otherCert.getCertificateReportList().size()
-                || !Objects.equals(generallyTrusted, otherCert.getGenerallyTrusted())
-                || !Objects.equals(containsTrustAnchor, otherCert.getContainsTrustAnchor())
-                || !Objects.equals(chainIsComplete, otherCert.getChainIsComplete())
-                || !Objects.equals(chainIsOrdered, otherCert.getChainIsOrdered())
-                || !Objects.equals(containsMultipleLeafs, otherCert.getContainsMultipleLeafs())
-                || !Objects.equals(containsValidLeaf, otherCert.getContainsValidLeaf())
-                || !Objects.equals(containsNotYetValid, otherCert.getContainsNotYetValid())
-                || !Objects.equals(containsExpired, otherCert.getContainsExpired())
-                || !Objects.equals(containsWeakSignedNonTruststoresCertificates,
-                        otherCert.getContainsWeakSignedNonTruststoresCertificates())) {
+            || !Objects.equals(generallyTrusted, otherCert.getGenerallyTrusted())
+            || !Objects.equals(containsTrustAnchor, otherCert.getContainsTrustAnchor())
+            || !Objects.equals(chainIsComplete, otherCert.getChainIsComplete())
+            || !Objects.equals(chainIsOrdered, otherCert.getChainIsOrdered())
+            || !Objects.equals(containsMultipleLeafs, otherCert.getContainsMultipleLeafs())
+            || !Objects.equals(containsValidLeaf, otherCert.getContainsValidLeaf())
+            || !Objects.equals(containsNotYetValid, otherCert.getContainsNotYetValid())
+            || !Objects.equals(containsExpired, otherCert.getContainsExpired())
+            || !Objects.equals(containsWeakSignedNonTruststoresCertificates,
+                otherCert.getContainsWeakSignedNonTruststoresCertificates())) {
             return false;
         } else {
             for (int i = 0; i < certificateReportList.size(); i++) {

@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
@@ -25,7 +26,7 @@ public class DirectRaccoonVector implements Vector {
     private final boolean pmsWithNullByte;
 
     public DirectRaccoonVector(DirectRaccoonWorkflowType type, ProtocolVersion version, CipherSuite suite,
-            boolean pmsWithNullByte) {
+        boolean pmsWithNullByte) {
         this.type = type;
         this.version = version;
         this.suite = suite;
@@ -71,7 +72,7 @@ public class DirectRaccoonVector implements Vector {
     @Override
     public String toString() {
         return "DirectRaccoonVector{" + "type=" + type + ", version=" + version + ", suite=" + suite
-                + ", pmsWithNullByte=" + pmsWithNullByte + '}';
+            + ", pmsWithNullByte=" + pmsWithNullByte + '}';
     }
 
     @Override

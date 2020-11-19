@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -78,13 +79,12 @@ public class CommonBugProbeResult extends ProbeResult {
     // client hello
     // messages
     public CommonBugProbeResult(TestResult extensionIntolerance, TestResult cipherSuiteIntolerance,
-            TestResult cipherSuiteLengthIntolerance512, TestResult compressionIntolerance,
-            TestResult versionIntolerance, TestResult alpnIntolerance, TestResult clientHelloLengthIntolerance,
-            TestResult emptyLastExtensionIntolerance, TestResult onlySecondCiphersuiteByteEvaluated,
-            TestResult namedGroupIntolerant, TestResult namedSignatureAndHashAlgorithmIntolerance,
-            TestResult ignoresCipherSuiteOffering, TestResult reflectsCipherSuiteOffering,
-            TestResult ignoresOfferedNamedGroups, TestResult ignoresOfferedSignatureAndHashAlgorithms,
-            TestResult maxLengthClientHelloIntolerant) {
+        TestResult cipherSuiteLengthIntolerance512, TestResult compressionIntolerance, TestResult versionIntolerance,
+        TestResult alpnIntolerance, TestResult clientHelloLengthIntolerance, TestResult emptyLastExtensionIntolerance,
+        TestResult onlySecondCiphersuiteByteEvaluated, TestResult namedGroupIntolerant,
+        TestResult namedSignatureAndHashAlgorithmIntolerance, TestResult ignoresCipherSuiteOffering,
+        TestResult reflectsCipherSuiteOffering, TestResult ignoresOfferedNamedGroups,
+        TestResult ignoresOfferedSignatureAndHashAlgorithms, TestResult maxLengthClientHelloIntolerant) {
         super(ProbeType.COMMON_BUGS);
         this.extensionIntolerance = extensionIntolerance;
         this.cipherSuiteIntolerance = cipherSuiteIntolerance;
@@ -116,7 +116,8 @@ public class CommonBugProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE, emptyLastExtensionIntolerance);
         report.putResult(AnalyzedProperty.HAS_SECOND_CIPHERSUITE_BYTE_BUG, onlySecondCiphersuiteByteEvaluated);
         report.putResult(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, namedGroupIntolerant);
-        report.putResult(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE, namedSignatureAndHashAlgorithmIntolerance);
+        report
+            .putResult(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE, namedSignatureAndHashAlgorithmIntolerance);
         report.putResult(AnalyzedProperty.IGNORES_OFFERED_CIPHERSUITES, ignoresCipherSuiteOffering);
         report.putResult(AnalyzedProperty.REFLECTS_OFFERED_CIPHERSUITES, reflectsCipherSuiteOffering);
         report.putResult(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, ignoresOfferedNamedGroups);

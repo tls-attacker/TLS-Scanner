@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher;
 
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
@@ -38,8 +39,8 @@ public class BleichenbacherTestResult {
     }
 
     public BleichenbacherTestResult(Boolean vulnerable, BleichenbacherCommandConfig.Type scanDetail,
-            BleichenbacherWorkflowType workflowType, List<VectorResponse> vectorFingerPrintPairList,
-            EqualityError equalityError) {
+        BleichenbacherWorkflowType workflowType, List<VectorResponse> vectorFingerPrintPairList,
+        EqualityError equalityError) {
         this.vulnerable = vulnerable;
         this.scanDetail = scanDetail;
         this.workflowType = workflowType;

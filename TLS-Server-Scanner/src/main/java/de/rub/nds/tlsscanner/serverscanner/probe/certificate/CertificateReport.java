@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
@@ -248,11 +249,11 @@ public class CertificateReport {
         }
         if (signatureAndHashAlgorithm != null) {
             builder.append("Signature Algorithm: ").append(signatureAndHashAlgorithm.getSignatureAlgorithm().name())
-                    .append("\n");
+                .append("\n");
         }
         if (signatureAndHashAlgorithm != null) {
             builder.append("Hash Algorithm     : ").append(signatureAndHashAlgorithm.getHashAlgorithm().name())
-                    .append("\n");
+                .append("\n");
         }
         if (extendedValidation != null) {
             builder.append("Extended Validation: ").append(extendedValidation).append("\n");
@@ -340,29 +341,28 @@ public class CertificateReport {
 
         final CertificateReport otherReport = (CertificateReport) obj;
         if (!Objects.equals(subject, otherReport.getSubject())
-                || !Objects.equals(commonNames, otherReport.getCommonNames())
-                || !Objects.equals(alternativenames, otherReport.getAlternativenames())
-                || !Objects.equals(validFrom, otherReport.getValidFrom())
-                || !Objects.equals(validTo, otherReport.getValidTo())
-                || !Objects.equals(publicKey, otherReport.getPublicKey())
-                || !Objects.equals(weakDebianKey, otherReport.getWeakDebianKey())
-                || !Objects.equals(issuer, otherReport.getIssuer())
-                || !Objects.equals(signatureAndHashAlgorithm, otherReport.getSignatureAndHashAlgorithm())
-                || !Objects.equals(extendedValidation, otherReport.getExtendedValidation())
-                || !Objects.equals(certificateTransparency, otherReport.getCertificateTransparency())
-                || !Objects.equals(ocspMustStaple, otherReport.getOcspMustStaple())
-                || !Objects.equals(crlSupported, otherReport.getCrlSupported())
-                || !Objects.equals(ocspSupported, otherReport.getOcspSupported())
-                || !Objects.equals(revoked, otherReport.getRevoked())
-                || !Objects.equals(dnsCAA, otherReport.getDnsCAA())
-                || !Objects.equals(trusted, otherReport.getTrusted())
-                || !Objects.equals(sha256Fingerprint, otherReport.getSHA256Fingerprint())
-                || !Objects.equals(rocaVulnerable, otherReport.getRocaVulnerable())
-                || !Objects.equals(trustAnchor, otherReport.isTrustAnchor())
-                || !Objects.equals(selfSigned, otherReport.getSelfSigned())
-                || !Objects.equals(leafCertificate, otherReport.getLeafCertificate())
-                || !Objects.equals(sha256Pin, otherReport.getSha256Pin())
-                || !Objects.equals(certificate.getSerialNumber(), otherReport.getCertificate().getSerialNumber())) {
+            || !Objects.equals(commonNames, otherReport.getCommonNames())
+            || !Objects.equals(alternativenames, otherReport.getAlternativenames())
+            || !Objects.equals(validFrom, otherReport.getValidFrom())
+            || !Objects.equals(validTo, otherReport.getValidTo())
+            || !Objects.equals(publicKey, otherReport.getPublicKey())
+            || !Objects.equals(weakDebianKey, otherReport.getWeakDebianKey())
+            || !Objects.equals(issuer, otherReport.getIssuer())
+            || !Objects.equals(signatureAndHashAlgorithm, otherReport.getSignatureAndHashAlgorithm())
+            || !Objects.equals(extendedValidation, otherReport.getExtendedValidation())
+            || !Objects.equals(certificateTransparency, otherReport.getCertificateTransparency())
+            || !Objects.equals(ocspMustStaple, otherReport.getOcspMustStaple())
+            || !Objects.equals(crlSupported, otherReport.getCrlSupported())
+            || !Objects.equals(ocspSupported, otherReport.getOcspSupported())
+            || !Objects.equals(revoked, otherReport.getRevoked()) || !Objects.equals(dnsCAA, otherReport.getDnsCAA())
+            || !Objects.equals(trusted, otherReport.getTrusted())
+            || !Objects.equals(sha256Fingerprint, otherReport.getSHA256Fingerprint())
+            || !Objects.equals(rocaVulnerable, otherReport.getRocaVulnerable())
+            || !Objects.equals(trustAnchor, otherReport.isTrustAnchor())
+            || !Objects.equals(selfSigned, otherReport.getSelfSigned())
+            || !Objects.equals(leafCertificate, otherReport.getLeafCertificate())
+            || !Objects.equals(sha256Pin, otherReport.getSha256Pin())
+            || !Objects.equals(certificate.getSerialNumber(), otherReport.getCertificate().getSerialNumber())) {
             return false;
         }
 

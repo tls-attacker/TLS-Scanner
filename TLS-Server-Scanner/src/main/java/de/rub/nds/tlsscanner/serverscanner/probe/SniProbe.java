@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -51,8 +52,9 @@ public class SniProbe extends TlsProbe {
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
             toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             config.setDefaultClientSupportedCiphersuites(toTestList);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                    WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
+            WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.SHORT_HELLO,
+                    RunningModeType.CLIENT);
             State state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
@@ -60,7 +62,8 @@ public class SniProbe extends TlsProbe {
             }
             // Test if we can get a hello with SNI
             config.setAddServerNameIndicationExtension(true);
-            trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
+            trace =
+                new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
                     RunningModeType.CLIENT);
             state = new State(config, trace);
             executeState(state);

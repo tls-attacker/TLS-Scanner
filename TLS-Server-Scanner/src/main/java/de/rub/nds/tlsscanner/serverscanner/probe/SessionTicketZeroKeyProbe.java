@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import java.util.ArrayList;
@@ -46,15 +47,13 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketZeroKeyRes
  * 
  * The Probe checks for CVE-2020-13777.
  * 
- * Quote: "GnuTLS 3.6.x before 3.6.14 uses incorrect cryptography for encrypting
- * a session ticket (a loss of confidentiality in TLS 1.2, and an authentication
- * bypass in TLS 1.3). The earliest affected version is 3.6.4 (2018-09-24)
- * because of an error in a 2018-09-18 commit. Until the first key rotation, the
- * TLS server always uses wrong data in place of an encryption key derived from
- * an application."[1]
+ * Quote: "GnuTLS 3.6.x before 3.6.14 uses incorrect cryptography for encrypting a session ticket (a loss of
+ * confidentiality in TLS 1.2, and an authentication bypass in TLS 1.3). The earliest affected version is 3.6.4
+ * (2018-09-24) because of an error in a 2018-09-18 commit. Until the first key rotation, the TLS server always uses
+ * wrong data in place of an encryption key derived from an application."[1]
  * 
- * Reference [1]: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13777
- * Reference [2]: https://www.gnutls.org/security-new.html
+ * Reference [1]: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13777 Reference [2]:
+ * https://www.gnutls.org/security-new.html
  * 
  */
 public class SessionTicketZeroKeyProbe extends TlsProbe {
@@ -75,14 +74,12 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     public static final int IV_LEN = 16;
 
     /**
-     * Offset of the length field for the in the encrypted state according to
-     * the ticket struct in rfc5077
+     * Offset of the length field for the in the encrypted state according to the ticket struct in rfc5077
      */
     public static final int SESSION_STATE_LENFIELD_OFFSET = 32;
 
     /**
-     * Length of the length field for the in the encrypted state according to
-     * the ticket struct in rfc5077
+     * Length of the length field for the in the encrypted state according to the ticket struct in rfc5077
      */
     public static final int SESSION_STATE_LENFIELD_LEN = 2;
 
@@ -140,11 +137,12 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
 
         try {
             iv = Arrays.copyOfRange(ticket, IV_OFFSET, IV_OFFSET + IV_LEN);
-            byte[] sessionStateLen = Arrays.copyOfRange(ticket, SESSION_STATE_LENFIELD_OFFSET,
-                    SESSION_STATE_LENFIELD_OFFSET + SESSION_STATE_LENFIELD_LEN);
+            byte[] sessionStateLen =
+                Arrays.copyOfRange(ticket, SESSION_STATE_LENFIELD_OFFSET, SESSION_STATE_LENFIELD_OFFSET
+                    + SESSION_STATE_LENFIELD_LEN);
             int sessionStateLenInt = ArrayConverter.bytesToInt(sessionStateLen);
-            encryptedSessionState = Arrays.copyOfRange(ticket, SESSION_STATE_OFFSET, SESSION_STATE_OFFSET
-                    + sessionStateLenInt);
+            encryptedSessionState =
+                Arrays.copyOfRange(ticket, SESSION_STATE_OFFSET, SESSION_STATE_OFFSET + sessionStateLenInt);
             Cipher cipher = Cipher.getInstance("AES/CBC/NOPADDING");
             SecretKey aesKey = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));

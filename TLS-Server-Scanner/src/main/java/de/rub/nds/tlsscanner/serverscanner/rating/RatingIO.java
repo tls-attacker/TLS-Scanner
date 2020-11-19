@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.modifiablevariable.util.XMLPrettyPrinter;
@@ -41,7 +42,7 @@ public class RatingIO {
         try {
             os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
         } catch (IOException | TransformerException | XPathExpressionException | ParserConfigurationException
-                | SAXException ex) {
+            | SAXException ex) {
             throw new RuntimeException("Could not format XML");
         }
     }
@@ -69,7 +70,7 @@ public class RatingIO {
         try {
             os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
         } catch (IOException | TransformerException | XPathExpressionException | ParserConfigurationException
-                | SAXException ex) {
+            | SAXException ex) {
             throw new RuntimeException("Could not format XML");
         }
     }

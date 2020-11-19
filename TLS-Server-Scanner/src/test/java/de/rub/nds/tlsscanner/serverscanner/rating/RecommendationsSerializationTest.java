@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -46,8 +47,8 @@ public class RecommendationsSerializationTest {
         List<Recommendation> propertyRecommendations = new LinkedList<>();
         original = new Recommendations(propertyRecommendations);
         List<PropertyResultRecommendation> recommendations = new LinkedList<>();
-        PropertyResultRecommendation r = new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled",
-                "Disable SSLv2");
+        PropertyResultRecommendation r =
+            new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
         recommendations.add(r);
 
         propertyRecommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_2, recommendations));
@@ -71,7 +72,7 @@ public class RecommendationsSerializationTest {
         result = (Recommendations) um.unmarshal(new StringReader(xmlString));
 
         assertEquals("Recommendation length check.", original.getRecommendations().size(), result.getRecommendations()
-                .size());
+            .size());
 
         Recommendation oRecommendation = original.getRecommendations().get(0);
         Recommendation rRecommendation = result.getRecommendations().get(0);

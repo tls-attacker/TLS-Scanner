@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
@@ -50,8 +51,9 @@ public class SimulationRequest {
             trace.addTlsAction(sendAction);
         } else {
             ClientHelloMessage msg = new ClientHelloMessage(config);
-            List<ExtensionMessage> extensions = WorkflowTraceUtil.getLastReceivedMessage(
-                    HandshakeMessageType.CLIENT_HELLO, tlsClientConfig.getTrace()).getExtensions();
+            List<ExtensionMessage> extensions =
+                WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.CLIENT_HELLO, tlsClientConfig.getTrace())
+                    .getExtensions();
             msg.setExtensions(extensions);
             trace.addTlsAction(new SendAction(msg));
         }

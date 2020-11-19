@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -64,7 +65,7 @@ public class Recommendations implements Serializable {
             }
         }
         return new PropertyResultRecommendation(result, Recommendation.NO_RECOMMENDATION_FOUND,
-                Recommendation.NO_RECOMMENDATION_FOUND);
+            Recommendation.NO_RECOMMENDATION_FOUND);
     }
 
     public Recommendation getRecommendation(AnalyzedProperty property) {

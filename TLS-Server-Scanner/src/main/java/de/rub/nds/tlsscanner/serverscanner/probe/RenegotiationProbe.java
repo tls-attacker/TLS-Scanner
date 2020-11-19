@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -91,8 +92,8 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
-                RunningModeType.CLIENT);
+        WorkflowTrace trace =
+            configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -124,8 +125,8 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
-                RunningModeType.CLIENT);
+        WorkflowTrace trace =
+            configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -139,7 +140,7 @@ public class RenegotiationProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return (report.getCipherSuites() != null && (report.getCipherSuites().size() > 0 || supportsOnlyTls13(report)) && report
-                .getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION) != TestResult.NOT_TESTED_YET);
+            .getResult(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION) != TestResult.NOT_TESTED_YET);
     }
 
     @Override
@@ -154,13 +155,12 @@ public class RenegotiationProbe extends TlsProbe {
     }
 
     /**
-     * Used to run the probe with empty CS list if we already know versions
-     * before TLS 1.3 are not supported, to avoid stalling of probes that depend
-     * on this one
+     * Used to run the probe with empty CS list if we already know versions before TLS 1.3 are not supported, to avoid
+     * stalling of probes that depend on this one
      */
     private boolean supportsOnlyTls13(SiteReport report) {
         return report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.FALSE
-                && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.FALSE
-                && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.FALSE;
+            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.FALSE
+            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.FALSE;
     }
 }

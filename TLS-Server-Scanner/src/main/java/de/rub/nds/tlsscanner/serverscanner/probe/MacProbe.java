@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.VariableModification;
@@ -108,24 +109,26 @@ public class MacProbe extends TlsProbe {
         config.setAddServerNameIndicationExtension(true);
         config.setWorkflowExecutorShouldClose(false);
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
                 RunningModeType.CLIENT);
         HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
 
         httpsRequestMessage.getHeader().add(new HostHeader());
         httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
         httpsRequestMessage.getHeader().add(
-                new GenericHttpsHeader("Accept",
-                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
+            new GenericHttpsHeader("Accept",
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
         httpsRequestMessage.getHeader().add(
-                new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
+            new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
         httpsRequestMessage.getHeader().add(
-                new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
+            new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
         httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
         httpsRequestMessage
-                .getHeader()
-                .add(new GenericHttpsHeader("User-Agent",
-                        "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
+            .getHeader()
+            .add(
+                new GenericHttpsHeader("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
 
         trace.addTlsAction(new SendAction(httpsRequestMessage));
         trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
@@ -151,24 +154,26 @@ public class MacProbe extends TlsProbe {
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
         VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
                 RunningModeType.CLIENT);
         HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
 
         httpsRequestMessage.getHeader().add(new HostHeader());
         httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
         httpsRequestMessage.getHeader().add(
-                new GenericHttpsHeader("Accept",
-                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
+            new GenericHttpsHeader("Accept",
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
         httpsRequestMessage.getHeader().add(
-                new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
+            new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
         httpsRequestMessage.getHeader().add(
-                new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
+            new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
         httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
         httpsRequestMessage
-                .getHeader()
-                .add(new GenericHttpsHeader("User-Agent",
-                        "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
+            .getHeader()
+            .add(
+                new GenericHttpsHeader("User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
 
         trace.addTlsAction(new SendAction(httpsRequestMessage));
         trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
@@ -185,17 +190,19 @@ public class MacProbe extends TlsProbe {
     }
 
     private WorkflowTrace getVerifyDataTrace(Config config, int xorPosition) {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
                 RunningModeType.CLIENT);
-        FinishedMessage lastSendMessage = (FinishedMessage) WorkflowTraceUtil.getLastSendMessage(
-                HandshakeMessageType.FINISHED, trace);
+        FinishedMessage lastSendMessage =
+            (FinishedMessage) WorkflowTraceUtil.getLastSendMessage(HandshakeMessageType.FINISHED, trace);
         lastSendMessage.setVerifyData(Modifiable.xor(new byte[] { 01 }, xorPosition));
         return trace;
     }
 
     private WorkflowTrace getFinishedTrace(Config config, int xorPosition) {
         VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
                 RunningModeType.CLIENT);
         SendAction lastSendingAction = (SendAction) trace.getLastSendingAction();
         Record r = new Record();
@@ -363,7 +370,7 @@ public class MacProbe extends TlsProbe {
 
     public boolean receivedFinAndCcs(WorkflowTrace trace) {
         return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, trace)
-                && WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.CHANGE_CIPHER_SPEC, trace);
+            && WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.CHANGE_CIPHER_SPEC, trace);
     }
 
     @Override

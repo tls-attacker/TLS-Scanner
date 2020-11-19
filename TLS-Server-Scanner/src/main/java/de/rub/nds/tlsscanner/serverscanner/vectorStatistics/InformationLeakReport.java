@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
@@ -56,10 +57,10 @@ public class InformationLeakReport {
                         for (ResponseFingerprint responseFingerprint : commonFingerPrints) {
                             VectorContainer vectorContainer1 = leakTest1.getVectorContainer(vector);
                             measuredList.add(vectorContainer1.getResponseCounterForFingerprint(responseFingerprint)
-                                    .getProbability());
+                                .getProbability());
                             VectorContainer vectorContainer2 = leakTest2.getVectorContainer(vector);
                             expectedList.add(vectorContainer2.getResponseCounterForFingerprint(responseFingerprint)
-                                    .getProbability());
+                                .getProbability());
                         }
                     }
                     break;

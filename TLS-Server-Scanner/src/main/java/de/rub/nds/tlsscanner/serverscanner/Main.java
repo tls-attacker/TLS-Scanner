@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner;
 
 import com.beust.jcommander.JCommander;
@@ -42,8 +43,8 @@ public class Main {
                 SiteReport report = scanner.scan();
                 LOGGER.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n");
                 ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: "
-                        + ((System.currentTimeMillis() - time) / 1000) + "s\n"
-                        + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
+                    + ((System.currentTimeMillis() - time) / 1000) + "s\n"
+                    + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
             } catch (ConfigurationException E) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", E);
             }

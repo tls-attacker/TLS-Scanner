@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.config.HeartbleedCommandConfig;
@@ -42,16 +43,16 @@ public class HeartbleedProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig()
-                    .getGeneralDelegate());
+            HeartbleedCommandConfig heartbleedConfig =
+                new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
             StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
             if (supportedCiphers != null) {
-                CiphersuiteDelegate ciphersuiteDelegate = (CiphersuiteDelegate) heartbleedConfig
-                        .getDelegate(CiphersuiteDelegate.class);
+                CiphersuiteDelegate ciphersuiteDelegate =
+                    (CiphersuiteDelegate) heartbleedConfig.getDelegate(CiphersuiteDelegate.class);
                 ciphersuiteDelegate.setCipherSuites(supportedCiphers);
             }
             HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());

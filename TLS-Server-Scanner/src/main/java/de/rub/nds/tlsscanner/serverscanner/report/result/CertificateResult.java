@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -32,9 +33,9 @@ public class CertificateResult extends ProbeResult {
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
     public CertificateResult(Set<CertificateChain> certificates, List<NamedGroup> ecdsaPkGroupsStatic,
-            List<NamedGroup> ecdsaPkGroupsEphemeral, List<NamedGroup> ecdsaSigGroupsStatic,
-            List<NamedGroup> ecdsaSigGroupsEphemeral, List<NamedGroup> ecdsaPkGroupsTls13,
-            List<NamedGroup> ecdsaCertSigGroupsTls13) {
+        List<NamedGroup> ecdsaPkGroupsEphemeral, List<NamedGroup> ecdsaSigGroupsStatic,
+        List<NamedGroup> ecdsaSigGroupsEphemeral, List<NamedGroup> ecdsaPkGroupsTls13,
+        List<NamedGroup> ecdsaCertSigGroupsTls13) {
         super(ProbeType.CERTIFICATE);
         this.certificates = certificates;
         this.ecdsaPkGroupsStatic = ecdsaPkGroupsStatic;

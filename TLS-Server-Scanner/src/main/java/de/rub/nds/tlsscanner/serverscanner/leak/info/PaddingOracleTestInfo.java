@@ -12,6 +12,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
 import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
@@ -34,7 +35,7 @@ public class PaddingOracleTestInfo extends TestInfo {
     private final PaddingRecordGeneratorType recordGeneratorType;
 
     public PaddingOracleTestInfo(ProtocolVersion version, CipherSuite suite,
-            PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType) {
+        PaddingVectorGeneratorType vectorGeneratorType, PaddingRecordGeneratorType recordGeneratorType) {
         this.version = version;
         this.cipherSuite = suite;
         this.vectorGeneratorType = vectorGeneratorType;
@@ -60,13 +61,13 @@ public class PaddingOracleTestInfo extends TestInfo {
     @Override
     public String getTechnicalName() {
         return vectorGeneratorType.name() + ":" + recordGeneratorType.name() + ":" + version.name() + ":"
-                + cipherSuite.name();
+            + cipherSuite.name();
     }
 
     @Override
     public String getPrintableName() {
         return vectorGeneratorType.name() + "\t" + recordGeneratorType.name() + "\t" + version.name() + "\t"
-                + cipherSuite.name();
+            + cipherSuite.name();
     }
 
     @Override

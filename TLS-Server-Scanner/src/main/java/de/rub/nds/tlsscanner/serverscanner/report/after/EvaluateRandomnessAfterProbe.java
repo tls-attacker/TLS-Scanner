@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -24,7 +25,7 @@ public class EvaluateRandomnessAfterProbe extends AfterProbe {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
-            .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
+        .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
 
     @Override
     public void analyze(SiteReport report) {

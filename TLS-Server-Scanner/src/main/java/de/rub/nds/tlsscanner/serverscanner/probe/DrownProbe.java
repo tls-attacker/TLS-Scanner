@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.config.GeneralDrownCommandConfig;
@@ -37,16 +38,16 @@ public class DrownProbe extends TlsProbe {
 
     private TestResult testForGeneralDrown() {
         try {
-            GeneralDrownCommandConfig drownCommandConfig = new GeneralDrownCommandConfig(getScannerConfig()
-                    .getGeneralDelegate());
+            GeneralDrownCommandConfig drownCommandConfig =
+                new GeneralDrownCommandConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) drownCommandConfig
-                    .getDelegate(StarttlsDelegate.class);
+            StarttlsDelegate starttlsDelegate =
+                (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            GeneralDrownAttacker attacker = new GeneralDrownAttacker(drownCommandConfig,
-                    drownCommandConfig.createConfig());
+            GeneralDrownAttacker attacker =
+                new GeneralDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
             Boolean generalDrown = attacker.isVulnerable();
             if (Objects.equals(generalDrown, Boolean.TRUE)) {
                 return TestResult.TRUE;
@@ -61,17 +62,17 @@ public class DrownProbe extends TlsProbe {
 
     private TestResult testForExtraClearDrown() {
         try {
-            SpecialDrownCommandConfig drownCommandConfig = new SpecialDrownCommandConfig(getScannerConfig()
-                    .getGeneralDelegate());
+            SpecialDrownCommandConfig drownCommandConfig =
+                new SpecialDrownCommandConfig(getScannerConfig().getGeneralDelegate());
 
             ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) drownCommandConfig
-                    .getDelegate(StarttlsDelegate.class);
+            StarttlsDelegate starttlsDelegate =
+                (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            SpecialDrownAttacker attacker = new SpecialDrownAttacker(drownCommandConfig,
-                    drownCommandConfig.createConfig());
+            SpecialDrownAttacker attacker =
+                new SpecialDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
             Boolean generalDrown = attacker.isVulnerable();
             if (Objects.equals(generalDrown, Boolean.TRUE)) {
                 return TestResult.TRUE;

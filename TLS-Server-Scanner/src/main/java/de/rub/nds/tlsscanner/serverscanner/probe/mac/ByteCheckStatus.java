@@ -9,6 +9,7 @@
  */
 /*
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.mac;
 
 /**

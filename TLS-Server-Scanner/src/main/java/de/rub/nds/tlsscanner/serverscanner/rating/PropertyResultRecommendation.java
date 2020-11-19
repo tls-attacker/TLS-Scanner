@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import javax.xml.bind.annotation.XmlType;
@@ -33,7 +34,7 @@ public class PropertyResultRecommendation {
     }
 
     public PropertyResultRecommendation(TestResult result, String resultStatus, String handlingRecommendation,
-            String detailedDescription) {
+        String detailedDescription) {
         this(result, resultStatus, handlingRecommendation);
         this.detailedDescription = detailedDescription;
     }

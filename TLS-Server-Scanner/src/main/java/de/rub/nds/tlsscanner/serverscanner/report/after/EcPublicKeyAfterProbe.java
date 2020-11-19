@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
@@ -21,8 +22,8 @@ public class EcPublicKeyAfterProbe extends AfterProbe {
     public void analyze(SiteReport report) {
         TestResult reuse;
         try {
-            ExtractedValueContainer valueContainer = report.getExtractedValueContainerMap().get(
-                    TrackableValueType.ECDHE_PUBKEY);
+            ExtractedValueContainer valueContainer =
+                report.getExtractedValueContainerMap().get(TrackableValueType.ECDHE_PUBKEY);
             if (valueContainer.getNumberOfExtractedValues() >= 2) {
                 if (!valueContainer.areAllValuesDiffernt()) {
                     reuse = TestResult.TRUE;

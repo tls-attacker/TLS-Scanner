@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -51,8 +52,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {
             try {
-                TlsClientConfig tlsClientConfig = TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/"
-                        + configFileName);
+                TlsClientConfig tlsClientConfig =
+                    TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/" + configFileName);
                 if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     simmulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 } else {
@@ -97,7 +98,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
         simulatedClient.setSupportedVersionList(simulatedClient.getTlsClientConfig().getSupportedVersionList());
         simulatedClient.setVersionAcceptForbiddenCiphersuiteList(simulatedClient.getTlsClientConfig()
-                .getVersionAcceptForbiddenCiphersuiteList());
+            .getVersionAcceptForbiddenCiphersuiteList());
         simulatedClient.setSupportedRsaKeySizeList(simulatedClient.getTlsClientConfig().getSupportedRsaKeySizeList());
         simulatedClient.setSupportedDheKeySizeList(simulatedClient.getTlsClientConfig().getSupportedDheKeySizeList());
     }
@@ -105,15 +106,15 @@ public class HandshakeSimulationProbe extends TlsProbe {
     private void evaluateReceivedMessages(SimulatedClientResult simulatedClient, State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
         simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO,
-                trace));
+            trace));
         simulatedClient.setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE,
-                trace));
+            trace));
         simulatedClient.setReceivedServerKeyExchange(WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
+            HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
         simulatedClient.setReceivedCertificateRequest(WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.CERTIFICATE_REQUEST, trace));
+            HandshakeMessageType.CERTIFICATE_REQUEST, trace));
         simulatedClient.setReceivedServerHelloDone(WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO_DONE, trace));
+            HandshakeMessageType.SERVER_HELLO_DONE, trace));
         simulatedClient.setReceivedAlert(WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, trace));
         simulatedClient.setReceivedUnknown(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.UNKNOWN, trace));
         if (!simulatedClient.getReceivedAlert()) {
@@ -194,7 +195,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
             if (simulatedClient.getServerPublicKeyParameter() == null) {
                 if (context.getServerEcPublicKey() != null) {
                     simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getX().getData()
-                            .bitLength() * 8);
+                        .bitLength() * 8);
                 }
             }
         }

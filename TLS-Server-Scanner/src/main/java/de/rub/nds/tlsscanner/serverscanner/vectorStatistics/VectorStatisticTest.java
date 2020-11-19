@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
@@ -156,7 +157,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
                 correctContainer.addResponseFingerprint(otherContainer.getResponseFingerprintList());
             } else {
                 vectorContainerList.add(new VectorContainer(otherContainer.getVector(), otherContainer
-                        .getResponseFingerprintList()));
+                    .getResponseFingerprintList()));
             }
         }
         updateInternals();

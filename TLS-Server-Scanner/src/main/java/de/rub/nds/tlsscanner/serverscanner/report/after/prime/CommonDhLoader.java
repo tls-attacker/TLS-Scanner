@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after.prime;
 
 import java.io.IOException;
@@ -30,8 +31,8 @@ public class CommonDhLoader {
         try {
             List<CommonDhValues> commonValuesList = new LinkedList<>();
             JSONParser parser = new JSONParser();
-            InputStream resourceAsStream = CommonDhLoader.class.getClassLoader().getResourceAsStream(
-                    "common/common.json");
+            InputStream resourceAsStream =
+                CommonDhLoader.class.getClassLoader().getResourceAsStream("common/common.json");
             Object obj = parser.parse(new InputStreamReader(resourceAsStream));
 
             JSONObject jsonObject = (JSONObject) obj;

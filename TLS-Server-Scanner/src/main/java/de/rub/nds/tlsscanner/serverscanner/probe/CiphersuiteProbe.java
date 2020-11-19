@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -127,14 +128,14 @@ public class CiphersuiteProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+            .getTls13SignatureAndHashAlgorithms());
 
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCipherSuite();
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_RETRY_REQUEST,
-                state.getWorkflowTrace())) {
+            state.getWorkflowTrace())) {
             return state.getTlsContext().getSelectedCipherSuite();
         } else {
             LOGGER.debug("Did not receive ServerHello Message");
@@ -148,7 +149,7 @@ public class CiphersuiteProbe extends TlsProbe {
     }
 
     public List<CipherSuite> getSupportedCipherSuitesWithIntolerance(List<CipherSuite> toTestList,
-            ProtocolVersion version) {
+        ProtocolVersion version) {
         List<CipherSuite> listWeSupport = new LinkedList<>(toTestList);
         List<CipherSuite> supported = new LinkedList<>();
 
@@ -202,8 +203,9 @@ public class CiphersuiteProbe extends TlsProbe {
                 LOGGER.debug(state.getWorkflowTrace().toString());
                 if (state.getTlsContext().isReceivedFatalAlert()) {
                     LOGGER.debug("Received Fatal Alert");
-                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(
-                            ProtocolMessageType.ALERT, state.getWorkflowTrace());
+                    AlertMessage alert =
+                        (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(ProtocolMessageType.ALERT,
+                            state.getWorkflowTrace());
                     LOGGER.debug("Type:" + alert.toString());
 
                 }

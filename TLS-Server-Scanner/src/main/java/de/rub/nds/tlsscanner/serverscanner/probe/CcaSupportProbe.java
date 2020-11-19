@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -39,7 +40,8 @@ public class CcaSupportProbe extends TlsProbe {
     public ProbeResult executeTest() {
         Config tlsConfig = generateConfig();
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig
                 .getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));

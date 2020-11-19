@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -146,7 +147,7 @@ public class ECPointFormatProbe extends TlsProbe {
             tlsConfig.setAddCertificateStatusRequestExtension(true);
             tlsConfig.setUseFreshRandom(true);
             tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                    .getTls13SignatureAndHashAlgorithms());
+                .getTls13SignatureAndHashAlgorithms());
             tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             State state = new State(tlsConfig);
@@ -165,8 +166,8 @@ public class ECPointFormatProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-                && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report
-                        .getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
+            && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report
+                .getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
     }
 
     @Override
@@ -176,7 +177,8 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
+        shouldTestPointFormats =
+            report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
         shouldTestTls13 = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;

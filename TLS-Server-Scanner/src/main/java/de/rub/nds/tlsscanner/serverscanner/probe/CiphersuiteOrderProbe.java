@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -48,7 +49,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
             Collections.reverse(toTestList);
             CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
             return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE
-                    : TestResult.FALSE);
+                : TestResult.FALSE);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);

@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.util;
 
 public class FisherExactTest {
@@ -22,8 +23,8 @@ public class FisherExactTest {
         int d = inputBOutput2;
         int n = a + b + c + d;
         double nominator = log2Factorial(a + b) + log2Factorial(c + d) + log2Factorial(a + c) + log2Factorial(b + d);
-        double denominator = log2Factorial(a) + log2Factorial(b) + log2Factorial(c) + log2Factorial(d)
-                + log2Factorial(n);
+        double denominator =
+            log2Factorial(a) + log2Factorial(b) + log2Factorial(c) + log2Factorial(d) + log2Factorial(n);
         return nominator - denominator;
     }
 

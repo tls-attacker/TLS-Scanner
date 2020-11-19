@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -28,7 +29,7 @@ public class InvalidCurveResult extends ProbeResult {
     private final List<InvalidCurveResponse> responses;
 
     public InvalidCurveResult(TestResult vulnerableClassic, TestResult vulnerableEphemeral, TestResult vulnerableTwist,
-            List<InvalidCurveResponse> responses) {
+        List<InvalidCurveResponse> responses) {
         super(ProbeType.INVALID_CURVE);
         this.vulnerableClassic = vulnerableClassic;
         this.vulnerableEphemeral = vulnerableEphemeral;

@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve.InvalidCurveVector;

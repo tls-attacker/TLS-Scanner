@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.trust;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -87,7 +88,8 @@ public class TrustAnchorManager {
             trustAnchors = null;
             trustPlatformList = null;
             asn1CaCertificateSet = null;
-            LOGGER.error("Could not load TrustAnchors. This means that you are running TLS-Scanner without its submodules. "
+            LOGGER
+                .error("Could not load TrustAnchors. This means that you are running TLS-Scanner without its submodules. "
                     + "If you want to evaluate if certificates are trusted by browsers you need to initialize submodules."
                     + "You can do this by running the following command:'git submodule update --init --recursive'");
             LOGGER.debug(ex);
@@ -131,15 +133,17 @@ public class TrustAnchorManager {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
             for (CertificateEntry entry : trustAnchors.values()) {
-                InputStream resourceAsStream = TrustAnchorManager.class.getClassLoader().getResourceAsStream(
+                InputStream resourceAsStream =
+                    TrustAnchorManager.class.getClassLoader().getResourceAsStream(
                         "trust/" + entry.getFingerprint() + ".pem");
                 try {
-                    X509Certificate ca = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(
+                    X509Certificate ca =
+                        (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(
                             new BufferedInputStream(resourceAsStream));
                     keyStore.setCertificateEntry("" + i, ca);
                 } catch (CertificateException ex) {
                     LOGGER.error("Could not load Certificate:" + entry.getSubjectName() + "/" + entry.getFingerprint(),
-                            ex);
+                        ex);
                 }
                 i++;
             }
@@ -147,7 +151,7 @@ public class TrustAnchorManager {
             return params.getTrustAnchors();
 
         } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException
-                | InvalidAlgorithmParameterException ex) {
+            | InvalidAlgorithmParameterException ex) {
             LOGGER.error("Could not build TrustAnchorSet", ex);
         }
         return new HashSet<>();
@@ -192,7 +196,8 @@ public class TrustAnchorManager {
     private Set<Certificate> getFullCaCertificateSet() {
         Set<Certificate> certificateSet = new HashSet<>();
         for (CertificateEntry entry : trustAnchors.values()) {
-            InputStream resourceAsStream = TrustAnchorManager.class.getClassLoader().getResourceAsStream(
+            InputStream resourceAsStream =
+                TrustAnchorManager.class.getClassLoader().getResourceAsStream(
                     "trust/" + entry.getFingerprint() + ".pem");
             try {
                 org.bouncycastle.crypto.tls.Certificate cert = PemUtil.readCertificate(resourceAsStream);

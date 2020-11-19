@@ -7,6 +7,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
@@ -91,7 +92,8 @@ public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest
         long[] measured = new long[vectorContainerList.size()];
         for (int i = 0; i < vectorContainerList.size(); i++) {
             expected[i] = probability * vectorContainerList.get(i).getResponseFingerprintList().size();
-            measured[i] = vectorContainerList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
+            measured[i] =
+                vectorContainerList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
                     .getCounter();
         }
         double chiSquare = test.chiSquare(expected, measured);
