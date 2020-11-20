@@ -73,8 +73,8 @@ public class SniProbe extends TlsProbe {
             // We cannot get a ServerHello from this Server...
             LOGGER.debug("SNI Test could not get a ServerHello message from the Server!");
             return new SniResult(TestResult.UNCERTAIN);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new SniResult(TestResult.ERROR_DURING_TEST);
         }
     }

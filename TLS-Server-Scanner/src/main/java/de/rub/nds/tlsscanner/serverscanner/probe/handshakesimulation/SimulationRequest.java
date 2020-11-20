@@ -8,7 +8,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation;
+package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;

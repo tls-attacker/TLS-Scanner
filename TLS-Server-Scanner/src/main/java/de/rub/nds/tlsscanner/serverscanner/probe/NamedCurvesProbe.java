@@ -27,7 +27,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -44,7 +43,7 @@ import java.util.Map;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class NamedCurvesProbe extends TlsProbe {
 
@@ -84,11 +83,11 @@ public class NamedCurvesProbe extends TlsProbe {
             }
             if (testUsingEcdsaStatic) {
                 groupsEcdsaStatic =
-                    getSupportedNamedGroupsEcdsa(getEcdsaStaticCiphersuites(), null, ecdsaCertSigGroupsStatic);
+                    getSupportedNamedGroupsEcdsa(getEcdsaStaticCipherSuites(), null, ecdsaCertSigGroupsStatic);
             }
             if (testUsingEcdsaEphemeral) {
                 groupsEcdsaEphemeral =
-                    getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCiphersuites(), ecdsaPkGroupsEphemeral,
+                    getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCipherSuites(), ecdsaPkGroupsEphemeral,
                         ecdsaCertSigGroupsEphemeral);
             }
             if (testUsingTls13) {
@@ -103,8 +102,8 @@ public class NamedCurvesProbe extends TlsProbe {
 
             return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
                 groupsDependOnCiphersuite, ignoresEcdsaGroupDisparity);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return getCouldNotExecuteResult();
         }
     }
@@ -112,7 +111,7 @@ public class NamedCurvesProbe extends TlsProbe {
     private Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsRsa() {
 
         Config tlsConfig = getBasicConfig();
-        tlsConfig.setDefaultClientSupportedCiphersuites(getEcRsaCiphersuites());
+        tlsConfig.setDefaultClientSupportedCiphersuites(getEcRsaCipherSuites());
         List<NamedGroup> toTestList = new ArrayList<>(Arrays.asList(NamedGroup.values()));
         TlsContext context;
         NamedGroup selectedGroup = null;
@@ -207,7 +206,7 @@ public class NamedCurvesProbe extends TlsProbe {
         }
     }
 
-    private List<CipherSuite> getEcCiphersuites() {
+    private List<CipherSuite> getEcCipherSuites() {
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.values()) {
             if (suite.name().contains("ECDH")) {
@@ -217,7 +216,7 @@ public class NamedCurvesProbe extends TlsProbe {
         return suiteList;
     }
 
-    private List<CipherSuite> getEcRsaCiphersuites() {
+    private List<CipherSuite> getEcRsaCipherSuites() {
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.values()) {
             if (suite.name().contains("ECDH") && suite.name().contains("RSA")) {
@@ -227,7 +226,7 @@ public class NamedCurvesProbe extends TlsProbe {
         return suiteList;
     }
 
-    private List<CipherSuite> getEcdsaEphemeralCiphersuites() {
+    private List<CipherSuite> getEcdsaEphemeralCipherSuites() {
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.values()) {
             if (suite.name().contains("ECDHE_") && suite.name().contains("ECDSA")) {
@@ -237,7 +236,7 @@ public class NamedCurvesProbe extends TlsProbe {
         return suiteList;
     }
 
-    private List<CipherSuite> getEcdsaStaticCiphersuites() {
+    private List<CipherSuite> getEcdsaStaticCipherSuites() {
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : CipherSuite.values()) {
             if (suite.name().contains("ECDH_") && suite.name().contains("ECDSA")) {
@@ -301,7 +300,7 @@ public class NamedCurvesProbe extends TlsProbe {
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.EXPLICIT_CHAR2);
         }
 
-        tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
+        tlsConfig.setDefaultClientSupportedCiphersuites(getEcCipherSuites());
         State state = new State(tlsConfig);
         executeState(state);
 

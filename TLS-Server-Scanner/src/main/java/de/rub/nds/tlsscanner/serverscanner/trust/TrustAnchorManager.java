@@ -40,7 +40,7 @@ import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class TrustAnchorManager {
 
-    private final static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private List<TrustPlatform> trustPlatformList;
 
@@ -127,6 +127,15 @@ public class TrustAnchorManager {
 
     }
 
+    public boolean isTrustAnchor(X500Principal principal) {
+        for (TrustAnchor anchor : trustAnchorSet) {
+            if (anchor.getTrustedCert().getSubjectX500Principal().equals(principal)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private Set<TrustAnchor> getFullTrustAnchorSet() {
         try {
             int i = 0;
@@ -159,15 +168,6 @@ public class TrustAnchorManager {
 
     public Set<TrustAnchor> getTrustAnchorSet() {
         return trustAnchorSet;
-    }
-
-    public boolean isTrustAnchor(X500Principal principal) {
-        for (TrustAnchor anchor : trustAnchorSet) {
-            if (anchor.getTrustedCert().getSubjectX500Principal().equals(principal)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public X509Certificate getTrustAnchorX509Certificate(X500Principal principal) {

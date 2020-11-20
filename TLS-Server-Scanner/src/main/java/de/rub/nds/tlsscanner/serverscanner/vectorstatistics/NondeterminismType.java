@@ -8,14 +8,14 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
+package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
 
 /**
  *
  * @author ic0ns
  */
-public enum NondetermninismType {
+public enum NondeterminismType {
     CONNECTION,
-    HETEROGEN,
+    HETEROGENEOUS,
     MIXED
 }

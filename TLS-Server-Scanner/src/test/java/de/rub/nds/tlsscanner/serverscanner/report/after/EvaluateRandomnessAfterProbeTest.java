@@ -34,6 +34,7 @@ public class EvaluateRandomnessAfterProbeTest {
 
     private EvaluateRandomnessAfterProbe evaluator;
 
+    @SuppressWarnings("SpellCheckingInspection")
     private final static byte[] STATIC_RANDOM1 = ArrayConverter
         .hexStringToByteArray("4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
     private final static byte[] STATIC_RANDOM2 = ArrayConverter

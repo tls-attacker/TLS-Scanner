@@ -61,8 +61,8 @@ public class ECPointFormatProbe extends TlsProbe {
                 LOGGER.debug("Unable to determine supported point formats");
                 return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
             }
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ECPointFormatResult(null, TestResult.ERROR_DURING_TEST);
         }
     }
@@ -96,6 +96,9 @@ public class ECPointFormatProbe extends TlsProbe {
                 break;
             case ANSIX962_COMPRESSED_CHAR2:
                 groups = getSectGroups();
+                break;
+            default: // will never occur as all enum types are caught
+                ;
         }
         Config config = getScannerConfig().createConfig();
         config.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
@@ -157,8 +160,8 @@ public class ECPointFormatProbe extends TlsProbe {
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
-        } catch (Exception E) {
-            LOGGER.error("Could not test for Tls13SecpCompression", E);
+        } catch (Exception e) {
+            LOGGER.error("Could not test for Tls13SecpCompression", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }

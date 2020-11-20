@@ -8,7 +8,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
+package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
@@ -34,7 +34,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
 
     protected final T testInfo;
 
-    protected double pValue;
+    protected double valueP;
 
     protected boolean distinctAnswers;
 
@@ -67,8 +67,8 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
         return significantDistinctAnswers;
     }
 
-    public double getpValue() {
-        return pValue;
+    public double getValueP() {
+        return valueP;
     }
 
     public T getTestInfo() {
@@ -177,9 +177,9 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
     }
 
     protected final void updateInternals() {
-        pValue = computePValue();
+        valueP = computePValue();
         distinctAnswers = getAllResponseFingerprints().size() > 1;
-        this.significantDistinctAnswers = pValue < P_VALUE_SIGNIFICANCE_BORDER;
+        this.significantDistinctAnswers = valueP < P_VALUE_SIGNIFICANCE_BORDER;
 
     }
 

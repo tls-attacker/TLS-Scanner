@@ -11,7 +11,7 @@ $ cd TLS-Scanner
 $ mvn clean package
 
 ```
-Alternatively, if you are in hurry, you can skip the tests by using:
+Alternatively, if you are in a hurry, you can skip the tests by using:
 ```bash
 $ mvn clean package -DskipTests=true
 ```
@@ -39,4 +39,5 @@ $ docker build . -t tlsscanner
 $ docker run -t tlsscanner
 ```
 
-**Please note:**  *I am by no means familiar with Docker best practices. If you know how to improve the Dockerfile feel free to issue a pullrequest*
+**Please note:**  *I am by no means familiar with Docker best practices. If you know how to improve the Dockerfile
+ feel free to issue a pull request*

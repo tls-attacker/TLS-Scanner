@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
 public enum AnsiColor {
     RESET("\u001B[0m"),

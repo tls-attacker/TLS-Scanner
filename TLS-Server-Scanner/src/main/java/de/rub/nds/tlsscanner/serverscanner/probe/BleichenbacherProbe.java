@@ -35,7 +35,7 @@ import java.util.List;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
 public class BleichenbacherProbe extends TlsProbe {
 
@@ -78,8 +78,8 @@ public class BleichenbacherProbe extends TlsProbe {
                     .getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
             }
             return new BleichenbacherResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE, resultList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new BleichenbacherResult(TestResult.ERROR_DURING_TEST, new LinkedList<BleichenbacherTestResult>());
         }
     }

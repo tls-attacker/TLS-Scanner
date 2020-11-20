@@ -28,7 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Testset should check if DhValueAfterProbe detects insecure DH-Parameters as insecure ones and secure parameters as
+ * TestSet should check if DhValueAfterProbe detects insecure DH-Parameters as insecure ones and secure parameters as
  * secure ones
  */
 public class DhValueAfterProbeTest {
@@ -40,7 +40,7 @@ public class DhValueAfterProbeTest {
     private ExtractedValueContainer<CustomDhPublicKey> pubkeyContainer;
     private DhValueAfterProbe test;
 
-    // intitilizes attributes
+    // initializes attributes
     @Before
     public void setup() {
         report = new SiteReport("sample");
@@ -53,6 +53,7 @@ public class DhValueAfterProbeTest {
     /**
      * Test if method analyze of class DhValueAfterProbe recognizes a secure public key as such
      */
+    @SuppressWarnings("SpellCheckingInspection")
     @Test
     public void secureDhParamTestAnalyze() {
         BigInteger securePubkey, secureMod;
@@ -77,7 +78,7 @@ public class DhValueAfterProbeTest {
     }
 
     /**
-     * Tests if method analyze recognizes an insecure parametes as such
+     * Tests if method analyze recognizes an insecure parameters as such
      */
     @Test
     public void insecureDhParamTestAnalyze() {
@@ -97,8 +98,9 @@ public class DhValueAfterProbeTest {
     }
 
     /**
-     * Test if method anaylize detects reused publickey
+     * Test if method analyze detects reused publickey
      */
+    @SuppressWarnings("SpellCheckingInspection")
     @Test
     public void secureReusedDhPubkeyTestAnalyze() {
         BigInteger secureKey, secureMod;
@@ -125,7 +127,7 @@ public class DhValueAfterProbeTest {
     }
 
     /**
-     * Executes the analysis: determies how secure the Diffie-Hellmann parameters are
+     * Executes the analysis: determines how secure the Diffie-Hellmann parameters are
      */
     private void analyseDhParams() {
         cipherMap.put(TrackableValueType.DHE_PUBLICKEY, pubkeyContainer);

@@ -48,7 +48,7 @@ public class CcaSupportProbe extends TlsProbe {
         State state = new State(tlsConfig, trace);
         try {
             executeState(state);
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.warn("Could not test for client authentication support.");
         }
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {

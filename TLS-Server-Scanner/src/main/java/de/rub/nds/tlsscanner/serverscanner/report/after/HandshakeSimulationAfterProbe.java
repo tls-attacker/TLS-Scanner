@@ -14,9 +14,9 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.ConnectionInsecure;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.HandshakeFailureReasons;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionInsecure;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFailureReasons;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.CiphersuiteRater;
@@ -74,7 +74,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     private boolean isCiphersuiteMismatch(SiteReport report, SimulatedClientResult simulatedClient) {
         if (report.getCipherSuites() != null) {
             for (CipherSuite serverCipherSuite : report.getCipherSuites()) {
-                for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCiphersuites()) {
+                for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCipherSuites()) {
                     if (serverCipherSuite.equals(clientCipherSuite)) {
                         return false;
                     }
@@ -99,9 +99,9 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             if (!commonProtocolVersions.isEmpty()
                 && commonProtocolVersions.get(commonProtocolVersions.size() - 1).equals(
                     simulatedClient.getSelectedProtocolVersion())) {
-                simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
+                simulatedClient.setHighestPossibleProtocolVersionSelected(true);
             } else {
-                simulatedClient.setHighestPossibleProtocolVersionSeleceted(false);
+                simulatedClient.setHighestPossibleProtocolVersionSelected(false);
             }
         }
     }
@@ -243,7 +243,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isProtocolVersionWhitelisted(SimulatedClientResult simulatedClient) {
-        return Objects.equals(simulatedClient.getHighestPossibleProtocolVersionSeleceted(), Boolean.TRUE)
+        return Objects.equals(simulatedClient.getHighestPossibleProtocolVersionSelected(), Boolean.TRUE)
             && simulatedClient.getSelectedProtocolVersion() != ProtocolVersion.TLS10
             && simulatedClient.getSelectedProtocolVersion() != ProtocolVersion.TLS11;
     }

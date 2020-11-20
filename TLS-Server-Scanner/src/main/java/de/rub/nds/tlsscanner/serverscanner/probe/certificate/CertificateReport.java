@@ -24,11 +24,11 @@ import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class CertificateReport {
 
-    private final static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private String subject;
     private String commonNames;
-    private String alternativenames;
+    private String alternativeNames;
     private Date validFrom;
     private Date validTo;
     private PublicKey publicKey;
@@ -91,8 +91,8 @@ public class CertificateReport {
         return commonNames;
     }
 
-    public String getAlternativenames() {
-        return alternativenames;
+    public String getAlternativeNames() {
+        return alternativeNames;
     }
 
     public Date getValidFrom() {
@@ -159,8 +159,8 @@ public class CertificateReport {
         this.commonNames = commonNames;
     }
 
-    public void setAlternativenames(String alternativenames) {
-        this.alternativenames = alternativenames;
+    public void setAlternativeNames(String alternativeNames) {
+        this.alternativeNames = alternativeNames;
     }
 
     public void setValidFrom(Date validFrom) {
@@ -229,8 +229,8 @@ public class CertificateReport {
         if (commonNames != null) {
             builder.append("CommonNames: ").append(commonNames).append("\n");
         }
-        if (alternativenames != null) {
-            builder.append("AltNames   : ").append(alternativenames).append("\n");
+        if (alternativeNames != null) {
+            builder.append("AltNames   : ").append(alternativeNames).append("\n");
         }
         if (validFrom != null) {
             builder.append("Valid From : ").append(validFrom.toString()).append("\n");
@@ -342,7 +342,7 @@ public class CertificateReport {
         final CertificateReport otherReport = (CertificateReport) obj;
         if (!Objects.equals(subject, otherReport.getSubject())
             || !Objects.equals(commonNames, otherReport.getCommonNames())
-            || !Objects.equals(alternativenames, otherReport.getAlternativenames())
+            || !Objects.equals(alternativeNames, otherReport.getAlternativeNames())
             || !Objects.equals(validFrom, otherReport.getValidFrom())
             || !Objects.equals(validTo, otherReport.getValidTo())
             || !Objects.equals(publicKey, otherReport.getPublicKey())
@@ -374,7 +374,7 @@ public class CertificateReport {
         int hash = 5;
         hash = 71 * hash + Objects.hashCode(this.subject);
         hash = 71 * hash + Objects.hashCode(this.commonNames);
-        hash = 71 * hash + Objects.hashCode(this.alternativenames);
+        hash = 71 * hash + Objects.hashCode(this.alternativeNames);
         hash = 71 * hash + Objects.hashCode(this.validFrom);
         hash = 71 * hash + Objects.hashCode(this.validTo);
         hash = 71 * hash + Objects.hashCode(this.publicKey);

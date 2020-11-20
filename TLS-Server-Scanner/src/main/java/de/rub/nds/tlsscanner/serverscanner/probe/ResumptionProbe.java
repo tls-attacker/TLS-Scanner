@@ -54,8 +54,8 @@ public class ResumptionProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(), getSupportsTls13PskDhe());
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
                 TestResult.ERROR_DURING_TEST);
         }
@@ -65,10 +65,10 @@ public class ResumptionProbe extends TlsProbe {
         try {
             Config tlsConfig = getScannerConfig().createConfig();
             tlsConfig.setQuickReceive(true);
-            List<CipherSuite> ciphersuites = new LinkedList<>();
-            ciphersuites.addAll(supportedSuites);
+            List<CipherSuite> cipherSuites = new LinkedList<>();
+            cipherSuites.addAll(supportedSuites);
             // TODO this can fail in some rare occasions
-            tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites.get(0));
+            tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites.get(0));
             tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setEnforceSettings(false);
@@ -86,7 +86,7 @@ public class ResumptionProbe extends TlsProbe {
             State state = new State(tlsConfig);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.error("Could not test for support for Tls13PskDhe");
             return TestResult.ERROR_DURING_TEST;
         }
@@ -127,7 +127,7 @@ public class ResumptionProbe extends TlsProbe {
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.error("Could not test for support for Tls13PskDhe");
             return TestResult.ERROR_DURING_TEST;
         }
@@ -185,7 +185,7 @@ public class ResumptionProbe extends TlsProbe {
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.error("Could not test for support for Tls13SessionTickets");
             return TestResult.ERROR_DURING_TEST;
         }

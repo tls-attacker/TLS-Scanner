@@ -38,7 +38,7 @@ import java.util.List;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class ProtocolVersionProbe extends TlsProbe {
 
@@ -82,8 +82,8 @@ public class ProtocolVersionProbe extends TlsProbe {
                 unsupportedVersionList.add(ProtocolVersion.TLS13);
             }
             return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ProtocolVersionResult(null, null);
         }
     }

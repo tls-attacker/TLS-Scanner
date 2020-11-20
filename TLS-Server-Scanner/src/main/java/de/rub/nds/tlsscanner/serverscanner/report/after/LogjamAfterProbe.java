@@ -17,9 +17,9 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class LogjamAfterprobe extends AfterProbe {
+public class LogjamAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {

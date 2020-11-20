@@ -11,12 +11,9 @@
 package de.rub.nds.tlsscanner.serverscanner.report.result.ocsp;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
-import org.bouncycastle.crypto.tls.Certificate;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -164,10 +161,8 @@ public class OcspCertificateResult {
             // Check if the client nonce was used
             if (firstResponse.getNonce().intValue() != OcspProbe.NONCE_TEST_VALUE_1) {
                 return true;
-            }
-            // Check if a nonce was reused, e.g. caching didn't respect
-            // given client nonce
-            else if (secondResponse != null) {
+            } else if (secondResponse != null) {
+                // Check if a nonce was reused, e.g. caching didn't respect given client nonce
                 if (firstResponse.getNonce().equals(secondResponse.getNonce())) {
                     return true;
                 } else {

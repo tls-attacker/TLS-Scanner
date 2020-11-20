@@ -116,7 +116,7 @@ public enum AnalyzedProperty {
     SUPPORTS_OCSP(AnalyzedPropertyCategory.OCSP),
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
-    ENFOCRES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
     /**
      * does it handle unknown versions correctly?
      */
@@ -166,13 +166,13 @@ public enum AnalyzedProperty {
      */
     HAS_SECOND_CIPHERSUITE_BYTE_BUG(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * does it ignore the offered ciphersuites
+     * does it ignore the offered cipher suites
      */
-    REFLECTS_OFFERED_CIPHERSUITES(AnalyzedPropertyCategory.QUIRKS),
+    REFLECTS_OFFERED_CIPHER_SUITES(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * does it ignore the offered ciphersuites
+     * does it ignore the offered cipher suites
      */
-    IGNORES_OFFERED_CIPHERSUITES(AnalyzedPropertyCategory.QUIRKS),
+    IGNORES_OFFERED_CIPHER_SUITES(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it ignore the offered named groups
      */

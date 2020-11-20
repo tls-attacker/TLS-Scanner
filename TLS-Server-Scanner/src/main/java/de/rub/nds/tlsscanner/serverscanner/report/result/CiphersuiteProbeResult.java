@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
 public class CiphersuiteProbeResult extends ProbeResult {
 
@@ -39,7 +39,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
     private TestResult supportsIdeaCiphers = TestResult.FALSE;
     private TestResult supportsRc2Ciphers = TestResult.FALSE;
     private TestResult supportsRc4Ciphers = TestResult.FALSE;
-    private TestResult supportsTrippleDesCiphers = TestResult.FALSE;
+    private TestResult supportsTripleDesCiphers = TestResult.FALSE;
     private TestResult supportsPostQuantumCiphers = TestResult.FALSE;
     private TestResult supportsAeadCiphers = TestResult.FALSE;
     private TestResult supportsPfsCiphers = TestResult.FALSE;
@@ -147,7 +147,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
             supportsRsaCert = TestResult.COULD_NOT_TEST;
             supportsDss = TestResult.COULD_NOT_TEST;
             supportsStreamCiphers = TestResult.COULD_NOT_TEST;
-            supportsTrippleDesCiphers = TestResult.COULD_NOT_TEST;
+            supportsTripleDesCiphers = TestResult.COULD_NOT_TEST;
             supportsLegacyPrf = TestResult.COULD_NOT_TEST;
             supportsSha256Prf = TestResult.COULD_NOT_TEST;
             supportsSha384Prf = TestResult.COULD_NOT_TEST;
@@ -167,6 +167,8 @@ public class CiphersuiteProbeResult extends ProbeResult {
             case STREAM:
                 supportsStreamCiphers = TestResult.TRUE;
                 break;
+            default:
+                ;
         }
     }
 
@@ -251,7 +253,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
                 supportsAria = TestResult.TRUE;
                 break;
             case DESede:
-                supportsTrippleDesCiphers = TestResult.TRUE;
+                supportsTripleDesCiphers = TestResult.TRUE;
                 break;
             case FORTEZZA:
                 supportsFortezza = TestResult.TRUE;
@@ -274,6 +276,8 @@ public class CiphersuiteProbeResult extends ProbeResult {
             case CHACHA20_POLY1305:
                 supportsChacha = TestResult.TRUE;
                 break;
+            default:
+                ;
         }
     }
 
@@ -298,7 +302,7 @@ public class CiphersuiteProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_IDEA, supportsIdeaCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_RC2, supportsRc2Ciphers);
         report.putResult(AnalyzedProperty.SUPPORTS_RC4, supportsRc4Ciphers);
-        report.putResult(AnalyzedProperty.SUPPORTS_3DES, supportsTrippleDesCiphers);
+        report.putResult(AnalyzedProperty.SUPPORTS_3DES, supportsTripleDesCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_POST_QUANTUM, supportsPostQuantumCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_AEAD, supportsAeadCiphers);
         report.putResult(AnalyzedProperty.SUPPORTS_PFS, supportsPfsCiphers);

@@ -71,7 +71,6 @@ public class PrintingScheme {
         textEncodingMap.put(TestResult.TRUE, "true");
         textEncodingMap.put(TestResult.UNCERTAIN, "uncertain");
         textEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by tls-scanner");
-        TextEncoding defaultTextEncoding = new TextEncoding(textEncodingMap);
         HashMap<TestResult, AnsiColor> ansiColorMap = new HashMap<>();
         ansiColorMap.put(TestResult.COULD_NOT_TEST, AnsiColor.BLUE);
         ansiColorMap.put(TestResult.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
@@ -81,7 +80,6 @@ public class PrintingScheme {
         ansiColorMap.put(TestResult.TRUE, AnsiColor.DEFAULT_COLOR);
         ansiColorMap.put(TestResult.UNCERTAIN, AnsiColor.YELLOW_BACKGROUND);
         ansiColorMap.put(TestResult.UNSUPPORTED, AnsiColor.CYAN);
-        ColorEncoding defaultColorEncoding = new ColorEncoding(ansiColorMap);
 
         HashMap<TestResult, String> attackEncodingMap = new HashMap<>();
         attackEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test (not vulnerable)");
@@ -252,7 +250,7 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.PREFERS_PFS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.ENFORCES_PFS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.ENFOCRES_CS_ORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(AnalyzedProperty.ENFORCES_CS_ORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.HAS_VERSION_INTOLERANCE, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
@@ -275,9 +273,9 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.HAS_SECOND_CIPHERSUITE_BYTE_BUG,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.REFLECTS_OFFERED_CIPHERSUITES,
+        colorMap.put(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.IGNORES_OFFERED_CIPHERSUITES,
+        colorMap.put(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
@@ -315,6 +313,10 @@ public class PrintingScheme {
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
         textMap.put(AnalyzedPropertyCategory.FRESHNESS, new TextEncoding(freshnessMap));
         textMap.put(AnalyzedPropertyCategory.FFDHE, new TextEncoding(freshnessMap));
+
+        TextEncoding defaultTextEncoding = new TextEncoding(textEncodingMap);
+        ColorEncoding defaultColorEncoding = new ColorEncoding(ansiColorMap);
+
         PrintingScheme scheme =
             new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding, useColors);
         return scheme;

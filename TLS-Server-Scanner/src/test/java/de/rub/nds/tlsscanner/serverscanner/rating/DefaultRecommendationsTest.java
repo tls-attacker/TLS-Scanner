@@ -70,7 +70,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the TLS server supports Fortezza ciphers",
                 new PropertyResultRecommendation(TestResult.TRUE, "Fortezza ciphers are supported",
                     "Disable Fortezza cipher suites",
-                    "Fortezza cipher suittes were developed by NSA in the 90s. You should better get rid of Fortezza algorithms."),
+                    "Fortezza cipher suites were developed by NSA in the 90s. You should better get rid of Fortezza algorithms."),
                 ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_EXPORT, "Export cipher support",
             "Evaluates whether the TLS server supports export ciphers", new PropertyResultRecommendation(
@@ -134,7 +134,7 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(AnalyzedProperty.PREFERS_PFS,
             "Perfect Forward Secrecy (PFS) preference",
             "Evaluates whether the TLS server prefers Perfect Forward Secrecy (PFS) cipher suites",
-            new PropertyResultRecommendation(TestResult.FALSE, "PFS cipher suites are not prefered",
+            new PropertyResultRecommendation(TestResult.FALSE, "PFS cipher suites are not preferred",
                 "Enable cipher suite ordering and prefer PFS cipher suites"), ""));
         recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_PFS,
             "Perfect Forward Secrecy (PFS) enforcing",
@@ -198,7 +198,7 @@ public class DefaultRecommendationsTest {
             .add(new Recommendation(AnalyzedProperty.SUPPORTS_POST_QUANTUM, "Post quantum algorithms support",
                 "Evaluates whether the TLS server supports post quantum algorithms", ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_NEWHOPE,
-            "Post quantum new hope algorihtm support",
+            "Post quantum new hope algorithm support",
             "Evaluates whether the TLS server supports the new hope post quantum algorithm", ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ECMQV, "Post quantum ECMQV algorithm support",
             "Evaluates whether the TLS server supports the ECMQV post quantum algorithm", ""));
@@ -245,10 +245,10 @@ public class DefaultRecommendationsTest {
                 ""));
 
         // TLS renegotiation
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RENEGOTIATION, "TLS renegoatiation support",
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RENEGOTIATION, "TLS renegotiation support",
             "Evaluates whether the TLS server supports renegotiation.", ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,
-            "TLS insecure renegoatiation support", "Evaluates whether the TLS server supports renegotiation.",
+            "TLS insecure renegotiation support", "Evaluates whether the TLS server supports renegotiation.",
             new PropertyResultRecommendation(TestResult.TRUE, "Insecure renegotiation is enabled",
                 "Disable renegotiation or enable only secure renegotiation."), ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
@@ -274,11 +274,13 @@ public class DefaultRecommendationsTest {
                 AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
                 "TLS Fallback Signaling Cipher Suite Value (SCSV) support",
                 "Evaluates whether the TLS server supports TLS Fallback Signaling Cipher Suite Value (SCSV)",
-                "In order to establish the highest possible TLS version, TLS clients attempt to perform several TLS handshake starting with the one with the highetst version. If a TLS handshake with a particular version does not work, the TLS client attampts to execute the handshake with a lower version. This of course allows an attacker to downgrade the TLS connection. TLS Fallback Signaling Cipher Suite Value (SCSV) was introduced to prevent downgrade attacks. For example, if a TLS client attempts to establish a TLS 1.1 conenction after an unsuccessful TLS 1.2 handshake attempt, it includes a TLS SCSV cipher suite into the ClientHello message. The server accepts this handshake if and only if its highest version is TLS 1.1.",
+                "In order to establish the highest possible TLS version, TLS clients attempt to perform several TLS "
+                    + "handshake starting with the one with the highest version. If a TLS handshake with a particular"
+                    + " version does not work, the TLS client attempts to execute the handshake with a lower version. This of course allows an attacker to downgrade the TLS connection. TLS Fallback Signaling Cipher Suite Value (SCSV) was introduced to prevent downgrade attacks. For example, if a TLS client attempts to establish a TLS 1.1 connection after an unsuccessful TLS 1.2 handshake attempt, it includes a TLS SCSV cipher suite into the ClientHello message. The server accepts this handshake if and only if its highest version is TLS 1.1.",
                 new PropertyResultRecommendation(TestResult.TRUE, "TLS SCSV is disabled",
                     " Enable TLS Fallback Signaling Cipher Suite Value (SCSV)"), "https://tools.ietf.org/html/rfc7507"));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, "TLS compression support",
-            "Evaluates whether the TLS server supports TLS compresssion", new PropertyResultRecommendation(
+            "Evaluates whether the TLS server supports TLS compression", new PropertyResultRecommendation(
                 TestResult.TRUE, "TLS compression is supported", "Disable TLS compression"), ""));
 
         // safe prime -> custom prime (-50) -> common prime (-100) -> non prime
@@ -328,11 +330,11 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the TLS server supports HTTP compression", new PropertyResultRecommendation(
                 TestResult.TRUE, "HTTP compression is enabled", "Disable HTTP compression"), ""));
 
-        recommendations.add(new Recommendation(AnalyzedProperty.ENFOCRES_CS_ORDERING, "Cipher suite ordering support",
+        recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_CS_ORDERING, "Cipher suite ordering support",
             "Evaluates whether the TLS server supports cipher suite ordering", new PropertyResultRecommendation(
                 TestResult.FALSE, "Cipher suite ordering is disabled", "Enable cipher suite ordering"), ""));
 
-        // intolerancies
+        // intolerances
         recommendations.add(new Recommendation(AnalyzedProperty.HAS_VERSION_INTOLERANCE, "TLS version intolerance",
             "Evaluates whether the TLS server is TLS version intolerant", new PropertyResultRecommendation(
                 TestResult.TRUE, "The server is TLS version intolerant",
@@ -390,11 +392,11 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.TRUE,
                 "The server always evaluates only the second cipher suite byte",
                 "There is a bug in your TLS implementation. Update your software or contact the developers."), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.REFLECTS_OFFERED_CIPHERSUITES,
+        recommendations.add(new Recommendation(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
             "Cipher suite reflection", "Evaluates whether the TLS server reflects offered cipher suites",
             new PropertyResultRecommendation(TestResult.TRUE, "The TLS server reflects offered cipher suites",
                 "There is a bug in your TLS implementation. Update your software or contact the developers."), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.IGNORES_OFFERED_CIPHERSUITES,
+        recommendations.add(new Recommendation(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
             "Ignoring offered cipher suites", "Evaluates whether the TLS server ignores offered cipher suites",
             new PropertyResultRecommendation(TestResult.TRUE, "The TLS server ignores offered cipher suites",
                 "There is a bug in your TLS implementation. Update your software or contact the developers."), ""));
@@ -440,8 +442,8 @@ public class DefaultRecommendationsTest {
         recommendations
             .add(new Recommendation(
                 AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
-                "Vulnerable to an innvalid curve attack on ephemeral cipher suites",
-                "Evaluates whether the TLS server is vulnerable to an innvalid curve attack on ephemeral cipher suites",
+                "Vulnerable to an invalid curve attack on ephemeral cipher suites",
+                "Evaluates whether the TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites",
                 new PropertyResultRecommendation(TestResult.TRUE,
                     "The TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites",
                     "There is a vulnerability in your TLS implementation. Update your software or contact the developers."),
@@ -449,8 +451,8 @@ public class DefaultRecommendationsTest {
         recommendations
             .add(new Recommendation(
                 AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE,
-                "Vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse",
-                "Evaluates whether the TLS server is vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse",
+                "Vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse",
+                "Evaluates whether the TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse",
                 new PropertyResultRecommendation(
                     TestResult.TRUE,
                     "The TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse",
@@ -474,15 +476,12 @@ public class DefaultRecommendationsTest {
                 ""));
         recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_SWEET_32, "Vulnerable to Sweet32",
             "Evaluates whether the TLS server is vulnerable to Sweet32", new PropertyResultRecommendation(
-                TestResult.TRUE, "The TLS server is vulnerable to Sweet32", "Disable 64 bit block siphers like 3DES."),
+                TestResult.TRUE, "The TLS server is vulnerable to Sweet32", "Disable 64 bit block ciphers like 3DES."),
             "https://sweet32.info"));
-        recommendations
-            .add(new Recommendation(
-                AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN,
-                "Vulnerable to DROWN",
-                "Evaluates whether the TLS server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened eNcryption)",
-                new PropertyResultRecommendation(TestResult.TRUE, "The TLS server is vulnerable to DROWN",
-                    "Disable SSL 2.0"), "https://drownattack.com"));
+        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, "Vulnerable to DROWN",
+            "Evaluates whether the TLS server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened "
+                + "encryption)", new PropertyResultRecommendation(TestResult.TRUE,
+                "The TLS server is vulnerable to DROWN", "Disable SSL 2.0"), "https://drownattack.com"));
         recommendations
             .add(new Recommendation(
                 AnalyzedProperty.VULNERABLE_TO_HEARTBLEED,

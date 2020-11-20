@@ -25,11 +25,11 @@ public enum CertificateIssue {
     REVOKED_OCSP("A certificate in your chain is revoked (OCSP)"),
     WEAK_SIGNATURE_OR_HASH_ALGORITHM("A certificate in your chain has a weak signature or hash algorithm"),
     BLACKLISTED("A certificate in your chain is blacklisted"),
-    UNKNOWN_CRITICAL_EXTENSION("A certificate in your chain has a criticial extension which we do not recognize"),
+    UNKNOWN_CRITICAL_EXTENSION("A certificate in your chain has a critical extension which we do not recognize"),
     DECODING_ERROR("A certificate in your chain could not be decoded by our scanner"),
     EMPTY_CHAIN("The server sent an empty certificate chain (weired)"),
     UNHANDLED_CRITICAL_EXTENSIONS("The server certificate contains an us unknown critical extension"),
-    MULTIPLE_LEAFS("The server sent multiple leaf certifiates (weired)");
+    MULTIPLE_LEAVES("The server sent multiple leaf certificates (weired)");
 
     private String humanReadable;
 

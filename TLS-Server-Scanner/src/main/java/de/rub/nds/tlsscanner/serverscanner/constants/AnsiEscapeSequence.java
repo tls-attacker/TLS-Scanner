@@ -12,7 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.constants;
 
 /**
  *
- * @author Pierre Tilhaus<pierre.tilhaus@rub.de>
+ * @author Pierre Tilhaus {@literal <pierre.tilhaus@rub.de>}
  */
 public class AnsiEscapeSequence {
 

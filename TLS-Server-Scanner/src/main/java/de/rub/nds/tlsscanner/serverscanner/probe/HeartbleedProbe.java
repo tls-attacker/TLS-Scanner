@@ -30,7 +30,7 @@ import java.util.Objects;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class HeartbleedProbe extends TlsProbe {
 
@@ -58,8 +58,8 @@ public class HeartbleedProbe extends TlsProbe {
             HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
             Boolean vulnerable = attacker.isVulnerable();
             return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new HeartbleedResult(TestResult.ERROR_DURING_TEST);
         }
     }

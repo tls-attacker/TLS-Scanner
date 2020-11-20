@@ -25,7 +25,7 @@ public class EcPublicKeyAfterProbe extends AfterProbe {
             ExtractedValueContainer valueContainer =
                 report.getExtractedValueContainerMap().get(TrackableValueType.ECDHE_PUBKEY);
             if (valueContainer.getNumberOfExtractedValues() >= 2) {
-                if (!valueContainer.areAllValuesDiffernt()) {
+                if (!valueContainer.areAllValuesDifferent()) {
                     reuse = TestResult.TRUE;
                 } else {
                     reuse = TestResult.FALSE;

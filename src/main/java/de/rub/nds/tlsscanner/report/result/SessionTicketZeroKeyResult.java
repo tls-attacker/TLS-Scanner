@@ -10,8 +10,8 @@
 
 package de.rub.nds.tlsscanner.report.result;
 
-import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.report.SiteReport;
 

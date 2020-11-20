@@ -8,7 +8,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon;
+package de.rub.nds.tlsscanner.serverscanner.probe.directraccoon;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
@@ -27,7 +27,7 @@ import java.math.BigInteger;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class DirectRaccoontWorkflowGenerator {
+public class DirectRaccoonWorkflowGenerator {
 
     public static WorkflowTrace generateWorkflow(Config tlsConfig, DirectRaccoonWorkflowType type,
         BigInteger initialDhSecret, boolean withNullByte) {
@@ -56,7 +56,7 @@ public class DirectRaccoontWorkflowGenerator {
         return trace;
     }
 
-    private DirectRaccoontWorkflowGenerator() {
+    private DirectRaccoonWorkflowGenerator() {
 
     }
 

@@ -17,15 +17,15 @@ import java.util.List;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
 public class SignatureAndHashAlgorithmResult extends ProbeResult {
 
     private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmList;
 
-    public SignatureAndHashAlgorithmResult(List<SignatureAndHashAlgorithm> signautureAndHashAlgorithmList) {
+    public SignatureAndHashAlgorithmResult(List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmList) {
         super(ProbeType.SIGNATURE_AND_HASH);
-        this.signatureAndHashAlgorithmList = signautureAndHashAlgorithmList;
+        this.signatureAndHashAlgorithmList = signatureAndHashAlgorithmList;
     }
 
     @Override

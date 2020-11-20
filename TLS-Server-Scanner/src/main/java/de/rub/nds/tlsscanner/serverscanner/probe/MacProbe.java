@@ -153,7 +153,6 @@ public class MacProbe extends TlsProbe {
     }
 
     private WorkflowTrace getAppDataTrace(Config config, int xorPosition) {
-        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
                 RunningModeType.CLIENT);
@@ -182,6 +181,8 @@ public class MacProbe extends TlsProbe {
         r.prepareComputations();
         ModifiableByteArray modMac = new ModifiableByteArray();
         r.getComputations().setMac(modMac);
+
+        VariableModification<byte[]> xor = ByteArrayModificationFactory.xor(new byte[] { 1 }, xorPosition);
         modMac.setModification(xor);
         lastSendingAction.setRecords(r);
         trace.addTlsAction(new GenericReceiveAction());
@@ -302,7 +303,7 @@ public class MacProbe extends TlsProbe {
 
     private ByteCheckStatus[] getMacByteCheckMap(Check check) {
         CipherSuite suite = suiteList.get(0);
-        // TODO Protocolversion not from report
+        // TODO: Protocol version not from report
         int macSize = AlgorithmResolver.getMacAlgorithm(ProtocolVersion.TLS12, suite).getSize(); // TODO
         ByteCheckStatus[] byteCheckArray = new ByteCheckStatus[macSize];
         List<State> stateList = new LinkedList<>();

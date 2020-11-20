@@ -22,21 +22,21 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.report.result.PaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class PaddingOracleProbe extends TlsProbe {
 
@@ -83,8 +83,8 @@ public class PaddingOracleProbe extends TlsProbe {
                 LOGGER.debug("Finished non-determinism evaluation");
             }
             return new PaddingOracleResult(testResultList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new PaddingOracleResult(null);
         }
     }
@@ -136,8 +136,8 @@ public class PaddingOracleProbe extends TlsProbe {
         }
         try {
             attacker.isVulnerable();
-        } catch (Exception E) {
-            LOGGER.error("Encountered an exception while testing for PaddingOracles", E);
+        } catch (Exception e) {
+            LOGGER.error("Encountered an exception while testing for PaddingOracles", e);
         }
 
         return new InformationLeakTest<>(new PaddingOracleTestInfo(paddingOracleConfig.getProtocolVersionDelegate()

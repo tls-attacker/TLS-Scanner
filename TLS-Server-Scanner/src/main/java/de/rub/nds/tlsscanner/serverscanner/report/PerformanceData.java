@@ -19,16 +19,16 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 public class PerformanceData {
 
     private ProbeType type;
-    private long starttime;
-    private long stoptime;
+    private long startTime;
+    private long stopTime;
 
     private PerformanceData() {
     }
 
-    public PerformanceData(ProbeType type, long starttime, long stoptime) {
+    public PerformanceData(ProbeType type, long startTime, long stopTime) {
         this.type = type;
-        this.starttime = starttime;
-        this.stoptime = stoptime;
+        this.startTime = startTime;
+        this.stopTime = stopTime;
     }
 
     public ProbeType getType() {
@@ -39,20 +39,20 @@ public class PerformanceData {
         this.type = type;
     }
 
-    public long getStarttime() {
-        return starttime;
+    public long getStartTime() {
+        return startTime;
     }
 
-    public void setStarttime(long starttime) {
-        this.starttime = starttime;
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
     }
 
-    public long getStoptime() {
-        return stoptime;
+    public long getStopTime() {
+        return stopTime;
     }
 
-    public void setStoptime(long stoptime) {
-        this.stoptime = stoptime;
+    public void setStopTime(long stopTime) {
+        this.stopTime = stopTime;
     }
 
 }

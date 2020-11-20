@@ -8,7 +8,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
+package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
 public class InformationLeakReport {
 

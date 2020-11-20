@@ -10,13 +10,6 @@
 
 package de.rub.nds.tlsscanner.clientscanner;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
-
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-
 public class Main {
 
     public static void main(String[] args) {

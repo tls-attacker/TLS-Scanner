@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
 public class CertificateResult extends ProbeResult {
 

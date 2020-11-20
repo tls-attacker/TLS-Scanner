@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class CompressionsProbe extends TlsProbe {
 
@@ -45,8 +45,8 @@ public class CompressionsProbe extends TlsProbe {
         try {
             List<CompressionMethod> compressions = getSupportedCompressionMethods();
             return new CompressionsResult(compressions);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new CompressionsResult(null);
         }
     }
@@ -54,11 +54,11 @@ public class CompressionsProbe extends TlsProbe {
     private List<CompressionMethod> getSupportedCompressionMethods() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
+        List<CipherSuite> cipherSuites = new LinkedList<>();
+        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);

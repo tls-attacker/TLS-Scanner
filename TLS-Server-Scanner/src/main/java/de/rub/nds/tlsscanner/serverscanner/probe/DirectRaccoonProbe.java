@@ -21,17 +21,17 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon.DirectRaccoonVector;
-import de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon.DirectRaccoontWorkflowGenerator;
+import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonVector;
+import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowGenerator;
+import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DirectRaccoonResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -77,8 +77,8 @@ public class DirectRaccoonProbe extends TlsProbe {
                 }
             }
             return new DirectRaccoonResult(testResultList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new DirectRaccoonResult(TestResult.ERROR_DURING_TEST);
         }
     }
@@ -135,7 +135,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setQuickReceive(true);
 
             WorkflowTrace trace =
-                DirectRaccoontWorkflowGenerator.generateWorkflow(config, workflowType, initialClientDhSecret, nullByte);
+                DirectRaccoonWorkflowGenerator.generateWorkflow(config, workflowType, initialClientDhSecret, nullByte);
             // Store
             trace.setName("" + nullByte);
             State state = new State(config, trace);

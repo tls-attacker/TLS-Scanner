@@ -773,7 +773,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>ENFOCRES_CS_ORDERING</analyzedProperty>
+        <analyzedProperty>ENFORCES_CS_ORDERING</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>50</influence>
@@ -916,7 +916,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>REFLECTS_OFFERED_CIPHERSUITES</analyzedProperty>
+        <analyzedProperty>REFLECTS_OFFERED_CIPHER_SUITES</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-200</influence>
@@ -927,7 +927,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>IGNORES_OFFERED_CIPHERSUITES</analyzedProperty>
+        <analyzedProperty>IGNORES_OFFERED_CIPHER_SUITES</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-200</influence>

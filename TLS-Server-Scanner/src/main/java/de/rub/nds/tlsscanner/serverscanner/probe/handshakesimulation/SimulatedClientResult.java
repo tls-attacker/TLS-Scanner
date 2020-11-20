@@ -8,13 +8,12 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation;
+package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.state.State;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class SimulatedClientResult {
     private ProtocolVersion highestClientProtocolVersion = null;
     private ProtocolVersion selectedProtocolVersion = null;
     private List<ProtocolVersion> commonProtocolVersions = null;
-    private List<CipherSuite> clientSupportedCiphersuites = null;
+    private List<CipherSuite> clientSupportedCipherSuites = null;
     private CipherSuite selectedCiphersuite = null;
     private KeyExchangeAlgorithm keyExchangeAlgorithm = null;
     private Boolean forwardSecrecy = null;
@@ -51,7 +50,7 @@ public class SimulatedClientResult {
     // private final TlsClientConfig tlsClientConfig;
 
     // To set in HandshakeSimulationAfterProbe
-    private Boolean highestPossibleProtocolVersionSeleceted = null;
+    private Boolean highestPossibleProtocolVersionSelected = null;
     private Boolean handshakeSuccessful = null;
     private Boolean connectionInsecure = null;
     private Boolean connectionRfc7918Secure = null;
@@ -160,20 +159,20 @@ public class SimulatedClientResult {
         this.commonProtocolVersions = commonProtocolVersions;
     }
 
-    public List<CipherSuite> getClientSupportedCiphersuites() {
-        return clientSupportedCiphersuites;
+    public List<CipherSuite> getClientSupportedCipherSuites() {
+        return clientSupportedCipherSuites;
     }
 
-    public void setClientSupportedCiphersuites(List<CipherSuite> clientSupportedCiphersuites) {
-        this.clientSupportedCiphersuites = clientSupportedCiphersuites;
+    public void setClientSupportedCipherSuites(List<CipherSuite> clientSupportedCipherSuites) {
+        this.clientSupportedCipherSuites = clientSupportedCipherSuites;
     }
 
-    public Boolean getHighestPossibleProtocolVersionSeleceted() {
-        return highestPossibleProtocolVersionSeleceted;
+    public Boolean getHighestPossibleProtocolVersionSelected() {
+        return highestPossibleProtocolVersionSelected;
     }
 
-    public void setHighestPossibleProtocolVersionSeleceted(Boolean highestPossibleProtocolVersionSeleceted) {
-        this.highestPossibleProtocolVersionSeleceted = highestPossibleProtocolVersionSeleceted;
+    public void setHighestPossibleProtocolVersionSelected(Boolean highestPossibleProtocolVersionSelected) {
+        this.highestPossibleProtocolVersionSelected = highestPossibleProtocolVersionSelected;
     }
 
     public CipherSuite getSelectedCiphersuite() {

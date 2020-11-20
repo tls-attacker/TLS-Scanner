@@ -15,8 +15,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
-import org.bouncycastle.util.test.Test;
-
 import java.util.List;
 
 public class CcaResult extends ProbeResult {

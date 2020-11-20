@@ -43,7 +43,7 @@ public class ExtractedValueContainer<T> {
         return true;
     }
 
-    public boolean areAllValuesDiffernt() {
+    public boolean areAllValuesDifferent() {
         Set<T> set = new HashSet<>();
         set.addAll(extractedValueList);
         return set.size() == extractedValueList.size();

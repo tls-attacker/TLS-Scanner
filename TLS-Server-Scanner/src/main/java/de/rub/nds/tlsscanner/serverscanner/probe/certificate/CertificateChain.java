@@ -56,7 +56,7 @@ public class CertificateChain {
 
     private Boolean chainIsOrdered = null;
 
-    private Boolean containsMultipleLeafs = null;
+    private Boolean containsMultipleLeaves = null;
 
     private Boolean containsValidLeaf = null;
 
@@ -64,7 +64,7 @@ public class CertificateChain {
 
     private Boolean containsExpired;
 
-    private Boolean containsWeakSignedNonTruststoresCertificates;
+    private Boolean containsWeakSignedNonTrustStoresCertificates;
 
     private List<TrustPlatform> platformsTrustingCertificate;
 
@@ -102,17 +102,17 @@ public class CertificateChain {
         // find leaf certificate
         CertificateReport leafReport = null;
         for (CertificateReport report : certificateReportList) {
-            if (isCertificateSuiteableForHost(report.convertToX509Certificate(), uri)) {
+            if (isCertificateSuitableForHost(report.convertToX509Certificate(), uri)) {
                 report.setLeafCertificate(true);
                 if (leafReport == null) {
                     leafReport = report;
                 } else {
-                    containsMultipleLeafs = true;
+                    containsMultipleLeaves = true;
                 }
             }
         }
-        if (containsMultipleLeafs == null) {
-            containsMultipleLeafs = false;
+        if (containsMultipleLeaves == null) {
+            containsMultipleLeaves = false;
         }
         containsValidLeaf = leafReport != null;
 
@@ -121,7 +121,7 @@ public class CertificateChain {
                 || !certificateReportList.get(0).getSHA256Fingerprint().equals(leafReport.getSHA256Fingerprint())) {
                 chainIsOrdered = false;
             } else {
-                chainIsOrdered = checkCertifiteChainIsOrdered(certificateReportList);
+                chainIsOrdered = checkCertificateChainIsOrdered(certificateReportList);
             }
             // Try to build a chain
             CertificateReport tempCertificate = leafReport;
@@ -163,7 +163,8 @@ public class CertificateChain {
                             chainIsComplete = false;
                         }
                     } else {
-                        LOGGER.error("Cannot check if the chain is complete since the trust manager is not initalized");
+                        LOGGER.error("Cannot check if the chain is complete since the trust manager is not "
+                            + "initialized");
                     }
                     break;
                 }
@@ -175,7 +176,7 @@ public class CertificateChain {
         }
         containsNotYetValid = false;
         containsExpired = false;
-        containsWeakSignedNonTruststoresCertificates = false;
+        containsWeakSignedNonTrustStoresCertificates = false;
         for (CertificateReport report : certificateReportList) {
             if (report.getValidFrom().after(new Date())) {
                 containsNotYetValid = true;
@@ -187,7 +188,7 @@ public class CertificateChain {
                 && Objects.equals(report.getSelfSigned(), Boolean.FALSE)
                 && report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5
                 || report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1) {
-                containsWeakSignedNonTruststoresCertificates = true;
+                containsWeakSignedNonTrustStoresCertificates = true;
             }
         }
         for (CertificateReport report : certificateReportList) {
@@ -210,10 +211,10 @@ public class CertificateChain {
         if (Objects.equals(containsNotYetValid, Boolean.TRUE)) {
             certificateIssues.add(CertificateIssue.CHAIN_CONTAINS_NOT_YET_VALID);
         }
-        if (Objects.equals(containsMultipleLeafs, Boolean.TRUE)) {
-            certificateIssues.add(CertificateIssue.MULTIPLE_LEAFS);
+        if (Objects.equals(containsMultipleLeaves, Boolean.TRUE)) {
+            certificateIssues.add(CertificateIssue.MULTIPLE_LEAVES);
         }
-        if (Objects.equals(containsWeakSignedNonTruststoresCertificates, Boolean.TRUE)) {
+        if (Objects.equals(containsWeakSignedNonTrustStoresCertificates, Boolean.TRUE)) {
             certificateIssues.add(CertificateIssue.WEAK_SIGNATURE_OR_HASH_ALGORITHM);
         }
         if (Objects.equals(chainIsComplete, Boolean.TRUE) && Objects.equals(containsValidLeaf, Boolean.TRUE)
@@ -262,12 +263,12 @@ public class CertificateChain {
         this.containsExpired = containsExpired;
     }
 
-    public Boolean getContainsWeakSignedNonTruststoresCertificates() {
-        return containsWeakSignedNonTruststoresCertificates;
+    public Boolean getContainsWeakSignedNonTrustStoresCertificates() {
+        return containsWeakSignedNonTrustStoresCertificates;
     }
 
-    public void setContainsWeakSignedNonTruststoresCertificates(Boolean containsWeakSignedNonTruststoresCertificates) {
-        this.containsWeakSignedNonTruststoresCertificates = containsWeakSignedNonTruststoresCertificates;
+    public void setContainsWeakSignedNonTrustStoresCertificates(Boolean containsWeakSignedNonTrustStoresCertificates) {
+        this.containsWeakSignedNonTrustStoresCertificates = containsWeakSignedNonTrustStoresCertificates;
     }
 
     public CertificateReport getTrustAnchor() {
@@ -298,8 +299,8 @@ public class CertificateChain {
         return chainIsOrdered;
     }
 
-    public Boolean getContainsMultipleLeafs() {
-        return containsMultipleLeafs;
+    public Boolean getContainsMultipleLeaves() {
+        return containsMultipleLeaves;
     }
 
     public Boolean getContainsValidLeaf() {
@@ -322,7 +323,7 @@ public class CertificateChain {
         return certificateReportList;
     }
 
-    public final boolean checkCertifiteChainIsOrdered(List<CertificateReport> reports) {
+    public final boolean checkCertificateChainIsOrdered(List<CertificateReport> reports) {
         if (reports.isEmpty()) {
             return true; // i guess ^^
         } else {
@@ -338,7 +339,7 @@ public class CertificateChain {
         }
     }
 
-    public final boolean isCertificateSuiteableForHost(X509Certificate cert, String host) {
+    public final boolean isCertificateSuitableForHost(X509Certificate cert, String host) {
         HostnameChecker checker = HostnameChecker.getInstance(HostnameChecker.TYPE_TLS);
         try {
             checker.match(host, cert);
@@ -351,7 +352,7 @@ public class CertificateChain {
 
     private CertPathValidationResult evaluateGeneralTrust(List<CertificateReport> orderedCertificateChain) {
         if (orderedCertificateChain.size() < 2) {
-            return null;// Emtpy chains & only root ca's are considered not
+            return null; // Emtpy chains & only root ca's are not considered
             // generally trusted i guess
         }
         X509CertificateHolder[] certPath = new X509CertificateHolder[orderedCertificateChain.size()];
@@ -385,12 +386,12 @@ public class CertificateChain {
             || !Objects.equals(containsTrustAnchor, otherCert.getContainsTrustAnchor())
             || !Objects.equals(chainIsComplete, otherCert.getChainIsComplete())
             || !Objects.equals(chainIsOrdered, otherCert.getChainIsOrdered())
-            || !Objects.equals(containsMultipleLeafs, otherCert.getContainsMultipleLeafs())
+            || !Objects.equals(containsMultipleLeaves, otherCert.getContainsMultipleLeaves())
             || !Objects.equals(containsValidLeaf, otherCert.getContainsValidLeaf())
             || !Objects.equals(containsNotYetValid, otherCert.getContainsNotYetValid())
             || !Objects.equals(containsExpired, otherCert.getContainsExpired())
-            || !Objects.equals(containsWeakSignedNonTruststoresCertificates,
-                otherCert.getContainsWeakSignedNonTruststoresCertificates())) {
+            || !Objects.equals(containsWeakSignedNonTrustStoresCertificates,
+                otherCert.getContainsWeakSignedNonTrustStoresCertificates())) {
             return false;
         } else {
             for (int i = 0; i < certificateReportList.size(); i++) {
@@ -410,11 +411,11 @@ public class CertificateChain {
         hash = 29 * hash + Objects.hashCode(this.containsTrustAnchor);
         hash = 29 * hash + Objects.hashCode(this.chainIsComplete);
         hash = 29 * hash + Objects.hashCode(this.chainIsOrdered);
-        hash = 29 * hash + Objects.hashCode(this.containsMultipleLeafs);
+        hash = 29 * hash + Objects.hashCode(this.containsMultipleLeaves);
         hash = 29 * hash + Objects.hashCode(this.containsValidLeaf);
         hash = 29 * hash + Objects.hashCode(this.containsNotYetValid);
         hash = 29 * hash + Objects.hashCode(this.containsExpired);
-        hash = 29 * hash + Objects.hashCode(this.containsWeakSignedNonTruststoresCertificates);
+        hash = 29 * hash + Objects.hashCode(this.containsWeakSignedNonTrustStoresCertificates);
         hash = 29 * hash + Objects.hashCode(this.certificateReportList);
         hash = 29 * hash + Objects.hashCode(this.trustAnchor);
         hash = 29 * hash + Objects.hashCode(this.certificateIssues);

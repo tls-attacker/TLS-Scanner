@@ -53,7 +53,7 @@ public class CiphersuiteProbe extends TlsProbe {
             for (ProtocolVersion version : protocolVersions) {
                 LOGGER.debug("Testing:" + version.name());
                 if (version.isTLS13()) {
-                    pairLists.add(new VersionSuiteListPair(version, getSupportedCiphersuites()));
+                    pairLists.add(new VersionSuiteListPair(version, getSupportedCipherSuites()));
                 } else {
                     List<CipherSuite> toTestList = new LinkedList<>();
                     List<CipherSuite> versionSupportedSuites = new LinkedList<>();
@@ -75,13 +75,13 @@ public class CiphersuiteProbe extends TlsProbe {
                 }
             }
             return new CiphersuiteProbeResult(pairLists);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new CiphersuiteProbeResult(null);
         }
     }
 
-    private List<CipherSuite> getSupportedCiphersuites() {
+    private List<CipherSuite> getSupportedCipherSuites() {
         CipherSuite selectedSuite = null;
         List<CipherSuite> toTestList = new LinkedList<>();
         List<CipherSuite> supportedSuits = new LinkedList<>();
@@ -96,7 +96,7 @@ public class CiphersuiteProbe extends TlsProbe {
             if (selectedSuite != null) {
                 if (!toTestList.contains(selectedSuite)) {
                     LOGGER.warn("Server chose a CipherSuite we did not propose!");
-                    // TODO write to sitereport
+                    // TODO write to site report
                     break;
                 }
                 supportedSuits.add(selectedSuite);

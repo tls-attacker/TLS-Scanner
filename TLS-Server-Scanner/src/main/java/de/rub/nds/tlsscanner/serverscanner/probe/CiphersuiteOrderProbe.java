@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class CiphersuiteOrderProbe extends TlsProbe {
 
@@ -50,8 +50,8 @@ public class CiphersuiteOrderProbe extends TlsProbe {
             CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
             return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE
                 : TestResult.FALSE);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);
         }
     }

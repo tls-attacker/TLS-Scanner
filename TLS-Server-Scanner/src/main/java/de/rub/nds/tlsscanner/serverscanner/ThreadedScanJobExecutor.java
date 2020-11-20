@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer {
 
@@ -195,7 +195,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
             }
             this.notScheduledTasks = newNotSchedulesTasksList;
         } else {
-            LOGGER.error(this.getClass().getName() + " received an update from a non-Sitereport");
+            LOGGER.error(this.getClass().getName() + " received an update from a non-siteReport");
         }
 
     }

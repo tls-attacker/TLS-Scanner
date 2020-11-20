@@ -43,7 +43,7 @@ public class DhValueAfterProbe extends AfterProbe {
 
         Integer shortestBitLength = Integer.MAX_VALUE;
         if (publicKeyContainer != null && publicKeyContainer.getExtractedValueList().size() > 2) {
-            if (!publicKeyContainer.areAllValuesDiffernt()) {
+            if (!publicKeyContainer.areAllValuesDifferent()) {
                 reuse = TestResult.TRUE;
             } else {
                 reuse = TestResult.FALSE;

@@ -54,8 +54,8 @@ public class DrownProbe extends TlsProbe {
             } else {
                 return TestResult.FALSE;
             }
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for testForGeneralDrown():" + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for testForGeneralDrown():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -79,8 +79,8 @@ public class DrownProbe extends TlsProbe {
             } else {
                 return TestResult.FALSE;
             }
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for testForExtraClearDrown():" + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for testForExtraClearDrown():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
         }
     }

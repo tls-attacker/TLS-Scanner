@@ -21,63 +21,39 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
  */
 public class CommonBugProbeResult extends ProbeResult {
 
-    private final TestResult extensionIntolerance; // does it handle unknown
-    // extenstions correctly?
-    private final TestResult cipherSuiteIntolerance; // does it handle unknown
-    // ciphersuites correctly?
-    private final TestResult cipherSuiteLengthIntolerance512; // does it handle
-    // long
-    // ciphersuite
-    // length values
-    // correctly?
+    // does it handle unknown extensions correctly?
+    private final TestResult extensionIntolerance;
+    // does it handle unknown cipher suites correctly?
+    private final TestResult cipherSuiteIntolerance;
+    // does it handle long ciphersuite length values correctly?
+    private final TestResult cipherSuiteLengthIntolerance512;
+    // does it handle unknown compression algorithms correctly?
+    private final TestResult compressionIntolerance;
+    // does it handle unknown versions correctly?
+    private final TestResult versionIntolerance;
+    // does it handle unknown alpn strings correctly?
+    private final TestResult alpnIntolerance;
+    // 256 - 511 <-- ch should be bigger than this?
+    private final TestResult clientHelloLengthIntolerance;
+    // does it break on empty last extension?
+    private final TestResult emptyLastExtensionIntolerance;
+    // is only the second byte of the ciphersuite evaluated?
+    private final TestResult onlySecondCiphersuiteByteEvaluated;
+    // does it handle unknown groups correctly?
+    private final TestResult namedGroupIntolerant;
+    // does it handle signature and hash algorithms correctly?
+    private final TestResult namedSignatureAndHashAlgorithmIntolerance;
+    // does it ignore the offered cipher suites?
+    private final TestResult ignoresCipherSuiteOffering;
+    // does it ignore the offered cipher suites?
+    private final TestResult reflectsCipherSuiteOffering;
+    // does it ignore the offered named groups?
+    private final TestResult ignoresOfferedNamedGroups;
+    // does it ignore the sig hash algorithms?
+    private final TestResult ignoresOfferedSignatureAndHashAlgorithms;
+    // server does not like really big client hello messages?
+    private final TestResult maxLengthClientHelloIntolerant;
 
-    private final TestResult compressionIntolerance; // does it handle unknown
-    // compression algorithms
-    // correctly
-    private final TestResult versionIntolerance; // does it handle unknown
-    // versions correctly?
-    private final TestResult alpnIntolerance; // does it handle unknown alpn
-    // strings correctly?
-    private final TestResult clientHelloLengthIntolerance; // 256 - 511 <-- ch
-    // should be bigger
-    // than this
-    private final TestResult emptyLastExtensionIntolerance; // does it break on
-    // empty last
-    // extension
-    private final TestResult onlySecondCiphersuiteByteEvaluated; // is only the
-    // second byte
-    // of the
-    // ciphersuite
-    // evaluated
-    private final TestResult namedGroupIntolerant; // does it handle unknown
-    // groups correctly
-    private final TestResult namedSignatureAndHashAlgorithmIntolerance; // does
-    // it
-    // handle
-    // signature
-    // and
-    // hash
-    // algorithms
-    // correctly
-    private final TestResult ignoresCipherSuiteOffering; // does it ignore the
-    // offered ciphersuites
-    private final TestResult reflectsCipherSuiteOffering; // does it ignore the
-    // offered
-    // ciphersuites
-    private final TestResult ignoresOfferedNamedGroups; // does it ignore the
-    // offered named groups
-    private final TestResult ignoresOfferedSignatureAndHashAlgorithms; // does
-    // it
-    // ignore
-    // the
-    // sig
-    // hash
-    // algorithms
-    private final TestResult maxLengthClientHelloIntolerant; // server does not
-
-    // like really big
-    // client hello
-    // messages
     public CommonBugProbeResult(TestResult extensionIntolerance, TestResult cipherSuiteIntolerance,
         TestResult cipherSuiteLengthIntolerance512, TestResult compressionIntolerance, TestResult versionIntolerance,
         TestResult alpnIntolerance, TestResult clientHelloLengthIntolerance, TestResult emptyLastExtensionIntolerance,
@@ -118,8 +94,8 @@ public class CommonBugProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, namedGroupIntolerant);
         report
             .putResult(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE, namedSignatureAndHashAlgorithmIntolerance);
-        report.putResult(AnalyzedProperty.IGNORES_OFFERED_CIPHERSUITES, ignoresCipherSuiteOffering);
-        report.putResult(AnalyzedProperty.REFLECTS_OFFERED_CIPHERSUITES, reflectsCipherSuiteOffering);
+        report.putResult(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES, ignoresCipherSuiteOffering);
+        report.putResult(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, reflectsCipherSuiteOffering);
         report.putResult(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, ignoresOfferedNamedGroups);
         report.putResult(AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, ignoresOfferedSignatureAndHashAlgorithms);
         report.putResult(AnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE, maxLengthClientHelloIntolerant);

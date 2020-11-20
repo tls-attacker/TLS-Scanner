@@ -68,7 +68,7 @@ public class HttpHeaderProbe extends TlsProbe {
             tlsConfig.setHttpsParsingEnabled(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
             tlsConfig.setStopActionsAfterIOException(true);
-            // Dont send extensions if we are in sslv2
+            // Don't send extensions if we are in SSLv2
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddServerNameIndicationExtension(true);
@@ -125,8 +125,8 @@ public class HttpHeaderProbe extends TlsProbe {
                 headerList = new LinkedList<>();
             }
             return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
         }
     }

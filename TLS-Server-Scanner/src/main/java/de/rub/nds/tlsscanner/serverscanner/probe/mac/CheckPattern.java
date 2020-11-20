@@ -84,9 +84,9 @@ public class CheckPattern {
                 return builder.toString();
             case UNKNOWN:
                 return "Unknown";
-
+            default:
+                return super.toString();
         }
-        return super.toString();
     }
 
 }

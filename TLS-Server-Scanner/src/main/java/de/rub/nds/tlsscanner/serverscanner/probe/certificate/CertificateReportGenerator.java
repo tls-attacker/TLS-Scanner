@@ -28,7 +28,6 @@ import java.security.PublicKey;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
@@ -43,7 +42,7 @@ import org.bouncycastle.jce.provider.X509CertificateObject;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class CertificateReportGenerator {
 
@@ -71,7 +70,7 @@ public class CertificateReportGenerator {
         setIssuer(report, cert);
         setSignatureAndHashAlgorithm(report, cert);
         setExtendedValidation(report, cert);
-        setCeritifcateTransparency(report, cert);
+        setCertificateTransparency(report, cert);
         setOcspMustStaple(report, cert);
         setCRLSupported(report, cert);
         setOcspSupported(report, cert);
@@ -182,8 +181,8 @@ public class CertificateReportGenerator {
                     SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
                 report.setSignatureAndHashAlgorithm(sigHashAlgo);
             }
-        } catch (Exception E) {
-            LOGGER.debug("Could not extraxt SignatureAndHashAlgorithm from String:" + sigAndHashString, E);
+        } catch (Exception e) {
+            LOGGER.debug("Could not extract SignatureAndHashAlgorithm from String:" + sigAndHashString, e);
         }
     }
 
@@ -192,7 +191,7 @@ public class CertificateReportGenerator {
     }
 
     private static void
-        setCeritifcateTransparency(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
+        setCertificateTransparency(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
     private static void setOcspMustStaple(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {

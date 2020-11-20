@@ -17,7 +17,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
 public class CipherSuiteOrderResult extends ProbeResult {
 
@@ -30,6 +30,6 @@ public class CipherSuiteOrderResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.ENFOCRES_CS_ORDERING, enforced);
+        report.putResult(AnalyzedProperty.ENFORCES_CS_ORDERING, enforced);
     }
 }

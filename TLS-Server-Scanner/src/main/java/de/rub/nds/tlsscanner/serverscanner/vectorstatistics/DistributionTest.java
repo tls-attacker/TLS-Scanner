@@ -8,7 +8,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
+package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.TestInfo;
@@ -74,8 +74,8 @@ public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T>
         }
         double chiSquare = test.chiSquareDataSetsComparison(expected, measured);
         ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);
-        double pValue = 1 - distribution.cumulativeProbability(chiSquare);
-        return pValue;
+        double valueP = 1 - distribution.cumulativeProbability(chiSquare);
+        return valueP;
     }
 
     @Override

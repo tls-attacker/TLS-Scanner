@@ -22,15 +22,15 @@ import sun.security.x509.X509CertImpl;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
-public class CertificateJudger {
+public class CertificateJudge {
 
     private final Certificate certificate;
     private final String domainName;
     private final CertificateReport report;
 
-    public CertificateJudger(Certificate certificate, CertificateReport report, String domainName) {
+    public CertificateJudge(Certificate certificate, CertificateReport report, String domainName) {
         this.certificate = certificate;
         this.report = report;
         this.domainName = domainName;
@@ -109,29 +109,6 @@ public class CertificateJudger {
 
     }
 
-    private Boolean checkDomainNameMatch() {
-        // if (domainNameDoesNotMatch(certificate, domainName)) {
-        // tlsCheckList.add(new ConfigurationFlaw("Domain nicht zulässig",
-        // FlawLevel.FATAL,
-        // "Das eingesetzte Zertifikat ist für die gescannte Domain nicht gültig.",
-        // "Beantrage sie ein neues Zertifikat welches ebenfalls für die Domain "
-        // + domainName
-        // + " gültig ist."));
-        // }
-        return null;
-    }
-
-    private Boolean checkCertificateTrusted() {
-        // if (isNotTrusted(certificate)) {
-        // tlsCheckList.add(new
-        // ConfigurationFlaw("Zertifikat nicht vertrauenswürdig",
-        // FlawLevel.FATAL,
-        // "Dem Eingesetzten Zertifikat wird nicht vertraut",
-        // "Beantrage sie ein neues Zertifikat welchem Vertraut werden kann."));
-        // }
-        return null;
-    }
-
     public Boolean isSelfSigned() {
         try {
             // Try to verify certificate signature with its own public key
@@ -141,9 +118,31 @@ public class CertificateJudger {
             return true;
         } catch (SignatureException | InvalidKeyException ex) {
             return false;
-        } catch (Exception E) {
+        } catch (Exception e) {
             return null;
         }
+    }
+
+    private Boolean checkDomainNameMatch() {
+        // if (domainNameDoesNotMatch(certificate, domainName)) {
+        // tlsCheckList.add(new ConfigurationFlaw("Domain invalid",
+        // FlawLevel.FATAL,
+        // "The used certificate is not valid for the scanned ID. Request a new certificate which is valid for "
+        // + domainName
+        // + " as well."));
+        // }
+        return null;
+    }
+
+    private Boolean checkCertificateTrusted() {
+        // if (isNotTrusted(certificate)) {
+        // tlsCheckList.add(new
+        // ConfigurationFlaw("Certificate untrusted.",
+        // FlawLevel.FATAL,
+        // "We don't trust the certificate.",
+        // "Request a new certificate which can be trusted."));
+        // }
+        return null;
     }
 
     private Boolean checkBlacklistedKey() {

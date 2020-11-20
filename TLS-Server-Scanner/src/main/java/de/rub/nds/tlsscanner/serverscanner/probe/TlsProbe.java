@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public abstract class TlsProbe implements Callable<ProbeResult> {
 
@@ -68,8 +68,8 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         ProbeResult result = executeTest();
         long stopTime = System.currentTimeMillis();
         if (result != null) {
-            result.setStarttime(startTime);
-            result.setStoptime(stopTime);
+            result.setStartTime(startTime);
+            result.setStopTime(stopTime);
         } else {
             LOGGER.warn("" + getProbeName() + " - is null result");
         }

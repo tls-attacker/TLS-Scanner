@@ -8,7 +8,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve;
+package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.FingerprintSecretPair;

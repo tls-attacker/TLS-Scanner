@@ -63,8 +63,8 @@ public class RenegotiationProbe extends TlsProbe {
             }
             TestResult supportsInsecureRenegotiation = supportsInsecureClientRenegotiation();
             return new RenegotiationResult(supportsSecureRenegotiation, supportsInsecureRenegotiation);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new RenegotiationResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }
@@ -72,10 +72,10 @@ public class RenegotiationProbe extends TlsProbe {
     private TestResult supportsSecureClientRenegotiation() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(supportedSuites);
+        List<CipherSuite> cipherSuites = new LinkedList<>();
+        cipherSuites.addAll(supportedSuites);
         // TODO this can fail in some rare occasions
-        tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites.get(0));
+        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites.get(0));
         tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
@@ -107,9 +107,9 @@ public class RenegotiationProbe extends TlsProbe {
     private TestResult supportsInsecureClientRenegotiation() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(supportedSuites);
-        tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
+        List<CipherSuite> cipherSuites = new LinkedList<>();
+        cipherSuites.addAll(supportedSuites);
+        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);

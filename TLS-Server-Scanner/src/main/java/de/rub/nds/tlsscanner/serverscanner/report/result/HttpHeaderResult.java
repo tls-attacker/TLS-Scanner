@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 public class HttpHeaderResult extends ProbeResult {
 
-    private final static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private List<HttpsHeader> headerList = null;
     private TestResult speaksHttps = null;
@@ -70,8 +70,8 @@ public class HttpHeaderResult extends ProbeResult {
                             if (maxAge.length == 2) {
                                 try {
                                     hstsMaxAge = Long.parseLong(maxAge[1].trim());
-                                } catch (Exception E) {
-                                    LOGGER.warn("HSTS was not parseable", E);
+                                } catch (Exception e) {
+                                    LOGGER.warn("HSTS was not parseable", e);
                                     hstsNotParseable = TestResult.TRUE;
                                 }
                             } else {
@@ -93,8 +93,8 @@ public class HttpHeaderResult extends ProbeResult {
                             if (maxAge.length == 2) {
                                 try {
                                     hpkpMaxAge = Integer.parseInt(maxAge[1].trim());
-                                } catch (Exception E) {
-                                    LOGGER.warn("HPKP was not parseable", E);
+                                } catch (Exception e) {
+                                    LOGGER.warn("HPKP was not parseable", e);
                                     hpkpNotParseable = TestResult.TRUE;
                                 }
                             } else {
@@ -106,8 +106,8 @@ public class HttpHeaderResult extends ProbeResult {
                             HpkpPin pin =
                                 new HpkpPin(pinString[0], Base64.getDecoder().decode(pinString[1].replace("\"", "")));
                             pinList.add(pin);
-                        } catch (Exception E) {
-                            LOGGER.warn("HPKP was not parseable", E);
+                        } catch (Exception e) {
+                            LOGGER.warn("HPKP was not parseable", e);
                             hpkpNotParseable = TestResult.TRUE;
                         }
                     }
@@ -124,8 +124,8 @@ public class HttpHeaderResult extends ProbeResult {
                             if (maxAge.length == 2) {
                                 try {
                                     hpkpMaxAge = Integer.parseInt(maxAge[1].trim());
-                                } catch (Exception E) {
-                                    LOGGER.warn("HPKP was not parseable", E);
+                                } catch (Exception e) {
+                                    LOGGER.warn("HPKP was not parseable", e);
                                     hpkpNotParseable = TestResult.TRUE;
                                 }
                             } else {
@@ -139,8 +139,8 @@ public class HttpHeaderResult extends ProbeResult {
                                     new HpkpPin(pinString[0], Base64.getDecoder()
                                         .decode(pinString[1].replace("\"", "")));
                                 reportOnlyPinList.add(pin);
-                            } catch (Exception E) {
-                                LOGGER.warn("HPKP was not parseable", E);
+                            } catch (Exception e) {
+                                LOGGER.warn("HPKP was not parseable", e);
                                 hpkpNotParseable = TestResult.TRUE;
                             }
                         }

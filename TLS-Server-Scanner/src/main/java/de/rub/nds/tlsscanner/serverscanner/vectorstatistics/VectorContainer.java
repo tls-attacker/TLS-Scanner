@@ -8,13 +8,11 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
+package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
 
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.ResponseCounter;
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -130,8 +128,8 @@ public class VectorContainer {
 
         for (ResponseFingerprint fp : responseFingerprintList) {
             boolean alreadyListed = false;
-            for (ResponseFingerprint uFp : uniqueFps) {
-                if (Objects.equals(fp, uFp)) {
+            for (ResponseFingerprint ufp : uniqueFps) {
+                if (Objects.equals(fp, ufp)) {
                     alreadyListed = true;
                 }
             }

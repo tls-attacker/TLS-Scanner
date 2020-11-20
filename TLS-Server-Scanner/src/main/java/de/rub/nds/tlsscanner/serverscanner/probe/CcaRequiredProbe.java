@@ -10,7 +10,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.tlsattacker.attacks.cca.*;
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateManager;
+import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
+import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowGenerator;
+import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -49,7 +52,7 @@ public class CcaRequiredProbe extends TlsProbe {
         State state = new State(tlsConfig, trace);
         try {
             executeState(state);
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.warn("Could not test if client authentication is required.");
         }
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {

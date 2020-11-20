@@ -38,7 +38,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
 
     private static final int MAX_CONSIDERED_PSK_LENGTH_BYTES = 128;
 
-    private static final double MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION = 0x0100000000000000l;
+    private static final double MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION = 0x0100000000000000L;
 
     private Boolean supportsSha384;
 
@@ -46,7 +46,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
 
     private Boolean supportsLegacyPrf;
 
-    private Boolean supportsSslv3;
+    private Boolean supportsSSLv3;
 
     private List<RaccoonAttackProbabilities> attackProbabilityList;
 
@@ -59,7 +59,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         supportsLegacyPrf = report.getResult(AnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResult.TRUE;
         supportsSha256 = report.getResult(AnalyzedProperty.SUPPORTS_SHA256_PRF) == TestResult.TRUE;
         supportsSha384 = report.getResult(AnalyzedProperty.SUPPORTS_SHA384_PRF) == TestResult.TRUE;
-        supportsSslv3 = report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE;
+        supportsSSLv3 = report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE;
         ExtractedValueContainer publicKeyContainer =
             report.getExtractedValueContainerMap().get(TrackableValueType.DHE_PUBLICKEY);
         List extractedValueList = publicKeyContainer.getExtractedValueList();
@@ -114,11 +114,11 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         if (supportsSha384) {
             probabilityList.add(computeSha384PrfProbability(modulus));
         }
-        if (supportsSslv3) {
-            probabilityList.add(computeSslv3OuterMd5Probability(modulus));
-            probabilityList.add(computeSslv3Sha1AInnerProbability(modulus));
-            probabilityList.add(computeSslv3Sha1BBInnerProbability(modulus));
-            probabilityList.add(computeSslv3Sha1CCCInnerProbability(modulus));
+        if (supportsSSLv3) {
+            probabilityList.add(computeSSLv3OuterMd5Probability(modulus));
+            probabilityList.add(computeSSLv3Sha1AInnerProbability(modulus));
+            probabilityList.add(computeSSLv3Sha1BBInnerProbability(modulus));
+            probabilityList.add(computeSSLv3Sha1CCCInnerProbability(modulus));
         }
         return probabilityList;
     }
@@ -151,14 +151,14 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
     }
 
     /**
-     * For PSK we have to attach 2 * 2 length byts and the psk to the pms
+     * For PSK we have to attach 2 * 2 length bytes and the psk to the pms
      */
-    private List<RaccoonAttackPskProbabilities> computePskProbabilitiesList(int blockLänge, int inputLength,
+    private List<RaccoonAttackPskProbabilities> computePskProbabilitiesList(int blockLength, int inputLength,
         int fixedLength, int minPadding, int hashLengthField, BigInteger modulus) {
         List<RaccoonAttackPskProbabilities> pskProbabilityList = new LinkedList<>();
         for (int i = 0; i < MAX_CONSIDERED_PSK_LENGTH_BYTES; i++) {
             int bitsToNextSmallerBlockPsk =
-                bitsToNextSmallerBlock(blockLänge, inputLength + 2 * 8 + 2 * 8 + i * 8, fixedLength, minPadding,
+                bitsToNextSmallerBlock(blockLength, inputLength + 2 * 8 + 2 * 8 + i * 8, fixedLength, minPadding,
                     hashLengthField);
             BigDecimal attackSuccessChance = attackSuccessChance(bitsToNextSmallerBlockPsk, modulus);
             if (attackSuccessChance.multiply(
@@ -217,7 +217,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
             attackSuccessChance(bitsToNextBorder, modulus), pskProbabilityList, modulus);
     }
 
-    private RaccoonAttackProbabilities computeSslv3OuterMd5Probability(BigInteger modulus) {
+    private RaccoonAttackProbabilities computeSSLv3OuterMd5Probability(BigInteger modulus) {
         int blockLength = 512;
         int fixedLength = 160;
         int maxPadding = blockLength - 8;
@@ -233,7 +233,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
             bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
-    private RaccoonAttackProbabilities computeSslv3Sha1AInnerProbability(BigInteger modulus) {
+    private RaccoonAttackProbabilities computeSSLv3Sha1AInnerProbability(BigInteger modulus) {
         int blockLength = 512;
         int fixedLength = 65;
         int maxPadding = blockLength - 8;
@@ -249,7 +249,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
             bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
-    private RaccoonAttackProbabilities computeSslv3Sha1BBInnerProbability(BigInteger modulus) {
+    private RaccoonAttackProbabilities computeSSLv3Sha1BBInnerProbability(BigInteger modulus) {
         int blockLength = 512;
         int fixedLength = 66;
         int maxPadding = blockLength - 8;
@@ -265,7 +265,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
             bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
-    private RaccoonAttackProbabilities computeSslv3Sha1CCCInnerProbability(BigInteger modulus) {
+    private RaccoonAttackProbabilities computeSSLv3Sha1CCCInnerProbability(BigInteger modulus) {
         int blockLength = 512;
         int fixedLength = 67;
         int maxPadding = blockLength - 8;

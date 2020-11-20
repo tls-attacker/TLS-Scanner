@@ -10,10 +10,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -28,14 +24,16 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class EsniProbe extends TlsProbe {
 
@@ -50,7 +48,7 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(this.getClientSupportedCiphersuites());
+        tlsConfig.setDefaultClientSupportedCiphersuites(this.getClientSupportedCipherSuites());
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(this.getTls13SignatureAndHashAlgorithms());
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -67,7 +65,7 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setClientSupportedEsniCiphersuites(this.getClientSupportedCiphersuites());
+        tlsConfig.setClientSupportedEsniCiphersuites(this.getClientSupportedCipherSuites());
         tlsConfig.getClientSupportedEsniNamedGroups().addAll(this.getImplementedGroups());
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
@@ -106,7 +104,7 @@ public class EsniProbe extends TlsProbe {
         return new SniResult(TestResult.COULD_NOT_TEST);
     }
 
-    private List<CipherSuite> getClientSupportedCiphersuites() {
+    private List<CipherSuite> getClientSupportedCipherSuites() {
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.add(CipherSuite.TLS_AES_128_GCM_SHA256);
         cipherSuites.add(CipherSuite.TLS_AES_256_GCM_SHA384);

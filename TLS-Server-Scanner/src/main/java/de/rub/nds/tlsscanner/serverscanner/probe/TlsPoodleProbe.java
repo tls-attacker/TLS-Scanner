@@ -25,7 +25,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.TlsPoodleResult;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class TlsPoodleProbe extends TlsProbe {
 
@@ -47,8 +47,8 @@ public class TlsPoodleProbe extends TlsProbe {
             TLSPoodleAttacker attacker = new TLSPoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
             Boolean vulnerable = attacker.isVulnerable();
             return new TlsPoodleResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new TlsPoodleResult(TestResult.ERROR_DURING_TEST);
         }
     }

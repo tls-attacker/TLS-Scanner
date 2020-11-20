@@ -15,16 +15,43 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.probe.*;
+import de.rub.nds.tlsscanner.serverscanner.probe.BleichenbacherProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaRequiredProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaSupportProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CiphersuiteOrderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CiphersuiteProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ECPointFormatProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ExtensionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HeartbleedProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpHeaderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.InvalidCurveProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.NamedCurvesProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RenegotiationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ResumptionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketZeroKeyProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsPoodleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.FreakAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.LogjamAfterprobe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.LogjamAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.RaccoonAttackAfterProbe;
@@ -37,11 +64,11 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class TlsScanner {
 
-    private final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final ParallelExecutor parallelExecutor;
     private final ScannerConfig config;
@@ -112,7 +139,7 @@ public class TlsScanner {
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());
-        afterList.add(new LogjamAfterprobe());
+        afterList.add(new LogjamAfterProbe());
         afterList.add(new EvaluateRandomnessAfterProbe());
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
@@ -167,8 +194,8 @@ public class TlsScanner {
             Config tlsConfig = config.createConfig();
             ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
             return checker.isConnectable();
-        } catch (Exception E) {
-            LOGGER.warn("Could not test if we can connect to the server", E);
+        } catch (Exception e) {
+            LOGGER.warn("Could not test if we can connect to the server", e);
             return false;
         }
     }
@@ -178,9 +205,9 @@ public class TlsScanner {
             Config tlsConfig = config.createConfig();
             ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
             return checker.speaksTls(tlsConfig);
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.warn("Could not test if the server speaks TLS. Probably could not connect.");
-            LOGGER.debug(E);
+            LOGGER.debug(e);
             return false;
         }
     }

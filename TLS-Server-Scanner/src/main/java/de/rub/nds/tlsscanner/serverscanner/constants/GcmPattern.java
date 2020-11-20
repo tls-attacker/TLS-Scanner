@@ -12,11 +12,11 @@ package de.rub.nds.tlsscanner.serverscanner.constants;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
 public enum GcmPattern {
     INCREMENTING,
     RANDOM,
     REPEATING,
-    AKWARD
+    AWKWARD
 }

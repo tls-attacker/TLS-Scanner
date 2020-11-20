@@ -23,7 +23,7 @@ import org.bouncycastle.util.IPAddress;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class ScannerConfig extends TLSDelegateConfig {
 

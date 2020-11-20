@@ -48,7 +48,7 @@ public class SiteReportRater {
      * @param recommendationLanguage
      * Language of the recommendations. If no language file can be found for selected language a default recommendation
      * file in english is returned
-     * @return
+     * @return A generated SiteReportRater
      * @throws JAXBException
      */
     public static SiteReportRater getSiteReportRater(String recommendationLanguage) throws JAXBException {

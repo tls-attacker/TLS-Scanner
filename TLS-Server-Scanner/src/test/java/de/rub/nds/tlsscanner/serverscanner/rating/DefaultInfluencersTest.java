@@ -192,7 +192,7 @@ public class DefaultInfluencersTest {
             TestResult.TRUE, 100), new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.ENFORCES_PFS, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 100), new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.ENFOCRES_CS_ORDERING, new PropertyResultRatingInfluencer(
+        influencers.add(new RatingInfluencer(AnalyzedProperty.ENFORCES_CS_ORDERING, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 50), new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
 
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_VERSION_INTOLERANCE,
@@ -230,10 +230,10 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_SECOND_CIPHERSUITE_BYTE_BUG,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.REFLECTS_OFFERED_CIPHERSUITES,
+        influencers.add(new RatingInfluencer(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.IGNORES_OFFERED_CIPHERSUITES,
+        influencers.add(new RatingInfluencer(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS,

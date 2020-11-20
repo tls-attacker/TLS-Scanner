@@ -8,7 +8,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon;
+package de.rub.nds.tlsscanner.serverscanner.probe.directraccoon;
 
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -33,7 +33,7 @@ public class DirectRaccoonVector implements Vector {
         this.pmsWithNullByte = pmsWithNullByte;
     }
 
-    public boolean isPmsWithNullybte() {
+    public boolean isPmsWithNullByte() {
         return pmsWithNullByte;
     }
 
@@ -52,9 +52,9 @@ public class DirectRaccoonVector implements Vector {
     public String getVectorName() {
         String name = type.name();
         if (pmsWithNullByte) {
-            name += "-with nullbyte";
+            name += "-with nullByte";
         } else {
-            name += "-without nullbyte";
+            name += "-without nullByte";
         }
         return name;
     }
@@ -78,9 +78,9 @@ public class DirectRaccoonVector implements Vector {
     @Override
     public String getName() {
         if (pmsWithNullByte) {
-            return "PMS starts with nullbyte";
+            return "PMS starts with nullByte";
         } else {
-            return "PMS does NOT start with nullbyte";
+            return "PMS does NOT start with nullByte";
         }
 
     }

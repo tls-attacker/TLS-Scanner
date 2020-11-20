@@ -23,11 +23,10 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.ConfigFileList;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulationRequest;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.TlsClientConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConfigFileList;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationRequest;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -44,23 +43,23 @@ public class HandshakeSimulationProbe extends TlsProbe {
 
     private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
-    private final List<SimulationRequest> simmulationRequestList;
+    private final List<SimulationRequest> simulationRequestList;
 
     public HandshakeSimulationProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config);
-        simmulationRequestList = new LinkedList<>();
+        simulationRequestList = new LinkedList<>();
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {
             try {
                 TlsClientConfig tlsClientConfig =
                     TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/" + configFileName);
                 if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                    simmulationRequestList.add(new SimulationRequest(tlsClientConfig));
+                    simulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 } else {
-                    simmulationRequestList.add(new SimulationRequest(tlsClientConfig));
+                    simulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 }
-            } catch (Exception E) {
-                LOGGER.error("Could not load " + configFileName, E);
+            } catch (Exception e) {
+                LOGGER.error("Could not load " + configFileName, e);
             }
         }
     }
@@ -70,7 +69,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         try {
             List<State> clientStateList = new LinkedList<>();
             List<SimulatedClientResult> resultList = new LinkedList<>();
-            for (SimulationRequest request : simmulationRequestList) {
+            for (SimulationRequest request : simulationRequestList) {
                 State state = request.getExecutableState(scannerConfig);
                 clientStateList.add(state);
             }
@@ -80,8 +79,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
                 // evaluateReceivedMessages(result);
             }
             return new HandshakeSimulationResult(resultList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new HandshakeSimulationResult(null);
         }
     }
@@ -90,7 +89,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         Config config = state.getConfig();
         config.setStopActionsAfterIOException(true);
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
-        simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
+        simulatedClient.setClientSupportedCipherSuites(config.getDefaultClientSupportedCiphersuites());
         if (config.isAddAlpnExtension()) {
             simulatedClient.setAlpnAnnouncedProtocols(Arrays.toString(config.getAlpnAnnouncedProtocols()));
         } else {

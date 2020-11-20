@@ -34,10 +34,12 @@ public class RandomExtractorTest {
     private WorkflowTrace testTrace;
     private RandomExtractor extractor;
     private final Logger LOGGER = LogManager.getLogger();
+    @SuppressWarnings("SpellCheckingInspection")
     private final static byte[] STATIC_RANDOM1 = ArrayConverter
         .hexStringToByteArray("4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
     private final static byte[] STATIC_RANDOM2 = ArrayConverter
         .hexStringToByteArray("CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
+    @SuppressWarnings("SpellCheckingInspection")
     private final static byte[] LONG_STATIC_RANDOM3 = ArrayConverter.hexStringToByteArray("19C26C4DD15B39"
         + "C49DFF3EAFB83130E8FAA462F252C2E0ED7F389ECC349A38DA1DB5D3E8D04BA6D77E6B05E81B04CF41CF737CC44E"
         + "F614E2B05672A18BE97E94345A112186A15529B05918CE3662D4DD18B909C161AA76AF7192CA6D20E074788E0059"

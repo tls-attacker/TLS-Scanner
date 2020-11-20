@@ -45,6 +45,9 @@ public class ECPointFormatResult extends ProbeResult {
                         break;
                     case ANSIX962_COMPRESSED_CHAR2:
                         supportsANSIX962CompressedChar2 = TestResult.TRUE;
+                        break;
+                    default: // will never occur as all enum types are caught
+                        ;
                 }
             }
         } else {

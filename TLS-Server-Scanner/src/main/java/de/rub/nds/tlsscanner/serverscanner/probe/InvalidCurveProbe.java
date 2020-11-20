@@ -21,7 +21,6 @@ import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
-import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -32,23 +31,22 @@ import de.rub.nds.tlsattacker.core.crypto.ec.EllipticCurveOverFp;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.InvalidCurveTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveScanType;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
-import de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve.InvalidCurveVector;
-import de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve.InvalidCurveResponse;
-import de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.InvalidCurveResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.DistributionTest;
+import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.DistributionTest;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -58,20 +56,20 @@ import java.util.Set;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class InvalidCurveProbe extends TlsProbe {
 
     /**
      * Defines the error probability for each test vector
      */
-    private final double ERROR_PROBABILITY = 0.0001; // increase if needed
+    private static final double ERROR_PROBABILITY = 0.0001; // increase if needed
 
-    private final int LARGE_ORDER_ITERATIONS = 40;
+    private static final int LARGE_ORDER_ITERATIONS = 40;
 
-    private final int EXTENSION_FACTOR = 7;
+    private static final int EXTENSION_FACTOR = 7;
 
-    private final int CURVE_TWIST_MAX_ORDER = 23;
+    private static final int CURVE_TWIST_MAX_ORDER = 23;
 
     private boolean supportsRenegotiation;
 
@@ -107,7 +105,7 @@ public class InvalidCurveProbe extends TlsProbe {
             List<InvalidCurveVector> vectors = prepareVectors();
             List<InvalidCurveResponse> responses = new LinkedList<>();
             for (InvalidCurveVector vector : vectors) {
-                if (benignHandshakeSuccessfull(vector)) {
+                if (benignHandshakeSuccessful(vector)) {
                     InvalidCurveResponse scanResponse = executeSingleScan(vector, InvalidCurveScanType.REGULAR);
 
                     if (scanResponse.getVectorResponses().size() > 0) {
@@ -123,8 +121,8 @@ public class InvalidCurveProbe extends TlsProbe {
                 }
             }
             return evaluateResponses(responses);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
                 TestResult.ERROR_DURING_TEST, null);
         }
@@ -142,7 +140,7 @@ public class InvalidCurveProbe extends TlsProbe {
         } else if (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) != TestResult.TRUE
             && report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) != TestResult.TRUE
             && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
-            return false; // can actually not be exectued
+            return false; // can actually not be executed
         } else {
             return true;
         }
@@ -237,7 +235,7 @@ public class InvalidCurveProbe extends TlsProbe {
             tls13FpPointFormatsToTest = tls13FpPointFormats;
         }
 
-        // sometimes we found more versions while testing ciphersuites
+        // sometimes we found more versions while testing cipher suites
         if (cipherSuitesMap.keySet().size() > protocolVersions.size()) {
             for (ProtocolVersion version : cipherSuitesMap.keySet()) {
                 if (!protocolVersions.contains(version)) {
@@ -293,7 +291,7 @@ public class InvalidCurveProbe extends TlsProbe {
         attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
 
         // avoid cases where the server requires an additional group
-        // to sign a PK of our testgroup using ECDSA
+        // to sign a PK of our test group using ECDSA
         if (!ecdsaRequiredGroups.isEmpty()) {
             attacker.getTlsConfig().getDefaultClientNamedGroups().addAll(ecdsaRequiredGroups);
         }
@@ -341,7 +339,7 @@ public class InvalidCurveProbe extends TlsProbe {
                                 }
                             }
                         } else {
-                            // reduced list of ciphersuites (varying by
+                            // reduced list of cipher suites (varying by
                             // ScannerDetail)
                             HashMap<ProtocolVersion, List<CipherSuite>> filteredCipherSuites =
                                 filterCipherSuites(group);
@@ -370,7 +368,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
         // repeat scans in renegotiation
         if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            ProtocolVersion renegVersion = pickRenegotiationVersion();
+            ProtocolVersion renegotiationVersion = pickRenegotiationVersion();
             int vectorCount = vectors.size();
             if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
                 // scan all possible combinations in renegotiation
@@ -383,11 +381,11 @@ public class InvalidCurveProbe extends TlsProbe {
                             .getEcdsaRequiredGroups()));
                     }
                 }
-            } else if (renegVersion != null) {
+            } else if (renegotiationVersion != null) {
                 // scan only one version in renegotiation
                 for (int i = 0; i < vectorCount; i++) {
                     InvalidCurveVector vector = vectors.get(i);
-                    if (vector.getProtocolVersion() == renegVersion) {
+                    if (vector.getProtocolVersion() == renegotiationVersion) {
                         vectors.add(new InvalidCurveVector(vector.getProtocolVersion(), vector.getCipherSuite(), vector
                             .getNamedGroup(), vector.getPointFormat(), vector.isTwistAttack(), true, vector
                             .getEcdsaRequiredGroups()));
@@ -479,9 +477,9 @@ public class InvalidCurveProbe extends TlsProbe {
                 TestResult foundDuplicate = TestResult.FALSE;
                 TestResult foundDuplicateFinished = TestResult.FALSE;
                 for (Point point : response.getReceivedEcPublicKeys()) {
-                    for (Point cPoint : response.getReceivedEcPublicKeys()) {
-                        if (point != cPoint && (point.getX().getData().compareTo(cPoint.getX().getData()) == 0)
-                            && point.getY().getData().compareTo(cPoint.getY().getData()) == 0) {
+                    for (Point pointC : response.getReceivedEcPublicKeys()) {
+                        if (point != pointC && (point.getX().getData().compareTo(pointC.getX().getData()) == 0)
+                            && point.getY().getData().compareTo(pointC.getY().getData()) == 0) {
                             foundDuplicate = TestResult.TRUE;
                         }
                     }
@@ -490,9 +488,9 @@ public class InvalidCurveProbe extends TlsProbe {
                 // Compare again for keys from handshakes that lead to a
                 // Finished message
                 for (Point point : response.getReceivedFinishedEcKeys()) {
-                    for (Point cPoint : response.getReceivedEcPublicKeys()) {
-                        if (point != cPoint && (point.getX().getData().compareTo(cPoint.getX().getData()) == 0)
-                            && point.getY().getData().compareTo(cPoint.getY().getData()) == 0) {
+                    for (Point pointC : response.getReceivedEcPublicKeys()) {
+                        if (point != pointC && (point.getX().getData().compareTo(pointC.getX().getData()) == 0)
+                            && point.getY().getData().compareTo(pointC.getY().getData()) == 0) {
                             foundDuplicateFinished = TestResult.TRUE;
                         }
                     }
@@ -567,7 +565,7 @@ public class InvalidCurveProbe extends TlsProbe {
     }
 
     /**
-     * Groups ciphersuites per Version in a hopefully sensible way that reduces the probe count but still provides
+     * Groups cipher suites per Version in a hopefully sensible way that reduces the probe count but still provides
      * enough accuracy
      */
     private HashMap<ProtocolVersion, List<CipherSuite>> filterCipherSuites(NamedGroup group) {
@@ -692,7 +690,7 @@ public class InvalidCurveProbe extends TlsProbe {
                 requiredGroups.add(namedCurveWitnessesTls13.get(testGroup).getEcdsaSigGroupEphemeral());
             }
         } else {
-            // RSA ciphersuites don't require any additional groups
+            // RSA cipher suites don't require any additional groups
             if (AlgorithmResolver.getKeyExchangeAlgorithm(testCipher) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
                 if (namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != null
                     && namedCurveWitnesses.get(testGroup).getEcdsaPkGroupEphemeral() != testGroup) {
@@ -712,7 +710,7 @@ public class InvalidCurveProbe extends TlsProbe {
         return new LinkedList<>(requiredGroups);
     }
 
-    private boolean benignHandshakeSuccessfull(InvalidCurveVector vector) {
+    private boolean benignHandshakeSuccessful(InvalidCurveVector vector) {
         InvalidCurveAttackConfig dummyAttackConfig =
             new InvalidCurveAttackConfig(getScannerConfig().getGeneralDelegate());
         InvalidCurveAttacker configBearer =
@@ -762,6 +760,8 @@ public class InvalidCurveProbe extends TlsProbe {
                     attackConfig.setKeyOffset(0);
                     attackConfig.setProtocolFlows(LARGE_ORDER_ITERATIONS);
                     break;
+                default: // will never occur as all enum types are handled
+                    ;
             }
         }
     }

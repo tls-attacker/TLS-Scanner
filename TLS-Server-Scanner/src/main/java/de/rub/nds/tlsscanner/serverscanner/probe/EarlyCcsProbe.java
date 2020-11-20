@@ -43,8 +43,8 @@ public class EarlyCcsProbe extends TlsProbe {
                 new EarlyCCSAttacker(earlyCcsCommandConfig, earlyCcsCommandConfig.createConfig());
             EarlyCcsVulnerabilityType earlyCcsVulnerabilityType = attacker.getEarlyCcsVulnerabilityType();
             return new EarlyCcsResult(earlyCcsVulnerabilityType);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new EarlyCcsResult(null);
         }
     }
