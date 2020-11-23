@@ -1363,6 +1363,8 @@ public class SiteReportPrinter {
                 for (HttpsHeader header : report.getHeaderList()) {
                     prettyAppend(builder, header.getHeaderName().getValue() + ":" + header.getHeaderValue().getValue());
                 }
+                prettyAppendHeading(builder, "HTTP False Start");
+                prettyAppend(builder, "HTTP False Start", AnalyzedProperty.SUPPORTS_HTTP_FALSE_START);
             } catch (Exception E) {
                 prettyAppend(builder, "Error: " + E.getMessage());
             }

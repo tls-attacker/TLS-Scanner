@@ -90,6 +90,7 @@ public class TlsScanner {
         probeList.add(new ExtensionProbe(config, parallelExecutor));
         probeList.add(new TokenbindingProbe(config, parallelExecutor));
         probeList.add(new HttpHeaderProbe(config, parallelExecutor));
+        probeList.add(new HttpFalseStartProbe(config, parallelExecutor));
         probeList.add(new ECPointFormatProbe(config, parallelExecutor));
         probeList.add(new ResumptionProbe(config, parallelExecutor));
         probeList.add(new RenegotiationProbe(config, parallelExecutor));
