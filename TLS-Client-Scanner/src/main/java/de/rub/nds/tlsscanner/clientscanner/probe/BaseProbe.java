@@ -47,14 +47,19 @@ public abstract class BaseProbe extends BaseDispatcher implements Probe {
         return prefix;
     }
 
+    protected ClientProbeResult callInternal(ClientReport report) throws InterruptedException,
+            ExecutionException {
+        return callInternal(report, getHostnamePrefix());
+    }
+
     protected ClientProbeResult callInternal(ClientReport report, String hostnamePrefix) throws InterruptedException,
             ExecutionException {
-        return orchestrator.runProbe(this, hostnamePrefix, report.uid, report, null);
+        return orchestrator.runProbe(this, hostnamePrefix, report, null);
     }
 
     public final ClientProbeResult call(ClientReport report) throws InterruptedException, ExecutionException {
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(getClass().getSimpleName())) {
-            return callInternal(report, getHostnamePrefix());
+            return callInternal(report);
         }
     }
 

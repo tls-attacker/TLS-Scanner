@@ -11,9 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 public abstract class BaseDHEProbe extends BaseProbe {
     private final boolean tls13, ec, ff;

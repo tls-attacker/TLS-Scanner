@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
+import javax.print.attribute.standard.Compression;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
@@ -34,7 +35,7 @@ public class ForcedCompressionProbe extends BaseProbe {
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
         Config config = state.getConfig();
-        // need to set contexts compression method correctly for now
+        // need to set contexts compression method correctly for hello
         state.getTlsContext().setSelectedCompressionMethod(CompressionMethod.NULL);
         config.setDefaultServerSupportedCompressionMethods(CompressionMethod.DEFLATE, CompressionMethod.LZS);
         config.setDefaultSelectedCompressionMethod(CompressionMethod.DEFLATE);

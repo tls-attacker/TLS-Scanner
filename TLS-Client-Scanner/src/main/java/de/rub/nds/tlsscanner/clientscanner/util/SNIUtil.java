@@ -24,6 +24,9 @@ public class SNIUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static ServerNameIndicationExtensionMessage getSNIFromExtensions(Iterable<ExtensionMessage> extensions) {
+        if (extensions == null) {
+            return null;
+        }
         for (ExtensionMessage ext : extensions) {
             if (ext instanceof ServerNameIndicationExtensionMessage) {
                 return (ServerNameIndicationExtensionMessage) ext;

@@ -111,14 +111,15 @@ public class VersionProbe extends BaseProbe {
             LOGGER.warn("[{}] Did not find app message in trace - results might be inaccurate; {}", versionToTest,
                     trace);
         } else if (recvFin == null) {
-            // dynamic handshake does not add clients CCS/FIN if we use tls1.3, because
-            // reasons
+            // dynamic handshake does not add clients CCS/FIN if we use tls1.3,
+            // because reasons
             LOGGER.debug("[{}] Did not find ccs/fin message in trace - adding them now", versionToTest);
             List<ProtocolMessage> msgs = new ArrayList<>(recvApp.getExpectedMessages());
             ChangeCipherSpecMessage ccs = new ChangeCipherSpecMessage(config);
             ccs.setRequired(false);
             msgs.add(0, ccs);
             msgs.add(1, new FinishedMessage(config));
+            recvApp.setExpectedMessages(msgs);
         } else {
             List<ProtocolMessage> msgs = new ArrayList<>();
             msgs.addAll(recvFin.getExpectedMessages());
@@ -173,7 +174,7 @@ public class VersionProbe extends BaseProbe {
         }
 
         public Boolean supportsVersion(ProtocolVersion version) {
-            return resultMap.getOrDefault(version, null);
+            return supportsVersion(version, false);
         }
 
         public Boolean supportsVersion(ProtocolVersion version, boolean fallbackValue) {

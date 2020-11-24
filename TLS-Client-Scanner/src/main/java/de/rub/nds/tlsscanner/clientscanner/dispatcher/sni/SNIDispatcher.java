@@ -93,6 +93,8 @@ public class SNIDispatcher implements Dispatcher {
 
     public void registerRule(String suffix, Dispatcher dispatcher) {
         forwardRules.put(suffix, dispatcher);
+        // also register lowercase version
+        forwardRules.putIfAbsent(suffix.toLowerCase(), dispatcher);
     }
 
     public static class RuleMatch {

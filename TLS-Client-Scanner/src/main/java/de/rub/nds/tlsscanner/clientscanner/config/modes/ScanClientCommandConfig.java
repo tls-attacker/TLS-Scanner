@@ -8,6 +8,15 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.config.modes;
 
+import java.io.File;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -15,16 +24,31 @@ import com.beust.jcommander.Parameters;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.connection.InboundConnection;
+import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
+import de.rub.nds.tlsscanner.clientscanner.ClientScanExecutor;
+import de.rub.nds.tlsscanner.clientscanner.Main;
+import de.rub.nds.tlsscanner.clientscanner.client.DefaultOrchestrator;
+import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.ExecutableSubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.DockerLibAdapterConfig;
-import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.IAdapterConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.AdapterConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.BaseCommandAdapterConfig;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 
 @Parameters(commandNames = "scanClient", commandDescription = "Scan a client automatically")
-public class ScanClientCommandConfig extends BaseSubcommand {
+public class ScanClientCommandConfig extends BaseSubcommand<AdapterConfig> implements ExecutableSubcommand {
     @Parameter(names = "-file", required = false, description = "File to write the report to as xml")
     private String reportFile = null;
+
+    @Parameter(names = { "-primaryThreads", "-pT" }, required = false, description = "Primary threads")
+    protected Integer primaryThreads = null;
+
+    @Parameter(names = { "-secondaryThreads",
+            "-sT" }, required = false, description = "Secondary threads - these may be used by Probes to run more tasks")
+    protected Integer secondaryThreads = null;
 
     public ScanClientCommandConfig() {
         subcommands.add(new DockerLibAdapterConfig());
@@ -42,20 +66,57 @@ public class ScanClientCommandConfig extends BaseSubcommand {
         }
     }
 
-    public String getReportFile() {
-        return reportFile;
+    public ClientAdapter createClientAdapter() {
+        return selectedSubcommand.createClientAdapter();
     }
 
     @Override
-    public void setParsed(JCommander jc) throws ParameterException {
-        super.setParsed(jc);
-        if (!(selectedSubcommand instanceof IAdapterConfig)) {
-            throw new ParameterException("Selected subCommand does not implement IAdapterConfig");
+    public void execute(ClientScannerConfig csConfig) {
+        if (primaryThreads == null) {
+            primaryThreads = Runtime.getRuntime().availableProcessors();
         }
-    }
+        if (secondaryThreads == null) {
+            secondaryThreads = primaryThreads;
+        }
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(primaryThreads, primaryThreads, 1, TimeUnit.MINUTES,
+                new LinkedBlockingDeque<>(),
+                new NamedThreadFactory("cs-probe-runner"));
+        // can't decrease core size without additional hassle
+        // https://stackoverflow.com/a/15485841/3578387
+        ThreadPoolExecutor secondaryPool = new ThreadPoolExecutor(secondaryThreads, secondaryThreads, 1,
+                TimeUnit.MINUTES,
+                new LinkedBlockingDeque<>(),
+                new NamedThreadFactory("cs-secondary-pool"));
+        // Orchestrator types: DefaultOrchestrator and ThreadLocalOrchestrator
+        Orchestrator orchestrator = new DefaultOrchestrator(csConfig, secondaryPool, primaryThreads + secondaryThreads);
 
-    public ClientAdapter createClientAdapter() {
-        return ((IAdapterConfig) selectedSubcommand).createClientAdapter();
+        ClientScanExecutor executor = new ClientScanExecutor(Main.getDefaultProbes(orchestrator), null, orchestrator,
+                pool);
+        ClientReport rep;
+        try {
+            rep = executor.execute();
+        } finally {
+            secondaryPool.shutdown();
+            pool.shutdown();
+        }
+
+        try {
+            File file = null;
+            if (reportFile != null) {
+                file = new File(reportFile);
+            }
+            JAXBContext ctx;
+            ctx = JAXBContext.newInstance(ClientReport.class);
+            Marshaller marsh = ctx.createMarshaller();
+            marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marsh.marshal(rep, System.out);
+            if (file != null) {
+                marsh.marshal(rep, file);
+            }
+        } catch (JAXBException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }

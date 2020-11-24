@@ -35,10 +35,8 @@ public class ClientReport extends Observable implements Serializable {
     private static final int UID_LEN = 10; // 36^10 > 2^50; that should be large
                                            // enough
     private static final Set<String> usedUIDs = new HashSet<>();
-    private static final Random uidRandom = new Random();
 
     private final Map<Class<? extends Probe>, ClientProbeResult> resultMap;
-    private final Collection<String> genericWarnings;
     private final ClientInfo clientInfo;
     public final transient String uid;
 
@@ -54,23 +52,17 @@ public class ClientReport extends Observable implements Serializable {
         // for serialization
         clientInfo = null;
         resultMap = null;
-        genericWarnings = null;
         uid = null;
     }
 
     public ClientReport(ClientInfo clientInfo) {
         this.resultMap = new HashMap<>();
-        this.genericWarnings = new ArrayList<>();
         this.clientInfo = clientInfo;
         uid = generateUID();
     }
 
     public void finalizeReport() {
         usedUIDs.remove(uid);
-    }
-
-    public Map<Class<? extends Probe>, ClientProbeResult> getResultMap() {
-        return resultMap;
     }
 
     public boolean hasResult(Class<? extends Probe> clazz) {
@@ -94,10 +86,6 @@ public class ClientReport extends Observable implements Serializable {
         ClientProbeResult ret = resultMap.put(clazz, result);
         markAsChangedAndNotify();
         return ret;
-    }
-
-    public void addGenericWarning(String warning) {
-        genericWarnings.add(warning);
     }
 
     public synchronized void markAsChangedAndNotify() {

@@ -15,6 +15,9 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.ParametersDelegate;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
@@ -25,6 +28,7 @@ import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
 
 public class ClientScannerConfig extends TLSDelegateConfig {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @ParametersDelegate
     private CACertDelegate certificateDelegate;
@@ -41,12 +45,15 @@ public class ClientScannerConfig extends TLSDelegateConfig {
 
     // #region Variables that are handled elsewhere
     @Parameter(names = "-serverBaseURL", required = false, description = "Base URL to use for the server. Defaults to 127.0.0.1.xip.io")
-    private String serverBaseURL = "127.0.0.1.xip.io";
+    protected String serverBaseURL = "127.0.0.1.xip.io";
     // #endregion
 
-    public final JCommander jCommander;
-    private boolean isParsed = false;
-    protected ISubcommand selectedSubcommand;
+    protected final JCommander jCommander;
+    protected ExecutableSubcommand selectedSubcommand;
+
+    public ClientScannerConfig() {
+        this(new GeneralDelegate());
+    }
 
     public ClientScannerConfig(GeneralDelegate delegate) {
         super(delegate);
@@ -66,16 +73,12 @@ public class ClientScannerConfig extends TLSDelegateConfig {
         new ScanClientCommandConfig().addToJCommander(jCommander);
     }
 
-    public synchronized void setParsed() throws ParameterException {
-        if (isParsed) {
-            return;
-        }
-        isParsed = true;
-        // find selected subCommand
+    public void parse(String[] args) {
+        jCommander.parse(args);
         String commandName = jCommander.getParsedCommand();
         JCommander commandJc = jCommander.getCommands().get(commandName);
         List<Object> cmdObjs = commandJc.getObjects();
-        ISubcommand cmd = (ISubcommand) cmdObjs.get(0);
+        ExecutableSubcommand cmd = (ExecutableSubcommand) cmdObjs.get(0);
         selectedSubcommand = cmd;
         selectedSubcommand.setParsed(commandJc);
 
@@ -83,11 +86,35 @@ public class ClientScannerConfig extends TLSDelegateConfig {
         if (selectedSubcommand == null) {
             throw new ParameterException("Could not parse command (is still null)");
         }
+        // ensure generalDelegate is applied
+        // it adds the BouncyCastle SecurityProvider
+        getGeneralDelegate().applyDelegate(Config.createConfig());
+    }
+
+    public void usage() {
+        jCommander.usage();
+    }
+
+    public void execute() {
+        if (getGeneralDelegate().isHelp()) {
+            usage();
+            return;
+        }
+        selectedSubcommand.execute(this);
+    }
+
+    public void parseAndExecute(String[] args) {
+        try {
+            parse(args);
+            execute();
+        } catch (ParameterException E) {
+            LOGGER.error("Could not parse provided parameters", E);
+            usage();
+        }
     }
 
     @Override
     public Config createConfig() {
-        setParsed(); // ensure we know the subcommand
         Config config = super.createConfig(Config.createConfig());
         config.getDefaultClientConnection().setTimeout(timeout);
         selectedSubcommand.applyDelegate(config);
@@ -102,7 +129,7 @@ public class ClientScannerConfig extends TLSDelegateConfig {
         return config;
     }
 
-    public ISubcommand getSelectedSubcommand() {
+    public ExecutableSubcommand getSelectedSubcommand() {
         return selectedSubcommand;
     }
 

@@ -44,11 +44,7 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
 
     protected T getPreviousState(String uid) {
         synchronized (previousStateCache) {
-            if (previousStateCache.containsKey(uid)) {
-                return previousStateCache.get(uid);
-            } else {
-                return getDefaultState();
-            }
+            return previousStateCache.computeIfAbsent(uid, k -> getDefaultState());
         }
     }
 
@@ -105,18 +101,35 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
     // sonarlint: use assert to check parameters
     // in this case we do not care about the parameter at all. This is just to
     // help check whether it was programmed correctly
-    protected ClientProbeResult callInternal(ClientReport report, String nullString) throws InterruptedException,
+    protected ClientProbeResult callInternal(ClientReport report) throws InterruptedException,
             ExecutionException {
-        // the nullString would be the getHostnamePrefix()
-        // but as we return null there, it shall be null
-        assert nullString == null;
         ClientProbeResult ret = null;
         while (ret == null) {
             T internalState = getPreviousState(report.uid);
-            ret = super.callInternal(report, getHostnamePrefix(internalState));
+            ret = callInternal(report, getHostnamePrefix(internalState));
         }
         return ret;
     }
+
+    @Override
+    public String getHostnameForStandalone() {
+        return null;
+    }
+
+    @Override
+    @Deprecated
+    /**
+     * @deprecated Use getHostnamePrefix(T internalState) instead
+     */
+    protected final String getHostnamePrefix() {
+        throw new UnsupportedOperationException("Use getHostnamePrefix(T internalState) instead");
+    }
+
+    protected String getHostnamePrefix(T internalState) {
+        return super.getHostnamePrefix();
+    }
+
+    // #endregion
 
     public static interface InternalProbeState {
         boolean isDone();
@@ -124,13 +137,4 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
         ClientProbeResult toResult();
     }
 
-    @Override
-    protected final String getHostnamePrefix() {
-        return null;
-    }
-
-    protected String getHostnamePrefix(T internalState) {
-        return super.getHostnamePrefix();
-    }
-    // #endregion
 }

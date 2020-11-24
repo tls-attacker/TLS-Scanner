@@ -9,7 +9,8 @@
 package de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.executors;
 
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor;
+import de.rub.nds.tlsscanner.clientscanner.config.Subcommand;
 
-public interface IExecutorConfig {
+public interface ExecutorConfig extends Subcommand {
     CommandExecutor createCommandExecutor();
 }

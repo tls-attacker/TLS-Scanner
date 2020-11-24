@@ -16,8 +16,10 @@ import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.Comma
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.ProxiedLocalCommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
 
+@SuppressWarnings("rawtypes")
+// this does not have any subcommands
 @Parameters(commandNames = "localProxied", commandDescription = "Use local command executor which passes the command as an argument to another command (e.g. bash)")
-public class ProxiedLocalCommandExecutorConfig extends BaseSubcommand implements IExecutorConfig {
+public class ProxiedLocalCommandExecutorConfig extends BaseSubcommand implements ExecutorConfig {
     @Parameter(names = "-proxy", required = true, description = "Proxy command to use. Example \"bash -c\"")
     protected String proxy = null;
 

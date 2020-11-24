@@ -19,7 +19,7 @@ public interface Probe {
      * Whether it makes sense to execute this probe given the current report.
      *
      * @param report
-     *                   The report so far
+     *            The report so far
      * @return Whether it makes sense to execute this probe.
      */
     public boolean canBeExecuted(ClientReport report);

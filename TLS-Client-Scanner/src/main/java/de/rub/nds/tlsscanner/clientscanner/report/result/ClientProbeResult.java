@@ -21,7 +21,7 @@ import de.rub.nds.tlsscanner.clientscanner.util.helper.UpdatableXmlSeeAlso;
 public abstract class ClientProbeResult implements Serializable {
     private static Set<Class<?>> seeAlso = UpdatableXmlSeeAlso.patch(ClientProbeResult.class);
 
-    public ClientProbeResult() {
+    protected ClientProbeResult() {
         seeAlso.add(getClass());
     }
 

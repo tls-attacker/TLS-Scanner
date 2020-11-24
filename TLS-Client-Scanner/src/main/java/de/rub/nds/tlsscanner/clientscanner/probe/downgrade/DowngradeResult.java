@@ -28,7 +28,7 @@ public class DowngradeResult extends ClientProbeResult {
         protocolVersionChanged = !getProtocolVersion(chlo1).equals(getProtocolVersion(chlo2));
 
         // TODO evaluate supported versions
-        // TODO evaluate supported ciphersuites
+        // TODO evaluate supported ciphersuites - downgrade scsv?
     }
 
     protected ProtocolVersion getProtocolVersion(ClientHelloMessage chlo) {

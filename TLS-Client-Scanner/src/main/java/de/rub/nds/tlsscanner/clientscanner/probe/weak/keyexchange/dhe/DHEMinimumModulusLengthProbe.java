@@ -29,7 +29,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
 //cf. logjam
 public class DHEMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHEWeakModulusState> {
-    // Primes with less than two bits (i.e. less than two) are quite "rare"
+    // Primes with less than two bits (i.e. less than two) don't exist
     private static final int BITLENGTH_CUTOFF_LB = 2;
     // Performance gets too slow
     private static final int BITLENGTH_CUTOFF_UB = 4096;

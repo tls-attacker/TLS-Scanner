@@ -95,15 +95,7 @@ public class DefaultOrchestrator implements Orchestrator {
         clientAdapter.cleanup(false);
     }
 
-    @Override
-    public void postProcessing(ClientReport report) {
-        if (dispatcher.isPrintedNoSNIWarning() && wasCalledWithMultithreading) {
-            report.addGenericWarning(
-                    "Client made unexpected connections without an SNI extension. This may cause issues, as the probes and hostnames might not match due to multithreading.");
-        }
-    }
-
-    private ClientProbeResult runProbe(Dispatcher probe, String hostnamePrefix, String uid, String hostname,
+    private ClientProbeResult runProbe(Dispatcher probe, String hostnamePrefix, String hostname,
             ClientReport report, Object additionalParameters)
             throws InterruptedException, ExecutionException {
         FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
@@ -127,7 +119,7 @@ public class DefaultOrchestrator implements Orchestrator {
         }
         try (SyncObject _sync = syncObjectPool.get(syncHostname)) {
             // enqueue probe on serverside
-            serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, uid, hostname,
+            serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, report.uid, hostname,
                     clientResultHolder, report, additionalParameters);
 
             // tell client to connect and get its result
@@ -174,21 +166,12 @@ public class DefaultOrchestrator implements Orchestrator {
     }
 
     @Override
-    public ClientProbeResult runProbe(Dispatcher probe, String hostnamePrefix, String uid, ClientReport report,
+    public ClientProbeResult runProbe(Dispatcher probe, String hostnamePrefix, ClientReport report,
             Object additionalParameters)
             throws InterruptedException, ExecutionException {
-        // keep track of multithreading to possibly issue warning
-        if (!wasCalledWithMultithreading) {
-            if (callingThread == null) {
-                callingThread = Thread.currentThread();
-            } else if (callingThread != Thread.currentThread()) {
-                wasCalledWithMultithreading = true;
-            }
-        }
-
-        String hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, uid, baseHostname);
+        String hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, report.uid, baseHostname);
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(hostname)) {
-            return runProbe(probe, hostnamePrefix, uid, hostname, report, additionalParameters);
+            return runProbe(probe, hostnamePrefix, hostname, report, additionalParameters);
         }
     }
 

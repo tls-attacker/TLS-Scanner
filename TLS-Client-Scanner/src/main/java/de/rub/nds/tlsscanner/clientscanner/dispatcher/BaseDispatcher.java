@@ -69,6 +69,7 @@ import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
 public abstract class BaseDispatcher implements Dispatcher {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static long serialCounter = 0;
 
     // #region Certificate stuff
 
@@ -145,7 +146,8 @@ public abstract class BaseDispatcher implements Dispatcher {
     protected X509v3CertificateBuilder generateInnerCertificate(String hostname,
             org.bouncycastle.asn1.x509.Certificate parent, PublicKey myPubKey) throws CertIOException {
         X500Name issuer = parent.getSubject();
-        BigInteger serial = BigInteger.valueOf(0);
+        @SuppressWarnings("squid:S2696")
+        BigInteger serial = BigInteger.valueOf(serialCounter++);
         Calendar notBefore = new GregorianCalendar();
         notBefore.add(Calendar.DAY_OF_MONTH, -1);
         Calendar notAfter = new GregorianCalendar();

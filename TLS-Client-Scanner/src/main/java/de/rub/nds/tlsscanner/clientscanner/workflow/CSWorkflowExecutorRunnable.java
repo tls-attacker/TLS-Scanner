@@ -56,6 +56,7 @@ public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable {
         initConnectionForState(state);
         WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
         executor.executeWorkflow();
+        // set config defaults for further use
         config.setWorkflowExecutorShouldOpen(false);
         config.setWorkflowExecutorShouldClose(true);
         config.setResetTrace(false);

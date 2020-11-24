@@ -15,14 +15,14 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
-public abstract class BaseSubcommand implements ISubcommand {
-    protected List<ISubcommand> subcommands = new ArrayList<>();
-    protected ISubcommand selectedSubcommand;
+public abstract class BaseSubcommand<T extends Subcommand> implements Subcommand {
+    protected List<T> subcommands = new ArrayList<>();
+    protected T selectedSubcommand;
 
     private void addToJCommander(JCommander jc, String name) {
         jc.addCommand(name, this);
         JCommander subCommander = jc.getCommands().get(name);
-        for (ISubcommand subcommand : subcommands) {
+        for (Subcommand subcommand : subcommands) {
             subcommand.addToJCommander(subCommander);
         }
     }
@@ -48,8 +48,11 @@ public abstract class BaseSubcommand implements ISubcommand {
         // find selected subCommand
         String commandName = jc.getParsedCommand();
         JCommander commandJc = jc.getCommands().get(commandName);
+        if (commandJc == null) {
+            throw new ParameterException("Did not find JCommander for name " + commandName);
+        }
         List<Object> cmdObjs = commandJc.getObjects();
-        ISubcommand cmd = (ISubcommand) cmdObjs.get(0);
+        T cmd = (T) cmdObjs.get(0);
         selectedSubcommand = cmd;
         cmd.setParsed(commandJc);
     }

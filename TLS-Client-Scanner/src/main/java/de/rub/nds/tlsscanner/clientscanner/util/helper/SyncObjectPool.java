@@ -50,7 +50,9 @@ public class SyncObjectPool {
             lockedKeys.remove(key);
             lock.lock();
             try {
-                keyCondition.signal();
+                // signal worked, but in theory could lead to a deadlock
+                // better use signalAll to be sure
+                keyCondition.signalAll();
             } finally {
                 lock.unlock();
             }

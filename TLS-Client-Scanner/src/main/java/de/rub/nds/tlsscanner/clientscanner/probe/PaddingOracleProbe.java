@@ -128,7 +128,7 @@ public class PaddingOracleProbe extends BaseProbe {
                 .needResultOfTypeMatching(
                         VersionProbe.class,
                         VersionProbeResult.class,
-                        res -> res.supportsVersion(params.protocolVersion, false),
+                        res -> res.supportsVersion(params.protocolVersion),
                         "Client does not support ProtocolVersion " + params.protocolVersion)
                 .needResultOfTypeMatching(
                         SupportedCipherSuitesProbe.class,
@@ -186,8 +186,7 @@ public class PaddingOracleProbe extends BaseProbe {
     protected ClientProbeResult callInternal(ClientReport report, String hostnamePrefix)
             throws InterruptedException, ExecutionException {
         PaddingOracleCommandConfig paddingOracleConfig = createPaddingOracleCommandConfig();
-        ClientParallelExecutor executor = new ClientParallelExecutor(orchestrator, report, report.uid, hostnamePrefix,
-                false);
+        ClientParallelExecutor executor = new ClientParallelExecutor(orchestrator, report, hostnamePrefix, false);
         InformationLeakTest<PaddingOracleTestInfo> res = getPaddingOracleInformationLeakTest(paddingOracleConfig,
                 executor);
         return new ParametrizedClientProbeResult<PaddingOracleParameters, PaddingOracleResult>(

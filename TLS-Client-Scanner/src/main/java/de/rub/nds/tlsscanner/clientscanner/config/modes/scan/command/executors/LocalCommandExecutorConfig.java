@@ -15,8 +15,10 @@ import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.Comma
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.LocalCommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
 
+@SuppressWarnings("rawtypes")
+// this does not have any subcommands
 @Parameters(commandNames = "local", commandDescription = "Use local command executor which executes the commands on your local system")
-public class LocalCommandExecutorConfig extends BaseSubcommand implements IExecutorConfig {
+public class LocalCommandExecutorConfig extends BaseSubcommand implements ExecutorConfig {
     @Override
     public void applyDelegate(Config config) {
         // nothing to do

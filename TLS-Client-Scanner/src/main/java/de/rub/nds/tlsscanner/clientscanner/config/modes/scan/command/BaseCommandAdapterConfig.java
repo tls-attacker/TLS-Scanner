@@ -16,14 +16,13 @@ import com.beust.jcommander.ParameterException;
 
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
-import de.rub.nds.tlsscanner.clientscanner.config.ISubcommand;
-import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.IAdapterConfig;
-import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.executors.IExecutorConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.AdapterConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.executors.ExecutorConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.executors.LocalCommandExecutorConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.executors.ProxiedLocalCommandExecutorConfig;
 
-public abstract class BaseCommandAdapterConfig extends BaseSubcommand implements IAdapterConfig {
-    public static Collection<ISubcommand> getAll() {
+public abstract class BaseCommandAdapterConfig extends BaseSubcommand<ExecutorConfig> implements AdapterConfig {
+    public static Collection<AdapterConfig> getAll() {
         return Arrays.asList(new CurlAdapterConfig());
     }
 
@@ -32,16 +31,8 @@ public abstract class BaseCommandAdapterConfig extends BaseSubcommand implements
         subcommands.add(new ProxiedLocalCommandExecutorConfig());
     }
 
-    @Override
-    public void setParsed(JCommander jc) throws ParameterException {
-        super.setParsed(jc);
-        if (!(selectedSubcommand instanceof IExecutorConfig)) {
-            throw new ParameterException("Selected subCommand does not implement IAdapterConfig");
-        }
-    }
-
     protected CommandExecutor createCommandExecutor() {
-        return ((IExecutorConfig) selectedSubcommand).createCommandExecutor();
+        return selectedSubcommand.createCommandExecutor();
     }
 
 }

@@ -13,13 +13,9 @@ import java.util.List;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe.SupportedCipherSuitesResult;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
-import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 
 class BaseDHEFunctionality {
     private BaseDHEFunctionality() {

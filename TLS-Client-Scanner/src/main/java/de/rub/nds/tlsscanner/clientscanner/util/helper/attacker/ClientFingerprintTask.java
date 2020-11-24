@@ -52,7 +52,6 @@ public class ClientFingerprintTask extends FingerPrintTask {
                     .runProbe(
                             ConfiguredTraceDispatcher.getInstance(),
                             hostnamePrefix,
-                            executorWithParameters.uid,
                             executorWithParameters.report,
                             new ConfiguredTraceDispatcherParameter(inputState.getWorkflowTrace(),
                                     inputState.getConfig()));

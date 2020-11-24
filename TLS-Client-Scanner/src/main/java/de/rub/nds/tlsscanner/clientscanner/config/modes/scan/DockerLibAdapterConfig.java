@@ -21,8 +21,10 @@ import de.rub.nds.tlsscanner.clientscanner.client.adapter.DockerLibAdapter;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
 
+@SuppressWarnings("rawtypes")
+// this does not have any subcommands
 @Parameters(commandNames = "docker", commandDescription = "Use a docker client (based on TLS-Docker-Library)")
-public class DockerLibAdapterConfig extends BaseSubcommand implements IAdapterConfig {
+public class DockerLibAdapterConfig extends BaseSubcommand implements AdapterConfig {
     @Parameter(names = "-type", required = true, description = "Type to use")
     protected TlsImplementationType type = null;
     @Parameter(names = "-version", required = true, description = "Version of client to use")

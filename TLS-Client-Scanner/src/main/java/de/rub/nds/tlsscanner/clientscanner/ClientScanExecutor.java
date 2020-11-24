@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +61,6 @@ public class ClientScanExecutor implements Observer {
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(clientInfo.toShortString())) {
             orchestrator.start();
             ClientReport report = executeInternal(clientInfo);
-            orchestrator.postProcessing(report);
             return report;
         } finally {
             orchestrator.cleanup();
@@ -71,8 +71,10 @@ public class ClientScanExecutor implements Observer {
         ClientReport report = new ClientReport(clientInfo);
         try {
             LOGGER.info("Starting scan");
+            report.addObserver(this);
             checkForExecutableProbes(report);
             executeProbesTillNoneCanBeExecuted(report);
+            report.deleteObserver(this);
             updateClientReporttWithNotExecutedProbes(report);
             reportAboutNotExecutedProbes(report);
             collectStatistics(report);
@@ -94,7 +96,10 @@ public class ClientScanExecutor implements Observer {
         do {
             long lastMerge = System.currentTimeMillis();
             List<ProbeAndResultFuture> finishedFutures = new LinkedList<>();
-            for (ProbeAndResultFuture probeAndResultFuture : futureResults) {
+            // iterate over a copy because somehow I failed to use synchronized
+            // to
+            // exclusively lock out this loop from the update function
+            for (ProbeAndResultFuture probeAndResultFuture : new ArrayList<>(futureResults)) {
                 Future<ClientProbeResult> result = probeAndResultFuture.future;
                 if (result.isDone()) {
                     lastMerge = System.currentTimeMillis();
@@ -133,7 +138,7 @@ public class ClientScanExecutor implements Observer {
                 }
             }
             futureResults.removeAll(finishedFutures);
-            update(report, this);
+            report.markAsChangedAndNotify();
         } while (!futureResults.isEmpty());
     }
 

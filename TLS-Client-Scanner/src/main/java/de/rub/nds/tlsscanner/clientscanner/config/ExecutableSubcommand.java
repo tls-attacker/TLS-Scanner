@@ -6,10 +6,8 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.clientscanner.config.modes.scan;
+package de.rub.nds.tlsscanner.clientscanner.config;
 
-import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
-
-public interface IAdapterConfig {
-    ClientAdapter createClientAdapter();
+public interface ExecutableSubcommand extends Subcommand {
+    void execute(ClientScannerConfig csConfig);
 }
