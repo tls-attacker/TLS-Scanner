@@ -106,6 +106,7 @@ public class TlsScanner {
         addProbeToProbeList(new InvalidCurveProbe(config, parallelExecutor));
         addProbeToProbeList(new DrownProbe(config, parallelExecutor));
         addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
+        addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
         // addProbeToProbeList(new MacProbe(config, parallelExecutor));
         addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
         addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));

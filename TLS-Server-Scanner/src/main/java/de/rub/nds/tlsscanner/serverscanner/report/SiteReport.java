@@ -66,6 +66,7 @@ public class SiteReport extends Observable implements Serializable {
 
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
+    private Boolean supportsRecordFragmentation = null;
 
     // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
@@ -670,5 +671,13 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setOcspResults(List<OcspCertificateResult> ocspResults) {
         this.ocspResults = ocspResults;
+    }
+
+    public Boolean getSupportsRecordFragmentation() {
+        return supportsRecordFragmentation;
+    }
+
+    public void setSupportsRecordFragmentation(Boolean supportsRecordFragmentation) {
+        this.supportsRecordFragmentation = supportsRecordFragmentation;
     }
 }
