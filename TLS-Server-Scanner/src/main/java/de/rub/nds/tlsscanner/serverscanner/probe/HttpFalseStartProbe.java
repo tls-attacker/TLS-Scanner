@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -47,19 +55,16 @@ public class HttpFalseStartProbe extends TlsProbe {
         Config tlsConfig = getConfig();
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = factory
-                .createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
+        WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(
-                new ChangeCipherSpecMessage(),
-                new FinishedMessage(),
-                this.getHttpsRequest() // immediately send application data
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), this.getHttpsRequest() // immediately
+                                                                                                                       // send
+                                                                                                                       // application
+                                                                                                                       // data
         ));
-        trace.addTlsAction(new ReceiveAction(
-                new ChangeCipherSpecMessage(),
-                new FinishedMessage(),
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(),
                 new HttpsResponseMessage() // receive application data
         ));
 
@@ -70,7 +75,8 @@ public class HttpFalseStartProbe extends TlsProbe {
         if (action.getReceivedMessages() != null) {
             for (ProtocolMessage message : action.getReceivedMessages()) {
                 if (message instanceof HttpsResponseMessage) {
-                    // if http response was received the server handled the false start
+                    // if http response was received the server handled the
+                    // false start
                     return TestResult.TRUE;
                 }
             }
@@ -108,30 +114,19 @@ public class HttpFalseStartProbe extends TlsProbe {
         httpsRequestMessage.setRequestPath("/");
 
         httpsRequestMessage.getHeader().add(new HostHeader());
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader(
-                "Connection",
-                "keep-alive"
-        ));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader(
-                "Accept",
-                "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
-        ));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader(
-                "Accept-Encoding",
-                "compress, deflate, exi, gzip, br, bzip2, lzma, xz"
-        ));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader(
-                "Accept-Language",
-                "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"
-        ));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader(
-                "Upgrade-Insecure-Requests",
-                "1"
-        ));
-        httpsRequestMessage.getHeader().add(new GenericHttpsHeader(
-                "User-Agent",
-                "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"
-        ));
+        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
+        httpsRequestMessage.getHeader().add(
+                new GenericHttpsHeader("Accept",
+                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
+        httpsRequestMessage.getHeader().add(
+                new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
+        httpsRequestMessage.getHeader().add(
+                new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
+        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
+        httpsRequestMessage
+                .getHeader()
+                .add(new GenericHttpsHeader("User-Agent",
+                        "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
         return httpsRequestMessage;
     }
 
