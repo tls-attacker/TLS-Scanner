@@ -1,3 +1,11 @@
+/**
+ * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ *
+ * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ *
+ * Licensed under Apache License 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -22,7 +30,8 @@ public class RecordFragmentationProbe extends TlsProbe {
         Config config = getScannerConfig().createConfig();
         config.setDefaultMaxRecordData(50);
 
-        State state = new State(config, new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
+        State state = new State(config, new WorkflowConfigurationFactory(config).createWorkflowTrace(
+                WorkflowTraceType.HELLO, RunningModeType.CLIENT));
 
         executeState(state);
 
@@ -36,7 +45,7 @@ public class RecordFragmentationProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return null;
+        return new RecordFragmentationResult(null);
     }
 
     @Override
