@@ -67,7 +67,7 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchExceptio
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
-public abstract class BaseDispatcher implements Dispatcher {
+public abstract class BaseExecutingDispatcher implements Dispatcher {
     private static final Logger LOGGER = LogManager.getLogger();
     private static long serialCounter = 0;
 
@@ -143,7 +143,7 @@ public abstract class BaseDispatcher implements Dispatcher {
         return kpg.genKeyPair();
     }
 
-    protected X509v3CertificateBuilder generateInnerCertificate(String hostname,
+    protected X509v3CertificateBuilder generateLeafCertificate(String hostname,
             org.bouncycastle.asn1.x509.Certificate parent, PublicKey myPubKey) throws CertIOException {
         X500Name issuer = parent.getSubject();
         @SuppressWarnings("squid:S2696")
@@ -188,7 +188,7 @@ public abstract class BaseDispatcher implements Dispatcher {
         org.bouncycastle.asn1.x509.Certificate parentCert = origCertChain.getCertificateAt(0);
         CustomPrivateKey parentSk = kp.getPrivateKey();
 
-        X509v3CertificateBuilder certBuilder = generateInnerCertificate(hostname, parentCert, pubKey);
+        X509v3CertificateBuilder certBuilder = generateLeafCertificate(hostname, parentCert, pubKey);
 
         ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSAEncryption").build(parentSk);
         X509CertificateHolder cert = certBuilder.build(signer);
@@ -253,7 +253,12 @@ public abstract class BaseDispatcher implements Dispatcher {
 
     protected void extendWorkflowTraceValidatingPrefix(WorkflowTrace traceToExtend, WorkflowTrace prefixTrace,
             WorkflowTrace actionsToAppendWithPrefix) {
-        final List<TlsAction> prefixActions = prefixTrace.getTlsActions();
+        final List<TlsAction> prefixActions;
+        if (prefixTrace != null) {
+            prefixActions = prefixTrace.getTlsActions();
+        } else {
+            prefixActions = new ArrayList<>();
+        }
         final List<TlsAction> appendActions = actionsToAppendWithPrefix.getTlsActions();
         for (int i = 0; i < prefixActions.size(); i++) {
             TlsAction prefixAction = prefixActions.get(i);

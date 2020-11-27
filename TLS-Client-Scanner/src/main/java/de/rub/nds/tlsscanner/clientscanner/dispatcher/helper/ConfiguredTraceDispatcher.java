@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.dispatcher.helper;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.BaseDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.BaseExecutingDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ControlledClientDispatchInformation;
@@ -19,7 +19,7 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchExceptio
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 
-public class ConfiguredTraceDispatcher extends BaseDispatcher {
+public class ConfiguredTraceDispatcher extends BaseExecutingDispatcher {
     private static ConfiguredTraceDispatcher instance;
 
     public static ConfiguredTraceDispatcher getInstance() {

@@ -49,7 +49,7 @@ public class ClientFingerprintTask extends FingerPrintTask {
         }
         try {
             res = (ConfiguredTraceDispatcherResult) executorWithParameters.orchestrator
-                    .runProbe(
+                    .runDispatcher(
                             ConfiguredTraceDispatcher.getInstance(),
                             hostnamePrefix,
                             executorWithParameters.report,

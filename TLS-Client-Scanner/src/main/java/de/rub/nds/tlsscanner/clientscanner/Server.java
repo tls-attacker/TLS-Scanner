@@ -33,10 +33,7 @@ public class Server extends Thread {
     public Server(ClientScannerConfig csconfig, Dispatcher rootDispatcher, int poolSize) {
         int i = serverCounter++;
         setName("Server-" + i);
-        int corePoolSize = Math.max(poolSize / 2, 2);
-        if (corePoolSize > poolSize) {
-            corePoolSize = poolSize;
-        }
+        int corePoolSize = Math.max(poolSize / 2, 1);
         ThreadPoolExecutor pool = new ThreadPoolExecutor(corePoolSize, poolSize, 10, TimeUnit.MINUTES,
                 new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("Server-" + i + "-Worker"));
@@ -60,18 +57,11 @@ public class Server extends Thread {
         try {
             this.executor.executeWorkflow();
         } catch (WorkflowExecutionException ex) {
-            LOGGER.info(
-                    "The TLS protocol flow was not executed completely, follow the debug messages for more information.");
-            LOGGER.debug(ex.getLocalizedMessage(), ex);
+            LOGGER.error("The workflow execution caused an error", ex);
         }
     }
 
     public void kill() {
-        if (this.executor instanceof ThreadedServerWorkflowExecutor) {
-            ((ThreadedServerWorkflowExecutor) this.executor).kill();
-            ((ThreadedServerWorkflowExecutor) this.executor).closeSockets();
-        } else {
-            this.interrupt();// hope for the best?
-        }
+        this.executor.kill();
     }
 }

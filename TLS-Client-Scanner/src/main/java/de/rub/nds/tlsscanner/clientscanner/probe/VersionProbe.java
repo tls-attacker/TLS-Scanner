@@ -129,6 +129,21 @@ public class VersionProbe extends BaseProbe {
         }
     }
 
+    public static void patchConfigFor13(Config config) {
+        // cf TLS-Attacker/resources/configs/tls13.config
+        config.setDefaultServerSupportedCiphersuites(suites13);
+        config.setDefaultSelectedCipherSuite(suites13.get(0));
+        config.setAddECPointFormatExtension(false);
+        config.setAddEllipticCurveExtension(true);
+        config.setAddSignatureAndHashAlgorithmsExtension(true);
+        config.setAddSupportedVersionsExtension(true);
+        config.setAddKeyShareExtension(true);
+
+        config.setAddRenegotiationInfoExtension(false);
+        // this should already have the correct value
+        // config.setDefaultServerSupportedSignatureAndHashAlgorithms
+    }
+
     @Override
     public VersionProbeResult execute(State state,
             DispatchInformation dispatchInformation) throws DispatchException {
@@ -139,18 +154,7 @@ public class VersionProbe extends BaseProbe {
         config.setDefaultSelectedProtocolVersion(versionToTest);
         config.setDefaultApplicationMessageData("TLS Version: " + versionToTest + "\n");
         if (versionToTest == ProtocolVersion.TLS13) {
-            // cf TLS-Attacker/resources/configs/tls13.config
-            config.setDefaultServerSupportedCiphersuites(suites13);
-            config.setDefaultSelectedCipherSuite(suites13.get(0));
-            config.setAddECPointFormatExtension(false);
-            config.setAddEllipticCurveExtension(true);
-            config.setAddSignatureAndHashAlgorithmsExtension(true);
-            config.setAddSupportedVersionsExtension(true);
-            config.setAddKeyShareExtension(true);
-
-            config.setAddRenegotiationInfoExtension(false);
-            // this should already have the correct value
-            // config.setDefaultServerSupportedSignatureAndHashAlgorithms
+            patchConfigFor13(config);
         }
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);

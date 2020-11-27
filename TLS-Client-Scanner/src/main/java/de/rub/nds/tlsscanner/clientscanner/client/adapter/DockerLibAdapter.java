@@ -46,7 +46,7 @@ public class DockerLibAdapter implements ClientAdapter {
     }
 
     @Override
-    public void prepare(boolean clean) {
+    public void prepare() {
         try {
             client = DockerTlsManagerFactory
                     .getTlsClientBuilder(type, version)
@@ -109,7 +109,7 @@ public class DockerLibAdapter implements ClientAdapter {
     }
 
     @Override
-    public void cleanup(boolean deleteAll) {
+    public void cleanup() {
         if (client != null) {
             client.close();
             client = null;

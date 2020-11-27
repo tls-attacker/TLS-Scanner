@@ -11,11 +11,8 @@ package de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
-
-import com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +23,7 @@ public class LocalCommandExecutor implements CommandExecutor {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
-    public void prepare(boolean clean) {
+    public void prepare() {
         // nothing to prepare
     }
 
@@ -44,7 +41,7 @@ public class LocalCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public void cleanup(boolean deleteAll) {
+    public void cleanup() {
         // nothing to cleanup
     }
 

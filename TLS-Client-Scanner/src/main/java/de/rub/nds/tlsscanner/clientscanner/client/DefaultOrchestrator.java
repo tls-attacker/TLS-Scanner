@@ -26,7 +26,6 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIFallingBackDispatcher;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SNIProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SNIProbe.SNIProbeResult;
@@ -44,13 +43,11 @@ public class DefaultOrchestrator implements Orchestrator {
     protected final SyncObjectPool syncObjectPool = new SyncObjectPool();
     protected final ClientAdapter clientAdapter;
     protected final Server server;
-    protected final ControlledClientDispatcher dispatcher;
+    protected final ControlledClientDispatcher ccDispatcher;
     protected final ClientScannerConfig csConfig;
     protected final ExecutorService secondaryExecutor;
 
-    private Thread callingThread = null;
-    private boolean wasCalledWithMultithreading = false;
-    protected String baseHostname = "127.0.0.1.xip.io";
+    protected String baseHostname;
 
     public DefaultOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int serverThreads) {
         this.csConfig = csConfig;
@@ -59,12 +56,12 @@ public class DefaultOrchestrator implements Orchestrator {
         baseHostname = csConfig.getServerBaseURL();
         LOGGER.info("Using base hostname {}", baseHostname);
 
-        SNIDispatcher snid = new SNIDispatcher();
-        dispatcher = new ControlledClientDispatcher();
-        snid.registerRule(baseHostname, new SNINopDispatcher());
-        snid.registerRule("uid", new SNIUidDispatcher());
-        snid.registerRule("cc", dispatcher);
-        server = new Server(csConfig, new SNIFallingBackDispatcher(snid, dispatcher), serverThreads);
+        SNIDispatcher sniD = new SNIDispatcher();
+        ccDispatcher = new ControlledClientDispatcher();
+        sniD.registerRule(baseHostname, sniD);
+        sniD.registerRule("uid", new SNIUidDispatcher());
+        sniD.registerRule("cc", ccDispatcher);
+        server = new Server(csConfig, new SNIFallingBackDispatcher(sniD, ccDispatcher), serverThreads);
         this.secondaryExecutor = secondaryExecutor;
     }
 
@@ -86,16 +83,16 @@ public class DefaultOrchestrator implements Orchestrator {
     @Override
     public void start() {
         server.start();
-        clientAdapter.prepare(false);
+        clientAdapter.prepare();
     }
 
     @Override
     public void cleanup() {
         server.kill();
-        clientAdapter.cleanup(false);
+        clientAdapter.cleanup();
     }
 
-    private ClientProbeResult runProbe(Dispatcher probe, String hostnamePrefix, String hostname,
+    private ClientProbeResult runDispatcher(Dispatcher dispatcher, String hostnamePrefix, String hostname,
             ClientReport report, Object additionalParameters)
             throws InterruptedException, ExecutionException {
         FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
@@ -119,7 +116,7 @@ public class DefaultOrchestrator implements Orchestrator {
         }
         try (SyncObject _sync = syncObjectPool.get(syncHostname)) {
             // enqueue probe on serverside
-            serverResultFuture = dispatcher.enqueueProbe(probe, hostnamePrefix, report.uid, hostname,
+            serverResultFuture = ccDispatcher.enqueueDispatcher(dispatcher, hostnamePrefix, report.uid, hostname,
                     clientResultHolder, report, additionalParameters);
 
             // tell client to connect and get its result
@@ -166,12 +163,12 @@ public class DefaultOrchestrator implements Orchestrator {
     }
 
     @Override
-    public ClientProbeResult runProbe(Dispatcher probe, String hostnamePrefix, ClientReport report,
+    public ClientProbeResult runDispatcher(Dispatcher probe, String hostnamePrefix, ClientReport report,
             Object additionalParameters)
             throws InterruptedException, ExecutionException {
         String hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, report.uid, baseHostname);
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(hostname)) {
-            return runProbe(probe, hostnamePrefix, hostname, report, additionalParameters);
+            return runDispatcher(probe, hostnamePrefix, hostname, report, additionalParameters);
         }
     }
 

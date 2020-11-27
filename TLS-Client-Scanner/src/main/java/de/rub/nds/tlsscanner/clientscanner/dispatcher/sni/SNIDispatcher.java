@@ -37,6 +37,16 @@ public class SNIDispatcher implements Dispatcher {
 
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
+        // check if we already had an SNI dispatcher
+        SNIDispatchInformation sniDInfo = dispatchInformation.getAdditionalInformation(SNIDispatcher.class,
+                SNIDispatchInformation.class);
+        if (sniDInfo != null) {
+            // some SNI already handled part of the hostname
+            // lets just use the remaining hostname
+            LOGGER.debug("Got '{}' from earlier SNI Dispatcher", sniDInfo.remainingHostname);
+            return dispatch(state, dispatchInformation, sniDInfo.remainingHostname);
+        }
+        // we are the first -> get hostname from SNI/CHLO
         ServerNameIndicationExtensionMessage SNI = SNIUtil
                 .getSNIFromExtensions(dispatchInformation.chlo.getExtensions());
         if (SNI == null) {

@@ -13,6 +13,9 @@ import java.util.List;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe.VersionProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe.SupportedCipherSuitesResult;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;

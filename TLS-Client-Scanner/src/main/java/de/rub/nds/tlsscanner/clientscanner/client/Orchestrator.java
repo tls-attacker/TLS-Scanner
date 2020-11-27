@@ -25,7 +25,7 @@ public interface Orchestrator {
 
     void cleanup();
 
-    ClientProbeResult runProbe(Dispatcher dispatcher, String hostnamePrefix, ClientReport report,
+    ClientProbeResult runDispatcher(Dispatcher dispatcher, String hostnamePrefix, ClientReport report,
             Object additionalParameters)
             throws InterruptedException, ExecutionException;
 

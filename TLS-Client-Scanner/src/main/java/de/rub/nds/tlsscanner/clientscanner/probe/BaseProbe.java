@@ -14,13 +14,13 @@ import java.util.concurrent.ExecutionException;
 import org.apache.logging.log4j.CloseableThreadContext;
 
 import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.BaseDispatcher;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.BaseExecutingDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.ReverseIterator;
 
-public abstract class BaseProbe extends BaseDispatcher implements Probe {
+public abstract class BaseProbe extends BaseExecutingDispatcher implements Probe {
     protected static String PROBE_NAMESPACE = BaseProbe.class.getPackage().getName() + '.';
     protected Orchestrator orchestrator;
     private ProbeRequirements requirementsCache = null;
@@ -54,7 +54,7 @@ public abstract class BaseProbe extends BaseDispatcher implements Probe {
 
     protected ClientProbeResult callInternal(ClientReport report, String hostnamePrefix) throws InterruptedException,
             ExecutionException {
-        return orchestrator.runProbe(this, hostnamePrefix, report, null);
+        return orchestrator.runDispatcher(this, hostnamePrefix, report, null);
     }
 
     public final ClientProbeResult call(ClientReport report) throws InterruptedException, ExecutionException {

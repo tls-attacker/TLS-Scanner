@@ -8,17 +8,17 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.client.adapter;
 
-import de.rub.nds.tlsscanner.clientscanner.Server;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 
 public interface ClientAdapter {
-    public ClientInfo getReportInformation();
 
-    public void prepare(boolean clean);
+    public void prepare();
+
+    public ClientInfo getReportInformation();
 
     public ClientAdapterResult connect(String hostname, int port) throws InterruptedException;
 
-    public void cleanup(boolean deleteAll);
+    public void cleanup();
 
 }

@@ -26,7 +26,6 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.ExecutableSubcommand;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNINopDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 
@@ -61,7 +60,7 @@ public class StandaloneCommandConfig extends BaseSubcommand implements Executabl
     private static Dispatcher getStandaloneDispatcher(ClientScannerConfig csConfig) {
         SNIDispatcher disp = new SNIDispatcher();
         LOGGER.info("Using base URL {}", csConfig.getServerBaseURL());
-        disp.registerRule(csConfig.getServerBaseURL(), new SNINopDispatcher());
+        disp.registerRule(csConfig.getServerBaseURL(), disp);
         List<Probe> probes = Main.getDefaultProbes(null);
         for (Probe p : probes) {
             if (p instanceof BaseProbe && p instanceof Dispatcher) {

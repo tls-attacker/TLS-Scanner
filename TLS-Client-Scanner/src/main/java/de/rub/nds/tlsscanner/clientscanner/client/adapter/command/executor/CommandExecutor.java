@@ -16,7 +16,7 @@ import java.util.List;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 
 public interface CommandExecutor {
-    public void prepare(boolean clean);
+    public void prepare();
 
     public default ExecuteResult executeCommand(String... command) throws IOException, InterruptedException {
         return executeCommand(Arrays.asList(command));
@@ -24,7 +24,7 @@ public interface CommandExecutor {
 
     public ExecuteResult executeCommand(List<String> command) throws IOException, InterruptedException;
 
-    public void cleanup(boolean deleteAll);
+    public void cleanup();
 
     public ClientInfo getReportInformation();
 

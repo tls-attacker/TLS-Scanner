@@ -64,14 +64,14 @@ public class ControlledClientDispatcher implements Dispatcher {
             LOGGER.debug("Patching HN to {}", task.expectedFullHostname);
             state.getConfig().getDefaultServerConnection().setHostname(task.expectedFullHostname);
         }
-        try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(task.probe.getClass()
+        try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(task.dispatcher.getClass()
                 .getSimpleName()).push(task.creatorThreadName)) {
             task.setGotConnection();
             LOGGER.trace("Got connection for sni {} uid {}", sni, uid);
             dispatchInformation.additionalInformation.put(
                     getClass(),
                     new ControlledClientDispatchInformation(task));
-            ClientProbeResult res = task.probe.execute(state, dispatchInformation);
+            ClientProbeResult res = task.dispatcher.execute(state, dispatchInformation);
             task.setResult(res);
             return res;
         } catch (Exception e) {
@@ -98,7 +98,7 @@ public class ControlledClientDispatcher implements Dispatcher {
             if (task == null) {
                 LOGGER.warn("Got hostname which we do not have a task for. sni={} uid={}", sni, uid);
             } else {
-                LOGGER.debug("Got task {} from thread {}", task.probe.getClass().getSimpleName(),
+                LOGGER.debug("Got task {} from thread {}", task.dispatcher.getClass().getSimpleName(),
                         task.creatorThreadName);
             }
         } else {
@@ -121,7 +121,8 @@ public class ControlledClientDispatcher implements Dispatcher {
         return task;
     }
 
-    public ClientProbeResultFuture enqueueProbe(Dispatcher probe, String expectedHostnamePrefix, String expectedUid,
+    public ClientProbeResultFuture enqueueDispatcher(Dispatcher probe, String expectedHostnamePrefix,
+            String expectedUid,
             String expectedFullHostname,
             Future<ClientAdapterResult> clientResultHolder, ClientReport report, Object additionalParameters) {
         ClientProbeResultFuture ret = new ClientProbeResultFuture(probe, clientResultHolder, report,
@@ -145,18 +146,18 @@ public class ControlledClientDispatcher implements Dispatcher {
         }
     }
 
-    public class ClientProbeResultFuture extends BaseFuture<ClientProbeResult> {
-        protected final Dispatcher probe;
-        protected final Future<ClientAdapterResult> clientResultFuture;
-        protected final ClientReport report;
-        protected boolean gotConnection = false;
-        protected final Object additionalParameters;
-        protected final String creatorThreadName;
-        protected final String expectedFullHostname;
+    public static class ClientProbeResultFuture extends BaseFuture<ClientProbeResult> {
+        public final Dispatcher dispatcher;
+        public final Future<ClientAdapterResult> clientResultFuture;
+        public final ClientReport report;
+        public final Object additionalParameters;
+        public final String creatorThreadName;
+        public final String expectedFullHostname;
+        private boolean gotConnection = false;
 
-        public ClientProbeResultFuture(Dispatcher probe, Future<ClientAdapterResult> clientResultFuture,
+        public ClientProbeResultFuture(Dispatcher dispatcher, Future<ClientAdapterResult> clientResultFuture,
                 ClientReport report, String expectedFullHostname, Object additionalParameters) {
-            this.probe = probe;
+            this.dispatcher = dispatcher;
             this.report = report;
             this.clientResultFuture = clientResultFuture;
             this.additionalParameters = additionalParameters;

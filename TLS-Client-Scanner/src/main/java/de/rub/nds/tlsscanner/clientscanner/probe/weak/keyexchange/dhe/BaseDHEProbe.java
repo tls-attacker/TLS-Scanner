@@ -14,7 +14,7 @@ import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
 
 public abstract class BaseDHEProbe extends BaseProbe {
-    private final boolean tls13, ec, ff;
+    protected final boolean tls13, ec, ff;
 
     public BaseDHEProbe(Orchestrator orchestrator, boolean tls13, boolean ec, boolean ff) {
         super(orchestrator);

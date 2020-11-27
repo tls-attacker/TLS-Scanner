@@ -26,13 +26,13 @@ public abstract class BaseCommandAdapter implements ClientAdapter {
     }
 
     @Override
-    public void prepare(boolean clean) {
-        this.executor.prepare(clean);
+    public void prepare() {
+        this.executor.prepare();
     }
 
     @Override
-    public void cleanup(boolean deleteAll) {
-        this.executor.cleanup(deleteAll);
+    public void cleanup() {
+        this.executor.cleanup();
     }
 
     @Override
