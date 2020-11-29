@@ -24,6 +24,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
@@ -36,7 +37,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
@@ -68,7 +68,7 @@ public class SiteReport extends Observable implements Serializable {
     private Boolean supportsDtls = null;
 
     // Attacks
-    private List<BleichenbacherTestResult> bleichenbacherTestResultList;
+    private List<InformationLeakTest<BleichenbacherOracleTestInfo>> bleichenbacherTestResultList;
     private List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList;
     private KnownPaddingOracleVulnerability knownVulnerability = null;
     private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList;
@@ -561,11 +561,12 @@ public class SiteReport extends Observable implements Serializable {
         this.weakestDhStrength = weakestDhStrength;
     }
 
-    public synchronized List<BleichenbacherTestResult> getBleichenbacherTestResultList() {
+    public synchronized List<InformationLeakTest<BleichenbacherOracleTestInfo>> getBleichenbacherTestResultList() {
         return bleichenbacherTestResultList;
     }
 
-    public synchronized void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
+    public synchronized void setBleichenbacherTestResultList(
+            List<InformationLeakTest<BleichenbacherOracleTestInfo>> bleichenbacherTestResultList) {
         this.bleichenbacherTestResultList = bleichenbacherTestResultList;
     }
 

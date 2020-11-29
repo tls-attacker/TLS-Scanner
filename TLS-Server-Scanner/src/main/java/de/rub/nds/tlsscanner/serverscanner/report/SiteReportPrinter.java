@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
-import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -50,7 +49,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
@@ -828,7 +826,7 @@ public class SiteReportPrinter {
     public StringBuilder appendInformationLeakTestList(StringBuilder builder,
             List<InformationLeakTest> informationLeakTestList, String heading) {
         prettyAppendHeading(builder, heading);
-        if (report.getDirectRaccoonResultList() == null || report.getDirectRaccoonResultList().isEmpty()) {
+        if (informationLeakTestList == null || informationLeakTestList.isEmpty()) {
             prettyAppend(builder, "No Testresults");
         } else {
             for (InformationLeakTest testResult : informationLeakTestList) {
@@ -955,41 +953,20 @@ public class SiteReportPrinter {
     }
 
     public StringBuilder appendBleichenbacherResults(StringBuilder builder) {
-        prettyAppendHeading(builder, "Bleichenbacher Details");
         try {
+            prettyAppendHeading(builder, "Bleichenbacher Responsemap");
             if (report.getBleichenbacherTestResultList() == null || report.getBleichenbacherTestResultList().isEmpty()) {
                 prettyAppend(builder, "No Testresults");
             } else {
-                for (BleichenbacherTestResult testResult : report.getBleichenbacherTestResultList()) {
-                    String resultString = "" + padToLength(testResult.getWorkflowType().name(), 40);
-                    if (testResult.getVulnerable() == Boolean.TRUE) {
-                        prettyAppend(builder, resultString + "\t | " + testResult.getEqualityError() + "  VULNERABLE",
-                                AnsiColor.RED);
-                    } else if (testResult.getVulnerable() == Boolean.FALSE) {
-                        prettyAppend(builder, resultString + "\t | No Behavior Difference", AnsiColor.GREEN);
-                    } else {
-                        prettyAppend(builder, resultString + "\t # Error during Scan", AnsiColor.YELLOW);
-                    }
+                prettyAppend(builder, "No vulnerability present to identify");
 
-                    if (detail == ScannerDetail.DETAILED || detail == ScannerDetail.ALL) {
-                        if (testResult.getEqualityError() != EqualityError.NONE || detail == ScannerDetail.ALL) {
-                            prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                            if (testResult.getVectorFingerPrintPairList() != null
-                                    && !testResult.getVectorFingerPrintPairList().isEmpty()) {
-                                for (VectorResponse vectorFingerPrintPair : testResult.getVectorFingerPrintPairList()) {
-                                    prettyAppend(builder,
-                                            padToLength("\t" + vectorFingerPrintPair.getVector().getName(), 60)
-                                                    + vectorFingerPrintPair.getFingerprint().toHumanReadable());
-                                }
-                            } else {
-                                prettyAppend(builder, "\tNULL");
-                            }
-                        }
-                    }
-                }
+                // TODO this recopying is weired
+                List<InformationLeakTest> informationLeakTestList = new LinkedList<>();
+                informationLeakTestList.addAll(report.getBleichenbacherTestResultList());
+                appendInformationLeakTestList(builder, informationLeakTestList, "Bleichenbacher Details");
             }
         } catch (Exception E) {
-            prettyAppend(builder, " Error: " + E.getMessage());
+            prettyAppend(builder, "Error:" + E.getMessage());
         }
         return builder;
     }
