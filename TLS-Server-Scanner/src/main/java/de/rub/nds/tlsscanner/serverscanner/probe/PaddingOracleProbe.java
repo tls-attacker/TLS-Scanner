@@ -21,10 +21,10 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.leak.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.result.PaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
@@ -52,7 +52,9 @@ public class PaddingOracleProbe extends TlsProbe {
             for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
                 for (VersionSuiteListPair pair : serverSupportedSuites) {
                     if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
-                            || pair.getVersion() == ProtocolVersion.TLS12) {
+                            || pair.getVersion() == ProtocolVersion.TLS12
+                            || pair.getVersion() == ProtocolVersion.DTLS10
+                            || pair.getVersion() == ProtocolVersion.DTLS12) {
                         for (CipherSuite suite : pair.getCiphersuiteList()) {
                             if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
                                 PaddingOracleCommandConfig paddingOracleConfig = createPaddingOracleCommandConfig(
@@ -83,7 +85,7 @@ public class PaddingOracleProbe extends TlsProbe {
             return new PaddingOracleResult(testResultList);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new PaddingOracleResult(null);
+            return new PaddingOracleResult(TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -160,7 +162,7 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new PaddingOracleResult(null);
+        return new PaddingOracleResult(TestResult.COULD_NOT_TEST);
     }
 
     private void extendFingerPrint(InformationLeakTest<PaddingOracleTestInfo> informationLeakTest,
