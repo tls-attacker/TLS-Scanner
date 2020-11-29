@@ -13,7 +13,9 @@ import de.rub.nds.tlsattacker.attacks.impl.BleichenbacherAttacker;
 import de.rub.nds.tlsattacker.attacks.constants.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
@@ -56,7 +58,8 @@ public class BleichenbacherProbe extends TlsProbe {
                             || pair.getVersion() == ProtocolVersion.DTLS10
                             || pair.getVersion() == ProtocolVersion.DTLS12) {
                         for (CipherSuite suite : pair.getCiphersuiteList()) {
-                            if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
+                            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
+                                    && CipherSuite.getImplemented().contains(suite)) {
                                 BleichenbacherCommandConfig bleichenbacherConfig = createBleichenbacherCommandConfig(
                                         pair.getVersion(), suite);
                                 bleichenbacherConfig.setWorkflowType(workflowType);
@@ -141,9 +144,6 @@ public class BleichenbacherProbe extends TlsProbe {
         } catch (Exception E) {
             LOGGER.error("Encountered an exception while testing for BleichenbacherOracles", E);
         }
-        LOGGER.warn(bleichenbacherConfig.getWorkflowType() + "; " + bleichenbacherConfig.getType() + "; "
-                + bleichenbacherConfig.getNumberOfIterations() + " Iterationen; "
-                + attacker.getResponseMapList().size() + " Fingerprints;");
         return new InformationLeakTest<>(new BleichenbacherOracleTestInfo(bleichenbacherConfig
                 .getProtocolVersionDelegate().getProtocolVersion(), bleichenbacherConfig.getCiphersuiteDelegate()
                 .getCipherSuites().get(0), bleichenbacherConfig.getWorkflowType(), bleichenbacherConfig.getType()),
