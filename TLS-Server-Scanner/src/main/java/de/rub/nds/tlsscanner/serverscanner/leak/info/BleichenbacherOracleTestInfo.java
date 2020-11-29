@@ -14,7 +14,7 @@
 package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
-import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
+import de.rub.nds.tlsattacker.attacks.constants.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 

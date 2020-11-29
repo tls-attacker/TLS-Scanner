@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.BleichenbacherAttacker;
-import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
+import de.rub.nds.tlsattacker.attacks.constants.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
