@@ -35,9 +35,6 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
     private boolean noColor = false;
 
-    @ParametersDelegate
-    private GeneralDelegate generalDelegate;
-
     @Parameter(names = "-scanDetail", required = false, description = "How detailed do you want to scan?")
     private ScannerDetail scanDetail = ScannerDetail.NORMAL;
 
@@ -61,13 +58,12 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
-        this.generalDelegate = delegate;
-        clientDelegate = new ClientDelegate();
-        starttlsDelegate = new StarttlsDelegate();
-        ccaDelegate = new CcaDelegate();
-        dtlsDelegate = new DtlsDelegate();
+        this.dtlsDelegate = new DtlsDelegate();
+        this.clientDelegate = new ClientDelegate();
+        this.starttlsDelegate = new StarttlsDelegate();
+        this.ccaDelegate = new CcaDelegate();
+
         addDelegate(clientDelegate);
-        addDelegate(generalDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
         addDelegate(dtlsDelegate);
@@ -75,13 +71,12 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public ScannerConfig(GeneralDelegate delegate, ClientDelegate clientDelegate) {
         super(delegate);
-        this.generalDelegate = delegate;
         this.clientDelegate = clientDelegate;
-        starttlsDelegate = new StarttlsDelegate();
-        ccaDelegate = new CcaDelegate();
-        dtlsDelegate = new DtlsDelegate();
+        this.dtlsDelegate = new DtlsDelegate();
+        this.starttlsDelegate = new StarttlsDelegate();
+        this.ccaDelegate = new CcaDelegate();
+
         addDelegate(clientDelegate);
-        addDelegate(generalDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
         addDelegate(dtlsDelegate);

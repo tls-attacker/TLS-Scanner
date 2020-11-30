@@ -8,10 +8,13 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.bouncycastle.crypto.tls.Certificate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -19,17 +22,35 @@ import org.bouncycastle.crypto.tls.Certificate;
  */
 public class CertificateResult extends ProbeResult {
 
-    private Certificate certs;
-    private CertificateChain chain;
+    private Set<CertificateChain> certificates;
+    private List<NamedGroup> ecdsaPkGroupsStatic;
+    private List<NamedGroup> ecdsaPkGroupsEphemeral;
+    private List<NamedGroup> ecdsaPkGroupsTls13;
+    private List<NamedGroup> ecdsaSigGroupsStatic;
+    private List<NamedGroup> ecdsaSigGroupsEphemeral;
+    private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
-    public CertificateResult(CertificateChain chain) {
+    public CertificateResult(Set<CertificateChain> certificates, List<NamedGroup> ecdsaPkGroupsStatic,
+            List<NamedGroup> ecdsaPkGroupsEphemeral, List<NamedGroup> ecdsaSigGroupsStatic,
+            List<NamedGroup> ecdsaSigGroupsEphemeral, List<NamedGroup> ecdsaPkGroupsTls13,
+            List<NamedGroup> ecdsaCertSigGroupsTls13) {
         super(ProbeType.CERTIFICATE);
-        this.chain = chain;
+        this.certificates = certificates;
+        this.ecdsaPkGroupsStatic = ecdsaPkGroupsStatic;
+        this.ecdsaPkGroupsEphemeral = ecdsaPkGroupsEphemeral;
+        this.ecdsaSigGroupsStatic = ecdsaSigGroupsStatic;
+        this.ecdsaSigGroupsEphemeral = ecdsaSigGroupsEphemeral;
+        this.ecdsaPkGroupsTls13 = ecdsaPkGroupsTls13;
+        this.ecdsaCertSigGroupsTls13 = ecdsaCertSigGroupsTls13;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setCertificateChain(chain);
+        if (certificates != null) {
+            report.setCertificateChainList(new LinkedList<>(certificates));
+        }
+        report.setEcdsaPkGroupsStatic(ecdsaPkGroupsStatic);
+        report.setEcdsaPkGroupsEphemeral(ecdsaPkGroupsEphemeral);
     }
 
 }

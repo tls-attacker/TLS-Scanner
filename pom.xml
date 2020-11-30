@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TLS-Scanner</artifactId>
     <groupId>de.rub.nds.tlsscanner</groupId>
-    <version>4.0.0</version>
+    <version>4.1.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>TLS-Scanner-Core</module>
@@ -12,14 +12,24 @@
     </modules>
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>TLS-Core</artifactId>
-            <version>3.5.0</version>
+            <version>3.7.0</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>Attacks</artifactId>
-            <version>3.5.0</version>
+            <version>3.7.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -155,7 +165,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.20.1</version>
+                <version>3.0.0-M5</version>
                 <configuration>
                     <!-- By default, the Failsafe plugin excludes various files. We have to override that. -->
                     <includes>
@@ -176,15 +186,23 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>3.0.0-M5</version>
                 <configuration>
                     <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>3.0.0-M5</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <!-- Format the Code -->
             <plugin>
                 <groupId>net.revelc.code</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
+                <version>0.5.2</version>
                 <configuration>
                     <configFile>${main.basedir}/maven-eclipse-codestyle.xml</configFile>
                     <lineEnding>LF</lineEnding>

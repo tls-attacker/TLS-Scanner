@@ -13,6 +13,7 @@ import java.security.PublicKey;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.x509.Certificate;
@@ -322,5 +323,77 @@ public class CertificateReport {
 
     public void setSha256Pin(String sha256Pin) {
         this.sha256Pin = sha256Pin;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final CertificateReport otherReport = (CertificateReport) obj;
+        if (!Objects.equals(subject, otherReport.getSubject())
+                || !Objects.equals(commonNames, otherReport.getCommonNames())
+                || !Objects.equals(alternativenames, otherReport.getAlternativenames())
+                || !Objects.equals(validFrom, otherReport.getValidFrom())
+                || !Objects.equals(validTo, otherReport.getValidTo())
+                || !Objects.equals(publicKey, otherReport.getPublicKey())
+                || !Objects.equals(weakDebianKey, otherReport.getWeakDebianKey())
+                || !Objects.equals(issuer, otherReport.getIssuer())
+                || !Objects.equals(signatureAndHashAlgorithm, otherReport.getSignatureAndHashAlgorithm())
+                || !Objects.equals(extendedValidation, otherReport.getExtendedValidation())
+                || !Objects.equals(certificateTransparency, otherReport.getCertificateTransparency())
+                || !Objects.equals(ocspMustStaple, otherReport.getOcspMustStaple())
+                || !Objects.equals(crlSupported, otherReport.getCrlSupported())
+                || !Objects.equals(ocspSupported, otherReport.getOcspSupported())
+                || !Objects.equals(revoked, otherReport.getRevoked())
+                || !Objects.equals(dnsCAA, otherReport.getDnsCAA())
+                || !Objects.equals(trusted, otherReport.getTrusted())
+                || !Objects.equals(sha256Fingerprint, otherReport.getSHA256Fingerprint())
+                || !Objects.equals(rocaVulnerable, otherReport.getRocaVulnerable())
+                || !Objects.equals(trustAnchor, otherReport.isTrustAnchor())
+                || !Objects.equals(selfSigned, otherReport.getSelfSigned())
+                || !Objects.equals(leafCertificate, otherReport.getLeafCertificate())
+                || !Objects.equals(sha256Pin, otherReport.getSha256Pin())
+                || !Objects.equals(certificate.getSerialNumber(), otherReport.getCertificate().getSerialNumber())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 71 * hash + Objects.hashCode(this.subject);
+        hash = 71 * hash + Objects.hashCode(this.commonNames);
+        hash = 71 * hash + Objects.hashCode(this.alternativenames);
+        hash = 71 * hash + Objects.hashCode(this.validFrom);
+        hash = 71 * hash + Objects.hashCode(this.validTo);
+        hash = 71 * hash + Objects.hashCode(this.publicKey);
+        hash = 71 * hash + Objects.hashCode(this.weakDebianKey);
+        hash = 71 * hash + Objects.hashCode(this.issuer);
+        hash = 71 * hash + Objects.hashCode(this.signatureAndHashAlgorithm);
+        hash = 71 * hash + Objects.hashCode(this.extendedValidation);
+        hash = 71 * hash + Objects.hashCode(this.certificateTransparency);
+        hash = 71 * hash + Objects.hashCode(this.ocspMustStaple);
+        hash = 71 * hash + Objects.hashCode(this.crlSupported);
+        hash = 71 * hash + Objects.hashCode(this.ocspSupported);
+        hash = 71 * hash + Objects.hashCode(this.revoked);
+        hash = 71 * hash + Objects.hashCode(this.dnsCAA);
+        hash = 71 * hash + Objects.hashCode(this.trusted);
+        hash = 71 * hash + Objects.hashCode(this.sha256Fingerprint);
+        hash = 71 * hash + Objects.hashCode(this.rocaVulnerable);
+        hash = 71 * hash + Objects.hashCode(this.trustAnchor);
+        hash = 71 * hash + Objects.hashCode(this.selfSigned);
+        hash = 71 * hash + Objects.hashCode(this.leafCertificate);
+        hash = 71 * hash + Objects.hashCode(this.sha256Pin);
+        return hash;
     }
 }

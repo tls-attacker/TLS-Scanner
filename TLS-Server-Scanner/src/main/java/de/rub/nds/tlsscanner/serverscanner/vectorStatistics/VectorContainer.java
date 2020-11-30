@@ -6,8 +6,9 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.serverscanner.leak;
+package de.rub.nds.tlsscanner.serverscanner.vectorStatistics;
 
+import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.ResponseCounter;
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import java.util.Collections;
@@ -28,8 +29,7 @@ public class VectorContainer {
         this.vector = vector;
         this.distinctResponsesCounterList = new LinkedList<>();
         this.responseList = responseFingerprintList;
-        HashSet<ResponseFingerprint> fingerprintSet = new HashSet<>();
-        fingerprintSet.addAll(responseFingerprintList);
+        List<ResponseFingerprint> fingerprintSet = getUniqueFingerprints(responseFingerprintList);
         for (ResponseFingerprint fingerprint : fingerprintSet) {
             int counter = 0;
             for (ResponseFingerprint tempFingerprint : responseFingerprintList) {
@@ -121,5 +121,24 @@ public class VectorContainer {
 
     public Vector getVector() {
         return vector;
+    }
+
+    private List<ResponseFingerprint> getUniqueFingerprints(List<ResponseFingerprint> responseFingerprintList) {
+        List<ResponseFingerprint> uniqueFps = new LinkedList<>();
+
+        for (ResponseFingerprint fp : responseFingerprintList) {
+            boolean alreadyListed = false;
+            for (ResponseFingerprint uFp : uniqueFps) {
+                if (Objects.equals(fp, uFp)) {
+                    alreadyListed = true;
+                }
+            }
+
+            if (!alreadyListed) {
+                uniqueFps.add(fp);
+            }
+        }
+
+        return uniqueFps;
     }
 }

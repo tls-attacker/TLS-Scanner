@@ -6,7 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.probe;
+package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -57,6 +57,9 @@ public class EsniProbe extends TlsProbe {
 
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
         tlsConfig.setDefaultSelectedNamedGroup(NamedGroup.ECDH_X25519);
+        List<NamedGroup> keyShareGroupList = new LinkedList<>();
+        keyShareGroupList.add(NamedGroup.ECDH_X25519);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroupList);
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);

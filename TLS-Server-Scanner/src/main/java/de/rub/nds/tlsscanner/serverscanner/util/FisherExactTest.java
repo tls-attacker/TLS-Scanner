@@ -28,7 +28,7 @@ public class FisherExactTest {
 
     private static double log2Factorial(int k) {
         double res = 0;
-        for (int i = 2; i < k; i++) {
+        for (int i = 2; i <= k; i++) {
             res += log2(i);
         }
         return res;
