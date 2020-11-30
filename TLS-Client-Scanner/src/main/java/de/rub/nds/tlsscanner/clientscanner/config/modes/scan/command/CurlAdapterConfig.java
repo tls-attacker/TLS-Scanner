@@ -17,7 +17,7 @@ import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.CurlAdapter;
 @Parameters(commandNames = "curl", commandDescription = "Use a curl based client")
 public class CurlAdapterConfig extends BaseCommandAdapterConfig {
     @Override
-    public void applyDelegate(Config config) {
+    protected void applyDelegateInternal(Config config) {
         // nothing to do
     }
 

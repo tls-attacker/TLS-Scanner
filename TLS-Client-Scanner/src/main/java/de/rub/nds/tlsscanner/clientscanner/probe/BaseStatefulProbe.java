@@ -105,8 +105,7 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
             ExecutionException {
         ClientProbeResult ret = null;
         while (ret == null) {
-            T internalState = getPreviousState(report.uid);
-            ret = callInternal(report, getHostnamePrefix(internalState));
+            ret = callInternal(report, getHostnamePrefix());
         }
         return ret;
     }
@@ -115,20 +114,6 @@ public abstract class BaseStatefulProbe<T extends BaseStatefulProbe.InternalProb
     public String getHostnameForStandalone() {
         return null;
     }
-
-    @Override
-    @Deprecated
-    /**
-     * @deprecated Use getHostnamePrefix(T internalState) instead
-     */
-    protected final String getHostnamePrefix() {
-        throw new UnsupportedOperationException("Use getHostnamePrefix(T internalState) instead");
-    }
-
-    protected String getHostnamePrefix(T internalState) {
-        return super.getHostnamePrefix();
-    }
-
     // #endregion
 
     public static interface InternalProbeState {

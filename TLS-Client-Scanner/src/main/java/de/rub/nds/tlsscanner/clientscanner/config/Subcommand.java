@@ -14,7 +14,9 @@ import com.beust.jcommander.ParameterException;
 import de.rub.nds.tlsattacker.core.config.Config;
 
 public interface Subcommand {
-    void addToJCommander(JCommander jc);
+    default void addToJCommander(JCommander jc) {
+        jc.addCommand(this);
+    }
 
     void setParsed(JCommander jc) throws ParameterException;
 

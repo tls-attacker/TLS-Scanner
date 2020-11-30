@@ -31,13 +31,13 @@ public class ClientScannerConfig extends TLSDelegateConfig {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @ParametersDelegate
-    private CACertDelegate certificateDelegate;
+    protected CACertDelegate certificateDelegate;
     @ParametersDelegate
-    private StarttlsDelegate startTlsDelegate;
+    protected StarttlsDelegate startTlsDelegate;
 
     // #region Variables to be applied in Config
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
-    private int timeout = 1000;
+    protected int timeout = 1000;
 
     @Parameter(names = "-bindaddr", required = false, description = "Hostname/IP to listen on. Defaults to any")
     protected String bindaddr = null;
@@ -75,7 +75,13 @@ public class ClientScannerConfig extends TLSDelegateConfig {
 
     public void parse(String[] args) {
         jCommander.parse(args);
+        if (getGeneralDelegate().isHelp()) {
+            return;
+        }
         String commandName = jCommander.getParsedCommand();
+        if (commandName == null) {
+            throw new ParameterException("No subcommand specified command (name is null)");
+        }
         JCommander commandJc = jCommander.getCommands().get(commandName);
         List<Object> cmdObjs = commandJc.getObjects();
         ExecutableSubcommand cmd = (ExecutableSubcommand) cmdObjs.get(0);

@@ -86,13 +86,13 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
     }
 
     @Override
-    protected String getHostnamePrefix(AlertDowngradeInternalState internalState) {
+    protected String getHostnamePrefix() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.alertLevel.name());
         sb.append('.');
         sb.append(this.alertDesc.name());
         sb.append('.');
-        sb.append(super.getHostnamePrefix(internalState));
+        sb.append(super.getHostnamePrefix());
         return sb.toString();
     }
 

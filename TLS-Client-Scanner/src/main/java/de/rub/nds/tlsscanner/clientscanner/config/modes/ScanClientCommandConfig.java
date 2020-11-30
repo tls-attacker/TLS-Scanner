@@ -30,16 +30,16 @@ import de.rub.nds.tlsscanner.clientscanner.Main;
 import de.rub.nds.tlsscanner.clientscanner.client.DefaultOrchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
-import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
+import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommandHolder;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.ExecutableSubcommand;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.DockerLibAdapterConfig;
-import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.AdapterConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.ClientAdapterConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.BaseCommandAdapterConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 
 @Parameters(commandNames = "scanClient", commandDescription = "Scan a client automatically")
-public class ScanClientCommandConfig extends BaseSubcommand<AdapterConfig> implements ExecutableSubcommand {
+public class ScanClientCommandConfig extends BaseSubcommandHolder<ClientAdapterConfig> implements ExecutableSubcommand {
     @Parameter(names = "-file", required = false, description = "File to write the report to as xml")
     private String reportFile = null;
 
@@ -56,7 +56,7 @@ public class ScanClientCommandConfig extends BaseSubcommand<AdapterConfig> imple
     }
 
     @Override
-    public void applyDelegate(Config config) {
+    protected void applyDelegateInternal(Config config) {
         // use any port
         InboundConnection inboundConnection = config.getDefaultServerConnection();
         if (inboundConnection == null) {

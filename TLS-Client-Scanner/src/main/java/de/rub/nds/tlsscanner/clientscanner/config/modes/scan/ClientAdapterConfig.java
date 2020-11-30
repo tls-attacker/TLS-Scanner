@@ -11,6 +11,6 @@ package de.rub.nds.tlsscanner.clientscanner.config.modes.scan;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.Subcommand;
 
-public interface AdapterConfig extends Subcommand {
+public interface ClientAdapterConfig extends Subcommand {
     ClientAdapter createClientAdapter();
 }

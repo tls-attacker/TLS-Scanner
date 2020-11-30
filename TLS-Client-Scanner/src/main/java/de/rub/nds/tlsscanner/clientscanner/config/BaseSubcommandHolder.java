@@ -15,7 +15,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
-public abstract class BaseSubcommand<T extends Subcommand> implements Subcommand {
+import de.rub.nds.tlsattacker.core.config.Config;
+
+public abstract class BaseSubcommandHolder<T extends Subcommand> implements Subcommand {
     protected List<T> subcommands = new ArrayList<>();
     protected T selectedSubcommand;
 
@@ -56,5 +58,13 @@ public abstract class BaseSubcommand<T extends Subcommand> implements Subcommand
         selectedSubcommand = cmd;
         cmd.setParsed(commandJc);
     }
+
+    @Override
+    public void applyDelegate(Config config) {
+        selectedSubcommand.applyDelegate(config);
+        applyDelegateInternal(config);
+    }
+
+    protected abstract void applyDelegateInternal(Config config);
 
 }

@@ -97,8 +97,8 @@ public class ClientScanExecutor implements Observer {
             long lastMerge = System.currentTimeMillis();
             List<ProbeAndResultFuture> finishedFutures = new LinkedList<>();
             // iterate over a copy because somehow I failed to use synchronized
-            // to
-            // exclusively lock out this loop from the update function
+            // to exclusively lock out this loop from the update function
+            // even using synchronized on this or the list did not work...
             for (ProbeAndResultFuture probeAndResultFuture : new ArrayList<>(futureResults)) {
                 Future<ClientProbeResult> result = probeAndResultFuture.future;
                 if (result.isDone()) {

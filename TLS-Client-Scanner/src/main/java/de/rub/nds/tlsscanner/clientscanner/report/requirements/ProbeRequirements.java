@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 
 public abstract class ProbeRequirements {
@@ -29,12 +30,13 @@ public abstract class ProbeRequirements {
         return new NeedResult(this, requiredClass);
     }
 
-    public ProbeRequirements needResultOfType(Class<? extends Probe> requiredClass,
-            Class<? extends Serializable> resType) {
+    public <T extends ClientProbeResult> ProbeRequirements needResultOfType(Class<? extends Probe> requiredClass,
+            Class<T> resType) {
         return new NeedResultOfType(this, requiredClass, resType);
     }
 
-    public <T extends Serializable> ProbeRequirements needResultOfTypeMatching(Class<? extends Probe> requiredClass,
+    public <T extends ClientProbeResult> ProbeRequirements needResultOfTypeMatching(
+            Class<? extends Probe> requiredClass,
             Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
         return new NeedResultOfTypeMatching<>(this, requiredClass, resType, predicate, notMatchedDescription);
     }

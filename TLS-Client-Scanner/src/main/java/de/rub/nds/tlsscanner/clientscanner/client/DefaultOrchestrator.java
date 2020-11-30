@@ -47,7 +47,7 @@ public class DefaultOrchestrator implements Orchestrator {
     protected final ClientScannerConfig csConfig;
     protected final ExecutorService secondaryExecutor;
 
-    protected String baseHostname;
+    protected final String baseHostname;
 
     public DefaultOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int serverThreads) {
         this.csConfig = csConfig;
@@ -96,8 +96,8 @@ public class DefaultOrchestrator implements Orchestrator {
             ClientReport report, Object additionalParameters)
             throws InterruptedException, ExecutionException {
         FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
-
         ClientProbeResultFuture serverResultFuture;
+
         // we need to sync enqueueing and connecting per unique hostname
         // TODO improve this, such that we can unsync as soon as we got a
         // connection
@@ -115,7 +115,7 @@ public class DefaultOrchestrator implements Orchestrator {
             syncHostname = hostname;
         }
         try (SyncObject _sync = syncObjectPool.get(syncHostname)) {
-            // enqueue probe on serverside
+            // enqueue probe on server-side
             serverResultFuture = ccDispatcher.enqueueDispatcher(dispatcher, hostnamePrefix, report.uid, hostname,
                     clientResultHolder, report, additionalParameters);
 
@@ -124,14 +124,14 @@ public class DefaultOrchestrator implements Orchestrator {
             int tryNo = 0;
             try {
                 while (!serverResultFuture.isGotConnection()) {
-                    // sleep a bit after fails
                     if (tryNo + 1 >= CLIENT_RETRY_COUNT) {
                         LOGGER.warn("Failed to get connection from client after {} tries", CLIENT_RETRY_COUNT);
                         break;
                     }
+                    // sleep a bit after fails
                     Thread.sleep(1000 * tryNo);
                     tryNo++;
-                    // assume that connect runs synchronously
+                    // connect runs synchronously
                     LOGGER.trace("Running client probe (try: {})", tryNo);
                     clientResult = clientAdapter.connect(hostname, server.getPort());
                     LOGGER.trace("Client is done running probe - check whether server got connection");
@@ -151,8 +151,7 @@ public class DefaultOrchestrator implements Orchestrator {
             res = serverResultFuture.get();
         } else {
             // we did not get a connection yet, let's just give it the benefit
-            // of the doubt
-            // and wait for 10 more seconds
+            // of the doubt and wait for 10 more seconds
             try {
                 res = serverResultFuture.get(10, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
@@ -163,12 +162,12 @@ public class DefaultOrchestrator implements Orchestrator {
     }
 
     @Override
-    public ClientProbeResult runDispatcher(Dispatcher probe, String hostnamePrefix, ClientReport report,
+    public ClientProbeResult runDispatcher(Dispatcher dispatcher, String hostnamePrefix, ClientReport report,
             Object additionalParameters)
             throws InterruptedException, ExecutionException {
         String hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, report.uid, baseHostname);
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(hostname)) {
-            return runDispatcher(probe, hostnamePrefix, hostname, report, additionalParameters);
+            return runDispatcher(dispatcher, hostnamePrefix, hostname, report, additionalParameters);
         }
     }
 

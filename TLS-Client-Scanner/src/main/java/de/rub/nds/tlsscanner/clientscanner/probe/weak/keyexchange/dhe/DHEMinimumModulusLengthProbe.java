@@ -35,7 +35,7 @@ public class DHEMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHEWeakMo
     private static final int BITLENGTH_CUTOFF_UB = 4096;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private Random rnd = new Random();
+    private Random random = new Random();
 
     public DHEMinimumModulusLengthProbe(Orchestrator orchestrator) {
         super(orchestrator, false, false, true);
@@ -54,7 +54,7 @@ public class DHEMinimumModulusLengthProbe extends BaseStatefulDHEProbe<DHEWeakMo
         LOGGER.debug("Testing {}", toTest);
         prepareConfig(config);
         config.setDefaultApplicationMessageData("Keysize: " + toTest);
-        config.setDefaultServerDhModulus(new BigInteger(toTest, 10, rnd));
+        config.setDefaultServerDhModulus(new BigInteger(toTest, 10, random));
         extendWorkflowTraceToApplication(state.getWorkflowTrace(), config, false);
         executeState(state, dispatchInformation);
         internalState.put(toTest, state);

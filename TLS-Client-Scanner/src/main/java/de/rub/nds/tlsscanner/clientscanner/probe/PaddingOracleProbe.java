@@ -145,7 +145,7 @@ public class PaddingOracleProbe extends BaseProbe {
         PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(
                 csConfig.getGeneralDelegate());
         // set any remote Address - this is just to avoid any exception
-        ClientDelegate clientDelegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
+        ClientDelegate clientDelegate = paddingOracleConfig.getDelegate(ClientDelegate.class);
         clientDelegate.setHost("localhost:0");
 
         StarttlsDelegate startTlsDelegate = paddingOracleConfig.getDelegate(StarttlsDelegate.class);

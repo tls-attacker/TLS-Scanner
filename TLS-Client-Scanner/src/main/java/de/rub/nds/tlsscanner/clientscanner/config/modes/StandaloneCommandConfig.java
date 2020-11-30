@@ -10,7 +10,9 @@ package de.rub.nds.tlsscanner.clientscanner.config.modes;
 
 import java.util.List;
 
+import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +23,7 @@ import de.rub.nds.tlsattacker.core.connection.InboundConnection;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.clientscanner.Main;
 import de.rub.nds.tlsscanner.clientscanner.Server;
-import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommand;
+import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommandHolder;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.ExecutableSubcommand;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
@@ -29,10 +31,8 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 
-@SuppressWarnings("rawtypes")
-// this does not have any subcommands
 @Parameters(commandNames = "standalone", commandDescription = "Host probes publicly")
-public class StandaloneCommandConfig extends BaseSubcommand implements ExecutableSubcommand {
+public class StandaloneCommandConfig implements ExecutableSubcommand {
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Parameter(names = { "-threads" }, required = false, description = "Primary threads")
@@ -43,18 +43,21 @@ public class StandaloneCommandConfig extends BaseSubcommand implements Executabl
 
     public StandaloneCommandConfig() {
         super();
-        // TODO
     }
 
     @Override
-    public void applyDelegate(Config config) throws ConfigurationException {
+    public void setParsed(JCommander jc) throws ParameterException {
+        // nothing to do
+    }
+
+    @Override
+    public void applyDelegate(Config config) {
         InboundConnection inboundConnection = config.getDefaultServerConnection();
         if (inboundConnection == null) {
             config.setDefaultServerConnection(new InboundConnection(port));
         } else {
             inboundConnection.setPort(port);
         }
-
     }
 
     private static Dispatcher getStandaloneDispatcher(ClientScannerConfig csConfig) {
