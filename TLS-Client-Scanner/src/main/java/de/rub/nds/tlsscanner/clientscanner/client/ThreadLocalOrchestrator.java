@@ -45,7 +45,7 @@ public class ThreadLocalOrchestrator implements Orchestrator {
     }
 
     // just so we have the same signature as the normal Orchestrator
-    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int _ignoreed) {
+    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int _ignored) {
         this(csConfig, secondaryExecutor);
     }
 

@@ -129,7 +129,7 @@ public class DefaultOrchestrator implements Orchestrator {
                         break;
                     }
                     // sleep a bit after fails
-                    Thread.sleep(1000 * tryNo);
+                    Thread.sleep(1000L * tryNo);
                     tryNo++;
                     // connect runs synchronously
                     LOGGER.trace("Running client probe (try: {})", tryNo);
