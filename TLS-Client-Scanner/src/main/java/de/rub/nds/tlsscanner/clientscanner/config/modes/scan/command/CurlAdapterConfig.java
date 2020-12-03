@@ -13,6 +13,7 @@ import com.beust.jcommander.Parameters;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.CurlAdapter;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 
 @Parameters(commandNames = "curl", commandDescription = "Use a curl based client")
 public class CurlAdapterConfig extends BaseCommandAdapterConfig {
@@ -22,8 +23,8 @@ public class CurlAdapterConfig extends BaseCommandAdapterConfig {
     }
 
     @Override
-    public ClientAdapter createClientAdapter() {
-        return new CurlAdapter(createCommandExecutor());
+    public ClientAdapter createClientAdapter(ClientScannerConfig csConfig) {
+        return new CurlAdapter(createCommandExecutor(csConfig), csConfig);
     }
 
 }

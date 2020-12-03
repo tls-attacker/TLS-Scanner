@@ -21,6 +21,7 @@ import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.DockerLibAdapter;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 
 @Parameters(commandNames = "docker", commandDescription = "Use a docker client (based on TLS-Docker-Library)")
 public class DockerLibAdapterConfig implements ClientAdapterConfig {
@@ -42,7 +43,7 @@ public class DockerLibAdapterConfig implements ClientAdapterConfig {
     }
 
     @Override
-    public ClientAdapter createClientAdapter() {
+    public ClientAdapter createClientAdapter(ClientScannerConfig csConfig) {
         UnaryOperator<HostConfig> hostConfigHook = null;
         if (dns != null) {
             hostConfigHook = cfg -> cfg.withDns(dns);

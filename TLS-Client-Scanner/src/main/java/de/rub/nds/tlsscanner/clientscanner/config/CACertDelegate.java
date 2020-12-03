@@ -42,4 +42,8 @@ public class CACertDelegate extends Delegate {
         }
     }
 
+    public String getCertPath() {
+        return certPath;
+    }
+
 }

@@ -16,21 +16,26 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor.ExecuteResult;
+import de.rub.nds.tlsscanner.clientscanner.config.CACertDelegate;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.result.BasicClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult.EContentShown;
 
 public class CurlAdapter extends BaseCommandAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
+    private final String certPath;
 
-    public CurlAdapter(CommandExecutor executor) {
+    public CurlAdapter(CommandExecutor executor, ClientScannerConfig csConfig) {
         super(executor);
+        this.certPath = csConfig.getDelegate(CACertDelegate.class).getCertPath();
     }
 
     @Override
     public ClientAdapterResult connect(String hostname, int port) throws InterruptedException {
         try {
-            ExecuteResult res = executor.executeCommand("curl", "-sS", "-k",
+            // --ssl-no-revoke might be required for some libraries (e.g. Schannel)
+            ExecuteResult res = executor.executeCommand("curl", "-sS", "--cacert", certPath,
                     String.format("https://%s:%d/", hostname, port));
             if (LOGGER.isDebugEnabled()) {
                 while (res.stdout.ready()) {

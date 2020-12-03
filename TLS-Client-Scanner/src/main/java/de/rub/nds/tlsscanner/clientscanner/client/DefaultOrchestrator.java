@@ -52,7 +52,7 @@ public class DefaultOrchestrator implements Orchestrator {
     public DefaultOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int serverThreads) {
         this.csConfig = csConfig;
         ScanClientCommandConfig scanCfg = csConfig.getSelectedSubcommand(ScanClientCommandConfig.class);
-        clientAdapter = scanCfg.createClientAdapter();
+        clientAdapter = scanCfg.createClientAdapter(csConfig);
         baseHostname = csConfig.getServerBaseURL();
         LOGGER.info("Using base hostname {}", baseHostname);
 

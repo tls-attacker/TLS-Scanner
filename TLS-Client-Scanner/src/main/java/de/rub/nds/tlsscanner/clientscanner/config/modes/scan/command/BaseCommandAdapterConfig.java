@@ -13,6 +13,7 @@ import java.util.Collection;
 
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.command.executor.CommandExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommandHolder;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.ClientAdapterConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.executors.ExecutorConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.executors.LocalCommandExecutorConfig;
@@ -29,7 +30,7 @@ public abstract class BaseCommandAdapterConfig extends BaseSubcommandHolder<Exec
         subcommands.add(new ProxiedLocalCommandExecutorConfig());
     }
 
-    protected CommandExecutor createCommandExecutor() {
+    protected CommandExecutor createCommandExecutor(ClientScannerConfig csConfig) {
         return selectedSubcommand.createCommandExecutor();
     }
 

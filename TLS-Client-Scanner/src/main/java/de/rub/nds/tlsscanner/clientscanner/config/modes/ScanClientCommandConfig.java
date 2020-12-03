@@ -66,8 +66,8 @@ public class ScanClientCommandConfig extends BaseSubcommandHolder<ClientAdapterC
         }
     }
 
-    public ClientAdapter createClientAdapter() {
-        return selectedSubcommand.createClientAdapter();
+    public ClientAdapter createClientAdapter(ClientScannerConfig csConfig) {
+        return selectedSubcommand.createClientAdapter(csConfig);
     }
 
     @Override

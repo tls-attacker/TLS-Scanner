@@ -9,8 +9,9 @@
 package de.rub.nds.tlsscanner.clientscanner.config.modes.scan;
 
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.Subcommand;
 
 public interface ClientAdapterConfig extends Subcommand {
-    ClientAdapter createClientAdapter();
+    ClientAdapter createClientAdapter(ClientScannerConfig csConfig);
 }
