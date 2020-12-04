@@ -51,12 +51,10 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         return result;
     }
 
-    @XmlElement(required = false)
     public Integer getInfluence() {
         return influence;
     }
 
-    @XmlElement(required = false)
     public Integer getScoreCap() {
         return scoreCap;
     }
@@ -113,4 +111,10 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         return this.getScoreCap().compareTo(t.getScoreCap());
     }
 
+    @Override
+    public String toString() {
+        return "PropertyResultRatingInfluencer{" + "result=" + result + ", influence=" + influence + ", scoreCap="
+                + scoreCap + ", referencedProperty=" + referencedProperty + ", referencedPropertyResult="
+                + referencedPropertyResult + '}';
+    }
 }

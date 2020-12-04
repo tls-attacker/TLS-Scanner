@@ -279,7 +279,7 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_CRIME, new PropertyResultRatingInfluencer(
                 TestResult.TRUE, -500, 1000), new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_BREACH, new PropertyResultRatingInfluencer(
-                TestResult.TRUE, -200, 0), new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+                TestResult.TRUE, -100), new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_LOGJAM, new PropertyResultRatingInfluencer(
                 TestResult.TRUE, -500, 1000), new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_FREAK, new PropertyResultRatingInfluencer(

@@ -101,6 +101,7 @@ public class SiteReportRater {
         for (PropertyResultRatingInfluencer influencer : influencers.values()) {
             if (influencer.getScoreCap() != null && score >= influencer.getScoreCap()) {
                 score = influencer.getScoreCap();
+                System.out.println("Influencer:" + influencer.toString());
             }
         }
         return score;

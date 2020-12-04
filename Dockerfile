@@ -11,5 +11,5 @@ FROM openjdk:8-alpine
 COPY --from=build-image /build/TLS-Scanner/apps /apps
 
 WORKDIR /apps
-ENTRYPOINT ["java", "-jar", "TLS-Scanner.jar"]
+ENTRYPOINT ["java", "-jar", "TLS-Server-Scanner.jar"]
 
