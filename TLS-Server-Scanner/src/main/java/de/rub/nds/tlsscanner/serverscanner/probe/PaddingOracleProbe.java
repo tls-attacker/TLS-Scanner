@@ -116,7 +116,7 @@ public class PaddingOracleProbe extends TlsProbe {
             paddingOracleConfig.setNumberOfIterations(1);
         }
         paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
-        paddingOracleConfig.getCiphersuiteDelegate().setCipherSuites(cipherSuite);
+        paddingOracleConfig.getCipherSuiteDelegate().setCipherSuites(cipherSuite);
         paddingOracleConfig.getProtocolVersionDelegate().setProtocolVersion(version);
         return paddingOracleConfig;
     }
@@ -138,7 +138,7 @@ public class PaddingOracleProbe extends TlsProbe {
         }
 
         return new InformationLeakTest<>(new PaddingOracleTestInfo(paddingOracleConfig.getProtocolVersionDelegate()
-                .getProtocolVersion(), paddingOracleConfig.getCiphersuiteDelegate().getCipherSuites().get(0),
+                .getProtocolVersion(), paddingOracleConfig.getCipherSuiteDelegate().getCipherSuites().get(0),
                 paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType()),
                 attacker.getResponseMapList());
     }

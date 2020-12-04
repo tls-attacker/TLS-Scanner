@@ -109,7 +109,7 @@ public class NamedCurvesProbe extends TlsProbe {
     private Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsRsa() {
 
         Config tlsConfig = getBasicConfig();
-        tlsConfig.setDefaultClientSupportedCiphersuites(getEcRsaCiphersuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(getEcRsaCiphersuites());
         List<NamedGroup> toTestList = new ArrayList<>(Arrays.asList(NamedGroup.values()));
         TlsContext context;
         NamedGroup selectedGroup = null;
@@ -136,7 +136,7 @@ public class NamedCurvesProbe extends TlsProbe {
             List<NamedGroup> pkGroups, List<NamedGroup> sigGroups) {
         HashMap<NamedGroup, NamedCurveWitness> namedCurveMap = new HashMap<>();
         Config tlsConfig = getBasicConfig();
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         List<NamedGroup> toTestList = new ArrayList<>(Arrays.asList(NamedGroup.values()));
 
         TlsContext context;
@@ -299,7 +299,7 @@ public class NamedCurvesProbe extends TlsProbe {
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.EXPLICIT_CHAR2);
         }
 
-        tlsConfig.setDefaultClientSupportedCiphersuites(getEcCiphersuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(getEcCiphersuites());
         State state = new State(tlsConfig);
         executeState(state);
 
@@ -404,7 +404,7 @@ public class NamedCurvesProbe extends TlsProbe {
     public TlsContext getTls13SupportedGroup(List<NamedGroup> groups) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplementedTls13CipherSuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setEnforceSettings(false);

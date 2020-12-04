@@ -29,7 +29,7 @@ public class DirectRaccoontWorkflowGenerator {
 
     public static WorkflowTrace generateWorkflow(Config tlsConfig, DirectRaccoonWorkflowType type,
             BigInteger initialDhSecret, boolean withNullByte) {
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowTrace(tlsConfig
                 .getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));

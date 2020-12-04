@@ -44,7 +44,7 @@ public class HttpFalseStartProbe extends HttpsProbe {
             Config tlsConfig = getConfig();
 
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
+            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
             trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
@@ -86,7 +86,7 @@ public class HttpFalseStartProbe extends HttpsProbe {
     private Config getConfig() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(this.getCipherSuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(this.getCipherSuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);

@@ -66,8 +66,8 @@ public class ResumptionProbe extends TlsProbe {
             List<CipherSuite> ciphersuites = new LinkedList<>();
             ciphersuites.addAll(supportedSuites);
             // TODO this can fail in some rare occasions
-            tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites.get(0));
-            tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
+            tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites.get(0));
+            tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setEnforceSettings(false);
             tlsConfig.setEarlyStop(true);
@@ -139,7 +139,7 @@ public class ResumptionProbe extends TlsProbe {
             }
         }
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getTls13CipherSuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getTls13CipherSuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setEnforceSettings(false);

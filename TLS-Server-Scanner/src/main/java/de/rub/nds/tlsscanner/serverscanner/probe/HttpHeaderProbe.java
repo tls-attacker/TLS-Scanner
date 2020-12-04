@@ -54,7 +54,7 @@ public class HttpHeaderProbe extends HttpsProbe {
             cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
             cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             tlsConfig.setQuickReceive(true);
-            tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setEnforceSettings(false);
             tlsConfig.setEarlyStop(true);
@@ -74,7 +74,7 @@ public class HttpHeaderProbe extends HttpsProbe {
             namedGroups.remove(NamedGroup.ECDH_X25519);
             tlsConfig.setDefaultClientNamedGroups(namedGroups);
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
+            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
             trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
