@@ -116,7 +116,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             Config config = getScannerConfig().createConfig();
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
-            config.setDefaultClientSupportedCiphersuites(suite);
+            config.setDefaultClientSupportedCipherSuites(suite);
             config.setDefaultSelectedCipherSuite(suite);
             config.setAddECPointFormatExtension(false);
             config.setAddEllipticCurveExtension(false);

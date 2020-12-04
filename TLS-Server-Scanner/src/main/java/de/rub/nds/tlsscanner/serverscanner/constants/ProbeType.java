@@ -44,5 +44,7 @@ public enum ProbeType {
     CCA_REQUIRED,
     CCA,
     DIRECT_RACCOON,
-    EC_POINT_FORMAT
+    EC_POINT_FORMAT,
+    RACCOON_ATTACK,
+    HTTP_FALSE_START
 }

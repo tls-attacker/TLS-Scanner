@@ -38,7 +38,7 @@ public class CcaSupportProbe extends TlsProbe {
     public ProbeResult executeTest() {
         Config tlsConfig = generateConfig();
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowtrace(tlsConfig
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowTrace(tlsConfig
                 .getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));

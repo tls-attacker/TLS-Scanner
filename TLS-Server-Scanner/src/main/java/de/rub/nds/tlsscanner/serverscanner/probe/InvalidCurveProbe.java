@@ -285,7 +285,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
         attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
         attacker.getTlsConfig().setDefaultSelectedProtocolVersion(protocolVersion);
-        attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuites);
+        attacker.getTlsConfig().setDefaultClientSupportedCipherSuites(cipherSuites);
         attacker.getTlsConfig().setDefaultClientNamedGroups(group);
         attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
 
@@ -475,8 +475,8 @@ public class InvalidCurveProbe extends TlsProbe {
                 TestResult foundDuplicateFinished = TestResult.FALSE;
                 for (Point point : response.getReceivedEcPublicKeys()) {
                     for (Point cPoint : response.getReceivedEcPublicKeys()) {
-                        if (point != cPoint && (point.getX().getData().compareTo(cPoint.getX().getData()) == 0)
-                                && point.getY().getData().compareTo(cPoint.getY().getData()) == 0) {
+                        if (point != cPoint && (point.getFieldX().getData().compareTo(cPoint.getFieldX().getData()) == 0)
+                                && point.getFieldY().getData().compareTo(cPoint.getFieldY().getData()) == 0) {
                             foundDuplicate = TestResult.TRUE;
                         }
                     }
@@ -486,8 +486,8 @@ public class InvalidCurveProbe extends TlsProbe {
                 // Finished message
                 for (Point point : response.getReceivedFinishedEcKeys()) {
                     for (Point cPoint : response.getReceivedEcPublicKeys()) {
-                        if (point != cPoint && (point.getX().getData().compareTo(cPoint.getX().getData()) == 0)
-                                && point.getY().getData().compareTo(cPoint.getY().getData()) == 0) {
+                        if (point != cPoint && (point.getFieldX().getData().compareTo(cPoint.getFieldX().getData()) == 0)
+                                && point.getFieldY().getData().compareTo(cPoint.getFieldY().getData()) == 0) {
                             foundDuplicateFinished = TestResult.TRUE;
                         }
                     }
@@ -764,7 +764,7 @@ public class InvalidCurveProbe extends TlsProbe {
             InvalidCurveScanType scanType) {
         if (scanType == InvalidCurveScanType.REGULAR || scanType == InvalidCurveScanType.EXTENDED) {
             if (vector.isTwistAttack()) {
-                attackConfig.setCurveTwistD(TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getD());
+                attackConfig.setCurveTwistD(TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPointD());
                 attackConfig.setPublicPointBaseX(TwistedCurvePoint.smallOrder(vector.getNamedGroup())
                         .getPublicPointBaseX());
                 attackConfig.setPublicPointBaseY(TwistedCurvePoint.smallOrder(vector.getNamedGroup())
@@ -781,7 +781,7 @@ public class InvalidCurveProbe extends TlsProbe {
         } else if (scanType == InvalidCurveScanType.REDUNDANT) {
             // use second point of different order
             if (vector.isTwistAttack()) {
-                attackConfig.setCurveTwistD(TwistedCurvePoint.alternativeOrder(vector.getNamedGroup()).getD());
+                attackConfig.setCurveTwistD(TwistedCurvePoint.alternativeOrder(vector.getNamedGroup()).getPointD());
                 attackConfig.setPublicPointBaseX(TwistedCurvePoint.alternativeOrder(vector.getNamedGroup())
                         .getPublicPointBaseX());
                 attackConfig.setPublicPointBaseY(TwistedCurvePoint.alternativeOrder(vector.getNamedGroup())
@@ -798,7 +798,7 @@ public class InvalidCurveProbe extends TlsProbe {
         } else if (scanType == InvalidCurveScanType.LARGE_GROUP) {
             // point of large order
             if (vector.isTwistAttack()) {
-                attackConfig.setCurveTwistD(TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getD());
+                attackConfig.setCurveTwistD(TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPointD());
                 attackConfig.setPublicPointBaseX(TwistedCurvePoint.largeOrder(vector.getNamedGroup())
                         .getPublicPointBaseX());
                 attackConfig.setPublicPointBaseY(TwistedCurvePoint.largeOrder(vector.getNamedGroup())

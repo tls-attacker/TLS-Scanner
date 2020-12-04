@@ -379,7 +379,7 @@ public class CertificateProbe extends TlsProbe {
     }
 
     private CertificateChain performCertScan(Config tlsConfig, List<CipherSuite> cipherSuitesToTest) {
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuitesToTest);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
@@ -394,7 +394,7 @@ public class CertificateProbe extends TlsProbe {
 
     private void performEcCertScan(Config tlsConfig, List<NamedGroup> groupsToTest,
             List<CipherSuite> cipherSuitesToTest, List<CertificateChain> certificateList) {
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuitesToTest);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         tlsConfig.setDefaultClientNamedGroups(groupsToTest);
         do {
             State state = new State(tlsConfig);
@@ -418,7 +418,7 @@ public class CertificateProbe extends TlsProbe {
     private void performEcCertScanEcdsa(Config tlsConfig, List<NamedGroup> groupsToTest,
             List<CipherSuite> cipherSuitesToTest, List<CertificateChain> certificateList, List<NamedGroup> pkGroups,
             List<NamedGroup> sigGroups) {
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuitesToTest);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         tlsConfig.setDefaultClientNamedGroups(groupsToTest);
         tlsConfig.setDefaultClientKeyShareNamedGroups(groupsToTest);
         do {

@@ -1,8 +1,8 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
- *
+ * <p>
  * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
- *
+ * <p>
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -21,7 +21,9 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+
 import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
+
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.ConfigFileList;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulationRequest;
@@ -29,12 +31,14 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.TlsClientCo
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
@@ -88,9 +92,9 @@ public class HandshakeSimulationProbe extends TlsProbe {
         Config config = state.getConfig();
         config.setStopActionsAfterIOException(true);
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
-        simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
+        simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCipherSuites());
         if (config.isAddAlpnExtension()) {
-            simulatedClient.setAlpnAnnouncedProtocols(Arrays.toString(config.getAlpnAnnouncedProtocols()));
+            simulatedClient.setAlpnAnnouncedProtocols(Arrays.toString(config.getDefaultProposedAlpnProtocols().toArray()));
         } else {
             simulatedClient.setAlpnAnnouncedProtocols("-");
         }
@@ -192,7 +196,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
             }
             if (simulatedClient.getServerPublicKeyParameter() == null) {
                 if (context.getServerEcPublicKey() != null) {
-                    simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getX().getData()
+                    simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getFieldX().getData()
                             .bitLength() * 8);
                 }
             }

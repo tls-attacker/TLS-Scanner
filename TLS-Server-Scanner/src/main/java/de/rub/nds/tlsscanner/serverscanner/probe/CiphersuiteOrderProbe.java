@@ -57,7 +57,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setEarlyStop(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
+        tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
         tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(true);

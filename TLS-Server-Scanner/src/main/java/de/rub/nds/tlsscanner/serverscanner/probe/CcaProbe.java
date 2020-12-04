@@ -98,7 +98,7 @@ public class CcaProbe extends TlsProbe {
                         CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite,
                                 ccaWorkflowType, ccaCertificateType);
                         Config tlsConfig = generateConfig();
-                        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
+                        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
 
                         CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout,
