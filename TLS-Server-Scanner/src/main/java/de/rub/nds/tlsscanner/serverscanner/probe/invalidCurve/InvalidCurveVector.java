@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve;
 
+import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -18,39 +19,30 @@ import java.util.List;
 /**
  *
  */
-public class InvalidCurveParameterSet {
+public class InvalidCurveVector implements Vector {
 
     private ProtocolVersion protocolVersion;
-    private List<CipherSuite> cipherSuites;
+    private CipherSuite cipherSuite;
     private NamedGroup namedGroup;
     private ECPointFormat pointFormat;
     private boolean twistAttack;
     private boolean attackInRenegotiation;
+    private List<NamedGroup> ecdsaRequiredGroups;
 
-    private InvalidCurveParameterSet() {
+    private InvalidCurveVector() {
     }
 
-    public InvalidCurveParameterSet(ProtocolVersion protocolVersion, List<CipherSuite> cipherSuites,
-            NamedGroup namedGroup, ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation) {
+    public InvalidCurveVector(ProtocolVersion protocolVersion, CipherSuite cipherSuite, NamedGroup namedGroup,
+            ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation,
+            List<NamedGroup> ecdsaRequiredGroups) {
+
         this.protocolVersion = protocolVersion;
-        this.cipherSuites = cipherSuites;
+        this.cipherSuite = cipherSuite;
         this.namedGroup = namedGroup;
         this.pointFormat = pointFormat;
         this.twistAttack = twistAttack;
         this.attackInRenegotiation = attackInRenegotiation;
-    }
-
-    public InvalidCurveParameterSet(ProtocolVersion protocolVersion, CipherSuite cipherSuite, NamedGroup namedGroup,
-            ECPointFormat pointFormat, boolean twistAttack, boolean attackInRenegotiation) {
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.add(cipherSuite);
-
-        this.protocolVersion = protocolVersion;
-        this.cipherSuites = cipherSuites;
-        this.namedGroup = namedGroup;
-        this.pointFormat = pointFormat;
-        this.twistAttack = twistAttack;
-        this.attackInRenegotiation = attackInRenegotiation;
+        this.ecdsaRequiredGroups = ecdsaRequiredGroups;
     }
 
     /**
@@ -63,8 +55,15 @@ public class InvalidCurveParameterSet {
     /**
      * @return the cipherSuites
      */
-    public List<CipherSuite> getCipherSuites() {
-        return cipherSuites;
+    public CipherSuite getCipherSuite() {
+        return cipherSuite;
+    }
+
+    public List<CipherSuite> getCipherSuiteAsList() {
+        List<CipherSuite> cipherList = new LinkedList<>();
+        cipherList.add(cipherSuite);
+
+        return cipherList;
     }
 
     /**
@@ -91,9 +90,7 @@ public class InvalidCurveParameterSet {
     @Override
     public String toString() {
         String parameter = ">";
-        for (CipherSuite cipherSuite : cipherSuites) {
-            parameter = parameter + cipherSuite.toString();
-        }
+        parameter = parameter + cipherSuite.toString();
 
         parameter = protocolVersion.toString() + ">" + namedGroup.toString() + ">"
                 + (attackInRenegotiation ? "Renegotiation>" : "") + pointFormat.toString() + parameter
@@ -114,5 +111,38 @@ public class InvalidCurveParameterSet {
      */
     public void setAttackInRenegotiation(boolean attackInRenegotiation) {
         this.attackInRenegotiation = attackInRenegotiation;
+    }
+
+    @Override
+    public String getName() {
+        return toString();
+    }
+
+    public List<NamedGroup> getEcdsaRequiredGroups() {
+        return ecdsaRequiredGroups;
+    }
+
+    public boolean equals(InvalidCurveVector toCompare) {
+        if (protocolVersion != toCompare.getProtocolVersion() || cipherSuite != toCompare.getCipherSuite()
+                || namedGroup != toCompare.getNamedGroup() || pointFormat != toCompare.getPointFormat()
+                || twistAttack != toCompare.isTwistAttack()
+                || attackInRenegotiation != toCompare.isAttackInRenegotiation()
+                || !ecdsaRequiredGroups.equals(toCompare.getEcdsaRequiredGroups())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void setEcdsaRequiredGroups(List<NamedGroup> ecdsaRequiredGroups) {
+        this.ecdsaRequiredGroups = ecdsaRequiredGroups;
+    }
+
+    public void setProtocolVersion(ProtocolVersion protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    public void setCipherSuite(CipherSuite cipherSuite) {
+        this.cipherSuite = cipherSuite;
     }
 }

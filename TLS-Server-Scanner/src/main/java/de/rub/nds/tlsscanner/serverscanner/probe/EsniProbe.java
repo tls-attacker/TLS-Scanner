@@ -6,7 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.probe;
+package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -29,7 +29,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -48,7 +47,7 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(this.getClientSupportedCiphersuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(this.getClientSupportedCiphersuites());
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(this.getTls13SignatureAndHashAlgorithms());
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -57,12 +56,15 @@ public class EsniProbe extends TlsProbe {
 
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
         tlsConfig.setDefaultSelectedNamedGroup(NamedGroup.ECDH_X25519);
+        List<NamedGroup> keyShareGroupList = new LinkedList<>();
+        keyShareGroupList.add(NamedGroup.ECDH_X25519);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroupList);
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setClientSupportedEsniCiphersuites(this.getClientSupportedCiphersuites());
+        tlsConfig.setClientSupportedEsniCipherSuites(this.getClientSupportedCiphersuites());
         tlsConfig.getClientSupportedEsniNamedGroups().addAll(this.getImplementedGroups());
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);

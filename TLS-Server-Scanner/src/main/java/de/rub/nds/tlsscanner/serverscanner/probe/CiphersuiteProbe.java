@@ -107,7 +107,7 @@ public class CiphersuiteProbe extends TlsProbe {
     private CipherSuite getSelectedCiphersuite(List<CipherSuite> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
+        tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setEnforceSettings(false);
@@ -120,6 +120,7 @@ public class CiphersuiteProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
@@ -153,13 +154,13 @@ public class CiphersuiteProbe extends TlsProbe {
         boolean supportsMore = false;
         do {
             Config config = getScannerConfig().createConfig();
-            config.setDefaultClientSupportedCiphersuites(listWeSupport);
+            config.setDefaultClientSupportedCipherSuites(listWeSupport);
             config.setDefaultSelectedProtocolVersion(version);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
             config.setAddServerNameIndicationExtension(true);
             boolean containsEc = false;
-            for (CipherSuite suite : config.getDefaultClientSupportedCiphersuites()) {
+            for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
                 KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
                 if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
                     containsEc = true;

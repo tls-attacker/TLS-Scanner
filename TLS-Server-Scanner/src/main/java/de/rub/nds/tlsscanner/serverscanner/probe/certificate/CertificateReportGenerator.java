@@ -218,6 +218,7 @@ public class CertificateReportGenerator {
             report.setOcspSupported(false);
             LOGGER.debug("OCSP is not supported for this certificate.");
         } catch (Exception e) {
+            report.setOcspSupported(false);
             LOGGER.error("An error happened during retrieving OCSP information for this certificate.");
         }
     }

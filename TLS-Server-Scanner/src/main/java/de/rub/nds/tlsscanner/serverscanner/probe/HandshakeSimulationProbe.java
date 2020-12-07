@@ -88,11 +88,11 @@ public class HandshakeSimulationProbe extends TlsProbe {
         Config config = state.getConfig();
         config.setStopActionsAfterIOException(true);
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
-        simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
+        simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCipherSuites());
         if (config.isAddAlpnExtension()) {
-            simulatedClient.setAlpnAnnouncedProtocols(Arrays.toString(config.getAlpnAnnouncedProtocols()));
+            simulatedClient.setAlpnAnnouncedProtocols(config.getDefaultProposedAlpnProtocols());
         } else {
-            simulatedClient.setAlpnAnnouncedProtocols("-");
+            simulatedClient.setAlpnAnnouncedProtocols(new LinkedList<>());
         }
         simulatedClient.setSupportedVersionList(simulatedClient.getTlsClientConfig().getSupportedVersionList());
         simulatedClient.setVersionAcceptForbiddenCiphersuiteList(simulatedClient.getTlsClientConfig()
@@ -192,7 +192,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
             }
             if (simulatedClient.getServerPublicKeyParameter() == null) {
                 if (context.getServerEcPublicKey() != null) {
-                    simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getX().getData()
+                    simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getFieldX().getData()
                             .bitLength() * 8);
                 }
             }

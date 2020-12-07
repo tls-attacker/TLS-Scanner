@@ -366,4 +366,57 @@ public class CertificateChain {
 
         return result;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CertificateChain otherCert = (CertificateChain) obj;
+        if (certificateReportList.size() != otherCert.getCertificateReportList().size()
+                || !Objects.equals(generallyTrusted, otherCert.getGenerallyTrusted())
+                || !Objects.equals(containsTrustAnchor, otherCert.getContainsTrustAnchor())
+                || !Objects.equals(chainIsComplete, otherCert.getChainIsComplete())
+                || !Objects.equals(chainIsOrdered, otherCert.getChainIsOrdered())
+                || !Objects.equals(containsMultipleLeafs, otherCert.getContainsMultipleLeafs())
+                || !Objects.equals(containsValidLeaf, otherCert.getContainsValidLeaf())
+                || !Objects.equals(containsNotYetValid, otherCert.getContainsNotYetValid())
+                || !Objects.equals(containsExpired, otherCert.getContainsExpired())
+                || !Objects.equals(containsWeakSignedNonTruststoresCertificates,
+                        otherCert.getContainsWeakSignedNonTruststoresCertificates())) {
+            return false;
+        } else {
+            for (int i = 0; i < certificateReportList.size(); i++) {
+                if (!certificateReportList.get(i).equals(otherCert.getCertificateReportList().get(i))) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 29 * hash + Objects.hashCode(this.generallyTrusted);
+        hash = 29 * hash + Objects.hashCode(this.containsTrustAnchor);
+        hash = 29 * hash + Objects.hashCode(this.chainIsComplete);
+        hash = 29 * hash + Objects.hashCode(this.chainIsOrdered);
+        hash = 29 * hash + Objects.hashCode(this.containsMultipleLeafs);
+        hash = 29 * hash + Objects.hashCode(this.containsValidLeaf);
+        hash = 29 * hash + Objects.hashCode(this.containsNotYetValid);
+        hash = 29 * hash + Objects.hashCode(this.containsExpired);
+        hash = 29 * hash + Objects.hashCode(this.containsWeakSignedNonTruststoresCertificates);
+        hash = 29 * hash + Objects.hashCode(this.certificateReportList);
+        hash = 29 * hash + Objects.hashCode(this.trustAnchor);
+        hash = 29 * hash + Objects.hashCode(this.certificateIssues);
+        return hash;
+    }
 }

@@ -62,6 +62,9 @@ public enum AnalyzedProperty {
     SUPPORTS_DH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_STATIC_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_ECDSA(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_RSA_CERT(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_DSS(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_GOST(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_SRP(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_KERBEROS(AnalyzedPropertyCategory.CIPHER_SUITES),
@@ -105,6 +108,9 @@ public enum AnalyzedProperty {
     SUPPORTS_ANSIX962_COMPRESSED_PRIME(AnalyzedPropertyCategory.EC),
     SUPPORTS_ANSIX962_COMPRESSED_CHAR2(AnalyzedPropertyCategory.EC),
     SUPPORTS_TLS13_SECP_COMPRESSION(AnalyzedPropertyCategory.EC),
+    SUPPORTS_EXPLICIT_PRIME_CURVE(AnalyzedPropertyCategory.EC),
+    SUPPORTS_EXPLICIT_CHAR2_CURVE(AnalyzedPropertyCategory.EC),
+    GROUPS_DEPEND_ON_CIPHER(AnalyzedPropertyCategory.EC),
     SUPPORTS_OCSP(AnalyzedPropertyCategory.OCSP),
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
@@ -173,6 +179,14 @@ public enum AnalyzedProperty {
      * does it ignore the sig hash algorithms
      */
     IGNORES_OFFERED_SIG_HASH_ALGOS(AnalyzedPropertyCategory.QUIRKS),
+    /**
+     * does it accept that named groups for ecdsa are missing
+     */
+    IGNORES_ECDSA_GROUP_DISPARITY(AnalyzedPropertyCategory.QUIRKS),
+    /**
+     * does it handle a http false start
+     */
+    SUPPORTS_HTTP_FALSE_START(AnalyzedPropertyCategory.QUIRKS),
     VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_DIRECT_RACCOON(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(AnalyzedPropertyCategory.ATTACKS),

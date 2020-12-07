@@ -25,7 +25,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon.DirectRaccoontWor
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DirectRaccoonResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -116,7 +116,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             Config config = getScannerConfig().createConfig();
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
-            config.setDefaultClientSupportedCiphersuites(suite);
+            config.setDefaultClientSupportedCipherSuites(suite);
             config.setDefaultSelectedCipherSuite(suite);
             config.setAddECPointFormatExtension(false);
             config.setAddEllipticCurveExtension(false);
