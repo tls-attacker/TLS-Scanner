@@ -25,7 +25,7 @@ public class CommonBugProbeResult extends ProbeResult {
     private final TestResult extensionIntolerance;
     // does it handle unknown cipher suites correctly?
     private final TestResult cipherSuiteIntolerance;
-    // does it handle long ciphersuite length values correctly?
+    // does it handle long cipher suite length values correctly?
     private final TestResult cipherSuiteLengthIntolerance512;
     // does it handle unknown compression algorithms correctly?
     private final TestResult compressionIntolerance;
@@ -37,8 +37,8 @@ public class CommonBugProbeResult extends ProbeResult {
     private final TestResult clientHelloLengthIntolerance;
     // does it break on empty last extension?
     private final TestResult emptyLastExtensionIntolerance;
-    // is only the second byte of the ciphersuite evaluated?
-    private final TestResult onlySecondCiphersuiteByteEvaluated;
+    // is only the second byte of the cipher suite evaluated?
+    private final TestResult onlySecondCipherSuiteByteEvaluated;
     // does it handle unknown groups correctly?
     private final TestResult namedGroupIntolerant;
     // does it handle signature and hash algorithms correctly?
@@ -57,7 +57,7 @@ public class CommonBugProbeResult extends ProbeResult {
     public CommonBugProbeResult(TestResult extensionIntolerance, TestResult cipherSuiteIntolerance,
         TestResult cipherSuiteLengthIntolerance512, TestResult compressionIntolerance, TestResult versionIntolerance,
         TestResult alpnIntolerance, TestResult clientHelloLengthIntolerance, TestResult emptyLastExtensionIntolerance,
-        TestResult onlySecondCiphersuiteByteEvaluated, TestResult namedGroupIntolerant,
+        TestResult onlySecondCipherSuiteByteEvaluated, TestResult namedGroupIntolerant,
         TestResult namedSignatureAndHashAlgorithmIntolerance, TestResult ignoresCipherSuiteOffering,
         TestResult reflectsCipherSuiteOffering, TestResult ignoresOfferedNamedGroups,
         TestResult ignoresOfferedSignatureAndHashAlgorithms, TestResult maxLengthClientHelloIntolerant) {
@@ -70,7 +70,7 @@ public class CommonBugProbeResult extends ProbeResult {
         this.alpnIntolerance = alpnIntolerance;
         this.clientHelloLengthIntolerance = clientHelloLengthIntolerance;
         this.emptyLastExtensionIntolerance = emptyLastExtensionIntolerance;
-        this.onlySecondCiphersuiteByteEvaluated = onlySecondCiphersuiteByteEvaluated;
+        this.onlySecondCipherSuiteByteEvaluated = onlySecondCipherSuiteByteEvaluated;
         this.namedGroupIntolerant = namedGroupIntolerant;
         this.namedSignatureAndHashAlgorithmIntolerance = namedSignatureAndHashAlgorithmIntolerance;
         this.ignoresCipherSuiteOffering = ignoresCipherSuiteOffering;
@@ -83,14 +83,14 @@ public class CommonBugProbeResult extends ProbeResult {
     @Override
     protected void mergeData(SiteReport report) {
         report.putResult(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE, extensionIntolerance);
-        report.putResult(AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE, cipherSuiteIntolerance);
-        report.putResult(AnalyzedProperty.HAS_CIPHERSUITE_LENGTH_INTOLERANCE, cipherSuiteLengthIntolerance512);
+        report.putResult(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, cipherSuiteIntolerance);
+        report.putResult(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE, cipherSuiteLengthIntolerance512);
         report.putResult(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE, compressionIntolerance);
         report.putResult(AnalyzedProperty.HAS_VERSION_INTOLERANCE, versionIntolerance);
         report.putResult(AnalyzedProperty.HAS_ALPN_INTOLERANCE, alpnIntolerance);
         report.putResult(AnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE, clientHelloLengthIntolerance);
         report.putResult(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE, emptyLastExtensionIntolerance);
-        report.putResult(AnalyzedProperty.HAS_SECOND_CIPHERSUITE_BYTE_BUG, onlySecondCiphersuiteByteEvaluated);
+        report.putResult(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, onlySecondCipherSuiteByteEvaluated);
         report.putResult(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, namedGroupIntolerant);
         report
             .putResult(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE, namedSignatureAndHashAlgorithmIntolerance);

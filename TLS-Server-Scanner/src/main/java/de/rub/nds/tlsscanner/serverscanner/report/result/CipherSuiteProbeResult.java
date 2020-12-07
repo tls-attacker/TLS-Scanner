@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class CiphersuiteProbeResult extends ProbeResult {
+public class CipherSuiteProbeResult extends ProbeResult {
 
     private List<VersionSuiteListPair> pairLists;
 
@@ -72,8 +72,8 @@ public class CiphersuiteProbeResult extends ProbeResult {
     private TestResult supportsSha256Prf = TestResult.FALSE;
     private TestResult supportsSha384Prf = TestResult.FALSE;
 
-    public CiphersuiteProbeResult(List<VersionSuiteListPair> pairLists) {
-        super(ProbeType.CIPHERSUITE);
+    public CipherSuiteProbeResult(List<VersionSuiteListPair> pairLists) {
+        super(ProbeType.CIPHER_SUITE);
         this.pairLists = pairLists;
     }
 
@@ -84,12 +84,12 @@ public class CiphersuiteProbeResult extends ProbeResult {
             supportsOnlyPfsCiphers = TestResult.TRUE;
             prefersPfsCiphers = TestResult.TRUE;
             for (VersionSuiteListPair pair : pairLists) {
-                if (pair.getCiphersuiteList().size() > 0 && !pair.getCiphersuiteList().get(0).isEphemeral()) {
+                if (pair.getCipherSuiteList().size() > 0 && !pair.getCipherSuiteList().get(0).isEphemeral()) {
                     prefersPfsCiphers = TestResult.FALSE;
                 }
-                allSupported.addAll(pair.getCiphersuiteList());
+                allSupported.addAll(pair.getCipherSuiteList());
 
-                for (CipherSuite suite : pair.getCiphersuiteList()) {
+                for (CipherSuite suite : pair.getCipherSuiteList()) {
                     PRFAlgorithm prfAlgorithm = AlgorithmResolver.getPRFAlgorithm(pair.getVersion(), suite);
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsLegacyPrf = TestResult.TRUE;

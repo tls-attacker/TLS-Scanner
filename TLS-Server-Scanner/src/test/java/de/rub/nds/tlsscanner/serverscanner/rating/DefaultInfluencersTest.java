@@ -198,13 +198,13 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_VERSION_INTOLERANCE,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE,
+        influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_CIPHERSUITE_LENGTH_INTOLERANCE,
+        influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE,
@@ -227,7 +227,7 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_SECOND_CIPHERSUITE_BYTE_BUG,
+        influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,

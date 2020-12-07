@@ -22,24 +22,24 @@ public class VersionSuiteListPair {
 
     private final ProtocolVersion version;
 
-    private final List<CipherSuite> ciphersuiteList;
+    private final List<CipherSuite> cipherSuiteList;
 
     private VersionSuiteListPair() {
         version = null;
-        ciphersuiteList = null;
+        cipherSuiteList = null;
     }
 
-    public VersionSuiteListPair(ProtocolVersion version, List<CipherSuite> ciphersuiteList) {
+    public VersionSuiteListPair(ProtocolVersion version, List<CipherSuite> cipherSuiteList) {
         this.version = version;
-        this.ciphersuiteList = ciphersuiteList;
+        this.cipherSuiteList = cipherSuiteList;
     }
 
     public ProtocolVersion getVersion() {
         return version;
     }
 
-    public List<CipherSuite> getCiphersuiteList() {
-        return ciphersuiteList;
+    public List<CipherSuite> getCipherSuiteList() {
+        return cipherSuiteList;
     }
 
 }

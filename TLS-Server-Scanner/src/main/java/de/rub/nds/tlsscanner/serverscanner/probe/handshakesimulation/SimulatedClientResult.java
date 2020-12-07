@@ -32,7 +32,7 @@ public class SimulatedClientResult {
     private ProtocolVersion selectedProtocolVersion = null;
     private List<ProtocolVersion> commonProtocolVersions = null;
     private List<CipherSuite> clientSupportedCipherSuites = null;
-    private CipherSuite selectedCiphersuite = null;
+    private CipherSuite selectedCipherSuite = null;
     private KeyExchangeAlgorithm keyExchangeAlgorithm = null;
     private Boolean forwardSecrecy = null;
     private CompressionMethod selectedCompressionMethod = null;
@@ -41,7 +41,7 @@ public class SimulatedClientResult {
     private String selectedNamedGroup = null;
     private Integer serverPublicKeyParameter = null;
     private List<ProtocolVersion> supportedVersionList = null;
-    private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList = null;
+    private List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList = null;
     private List<Integer> supportedRsaKeySizeList = null;
     private List<Integer> supportedDheKeySizeList = null;
 
@@ -175,12 +175,12 @@ public class SimulatedClientResult {
         this.highestPossibleProtocolVersionSelected = highestPossibleProtocolVersionSelected;
     }
 
-    public CipherSuite getSelectedCiphersuite() {
-        return selectedCiphersuite;
+    public CipherSuite getSelectedCipherSuite() {
+        return selectedCipherSuite;
     }
 
-    public void setSelectedCiphersuite(CipherSuite selectedCiphersuite) {
-        this.selectedCiphersuite = selectedCiphersuite;
+    public void setSelectedCipherSuite(CipherSuite selectedCipherSuite) {
+        this.selectedCipherSuite = selectedCipherSuite;
     }
 
     public KeyExchangeAlgorithm getKeyExchangeAlgorithm() {
@@ -247,12 +247,12 @@ public class SimulatedClientResult {
         this.supportedVersionList = supportedVersionList;
     }
 
-    public List<ProtocolVersion> getVersionAcceptForbiddenCiphersuiteList() {
-        return versionAcceptForbiddenCiphersuiteList;
+    public List<ProtocolVersion> getVersionAcceptForbiddenCipherSuiteList() {
+        return versionAcceptForbiddenCipherSuiteList;
     }
 
-    public void setVersionAcceptForbiddenCiphersuiteList(List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList) {
-        this.versionAcceptForbiddenCiphersuiteList = versionAcceptForbiddenCiphersuiteList;
+    public void setVersionAcceptForbiddenCipherSuiteList(List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList) {
+        this.versionAcceptForbiddenCipherSuiteList = versionAcceptForbiddenCipherSuiteList;
     }
 
     public List<Integer> getSupportedRsaKeySizeList() {

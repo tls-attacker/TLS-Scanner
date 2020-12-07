@@ -133,7 +133,7 @@ public class InvalidCurveProbe extends TlsProbe {
         if (report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION) == TestResult.NOT_TESTED_YET
             || report.getResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION) == TestResult.NOT_TESTED_YET
             || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            || !report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE)
+            || !report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
             || !report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS)
             || !report.isProbeAlreadyExecuted(ProbeType.RESUMPTION)) {
             return false; // dependency is missing
@@ -173,7 +173,7 @@ public class InvalidCurveProbe extends TlsProbe {
                 if (!cipherSuitesMap.containsKey(pair.getVersion())) {
                     cipherSuitesMap.put(pair.getVersion(), new LinkedList<>());
                 }
-                for (CipherSuite cipherSuite : pair.getCiphersuiteList()) {
+                for (CipherSuite cipherSuite : pair.getCipherSuiteList()) {
                     if (cipherSuite.name().contains("TLS_ECDH")) {
                         cipherSuitesMap.get(pair.getVersion()).add(cipherSuite);
                     }
@@ -217,7 +217,7 @@ public class InvalidCurveProbe extends TlsProbe {
             List<CipherSuite> tls13CipherSuites = new LinkedList<>();
             for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
                 if (pair.getVersion().isTLS13()) {
-                    for (CipherSuite cipherSuite : pair.getCiphersuiteList()) {
+                    for (CipherSuite cipherSuite : pair.getCipherSuiteList()) {
                         if (cipherSuite.isImplemented()) {
                             tls13CipherSuites.add(cipherSuite);
                         }
@@ -286,7 +286,7 @@ public class InvalidCurveProbe extends TlsProbe {
 
         attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
         attacker.getTlsConfig().setDefaultSelectedProtocolVersion(protocolVersion);
-        attacker.getTlsConfig().setDefaultClientSupportedCiphersuites(cipherSuites);
+        attacker.getTlsConfig().setDefaultClientSupportedCipherSuites(cipherSuites);
         attacker.getTlsConfig().setDefaultClientNamedGroups(group);
         attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
 
@@ -323,17 +323,17 @@ public class InvalidCurveProbe extends TlsProbe {
                 for (ECPointFormat format : formatList) {
                     if (supportedECDHCipherSuites.get(protocolVersion) == null) {
                         LOGGER.warn("Protocol Version " + protocolVersion
-                            + " had no entry in Ciphersuite map - omitting from InvalidCurve scan");
+                            + " had no entry in CipherSuite map - omitting from InvalidCurve scan");
                     } else {
                         if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
-                            // individual scans for every ciphersuite
+                            // individual scans for every cipher suite
                             for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
                                 if (legitInvalidCurveVector(group, format)
-                                    && groupQualifiedForCiphersuite(group, cipherSuite)) {
+                                    && groupQualifiedForCipherSuite(group, cipherSuite)) {
                                     vectors.add(new InvalidCurveVector(protocolVersion, cipherSuite, group, format,
                                         false, false, getRequiredGroups(group, cipherSuite)));
                                 }
-                                if (legitTwistVector(group, format) && groupQualifiedForCiphersuite(group, cipherSuite)) {
+                                if (legitTwistVector(group, format) && groupQualifiedForCipherSuite(group, cipherSuite)) {
                                     vectors.add(new InvalidCurveVector(protocolVersion, cipherSuite, group, format,
                                         true, false, getRequiredGroups(group, cipherSuite)));
                                 }
@@ -478,8 +478,9 @@ public class InvalidCurveProbe extends TlsProbe {
                 TestResult foundDuplicateFinished = TestResult.FALSE;
                 for (Point point : response.getReceivedEcPublicKeys()) {
                     for (Point pointC : response.getReceivedEcPublicKeys()) {
-                        if (point != pointC && (point.getX().getData().compareTo(pointC.getX().getData()) == 0)
-                            && point.getY().getData().compareTo(pointC.getY().getData()) == 0) {
+                        if (point != pointC
+                            && (point.getFieldX().getData().compareTo(pointC.getFieldX().getData()) == 0)
+                            && point.getFieldY().getData().compareTo(pointC.getFieldY().getData()) == 0) {
                             foundDuplicate = TestResult.TRUE;
                         }
                     }
@@ -489,8 +490,9 @@ public class InvalidCurveProbe extends TlsProbe {
                 // Finished message
                 for (Point point : response.getReceivedFinishedEcKeys()) {
                     for (Point pointC : response.getReceivedEcPublicKeys()) {
-                        if (point != pointC && (point.getX().getData().compareTo(pointC.getX().getData()) == 0)
-                            && point.getY().getData().compareTo(pointC.getY().getData()) == 0) {
+                        if (point != pointC
+                            && (point.getFieldX().getData().compareTo(pointC.getFieldX().getData()) == 0)
+                            && point.getFieldY().getData().compareTo(pointC.getFieldY().getData()) == 0) {
                             foundDuplicateFinished = TestResult.TRUE;
                         }
                     }
@@ -586,7 +588,7 @@ public class InvalidCurveProbe extends TlsProbe {
             if (supportedECDHCipherSuites.get(protocolVersion) != null) {
                 for (CipherSuite cipherSuite : supportedECDHCipherSuites.get(protocolVersion)) {
                     boolean addCandidate = false;
-                    if (groupQualifiedForCiphersuite(group, cipherSuite)) {
+                    if (groupQualifiedForCipherSuite(group, cipherSuite)) {
                         if (!cipherSuite.isEphemeral() && gotStatic == false) {
                             addCandidate = true;
                             gotStatic = true;
@@ -662,7 +664,7 @@ public class InvalidCurveProbe extends TlsProbe {
         return algos;
     }
 
-    private boolean groupQualifiedForCiphersuite(NamedGroup testGroup, CipherSuite testCipher) {
+    private boolean groupQualifiedForCipherSuite(NamedGroup testGroup, CipherSuite testCipher) {
         if (!testCipher.isTLS13()) {
             if (namedCurveWitnesses.containsKey(testGroup) == false) {
                 return false;
@@ -770,7 +772,7 @@ public class InvalidCurveProbe extends TlsProbe {
         InvalidCurveScanType scanType) {
         if (scanType == InvalidCurveScanType.REGULAR || scanType == InvalidCurveScanType.EXTENDED) {
             if (vector.isTwistAttack()) {
-                attackConfig.setCurveTwistD(TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getD());
+                attackConfig.setCurveTwistD(TwistedCurvePoint.smallOrder(vector.getNamedGroup()).getPointD());
                 attackConfig.setPublicPointBaseX(TwistedCurvePoint.smallOrder(vector.getNamedGroup())
                     .getPublicPointBaseX());
                 attackConfig.setPublicPointBaseY(TwistedCurvePoint.smallOrder(vector.getNamedGroup())
@@ -787,7 +789,7 @@ public class InvalidCurveProbe extends TlsProbe {
         } else if (scanType == InvalidCurveScanType.REDUNDANT) {
             // use second point of different order
             if (vector.isTwistAttack()) {
-                attackConfig.setCurveTwistD(TwistedCurvePoint.alternativeOrder(vector.getNamedGroup()).getD());
+                attackConfig.setCurveTwistD(TwistedCurvePoint.alternativeOrder(vector.getNamedGroup()).getPointD());
                 attackConfig.setPublicPointBaseX(TwistedCurvePoint.alternativeOrder(vector.getNamedGroup())
                     .getPublicPointBaseX());
                 attackConfig.setPublicPointBaseY(TwistedCurvePoint.alternativeOrder(vector.getNamedGroup())
@@ -804,7 +806,7 @@ public class InvalidCurveProbe extends TlsProbe {
         } else if (scanType == InvalidCurveScanType.LARGE_GROUP) {
             // point of large order
             if (vector.isTwistAttack()) {
-                attackConfig.setCurveTwistD(TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getD());
+                attackConfig.setCurveTwistD(TwistedCurvePoint.largeOrder(vector.getNamedGroup()).getPointD());
                 attackConfig.setPublicPointBaseX(TwistedCurvePoint.largeOrder(vector.getNamedGroup())
                     .getPublicPointBaseX());
                 attackConfig.setPublicPointBaseY(TwistedCurvePoint.largeOrder(vector.getNamedGroup())

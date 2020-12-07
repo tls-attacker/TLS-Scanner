@@ -24,7 +24,7 @@ public class CipherSuiteOrderResult extends ProbeResult {
     private TestResult enforced;
 
     public CipherSuiteOrderResult(TestResult enforced) {
-        super(ProbeType.CIPHERSUITE_ORDER);
+        super(ProbeType.CIPHER_SUITE_ORDER);
         this.enforced = enforced;
     }
 

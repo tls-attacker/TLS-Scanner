@@ -17,9 +17,9 @@ import org.junit.Test;
  *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
-public class CiphersuiteProbeTest {
+public class CipherSuiteProbeTest {
 
-    public CiphersuiteProbeTest() {
+    public CipherSuiteProbeTest() {
     }
 
     @Before
@@ -27,14 +27,14 @@ public class CiphersuiteProbeTest {
     }
 
     /**
-     * Test of call method, of class CiphersuiteTest.
+     * Test of call method, of class cipherSuiteTest.
      */
     @Test
     public void testCall() {
     }
 
     /**
-     * Test of getSupportedCipherSuitesFromList method, of class CiphersuiteTest.
+     * Test of getSupportedCipherSuitesFromList method, of class cipherSuiteTest.
      */
     @Test
     public void testGetSupportedCipherSuitesFromList() {

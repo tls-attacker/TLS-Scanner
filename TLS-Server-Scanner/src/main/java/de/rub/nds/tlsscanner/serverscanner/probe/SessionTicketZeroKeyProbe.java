@@ -102,8 +102,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-            tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites.get(0));
-            tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
+            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites.get(0));
+            tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddSessionTicketTLSExtension(true);

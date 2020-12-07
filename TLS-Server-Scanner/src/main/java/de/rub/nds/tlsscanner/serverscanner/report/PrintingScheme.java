@@ -252,11 +252,11 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.ENFORCES_PFS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.ENFORCES_CS_ORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.HAS_VERSION_INTOLERANCE, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE,
+        colorMap.put(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.HAS_EXTENSION_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.HAS_CIPHERSUITE_LENGTH_INTOLERANCE,
+        colorMap.put(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
@@ -271,7 +271,7 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.HAS_SECOND_CIPHERSUITE_BYTE_BUG,
+        colorMap.put(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));

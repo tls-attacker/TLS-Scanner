@@ -101,7 +101,7 @@ public class ECPointFormatProbe extends TlsProbe {
                 ;
         }
         Config config = getScannerConfig().createConfig();
-        config.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
+        config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
         config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setEnforceSettings(true);
@@ -131,7 +131,7 @@ public class ECPointFormatProbe extends TlsProbe {
             List<NamedGroup> secpGroups = getSecpGroups();
             Config tlsConfig = getScannerConfig().createConfig();
             tlsConfig.setQuickReceive(true);
-            tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplemented());
+            tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplemented());
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
             tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
             tlsConfig.setEnforceSettings(false);

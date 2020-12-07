@@ -32,10 +32,10 @@ import java.util.List;
  *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
-public class CiphersuiteOrderProbe extends TlsProbe {
+public class CipherSuiteOrderProbe extends TlsProbe {
 
-    public CiphersuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CIPHERSUITE_ORDER, config);
+    public CipherSuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.CIPHER_SUITE_ORDER, config);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CiphersuiteOrderProbe extends TlsProbe {
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setEarlyStop(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
+        tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
         tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(true);

@@ -12,9 +12,9 @@ package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
 public enum HandshakeFailureReasons {
     PROTOCOL_MISMATCH("Client and server do not support a common version"),
-    CIPHERSUITE_MISMATCH("Server does not have a valid ciphersuite choice"),
+    CIPHER_SUITE_MISMATCH("Server does not have a valid cipher suite choice"),
     PARSING_ERROR("The answer received from the server was not parseable"),
-    CIPHERSUITE_FORBIDDEN("Client rejects ciphersuite choice from the server"),
+    CIPHER_SUITE_FORBIDDEN("Client rejects cipher suite choice from the server"),
     RSA_CERTIFICATE_MODULUS_SIZE_NOT_ACCEPTED("Client does not support the RSA modulus size"),
     DHE_MODULUS_SIZE_NOT_ACCEPTED("Client does not support the DH parameter size"),
     ECDH_NO_COMMON_GROUP("Server does not have a group in common with the server"),

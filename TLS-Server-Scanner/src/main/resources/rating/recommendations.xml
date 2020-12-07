@@ -923,7 +923,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>HAS_CIPHERSUITE_INTOLERANCE</analyzedProperty>
+        <analyzedProperty>HAS_CIPHER_SUITE_INTOLERANCE</analyzedProperty>
         <shortName>TLS cipher suite intolerance</shortName>
         <shortDescription>Evaluates whether the TLS server is cipher suite intolerant</shortDescription>
         <links>
@@ -953,7 +953,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>HAS_CIPHERSUITE_LENGTH_INTOLERANCE</analyzedProperty>
+        <analyzedProperty>HAS_CIPHER_SUITE_LENGTH_INTOLERANCE</analyzedProperty>
         <shortName>TLS cipher suite length intolerance</shortName>
         <shortDescription>Evaluates whether the TLS server has TLS cipher suite length intolerance</shortDescription>
         <links>
@@ -1073,7 +1073,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>HAS_SECOND_CIPHERSUITE_BYTE_BUG</analyzedProperty>
+        <analyzedProperty>HAS_SECOND_CIPHER_SUITE_BYTE_BUG</analyzedProperty>
         <shortName>Second cipher suite bug</shortName>
         <shortDescription>Evaluates whether the TLS server always evaluates only the second cipher suite byte</shortDescription>
         <links>

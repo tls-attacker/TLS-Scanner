@@ -85,7 +85,7 @@ public class SiteReportPrinter {
 
     private final String hsClientFormat = "%-28s";
     private final String hsVersionFormat = "%-14s";
-    private final String hsCiphersuiteFormat = "%-52s";
+    private final String hsCipherSuiteFormat = "%-52s";
     private final String hsForwardSecrecyFormat = "%-19s";
     private final String hsKeyLengthFormat = "%-17s";
     private final PrintingScheme scheme;
@@ -199,7 +199,7 @@ public class SiteReportPrinter {
     public StringBuilder appendHandshakeSimulationTable(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation");
         int counter = 0;
-        appendHandshakeSimulationTableRowHeading(builder, "Client", "Version", "Ciphersuite", "Forward Secrecy",
+        appendHandshakeSimulationTableRowHeading(builder, "Client", "Version", "CipherSuite", "Forward Secrecy",
             "Server Public Key");
         builder.append("\n");
         for (SimulatedClientResult simulatedClient : report.getSimulatedClientList()) {
@@ -222,10 +222,10 @@ public class SiteReportPrinter {
     }
 
     public StringBuilder appendHandshakeSimulationTableRowHeading(StringBuilder builder, String tlsClient,
-        String tlsVersion, String ciphersuite, String forwardSecrecy, String keyLength) {
+        String tlsVersion, String cipherSuite, String forwardSecrecy, String keyLength) {
         builder.append(String.format(hsClientFormat, tlsClient));
         builder.append(String.format("| " + hsVersionFormat, tlsVersion));
-        builder.append(String.format("| " + hsCiphersuiteFormat, ciphersuite));
+        builder.append(String.format("| " + hsCipherSuiteFormat, cipherSuite));
         builder.append(String.format("| " + hsForwardSecrecyFormat, forwardSecrecy));
         builder.append(String.format("| " + hsKeyLengthFormat, keyLength));
         builder.append("\n");
@@ -240,7 +240,7 @@ public class SiteReportPrinter {
             simulatedClient.getConnectionRfc7918Secure()));
         builder.append("| ").append(
             getProtocolVersionColor(simulatedClient.getSelectedProtocolVersion(), hsVersionFormat));
-        builder.append("| ").append(getCipherSuiteColor(simulatedClient.getSelectedCiphersuite(), hsCiphersuiteFormat));
+        builder.append("| ").append(getCipherSuiteColor(simulatedClient.getSelectedCipherSuite(), hsCipherSuiteFormat));
         builder.append("| ").append(getForwardSecrecyColor(simulatedClient.getForwardSecrecy()));
         builder.append("| ").append(getServerPublicKeyParameterColor(simulatedClient));
         builder.append("\n");
@@ -309,7 +309,7 @@ public class SiteReportPrinter {
 
     private String getCipherSuiteColor(CipherSuite suite, String format) {
         if (suite != null) {
-            CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
+            CipherSuiteGrade grade = CipherSuiteRater.getGrade(suite);
             switch (grade) {
                 case GOOD:
                     return getGreenString(suite.name(), format);
@@ -357,7 +357,7 @@ public class SiteReportPrinter {
     }
 
     private String getServerPublicKeyParameterToPrint(SimulatedClientResult simulatedClient) {
-        CipherSuite suite = simulatedClient.getSelectedCiphersuite();
+        CipherSuite suite = simulatedClient.getSelectedCipherSuite();
         Integer param = simulatedClient.getServerPublicKeyParameter();
         if (suite != null && param != null) {
             if (AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeRsa()) {
@@ -403,8 +403,8 @@ public class SiteReportPrinter {
                 simulatedClient.getHighestPossibleProtocolVersionSelected(),
                 simulatedClient.getHighestPossibleProtocolVersionSelected() ? AnsiColor.GREEN : AnsiColor.RED);
             builder.append("\n");
-            prettyAppend(builder, "Selected Ciphersuite",
-                getCipherSuiteColor(simulatedClient.getSelectedCiphersuite(), "%s"));
+            prettyAppend(builder, "Selected CipherSuite",
+                getCipherSuiteColor(simulatedClient.getSelectedCipherSuite(), "%s"));
             prettyAppend(builder, "Forward Secrecy", simulatedClient.getForwardSecrecy(),
                 simulatedClient.getForwardSecrecy() ? AnsiColor.GREEN : AnsiColor.RED);
             builder.append("\n");
@@ -772,9 +772,9 @@ public class SiteReportPrinter {
     public StringBuilder appendIntolerances(StringBuilder builder) {
         prettyAppendHeading(builder, "Common Bugs [EXPERIMENTAL]");
         prettyAppend(builder, "Version Intolerant", AnalyzedProperty.HAS_VERSION_INTOLERANCE);
-        prettyAppend(builder, "Ciphersuite Intolerant", AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE);
+        prettyAppend(builder, "CipherSuite Intolerant", AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE);
         prettyAppend(builder, "Extension Intolerant", AnalyzedProperty.HAS_EXTENSION_INTOLERANCE);
-        prettyAppend(builder, "CS Length Intolerant (>512 Byte)", AnalyzedProperty.HAS_CIPHERSUITE_LENGTH_INTOLERANCE);
+        prettyAppend(builder, "CS Length Intolerant (>512 Byte)", AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE);
         prettyAppend(builder, "Compression Intolerant", AnalyzedProperty.HAS_COMPRESSION_INTOLERANCE);
         prettyAppend(builder, "ALPN Intolerant", AnalyzedProperty.HAS_ALPN_INTOLERANCE);
         prettyAppend(builder, "CH Length Intolerant", AnalyzedProperty.HAS_CLIENT_HELLO_LENGTH_INTOLERANCE);
@@ -782,7 +782,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Empty last Extension Intolerant", AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE);
         prettyAppend(builder, "SigHashAlgo Intolerant", AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE);
         prettyAppend(builder, "Big ClientHello Intolerant", AnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE);
-        prettyAppend(builder, "2nd Ciphersuite Byte Bug", AnalyzedProperty.HAS_SECOND_CIPHERSUITE_BYTE_BUG);
+        prettyAppend(builder, "2nd CipherSuite Byte Bug", AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG);
         prettyAppend(builder, "Ignores offered Cipher suites", AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES);
         prettyAppend(builder, "Reflects offered Cipher suites", AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES);
         prettyAppend(builder, "Ignores offered NamedGroups", AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS);
@@ -1182,7 +1182,7 @@ public class SiteReportPrinter {
                         + toHumanReadable(versionSuitePair.getVersion())
                         + (report.getResult(AnalyzedProperty.ENFORCES_CS_ORDERING) == TestResult.TRUE
                             ? "(server order)" : ""));
-                    for (CipherSuite suite : versionSuitePair.getCiphersuiteList()) {
+                    for (CipherSuite suite : versionSuitePair.getCipherSuiteList()) {
                         builder.append(getCipherSuiteColor(suite, "%s")).append("\n");
                     }
                 }
@@ -1235,8 +1235,8 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Prefers PFS", AnalyzedProperty.PREFERS_PFS);
             prettyAppend(builder, "Supports Only PFS", AnalyzedProperty.SUPPORTS_ONLY_PFS);
 
-            prettyAppendHeading(builder, "Ciphersuite General");
-            prettyAppend(builder, "Enforces Ciphersuite ordering", AnalyzedProperty.ENFORCES_CS_ORDERING);
+            prettyAppendHeading(builder, "CipherSuite General");
+            prettyAppend(builder, "Enforces CipherSuite ordering", AnalyzedProperty.ENFORCES_CS_ORDERING);
         }
         return builder;
     }
@@ -1554,7 +1554,7 @@ public class SiteReportPrinter {
     }
 
     private void prettyPrintCipherSuite(StringBuilder builder, CipherSuite suite) {
-        CipherSuiteGrade grade = CiphersuiteRater.getGrade(suite);
+        CipherSuiteGrade grade = CipherSuiteRater.getGrade(suite);
         switch (grade) {
             case GOOD:
                 prettyAppend(builder, suite.name(), AnsiColor.GREEN);

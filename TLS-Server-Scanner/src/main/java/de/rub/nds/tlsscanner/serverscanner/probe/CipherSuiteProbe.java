@@ -29,7 +29,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CiphersuiteProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.CipherSuiteProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import java.util.ArrayList;
@@ -37,12 +37,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CiphersuiteProbe extends TlsProbe {
+public class CipherSuiteProbe extends TlsProbe {
 
     private final List<ProtocolVersion> protocolVersions;
 
-    public CiphersuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CIPHERSUITE, config);
+    public CipherSuiteProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.CIPHER_SUITE, config);
         protocolVersions = new LinkedList<>();
     }
 
@@ -74,10 +74,10 @@ public class CiphersuiteProbe extends TlsProbe {
                     }
                 }
             }
-            return new CiphersuiteProbeResult(pairLists);
+            return new CipherSuiteProbeResult(pairLists);
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new CiphersuiteProbeResult(null);
+            return new CipherSuiteProbeResult(null);
         }
     }
 
@@ -91,7 +91,7 @@ public class CiphersuiteProbe extends TlsProbe {
             }
         }
         do {
-            selectedSuite = getSelectedCiphersuite(toTestList);
+            selectedSuite = getSelectedCipherSuite(toTestList);
 
             if (selectedSuite != null) {
                 if (!toTestList.contains(selectedSuite)) {
@@ -106,10 +106,10 @@ public class CiphersuiteProbe extends TlsProbe {
         return supportedSuits;
     }
 
-    private CipherSuite getSelectedCiphersuite(List<CipherSuite> toTestList) {
+    private CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(toTestList);
+        tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setEnforceSettings(false);
@@ -156,13 +156,13 @@ public class CiphersuiteProbe extends TlsProbe {
         boolean supportsMore = false;
         do {
             Config config = getScannerConfig().createConfig();
-            config.setDefaultClientSupportedCiphersuites(listWeSupport);
+            config.setDefaultClientSupportedCipherSuites(listWeSupport);
             config.setDefaultSelectedProtocolVersion(version);
             config.setHighestProtocolVersion(version);
             config.setEnforceSettings(true);
             config.setAddServerNameIndicationExtension(true);
             boolean containsEc = false;
-            for (CipherSuite suite : config.getDefaultClientSupportedCiphersuites()) {
+            for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
                 KeyExchangeAlgorithm keyExchangeAlgorithm = AlgorithmResolver.getKeyExchangeAlgorithm(suite);
                 if (keyExchangeAlgorithm != null && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
                     containsEc = true;
@@ -195,7 +195,7 @@ public class CiphersuiteProbe extends TlsProbe {
                     listWeSupport.remove(state.getTlsContext().getSelectedCipherSuite());
                 } else {
                     supportsMore = false;
-                    LOGGER.warn("Server chose not proposed Ciphersuite");
+                    LOGGER.warn("Server chose not proposed cipher suite");
                 }
             } else {
                 supportsMore = false;
@@ -244,6 +244,6 @@ public class CiphersuiteProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CiphersuiteProbeResult(null);
+        return new CipherSuiteProbeResult(null);
     }
 }

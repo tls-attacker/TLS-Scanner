@@ -95,13 +95,13 @@ public class CcaProbe extends TlsProbe {
                     continue;
                 }
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
-                    for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
+                    for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
 
                         CcaVector ccaVector =
                             new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType,
                                 ccaCertificateType);
                         Config tlsConfig = generateConfig();
-                        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuite);
+                        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
 
                         CcaTask ccaTask =
@@ -197,7 +197,7 @@ public class CcaProbe extends TlsProbe {
         List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
         for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
             List<CipherSuite> cipherSuites = new LinkedList<>();
-            for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
+            for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
                 if (implementedCipherSuites.contains(cipherSuite)) {
                     cipherSuites.add(cipherSuite);
                 }
@@ -215,7 +215,7 @@ public class CcaProbe extends TlsProbe {
         if (!getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
             for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                 List<CipherSuite> cipherSuites = new LinkedList<>();
-                for (CipherSuite cipherSuite : versionSuiteListPair.getCiphersuiteList()) {
+                for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
                     if (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite).isKeyExchangeDh()
                         && implementedCipherSuites.contains(cipherSuite)) {
                         cipherSuites.add(cipherSuite);

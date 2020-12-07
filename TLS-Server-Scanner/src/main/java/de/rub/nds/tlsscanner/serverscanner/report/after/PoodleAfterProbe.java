@@ -31,7 +31,7 @@ public class PoodleAfterProbe extends AfterProbe {
             if (ssl3Result == TestResult.TRUE) {
                 for (VersionSuiteListPair versionSuitList : report.getVersionSuitePairs()) {
                     if (versionSuitList.getVersion() == ProtocolVersion.SSL3) {
-                        for (CipherSuite suite : versionSuitList.getCiphersuiteList()) {
+                        for (CipherSuite suite : versionSuitList.getCipherSuiteList()) {
                             if (suite.isCBC()) {
                                 report.putResult(AnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.TRUE);
                                 return;

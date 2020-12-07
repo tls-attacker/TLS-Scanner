@@ -65,7 +65,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             loop: for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
                     || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
-                    for (CipherSuite suite : pair.getCiphersuiteList()) {
+                    for (CipherSuite suite : pair.getCipherSuiteList()) {
                         if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
                             InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
                                 createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
@@ -119,7 +119,7 @@ public class DirectRaccoonProbe extends TlsProbe {
             Config config = getScannerConfig().createConfig();
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
-            config.setDefaultClientSupportedCiphersuites(suite);
+            config.setDefaultClientSupportedCipherSuites(suite);
             config.setDefaultSelectedCipherSuite(suite);
             config.setAddECPointFormatExtension(false);
             config.setAddEllipticCurveExtension(false);

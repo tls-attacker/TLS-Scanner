@@ -339,7 +339,7 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the TLS server is TLS version intolerant", new PropertyResultRecommendation(
                 TestResult.TRUE, "The server is TLS version intolerant",
                 "There is a bug in your TLS implementation. Update your software or contact the developers."), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_CIPHERSUITE_INTOLERANCE,
+        recommendations.add(new Recommendation(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
             "TLS cipher suite intolerance", "Evaluates whether the TLS server is cipher suite intolerant",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is cipher suite intolerant",
                 "There is a bug in your TLS implementation. Update your software or contact the developers."), ""));
@@ -347,7 +347,7 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the TLS server is TLS extension intolerant", new PropertyResultRecommendation(
                 TestResult.TRUE, "The server is TLS extension intolerant",
                 "There is a bug in your TLS implementation. Update your software or contact the developers."), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_CIPHERSUITE_LENGTH_INTOLERANCE,
+        recommendations.add(new Recommendation(AnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE,
             "TLS cipher suite length intolerance",
             "Evaluates whether the TLS server has TLS cipher suite length intolerance",
             new PropertyResultRecommendation(TestResult.TRUE, "The server has TLS cipher suite length intolerance",
@@ -386,7 +386,7 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the TLS server has elliptic curve named group intolerance",
             new PropertyResultRecommendation(TestResult.TRUE, "The server has elliptic curve named group intolerance",
                 "There is a bug in your TLS implementation. Update your software or contact the developers."), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_SECOND_CIPHERSUITE_BYTE_BUG,
+        recommendations.add(new Recommendation(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG,
             "Second cipher suite bug",
             "Evaluates whether the TLS server always evaluates only the second cipher suite byte",
             new PropertyResultRecommendation(TestResult.TRUE,

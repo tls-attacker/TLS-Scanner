@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
-import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
@@ -20,7 +19,6 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.util.CertificateFetcher;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -106,7 +104,7 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE)
+        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
             && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
             return true;
         }
@@ -380,7 +378,7 @@ public class CertificateProbe extends TlsProbe {
     }
 
     private CertificateChain performCertScan(Config tlsConfig, List<CipherSuite> cipherSuitesToTest) {
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuitesToTest);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
@@ -395,7 +393,7 @@ public class CertificateProbe extends TlsProbe {
 
     private void performEcCertScan(Config tlsConfig, List<NamedGroup> groupsToTest,
         List<CipherSuite> cipherSuitesToTest, List<CertificateChain> certificateList) {
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuitesToTest);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         tlsConfig.setDefaultClientNamedGroups(groupsToTest);
         do {
             State state = new State(tlsConfig);
@@ -409,7 +407,7 @@ public class CertificateProbe extends TlsProbe {
                 certificateList.add(new CertificateChain(state.getTlsContext().getServerCertificate(), tlsConfig
                     .getDefaultClientConnection().getHostname()));
             } else {
-                // selected ciphersuite or certificate named group invalid
+                // selected cipher suite or certificate named group invalid
                 cipherSuitesToTest.clear();
                 groupsToTest.clear();
             }
@@ -419,7 +417,7 @@ public class CertificateProbe extends TlsProbe {
     private void performEcCertScanEcdsa(Config tlsConfig, List<NamedGroup> groupsToTest,
         List<CipherSuite> cipherSuitesToTest, List<CertificateChain> certificateList, List<NamedGroup> pkGroups,
         List<NamedGroup> sigGroups) {
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuitesToTest);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         tlsConfig.setDefaultClientNamedGroups(groupsToTest);
         tlsConfig.setDefaultClientKeyShareNamedGroups(groupsToTest);
         do {
@@ -439,7 +437,7 @@ public class CertificateProbe extends TlsProbe {
                     sigGroups.add(state.getTlsContext().getEcCertificateSignatureCurve());
                 }
             } else {
-                // selected ciphersuite or certificate named group invalid
+                // selected cipher suite or certificate named group invalid
                 cipherSuitesToTest.clear();
                 groupsToTest.clear();
             }

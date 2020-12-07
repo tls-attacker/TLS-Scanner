@@ -124,15 +124,15 @@ public enum AnalyzedProperty {
     /**
      * does it handle unknown cipher suites correctly?
      */
-    HAS_CIPHERSUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_CIPHER_SUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it handle unknown extensions correctly?
      */
     HAS_EXTENSION_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * does it handle long ciphersuite length values correctly?
+     * does it handle long cipher suite length values correctly?
      */
-    HAS_CIPHERSUITE_LENGTH_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_CIPHER_SUITE_LENGTH_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it handle unknown compression algorithms correctly
      */
@@ -162,9 +162,9 @@ public enum AnalyzedProperty {
      */
     HAS_NAMED_GROUP_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * is only the second byte of the ciphersuite evaluated
+     * is only the second byte of the cipher suite evaluated
      */
-    HAS_SECOND_CIPHERSUITE_BYTE_BUG(AnalyzedPropertyCategory.QUIRKS),
+    HAS_SECOND_CIPHER_SUITE_BYTE_BUG(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it ignore the offered cipher suites
      */

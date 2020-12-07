@@ -36,7 +36,7 @@ public class TlsClientConfig implements Serializable {
     private Config config;
     private WorkflowTrace trace;
     private List<ProtocolVersion> supportedVersionList;
-    private List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList;
+    private List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList;
     private List<Integer> supportedRsaKeySizeList;
     private List<Integer> supportedDheKeySizeList;
     @XmlJavaTypeAdapter(ByteArrayAdapter.class)
@@ -55,7 +55,7 @@ public class TlsClientConfig implements Serializable {
         this.config = null;
         this.trace = null;
         this.supportedVersionList = null;
-        this.versionAcceptForbiddenCiphersuiteList = null;
+        this.versionAcceptForbiddenCipherSuiteList = null;
         this.supportedVersionList = null;
         this.supportedRsaKeySizeList = null;
         this.supportedDheKeySizeList = null;
@@ -117,12 +117,12 @@ public class TlsClientConfig implements Serializable {
         return supportedVersionList;
     }
 
-    public void setVersionAcceptForbiddenCiphersuiteList(List<ProtocolVersion> versionAcceptForbiddenCiphersuiteList) {
-        this.versionAcceptForbiddenCiphersuiteList = versionAcceptForbiddenCiphersuiteList;
+    public void setVersionAcceptForbiddenCipherSuiteList(List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList) {
+        this.versionAcceptForbiddenCipherSuiteList = versionAcceptForbiddenCipherSuiteList;
     }
 
-    public List<ProtocolVersion> getVersionAcceptForbiddenCiphersuiteList() {
-        return versionAcceptForbiddenCiphersuiteList;
+    public List<ProtocolVersion> getVersionAcceptForbiddenCipherSuiteList() {
+        return versionAcceptForbiddenCipherSuiteList;
     }
 
     public void setSupportedRsaKeySizeList(List<Integer> supportedRsaKeySizeList) {

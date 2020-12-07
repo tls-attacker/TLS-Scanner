@@ -55,7 +55,7 @@ public class PaddingOracleProbe extends TlsProbe {
                 for (VersionSuiteListPair pair : serverSupportedSuites) {
                     if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
                         || pair.getVersion() == ProtocolVersion.TLS12) {
-                        for (CipherSuite suite : pair.getCiphersuiteList()) {
+                        for (CipherSuite suite : pair.getCipherSuiteList()) {
                             if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
                                 PaddingOracleCommandConfig paddingOracleConfig =
                                     createPaddingOracleCommandConfig(pair.getVersion(), suite);
@@ -119,7 +119,7 @@ public class PaddingOracleProbe extends TlsProbe {
             paddingOracleConfig.setNumberOfIterations(1);
         }
         paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
-        paddingOracleConfig.getCiphersuiteDelegate().setCipherSuites(cipherSuite);
+        paddingOracleConfig.getCipherSuiteDelegate().setCipherSuites(cipherSuite);
         paddingOracleConfig.getProtocolVersionDelegate().setProtocolVersion(version);
         return paddingOracleConfig;
     }
@@ -141,14 +141,14 @@ public class PaddingOracleProbe extends TlsProbe {
         }
 
         return new InformationLeakTest<>(new PaddingOracleTestInfo(paddingOracleConfig.getProtocolVersionDelegate()
-            .getProtocolVersion(), paddingOracleConfig.getCiphersuiteDelegate().getCipherSuites().get(0),
+            .getProtocolVersion(), paddingOracleConfig.getCipherSuiteDelegate().getCipherSuites().get(0),
             paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType()),
             attacker.getResponseMapList());
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE)
+        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
             && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
             return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
         } else {
