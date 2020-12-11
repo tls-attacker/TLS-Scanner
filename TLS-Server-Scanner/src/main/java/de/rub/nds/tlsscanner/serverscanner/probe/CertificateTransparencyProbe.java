@@ -124,7 +124,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
                         serverCertChain, true);
             }
         } catch (Exception e) {
-            LOGGER.warn("Couldn't determine Signed Certificate Timestamp Extension in certificate.");
+            LOGGER.warn("Couldn't determine Signed Certificate Timestamp Extension in certificate.", e);
         }
     }
 
