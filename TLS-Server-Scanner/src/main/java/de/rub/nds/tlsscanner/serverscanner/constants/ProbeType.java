@@ -46,5 +46,6 @@ public enum ProbeType {
     DIRECT_RACCOON,
     EC_POINT_FORMAT,
     RACCOON_ATTACK,
-    HTTP_FALSE_START
+    HTTP_FALSE_START,
+    GREASE
 }

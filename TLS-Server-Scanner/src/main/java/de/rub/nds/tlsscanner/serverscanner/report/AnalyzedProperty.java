@@ -117,6 +117,9 @@ public enum AnalyzedProperty {
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFOCRES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    TOLERATES_GREASE_CIPHER_SUITE(AnalyzedPropertyCategory.BEST_PRACTICES),
+    TOLERATES_GREASE_NAMED_GROUP(AnalyzedPropertyCategory.BEST_PRACTICES),
+    TOLERATES_GREASE_SIGNATURE_AND_HASH_ALGORITHM(AnalyzedPropertyCategory.BEST_PRACTICES),
     /**
      * does it handle unknown versions correctly?
      */

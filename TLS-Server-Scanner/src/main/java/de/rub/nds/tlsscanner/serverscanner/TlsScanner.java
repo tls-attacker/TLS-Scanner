@@ -82,6 +82,7 @@ public class TlsScanner {
     }
 
     private void fillDefaultProbeLists() {
+        addProbeToProbeList(new GreaseProbe(config, parallelExecutor));
         addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
         addProbeToProbeList(new SniProbe(config, parallelExecutor));
         addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
@@ -95,7 +96,7 @@ public class TlsScanner {
         addProbeToProbeList(new ExtensionProbe(config, parallelExecutor));
         addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
         addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
-		addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
+        addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
         addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
         addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
         addProbeToProbeList(new RenegotiationProbe(config, parallelExecutor));
