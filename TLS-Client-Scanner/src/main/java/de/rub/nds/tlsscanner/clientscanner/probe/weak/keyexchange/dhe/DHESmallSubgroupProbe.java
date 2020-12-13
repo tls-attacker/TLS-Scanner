@@ -27,13 +27,17 @@ import de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe.DHESmallSu
 public class DHESmallSubgroupProbe extends BaseDHEParametrizedProbe<SmallSubgroupType, DHESmallSubgroupResult> {
     enum SmallSubgroupType {
         ONE,
-        MINUS_ONE
+        MINUS_ONE,
+        ZERO,
+        P_ONE,
     }
 
     public static Collection<DHESmallSubgroupProbe> getDefaultProbes(Orchestrator orchestrator) {
         return Arrays.asList(
                 new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.ONE),
-                new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.MINUS_ONE));
+                new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.MINUS_ONE),
+                new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.ZERO),
+                new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.P_ONE));
     }
 
     public DHESmallSubgroupProbe(Orchestrator orchestrator, SmallSubgroupType groupType) {
@@ -50,7 +54,13 @@ public class DHESmallSubgroupProbe extends BaseDHEParametrizedProbe<SmallSubgrou
                 config.setDefaultServerDhGenerator(BigInteger.ONE);
                 break;
             case MINUS_ONE:
-                config.setDefaultServerDhGenerator(config.getDefaultClientDhModulus().subtract(BigInteger.ONE));
+                config.setDefaultServerDhGenerator(config.getDefaultServerDhModulus().subtract(BigInteger.ONE));
+                break;
+            case ZERO:
+                config.setDefaultServerDhGenerator(BigInteger.ZERO);
+                break;
+            case P_ONE:
+                config.setDefaultServerDhGenerator(config.getDefaultServerDhModulus().add(BigInteger.ONE));
                 break;
             default:
                 throw new DispatchException("Failed to generate generator; unknown type " + enumValue);
