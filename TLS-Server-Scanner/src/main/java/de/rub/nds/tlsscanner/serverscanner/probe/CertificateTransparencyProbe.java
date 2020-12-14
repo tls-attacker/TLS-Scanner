@@ -119,9 +119,9 @@ public class CertificateTransparencyProbe extends TlsProbe {
                             (Asn1EncapsulatingOctetString) innerContentEncapsulation;
                     encodedSctList = innerEncapsulatingOctetString.getContent().getOriginalValue();
                 }
-
-                precertificateSctList = SignedCertificateTimestampListParser.parseTimestampList(encodedSctList,
-                        serverCertChain, true);
+                SignedCertificateTimestampListParser sctListParser
+                        = new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, true);
+                precertificateSctList = sctListParser.parse();
             }
         } catch (Exception e) {
             LOGGER.warn("Couldn't determine Signed Certificate Timestamp Extension in certificate.", e);
@@ -145,15 +145,17 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
                         SignedCertificateTimestampExtensionMessage sctExtensionMessage
                                 = serverHelloMessage.getExtension(SignedCertificateTimestampExtensionMessage.class);
-                        byte[] signedCertificateTimestampList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
-                        handshakeSctList = SignedCertificateTimestampListParser.parseTimestampList(signedCertificateTimestampList,
-                                serverCertChain, false);
+                        byte[] encodedSctList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
+
+                        SignedCertificateTimestampListParser sctListParser
+                                = new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, false);
+                        handshakeSctList = sctListParser.parse();
 
                         supportsHandshakeSCTs = true;
                     }
                 }
             }
-        } catch (ParserException e) {
+        } catch (Exception e) {
             LOGGER.warn("Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
         }
     }
