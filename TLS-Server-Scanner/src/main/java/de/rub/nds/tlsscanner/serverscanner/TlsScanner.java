@@ -14,7 +14,7 @@ import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.report.after.ExtractRandomnessProbe;
-import de.rub.nds.tlsscanner.probe.EsniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -95,6 +95,7 @@ public class TlsScanner {
         probeList.add(new ExtensionProbe(config, parallelExecutor));
         probeList.add(new TokenbindingProbe(config, parallelExecutor));
         probeList.add(new HttpHeaderProbe(config, parallelExecutor));
+        probeList.add(new HttpFalseStartProbe(config, parallelExecutor));
         probeList.add(new ECPointFormatProbe(config, parallelExecutor));
         probeList.add(new ResumptionProbe(config, parallelExecutor));
         probeList.add(new RenegotiationProbe(config, parallelExecutor));

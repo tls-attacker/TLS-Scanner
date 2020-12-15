@@ -120,6 +120,7 @@ public class CiphersuiteProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);

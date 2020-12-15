@@ -47,5 +47,6 @@ public enum ProbeType {
     DIRECT_RACCOON,
     EC_POINT_FORMAT,
     RACCOON_ATTACK,
-    RNG
+    RNG,
+    HTTP_FALSE_START
 }

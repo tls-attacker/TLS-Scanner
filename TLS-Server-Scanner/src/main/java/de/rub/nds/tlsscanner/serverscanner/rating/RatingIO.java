@@ -39,8 +39,8 @@ public class RatingIO {
         JAXB.marshal(r, tempStream);
         try {
             os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
-        } catch (IOException | TransformerException | XPathExpressionException | XPathFactoryConfigurationException
-                | ParserConfigurationException | SAXException ex) {
+        } catch (IOException | TransformerException | XPathExpressionException | ParserConfigurationException
+                | SAXException ex) {
             throw new RuntimeException("Could not format XML");
         }
     }
@@ -67,8 +67,8 @@ public class RatingIO {
         JAXB.marshal(ri, tempStream);
         try {
             os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
-        } catch (IOException | TransformerException | XPathExpressionException | XPathFactoryConfigurationException
-                | ParserConfigurationException | SAXException ex) {
+        } catch (IOException | TransformerException | XPathExpressionException | ParserConfigurationException
+                | SAXException ex) {
             throw new RuntimeException("Could not format XML");
         }
     }

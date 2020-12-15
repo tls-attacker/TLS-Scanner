@@ -17,8 +17,8 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import java.util.List;
 
 /**
- * Currently not in use for any probe.
- * The probe TlsRng extracts randomness by other means.
+ * Currently not in use for any probe. The probe TlsRng extracts randomness by
+ * other means.
  */
 public class RandomExtractor extends StatExtractor<ComparableByteArray> {
 

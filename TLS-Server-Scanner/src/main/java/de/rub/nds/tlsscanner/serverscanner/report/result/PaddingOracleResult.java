@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.leak.InformationLeakTest;
+import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
