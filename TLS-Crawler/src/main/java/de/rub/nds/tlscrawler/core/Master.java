@@ -12,6 +12,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,9 +39,12 @@ public class Master {
     public void start() {
         cleanUpFinishedScanTasks();
         int counter = 0;
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+        String currentDate = dtf.format(now);
         do {
             LOGGER.info("Initializing ScanJob");
-            ScanJob job = new ScanJob(config.getScanName(), config.getScanName() + "-" + counter, "tls", config.getPort(), config.getReexecutions(), config.getScannerTimeout(), config.getStarttlsDelegate().getStarttlsType());
+            ScanJob job = new ScanJob(config.getScanName(), config.getScanName() + "_" + currentDate + "_" + counter, "tls", config.getPort(), config.getReexecutions(), config.getScannerTimeout(), config.getStarttlsDelegate().getStarttlsType());
             addFreshScanTasks(job);
             LOGGER.info("Pushing ScanJob");
             orchestrationProvider.putScanJob(job);
