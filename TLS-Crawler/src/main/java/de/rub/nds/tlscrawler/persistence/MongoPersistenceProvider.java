@@ -7,8 +7,10 @@
  */
 package de.rub.nds.tlscrawler.persistence;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mongodb.MongoClient;
@@ -17,12 +19,15 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
+import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1Vector;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.crypto.ec.FieldElement;
 import de.rub.nds.tlsattacker.core.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
-import de.rub.nds.tlscrawler.data.*;
+import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
+import de.rub.nds.tlscrawler.data.ScanJob;
+import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateSerializer;
 import de.rub.nds.tlscrawler.persistence.converter.ByteArraySerializer;
@@ -46,14 +51,16 @@ import de.rub.nds.tlscrawler.persistence.converter.VectorDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.VectorSerializer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import java.math.BigDecimal;
 import java.security.PublicKey;
-import de.rub.nds.tlsattacker.attacks.general.Vector;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.tls.Certificate;
-import org.bson.BsonDocument;
-import org.bson.BsonNull;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.json.simple.JSONObject;
@@ -111,6 +118,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         //module.addDeserializer(BleichenbacherTestResult.class, new BleichenbacherTestResultDeserializer());
         mapper.registerModule(module);
         mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
     }
 
     /**

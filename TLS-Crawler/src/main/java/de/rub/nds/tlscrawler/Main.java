@@ -66,7 +66,6 @@ public class Main {
         }
         switch (jc.getParsedCommand().toLowerCase()) {
             case "slave":
-
                 ITlsCrawlerSlave slave = new TlsCrawlerSlave(slaveCommandConfig.getInstanceId(), setUpOrchestrationProvider(slaveCommandConfig.getRedisDelegate()), setUpPersistenceProvider(slaveCommandConfig.getMongoDbDelegate()), slaveCommandConfig.getNumberOfThreads());
                 slave.start();
                 break;
