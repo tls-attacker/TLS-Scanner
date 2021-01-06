@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
@@ -27,7 +26,6 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
-import static de.rub.nds.tlsscanner.serverscanner.constants.CheckPatternType.CORRECT;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
@@ -70,12 +68,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
@@ -147,7 +143,7 @@ public class SiteReportPrinter {
         appendRenegotiation(builder);
         appendHandshakeSimulation(builder);
         appendHttps(builder);
-        appendRandom(builder);
+        appendRandomness(builder);
         appendPublicKeyIssues(builder);
         appendClientAuthentication(builder);
         appendScoringResults(builder);
@@ -1407,7 +1403,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    public void appendRandom(StringBuilder builder) {
+    public void appendRandomness(StringBuilder builder) {
         prettyAppendHeading(builder, "Nonce");
         // prettyAppendRandom(builder, "Random",
         // report.getRandomEvaluationResult());

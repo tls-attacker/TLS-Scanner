@@ -14,10 +14,9 @@ import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
-import sun.security.util.ArrayUtil;
+
 import static org.junit.Assert.*;
 
 import java.util.LinkedList;
@@ -25,17 +24,17 @@ import java.util.LinkedList;
 /***
  * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
  */
-public class ExtractRandomnessProbeTest {
+public class TlsRngAfterProbeTest {
 
     private SiteReport testReport;
-    private ExtractRandomnessProbe randomnessTester;
+    private TlsRngAfterProbe randomnessTester;
 
-    public ExtractRandomnessProbeTest() {
+    public TlsRngAfterProbeTest() {
     }
 
     @Before
     public void setUp() {
-        randomnessTester = new ExtractRandomnessProbe();
+        randomnessTester = new TlsRngAfterProbe();
         testReport = new SiteReport("test");
     }
 

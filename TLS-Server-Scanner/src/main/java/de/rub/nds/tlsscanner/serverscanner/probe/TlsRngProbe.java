@@ -134,7 +134,7 @@ public class TlsRngProbe extends TlsProbe {
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // If we reached this point we collected some amount of data.
-        // ExtractRandomnessProbe will determine if this
+        // TlsRngAfterProbe will determine if this
         // is enough.
         boolean successfulHandshake = true;
 
@@ -152,7 +152,8 @@ public class TlsRngProbe extends TlsProbe {
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_RSA) == TestResult.NOT_TESTED_YET
                 || report.getResult(AnalyzedProperty.SUPPORTS_DH) == TestResult.NOT_TESTED_YET
-                || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.NOT_TESTED_YET) {
+                || report.getResult(AnalyzedProperty.SUPPORTS_STATIC_ECDH) == TestResult.NOT_TESTED_YET
+                || report.getResult(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER) == TestResult.NOT_TESTED_YET) {
             return false;
         } else {
             // We will conduct the rng extraction based on the test-results, so

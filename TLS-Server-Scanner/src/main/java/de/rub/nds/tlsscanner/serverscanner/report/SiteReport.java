@@ -129,7 +129,6 @@ public class SiteReport extends Observable implements Serializable {
     @JsonIgnore
     private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
 
-    // TODO: Check if this is appropriate
     // Randomness NEW
     private LinkedList<ComparableByteArray> extractedIVList = null;
     private LinkedList<ComparableByteArray> extractedRandomList = null;
@@ -683,7 +682,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to set the List of RandomTypes which failed the Duplicate
-     * Test in the ExtractRandomnessProbe
+     * Test in the TlsRngAfterProbe
      * 
      * @param duplicatesDetected
      *            LinkedList of RandomTypes
@@ -694,7 +693,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to get the List of RandomTypes which failed the Duplicate
-     * Test in the ExtractRandomnessProbe
+     * Test in the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the Duplicate Test
      */
@@ -704,7 +703,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to set the List of RandomTypes which failed the MonoBit Test
-     * in the ExtractRandomnessProbe
+     * in the TlsRngAfterProbe
      * 
      * @param failedTypes
      *            LinkedList of RandomTypes which failed the MonoBitTest
@@ -715,7 +714,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to get the List of RandomTypes which failed the MonoBit Test
-     * in the ExtractRandomnessProbe
+     * in the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the MonoBitTest
      */
@@ -725,7 +724,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to set the List of RandomTypes which failed the Frequency
-     * Test in the ExtractRandomnessProbe
+     * Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
      *            LinkedList of Randomtyes which failed the Frequency Test
@@ -736,7 +735,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to get the List of RandomTypes which failed the Frequency
-     * Test in the ExtractRandomnessProbe
+     * Test in the TlsRngAfterProbe
      *
      * @return LinkedList of RandomTypes which failed the Frequency Test
      */
@@ -746,7 +745,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to set the List of RandomTypes which failed the Runs Test in
-     * the ExtractRandomnessProbe
+     * the TlsRngAfterProbe
      * 
      * @param failedTypes
      *            LinkedList of RandomTypes which failed the Runs Test
@@ -757,7 +756,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to get the List of RandomTypes which failed the Runs Test in
-     * the ExtractRandomnessProbe
+     * the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the Frequency Test
      */
@@ -767,7 +766,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to set the List of RandomTypes which failed the Longest Run
-     * within a Block Test in the ExtractRandomnessProbe
+     * within a Block Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
      *            LinkedList of RandomTypes which failed the Longest Run within
@@ -779,7 +778,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to get the List of RandomTypes which failed the Longest Run
-     * within a Block Test in the ExtractRandomnessProbe
+     * within a Block Test in the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the Longest Run within a
      *         Block Test
@@ -790,7 +789,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to set the List of RandomTypes which failed the discrete
-     * Fourier Test in the ExtractRandomnessProbe
+     * Fourier Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
      *            LinkedList of RandomTypes which failed the discrete Fourier
@@ -802,7 +801,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to get the List of RandomTypes which failed the discrete
-     * Fourier Test in the ExtractRandomnessProbe
+     * Fourier Test in the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the discrete Fourier Test
      */
@@ -813,7 +812,7 @@ public class SiteReport extends Observable implements Serializable {
     /**
      * Method used to set the Map of RandomTypes with the associated percentage
      * of failed Templates in the Overlapping Template Test in the
-     * ExtractRandomnessProbe
+     * TlsRngAfterProbe
      * 
      * @param failedTypes
      *            LinkedList of RandomTypes which failed the Non Overlapping
@@ -826,7 +825,7 @@ public class SiteReport extends Observable implements Serializable {
     /**
      * Method used to get the Map of RandomTypes with the associated percentage
      * of failed Templates in the the Non Overlapping Template Test in the
-     * ExtractRandomnessProbe
+     * TlsRngAfterProbe
      * 
      * @return Map of RandomTypes with percentage of failed Templates in the Non
      *         Overlapping Template Test
@@ -859,7 +858,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to set the List of RandomTypes which failed the Approximate
-     * Entropy Test in the ExtractRandomnessProbe
+     * Entropy Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
      *            LinkedList of RandomTypes which failed the Approximate Entropy
@@ -871,7 +870,7 @@ public class SiteReport extends Observable implements Serializable {
 
     /**
      * Method used to get the List of RandomTypes which failed the Approximate
-     * Entropy Test in the ExtractRandomnessProbe
+     * Entropy Test in the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the Approximate Entropy
      *         Test

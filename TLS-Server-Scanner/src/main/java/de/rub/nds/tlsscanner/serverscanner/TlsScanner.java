@@ -13,7 +13,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.report.after.ExtractRandomnessProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.TlsRngAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
@@ -80,7 +80,7 @@ public class TlsScanner {
     private void fillDefaultProbeLists() {
         if (config.isCollectRng()) {
             probeList.add(new TlsRngProbe(config, parallelExecutor));
-            afterList.add(new ExtractRandomnessProbe());
+            afterList.add(new TlsRngAfterProbe());
         }
         probeList.add(new CommonBugProbe(config, parallelExecutor));
         probeList.add(new SniProbe(config, parallelExecutor));

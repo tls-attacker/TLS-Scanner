@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.constants;
 
 /***
  * Constants used by the statistical tests employed by the
- * ExtractRandomnessProbe
+ * TlsRngAfterProbe
  */
 public class RngConstants {
 
@@ -51,5 +51,10 @@ public class RngConstants {
             { "111100110" }, { "111101000" }, { "111101010" }, { "111101100" }, { "111101110" }, { "111110000" },
             { "111110010" }, { "111110100" }, { "111110110" }, { "111111000" }, { "111111010" }, { "111111100" },
             { "111111110" } };
+
+    public enum TEMPLATE_CONSTANTS {
+        TEST_RESULT,
+        PERCENTAGE
+    }
 
 }
