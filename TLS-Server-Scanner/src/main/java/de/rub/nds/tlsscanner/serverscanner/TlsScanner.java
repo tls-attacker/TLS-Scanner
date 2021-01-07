@@ -32,6 +32,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.ExtensionProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.HeartbleedProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpFalseStartProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.HttpHeaderProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.InvalidCurveProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.NamedCurvesProbe;
@@ -120,6 +121,7 @@ public class TlsScanner {
         probeList.add(new ExtensionProbe(config, parallelExecutor));
         probeList.add(new TokenbindingProbe(config, parallelExecutor));
         probeList.add(new HttpHeaderProbe(config, parallelExecutor));
+        probeList.add(new HttpFalseStartProbe(config, parallelExecutor));
         probeList.add(new ECPointFormatProbe(config, parallelExecutor));
         probeList.add(new ResumptionProbe(config, parallelExecutor));
         probeList.add(new RenegotiationProbe(config, parallelExecutor));

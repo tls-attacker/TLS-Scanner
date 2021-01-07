@@ -484,7 +484,7 @@ public class CommonBugProbe extends TlsProbe {
         try {
             Config config = getWorkingConfig();
             config.setAddAlpnExtension(true);
-            config.setAlpnAnnouncedProtocols(new String[] { "This is not an ALPN Protocol" });
+            config.setDefaultProposedAlpnProtocols("This is not an ALPN Protocol");
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);

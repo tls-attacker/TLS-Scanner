@@ -15,7 +15,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -34,85 +33,96 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HttpHeaderResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.HttpFalseStartResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HttpHeaderProbe extends HttpsProbe {
+public class HttpFalseStartProbe extends HttpsProbe {
 
-    public HttpHeaderProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HTTP_HEADER, scannerConfig);
+    public HttpFalseStartProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.HTTP_FALSE_START, scannerConfig);
     }
 
     @Override
     public ProbeResult executeTest() {
         try {
-            Config tlsConfig = getScannerConfig().createConfig();
-            List<CipherSuite> cipherSuites = new LinkedList<>();
-            cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
-            cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            tlsConfig.setQuickReceive(true);
-            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-            tlsConfig.setEnforceSettings(false);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(true);
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setHttpsParsingEnabled(true);
-            tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
-            tlsConfig.setStopActionsAfterIOException(true);
-            // Don't send extensions if we are in SSLv2
-            tlsConfig.setAddECPointFormatExtension(true);
-            tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddServerNameIndicationExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-            tlsConfig.setAddRenegotiationInfoExtension(true);
+            Config tlsConfig = getConfig();
 
-            List<NamedGroup> namedGroups = NamedGroup.getImplemented();
-            namedGroups.remove(NamedGroup.ECDH_X25519);
-            tlsConfig.setDefaultClientNamedGroups(namedGroups);
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
             WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
             trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-            trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-            trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-            trace.addTlsAction(new SendAction(this.getHttpsRequest()));
-            trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
+            trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), this
+                .getHttpsRequest()));
+            trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(),
+                new HttpsResponseMessage()));
+
             State state = new State(tlsConfig, trace);
             executeState(state);
+
+            boolean receivedServerFinishedMessage = false;
             ReceivingAction action = trace.getLastReceivingAction();
-            HttpsResponseMessage responseMessage = null;
             if (action.getReceivedMessages() != null) {
                 for (ProtocolMessage message : action.getReceivedMessages()) {
                     if (message instanceof HttpsResponseMessage) {
-                        responseMessage = (HttpsResponseMessage) message;
-                        break;
+                        // if http response was received the server handled the
+                        // false start
+                        return new HttpFalseStartResult(TestResult.TRUE);
+                    } else if (message instanceof FinishedMessage) {
+                        receivedServerFinishedMessage = true;
                     }
                 }
             }
-            boolean speaksHttps = responseMessage != null;
-            List<HttpsHeader> headerList;
-            if (speaksHttps) {
-                headerList = responseMessage.getHeader();
-            } else {
-                headerList = new LinkedList<>();
+            if (!receivedServerFinishedMessage) {
+                // server sent no finished message, false start messed up the
+                // handshake
+                return new HttpFalseStartResult(TestResult.FALSE);
             }
-            return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
+            // received no http response -> maybe server did not understand
+            // request
+            return new HttpFalseStartResult(TestResult.UNCERTAIN);
+        } catch (Exception exc) {
+            LOGGER.error("Could not scan for " + getProbeName(), exc);
+            return new HttpFalseStartResult(TestResult.ERROR_DURING_TEST);
         }
+    }
+
+    private Config getConfig() {
+        Config tlsConfig = getScannerConfig().createConfig();
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCipherSuites(this.getCipherSuites());
+        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setHttpsParsingEnabled(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
+        tlsConfig.setStopActionsAfterIOException(true);
+        tlsConfig.setAddECPointFormatExtension(true);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddServerNameIndicationExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddRenegotiationInfoExtension(true);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
+        return tlsConfig;
+    }
+
+    private List<CipherSuite> getCipherSuites() {
+        List<CipherSuite> cipherSuites = new LinkedList<>(Arrays.asList(CipherSuite.values()));
+        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        return cipherSuites;
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
+        return report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE;
     }
 
     @Override
@@ -121,6 +131,6 @@ public class HttpHeaderProbe extends HttpsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new HttpHeaderResult(TestResult.COULD_NOT_TEST, null);
+        return new HttpFalseStartResult(TestResult.COULD_NOT_TEST);
     }
 }
