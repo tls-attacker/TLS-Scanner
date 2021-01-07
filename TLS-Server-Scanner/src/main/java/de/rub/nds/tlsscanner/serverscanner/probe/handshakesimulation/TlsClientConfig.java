@@ -10,7 +10,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 
-import de.rub.nds.modifiablevariable.util.ByteArrayAdapter;
+import de.rub.nds.modifiablevariable.util.UnformattedByteArrayAdapter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.handler.ClientHelloHandler;
@@ -39,7 +39,7 @@ public class TlsClientConfig implements Serializable {
     private List<ProtocolVersion> versionAcceptForbiddenCipherSuiteList;
     private List<Integer> supportedRsaKeySizeList;
     private List<Integer> supportedDheKeySizeList;
-    @XmlJavaTypeAdapter(ByteArrayAdapter.class)
+    @XmlJavaTypeAdapter(UnformattedByteArrayAdapter.class)
     private byte[] initialBytes;
     private Boolean isSSL2CompatibleClientHello = false;
 

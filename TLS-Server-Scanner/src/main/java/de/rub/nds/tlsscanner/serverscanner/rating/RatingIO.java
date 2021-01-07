@@ -10,7 +10,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.modifiablevariable.util.XMLPrettyPrinter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,9 +39,8 @@ public class RatingIO {
 
         JAXB.marshal(r, tempStream);
         try {
-            os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
-        } catch (IOException | TransformerException | XPathExpressionException | ParserConfigurationException
-            | SAXException ex) {
+            os.write(new String(tempStream.toByteArray()).getBytes());
+        } catch (IOException ex) {
             throw new RuntimeException("Could not format XML");
         }
     }
@@ -68,9 +66,8 @@ public class RatingIO {
 
         JAXB.marshal(ri, tempStream);
         try {
-            os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
-        } catch (IOException | TransformerException | XPathExpressionException | ParserConfigurationException
-            | SAXException ex) {
+            os.write(new String(tempStream.toByteArray()).getBytes());
+        } catch (IOException ex) {
             throw new RuntimeException("Could not format XML");
         }
     }
