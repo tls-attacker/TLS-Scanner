@@ -53,6 +53,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -280,7 +281,7 @@ public class InvalidCurveProbe extends TlsProbe {
             pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
             attacker.getTlsConfig().setPSKKeyExchangeModes(pskKex);
             attacker.getTlsConfig().setDefaultClientSupportedSignatureAndHashAlgorithms(
-                    getTls13SignatureAndHashAlgorithms());
+                    SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
         }
 
         attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
@@ -475,7 +476,8 @@ public class InvalidCurveProbe extends TlsProbe {
                 TestResult foundDuplicateFinished = TestResult.FALSE;
                 for (Point point : response.getReceivedEcPublicKeys()) {
                     for (Point cPoint : response.getReceivedEcPublicKeys()) {
-                        if (point != cPoint && (point.getFieldX().getData().compareTo(cPoint.getFieldX().getData()) == 0)
+                        if (point != cPoint
+                                && (point.getFieldX().getData().compareTo(cPoint.getFieldX().getData()) == 0)
                                 && point.getFieldY().getData().compareTo(cPoint.getFieldY().getData()) == 0) {
                             foundDuplicate = TestResult.TRUE;
                         }
@@ -486,7 +488,8 @@ public class InvalidCurveProbe extends TlsProbe {
                 // Finished message
                 for (Point point : response.getReceivedFinishedEcKeys()) {
                     for (Point cPoint : response.getReceivedEcPublicKeys()) {
-                        if (point != cPoint && (point.getFieldX().getData().compareTo(cPoint.getFieldX().getData()) == 0)
+                        if (point != cPoint
+                                && (point.getFieldX().getData().compareTo(cPoint.getFieldX().getData()) == 0)
                                 && point.getFieldY().getData().compareTo(cPoint.getFieldY().getData()) == 0) {
                             foundDuplicateFinished = TestResult.TRUE;
                         }
@@ -640,23 +643,6 @@ public class InvalidCurveProbe extends TlsProbe {
         }
 
         return groupedMap;
-    }
-
-    private List<SignatureAndHashAlgorithm> getTls13SignatureAndHashAlgorithms() {
-        List<SignatureAndHashAlgorithm> algos = new LinkedList<>();
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA512);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA256);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA384);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA512);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512);
-        return algos;
     }
 
     private boolean groupQualifiedForCiphersuite(NamedGroup testGroup, CipherSuite testCipher) {

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CiphersuiteProbe extends TlsProbe {
 
@@ -126,7 +127,7 @@ public class CiphersuiteProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+                .getImplementedTls13SignatureAndHashAlgorithms());
 
         State state = new State(tlsConfig);
         executeState(state);

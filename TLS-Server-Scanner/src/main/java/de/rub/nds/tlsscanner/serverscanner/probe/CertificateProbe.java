@@ -349,7 +349,8 @@ public class CertificateProbe extends TlsProbe {
         List<NamedGroup> namedGroups = new ArrayList<>(Arrays.asList(NamedGroup.values()));
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
         List<SignatureAndHashAlgorithm> sigHashAlgos = Arrays.asList(SignatureAndHashAlgorithm.values());
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashAlgos);
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
+                .getImplementedTls13SignatureAndHashAlgorithms());
         tlsConfig.setStopActionsAfterFatal(true);
 
         return tlsConfig;
@@ -447,7 +448,8 @@ public class CertificateProbe extends TlsProbe {
 
     private List<SignatureAndHashAlgorithm> getTls13RsaSigHash() {
         List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
-        for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()) {
+        for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm
+                .getImplementedTls13SignatureAndHashAlgorithms()) {
             if (algorithm.name().contains("RSA")) {
                 algorithms.add(algorithm);
             }
@@ -458,7 +460,8 @@ public class CertificateProbe extends TlsProbe {
 
     private List<SignatureAndHashAlgorithm> getTls13EcdsaSigHash() {
         List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
-        for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()) {
+        for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm
+                .getImplementedTls13SignatureAndHashAlgorithms()) {
             if (algorithm.name().contains("ECDSA")) {
                 algorithms.add(algorithm);
             }

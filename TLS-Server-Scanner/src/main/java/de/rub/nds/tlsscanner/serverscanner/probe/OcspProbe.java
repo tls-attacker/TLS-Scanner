@@ -270,7 +270,7 @@ public class OcspProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+                .getImplementedTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         List<PskKeyExchangeMode> pskKex = new LinkedList<>();
         pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);

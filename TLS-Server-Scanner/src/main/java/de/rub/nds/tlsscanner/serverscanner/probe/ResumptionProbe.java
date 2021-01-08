@@ -123,7 +123,7 @@ public class ResumptionProbe extends TlsProbe {
             return TestResult.ERROR_DURING_TEST;
         }
     }
-    
+
     private TestResult getSupports0rtt() {
         try {
             Config tlsConfig = createConfig();
@@ -174,7 +174,7 @@ public class ResumptionProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+                .getImplementedTls13SignatureAndHashAlgorithms());
         tlsConfig.setTls13BackwardsCompatibilityMode(Boolean.TRUE);
         return tlsConfig;
     }
