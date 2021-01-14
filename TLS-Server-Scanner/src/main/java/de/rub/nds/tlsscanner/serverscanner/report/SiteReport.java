@@ -105,6 +105,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<NamedGroup> ecdsaSigGroupsStatic;
     private List<NamedGroup> ecdsaSigGroupsEphemeral;
     private List<NamedGroup> ecdsaSigGroupsTls13;
+    private int minimumRsaCertKeySize;
 
     // OCSP
     private List<OcspCertificateResult> ocspResults;
@@ -679,5 +680,13 @@ public class SiteReport extends Observable implements Serializable {
 
     public void setSupportsRecordFragmentation(Boolean supportsRecordFragmentation) {
         this.supportsRecordFragmentation = supportsRecordFragmentation;
+    }
+
+    public int getMinimumRsaCertKeySize() {
+        return minimumRsaCertKeySize;
+    }
+
+    public void setMinimumRsaCertKeySize(int minimumRsaCertKeySize) {
+        this.minimumRsaCertKeySize = minimumRsaCertKeySize;
     }
 }
