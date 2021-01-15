@@ -343,7 +343,6 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         List<NamedGroup> namedGroups = new ArrayList<>(Arrays.asList(NamedGroup.values()));

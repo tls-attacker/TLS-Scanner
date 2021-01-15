@@ -101,7 +101,6 @@ public class ECPointFormatProbe extends TlsProbe {
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
         config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setEnforceSettings(true);
-        config.setAddServerNameIndicationExtension(true);
         config.setAddEllipticCurveExtension(true);
         config.setAddECPointFormatExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
@@ -142,7 +141,6 @@ public class ECPointFormatProbe extends TlsProbe {
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
             tlsConfig.setAddSupportedVersionsExtension(true);
             tlsConfig.setAddKeyShareExtension(true);
-            tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddCertificateStatusRequestExtension(true);
             tlsConfig.setUseFreshRandom(true);
             tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm

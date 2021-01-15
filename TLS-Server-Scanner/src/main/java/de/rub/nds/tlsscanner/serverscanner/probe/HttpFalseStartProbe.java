@@ -97,7 +97,6 @@ public class HttpFalseStartProbe extends HttpsProbe {
         tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
