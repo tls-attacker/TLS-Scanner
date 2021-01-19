@@ -90,7 +90,8 @@ public class TlsScanner {
         // probeList.add(new ResumptionProbe(config, parallelExecutor));
         // probeList.add(new HeartbleedProbe(config, parallelExecutor));
         // probeList.add(new PaddingOracleProbe(config, parallelExecutor));
-        probeList.add(new BleichenbacherProbe(config, parallelExecutor));
+        // probeList.add(new BleichenbacherProbe(config, parallelExecutor));
+        // probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
 
         // afterList.add(new Sweet32AfterProbe());
         // afterList.add(new FreakAfterProbe());
@@ -104,6 +105,9 @@ public class TlsScanner {
         // TODO: Füge alle Probes die für DTLS nicht geeignet sind hier rein.
         // Kann auch mit canbeExecuted() und der Config dort gelöst werden.
         if (config.getDtlsDelegate().isDTLS()) {
+            // probeList.add(new DtlsCookieProbe(config, parallelExecutor));
+            // probeList.add(new DtlsCcsProbe(config, parallelExecutor));
+            probeList.add(new DtlsFragmentationProbe(config, parallelExecutor));
             // afterList.add(new EvaluateCookieAfterProbe());
         } else {
             // probeList.add(new EsniProbe(config, parallelExecutor));
@@ -116,7 +120,6 @@ public class TlsScanner {
         // probeList.add(new NamedCurvesProbe(config, parallelExecutor));
         // probeList.add(new CertificateProbe(config, parallelExecutor));
         // probeList.add(new OcspProbe(config, parallelExecutor));
-        // probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
         // probeList.add(new SessionTicketZeroKeyProbe(config,
         // parallelExecutor));
         // probeList.add(new TlsPoodleProbe(config, parallelExecutor));
