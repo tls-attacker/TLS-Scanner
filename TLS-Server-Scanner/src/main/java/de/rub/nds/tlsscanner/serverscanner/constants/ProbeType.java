@@ -46,5 +46,8 @@ public enum ProbeType {
     CCA,
     DIRECT_RACCOON,
     EC_POINT_FORMAT,
-    RACCOON_ATTACK
+    RACCOON_ATTACK,
+    DTLS_COOKIE,
+    DTLS_CCS,
+    DTLS_FRAGMENTATION
 }

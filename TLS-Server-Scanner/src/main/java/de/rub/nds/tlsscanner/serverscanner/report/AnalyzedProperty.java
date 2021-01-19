@@ -230,7 +230,15 @@ public enum AnalyzedProperty {
      */
     SUPPORTS_CCA(AnalyzedPropertyCategory.CERTIFICATE),
     REQUIRES_CCA(AnalyzedPropertyCategory.CERTIFICATE),
-    VULNERABLE_TO_CCA_BYPASS(AnalyzedPropertyCategory.ATTACKS);
+    VULNERABLE_TO_CCA_BYPASS(AnalyzedPropertyCategory.ATTACKS),
+    /**
+     * DTLS
+     */
+    HAS_DTLS_SECOND_CLIENT_HELLO_CHECKS(AnalyzedPropertyCategory.COOKIE),
+    HAS_DTLS_COOKIE_CHECKS(AnalyzedPropertyCategory.COOKIE),
+    ACCEPT_UNENCRYPTED_APP_DATA(AnalyzedPropertyCategory.QUIRKS),
+    HAS_EARLY_FINISHED_BUG(AnalyzedPropertyCategory.QUIRKS),
+    HAS_MULTIPLE_CSS_BUG(AnalyzedPropertyCategory.QUIRKS);
 
     private AnalyzedPropertyCategory category;
 

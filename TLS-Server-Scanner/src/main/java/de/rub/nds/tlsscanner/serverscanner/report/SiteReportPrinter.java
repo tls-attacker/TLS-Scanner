@@ -155,11 +155,23 @@ public class SiteReportPrinter {
         }
         appendPublicKeyIssues(builder);
         appendClientAuthentication(builder);
+        if (report.getSupportsDtls() == Boolean.TRUE) {
+            appendDtlsSpecificResults(builder);
+        }
         appendScoringResults(builder);
         appendRecommendations(builder);
         appendPerformanceData(builder);
 
         return builder.toString();
+    }
+
+    private void appendDtlsSpecificResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "DTLS");
+        prettyAppend(builder, "Checks second ClientHello", AnalyzedProperty.HAS_DTLS_SECOND_CLIENT_HELLO_CHECKS);
+        prettyAppend(builder, "Checks cookie", AnalyzedProperty.HAS_DTLS_COOKIE_CHECKS);
+        prettyAppend(builder, "Accept unencrypted App Data with Epoch 0", AnalyzedProperty.ACCEPT_UNENCRYPTED_APP_DATA);
+        prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
+        prettyAppend(builder, "Multiple CSS Bug", AnalyzedProperty.HAS_MULTIPLE_CSS_BUG);
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {
@@ -1397,7 +1409,7 @@ public class SiteReportPrinter {
     }
 
     public void appendCookie(StringBuilder builder) {
-        prettyAppendHeading(builder, "Cookie");
+        prettyAppendHeading(builder, "DTLS Cookie");
         prettyAppendCookie(builder, "Cookie", report.getCookieEvaluationResult());
     }
 

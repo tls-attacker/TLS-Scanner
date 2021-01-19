@@ -28,4 +28,5 @@ public enum AnalyzedPropertyCategory {
     EC,
     FFDHE,
     BEST_PRACTICES,
+    COOKIE
 }
