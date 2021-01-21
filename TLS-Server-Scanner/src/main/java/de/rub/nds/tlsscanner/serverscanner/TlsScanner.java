@@ -21,6 +21,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.CcaProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CcaRequiredProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CcaSupportProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CertificateTransparencyProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;

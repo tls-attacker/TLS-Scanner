@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
-import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;

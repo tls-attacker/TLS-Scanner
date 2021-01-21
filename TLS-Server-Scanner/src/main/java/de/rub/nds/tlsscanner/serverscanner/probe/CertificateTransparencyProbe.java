@@ -1,21 +1,21 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
- * <p>
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
- * <p>
+ *
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
+ *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.asn1.model.*;
-import de.rub.nds.asn1.parser.ParserException;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
-import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLog;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogList;
 import de.rub.nds.tlsattacker.core.certificate.transparency.logs.CtLogListLoader;
@@ -23,6 +23,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.SignedCertificateTimestampExtensionMessage;
+import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampListParser;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -65,11 +66,10 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
         getPrecertificateSCTs();
         getTlsHandshakeSCTs(tlsConfig);
-        getOcspResponseScts();
         evaluateChromeCtPolicy();
 
-        return new CertificateTransparencyResult(supportsPrecertificateSCTs, supportsHandshakeSCTs,
-                supportsOcspSCTs, meetsChromeCTPolicy, precertificateSctList, handshakeSctList, ocspSctList);
+        return new CertificateTransparencyResult(supportsPrecertificateSCTs, supportsHandshakeSCTs, supportsOcspSCTs,
+            meetsChromeCTPolicy, precertificateSctList, handshakeSctList, ocspSctList);
     }
 
     private Config initTlsConfig() {
@@ -79,7 +79,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -101,9 +101,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
             if (precertificateSctExtension != null) {
                 supportsPrecertificateSCTs = true;
 
-                Asn1EncapsulatingOctetString outerContentEncapsulation = (Asn1EncapsulatingOctetString)
-                        precertificateSctExtension.getChildren().get(1);
-
+                Asn1EncapsulatingOctetString outerContentEncapsulation =
+                    (Asn1EncapsulatingOctetString) precertificateSctExtension.getChildren().get(1);
 
                 byte[] encodedSctList = null;
 
@@ -112,15 +111,15 @@ public class CertificateTransparencyProbe extends TlsProbe {
                 Asn1Field innerContentEncapsulation = (Asn1Field) outerContentEncapsulation.getChildren().get(0);
                 if (innerContentEncapsulation instanceof Asn1PrimitiveOctetString) {
                     Asn1PrimitiveOctetString innerPrimitiveOctetString =
-                            (Asn1PrimitiveOctetString) innerContentEncapsulation;
+                        (Asn1PrimitiveOctetString) innerContentEncapsulation;
                     encodedSctList = innerPrimitiveOctetString.getValue();
                 } else if (innerContentEncapsulation instanceof Asn1EncapsulatingOctetString) {
                     Asn1EncapsulatingOctetString innerEncapsulatingOctetString =
-                            (Asn1EncapsulatingOctetString) innerContentEncapsulation;
+                        (Asn1EncapsulatingOctetString) innerContentEncapsulation;
                     encodedSctList = innerEncapsulatingOctetString.getContent().getOriginalValue();
                 }
-                SignedCertificateTimestampListParser sctListParser
-                        = new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, true);
+                SignedCertificateTimestampListParser sctListParser =
+                    new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, true);
                 precertificateSctList = sctListParser.parse();
             }
         } catch (Exception e) {
@@ -138,17 +137,18 @@ public class CertificateTransparencyProbe extends TlsProbe {
         try {
             if (supportedExtensions.contains(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
                 if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-                    ServerHelloMessage serverHelloMessage = (ServerHelloMessage)
-                            WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
+                    ServerHelloMessage serverHelloMessage =
+                        (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(
+                            HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
                     if (serverHelloMessage != null
-                            && serverHelloMessage.containsExtension(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
+                        && serverHelloMessage.containsExtension(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
 
-                        SignedCertificateTimestampExtensionMessage sctExtensionMessage
-                                = serverHelloMessage.getExtension(SignedCertificateTimestampExtensionMessage.class);
+                        SignedCertificateTimestampExtensionMessage sctExtensionMessage =
+                            serverHelloMessage.getExtension(SignedCertificateTimestampExtensionMessage.class);
                         byte[] encodedSctList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
 
-                        SignedCertificateTimestampListParser sctListParser
-                                = new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, false);
+                        SignedCertificateTimestampListParser sctListParser =
+                            new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, false);
                         handshakeSctList = sctListParser.parse();
 
                         supportsHandshakeSCTs = true;
@@ -156,23 +156,14 @@ public class CertificateTransparencyProbe extends TlsProbe {
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
-        }
-    }
-
-    private void getOcspResponseScts() {
-        supportsOcspSCTs = false;
-        if (stapledOcspResponse != null) {
-
-            // TODO: Implement this using stapledOcspResponse.
-            //  The OCSPResponse class needs to modified to support OCSP extensions (primarily singleExtension)
+            LOGGER
+                .warn("Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
         }
     }
 
     /**
-     * Evaluates if Chrome's CT Policy is met.
-     * See https://github.com/chromium/ct-policy/blob/master/ct_policy.md
-     * for detailed information about Chrome's CT Policy.
+     * Evaluates if Chrome's CT Policy is met. See https://github.com/chromium/ct-policy/blob/master/ct_policy.md for
+     * detailed information about Chrome's CT Policy.
      */
     private void evaluateChromeCtPolicy() {
 
@@ -206,8 +197,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
                 hasEnoughPrecertificateSCTs = precertificateSctList.getCertificateTimestampList().size() >= 5;
             }
 
-            boolean hasGoogleAndNonGoogleScts = hasGoogleAndNonGoogleScts(
-                    precertificateSctList.getCertificateTimestampList());
+            boolean hasGoogleAndNonGoogleScts =
+                hasGoogleAndNonGoogleScts(precertificateSctList.getCertificateTimestampList());
             meetsChromeCTPolicy = hasGoogleAndNonGoogleScts && hasEnoughPrecertificateSCTs;
         }
     }
@@ -233,10 +224,9 @@ public class CertificateTransparencyProbe extends TlsProbe {
         return hasGoogleSct && hasNonGoogleSct;
     }
 
-
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getCertificateChain() != null && report.isProbeAlreadyExecuted(ProbeType.OCSP);
+        return report.getCertificateChainList() != null && report.isProbeAlreadyExecuted(ProbeType.OCSP);
     }
 
     @Override
@@ -246,7 +236,6 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        serverCertChain = report.getCertificateChain().getCertificate();
-        stapledOcspResponse = report.getStapledOcspResponse();
+        serverCertChain = report.getCertificateChainList().get(0).getCertificate();
     }
 }
