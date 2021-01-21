@@ -21,6 +21,7 @@ public enum AnalyzedPropertyCategory {
     ATTACKS,
     COMPARISON_FAILURE,
     CERTIFICATE,
+    CERTIFICATE_TRANSPARENCY,
     OCSP,
     FRESHNESS,
     SNI,
