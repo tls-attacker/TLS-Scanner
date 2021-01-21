@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -59,8 +61,8 @@ public class ECPointFormatProbe extends TlsProbe {
                 LOGGER.debug("Unable to determine supported point formats");
                 return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
             }
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ECPointFormatResult(null, TestResult.ERROR_DURING_TEST);
         }
     }
@@ -94,9 +96,12 @@ public class ECPointFormatProbe extends TlsProbe {
                 break;
             case ANSIX962_COMPRESSED_CHAR2:
                 groups = getSectGroups();
+                break;
+            default: // will never occur as all enum types are caught
+                ;
         }
         Config config = getScannerConfig().createConfig();
-        config.setDefaultClientSupportedCiphersuites(ourECDHCipherSuites);
+        config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
         config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setEnforceSettings(true);
@@ -126,7 +131,7 @@ public class ECPointFormatProbe extends TlsProbe {
             List<NamedGroup> secpGroups = getSecpGroups();
             Config tlsConfig = getScannerConfig().createConfig();
             tlsConfig.setQuickReceive(true);
-            tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplemented());
+            tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplemented());
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
             tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
             tlsConfig.setEnforceSettings(false);
@@ -145,7 +150,7 @@ public class ECPointFormatProbe extends TlsProbe {
             tlsConfig.setAddCertificateStatusRequestExtension(true);
             tlsConfig.setUseFreshRandom(true);
             tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                    .getTls13SignatureAndHashAlgorithms());
+                .getTls13SignatureAndHashAlgorithms());
             tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             State state = new State(tlsConfig);
@@ -155,8 +160,8 @@ public class ECPointFormatProbe extends TlsProbe {
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
-        } catch (Exception E) {
-            LOGGER.error("Could not test for Tls13SecpCompression", E);
+        } catch (Exception e) {
+            LOGGER.error("Could not test for Tls13SecpCompression", e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -164,8 +169,8 @@ public class ECPointFormatProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-                && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report
-                        .getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
+            && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE || report
+                .getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
     }
 
     @Override
@@ -175,7 +180,8 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
+        shouldTestPointFormats =
+            report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
         shouldTestTls13 = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;

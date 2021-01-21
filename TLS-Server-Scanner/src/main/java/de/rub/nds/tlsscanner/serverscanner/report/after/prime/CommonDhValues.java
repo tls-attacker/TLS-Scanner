@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after.prime;
 
 import java.io.Serializable;
@@ -24,7 +26,7 @@ public class CommonDhValues implements Serializable {
     }
 
     public CommonDhValues(BigInteger generator, BigInteger modulus, int length, boolean prime, boolean safePrime,
-            String name) {
+        String name) {
         this.generator = generator;
         this.modulus = modulus;
         this.length = length;

@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
- * <p>
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
- * <p>
+ *
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
+ *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
@@ -24,12 +26,9 @@ public class CertificateTransparencyResult extends ProbeResult {
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
 
-    public CertificateTransparencyResult(boolean supportsPrecertificateSCTs,
-                                         boolean supportsHandshakeSCTs, boolean supportsOcspSCTs,
-                                         boolean meetsChromeCTPolicy,
-                                         SignedCertificateTimestampList precertificateSctList,
-                                         SignedCertificateTimestampList handshakeSctList,
-                                         SignedCertificateTimestampList ocspSctList) {
+    public CertificateTransparencyResult(boolean supportsPrecertificateSCTs, boolean supportsHandshakeSCTs,
+        boolean supportsOcspSCTs, boolean meetsChromeCTPolicy, SignedCertificateTimestampList precertificateSctList,
+        SignedCertificateTimestampList handshakeSctList, SignedCertificateTimestampList ocspSctList) {
         super(ProbeType.CERTIFICATE_TRANSPARENCY);
         this.supportsPrecertificateSCTs = supportsPrecertificateSCTs;
         this.supportsHandshakeSCTs = supportsHandshakeSCTs;
