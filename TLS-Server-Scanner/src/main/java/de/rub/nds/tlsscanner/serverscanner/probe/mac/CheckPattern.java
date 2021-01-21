@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.mac;
 
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
@@ -82,9 +84,9 @@ public class CheckPattern {
                 return builder.toString();
             case UNKNOWN:
                 return "Unknown";
-
+            default:
+                return super.toString();
         }
-        return super.toString();
     }
 
 }

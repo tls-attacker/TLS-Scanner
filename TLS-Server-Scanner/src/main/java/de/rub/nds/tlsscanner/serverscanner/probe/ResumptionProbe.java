@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -52,10 +54,10 @@ public class ResumptionProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(), getSupportsTls13PskDhe());
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                    TestResult.ERROR_DURING_TEST);
+                TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -63,10 +65,10 @@ public class ResumptionProbe extends TlsProbe {
         try {
             Config tlsConfig = getScannerConfig().createConfig();
             tlsConfig.setQuickReceive(true);
-            List<CipherSuite> ciphersuites = new LinkedList<>();
-            ciphersuites.addAll(supportedSuites);
+            List<CipherSuite> cipherSuites = new LinkedList<>();
+            cipherSuites.addAll(supportedSuites);
             // TODO this can fail in some rare occasions
-            tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites.get(0));
+            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites.get(0));
             tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setEnforceSettings(false);
@@ -84,7 +86,7 @@ public class ResumptionProbe extends TlsProbe {
             State state = new State(tlsConfig);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.error("Could not test for support for Tls13PskDhe");
             return TestResult.ERROR_DURING_TEST;
         }
@@ -101,12 +103,13 @@ public class ResumptionProbe extends TlsProbe {
             WorkflowTrace trace = state.getWorkflowTrace();
 
             trace.addTlsAction(new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(),
-                    new NewSessionTicketMessage(false)));
+                new NewSessionTicketMessage(false)));
             trace.addTlsAction(new ResetConnectionAction(tlsConfig.getDefaultClientConnection().getAlias()));
 
             tlsConfig.setAddPreSharedKeyExtension(Boolean.TRUE);
-            WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
-                    WorkflowTraceType.HANDSHAKE, RunningModeType.CLIENT);
+            WorkflowTrace secondHandshake =
+                new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+                    RunningModeType.CLIENT);
 
             // remove certificate messages from 2nd handshake
             ReceiveAction firstServerMsgs = (ReceiveAction) secondHandshake.getTlsActions().get(1);
@@ -124,7 +127,7 @@ public class ResumptionProbe extends TlsProbe {
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.error("Could not test for support for Tls13PskDhe");
             return TestResult.ERROR_DURING_TEST;
         }
@@ -158,7 +161,7 @@ public class ResumptionProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+            .getTls13SignatureAndHashAlgorithms());
         tlsConfig.setTls13BackwardsCompatibilityMode(Boolean.TRUE);
         return tlsConfig;
     }
@@ -172,16 +175,17 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setPSKKeyExchangeModes(pskKex);
             tlsConfig.setAddPSKKeyExchangeModesExtension(true);
             State state = new State(tlsConfig);
-            state.getWorkflowTrace().addTlsAction(
+            state.getWorkflowTrace()
+                .addTlsAction(
                     new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(), new NewSessionTicketMessage(
-                            false)));
+                        false)));
 
             executeState(state);
             if (state.getWorkflowTrace().getLastMessageAction().executedAsPlanned()) {
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.error("Could not test for support for Tls13SessionTickets");
             return TestResult.ERROR_DURING_TEST;
         }

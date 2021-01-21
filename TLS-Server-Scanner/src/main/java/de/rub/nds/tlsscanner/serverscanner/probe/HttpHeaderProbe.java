@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -63,7 +65,7 @@ public class HttpHeaderProbe extends HttpsProbe {
             tlsConfig.setHttpsParsingEnabled(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
             tlsConfig.setStopActionsAfterIOException(true);
-            // Dont send extensions if we are in sslv2
+            // Don't send extensions if we are in SSLv2
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddServerNameIndicationExtension(true);
@@ -80,7 +82,6 @@ public class HttpHeaderProbe extends HttpsProbe {
             trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
             trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
             trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-
             trace.addTlsAction(new SendAction(this.getHttpsRequest()));
             trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
             State state = new State(tlsConfig, trace);
@@ -103,8 +104,8 @@ public class HttpHeaderProbe extends HttpsProbe {
                 headerList = new LinkedList<>();
             }
             return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
         }
     }

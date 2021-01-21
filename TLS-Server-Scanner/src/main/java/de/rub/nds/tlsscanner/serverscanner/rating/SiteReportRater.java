@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -44,10 +46,9 @@ public class SiteReportRater {
      * Returns a generic SiteReportRater
      *
      * @param recommendationLanguage
-     *            Language of the recommendations. If no language file can be
-     *            found for selected language a default recommendation file in
-     *            english is returned
-     * @return
+     * Language of the recommendations. If no language file can be found for selected language a default recommendation
+     * file in english is returned
+     * @return A generated SiteReportRater
      * @throws JAXBException
      */
     public static SiteReportRater getSiteReportRater(String recommendationLanguage) throws JAXBException {
@@ -63,7 +64,7 @@ public class SiteReportRater {
         URL u = classLoader.getResource(fileName);
         if (u == null) {
             LOGGER.warn("Could not find language resources \"" + fileName
-                    + "\" for SiteReportRater. Using default (english).");
+                + "\" for SiteReportRater. Using default (english).");
             fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
         }
         in = classLoader.getResourceAsStream(fileName);
@@ -79,8 +80,8 @@ public class SiteReportRater {
         for (RatingInfluencer ratingInfluencer : influencers.getRatingInfluencers()) {
             TestResult result = resultMap.get(ratingInfluencer.getAnalyzedProperty().toString());
             if (result != null) {
-                PropertyResultRatingInfluencer propertyRatingInfluencer = ratingInfluencer
-                        .getPropertyRatingInfluencer(result);
+                PropertyResultRatingInfluencer propertyRatingInfluencer =
+                    ratingInfluencer.getPropertyRatingInfluencer(result);
                 ratingInfluencers.put(ratingInfluencer.getAnalyzedProperty(), propertyRatingInfluencer);
             }
         }
