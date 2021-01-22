@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.trust;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -39,7 +41,7 @@ public class TrustPlatform {
     }
 
     public TrustPlatform(String platform, String version, String url, Date lastUpdate,
-            List<CertificateEntry> certificateEntries, List<CertificateEntry> blockedCertificateEntries) {
+        List<CertificateEntry> certificateEntries, List<CertificateEntry> blockedCertificateEntries) {
         this.platform = platform;
         this.version = version;
         this.url = url;
@@ -91,11 +93,11 @@ public class TrustPlatform {
     }
 
     /**
-     * Returns the trust anchor as a CertificateEntry for the Subject.If the
-     * subject is not trusted or not found null is returned
+     * Returns the trust anchor as a CertificateEntry for the Subject.If the subject is not trusted or not found null is
+     * returned
      *
      * @param subject
-     *            The subject to search for
+     * The subject to search for
      * @return The relevant CertificateEntry or null if not found
      */
     public CertificateEntry getTrustedCertificateEntry(String subject) {
@@ -108,11 +110,11 @@ public class TrustPlatform {
     }
 
     /**
-     * Returns the trust anchor as a CertificateEntry for the Subject.If the
-     * subject is not trusted or not found null is returned
+     * Returns the trust anchor as a CertificateEntry for the Subject.If the subject is not trusted or not found null is
+     * returned
      *
      * @param subject
-     *            The subject to search for
+     * The subject to search for
      * @return The relevant CertificateEntry or null if not found
      */
     public CertificateEntry getBlacklistedCertificateEntry(String subject) {
