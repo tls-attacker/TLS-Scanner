@@ -16,37 +16,8 @@ import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.probe.BleichenbacherProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CcaProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CcaRequiredProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CcaSupportProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CertificateTransparencyProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.ECPointFormatProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.ExtensionProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.HeartbleedProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.HttpFalseStartProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.HttpHeaderProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.InvalidCurveProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.NamedCurvesProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.PaddingOracleProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.RenegotiationProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.ResumptionProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketZeroKeyProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsPoodleProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
@@ -77,6 +48,7 @@ public class TlsScanner {
     private boolean closeAfterFinishParallel;
     private final List<TlsProbe> probeList;
     private final List<AfterProbe> afterList;
+    private final List<ProbeType> probesToExecute;
 
     public TlsScanner(ScannerConfig config) {
 
@@ -87,6 +59,7 @@ public class TlsScanner {
                 .getHost() + "-Worker"));
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
+        this.probesToExecute = config.getProbes();
         fillDefaultProbeLists();
     }
 
@@ -96,6 +69,7 @@ public class TlsScanner {
         closeAfterFinishParallel = true;
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
+        this.probesToExecute = config.getProbes();
         fillDefaultProbeLists();
     }
 
@@ -105,6 +79,7 @@ public class TlsScanner {
         this.config = config;
         this.probeList = probeList;
         this.afterList = afterList;
+        this.probesToExecute = config.getProbes();
         closeAfterFinishParallel = true;
     }
 
@@ -149,6 +124,12 @@ public class TlsScanner {
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
         afterList.add(new RaccoonAttackAfterProbe());
+    }
+
+    private void addProbeToProbeList(TlsProbe probe) {
+        if (probesToExecute == null || probesToExecute.contains(probe.getType())) {
+            probeList.add(probe);
+        }
     }
 
     public SiteReport scan() {

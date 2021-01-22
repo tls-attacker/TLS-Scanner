@@ -107,7 +107,6 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddSessionTicketTLSExtension(true);
-            tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddRenegotiationInfoExtension(false);
             state = new State(tlsConfig);
             executeState(state);

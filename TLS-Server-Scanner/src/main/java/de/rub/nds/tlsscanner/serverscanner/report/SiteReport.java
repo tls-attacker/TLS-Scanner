@@ -157,7 +157,7 @@ public class SiteReport extends Observable implements Serializable {
 
     private int performedTcpConnections = 0;
 
-    private SiteReport() {
+    public SiteReport() {
         resultMap = new HashMap<>();
         host = null;
     }
@@ -314,6 +314,10 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void addCipherSuites(Set<CipherSuite> cipherSuites) {
         this.cipherSuites.addAll(cipherSuites);
+    }
+
+    public synchronized void setCipherSuites(Set<CipherSuite> cipherSuites) {
+        this.cipherSuites = cipherSuites;
     }
 
     public synchronized List<NamedGroup> getSupportedNamedGroups() {

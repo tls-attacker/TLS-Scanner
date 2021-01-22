@@ -68,7 +68,6 @@ public class HttpHeaderProbe extends HttpsProbe {
             // Don't send extensions if we are in SSLv2
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
             tlsConfig.setAddRenegotiationInfoExtension(true);
 

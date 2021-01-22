@@ -85,7 +85,6 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
@@ -119,7 +118,6 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(false);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());

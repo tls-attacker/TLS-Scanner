@@ -19,7 +19,11 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import org.bouncycastle.util.IPAddress;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -60,6 +64,10 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
+
+    private List<ProbeType> probes = null;
+
+    private Config baseConfig = null;
 
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
@@ -131,6 +139,10 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Override
     public Config createConfig() {
+        if (baseConfig != null) {
+            return baseConfig.createCopy();
+        }
+
         Config config = super.createConfig(Config.createConfig());
         if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
             || clientDelegate.getSniHostname() != null) {
@@ -149,5 +161,25 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public Config getBaseConfig() {
+        return baseConfig;
+    }
+
+    public void setBaseConfig(Config baseConfig) {
+        this.baseConfig = baseConfig;
+    }
+
+    public List<ProbeType> getProbes() {
+        return probes;
+    }
+
+    public void setProbes(List<ProbeType> probes) {
+        this.probes = probes;
+    }
+
+    public void setProbes(ProbeType... probes) {
+        this.probes = Arrays.asList(probes);
     }
 }

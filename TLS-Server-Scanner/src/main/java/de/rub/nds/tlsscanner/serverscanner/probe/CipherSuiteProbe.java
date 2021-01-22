@@ -124,7 +124,6 @@ public class CipherSuiteProbe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
         tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
