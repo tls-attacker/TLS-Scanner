@@ -156,8 +156,7 @@ public abstract class VectorStatisticTest<T extends TestInfo> {
             if (correctContainer != null) {
                 correctContainer.addResponseFingerprint(otherContainer.getResponseFingerprintList());
             } else {
-                vectorContainerList.add(new VectorContainer(otherContainer.getVector(), otherContainer
-                    .getResponseFingerprintList()));
+                this.vectorContainerList.add(otherContainer);
             }
         }
         updateInternals();
