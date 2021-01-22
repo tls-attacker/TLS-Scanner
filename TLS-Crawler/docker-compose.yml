@@ -1,0 +1,44 @@
+version: '3'
+services:
+  redis:
+    image: redis:latest
+    restart: "no"
+    ports:
+      - 6379:6379
+    networks:
+      - crawler_overlay
+  mongo:
+    image: mongo:latest
+    restart: "no"
+    volumes:
+      - mongodata:/db/data
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoadminpw
+    ports:
+      - 27017:27017
+    networks:
+      - crawler_overlay
+  controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "no"
+    command: ["master", "-hostFile", "/resources/ipv4_443", "-portToBeScanned", "443", "-redisHost", "redis", "-redisPort", "6379", "-scanName", "scanResults"]
+    volumes:
+      - "./resources:/resources"
+    networks:
+      - crawler_overlay
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "no"
+    command: ["slave", "-instanceId", "instance-1", "-mongoDbHost", "mongo", "-mongoDbPort", "27017", "-redisHost", "redis", "-redisPort", "6379", "-numberOfThreads", "100", "-parallelProbeThreads", "100", "-mongoDbUser", "mongoadmin", "-mongoDbPass", "mongoadminpw", "-mongoDbAuthSource", "admin"]
+    networks:
+      - crawler_overlay
+volumes:
+  mongodata:
+
+networks:
+  crawler_overlay:
