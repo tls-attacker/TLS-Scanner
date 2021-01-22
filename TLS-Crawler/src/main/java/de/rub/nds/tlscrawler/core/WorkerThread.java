@@ -23,19 +23,19 @@ import org.bson.Document;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class SlaveWorkerThread extends Thread {
+public class WorkerThread extends Thread {
 
     private static Logger LOG = LogManager.getLogger();
 
     private final SynchronizedTaskRouter synchronizedTaskRouter;
-    private final String slaveInstanceId;
+    private final String workerInstanceId;
 
     private IScanProvider scanProvider;
 
-    public SlaveWorkerThread(String slaveInstanceId,
-            SynchronizedTaskRouter synchronizedTaskRouter,
-            IScanProvider scanProvider) {
-        this.slaveInstanceId = slaveInstanceId;
+    public WorkerThread(String workerInstanceId,
+                        SynchronizedTaskRouter synchronizedTaskRouter,
+                        IScanProvider scanProvider) {
+        this.workerInstanceId = workerInstanceId;
         this.synchronizedTaskRouter = synchronizedTaskRouter;
         this.scanProvider = scanProvider;
     }

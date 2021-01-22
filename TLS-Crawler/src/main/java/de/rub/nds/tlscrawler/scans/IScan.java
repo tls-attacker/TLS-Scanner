@@ -17,8 +17,6 @@ import org.bson.Document;
  */
 public interface IScan {
 
-    static String SLAVE_INSTANCE_ID = "slaveInstanceId";
-
     /**
      * @return A unique name.
      */

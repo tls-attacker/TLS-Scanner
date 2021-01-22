@@ -5,7 +5,7 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.config.MasterCommandConfig;
+import de.rub.nds.tlscrawler.config.ControllerCommandConfig;
 import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import java.io.BufferedReader;
@@ -24,14 +24,14 @@ import org.apache.logging.log4j.Logger;
  *
  * @author robert
  */
-public class Master {
+public class Controller {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private IOrchestrationProvider orchestrationProvider;
-    private MasterCommandConfig config;
+    private ControllerCommandConfig config;
 
-    public Master(MasterCommandConfig config, IOrchestrationProvider orchestrationProvider) {
+    public Controller(ControllerCommandConfig config, IOrchestrationProvider orchestrationProvider) {
         this.orchestrationProvider = orchestrationProvider;
         this.config = config;
     }

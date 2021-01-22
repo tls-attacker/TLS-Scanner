@@ -7,18 +7,17 @@
  */
 package de.rub.nds.tlscrawler;
 
-import de.rub.nds.tlscrawler.config.MasterCommandConfig;
+import de.rub.nds.tlscrawler.config.ControllerCommandConfig;
 import com.beust.jcommander.JCommander;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import de.rub.nds.tlscrawler.analysis.DataAnalyser;
 import de.rub.nds.tlscrawler.config.AnalysisCommandConfig;
-import de.rub.nds.tlscrawler.config.SlaveCommandConfig;
-import de.rub.nds.tlscrawler.core.ITlsCrawlerSlave;
-import de.rub.nds.tlscrawler.core.TlsCrawlerSlave;
+import de.rub.nds.tlscrawler.config.WorkerCommandConfig;
+import de.rub.nds.tlscrawler.core.ITlsCrawlerWorker;
+import de.rub.nds.tlscrawler.core.TlsCrawlerWorker;
 import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
 import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
-import de.rub.nds.tlscrawler.core.Master;
+import de.rub.nds.tlscrawler.core.Controller;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
@@ -46,36 +45,30 @@ public class Main {
         mongoLogger.setLevel(Level.SEVERE);
 
         JCommander jc = new JCommander();
-        MasterCommandConfig masterCommandConfig = new MasterCommandConfig();
-        jc.addCommand("master", masterCommandConfig);
+        ControllerCommandConfig controllerCommandConfig = new ControllerCommandConfig();
+        jc.addCommand("controller", controllerCommandConfig);
 
-        SlaveCommandConfig slaveCommandConfig = new SlaveCommandConfig();
-        jc.addCommand("slave", slaveCommandConfig);
+        WorkerCommandConfig workerCommandConfig = new WorkerCommandConfig();
+        jc.addCommand("worker", workerCommandConfig);
 
         AnalysisCommandConfig analysisCommandConfig = new AnalysisCommandConfig();
         jc.addCommand("analysis", analysisCommandConfig);
 
         jc.parse(args);
         if (jc.getParsedCommand() == null) {
-            if (jc.getParsedCommand() == null) {
-                jc.usage();
-            } else {
-                jc.usage(jc.getParsedCommand());
-            }
-            return;
+            jc.usage();
+        } else {
+            jc.usage(jc.getParsedCommand());
         }
+
         switch (jc.getParsedCommand().toLowerCase()) {
-            case "slave":
-                ITlsCrawlerSlave slave = new TlsCrawlerSlave(slaveCommandConfig.getInstanceId(), setUpOrchestrationProvider(slaveCommandConfig.getRedisDelegate()), setUpPersistenceProvider(slaveCommandConfig.getMongoDbDelegate()), slaveCommandConfig.getNumberOfThreads());
-                slave.start();
+            case "worker":
+                ITlsCrawlerWorker worker = new TlsCrawlerWorker(workerCommandConfig.getInstanceId(), setUpOrchestrationProvider(workerCommandConfig.getRedisDelegate()), setUpPersistenceProvider(workerCommandConfig.getMongoDbDelegate()), workerCommandConfig.getNumberOfThreads());
+                worker.start();
                 break;
-            case "master":
-                Master master = new Master(masterCommandConfig, setUpOrchestrationProvider(masterCommandConfig.getRedisDelegate()));
-                master.start();
-                break;
-            case "analysis":
-                DataAnalyser analyser = new DataAnalyser(analysisCommandConfig, setUpPersistenceProvider(analysisCommandConfig.getMongoDbDelegate()));
-                analyser.analyze();
+            case "controller":
+                Controller controller = new Controller(controllerCommandConfig, setUpOrchestrationProvider(controllerCommandConfig.getRedisDelegate()));
+                controller.start();
                 break;
             default:
                 jc.usage(jc.getParsedCommand());

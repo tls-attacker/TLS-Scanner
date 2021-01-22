@@ -7,11 +7,11 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.ISlaveStats;
+import de.rub.nds.tlscrawler.data.IWorkerStats;
 import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.data.ScanTarget;
 import de.rub.nds.tlscrawler.data.ScanTask;
-import de.rub.nds.tlscrawler.data.SlaveStats;
+import de.rub.nds.tlscrawler.data.WorkerStats;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
+public class TlsCrawlerWorker extends TlsCrawler implements ITlsCrawlerWorker {
 
     private static Logger LOG = LogManager.getLogger();
 
@@ -48,8 +48,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     private int newFetchLimit;
     private int fetchAmount;
     private List<Thread> threads;
-    private TlsCrawlerSlaveOrgThread orgThread;
-    private SlaveStats slaveStats;
+    private TlsCrawlerWorkerOrgThread orgThread;
+    private WorkerStats workerStats;
     private SynchronizedTaskRouter synchronizedTaskRouter;
 
     private ScanJob currentScanJob;
@@ -62,9 +62,9 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
      */
-    public TlsCrawlerSlave(String instanceId,
-            IOrchestrationProvider orchestrationProvider,
-            IPersistenceProvider persistenceProvider) {
+    public TlsCrawlerWorker(String instanceId,
+                            IOrchestrationProvider orchestrationProvider,
+                            IPersistenceProvider persistenceProvider) {
         this(instanceId, orchestrationProvider, persistenceProvider, STANDARD_NO_THREADS);
     }
 
@@ -74,12 +74,11 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
      * @param instanceId The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
-     * @param scans A neither null nor empty list of available scans.
      * @param noThreads Number of worker threads the crawler slave should use.
      */
-    public TlsCrawlerSlave(String instanceId,
-            IOrchestrationProvider orchestrationProvider,
-            IPersistenceProvider persistenceProvider, int noThreads) {
+    public TlsCrawlerWorker(String instanceId,
+                            IOrchestrationProvider orchestrationProvider,
+                            IPersistenceProvider persistenceProvider, int noThreads) {
         super(instanceId, orchestrationProvider, persistenceProvider);
         this.noThreads = noThreads;
         this.newFetchLimit = 1000;
@@ -88,16 +87,16 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         LOG.trace("Constructor()");
 
         this.synchronizedTaskRouter = new SynchronizedTaskRouter();
-        this.slaveStats = new SlaveStats(0, 0);
+        this.workerStats = new WorkerStats(0, 0);
         this.threads = new LinkedList<>();
 
         for (int i = 0; i < this.noThreads; i++) {
-            Thread t = new SlaveWorkerThread(this.getInstanceId(), this.synchronizedTaskRouter, this);
+            Thread t = new WorkerThread(this.getInstanceId(), this.synchronizedTaskRouter, this);
             t.start();
         }
 
-        this.orgThread = new TlsCrawlerSlaveOrgThread(
-                this.slaveStats,
+        this.orgThread = new TlsCrawlerWorkerOrgThread(
+                this.workerStats,
                 this,
                 this,
                 this.synchronizedTaskRouter,
@@ -112,8 +111,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     }
 
     @Override
-    public ISlaveStats getStats() {
-        return SlaveStats.copyFrom(this.slaveStats);
+    public IWorkerStats getStats() {
+        return WorkerStats.copyFrom(this.workerStats);
     }
 
     @Override
@@ -121,7 +120,7 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         return currentScan;
     }
 
-    private class TlsCrawlerSlaveOrgThread extends Thread {
+    private class TlsCrawlerWorkerOrgThread extends Thread {
 
         private AtomicBoolean isRunning = new AtomicBoolean(false);
         private int iterations = 0;
@@ -130,17 +129,17 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         private int fetchAmount;
         private SynchronizedTaskRouter synchronizedTaskRouter;
         private IOrganizer organizer;
-        private SlaveStats stats;
+        private WorkerStats stats;
         private ExecutorService dnsPool;
         private List<Future<ScanTarget>> futureDnsResults;
 
-        public TlsCrawlerSlaveOrgThread(SlaveStats stats,
-                IOrganizer organizer,
-                IScanProvider scanProvider,
-                SynchronizedTaskRouter synchronizedTaskRouter,
-                int newFetchLimit,
-                int fetchAmount) {
-            super(TlsCrawlerSlaveOrgThread.class.getSimpleName());
+        public TlsCrawlerWorkerOrgThread(WorkerStats stats,
+                                         IOrganizer organizer,
+                                         IScanProvider scanProvider,
+                                         SynchronizedTaskRouter synchronizedTaskRouter,
+                                         int newFetchLimit,
+                                         int fetchAmount) {
+            super(TlsCrawlerWorkerOrgThread.class.getSimpleName());
 
             this.stats = stats;
             this.organizer = organizer;

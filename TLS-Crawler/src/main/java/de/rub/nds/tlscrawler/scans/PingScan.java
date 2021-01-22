@@ -8,16 +8,12 @@
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlscrawler.data.ScanTarget;
-import de.rub.nds.tlscrawler.utility.Tuple;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -36,7 +32,7 @@ public class PingScan implements IScan {
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
@@ -45,23 +41,16 @@ public class PingScan implements IScan {
 
         Document document = new Document();
         document.put("timestamp", Instant.now());
-        document.put("timeout", this.timeOutMs);
+        document.put("timeout", timeOutMs);
 
-        Collection<Tuple> portwiseScanResult = new LinkedList<>();
-        portwiseScanResult.add(Tuple.create(target.getPort(), isReachable(target.getIp(), target.getPort())));
 
-        List<Integer> reachablePorts = portwiseScanResult.stream()
-                .filter(x -> (boolean) x.getSecond())
-                .map(x -> (int) x.getFirst())
-                .collect(Collectors.toList());
-
-        List<Integer> unreachablePorts = portwiseScanResult.stream()
-                .filter(x -> !(boolean) x.getSecond())
-                .map(x -> (int) x.getFirst())
-                .collect(Collectors.toList());
-
-        document.put("reachablePorts", reachablePorts);
-        document.put("unreachablePorts", unreachablePorts);
+        if (isReachable(target.getIp(), target.getPort())) {
+            document.put("reachablePorts", new ArrayList<>(target.getPort()));
+            document.put("unreachablePorts", new ArrayList<>());
+        } else {
+            document.put("reachablePorts", new ArrayList<>());
+            document.put("unreachablePorts", new ArrayList<>(target.getPort()));
+        }
 
         return document;
     }

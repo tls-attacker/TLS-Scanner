@@ -14,7 +14,7 @@ import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
  *
  * @author robert
  */
-public class SlaveCommandConfig {
+public class WorkerCommandConfig {
 
     @Parameter(names = "-numberOfThreads", description = "Number of worker threads the crawler slave should use")
     private int numberOfThreads = 500;
@@ -31,7 +31,7 @@ public class SlaveCommandConfig {
     @ParametersDelegate
     private MongoDbDelegate mongoDbDelegate;
 
-    public SlaveCommandConfig() {
+    public WorkerCommandConfig() {
         redisDelegate = new RedisDelegate();
         mongoDbDelegate = new MongoDbDelegate();
     }

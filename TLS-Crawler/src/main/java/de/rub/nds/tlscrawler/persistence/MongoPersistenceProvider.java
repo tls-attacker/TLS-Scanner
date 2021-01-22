@@ -239,32 +239,4 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         return collection.distinct(fieldName, filter, resultClass);
     }
 
-    /**
-     * Constants of the keys in the result documents used in MongoDB.
-     */
-    static class DBKeys {
-
-        static String ID = "taskId";
-        static String MASTER_INSTANCE_ID = "masterInstanceId";
-        static String ACCEPTED_TIMESTAMP = "acceptedTimestamp";
-        static String COMPLETED_TIMESTAMP = "completedTimestamp";
-        static String SCAN_TARGET = "scanTarget";
-        static String PORTS = "ports";
-        static String RESULTS = "results";
-    }
-
-    /**
-     * Constants to use in update-queries.
-     */
-    static class DBOperations {
-
-        static String EQUALS = "$eq";
-        static String EXISTS = "$exists";
-        static String GROUP = "$group";
-        static String IN = "$in";
-        static String MATCH = "$match";
-        static String MIN = "$min";
-        static String NOT_EQUAL = "$ne";
-        static String SET = "$set";
-    }
 }

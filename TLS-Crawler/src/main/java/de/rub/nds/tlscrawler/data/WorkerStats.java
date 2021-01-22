@@ -12,19 +12,19 @@ package de.rub.nds.tlscrawler.data;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class SlaveStats implements ISlaveStats {
+public class WorkerStats implements IWorkerStats {
 
     private final Object _syncroot = new Object();
 
     private long acceptedTaskCount;
     private long completedTaskCount;
 
-    public SlaveStats() {
+    public WorkerStats() {
         this.acceptedTaskCount = 0;
         this.completedTaskCount = 0;
     }
 
-    public SlaveStats(long acceptedTaskCount, long completedTaskCount) {
+    public WorkerStats(long acceptedTaskCount, long completedTaskCount) {
         this.acceptedTaskCount = acceptedTaskCount;
         this.completedTaskCount = completedTaskCount;
     }
@@ -82,11 +82,11 @@ public class SlaveStats implements ISlaveStats {
      * @param stats The stats to copy.
      * @return A threadsafe slave stats copy.
      */
-    public static SlaveStats copyFrom(ISlaveStats stats) {
+    public static WorkerStats copyFrom(IWorkerStats stats) {
         if (stats == null) {
             throw new IllegalArgumentException("'stats' must not be null.");
         }
 
-        return new SlaveStats(stats.getAcceptedTasksCount(), stats.getCompletedTasksCount());
+        return new WorkerStats(stats.getAcceptedTasksCount(), stats.getCompletedTasksCount());
     }
 }

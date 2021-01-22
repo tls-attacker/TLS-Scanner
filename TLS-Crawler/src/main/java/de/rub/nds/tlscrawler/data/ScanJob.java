@@ -6,7 +6,7 @@
 package de.rub.nds.tlscrawler.data;
 
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
-import de.rub.nds.tlscrawler.config.SlaveCommandConfig;
+import de.rub.nds.tlscrawler.config.WorkerCommandConfig;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.NullScan;
 import de.rub.nds.tlscrawler.scans.PingScan;
@@ -74,7 +74,7 @@ public class ScanJob implements Serializable {
         this.scan = scan;
     }
 
-    public IScan createIScanObject(SlaveCommandConfig config) {
+    public IScan createIScanObject(WorkerCommandConfig config) {
         switch (getScan()) {
             case "tls":
                 return new TlsScan(getTimeout(), config.getParallelProbeThreads(), getReexecutions(), starttlsType);

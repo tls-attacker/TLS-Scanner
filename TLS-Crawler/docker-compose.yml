@@ -24,7 +24,7 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: "no"
-    command: ["master", "-hostFile", "/resources/ipv4_443", "-portToBeScanned", "443", "-redisHost", "redis", "-redisPort", "6379", "-scanName", "scanResults"]
+    command: ["controller", "-hostFile", "/resources/ipv4_443", "-portToBeScanned", "443", "-redisHost", "redis", "-redisPort", "6379", "-scanName", "scanResults"]
     volumes:
       - "./resources:/resources"
     networks:
@@ -34,7 +34,7 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: "no"
-    command: ["slave", "-instanceId", "instance-1", "-mongoDbHost", "mongo", "-mongoDbPort", "27017", "-redisHost", "redis", "-redisPort", "6379", "-numberOfThreads", "100", "-parallelProbeThreads", "100", "-mongoDbUser", "mongoadmin", "-mongoDbPass", "mongoadminpw", "-mongoDbAuthSource", "admin"]
+    command: ["worker", "-instanceId", "instance-1", "-mongoDbHost", "mongo", "-mongoDbPort", "27017", "-redisHost", "redis", "-redisPort", "6379", "-numberOfThreads", "100", "-parallelProbeThreads", "100", "-mongoDbUser", "mongoadmin", "-mongoDbPass", "mongoadminpw", "-mongoDbAuthSource", "admin"]
     networks:
       - crawler_overlay
 volumes:

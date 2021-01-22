@@ -16,8 +16,6 @@ import de.rub.nds.tlsattacker.core.constants.StarttlsType;
  */
 public class ScanHolder {
 
-    private static ScanHolder _instance = new ScanHolder();
-
     private ScanHolder() {
     }
 

@@ -14,13 +14,13 @@ import java.time.Instant;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public class MasterStats implements IMasterStats {
+public class ControllerStats implements IControllerStats {
     private long totalTasks;
     private long finishedTasks;
     private Instant earliestCompletionTimestamp;
     private Instant earliestCreatedTimestamp;
 
-    public MasterStats(long totalTasks, long finishedTasks, Instant earliestCompletionTimestamp, Instant earliestCreatedTimestamp) {
+    public ControllerStats(long totalTasks, long finishedTasks, Instant earliestCompletionTimestamp, Instant earliestCreatedTimestamp) {
         this.totalTasks = totalTasks;
         this.finishedTasks = finishedTasks;
         this.earliestCompletionTimestamp = earliestCompletionTimestamp;
@@ -51,12 +51,12 @@ public class MasterStats implements IMasterStats {
      * @param stats The stats to copy.
      * @return A threadsafe master stats copy.
      */
-    public static MasterStats copyFrom(IMasterStats stats) {
+    public static ControllerStats copyFrom(IControllerStats stats) {
         if (stats == null) {
             throw new IllegalArgumentException("'stats' must not be null.");
         }
 
-        return new MasterStats(stats.getTotalTasks(),
+        return new ControllerStats(stats.getTotalTasks(),
                 stats.getFinishedTasks(),
                 stats.getEarliestCompletionTimestamp(),
                 stats.getEarliestCreatedTimestamp());

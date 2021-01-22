@@ -27,9 +27,9 @@ import org.bson.Document;
  */
 public class TlsScan implements IScan {
 
-    private static Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
-    private static String SCAN_NAME = "tls_scan";
+    private static final String SCAN_NAME = "tls_scan";
 
     private final ParallelExecutor parallelExecutor;
 
@@ -58,14 +58,14 @@ public class TlsScan implements IScan {
         ScannerConfig config = new ScannerConfig(generalDelegate);
         config.setScanDetail(ScannerDetail.NORMAL);
         config.setTimeout(timeout);
-
-        int port = 443;
-        config.getClientDelegate().setHost(target.getIp() + ":" + port);
+        config.getClientDelegate().setHost(target.getIp() + ":" + 443);
         config.getClientDelegate().setSniHostname(target.getHostname());
-        config.setScanDetail(ScannerDetail.QUICK);
         config.getStarttlsDelegate().setStarttlsType(starttlsType);
+
+
         TlsScanner scanner = new TlsScanner(config, parallelExecutor);
         scanner.setCloseAfterFinishParallel(false);
+
         if (target.getHostname() != null) {
             LOG.info("Started scanning: " + target.getHostname());
         } else {
@@ -78,8 +78,8 @@ public class TlsScan implements IScan {
         } else {
             LOG.info("Finished scanning: " + target.getIp());
         }
-        Document document = createDocumentFromSiteReport(report);
-        return document;
+
+        return createDocumentFromSiteReport(report);
     }
 
     private Document createDocumentFromSiteReport(SiteReport report) {

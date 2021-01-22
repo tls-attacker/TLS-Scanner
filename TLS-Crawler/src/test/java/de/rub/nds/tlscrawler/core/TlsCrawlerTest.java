@@ -44,7 +44,7 @@ public class TlsCrawlerTest {
         IOrchestrationProvider op = mock(IOrchestrationProvider.class);
         when(op.getScanTask(testJob)).thenReturn("scanTaskId");
         when(op.getScanJobs()).thenReturn(scanJobList);
-        this.subject = new TlsCrawlerSlave("slaveId", op, pp, 1);
+        this.subject = new TlsCrawlerWorker("slaveId", op, pp, 1);
     }
 
     @Test

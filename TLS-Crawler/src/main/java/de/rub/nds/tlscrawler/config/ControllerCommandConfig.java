@@ -14,7 +14,7 @@ import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
  *
  * @author robert
  */
-public class MasterCommandConfig {
+public class ControllerCommandConfig {
 
     @Parameter(names = "-portToBeScanned", description = "The port that should be scanned.")
     private int port = 443;
@@ -43,7 +43,7 @@ public class MasterCommandConfig {
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
 
-    public MasterCommandConfig() {
+    public ControllerCommandConfig() {
         redisDelegate = new RedisDelegate();
         starttlsDelegate = new StarttlsDelegate();
     }

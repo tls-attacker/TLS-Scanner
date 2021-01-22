@@ -12,7 +12,7 @@ package de.rub.nds.tlscrawler.data;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public interface ISlaveStats {
+public interface IWorkerStats {
 
     /**
      * @return The number of accepted tasks.

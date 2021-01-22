@@ -14,7 +14,7 @@ import java.time.Instant;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public interface IMasterStats {
+public interface IControllerStats {
 
     /**
      * @return The total number of tasks in the persistence provider.

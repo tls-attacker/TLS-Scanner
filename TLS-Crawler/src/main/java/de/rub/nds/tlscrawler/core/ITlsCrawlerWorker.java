@@ -7,7 +7,7 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.ISlaveStats;
+import de.rub.nds.tlscrawler.data.IWorkerStats;
 
 /**
  * Interface for TLS-Crawler slaves.
@@ -15,7 +15,7 @@ import de.rub.nds.tlscrawler.data.ISlaveStats;
  *
  * @author janis.fliegenschmidt@rub.de
  */
-public interface ITlsCrawlerSlave {
+public interface ITlsCrawlerWorker {
 
     /**
      * Starts the slave. Implementations should not pull tasks before this method has been called.
@@ -27,5 +27,5 @@ public interface ITlsCrawlerSlave {
      *
      * @return An object implementing the slave stats interface.
      */
-    ISlaveStats getStats();
+    IWorkerStats getStats();
 }
