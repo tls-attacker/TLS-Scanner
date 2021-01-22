@@ -12,9 +12,9 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import java.io.IOException;
 
-public class VectorSerialisationConverter extends StdSerializer<Vector> {
+public class VectorSerializer extends StdSerializer<Vector> {
     
-    public VectorSerialisationConverter() {
+    public VectorSerializer() {
         super(Vector.class);
     }
 

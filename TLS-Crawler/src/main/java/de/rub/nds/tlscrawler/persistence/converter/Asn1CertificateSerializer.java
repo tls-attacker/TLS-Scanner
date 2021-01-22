@@ -10,19 +10,20 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import java.io.IOException;
+import org.bouncycastle.asn1.x509.Certificate;
 
 /**
  *
  * @author robert
  */
-public class ByteArraySerialisationConverter extends StdSerializer<byte[]> {
+public class Asn1CertificateSerializer extends StdSerializer<Certificate> {
 
-    public ByteArraySerialisationConverter() {
-        super(byte[].class);
+    public Asn1CertificateSerializer() {
+        super(Certificate.class);
     }
 
     @Override
-    public void serialize(byte[] bytes, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeString(ArrayConverter.bytesToHexString(bytes, false, false).replace(" ", ""));
+    public void serialize(Certificate certificate, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        jsonGenerator.writeString(ArrayConverter.bytesToHexString(certificate.getEncoded(), false, false).replace(" ", ""));
     }
 }

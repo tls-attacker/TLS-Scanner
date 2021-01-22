@@ -7,7 +7,8 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
-import de.rub.nds.tlscrawler.data.IScanTarget;
+import de.rub.nds.tlscrawler.data.ScanJob;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import java.util.Collection;
 
 /**
@@ -18,34 +19,47 @@ import java.util.Collection;
  * @author janis.fliegenschmidt@rub.de
  */
 public interface IOrchestrationProvider {
-
+ 
+    /**
+     * Returns all active scan jobs
+     * @return 
+     */
+    public Collection<ScanJob> getScanJobs();
+    
+    public void putScanJob(ScanJob job);
+    
+    public void deleteScanJob(ScanJob job);
+    
     /**
      * Retrieves a scan task.
      *
+     * @param job
      * @return The scan task.
      */
-    String getScanTask();
+    public String getScanTask(ScanJob job);
 
     /**
      * Retrieves a number of scan tasks.
      *
+     * @param job
      * @param quantity Number of tasks to be retrieved.
      * @return A list of scan task IDs.
      */
-    Collection<String> getScanTasks(int quantity);
+    public Collection<String> getScanTasks(ScanJob job, int quantity);
 
-    long getNumberOfTasks() throws Exception;
+    public long getNumberOfTasks(ScanJob job);
 
-    void addScanTask(String taskId);
+    public void addScanTask(ScanJob job, String taskId);
 
     /**
      * Adds scan tasks to be distributed.
      *
+     * @param job
      * @param taskIds
      */
-    void addScanTasks(Collection<String> taskIds);
+    public void addScanTasks(ScanJob job, Collection<String> taskIds);
     
-    boolean isBlacklisted(IScanTarget target);
+    public boolean isBlacklisted(ScanTarget target);
     
     public void updateBlacklist();
 }

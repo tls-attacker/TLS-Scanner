@@ -8,20 +8,20 @@ package de.rub.nds.tlscrawler.persistence.converter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.rub.nds.tlsattacker.core.crypto.ec.Point;
+import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import java.io.IOException;
 
-public class PointSerialisationConverter extends StdSerializer<Point> {
+public class HttpsHeaderSerializer extends StdSerializer<HttpsHeader> {
 
-    public PointSerialisationConverter() {
-        super(Point.class);
+    public HttpsHeaderSerializer() {
+        super(HttpsHeader.class);
     }
 
     @Override
-    public void serialize(Point point, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(HttpsHeader header, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeStringField("x", point.getX().getData().toString());
-        jsonGenerator.writeStringField("y", point.getY().getData().toString());
+        jsonGenerator.writeStringField("header", header.getHeaderName().getValue());
+        jsonGenerator.writeStringField("value", header.getHeaderValue().getValue());
         jsonGenerator.writeEndObject();
     }
 }

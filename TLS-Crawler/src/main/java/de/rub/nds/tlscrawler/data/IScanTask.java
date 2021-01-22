@@ -7,8 +7,8 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import de.rub.nds.tlscrawler.scans.IScan;
 import java.time.Instant;
-import java.util.Collection;
 import org.bson.Document;
 
 /**
@@ -49,12 +49,12 @@ public interface IScanTask {
     /**
      * @return A list of scans to be performed.
      */
-    Collection<String> getScans();
+    IScan getScan();
 
     /**
      * @return Returns the scan target.
      */
-    IScanTarget getScanTarget();
+    ScanTarget getScanTarget();
 
     /**
      * @return Returns the scan results.

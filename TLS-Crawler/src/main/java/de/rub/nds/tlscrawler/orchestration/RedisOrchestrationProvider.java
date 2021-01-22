@@ -7,7 +7,11 @@
  */
 package de.rub.nds.tlscrawler.orchestration;
 
-import de.rub.nds.tlscrawler.data.IScanTarget;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.rub.nds.tlscrawler.data.ScanJob;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -32,20 +36,21 @@ import org.apache.logging.log4j.Logger;
  */
 public class RedisOrchestrationProvider implements IOrchestrationProvider {
 
-    private static Logger LOG = LogManager.getLogger();
+    private final static Logger LOG = LogManager.getLogger();
 
-    private static int REDIS_TIMEOUT = 30000; // in ms
+    private final static int REDIS_TIMEOUT = 30000; // in ms
 
     private boolean initialized = false;
 
-    private String redisHost;
-    private int redisPort;
-    private String redisPass;
+    private final String redisHost;
+    private final int redisPort;
+    private final String redisPass;
 
     private JedisPool jedisPool;
 
-    private String taskListName = null;
     private String blackListName = null;
+
+    private String jobListName = null;
 
     private Set<String> ipBlackListSet = null;
     private List<SubnetInfo> cidrBlackList = null;
@@ -56,7 +61,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         this.redisPass = redisPass;
     }
 
-    public void init(String taskListName, String blackListName) throws ConnectException {
+    public void init(String blackListName, String jobListName) throws ConnectException {
         LOG.trace("init() - Enter");
 
         JedisPoolConfig cfg = new JedisPoolConfig();
@@ -64,7 +69,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
         cfg.setMinIdle(GenericObjectPoolConfig.DEFAULT_MIN_IDLE);
         cfg.setTestOnBorrow(true);
 
-        if (!this.redisPass.equals("")) {
+        if (this.redisPass != null && !this.redisPass.equals("")) {
             this.jedisPool = new JedisPool(cfg, this.redisHost, this.redisPort, REDIS_TIMEOUT, this.redisPass);
         } else {
             this.jedisPool = new JedisPool(cfg, this.redisHost, this.redisPort, REDIS_TIMEOUT);
@@ -78,13 +83,12 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
                 throw new ConnectException("Could not connect to Redis endpoint.");
             }
         }
-        LOG.info("Redis Tasks are listed in:" + taskListName);
-        this.taskListName = taskListName;
+
         this.blackListName = blackListName;
+        this.jobListName = jobListName;
         this.initialized = true;
         LOG.info("Initializing Blacklist");
         updateBlacklist();
-        LOG.trace("init() - Leave");
     }
 
     /**
@@ -102,67 +106,76 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     }
 
     @Override
-    public String getScanTask() {
+    public String getScanTask(ScanJob job) {
         this.checkInit();
 
         LOG.trace("getScanTask()");
 
         String result;
         try (Jedis jedis = this.jedisPool.getResource()) {
-            result = jedis.rpop(this.taskListName);
+            result = jedis.rpop(job.getWorkspace());
         }
 
         return result;
     }
 
     @Override
-    public long getNumberOfTasks() {
+    public long getNumberOfTasks(ScanJob job) {
         this.checkInit();
 
         long listLength;
         try (Jedis redis = this.jedisPool.getResource()) {
-            listLength = redis.llen(this.taskListName);
+            listLength = redis.scard(job.getWorkspace());
         }
         return listLength;
     }
 
     @Override
-    public Collection<String> getScanTasks(int quantity) {
+    public Collection<String> getScanTasks(ScanJob job, int quantity) {
         this.checkInit();
-        Collection<String> result = new ArrayList<>(quantity);
         try (Jedis jedis = this.jedisPool.getResource()) {
-            Set<String> scanTaskIds = jedis.spop(this.taskListName, quantity);
+            Set<String> scanTaskIds = jedis.spop(job.getWorkspace(), quantity);
             return scanTaskIds;
         }
     }
 
     @Override
-    public void addScanTask(String taskId
-    ) {
+    public void addScanTask(ScanJob job, String taskId) {
         this.checkInit();
 
         LOG.trace("addScanTask()");
 
         try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.sadd(this.taskListName, taskId);
+            jedis.sadd(job.getWorkspace(), taskId);
         }
     }
 
     @Override
-    public void addScanTasks(Collection<String> taskIds) {
+    public void addScanTasks(ScanJob job, Collection<String> hosts) {
         this.checkInit();
 
         LOG.trace("addScanTasks()");
+        if (hosts.size() > 500000) {
+            //Redis does not allow really really big inserstions - we need to split this up : /
+            final Collection<String> subList = new LinkedList<>();
+            hosts.forEach(next -> {
+                subList.add(next);
+                if (subList.size() == 500000) {
+                    addScanTasks(job, subList);
+                    subList.clear();
+                }
+            });
+        } else {
+            String[] tids = hosts.toArray(new String[hosts.size()]);
 
-        String[] tids = taskIds.toArray(new String[taskIds.size()]);
-
-        try (Jedis jedis = this.jedisPool.getResource()) {
-            jedis.sadd(this.taskListName, tids);
+            try (Jedis jedis = this.jedisPool.getResource()) {
+                jedis.sadd(job.getWorkspace(), tids);
+            }
         }
     }
 
     @Override
-    public synchronized boolean isBlacklisted(IScanTarget target) {
+    public synchronized boolean isBlacklisted(ScanTarget target) {
         if (ipBlackListSet.contains(target.getIp())) {
             return true;
         }
@@ -189,6 +202,51 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
                 }
             }
             LOG.info("Blacklist now contains: {}", tempBlacklistStrings.size());
+        }
+    }
+
+    @Override
+    public Collection<ScanJob> getScanJobs() {
+        this.checkInit();
+
+        LOG.trace("getScanJobs()");
+        List<String> activeJobs;
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            activeJobs = jedis.lrange(jobListName, 0l, -1l);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        List<ScanJob> scanJobList = new LinkedList<>();
+        for (String job : activeJobs) {
+            try {
+                ScanJob readJob = mapper.readValue(job, ScanJob.class);
+                scanJobList.add(readJob);
+            } catch (JsonProcessingException ex) {
+                ex.printStackTrace();
+                LOG.warn("Invalid active job:\n" + job);
+            }
+        }
+        return scanJobList;
+    }
+
+    @Override
+    public void putScanJob(ScanJob job) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            jedis.lpush(jobListName, mapper.writeValueAsString(job));
+        } catch (JsonProcessingException ex) {
+            LOG.warn("Could not add ScanJob to Redis");
+        }
+    }
+
+    @Override
+    public void deleteScanJob(ScanJob job) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try (Jedis jedis = this.jedisPool.getResource()) {
+            jedis.lrem(jobListName, 1, mapper.writeValueAsString(job));
+        } catch (JsonProcessingException ex) {
+            LOG.warn("Could not remove ScanJob from Redis");
         }
     }
 }

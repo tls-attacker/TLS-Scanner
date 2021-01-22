@@ -8,12 +8,13 @@
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlscrawler.data.IScanTarget;
-import de.rub.nds.tlsscanner.TlsScanner;
-import de.rub.nds.tlsscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.report.SiteReport;
+import de.rub.nds.tlscrawler.data.ScanTarget;
+import de.rub.nds.tlsscanner.serverscanner.TlsScanner;
+import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,10 +34,13 @@ public class TlsScan implements IScan {
     private final ParallelExecutor parallelExecutor;
 
     private final int timeout;
+    
+    private final StarttlsType starttlsType;
 
-    public TlsScan(int timeout, int parallelExecutorThreads, int reexecutions) {
+    public TlsScan(int timeout, int parallelExecutorThreads, int reexecutions, StarttlsType starttlsType) {
         parallelExecutor = new ParallelExecutor(parallelExecutorThreads, reexecutions);
         this.timeout = timeout;
+        this.starttlsType = starttlsType;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class TlsScan implements IScan {
     }
 
     @Override
-    public Document scan(IScanTarget target) {
+    public Document scan(ScanTarget target) {
         LOG.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
@@ -59,6 +63,7 @@ public class TlsScan implements IScan {
         config.getClientDelegate().setHost(target.getIp() + ":" + port);
         config.getClientDelegate().setSniHostname(target.getHostname());
         config.setScanDetail(ScannerDetail.QUICK);
+        config.getStarttlsDelegate().setStarttlsType(starttlsType);
         TlsScanner scanner = new TlsScanner(config, parallelExecutor);
         scanner.setCloseAfterFinishParallel(false);
         if (target.getHostname() != null) {
@@ -82,4 +87,5 @@ public class TlsScan implements IScan {
         document.put("report", report);
         return document;
     }
+
 }

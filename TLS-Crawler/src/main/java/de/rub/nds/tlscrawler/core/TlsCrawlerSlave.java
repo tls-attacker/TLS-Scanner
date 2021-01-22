@@ -7,22 +7,22 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.tlscrawler.data.IScanTarget;
 import de.rub.nds.tlscrawler.data.ISlaveStats;
+import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.data.ScanTarget;
 import de.rub.nds.tlscrawler.data.ScanTask;
 import de.rub.nds.tlscrawler.data.SlaveStats;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import de.rub.nds.tlscrawler.scans.ScanHolder;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -52,20 +52,20 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     private SlaveStats slaveStats;
     private SynchronizedTaskRouter synchronizedTaskRouter;
 
+    private ScanJob currentScanJob;
+    private IScan currentScan;
+
     /**
      * TLS-Crawler constructor.
      *
      * @param instanceId The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
      * @param persistenceProvider A non-null persistence provider.
-     * @param scans A neither null nor empty list of available scans.
-     * @param port
      */
     public TlsCrawlerSlave(String instanceId,
             IOrchestrationProvider orchestrationProvider,
-            IPersistenceProvider persistenceProvider,
-            Collection<IScan> scans, int port) {
-        this(instanceId, orchestrationProvider, persistenceProvider, scans, port, STANDARD_NO_THREADS);
+            IPersistenceProvider persistenceProvider) {
+        this(instanceId, orchestrationProvider, persistenceProvider, STANDARD_NO_THREADS);
     }
 
     /**
@@ -79,9 +79,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
      */
     public TlsCrawlerSlave(String instanceId,
             IOrchestrationProvider orchestrationProvider,
-            IPersistenceProvider persistenceProvider,
-            Collection<IScan> scans, int port, int noThreads) {
-        super(instanceId, orchestrationProvider, persistenceProvider, scans, port);
+            IPersistenceProvider persistenceProvider, int noThreads) {
+        super(instanceId, orchestrationProvider, persistenceProvider);
         this.noThreads = noThreads;
         this.newFetchLimit = 1000;
         this.fetchAmount = 5000;
@@ -118,13 +117,8 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
     }
 
     @Override
-    public Collection<IScan> getScans() {
-        return scans;
-    }
-
-    @Override
-    public int getPort() {
-        return port;
+    public IScan getCurrentScan() {
+        return currentScan;
     }
 
     private class TlsCrawlerSlaveOrgThread extends Thread {
@@ -136,7 +130,6 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
         private int fetchAmount;
         private SynchronizedTaskRouter synchronizedTaskRouter;
         private IOrganizer organizer;
-        private IScanProvider scanProvider;
         private SlaveStats stats;
         private ExecutorService dnsPool;
         private List<Future<ScanTarget>> futureDnsResults;
@@ -151,7 +144,6 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
 
             this.stats = stats;
             this.organizer = organizer;
-            this.scanProvider = scanProvider;
             this.synchronizedTaskRouter = synchronizedTaskRouter;
             this.newFetchLimit = newFetchLimit;
             this.fetchAmount = fetchAmount;
@@ -172,49 +164,87 @@ public class TlsCrawlerSlave extends TlsCrawler implements ITlsCrawlerSlave {
                 try {
                     // Fetch new tasks:
                     if (this.synchronizedTaskRouter.getTodoCount() < this.newFetchLimit) {
-                        LOG.info("Fetching tasks: {}", this.getName());
-                        Collection<String> targetString = this.organizer.getOrchestrationProvider().getScanTasks(this.fetchAmount);
-                        LOG.info("#Fetched: {}", targetString.size());
-
-                        for (String tempString : targetString) {
-                            futureDnsResults.add(dnsPool.submit(new DnsThread(tempString, port)));
-                        }
+                        findWork();
                     }
                     // Persist task results:
                     if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
                             || ((ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) && this.synchronizedTaskRouter.getFinishedCount() != 0)) {
-                        LOG.trace("Persisting results.");
-                        List<ScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
-                        LOG.info("Storing results");
-                        this.organizer.getPersistenceProvider().insertScanTasks(finishedTasks);
-                        this.stats.incrementCompletedTaskCount(finishedTasks.size());
-                        this.iterations = 0;
+                        persistResults();
                     }
 
-                    for (Future<ScanTarget> future : futureDnsResults) {
-                        String taskId = UUID.randomUUID().toString();
-                        ScanTarget target = future.get();
-                        if (organizer.getOrchestrationProvider().isBlacklisted(target)) {
-                            String name = target.getHostname() != null ? target.getHostname() : target.getIp();
-                            LOG.info("Not scanning: {}", name);
-                        } else {
-                            ScanTask task = new ScanTask(taskId, organizer.getInstanceId(), Instant.now(), target, scanProvider.getScans());
-                            this.synchronizedTaskRouter.addTodo(task);
-                            this.stats.incrementAcceptedTaskCount(1);
-                        }
-                    }
-                    futureDnsResults = new LinkedList<>();
-                    // (Procreate, eat,) sleep, repeat.
-                    try {
-                        LOG.info("Sleeping");
-                        Thread.sleep(ORG_THREAD_SLEEP_MILLIS);
-                    } catch (InterruptedException e) {
-                        // Suffer quietly.
-                    }
+                    updateTodos();
+                    sleep();
                 } catch (Exception E) {
                     E.printStackTrace();
                 }
             }
+        }
+
+        private void sleep() {
+            // (Procreate, eat,) sleep, repeat.
+            try {
+                LOG.info("Sleeping");
+                Thread.sleep(ORG_THREAD_SLEEP_MILLIS);
+            } catch (InterruptedException e) {
+                // Suffer quietly.
+            }
+        }
+
+        private void updateTodos() throws InterruptedException, ExecutionException {
+            for (Future<ScanTarget> future : futureDnsResults) {
+                String taskId = UUID.randomUUID().toString();
+                ScanTarget target = future.get();
+                if (organizer.getOrchestrationProvider().isBlacklisted(target)) {
+                    String name = target.getHostname() != null ? target.getHostname() : target.getIp();
+                    LOG.info("Not scanning: {}", name);
+                } else {
+                    ScanTask task = new ScanTask(taskId, organizer.getInstanceId(), Instant.now(), target, currentScan, currentScanJob);
+                    this.synchronizedTaskRouter.addTodo(task);
+                    this.stats.incrementAcceptedTaskCount(1);
+                }
+            }
+            futureDnsResults = new LinkedList<>();
+        }
+
+        private void persistResults() {
+            LOG.trace("Persisting results.");
+            List<ScanTask> finishedTasks = this.synchronizedTaskRouter.getFinished();
+            LOG.info("Storing results");
+
+            this.organizer.getPersistenceProvider().insertScanTasks(finishedTasks);
+            this.stats.incrementCompletedTaskCount(finishedTasks.size());
+            this.iterations = 0;
+        }
+
+        private void findWork() {
+            if (currentScanJob == null) {
+                currentScanJob = lookForScanJob();
+            }
+            if (currentScanJob != null) {
+                LOG.info("Fetching tasks: {}", this.getName());
+                Collection<String> targetString = this.organizer.getOrchestrationProvider().getScanTasks(currentScanJob, this.fetchAmount);
+                LOG.info("#Fetched: {}", targetString.size());
+                if (targetString.isEmpty()) {
+                    currentScanJob = null;
+                } else {
+                    for (String tempString : targetString) {
+                        futureDnsResults.add(dnsPool.submit(new DnsThread(tempString, currentScanJob.getPort())));
+                    }
+                }
+            }
+        }
+
+        private ScanJob lookForScanJob() {
+            IOrchestrationProvider orchestrationProvider = organizer.getOrchestrationProvider();
+            Collection<ScanJob> scanJobs = orchestrationProvider.getScanJobs();
+            for (ScanJob job : scanJobs) {
+                if (orchestrationProvider.getNumberOfTasks(job) > 0) {
+                    currentScan = ScanHolder.createScan(job.getScan(), job.getTimeout(), noThreads, job.getReexecutions(), job.getStarttlsType());
+                    return job;
+                }
+            }
+            LOG.info("No jobs in queue are up");
+            return null;
         }
     }
 }

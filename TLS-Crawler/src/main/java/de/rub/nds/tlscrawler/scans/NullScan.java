@@ -7,7 +7,7 @@
  */
 package de.rub.nds.tlscrawler.scans;
 
-import de.rub.nds.tlscrawler.data.IScanTarget;
+import de.rub.nds.tlscrawler.data.ScanTarget;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -32,7 +32,7 @@ public class NullScan implements IScan {
     }
 
     @Override
-    public Document scan(IScanTarget target) {
+    public Document scan(ScanTarget target) {
         LOG.trace("scan()");
 
         Document document = new Document();
@@ -49,4 +49,5 @@ public class NullScan implements IScan {
 
         return document;
     }
+
 }

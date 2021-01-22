@@ -7,12 +7,12 @@
  */
 package de.rub.nds.tlscrawler.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.rub.nds.tlscrawler.scans.IScan;
 import java.io.Serializable;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.LinkedList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -26,33 +26,49 @@ public class ScanTask implements IScanTask, Serializable {
 
     private static Logger LOG = LogManager.getLogger();
 
-    private final String _id;
-    private final String instanceId;
-    private final Instant acceptedTimestamp;
-    private final Instant startedTimestamp;
+    private String _id;
+    private String instanceId;
+    @JsonIgnore
+    private Instant acceptedTimestamp;
+    @JsonIgnore
+    private Instant startedTimestamp;
+    @JsonIgnore
     private Instant completedTimestamp;
-    private final IScanTarget scanTarget;
-    private final Collection<String> scans;
+    private ScanTarget scanTarget;
+    @JsonIgnore
+    private IScan scan;
+    @JsonIgnore
+    private ScanJob scanJob;
     private Document result;
+
+    private ScanTask() {
+    }
 
     public ScanTask(String id,
             String instanceId,
             Instant acceptedTimestamp,
-            IScanTarget scanTarget,
-            Collection<IScan> scans) {
+            ScanTarget scanTarget,
+            IScan scan, ScanJob scanJob) {
         this._id = id;
         this.instanceId = instanceId;
         this.acceptedTimestamp = acceptedTimestamp;
         this.scanTarget = scanTarget;
-        this.scans = new LinkedList<>();
-        for (IScan tempScan : scans) {
-            this.scans.add(tempScan.getName());
-        }
         this.result = null;
         this.startedTimestamp = null;
         this.completedTimestamp = null;
+        this.scan = scan;
+        this.scanJob = scanJob;
     }
 
+    public ScanJob getScanJob() {
+        return scanJob;
+    }
+
+    public void setScanJob(ScanJob scanJob) {
+        this.scanJob = scanJob;
+    }
+
+    @JsonProperty("_id")
     @Override
     public String getId() {
         return this._id;
@@ -83,8 +99,8 @@ public class ScanTask implements IScanTask, Serializable {
     }
 
     @Override
-    public Collection<String> getScans() {
-        return this.scans;
+    public IScan getScan() {
+        return scan;
     }
 
     @Override
@@ -98,8 +114,33 @@ public class ScanTask implements IScanTask, Serializable {
     }
 
     @Override
-    public IScanTarget getScanTarget() {
+    public ScanTarget getScanTarget() {
         return scanTarget;
+    }
+
+    @JsonProperty("_id")
+    public void setId(String _id) {
+        this._id = _id;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+    public void setAcceptedTimestamp(Instant acceptedTimestamp) {
+        this.acceptedTimestamp = acceptedTimestamp;
+    }
+
+    public void setStartedTimestamp(Instant startedTimestamp) {
+        this.startedTimestamp = startedTimestamp;
+    }
+
+    public void setScanTarget(ScanTarget scanTarget) {
+        this.scanTarget = scanTarget;
+    }
+
+    public void setScan(IScan scan) {
+        this.scan = scan;
     }
 
 }

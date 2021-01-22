@@ -42,18 +42,19 @@ public class SlaveWorkerThread extends Thread {
 
     @Override
     public void run() {
-        for (;;) {
-            ScanTask todo = this.synchronizedTaskRouter.getTodo();
+        try {
+            for (;;) {
+                ScanTask todo = this.synchronizedTaskRouter.getTodo();
 
-            if (todo != null) {
-                LOG.trace("Started work on {}.", todo.getId());
-                this.setName("Thread - " + todo.getScanTarget());
+                if (todo != null) {
+                    LOG.trace("Started work on {}.", todo.getId());
+                    this.setName("Thread - " + todo.getScanTarget());
 
-                for (String scan : todo.getScans()) {
                     Document result;
 
                     try {
-                        IScan scanInstance = this.scanProvider.getScanByName(scan);
+                        IScan scanInstance = this.scanProvider.getCurrentScan();
+
                         result = scanInstance.scan(todo.getScanTarget());
                     } catch (Exception e) {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -63,18 +64,21 @@ public class SlaveWorkerThread extends Thread {
                     }
 
                     todo.setResult(result);
-                }
 
-                todo.setCompletedTimestamp(Instant.now());
+                    todo.setCompletedTimestamp(Instant.now());
 
-                this.synchronizedTaskRouter.addFinished(todo);
-            } else {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    // Suffer quietly.
+                    this.synchronizedTaskRouter.addFinished(todo);
+                } else {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        // Suffer quietly.
+                    }
                 }
             }
+        } catch (Exception E) {
+            LOG.error("SlaveWorkerThread died");
+
         }
     }
 }
