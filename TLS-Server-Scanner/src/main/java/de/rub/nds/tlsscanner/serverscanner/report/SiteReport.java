@@ -1,17 +1,19 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
-import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
+import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -27,14 +29,13 @@ import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve.InvalidCurveResponse;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
@@ -47,6 +48,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateRes
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomMinimalLengthResult;
+import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.io.Serializable;
 import java.util.*;
 
@@ -104,6 +106,11 @@ public class SiteReport extends Observable implements Serializable {
 
     // OCSP
     private List<OcspCertificateResult> ocspResults;
+
+    // Certificate Transparency
+    private SignedCertificateTimestampList precertificateSctList = null;
+    private SignedCertificateTimestampList handshakeSctList = null;
+    private SignedCertificateTimestampList ocspSctList = null;
 
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -166,7 +173,7 @@ public class SiteReport extends Observable implements Serializable {
 
     private int performedTcpConnections = 0;
 
-    private SiteReport() {
+    public SiteReport() {
         resultMap = new HashMap<>();
         host = null;
     }
@@ -213,13 +220,13 @@ public class SiteReport extends Observable implements Serializable {
         return getResult(property.toString());
     }
 
-    public synchronized void removeResult(AnalyzedProperty property) {
-        resultMap.remove(property.toString());
-    }
-
     public synchronized TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null) ? TestResult.NOT_TESTED_YET : result;
+    }
+
+    public synchronized void removeResult(AnalyzedProperty property) {
+        resultMap.remove(property.toString());
     }
 
     public synchronized void putResult(AnalyzedProperty property, TestResult result) {
@@ -228,8 +235,8 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
         this.putResult(property,
-                Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
-                        : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
+            Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE : Objects.equals(result, Boolean.FALSE)
+                ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
     public synchronized void putResult(DrownVulnerabilityType result) {
@@ -297,7 +304,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedTokenBindingKeyParameters(
-            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
+        List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
@@ -325,6 +332,10 @@ public class SiteReport extends Observable implements Serializable {
         this.cipherSuites.addAll(cipherSuites);
     }
 
+    public synchronized void setCipherSuites(Set<CipherSuite> cipherSuites) {
+        this.cipherSuites = cipherSuites;
+    }
+
     public synchronized List<NamedGroup> getSupportedNamedGroups() {
         return supportedNamedGroups;
     }
@@ -346,7 +357,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedSignatureAndHashAlgorithms(
-            List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
     }
 
@@ -476,7 +487,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setPaddingOracleTestResultList(
-            List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
+        List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 
@@ -485,7 +496,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setDirectRaccoonResultList(
-            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
+        List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
         this.directRaccoonResultList = directRaccoonResultList;
     }
 
@@ -534,7 +545,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setExtractedValueContainerList(
-            Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
+        Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
@@ -574,7 +585,8 @@ public class SiteReport extends Observable implements Serializable {
         return bleichenbacherTestResultList;
     }
 
-    public synchronized void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
+    public synchronized void
+        setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
         this.bleichenbacherTestResultList = bleichenbacherTestResultList;
     }
 
@@ -619,11 +631,10 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     /**
-     * Sets the List of extracted IVs in the SiteReport and is used by the
-     * TlsRngProbe
+     * Sets the List of extracted IVs in the SiteReport and is used by the TlsRngProbe
      * 
      * @param extractedIVList
-     *            LinkedList of extracted IVs.
+     * LinkedList of extracted IVs.
      */
     public synchronized void setExtractedIVList(LinkedList<ComparableByteArray> extractedIVList) {
         this.extractedIVList = extractedIVList;
@@ -639,11 +650,10 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     /**
-     * Sets the List of extracted Randoms in the SiteReport and is used by the
-     * TlsRngProbe
+     * Sets the List of extracted Randoms in the SiteReport and is used by the TlsRngProbe
      * 
      * @param extractedRandomList
-     *            LinkedList of extracted Server Hello Randoms.
+     * LinkedList of extracted Server Hello Randoms.
      */
     public synchronized void setExtractedRandomList(LinkedList<ComparableByteArray> extractedRandomList) {
         this.extractedRandomList = extractedRandomList;
@@ -652,19 +662,17 @@ public class SiteReport extends Observable implements Serializable {
     /**
      * Returns the List of Server Hello Randoms extracted by the TlsRngProbe
      * 
-     * @return LinkedList of ComparableByteArrays containing the Server Hello
-     *         Randoms
+     * @return LinkedList of ComparableByteArrays containing the Server Hello Randoms
      */
     public synchronized LinkedList<ComparableByteArray> getExtractedRandomList() {
         return extractedRandomList;
     }
 
     /**
-     * Sets the List of extracted SessionIDs in the SiteReport and is used by
-     * the TlsRngProbe
+     * Sets the List of extracted SessionIDs in the SiteReport and is used by the TlsRngProbe
      * 
      * @param extractedSessionIDList
-     *            LinkedList of extracted Server Hello Session IDs.
+     * LinkedList of extracted Server Hello Session IDs.
      */
     public synchronized void setExtractedSessionIDList(LinkedList<ComparableByteArray> extractedSessionIDList) {
         this.extractedSessionIDList = extractedSessionIDList;
@@ -673,27 +681,24 @@ public class SiteReport extends Observable implements Serializable {
     /**
      * Returns the List of Server Hello SessionIDs extracted by the TlsRngProbe
      * 
-     * @return LinkedList of ComparableByteArrays containing the Server Hello
-     *         SessionIDs
+     * @return LinkedList of ComparableByteArrays containing the Server Hello SessionIDs
      */
     public synchronized LinkedList<ComparableByteArray> getExtractedSessionIDList() {
         return extractedSessionIDList;
     }
 
     /**
-     * Method used to set the List of RandomTypes which failed the Duplicate
-     * Test in the TlsRngAfterProbe
+     * Method used to set the List of RandomTypes which failed the Duplicate Test in the TlsRngAfterProbe
      * 
      * @param duplicatesDetected
-     *            LinkedList of RandomTypes
+     * LinkedList of RandomTypes
      */
     public synchronized void putRandomDuplicatesResult(LinkedList<RandomType> duplicatesDetected) {
         this.randomTypeDuplicates = duplicatesDetected;
     }
 
     /**
-     * Method used to get the List of RandomTypes which failed the Duplicate
-     * Test in the TlsRngAfterProbe
+     * Method used to get the List of RandomTypes which failed the Duplicate Test in the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the Duplicate Test
      */
@@ -702,19 +707,17 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     /**
-     * Method used to set the List of RandomTypes which failed the MonoBit Test
-     * in the TlsRngAfterProbe
+     * Method used to set the List of RandomTypes which failed the MonoBit Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
-     *            LinkedList of RandomTypes which failed the MonoBitTest
+     * LinkedList of RandomTypes which failed the MonoBitTest
      */
     public synchronized void putMonoBitResult(LinkedList<RandomType> failedTypes) {
         this.failedMonoBitTypes = failedTypes;
     }
 
     /**
-     * Method used to get the List of RandomTypes which failed the MonoBit Test
-     * in the TlsRngAfterProbe
+     * Method used to get the List of RandomTypes which failed the MonoBit Test in the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the MonoBitTest
      */
@@ -723,19 +726,17 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     /**
-     * Method used to set the List of RandomTypes which failed the Frequency
-     * Test in the TlsRngAfterProbe
+     * Method used to set the List of RandomTypes which failed the Frequency Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
-     *            LinkedList of Randomtyes which failed the Frequency Test
+     * LinkedList of Randomtyes which failed the Frequency Test
      */
     public synchronized void putFrequencyResult(LinkedList<RandomType> failedTypes) {
         this.failedFrequencyTypes = failedTypes;
     }
 
     /**
-     * Method used to get the List of RandomTypes which failed the Frequency
-     * Test in the TlsRngAfterProbe
+     * Method used to get the List of RandomTypes which failed the Frequency Test in the TlsRngAfterProbe
      *
      * @return LinkedList of RandomTypes which failed the Frequency Test
      */
@@ -744,19 +745,17 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     /**
-     * Method used to set the List of RandomTypes which failed the Runs Test in
-     * the TlsRngAfterProbe
+     * Method used to set the List of RandomTypes which failed the Runs Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
-     *            LinkedList of RandomTypes which failed the Runs Test
+     * LinkedList of RandomTypes which failed the Runs Test
      */
     public synchronized void putRunsResult(LinkedList<RandomType> failedTypes) {
         this.failedRunsTypes = failedTypes;
     }
 
     /**
-     * Method used to get the List of RandomTypes which failed the Runs Test in
-     * the TlsRngAfterProbe
+     * Method used to get the List of RandomTypes which failed the Runs Test in the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the Frequency Test
      */
@@ -765,43 +764,38 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     /**
-     * Method used to set the List of RandomTypes which failed the Longest Run
-     * within a Block Test in the TlsRngAfterProbe
+     * Method used to set the List of RandomTypes which failed the Longest Run within a Block Test in the
+     * TlsRngAfterProbe
      * 
      * @param failedTypes
-     *            LinkedList of RandomTypes which failed the Longest Run within
-     *            a Block Test
+     * LinkedList of RandomTypes which failed the Longest Run within a Block Test
      */
     public synchronized void putLongestRunBlockResult(LinkedList<RandomType> failedTypes) {
         this.failedLongestRunBlockTypes = failedTypes;
     }
 
     /**
-     * Method used to get the List of RandomTypes which failed the Longest Run
-     * within a Block Test in the TlsRngAfterProbe
+     * Method used to get the List of RandomTypes which failed the Longest Run within a Block Test in the
+     * TlsRngAfterProbe
      * 
-     * @return LinkedList of RandomTypes which failed the Longest Run within a
-     *         Block Test
+     * @return LinkedList of RandomTypes which failed the Longest Run within a Block Test
      */
     public synchronized LinkedList<RandomType> getLongestRunBlockResult() {
         return failedLongestRunBlockTypes;
     }
 
     /**
-     * Method used to set the List of RandomTypes which failed the discrete
-     * Fourier Test in the TlsRngAfterProbe
+     * Method used to set the List of RandomTypes which failed the discrete Fourier Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
-     *            LinkedList of RandomTypes which failed the discrete Fourier
-     *            Test
+     * LinkedList of RandomTypes which failed the discrete Fourier Test
      */
     public synchronized void putFourierResult(LinkedList<RandomType> failedTypes) {
         this.failedFourierTypes = failedTypes;
     }
 
     /**
-     * Method used to get the List of RandomTypes which failed the discrete
-     * Fourier Test in the TlsRngAfterProbe
+     * Method used to get the List of RandomTypes which failed the discrete Fourier Test in the TlsRngAfterProbe
      * 
      * @return LinkedList of RandomTypes which failed the discrete Fourier Test
      */
@@ -810,70 +804,59 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     /**
-     * Method used to set the Map of RandomTypes with the associated percentage
-     * of failed Templates in the Overlapping Template Test in the
-     * TlsRngAfterProbe
+     * Method used to set the Map of RandomTypes with the associated percentage of failed Templates in the Overlapping
+     * Template Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
-     *            LinkedList of RandomTypes which failed the Non Overlapping
-     *            Template Test
+     * LinkedList of RandomTypes which failed the Non Overlapping Template Test
      */
     public synchronized void putTemplatePercentageMap(Map<RandomType, Double> failedTypes) {
         this.failedTemplateMap = failedTypes;
     }
 
     /**
-     * Method used to get the Map of RandomTypes with the associated percentage
-     * of failed Templates in the the Non Overlapping Template Test in the
-     * TlsRngAfterProbe
+     * Method used to get the Map of RandomTypes with the associated percentage of failed Templates in the the Non
+     * Overlapping Template Test in the TlsRngAfterProbe
      * 
-     * @return Map of RandomTypes with percentage of failed Templates in the Non
-     *         Overlapping Template Test
+     * @return Map of RandomTypes with percentage of failed Templates in the Non Overlapping Template Test
      */
     public synchronized Map<RandomType, Double> getTemplatePercentageMap() {
         return failedTemplateMap;
     }
 
     /***
-     * Method used to set the Linked List of RandomTypes which failed the Non
-     * Overlapping Template Test.
+     * Method used to set the Linked List of RandomTypes which failed the Non Overlapping Template Test.
      * 
      * @param failedTypes
-     *            RandomTypes that failed the Non Overlapping Template Test.
+     * RandomTypes that failed the Non Overlapping Template Test.
      */
     public synchronized void putTemplateResult(LinkedList<RandomType> failedTypes) {
         this.failedTemplateTypes = failedTypes;
     }
 
     /***
-     * Method used to get the Linked List of RandomTypes which failed the Non
-     * Overlapping Template Test.
+     * Method used to get the Linked List of RandomTypes which failed the Non Overlapping Template Test.
      * 
-     * @return Linked List of RandomTypes that failed the Non Overlapping
-     *         Template Test
+     * @return Linked List of RandomTypes that failed the Non Overlapping Template Test
      */
     public synchronized LinkedList<RandomType> getTemplateResult() {
         return failedTemplateTypes;
     }
 
     /**
-     * Method used to set the List of RandomTypes which failed the Approximate
-     * Entropy Test in the TlsRngAfterProbe
+     * Method used to set the List of RandomTypes which failed the Approximate Entropy Test in the TlsRngAfterProbe
      * 
      * @param failedTypes
-     *            LinkedList of RandomTypes which failed the Approximate Entropy
-     *            Test
+     * LinkedList of RandomTypes which failed the Approximate Entropy Test
      */
     public synchronized void putEntropyResult(LinkedList<RandomType> failedTypes) {
         this.failedEntropyTypes = failedTypes;
     }
 
     /**
-     * Method used to get the List of RandomTypes which failed the Approximate
-     * Entropy Test in the TlsRngAfterProbe
+     * Method used to get the List of RandomTypes which failed the Approximate Entropy Test in the TlsRngAfterProbe
      * 
-     * @return LinkedList of RandomTypes which failed the Approximate Entropy
-     *         Test
+     * @return LinkedList of RandomTypes which failed the Approximate Entropy Test
      */
     public synchronized LinkedList<RandomType> getEntropyResult() {
         return failedEntropyTypes;
@@ -924,7 +907,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedNamedGroupsWitnesses(
-            Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
+        Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
         this.supportedNamedGroupsWitnesses = supportedNamedGroupsWitnesses;
     }
 
@@ -965,7 +948,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedNamedGroupsWitnessesTls13(
-            Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
+        Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
         this.supportedNamedGroupsWitnessesTls13 = supportedNamedGroupsWitnessesTls13;
     }
 
@@ -975,5 +958,29 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setOcspResults(List<OcspCertificateResult> ocspResults) {
         this.ocspResults = ocspResults;
+    }
+
+    public synchronized SignedCertificateTimestampList getPrecertificateSctList() {
+        return precertificateSctList;
+    }
+
+    public synchronized void setPrecertificateSctList(SignedCertificateTimestampList precertificateSctList) {
+        this.precertificateSctList = precertificateSctList;
+    }
+
+    public synchronized SignedCertificateTimestampList getHandshakeSctList() {
+        return handshakeSctList;
+    }
+
+    public synchronized void setHandshakeSctList(SignedCertificateTimestampList handshakeSctList) {
+        this.handshakeSctList = handshakeSctList;
+    }
+
+    public synchronized SignedCertificateTimestampList getOcspSctList() {
+        return ocspSctList;
+    }
+
+    public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
+        this.ocspSctList = ocspSctList;
     }
 }

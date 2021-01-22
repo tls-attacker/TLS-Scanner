@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -31,8 +33,8 @@ public class TlsRngResult extends ProbeResult {
     private final boolean prematureStop;
 
     public TlsRngResult(boolean rng_extracted, LinkedList<ComparableByteArray> extractedIVList,
-            LinkedList<ComparableByteArray> extractedServerRandomList,
-            LinkedList<ComparableByteArray> extractedSessionIDList, boolean usesUnixtime, boolean prematureStop) {
+        LinkedList<ComparableByteArray> extractedServerRandomList,
+        LinkedList<ComparableByteArray> extractedSessionIDList, boolean usesUnixtime, boolean prematureStop) {
         super(ProbeType.RNG);
         this.rng_extracted = rng_extracted;
         this.extractedIVList = extractedIVList;

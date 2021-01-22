@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -54,7 +56,7 @@ public class HttpHeaderProbe extends HttpsProbe {
             cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
             cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             tlsConfig.setQuickReceive(true);
-            tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setEnforceSettings(false);
             tlsConfig.setEarlyStop(true);
@@ -63,10 +65,9 @@ public class HttpHeaderProbe extends HttpsProbe {
             tlsConfig.setHttpsParsingEnabled(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.HTTPS);
             tlsConfig.setStopActionsAfterIOException(true);
-            // Dont send extensions if we are in sslv2
+            // Don't send extensions if we are in SSLv2
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
             tlsConfig.setAddRenegotiationInfoExtension(true);
 
@@ -74,13 +75,12 @@ public class HttpHeaderProbe extends HttpsProbe {
             namedGroups.remove(NamedGroup.ECDH_X25519);
             tlsConfig.setDefaultClientNamedGroups(namedGroups);
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
+            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
             trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
             trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
             trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-
             trace.addTlsAction(new SendAction(this.getHttpsRequest()));
             trace.addTlsAction(new ReceiveAction(new HttpsResponseMessage()));
             State state = new State(tlsConfig, trace);
@@ -103,8 +103,8 @@ public class HttpHeaderProbe extends HttpsProbe {
                 headerList = new LinkedList<>();
             }
             return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
         }
     }

@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -36,10 +38,9 @@ import static java.lang.Math.*;
 import static org.apache.commons.math3.special.Erf.erfc;
 
 /**
- * AfterProbe which analyses the random material extracted using the TLS RNG
- * Probe by employing statistical tests defined by NIST SP 800-22. The test
- * results are then passed onto the SiteReport, displaying them at the end of
- * the scan procedure.
+ * AfterProbe which analyses the random material extracted using the TLS RNG Probe by employing statistical tests
+ * defined by NIST SP 800-22. The test results are then passed onto the SiteReport, displaying them at the end of the
+ * scan procedure.
  * 
  * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
  */
@@ -64,15 +65,15 @@ public class TlsRngAfterProbe extends AfterProbe {
 
     // TLS 1.3 specific message requesting to send a new ClientHello
     private final static byte[] HELLO_RETRY_REQUEST_CONST = ArrayConverter
-            .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
+        .hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
 
     @Override
     public void analyze(SiteReport report) {
 
         LOGGER.debug("TLS-RNG-PROBE RESULT : " + report.getResult(AnalyzedProperty.RNG_EXTRACTED));
         if (report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.FALSE
-                || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.COULD_NOT_TEST
-                || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.NOT_TESTED_YET) {
+            || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.COULD_NOT_TEST
+            || report.getResult(AnalyzedProperty.RNG_EXTRACTED) == TestResult.NOT_TESTED_YET) {
             LOGGER.debug("AfterProbe can only be executed when TlsRngProbe was successfully executed.");
             return;
         }
@@ -141,7 +142,7 @@ public class TlsRngAfterProbe extends AfterProbe {
 
         if (fullByteSequence.size() < MINIMUM_AMOUNT_OF_BYTES) {
             LOGGER.debug("Minimum Amount of Bytes not reached! This will negatively impact the "
-                    + "performance of the tests. This will be noted in the site report.");
+                + "performance of the tests. This will be noted in the site report.");
             report.setRandomMinimalLengthResult(RandomMinimalLengthResult.NOT_FULFILLED);
         } else {
             report.setRandomMinimalLengthResult(RandomMinimalLengthResult.FULFILLED);
@@ -206,14 +207,14 @@ public class TlsRngAfterProbe extends AfterProbe {
             LOGGER.debug("MONOBIT_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0)
-                && frequencyTest(extractedSessionIdArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+            && frequencyTest(extractedSessionIdArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("MONOBIT_TEST SessionID : FAILED");
             monoBitList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("MONOBIT_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0)
-                && frequencyTest(extractedIvArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+            && frequencyTest(extractedIvArray, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("MONOBIT_TEST IV : FAILED");
             monoBitList.add(RandomType.IV);
         } else {
@@ -237,14 +238,14 @@ public class TlsRngAfterProbe extends AfterProbe {
             LOGGER.debug("FREQUENCY_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0)
-                && frequencyTest(extractedSessionIdArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+            && frequencyTest(extractedSessionIdArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("FREQUENCY_TEST SessionID : FAILED");
             frequencyList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("FREQUENCY_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0)
-                && frequencyTest(extractedIvArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+            && frequencyTest(extractedIvArray, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("FREQUENCY_TEST IV : FAILED");
             frequencyList.add(RandomType.IV);
         } else {
@@ -297,14 +298,14 @@ public class TlsRngAfterProbe extends AfterProbe {
             LOGGER.debug("LONGEST_RUN_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0)
-                && longestRunWithinBlock(extractedSessionIdArray, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+            && longestRunWithinBlock(extractedSessionIdArray, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("LONGEST_RUN_TEST SessionID : FAILED");
             longestRunBlockList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("LONGEST_RUN_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0)
-                && longestRunWithinBlock(extractedIvArray, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+            && longestRunWithinBlock(extractedIvArray, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("LONGEST_RUN_TEST IV : FAILED");
             longestRunBlockList.add(RandomType.IV);
         } else {
@@ -415,14 +416,14 @@ public class TlsRngAfterProbe extends AfterProbe {
             LOGGER.debug("ENTROPY_TEST ServerHelloRandom : PASSED");
         }
         if (!(extractedSessionIdArray.length == 0)
-                && approximateEntropyTest(extractedSessionIdArray, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+            && approximateEntropyTest(extractedSessionIdArray, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("ENTROPY_TEST SessionID : FAILED");
             entropyList.add(RandomType.SESSION_ID);
         } else {
             LOGGER.debug("ENTROPY_TEST SessionID : PASSED");
         }
         if (!(extractedIvArray.length == 0)
-                && approximateEntropyTest(extractedIvArray, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
+            && approximateEntropyTest(extractedIvArray, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE) {
             LOGGER.debug("ENTROPY_TEST IV : FAILED");
             entropyList.add(RandomType.IV);
         } else {
@@ -448,12 +449,11 @@ public class TlsRngAfterProbe extends AfterProbe {
     }
 
     /**
-     * Simple Test creating a hash-set of random-values and checks for every
-     * random if it is already inserted. If no collision was found then no
-     * duplicates are present.
+     * Simple Test creating a hash-set of random-values and checks for every random if it is already inserted. If no
+     * collision was found then no duplicates are present.
      * 
      * @param byteSequence
-     *            Array of random byte sequences
+     * Array of random byte sequences
      * @return TRUE if duplicates were found
      */
     private boolean testForDuplicates(ComparableByteArray[] byteSequence) {

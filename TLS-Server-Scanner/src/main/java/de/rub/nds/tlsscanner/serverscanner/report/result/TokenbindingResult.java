@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -28,7 +30,7 @@ public class TokenbindingResult extends ProbeResult {
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
 
     public TokenbindingResult(List<TokenBindingVersion> supportedTokenBindingVersion,
-            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
+        List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         super(ProbeType.TOKENBINDING);
         this.supportedTokenBindingVersion = supportedTokenBindingVersion;
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;

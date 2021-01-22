@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -41,8 +43,8 @@ public class TlsRngAfterProbeTest {
     private void generateDuplicateRandom(RandomType duplicateForType) {
         if (duplicateForType == RandomType.RANDOM) {
             LinkedList<ComparableByteArray> randoms = new LinkedList<>();
-            byte[] random = ArrayConverter
-                    .hexStringToByteArray("AABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABB");
+            byte[] random =
+                ArrayConverter.hexStringToByteArray("AABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABB");
             ComparableByteArray convertedRandom = new ComparableByteArray(random);
             randoms.add(convertedRandom);
             randoms.add(convertedRandom);
@@ -50,8 +52,8 @@ public class TlsRngAfterProbeTest {
         }
         if (duplicateForType == RandomType.SESSION_ID) {
             LinkedList<ComparableByteArray> sessionIds = new LinkedList<>();
-            byte[] sessionID = ArrayConverter
-                    .hexStringToByteArray("AABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABB");
+            byte[] sessionID =
+                ArrayConverter.hexStringToByteArray("AABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABBCCDDEEFFAABB");
             ComparableByteArray convertedSessionId = new ComparableByteArray(sessionID);
             sessionIds.add(convertedSessionId);
             sessionIds.add(convertedSessionId);
