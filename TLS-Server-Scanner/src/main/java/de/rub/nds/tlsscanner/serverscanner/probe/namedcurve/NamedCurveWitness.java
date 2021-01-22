@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.namedcurve;
 
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -32,7 +34,7 @@ public class NamedCurveWitness {
     }
 
     public NamedCurveWitness(NamedGroup ecdsaPkGroupEphemeral, NamedGroup ecdsaSigGroupStatic,
-            NamedGroup ecdsaSigGroupEphemeral, CipherSuite cipherSuite) {
+        NamedGroup ecdsaSigGroupEphemeral, CipherSuite cipherSuite) {
         this.ecdsaPkGroupEphemeral = ecdsaPkGroupEphemeral;
         this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
         this.ecdsaSigGroupEphemeral = ecdsaSigGroupEphemeral;
@@ -60,7 +62,7 @@ public class NamedCurveWitness {
     public boolean isFoundUsingRsaCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTLS13()
-                    && AlgorithmResolver.getCertificateKeyType(cipherSuite) == CertificateKeyType.RSA) {
+                && AlgorithmResolver.getCertificateKeyType(cipherSuite) == CertificateKeyType.RSA) {
                 return true;
             }
         }
@@ -70,7 +72,7 @@ public class NamedCurveWitness {
     public boolean isFoundUsingEcdsaStaticCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTLS13()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDH_ECDSA) {
+                && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDH_ECDSA) {
                 return true;
             }
         }
@@ -80,7 +82,7 @@ public class NamedCurveWitness {
     public boolean isFoundUsingEcdsaEphemeralCipher() {
         for (CipherSuite cipherSuite : cipherSuites) {
             if (!cipherSuite.isTLS13()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
+                && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_ECDSA) {
                 return true;
             }
         }
