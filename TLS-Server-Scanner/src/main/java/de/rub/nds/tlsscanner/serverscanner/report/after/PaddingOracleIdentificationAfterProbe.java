@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
@@ -30,8 +32,8 @@ public class PaddingOracleIdentificationAfterProbe extends AfterProbe {
     @Override
     public void analyze(SiteReport report) {
         if (Objects.equals(report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE), TestResult.TRUE)) {
-            KnownPaddingOracleVulnerability knownVulnerability = attributor.getKnownVulnerability(report
-                    .getPaddingOracleTestResultList());
+            KnownPaddingOracleVulnerability knownVulnerability =
+                attributor.getKnownVulnerability(report.getPaddingOracleTestResultList());
             report.setKnownVulnerability(knownVulnerability);
         }
     }

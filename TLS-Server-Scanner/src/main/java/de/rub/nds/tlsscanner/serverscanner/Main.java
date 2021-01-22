@@ -1,16 +1,17 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
@@ -41,13 +42,13 @@ public class Main {
                 SiteReport report = scanner.scan();
                 LOGGER.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n");
                 ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: "
-                        + ((System.currentTimeMillis() - time) / 1000) + "s\n"
-                        + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
-            } catch (ConfigurationException E) {
-                LOGGER.error("Encountered a ConfigurationException aborting.", E);
+                    + ((System.currentTimeMillis() - time) / 1000) + "s\n"
+                    + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
+            } catch (ConfigurationException e) {
+                LOGGER.error("Encountered a ConfigurationException aborting.", e);
             }
-        } catch (ParameterException E) {
-            LOGGER.error("Could not parse provided parameters", E);
+        } catch (ParameterException e) {
+            LOGGER.error("Could not parse provided parameters", e);
             commander.usage();
         }
     }

@@ -1,14 +1,15 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.modifiablevariable.util.XMLPrettyPrinter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,9 +39,8 @@ public class RatingIO {
 
         JAXB.marshal(r, tempStream);
         try {
-            os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
-        } catch (IOException | TransformerException | XPathExpressionException | XPathFactoryConfigurationException
-                | ParserConfigurationException | SAXException ex) {
+            os.write(new String(tempStream.toByteArray()).getBytes());
+        } catch (IOException ex) {
             throw new RuntimeException("Could not format XML");
         }
     }
@@ -66,9 +66,8 @@ public class RatingIO {
 
         JAXB.marshal(ri, tempStream);
         try {
-            os.write(XMLPrettyPrinter.prettyPrintXML(new String(tempStream.toByteArray())).getBytes());
-        } catch (IOException | TransformerException | XPathExpressionException | XPathFactoryConfigurationException
-                | ParserConfigurationException | SAXException ex) {
+            os.write(new String(tempStream.toByteArray()).getBytes());
+        } catch (IOException ex) {
             throw new RuntimeException("Could not format XML");
         }
     }
