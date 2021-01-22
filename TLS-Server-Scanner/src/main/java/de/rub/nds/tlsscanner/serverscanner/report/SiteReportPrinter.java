@@ -529,7 +529,7 @@ public class SiteReportPrinter {
                     }
                 }
                 if (certReport.getPublicKey() != null) {
-                    prettyAppend(builder, "PublicKey", certReport.getPublicKey().toString());
+                    prettyAppendPublicKey(builder, certReport.getPublicKey());
                 }
                 if (certReport.getWeakDebianKey() != null) {
                     prettyAppend(builder, "Weak Debian Key", certReport.getWeakDebianKey(),
