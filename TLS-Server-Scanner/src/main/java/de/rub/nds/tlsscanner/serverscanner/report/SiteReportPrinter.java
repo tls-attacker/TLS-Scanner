@@ -27,6 +27,10 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
@@ -60,6 +64,11 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvalua
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.ResponseCounter;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.VectorContainer;
+import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.DUPLICATES;
+import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
+import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
+import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
+import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -420,7 +429,7 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "Selected Compression Method", tmp);
             }
             prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
-            prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
+            prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols().toString());
         }
         return builder;
     }
@@ -520,7 +529,7 @@ public class SiteReportPrinter {
                     }
                 }
                 if (certReport.getPublicKey() != null) {
-                    prettyAppend(builder, "PublicKey", certReport.getPublicKey().toString());
+                    prettyAppendPublicKey(builder, certReport.getPublicKey());
                 }
                 if (certReport.getWeakDebianKey() != null) {
                     prettyAppend(builder, "Weak Debian Key", certReport.getWeakDebianKey(),
@@ -585,6 +594,41 @@ public class SiteReportPrinter {
             }
         }
         return builder;
+    }
+
+    private String prettyAppendPublicKey(StringBuilder builder, PublicKey publicKey) {
+        if (publicKey instanceof CustomDhPublicKey) {
+            CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
+            prettyAppend(builder, "PublicKey Type:", "Static Diffie Hellman");
+
+            prettyAppend(builder, "Modulus", dhPublicKey.getModulus().toString(16));
+            prettyAppend(builder, "Generator", dhPublicKey.getModulus().toString(16));
+            prettyAppend(builder, "Y", dhPublicKey.getY().toString(16));
+        } else if (publicKey instanceof CustomDsaPublicKey) {
+            CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
+            prettyAppend(builder, "PublicKey Type:", "DSA");
+            prettyAppend(builder, "Modulus", dsaPublicKey.getDsaP().toString(16));
+            prettyAppend(builder, "Generator", dsaPublicKey.getDsaG().toString(16));
+            prettyAppend(builder, "Q", dsaPublicKey.getDsaQ().toString(16));
+            prettyAppend(builder, "X", dsaPublicKey.getY().toString(16));
+        } else if (publicKey instanceof CustomRsaPublicKey) {
+            CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
+            prettyAppend(builder, "PublicKey Type:", "RSA");
+            prettyAppend(builder, "Modulus", rsaPublicKey.getModulus().toString(16));
+            prettyAppend(builder, "Public exponent", rsaPublicKey.getPublicExponent().toString(16));
+        } else if (publicKey instanceof CustomEcPublicKey) {
+            CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
+            prettyAppend(builder, "PublicKey Type:", "EC");
+            if (ecPublicKey.getGroup() == null) {
+                prettyAppend(builder, "Group (GOST)", ecPublicKey.getGostCurve().name());
+            } else {
+                prettyAppend(builder, "Group", ecPublicKey.getGroup().name());
+            }
+            prettyAppend(builder, "Public Point", ecPublicKey.getPoint().toString());
+        } else {
+            builder.append(publicKey.toString()).append("\n");
+        }
+        return builder.toString();
     }
 
     private StringBuilder appendOcsp(StringBuilder builder) {

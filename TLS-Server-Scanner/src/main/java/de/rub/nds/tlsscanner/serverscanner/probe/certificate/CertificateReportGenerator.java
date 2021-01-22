@@ -266,7 +266,7 @@ public class CertificateReportGenerator {
                     report.setRevoked(true);
                 }
             } catch (Exception e) {
-                LOGGER.error("Failed to get certificate revocation status via OCSP.");
+                LOGGER.error("Failed to get certificate revocation status via OCSP.", e);
             }
         }
     }
