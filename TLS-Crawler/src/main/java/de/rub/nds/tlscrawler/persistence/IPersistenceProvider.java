@@ -48,13 +48,5 @@ public interface IPersistenceProvider {
      */
     public IPersistenceProviderStats getStats();
     
-    public long countDocuments(String database, String workspace, Bson query);
 
-    public DistinctIterable findDistinctValues(String database, String workspace, String fieldName, Class resultClass);
-    
-    public DistinctIterable findDistinctValues(String database, String workspace, Bson filter ,String fieldName, Class resultClass);
-    
-    public FindIterable<ScanTask> findDocuments(String database, String workspace, Bson findQuery);
-
-    public Collection<SiteReport> findSiteReports(String database, String workspace, Bson findQuery);
 }

@@ -57,8 +57,6 @@ public class Main {
         jc.parse(args);
         if (jc.getParsedCommand() == null) {
             jc.usage();
-        } else {
-            jc.usage(jc.getParsedCommand());
         }
 
         switch (jc.getParsedCommand().toLowerCase()) {
@@ -71,7 +69,7 @@ public class Main {
                 controller.start();
                 break;
             default:
-                jc.usage(jc.getParsedCommand());
+                jc.usage();
         }
     }
 

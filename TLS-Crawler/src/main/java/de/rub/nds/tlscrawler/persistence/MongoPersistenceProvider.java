@@ -8,17 +8,15 @@
 package de.rub.nds.tlscrawler.persistence;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
-import com.mongodb.client.DistinctIterable;
-import com.mongodb.client.FindIterable;
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.internal.MongoClientImpl;
 import de.rub.nds.tlsattacker.attacks.general.Vector;
 import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1Vector;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
@@ -50,20 +48,15 @@ import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerializer
 import de.rub.nds.tlscrawler.persistence.converter.VectorDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.VectorSerializer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.math.BigDecimal;
 import java.security.PublicKey;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.tls.Certificate;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.json.simple.JSONObject;
+import org.bson.UuidRepresentation;
 import org.mongojack.JacksonMongoCollection;
 
 /**
@@ -75,7 +68,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     private static Logger LOG = LogManager.getLogger();
 
-    private boolean initialized = false;
     private final ServerAddress address;
     private final MongoCredential credentials;
     private MongoClient mongoClient;
@@ -105,17 +97,7 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         module.addSerializer(new VectorSerializer());
         module.addSerializer(new PointSerializer());
         module.addSerializer(new HttpsHeaderSerializer());
-        module.addDeserializer(ResponseFingerprint.class, new ResponseFingerprintDeserializer());
-        module.addDeserializer(HttpsHeader.class, new HttpsHeaderDeserializer());
-        module.addDeserializer(FieldElement.class, new FieldElementDeserializer());
-        module.addDeserializer(ExtractedValueContainer.class, new ExtractedValueContainerDeserializer());
-        module.addDeserializer(Certificate.class, new CertificateDeserializer());
-        module.addDeserializer(PublicKey.class, new PublicKeyDeserializer());
-        module.addDeserializer(Pkcs1Vector.class, new Pkcs1Deserializer());
-        module.addDeserializer(org.bouncycastle.asn1.x509.Certificate.class, new Asn1CertificateDeserializer());
-        module.addDeserializer(Point.class, new PointDeserializer());
-        module.addDeserializer(Vector.class, new VectorDeserializer());
-        //module.addDeserializer(BleichenbacherTestResult.class, new BleichenbacherTestResultDeserializer());
+
         mapper.registerModule(module);
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -136,7 +118,8 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         LOG.trace("init() with name '{}'", dbName);
 
         if (this.credentials != null) {
-            this.mongoClient = new MongoClient(this.address, Arrays.asList(this.credentials));
+            this.mongoClient = new MongoClient(this.address, Arrays.asList(this.credentials)) {
+            };
         } else {
             this.mongoClient = new MongoClient(this.address);
         }
@@ -145,11 +128,10 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
         collection = JacksonMongoCollection.builder().withObjectMapper(mapper).<ScanTask>build(database, collectionName, ScanTask.class);
 
-        this.initialized = true;
         this.intializedDb = dbName;
         this.initalizedWorkspace = collectionName;
         LOG.info("MongoDB persistence provider initialized, connected to {}.", address.toString());
-        LOG.info("Database: {}.", database.getName());
+        LOG.info("Database: {}.", dbName);
         LOG.info("CurrentCollection: {}.", collectionName);
     }
 
@@ -185,58 +167,17 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         }
     }
 
-    @Override
-    public FindIterable<ScanTask> findDocuments(String database, String workspace, Bson findQuery) {
-        this.init(database, workspace);
-        return collection.find(findQuery);
-    }
-
-    @Override
-    public Collection<SiteReport> findSiteReports(String database, String workspace, Bson findQuery) {
-        this.init(database, workspace);
-        List<SiteReport> reportList = new LinkedList<>();
-        FindIterable<ScanTask> findIterable = collection.find(findQuery);
-        for (ScanTask scanTask : findIterable) {
-            Document document = scanTask.getResult();
-            LinkedHashMap map = (LinkedHashMap) document.get("report");
-            JSONObject obj = new JSONObject(map);
-            try {
-                SiteReport report = mapper.readValue(obj.toJSONString(), SiteReport.class);
-                reportList.add(report);
-            } catch (JsonProcessingException ex) {
-                LOG.error("Could not deserialize SiteReport", ex);
-                ex.printStackTrace();
-            }
-        }
-        return reportList;
-    }
 
     @Override
     public IPersistenceProviderStats getStats() {
         return null;
     }
 
-    @Override
-    public long countDocuments(String database, String workspace, Bson query) {
-        this.init(database, workspace);
-        return collection.countDocuments(query);
-    }
-
-    @Override
-    public DistinctIterable findDistinctValues(String database, String workspace, String fieldName, Class resultClass) {
-        this.init(database, workspace);
-        return collection.distinct(fieldName, resultClass);
-    }
 
     @Override
     public void clean(String database, String workspace) {
 
     }
 
-    @Override
-    public DistinctIterable findDistinctValues(String database, String workspace, Bson filter, String fieldName, Class resultClass) {
-        this.init(database, workspace);
-        return collection.distinct(fieldName, filter, resultClass);
-    }
 
 }

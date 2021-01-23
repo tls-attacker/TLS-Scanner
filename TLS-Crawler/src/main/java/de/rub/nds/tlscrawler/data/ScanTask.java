@@ -41,9 +41,6 @@ public class ScanTask implements IScanTask, Serializable {
     private ScanJob scanJob;
     private Document result;
 
-    private ScanTask() {
-    }
-
     public ScanTask(String id,
             String instanceId,
             Instant acceptedTimestamp,
