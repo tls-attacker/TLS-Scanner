@@ -157,6 +157,14 @@ public class SiteReport extends Observable implements Serializable {
 
     private int performedTcpConnections = 0;
 
+    // Rating
+    private int score;
+    private List<String> recommendations;
+
+    // Scan Timestamps
+    private long scanStartTime;
+    private long scanEndTime;
+
     public SiteReport() {
         resultMap = new HashMap<>();
         host = null;
@@ -702,5 +710,37 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
         this.ocspSctList = ocspSctList;
+    }
+
+    public synchronized int getScore() {
+        return score;
+    }
+
+    public synchronized void setScore(int score) {
+        this.score = score;
+    }
+
+    public synchronized List<String> getRecommendations() {
+        return recommendations;
+    }
+
+    public synchronized void setRecommendations(List<String> recommendations) {
+        this.recommendations = recommendations;
+    }
+
+    public synchronized long getScanStartTime() {
+        return scanStartTime;
+    }
+
+    public synchronized void setScanStartTime(long scanStartTime) {
+        this.scanStartTime = scanStartTime;
+    }
+
+    public synchronized long getScanEndTime() {
+        return scanEndTime;
+    }
+
+    public synchronized void setScanEndTime(long scanEndTime) {
+        this.scanEndTime = scanEndTime;
     }
 }

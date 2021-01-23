@@ -15,11 +15,18 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.rating.PropertyResultRatingInfluencer;
+import de.rub.nds.tlsscanner.serverscanner.rating.PropertyResultRecommendation;
+import de.rub.nds.tlsscanner.serverscanner.rating.Recommendation;
+import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -30,6 +37,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,6 +75,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     }
 
     public SiteReport execute() {
+        long scanStartTime = System.currentTimeMillis();
         this.notScheduledTasks = new ArrayList<>(scanJob.getProbeList());
 
         SiteReport report = new SiteReport(config.getClientDelegate().getHost());
@@ -79,6 +88,45 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
         collectStatistics(report);
         executeAfterProbes(report);
 
+        // write rating results
+        SiteReportRater rater;
+        try {
+            rater = SiteReportRater.getSiteReportRater("en");
+            ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
+            report.setScore(scoreReport.getScore());
+
+            LinkedList<String> recommendations = new LinkedList<>();
+
+            // get recommendations for affected properties
+            LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
+            influencers
+                .entrySet()
+                .stream()
+                .sorted((o1, o2) -> {
+                    return o1.getValue().compareTo(o2.getValue());
+                })
+                .forEach(
+                    (entry) -> {
+                        PropertyResultRatingInfluencer influencer = entry.getValue();
+                        if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
+                            Recommendation recommendation =
+                                rater.getRecommendations().getRecommendation(entry.getKey());
+                            PropertyResultRecommendation resultRecommendation =
+                                recommendation.getPropertyResultRecommendation(influencer.getResult());
+                            recommendations.add(resultRecommendation.getShortDescription() + ". "
+                                + resultRecommendation.getHandlingRecommendation() + ".");
+                        }
+                    });
+
+            report.setRecommendations(recommendations);
+
+        } catch (JAXBException ex) {
+            LOGGER.error("Could not retrieve scoring results");
+        }
+
+        long scanEndTime = System.currentTimeMillis();
+        report.setScanStartTime(scanStartTime);
+        report.setScanEndTime(scanEndTime);
         LOGGER.info("Finished scan for: " + config.getClientDelegate().getHost());
         return report;
     }
