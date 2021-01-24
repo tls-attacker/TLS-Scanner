@@ -15,7 +15,7 @@ public class DnsThread implements Callable<ScanTarget> {
     }
 
     @Override
-    public ScanTarget call() throws Exception {
+    public ScanTarget call() {
         try {
             InetAddress address = InetAddress.getByName(hostname);
             return new ScanTarget(address.getHostAddress(), hostname, port);

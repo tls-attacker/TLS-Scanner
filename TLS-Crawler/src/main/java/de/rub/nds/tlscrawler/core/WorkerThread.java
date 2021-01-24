@@ -12,30 +12,25 @@ import de.rub.nds.tlscrawler.scans.IScan;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.Instant;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.bson.Document;
 
 /**
  * Worker Thread for a more sophisticated TLS crawler slave implementation.
- *
+ * <p>
  * // TODO: Graceful exit
  *
  * @author janis.fliegenschmidt@rub.de
  */
+@Log4j2
 public class WorkerThread extends Thread {
 
-    private static final Logger LOG = LogManager.getLogger();
-
     private final SynchronizedTaskRouter synchronizedTaskRouter;
-    private final String workerInstanceId;
 
     private final IScanProvider scanProvider;
 
-    public WorkerThread(String workerInstanceId,
-                        SynchronizedTaskRouter synchronizedTaskRouter,
+    public WorkerThread(SynchronizedTaskRouter synchronizedTaskRouter,
                         IScanProvider scanProvider) {
-        this.workerInstanceId = workerInstanceId;
         this.synchronizedTaskRouter = synchronizedTaskRouter;
         this.scanProvider = scanProvider;
     }
@@ -47,7 +42,7 @@ public class WorkerThread extends Thread {
                 ScanTask todo = this.synchronizedTaskRouter.getTodo();
 
                 if (todo != null) {
-                    LOG.trace("Started work on {}.", todo.getId());
+                    log.trace("Started work on {}.", todo.getId());
                     this.setName("Thread - " + todo.getScanTarget());
 
                     Document result;
@@ -77,7 +72,7 @@ public class WorkerThread extends Thread {
                 }
             }
         } catch (Exception E) {
-            LOG.error("SlaveWorkerThread died");
+            log.error("SlaveWorkerThread died");
 
         }
     }

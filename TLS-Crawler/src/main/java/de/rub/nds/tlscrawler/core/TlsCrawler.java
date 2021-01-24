@@ -9,8 +9,6 @@ package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Base class for the crawler modules.
@@ -19,8 +17,6 @@ import org.apache.logging.log4j.Logger;
  */
 abstract class TlsCrawler implements IScanProvider, IOrganizer {
 
-    private static final Logger LOG = LogManager.getLogger();
-
     private final String instanceId;
     private final IOrchestrationProvider orchestrationProvider;
     private final IPersistenceProvider persistenceProvider;
@@ -28,10 +24,9 @@ abstract class TlsCrawler implements IScanProvider, IOrganizer {
     /**
      * TLS-Crawler constructor.
      *
-     * @param instanceId The identifier of this instance.
+     * @param instanceId            The identifier of this instance.
      * @param orchestrationProvider A non-null orchestration provider.
-     * @param persistenceProvider A non-null persistence provider.
-     * @param scans A neither null nor empty list of available scans.
+     * @param persistenceProvider   A non-null persistence provider.
      */
     public TlsCrawler(String instanceId,
                       IOrchestrationProvider orchestrationProvider,

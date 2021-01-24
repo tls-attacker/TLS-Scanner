@@ -13,8 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.ArrayList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.bson.Document;
 
 /**
@@ -22,19 +21,19 @@ import org.bson.Document;
  *
  * @author janis.fliegenschmidt@rub.de
  */
+@Log4j2
 public class PingScan implements IScan {
 
     private static final String name = "ping_scan";
     private static final int timeOutMs = 5000;
-    private static final Logger LOG = LogManager.getLogger();
 
     // Ping, Java style. I. e., 1 of approx. 10^10 possible implementations with unique advantages and disadvantages to
     // each. Yeah. Standard port: Echo service, port nr 7
     private static boolean isReachable(String address, int port) {
-        LOG.trace("isReachable()");
+        log.trace("isReachable()");
 
         if (port < 1 || port > 65535) {
-            LOG.error("Tried connecting to a port outside the 16-bit range.");
+            log.error("Tried connecting to a port outside the 16-bit range.");
             throw new IllegalArgumentException("port must be in range 1-65535.");
         }
 
@@ -53,7 +52,7 @@ public class PingScan implements IScan {
 
     @Override
     public Document scan(ScanTarget target) {
-        LOG.trace("scan()");
+        log.trace("scan()");
 
         Document document = new Document();
         document.put("timestamp", Instant.now());

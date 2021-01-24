@@ -10,7 +10,6 @@ package de.rub.nds.tlscrawler;
 import com.beust.jcommander.JCommander;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoCredential;
-import de.rub.nds.tlscrawler.config.AnalysisCommandConfig;
 import de.rub.nds.tlscrawler.config.ControllerCommandConfig;
 import de.rub.nds.tlscrawler.config.WorkerCommandConfig;
 import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
@@ -25,7 +24,6 @@ import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import java.net.ConnectException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * TLS-Crawler's main class.
@@ -33,8 +31,6 @@ import org.apache.logging.log4j.LogManager;
  * @author janis.fliegenschmidt@rub.de
  */
 public class Main {
-
-    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger();
 
     public static void main(String[] args) throws ConnectException {
 
@@ -49,9 +45,6 @@ public class Main {
 
         WorkerCommandConfig workerCommandConfig = new WorkerCommandConfig();
         jc.addCommand("worker", workerCommandConfig);
-
-        AnalysisCommandConfig analysisCommandConfig = new AnalysisCommandConfig();
-        jc.addCommand("analysis", analysisCommandConfig);
 
         jc.parse(args);
         if (jc.getParsedCommand() == null) {

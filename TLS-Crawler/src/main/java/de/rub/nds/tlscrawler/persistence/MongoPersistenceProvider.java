@@ -35,8 +35,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.bson.UuidRepresentation;
 import org.mongojack.JacksonMongoCollection;
 
@@ -45,9 +44,9 @@ import org.mongojack.JacksonMongoCollection;
  *
  * @author janis.fliegenschmidt@rub.de
  */
+@Log4j2
 public class MongoPersistenceProvider implements IPersistenceProvider {
 
-    private static final Logger LOG = LogManager.getLogger();
     private final MongoClient mongoClient;
     private final ObjectMapper mapper;
     private final Map<String, JacksonMongoCollection<ScanTask>> collectionByDbAndCollectionName;
@@ -55,12 +54,13 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     /**
      * Initialize connection to mongodb and setup MongoJack PojoToBson mapper.
+     *
      * @param connectionString mongodb server url and port
-     * @param credentials mongodb user name, password and authentication database name
+     * @param credentials      mongodb user name, password and authentication database name
      */
     public MongoPersistenceProvider(ConnectionString connectionString, MongoCredential credentials) {
         this.mapper = new ObjectMapper();
-        LOG.trace("Constructor()");
+        log.trace("Constructor()");
         this.collectionByDbAndCollectionName = new HashMap<>();
 
         SimpleModule module = new SimpleModule();
@@ -83,25 +83,25 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder().credential(credentials).applyConnectionString(connectionString).build();
         this.mongoClient = MongoClients.create(mongoClientSettings);
-        LOG.info("MongoDB persistence provider initialized, connected to {}.", connectionString.toString());
+        log.info("MongoDB persistence provider initialized, connected to {}.", connectionString.toString());
     }
 
     /**
      * On first call creates a collection with the specified name for the specified database and saves it in a hashmap.
      * On repeating calls with same parameters returns the saved collection.
      *
-     * @param dbName Name of the database to use.
+     * @param dbName         Name of the database to use.
      * @param collectionName Name of the collection to create/return
      */
     private JacksonMongoCollection<ScanTask> getCollection(String dbName, String collectionName) {
         if (collectionByDbAndCollectionName.containsKey(dbName + collectionName)) {
             return collectionByDbAndCollectionName.get(dbName + collectionName);
         } else {
-            LOG.trace("init() with name '{}'", dbName);
+            log.trace("init() with name '{}'", dbName);
 
             MongoDatabase database = this.mongoClient.getDatabase(dbName);
-            LOG.info("Database: {}.", dbName);
-            LOG.info("CurrentCollection: {}.", collectionName);
+            log.info("Database: {}.", dbName);
+            log.info("CurrentCollection: {}.", collectionName);
 
             JacksonMongoCollection<ScanTask> collection = JacksonMongoCollection.builder().withObjectMapper(mapper).build(database, collectionName, ScanTask.class, UuidRepresentation.STANDARD);
             collectionByDbAndCollectionName.put(dbName + collectionName, collection);
@@ -112,12 +112,13 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
 
     /**
      * Inserts the task into a collection named after the scan and a database named after the workspace of the scan.
+     *
      * @param newTask The new scan task.
      */
     @Override
     public void insertScanTask(ScanTask newTask) {
         this.getCollection(newTask.getScanJob().getScanName(), newTask.getScanJob().getWorkspace()).insertOne(newTask);
-        LOG.trace("setUpScanTask()");
+        log.trace("setUpScanTask()");
     }
 
     @Override

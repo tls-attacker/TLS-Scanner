@@ -12,7 +12,11 @@ import de.rub.nds.tlscrawler.scans.NullScan;
 import de.rub.nds.tlscrawler.scans.PingScan;
 import de.rub.nds.tlscrawler.scans.TlsScan;
 import java.io.Serializable;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ScanJob implements Serializable {
 
     private String scanName;
@@ -42,37 +46,6 @@ public class ScanJob implements Serializable {
         this.starttlsType = starttlsType;
     }
 
-    public StarttlsType getStarttlsType() {
-        return starttlsType;
-    }
-
-    public void setStarttlsType(StarttlsType starttlsType) {
-        this.starttlsType = starttlsType;
-    }
-
-    public String getScanName() {
-        return scanName;
-    }
-
-    public void setScanName(String scanName) {
-        this.scanName = scanName;
-    }
-
-    public String getWorkspace() {
-        return workspace;
-    }
-
-    public void setWorkspace(String workspace) {
-        this.workspace = workspace;
-    }
-
-    public String getScan() {
-        return scan;
-    }
-
-    public void setScan(String scan) {
-        this.scan = scan;
-    }
 
     public IScan createIScanObject(WorkerCommandConfig config) {
         switch (getScan()) {
@@ -87,27 +60,4 @@ public class ScanJob implements Serializable {
         }
     }
 
-    public int getReexecutions() {
-        return reexecutions;
-    }
-
-    public void setReexecutions(int reexecutions) {
-        this.reexecutions = reexecutions;
-    }
-
-    public int getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
 }

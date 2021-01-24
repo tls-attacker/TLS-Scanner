@@ -8,8 +8,7 @@
 package de.rub.nds.tlscrawler.scans;
 
 import de.rub.nds.tlscrawler.data.ScanTarget;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.bson.Document;
 
 /**
@@ -18,9 +17,8 @@ import org.bson.Document;
  *
  * @author janis.fliegenschmidt@rub.de
  */
+@Log4j2
 public class NullScan implements IScan {
-
-    private static final Logger LOG = LogManager.getLogger();
 
     private static final String NAME = "null_scan";
     private static final Integer WAIT_MS = 5000;
@@ -33,14 +31,14 @@ public class NullScan implements IScan {
 
     @Override
     public Document scan(ScanTarget target) {
-        LOG.trace("scan()");
+        log.trace("scan()");
 
         Document document = new Document();
-        LOG.info("testing: " + target.getIp());
+        log.info("testing: " + target.getIp());
         document.put("target_ip", target.getIp());
         document.put("target_ports", target.getPort());
         try {
-            LOG.trace("Going to sleep.");
+            log.trace("Going to sleep.");
             Thread.sleep(NullScan.WAIT_MS);
             document.put("wait_time", NullScan.WAIT_MS);
         } catch (InterruptedException e) {

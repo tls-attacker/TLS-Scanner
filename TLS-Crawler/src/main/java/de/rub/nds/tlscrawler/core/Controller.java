@@ -17,15 +17,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author robert
  */
+@Log4j2
 public class Controller {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private final IOrchestrationProvider orchestrationProvider;
     private final ControllerCommandConfig config;
@@ -42,12 +40,12 @@ public class Controller {
         LocalDateTime now = LocalDateTime.now();
         String currentDate = dtf.format(now);
         do {
-            LOGGER.info("Initializing ScanJob");
+            log.info("Initializing ScanJob");
             ScanJob job = new ScanJob(config.getScanName(), config.getScanName() + "_" + currentDate + "_" + counter, "tls", config.getPort(), config.getReexecutions(), config.getScannerTimeout(), config.getStarttlsDelegate().getStarttlsType());
             addFreshScanTasks(job);
-            LOGGER.info("Pushing ScanJob");
+            log.info("Pushing ScanJob");
             orchestrationProvider.putScanJob(job);
-            LOGGER.info("ScanJob pushed");
+            log.info("ScanJob pushed");
             counter++;
             if (checkForEarlyAbortion(counter)) {
                 break;
@@ -56,11 +54,11 @@ public class Controller {
             cleanUpFinishedScanTasks();
             waitAfterFinishedScan(config.getWaitTimeAfterScan());
         } while (counter < config.getScansToBeExecuted() || config.getScansToBeExecuted() == 0);
-        LOGGER.info("All scans queued up. Shutting master down");
+        log.info("All scans queued up. Shutting master down");
     }
 
     private void addFreshScanTasks(ScanJob job) throws RuntimeException {
-        LOGGER.info("Reading hostName list");
+        log.info("Reading hostName list");
         List<String> hostNameList = new LinkedList<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(new File(config.getHostFile())));
@@ -71,9 +69,9 @@ public class Controller {
         } catch (IOException ex) {
             throw new RuntimeException("Could not load " + config.getHostFile(), ex);
         }
-        LOGGER.info("Read " + hostNameList.size() + " hosts");
+        log.info("Read " + hostNameList.size() + " hosts");
         orchestrationProvider.addScanTasks(job, hostNameList);
-        LOGGER.info("Pushed scans tasks");
+        log.info("Pushed scans tasks");
     }
 
     private boolean checkForEarlyAbortion(int counter) {
@@ -81,32 +79,32 @@ public class Controller {
     }
 
     private void waitTillScanJobFinishes(ScanJob job) {
-        LOGGER.info("Waiting till ScanJob finishes - this may take hours, days, weeks, months - depending on the schedules scan - see you then :)");
+        log.info("Waiting till ScanJob finishes - this may take hours, days, weeks, months - depending on the schedules scan - see you then :)");
 
         while (orchestrationProvider.getNumberOfTasks(job) > 0) {
             try {
                 Thread.sleep(60000);
             } catch (InterruptedException ex) {
-                LOGGER.error("Error during sleeping :(");
+                log.error("Error during sleeping :(");
             }
         }
     }
 
     private void waitAfterFinishedScan(long minutes) {
-        LOGGER.info("Giving the hosts that should be scanned a break of " + minutes + " minutes");
+        log.info("Giving the hosts that should be scanned a break of " + minutes + " minutes");
         try {
             Thread.sleep(minutes * 60000);
         } catch (InterruptedException ex) {
-            LOGGER.error("Error during sleeping :(");
+            log.error("Error during sleeping :(");
         }
     }
 
     private void cleanUpFinishedScanTasks() {
-        LOGGER.info("Looking for already finished ScanJobs in the Queue");
+        log.info("Looking for already finished ScanJobs in the Queue");
         Collection<ScanJob> scanJobs = orchestrationProvider.getScanJobs();
         for (ScanJob job : scanJobs) {
             if (orchestrationProvider.getNumberOfTasks(job) == 0) {
-                LOGGER.info("Found an already finished ScanJobs. Deleting");
+                log.info("Found an already finished ScanJobs. Deleting");
                 orchestrationProvider.deleteScanJob(job);
             }
         }

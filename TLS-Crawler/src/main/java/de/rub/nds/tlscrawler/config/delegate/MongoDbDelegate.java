@@ -6,15 +6,14 @@
 package de.rub.nds.tlscrawler.config.delegate;
 
 import com.beust.jcommander.Parameter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.Getter;
 
 /**
  * @author robert
  */
+@Getter
 public class MongoDbDelegate {
 
-    private static final Logger LOGGER = LogManager.getLogger();
 
     @Parameter(names = "-mongoDbHost", description = "Host of the MongoDB instance this crawler saves to.")
     private String mongoDbHost;
@@ -34,44 +33,5 @@ public class MongoDbDelegate {
     public MongoDbDelegate() {
     }
 
-    public String getMongoDbHost() {
-        return mongoDbHost;
-    }
-
-    public void setMongoDbHost(String mongoDbHost) {
-        this.mongoDbHost = mongoDbHost;
-    }
-
-    public int getMongoDbPort() {
-        return mongoDbPort;
-    }
-
-    public void setMongoDbPort(int mongoDbPort) {
-        this.mongoDbPort = mongoDbPort;
-    }
-
-    public String getMongoDbUser() {
-        return mongoDbUser;
-    }
-
-    public void setMongoDbUser(String mongoDbUser) {
-        this.mongoDbUser = mongoDbUser;
-    }
-
-    public String getMongoDbPass() {
-        return mongoDbPass;
-    }
-
-    public void setMongoDbPass(String mongoDbPass) {
-        this.mongoDbPass = mongoDbPass;
-    }
-
-    public String getMongoDbAuthSource() {
-        return mongoDbAuthSource;
-    }
-
-    public void setMongoDbAuthSource(String mongoDbAuthSource) {
-        this.mongoDbAuthSource = mongoDbAuthSource;
-    }
 
 }

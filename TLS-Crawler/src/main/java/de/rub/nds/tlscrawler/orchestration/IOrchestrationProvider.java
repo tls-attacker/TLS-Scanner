@@ -22,6 +22,7 @@ public interface IOrchestrationProvider {
 
     /**
      * Returns all active scan jobs
+     *
      * @return
      */
     Collection<ScanJob> getScanJobs();

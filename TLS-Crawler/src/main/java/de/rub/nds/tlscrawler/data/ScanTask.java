@@ -12,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.rub.nds.tlscrawler.scans.IScan;
 import java.io.Serializable;
 import java.time.Instant;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 /**
@@ -22,8 +20,6 @@ import org.bson.Document;
  * @author janis.fliegenschmidt@rub.de
  */
 public class ScanTask implements IScanTask, Serializable {
-
-    private static final Logger LOG = LogManager.getLogger();
 
     private String _id;
     private String instanceId;

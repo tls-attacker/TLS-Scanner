@@ -19,11 +19,6 @@ public class WorkerStats implements IWorkerStats {
     private long acceptedTaskCount;
     private long completedTaskCount;
 
-    public WorkerStats() {
-        this.acceptedTaskCount = 0;
-        this.completedTaskCount = 0;
-    }
-
     public WorkerStats(long acceptedTaskCount, long completedTaskCount) {
         this.acceptedTaskCount = acceptedTaskCount;
         this.completedTaskCount = completedTaskCount;

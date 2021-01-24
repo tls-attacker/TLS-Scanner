@@ -15,8 +15,7 @@ import de.rub.nds.tlsscanner.serverscanner.TlsScanner;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.bson.Document;
 
 /**
@@ -24,9 +23,8 @@ import org.bson.Document;
  *
  * @author janis.fliegenschmidt@rub.de
  */
+@Log4j2
 public class TlsScan implements IScan {
-
-    private static final Logger LOG = LogManager.getLogger();
 
     private static final String SCAN_NAME = "tls_scan";
 
@@ -49,7 +47,7 @@ public class TlsScan implements IScan {
 
     @Override
     public Document scan(ScanTarget target) {
-        LOG.trace("scan()");
+        log.trace("scan()");
 
         GeneralDelegate generalDelegate = new GeneralDelegate();
         generalDelegate.setQuiet(true);
@@ -66,16 +64,16 @@ public class TlsScan implements IScan {
         scanner.setCloseAfterFinishParallel(false);
 
         if (target.getHostname() != null) {
-            LOG.info("Started scanning: " + target.getHostname());
+            log.info("Started scanning: " + target.getHostname());
         } else {
-            LOG.info("Started scanning: " + target.getIp());
+            log.info("Started scanning: " + target.getIp());
         }
         SiteReport report = scanner.scan();
 
         if (target.getHostname() != null) {
-            LOG.info("Finished scanning: " + target.getHostname());
+            log.info("Finished scanning: " + target.getHostname());
         } else {
-            LOG.info("Finished scanning: " + target.getIp());
+            log.info("Finished scanning: " + target.getIp());
         }
 
         return createDocumentFromSiteReport(report);

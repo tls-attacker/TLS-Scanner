@@ -1,11 +1,11 @@
-FROM maven:3.6.3-jdk-8-slim
+FROM maven:3.6.3-jdk-11-slim
 WORKDIR /
 COPY . /TLS-Crawler
 # build TLS-Crawler
 RUN cd /TLS-Crawler && mvn clean package -DskipTests
 
 
-FROM openjdk:8-jre-slim
+FROM openjdk:11-jre-slim
 WORKDIR /
 COPY --from=0 /TLS-Crawler/target/*.jar /TLS-Crawler.jar
 COPY --from=0 /TLS-Crawler/target/lib /lib

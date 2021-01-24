@@ -6,10 +6,8 @@
 package de.rub.nds.tlscrawler.persistence.converter;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import java.io.IOException;
 import org.bouncycastle.asn1.x509.Certificate;
 
 /**
@@ -22,7 +20,7 @@ public class Asn1CertificateDeserializer extends StdDeserializer<Certificate> {
     }
 
     @Override
-    public Certificate deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
+    public Certificate deserialize(JsonParser jp, DeserializationContext dc) {
         return null;
 
     }
