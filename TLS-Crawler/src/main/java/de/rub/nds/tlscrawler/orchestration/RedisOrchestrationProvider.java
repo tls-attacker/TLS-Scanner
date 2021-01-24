@@ -1,24 +1,17 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.orchestration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.data.ScanTarget;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-
 import java.net.ConnectException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,8 +19,12 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * An orchestration provider implementation using Redis as an external source.
@@ -39,13 +36,10 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     private final static Logger LOG = LogManager.getLogger();
 
     private final static int REDIS_TIMEOUT = 30000; // in ms
-
-    private boolean initialized = false;
-
     private final String redisHost;
     private final int redisPort;
     private final String redisPass;
-
+    private boolean initialized = false;
     private JedisPool jedisPool;
 
     private String blackListName = null;
@@ -98,7 +92,7 @@ public class RedisOrchestrationProvider implements IOrchestrationProvider {
     private void checkInit() {
         if (!this.initialized) {
             String error = String.format("%s has not been initialized.",
-                    RedisOrchestrationProvider.class.getName());
+                RedisOrchestrationProvider.class.getName());
 
             LOG.error(error);
             throw new RuntimeException(error);

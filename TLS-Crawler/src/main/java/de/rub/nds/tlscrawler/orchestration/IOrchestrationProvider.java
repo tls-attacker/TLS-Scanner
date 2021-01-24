@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.orchestration;
@@ -19,24 +19,24 @@ import java.util.Collection;
  * @author janis.fliegenschmidt@rub.de
  */
 public interface IOrchestrationProvider {
- 
+
     /**
      * Returns all active scan jobs
-     * @return 
+     * @return
      */
-    public Collection<ScanJob> getScanJobs();
-    
-    public void putScanJob(ScanJob job);
-    
-    public void deleteScanJob(ScanJob job);
-    
+    Collection<ScanJob> getScanJobs();
+
+    void putScanJob(ScanJob job);
+
+    void deleteScanJob(ScanJob job);
+
     /**
      * Retrieves a scan task.
      *
      * @param job
      * @return The scan task.
      */
-    public String getScanTask(ScanJob job);
+    String getScanTask(ScanJob job);
 
     /**
      * Retrieves a number of scan tasks.
@@ -45,11 +45,11 @@ public interface IOrchestrationProvider {
      * @param quantity Number of tasks to be retrieved.
      * @return A list of scan task IDs.
      */
-    public Collection<String> getScanTasks(ScanJob job, int quantity);
+    Collection<String> getScanTasks(ScanJob job, int quantity);
 
-    public long getNumberOfTasks(ScanJob job);
+    long getNumberOfTasks(ScanJob job);
 
-    public void addScanTask(ScanJob job, String taskId);
+    void addScanTask(ScanJob job, String taskId);
 
     /**
      * Adds scan tasks to be distributed.
@@ -57,9 +57,9 @@ public interface IOrchestrationProvider {
      * @param job
      * @param taskIds
      */
-    public void addScanTasks(ScanJob job, Collection<String> taskIds);
-    
-    public boolean isBlacklisted(ScanTarget target);
-    
-    public void updateBlacklist();
+    void addScanTasks(ScanJob job, Collection<String> taskIds);
+
+    boolean isBlacklisted(ScanTarget target);
+
+    void updateBlacklist();
 }

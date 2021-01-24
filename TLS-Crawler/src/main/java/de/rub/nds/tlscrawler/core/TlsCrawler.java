@@ -1,15 +1,14 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,11 +19,11 @@ import org.apache.logging.log4j.Logger;
  */
 abstract class TlsCrawler implements IScanProvider, IOrganizer {
 
-    private static Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
     private final String instanceId;
     private final IOrchestrationProvider orchestrationProvider;
-    private IPersistenceProvider persistenceProvider;
+    private final IPersistenceProvider persistenceProvider;
 
     /**
      * TLS-Crawler constructor.
@@ -35,8 +34,8 @@ abstract class TlsCrawler implements IScanProvider, IOrganizer {
      * @param scans A neither null nor empty list of available scans.
      */
     public TlsCrawler(String instanceId,
-            IOrchestrationProvider orchestrationProvider,
-            IPersistenceProvider persistenceProvider) {
+                      IOrchestrationProvider orchestrationProvider,
+                      IPersistenceProvider persistenceProvider) {
 
         this.instanceId = instanceId;
         this.orchestrationProvider = orchestrationProvider;

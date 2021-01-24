@@ -8,7 +8,6 @@ package de.rub.nds.tlscrawler.config.delegate;
 import com.beust.jcommander.Parameter;
 
 /**
- *
  * @author robert
  */
 public class RedisDelegate {

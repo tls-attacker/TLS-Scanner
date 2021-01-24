@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.persistence;
@@ -12,50 +12,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.internal.MongoClientImpl;
-import de.rub.nds.tlsattacker.attacks.general.Vector;
-import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1Vector;
-import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
-import de.rub.nds.tlsattacker.core.crypto.ec.FieldElement;
-import de.rub.nds.tlsattacker.core.crypto.ec.Point;
-import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlscrawler.data.IPersistenceProviderStats;
-import de.rub.nds.tlscrawler.data.ScanJob;
 import de.rub.nds.tlscrawler.data.ScanTask;
-import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.Asn1CertificateSerializer;
 import de.rub.nds.tlscrawler.persistence.converter.ByteArraySerializer;
-import de.rub.nds.tlscrawler.persistence.converter.CertificateDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.CertificateSerializer;
 import de.rub.nds.tlscrawler.persistence.converter.CustomDhPublicKeySerializer;
 import de.rub.nds.tlscrawler.persistence.converter.CustomDsaPublicKeySerializer;
 import de.rub.nds.tlscrawler.persistence.converter.CustomEcPublicKeySerializer;
 import de.rub.nds.tlscrawler.persistence.converter.CustomRsaPublicKeySerializer;
-import de.rub.nds.tlscrawler.persistence.converter.ExtractedValueContainerDeserializer;
-import de.rub.nds.tlscrawler.persistence.converter.FieldElementDeserializer;
-import de.rub.nds.tlscrawler.persistence.converter.HttpsHeaderDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.HttpsHeaderSerializer;
-import de.rub.nds.tlscrawler.persistence.converter.Pkcs1Deserializer;
-import de.rub.nds.tlscrawler.persistence.converter.PointDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.PointSerializer;
-import de.rub.nds.tlscrawler.persistence.converter.PublicKeyDeserializer;
-import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.ResponseFingerprintSerializer;
-import de.rub.nds.tlscrawler.persistence.converter.VectorDeserializer;
 import de.rub.nds.tlscrawler.persistence.converter.VectorSerializer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import java.math.BigDecimal;
-import java.security.PublicKey;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.crypto.tls.Certificate;
 import org.bson.UuidRepresentation;
 import org.mongojack.JacksonMongoCollection;
 
@@ -66,24 +47,21 @@ import org.mongojack.JacksonMongoCollection;
  */
 public class MongoPersistenceProvider implements IPersistenceProvider {
 
-    private static Logger LOG = LogManager.getLogger();
-
-    private final ServerAddress address;
-    private final MongoCredential credentials;
-    private MongoClient mongoClient;
-    private MongoDatabase database;
-    private JacksonMongoCollection<ScanTask> collection;
-
+    private static final Logger LOG = LogManager.getLogger();
+    private final MongoClient mongoClient;
     private final ObjectMapper mapper;
+    private final Map<String, JacksonMongoCollection<ScanTask>> collectionByDbAndCollectionName;
 
-    private String intializedDb = null;
-    private String initalizedWorkspace = null;
 
-    public MongoPersistenceProvider(ServerAddress address, MongoCredential credentials) {
+    /**
+     * Initialize connection to mongodb and setup MongoJack PojoToBson mapper.
+     * @param connectionString mongodb server url and port
+     * @param credentials mongodb user name, password and authentication database name
+     */
+    public MongoPersistenceProvider(ConnectionString connectionString, MongoCredential credentials) {
         this.mapper = new ObjectMapper();
         LOG.trace("Constructor()");
-        this.address = address;
-        this.credentials = credentials;
+        this.collectionByDbAndCollectionName = new HashMap<>();
 
         SimpleModule module = new SimpleModule();
         module.addSerializer(new ByteArraySerializer());
@@ -102,68 +80,50 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
+
+        MongoClientSettings mongoClientSettings = MongoClientSettings.builder().credential(credentials).applyConnectionString(connectionString).build();
+        this.mongoClient = MongoClients.create(mongoClientSettings);
+        LOG.info("MongoDB persistence provider initialized, connected to {}.", connectionString.toString());
     }
 
     /**
-     * Initializes the MongoDB persistence provider.
+     * On first call creates a collection with the specified name for the specified database and saves it in a hashmap.
+     * On repeating calls with same parameters returns the saved collection.
      *
      * @param dbName Name of the database to use.
-     * @param collectionName
+     * @param collectionName Name of the collection to create/return
      */
-    private void init(String dbName, String collectionName) {
-        if (dbName.equals(intializedDb) && collectionName.equals(initalizedWorkspace)) {
-            //Connection already initialized
-            return;
-        }
-        LOG.trace("init() with name '{}'", dbName);
-
-        if (this.credentials != null) {
-            this.mongoClient = new MongoClient(this.address, Arrays.asList(this.credentials)) {
-            };
+    private JacksonMongoCollection<ScanTask> getCollection(String dbName, String collectionName) {
+        if (collectionByDbAndCollectionName.containsKey(dbName + collectionName)) {
+            return collectionByDbAndCollectionName.get(dbName + collectionName);
         } else {
-            this.mongoClient = new MongoClient(this.address);
+            LOG.trace("init() with name '{}'", dbName);
+
+            MongoDatabase database = this.mongoClient.getDatabase(dbName);
+            LOG.info("Database: {}.", dbName);
+            LOG.info("CurrentCollection: {}.", collectionName);
+
+            JacksonMongoCollection<ScanTask> collection = JacksonMongoCollection.builder().withObjectMapper(mapper).build(database, collectionName, ScanTask.class, UuidRepresentation.STANDARD);
+            collectionByDbAndCollectionName.put(dbName + collectionName, collection);
+
+            return collection;
         }
-
-        this.database = this.mongoClient.getDatabase(dbName);
-
-        collection = JacksonMongoCollection.builder().withObjectMapper(mapper).<ScanTask>build(database, collectionName, ScanTask.class);
-
-        this.intializedDb = dbName;
-        this.initalizedWorkspace = collectionName;
-        LOG.info("MongoDB persistence provider initialized, connected to {}.", address.toString());
-        LOG.info("Database: {}.", dbName);
-        LOG.info("CurrentCollection: {}.", collectionName);
     }
 
+    /**
+     * Inserts the task into a collection named after the scan and a database named after the workspace of the scan.
+     * @param newTask The new scan task.
+     */
     @Override
     public void insertScanTask(ScanTask newTask) {
-        this.init(newTask.getScanJob().getScanName(), newTask.getScanJob().getWorkspace());
+        this.getCollection(newTask.getScanJob().getScanName(), newTask.getScanJob().getWorkspace()).insertOne(newTask);
         LOG.trace("setUpScanTask()");
-        this.collection.insertOne(newTask);
     }
 
     @Override
     public void insertScanTasks(List<ScanTask> newTasks) {
-        LOG.trace("setUpScanTasks()");
-        ScanJob job = null;
-        List<ScanTask> tempTaskList = new LinkedList<>();
         for (ScanTask task : newTasks) {
-            if (job == null) {
-                job = task.getScanJob();
-                this.init(job.getScanName(), job.getWorkspace());
-            }
-            if (task.getScanJob().equals(job)) {
-                tempTaskList.add(task);
-            } else {
-                this.collection.insertMany(tempTaskList);
-                tempTaskList = new LinkedList<>();
-                tempTaskList.add(task);
-                job = task.getScanJob();
-                this.init(job.getScanName(), job.getWorkspace());
-            }
-        }
-        if (!tempTaskList.isEmpty()) {
-            this.collection.insertMany(tempTaskList);
+            this.insertScanTask(task);
         }
     }
 
@@ -171,12 +131,6 @@ public class MongoPersistenceProvider implements IPersistenceProvider {
     @Override
     public IPersistenceProviderStats getStats() {
         return null;
-    }
-
-
-    @Override
-    public void clean(String database, String workspace) {
-
     }
 
 

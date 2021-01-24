@@ -10,13 +10,12 @@ import com.beust.jcommander.ParametersDelegate;
 import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
 
 /**
- *
  * @author robert
  */
 public class AnalysisCommandConfig {
 
     @ParametersDelegate
-    private MongoDbDelegate mongoDbDelegate;
+    private final MongoDbDelegate mongoDbDelegate;
 
     @Parameter(names = "-databaseName", description = "The name of the database.")
     private String databaseName;

@@ -13,7 +13,6 @@ import de.rub.nds.tlsattacker.core.crypto.ec.FieldElement;
 import java.io.IOException;
 
 /**
- *
  * @author robert
  */
 public class FieldElementDeserializer extends StdDeserializer<FieldElement> {
@@ -23,7 +22,7 @@ public class FieldElementDeserializer extends StdDeserializer<FieldElement> {
     }
 
     @Override
-    public FieldElement deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
+    public FieldElement deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
 //        JsonNode node = jp.getCodec().readTree(jp);
 //        String socketState = node.get("socketState").asText();
 //        System.out.println(socketState);
@@ -31,7 +30,7 @@ public class FieldElementDeserializer extends StdDeserializer<FieldElement> {
 //        for (String book : receivedMessages) {
 //            System.out.println(book);
 //        }
-        
+
 
 //        
 //        jsonGenerator.writeStartObject();

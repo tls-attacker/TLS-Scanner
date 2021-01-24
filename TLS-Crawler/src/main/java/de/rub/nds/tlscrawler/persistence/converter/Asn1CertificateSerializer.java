@@ -13,7 +13,6 @@ import java.io.IOException;
 import org.bouncycastle.asn1.x509.Certificate;
 
 /**
- *
  * @author robert
  */
 public class Asn1CertificateSerializer extends StdSerializer<Certificate> {

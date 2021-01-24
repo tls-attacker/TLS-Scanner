@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.security.PublicKey;
 
 /**
- *
  * @author robert
  */
 public class PublicKeyDeserializer extends StdDeserializer<PublicKey> {
@@ -24,9 +23,9 @@ public class PublicKeyDeserializer extends StdDeserializer<PublicKey> {
     }
 
     @Override
-    public PublicKey deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
+    public PublicKey deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
-      //  System.out.println(node);
+        //  System.out.println(node);
         return null;
     }
 }

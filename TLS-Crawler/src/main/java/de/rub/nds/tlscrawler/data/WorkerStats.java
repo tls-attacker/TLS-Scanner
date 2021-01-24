@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.data;
@@ -27,6 +27,18 @@ public class WorkerStats implements IWorkerStats {
     public WorkerStats(long acceptedTaskCount, long completedTaskCount) {
         this.acceptedTaskCount = acceptedTaskCount;
         this.completedTaskCount = completedTaskCount;
+    }
+
+    /**
+     * @param stats The stats to copy.
+     * @return A threadsafe slave stats copy.
+     */
+    public static WorkerStats copyFrom(IWorkerStats stats) {
+        if (stats == null) {
+            throw new IllegalArgumentException("'stats' must not be null.");
+        }
+
+        return new WorkerStats(stats.getAcceptedTasksCount(), stats.getCompletedTasksCount());
     }
 
     @Override
@@ -74,19 +86,7 @@ public class WorkerStats implements IWorkerStats {
         }
 
         return "### Slave Stats: "
-                + atc + "accepted, "
-                + ctc + "completed.";
-    }
-
-    /**
-     * @param stats The stats to copy.
-     * @return A threadsafe slave stats copy.
-     */
-    public static WorkerStats copyFrom(IWorkerStats stats) {
-        if (stats == null) {
-            throw new IllegalArgumentException("'stats' must not be null.");
-        }
-
-        return new WorkerStats(stats.getAcceptedTasksCount(), stats.getCompletedTasksCount());
+            + atc + "accepted, "
+            + ctc + "completed.";
     }
 }

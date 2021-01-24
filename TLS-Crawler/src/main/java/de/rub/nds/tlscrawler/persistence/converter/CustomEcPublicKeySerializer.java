@@ -12,7 +12,6 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
 import java.io.IOException;
 
 /**
- *
  * @author robert
  */
 public class CustomEcPublicKeySerializer extends StdSerializer<CustomEcPublicKey> {

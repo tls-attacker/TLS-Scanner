@@ -6,18 +6,16 @@
 package de.rub.nds.tlscrawler.config.delegate;
 
 import com.beust.jcommander.Parameter;
-import de.rub.nds.tlsattacker.core.config.converters.CipherSuiteConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
  * @author robert
  */
 public class MongoDbDelegate {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    
+
     @Parameter(names = "-mongoDbHost", description = "Host of the MongoDB instance this crawler saves to.")
     private String mongoDbHost;
 
@@ -29,7 +27,7 @@ public class MongoDbDelegate {
 
     @Parameter(names = "-mongoDbPass", description = "The passwort to be used to authenticate with MongoDB.")
     private String mongoDbPass;
-    
+
     @Parameter(names = "-mongoDbAuthSource", description = "The DB within the MongoDB instance, in which the user:pass is defined.")
     private String mongoDbAuthSource;
 

@@ -21,7 +21,7 @@ public class VectorDeserializer extends StdDeserializer<Vector> {
     }
 
     @Override
-    public Vector deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
+    public Vector deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
         String name = node.asText();
         return new Vector() {

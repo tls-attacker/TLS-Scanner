@@ -13,7 +13,7 @@ import de.rub.nds.tlsattacker.attacks.general.Vector;
 import java.io.IOException;
 
 public class VectorSerializer extends StdSerializer<Vector> {
-    
+
     public VectorSerializer() {
         super(Vector.class);
     }

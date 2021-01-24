@@ -12,7 +12,6 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import java.io.IOException;
 
 /**
- *
  * @author robert
  */
 public class CustomRsaPublicKeySerializer extends StdSerializer<CustomRsaPublicKey> {

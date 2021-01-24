@@ -21,15 +21,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
  * @author robert
  */
 public class Controller {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private IOrchestrationProvider orchestrationProvider;
-    private ControllerCommandConfig config;
+    private final IOrchestrationProvider orchestrationProvider;
+    private final ControllerCommandConfig config;
 
     public Controller(ControllerCommandConfig config, IOrchestrationProvider orchestrationProvider) {
         this.orchestrationProvider = orchestrationProvider;
@@ -78,10 +77,7 @@ public class Controller {
     }
 
     private boolean checkForEarlyAbortion(int counter) {
-        if (counter > config.getScansToBeExecuted() && config.getScansToBeExecuted() != 0) {
-            return true;
-        }
-        return false;
+        return counter > config.getScansToBeExecuted() && config.getScansToBeExecuted() != 0;
     }
 
     private void waitTillScanJobFinishes(ScanJob job) {
@@ -89,7 +85,7 @@ public class Controller {
 
         while (orchestrationProvider.getNumberOfTasks(job) > 0) {
             try {
-                Thread.currentThread().sleep(60000);
+                Thread.sleep(60000);
             } catch (InterruptedException ex) {
                 LOGGER.error("Error during sleeping :(");
             }
@@ -99,7 +95,7 @@ public class Controller {
     private void waitAfterFinishedScan(long minutes) {
         LOGGER.info("Giving the hosts that should be scanned a break of " + minutes + " minutes");
         try {
-            Thread.currentThread().sleep(minutes * 60000);
+            Thread.sleep(minutes * 60000);
         } catch (InterruptedException ex) {
             LOGGER.error("Error during sleeping :(");
         }

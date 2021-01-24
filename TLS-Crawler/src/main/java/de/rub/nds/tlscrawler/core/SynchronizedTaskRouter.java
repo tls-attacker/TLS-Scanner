@@ -1,14 +1,13 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.tlscrawler.data.ScanTask;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,13 +22,13 @@ import org.apache.logging.log4j.Logger;
  */
 public class SynchronizedTaskRouter {
 
-    private static Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
     private final Object _syncrootTodo = new Object();
     private final Object _syncrootFinished = new Object();
 
-    private List<ScanTask> todo;
-    private List<ScanTask> finished;
+    private final List<ScanTask> todo;
+    private final List<ScanTask> finished;
 
     public SynchronizedTaskRouter() {
         this.todo = new LinkedList<>();

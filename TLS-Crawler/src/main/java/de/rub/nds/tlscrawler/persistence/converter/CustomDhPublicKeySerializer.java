@@ -12,7 +12,6 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import java.io.IOException;
 
 /**
- *
  * @author robert
  */
 public class CustomDhPublicKeySerializer extends StdSerializer<CustomDhPublicKey> {

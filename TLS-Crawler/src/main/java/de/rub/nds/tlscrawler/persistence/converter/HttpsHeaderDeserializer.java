@@ -13,7 +13,6 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import java.io.IOException;
 
 /**
- *
  * @author robert
  */
 public class HttpsHeaderDeserializer extends StdDeserializer<HttpsHeader> {
@@ -23,7 +22,7 @@ public class HttpsHeaderDeserializer extends StdDeserializer<HttpsHeader> {
     }
 
     @Override
-    public HttpsHeader deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
+    public HttpsHeader deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
 
         return null;
     }

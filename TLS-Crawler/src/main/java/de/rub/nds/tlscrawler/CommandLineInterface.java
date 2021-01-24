@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler;
@@ -21,21 +21,21 @@ import org.apache.logging.log4j.Logger;
  */
 public class CommandLineInterface {
 
-    private static Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
     public static void handleInput() {
         LOG.trace("handleInput()");
 
         Scanner scanner = new Scanner(System.in);
 
-        for (;;) {
+        for (; ; ) {
             LOG.info("Starting command reception. Try \"help\" or \"exit\".");
             String input = scanner.nextLine();
 
             LOG.debug("Received input: {}", input);
 
             String[] in_arr = input.split(Pattern.quote(" "));
-            String[] args = in_arr.length <= 1 ? new String[] { } : Arrays.copyOfRange(in_arr, 1, in_arr.length);
+            String[] args = in_arr.length <= 1 ? new String[] {} : Arrays.copyOfRange(in_arr, 1, in_arr.length);
 
             LOG.debug(Arrays.deepToString(in_arr));
             LOG.debug(Arrays.deepToString(args));

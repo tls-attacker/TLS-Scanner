@@ -31,13 +31,13 @@
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver</artifactId>
-            <version>3.12.2</version>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>4.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.mongojack</groupId>
             <artifactId>mongojack</artifactId>
-            <version>3.0.1</version>
+            <version>4.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>3.5.0</version>
+            <version>3.5.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
-            <version>3.6</version>
+            <version>3.7.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

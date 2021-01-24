@@ -8,16 +8,11 @@ package de.rub.nds.tlscrawler.persistence.converter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.bouncycastle.asn1.x509.Certificate;
 
 /**
- *
  * @author robert
  */
 public class Asn1CertificateDeserializer extends StdDeserializer<Certificate> {
@@ -27,8 +22,8 @@ public class Asn1CertificateDeserializer extends StdDeserializer<Certificate> {
     }
 
     @Override
-    public Certificate deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
+    public Certificate deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
         return null;
-        
+
     }
 }

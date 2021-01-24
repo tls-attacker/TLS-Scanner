@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.core;
@@ -16,7 +16,6 @@ import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.scans.IScan;
 import de.rub.nds.tlscrawler.scans.ScanHolder;
-
 import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,20 +36,20 @@ import org.apache.logging.log4j.Logger;
  */
 public class TlsCrawlerWorker extends TlsCrawler implements ITlsCrawlerWorker {
 
-    private static Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
-    private static int STANDARD_NO_THREADS = 500;
-    private static int MIN_NO_TO_PERSIST = 10;
-    private static int ITERATIONS_TO_IGNORE_BULK_LIMITS = 10;
-    private static int ORG_THREAD_SLEEP_MILLIS = 6000;
+    private static final int STANDARD_NO_THREADS = 500;
+    private static final int MIN_NO_TO_PERSIST = 10;
+    private static final int ITERATIONS_TO_IGNORE_BULK_LIMITS = 10;
+    private static final int ORG_THREAD_SLEEP_MILLIS = 6000;
 
-    private int noThreads;
-    private int newFetchLimit;
-    private int fetchAmount;
-    private List<Thread> threads;
-    private TlsCrawlerWorkerOrgThread orgThread;
-    private WorkerStats workerStats;
-    private SynchronizedTaskRouter synchronizedTaskRouter;
+    private final int noThreads;
+    private final int newFetchLimit;
+    private final int fetchAmount;
+    private final List<Thread> threads;
+    private final TlsCrawlerWorkerOrgThread orgThread;
+    private final WorkerStats workerStats;
+    private final SynchronizedTaskRouter synchronizedTaskRouter;
 
     private ScanJob currentScanJob;
     private IScan currentScan;
@@ -96,12 +95,12 @@ public class TlsCrawlerWorker extends TlsCrawler implements ITlsCrawlerWorker {
         }
 
         this.orgThread = new TlsCrawlerWorkerOrgThread(
-                this.workerStats,
-                this,
-                this,
-                this.synchronizedTaskRouter,
-                this.newFetchLimit,
-                this.fetchAmount);
+            this.workerStats,
+            this,
+            this,
+            this.synchronizedTaskRouter,
+            this.newFetchLimit,
+            this.fetchAmount);
     }
 
     @Override
@@ -122,15 +121,15 @@ public class TlsCrawlerWorker extends TlsCrawler implements ITlsCrawlerWorker {
 
     private class TlsCrawlerWorkerOrgThread extends Thread {
 
-        private AtomicBoolean isRunning = new AtomicBoolean(false);
+        private final AtomicBoolean isRunning = new AtomicBoolean(false);
         private int iterations = 0;
-        private long lastBlacklistUpdate = System.currentTimeMillis();
-        private int newFetchLimit;
-        private int fetchAmount;
-        private SynchronizedTaskRouter synchronizedTaskRouter;
-        private IOrganizer organizer;
-        private WorkerStats stats;
-        private ExecutorService dnsPool;
+        private final long lastBlacklistUpdate = System.currentTimeMillis();
+        private final int newFetchLimit;
+        private final int fetchAmount;
+        private final SynchronizedTaskRouter synchronizedTaskRouter;
+        private final IOrganizer organizer;
+        private final WorkerStats stats;
+        private final ExecutorService dnsPool;
         private List<Future<ScanTarget>> futureDnsResults;
 
         public TlsCrawlerWorkerOrgThread(WorkerStats stats,
@@ -167,7 +166,7 @@ public class TlsCrawlerWorker extends TlsCrawler implements ITlsCrawlerWorker {
                     }
                     // Persist task results:
                     if (this.synchronizedTaskRouter.getFinishedCount() > MIN_NO_TO_PERSIST
-                            || ((ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) && this.synchronizedTaskRouter.getFinishedCount() != 0)) {
+                        || ((ITERATIONS_TO_IGNORE_BULK_LIMITS < this.iterations++) && this.synchronizedTaskRouter.getFinishedCount() != 0)) {
                         persistResults();
                     }
 

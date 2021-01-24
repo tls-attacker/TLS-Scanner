@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.data;
@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.rub.nds.tlscrawler.scans.IScan;
 import java.io.Serializable;
-
 import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +23,7 @@ import org.bson.Document;
  */
 public class ScanTask implements IScanTask, Serializable {
 
-    private static Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
     private String _id;
     private String instanceId;
@@ -42,10 +41,10 @@ public class ScanTask implements IScanTask, Serializable {
     private Document result;
 
     public ScanTask(String id,
-            String instanceId,
-            Instant acceptedTimestamp,
-            ScanTarget scanTarget,
-            IScan scan, ScanJob scanJob) {
+                    String instanceId,
+                    Instant acceptedTimestamp,
+                    ScanTarget scanTarget,
+                    IScan scan, ScanJob scanJob) {
         this._id = id;
         this.instanceId = instanceId;
         this.acceptedTimestamp = acceptedTimestamp;
@@ -71,9 +70,18 @@ public class ScanTask implements IScanTask, Serializable {
         return this._id;
     }
 
+    @JsonProperty("_id")
+    public void setId(String _id) {
+        this._id = _id;
+    }
+
     @Override
     public String getInstanceId() {
         return this.instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 
     @Override
@@ -81,13 +89,17 @@ public class ScanTask implements IScanTask, Serializable {
         return startedTimestamp;
     }
 
+    public void setStartedTimestamp(Instant startedTimestamp) {
+        this.startedTimestamp = startedTimestamp;
+    }
+
     @Override
     public Instant getAcceptedTimestamp() {
         return this.acceptedTimestamp;
     }
 
-    public void setCompletedTimestamp(Instant completedTimestamp) {
-        this.completedTimestamp = completedTimestamp;
+    public void setAcceptedTimestamp(Instant acceptedTimestamp) {
+        this.acceptedTimestamp = acceptedTimestamp;
     }
 
     @Override
@@ -95,9 +107,17 @@ public class ScanTask implements IScanTask, Serializable {
         return completedTimestamp;
     }
 
+    public void setCompletedTimestamp(Instant completedTimestamp) {
+        this.completedTimestamp = completedTimestamp;
+    }
+
     @Override
     public IScan getScan() {
         return scan;
+    }
+
+    public void setScan(IScan scan) {
+        this.scan = scan;
     }
 
     @Override
@@ -115,29 +135,8 @@ public class ScanTask implements IScanTask, Serializable {
         return scanTarget;
     }
 
-    @JsonProperty("_id")
-    public void setId(String _id) {
-        this._id = _id;
-    }
-
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
-    }
-
-    public void setAcceptedTimestamp(Instant acceptedTimestamp) {
-        this.acceptedTimestamp = acceptedTimestamp;
-    }
-
-    public void setStartedTimestamp(Instant startedTimestamp) {
-        this.startedTimestamp = startedTimestamp;
-    }
-
     public void setScanTarget(ScanTarget scanTarget) {
         this.scanTarget = scanTarget;
-    }
-
-    public void setScan(IScan scan) {
-        this.scan = scan;
     }
 
 }

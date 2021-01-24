@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.data;
@@ -47,6 +47,13 @@ public interface IScanTask {
     Instant getCompletedTimestamp();
 
     /**
+     * Sets the instant when the ScanTask was completed
+     *
+     * @param instant the instant the ScanTask was completed
+     */
+    void setCompletedTimestamp(Instant instant);
+
+    /**
      * @return A list of scans to be performed.
      */
     IScan getScan();
@@ -67,11 +74,4 @@ public interface IScanTask {
      * @param result the result to set
      */
     void setResult(Document result);
-
-    /**
-     * Sets the instant when the ScanTask was completed
-     *
-     * @param instant the instant the ScanTask was completed
-     */
-    void setCompletedTimestamp(Instant instant);
 }

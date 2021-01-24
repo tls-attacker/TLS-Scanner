@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.scans;
@@ -20,10 +20,10 @@ import org.bson.Document;
  */
 public class NullScan implements IScan {
 
-    private static Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
-    private static String NAME = "null_scan";
-    private static Integer WAIT_MS = 5000;
+    private static final String NAME = "null_scan";
+    private static final Integer WAIT_MS = 5000;
 
     // TODO This scan should also use the fully qualified class name. TBI with aliases.
     @Override

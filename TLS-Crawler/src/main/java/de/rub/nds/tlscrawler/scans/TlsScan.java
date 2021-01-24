@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.scans;
@@ -17,7 +17,6 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.bson.Document;
 
 /**
@@ -34,7 +33,7 @@ public class TlsScan implements IScan {
     private final ParallelExecutor parallelExecutor;
 
     private final int timeout;
-    
+
     private final StarttlsType starttlsType;
 
     public TlsScan(int timeout, int parallelExecutorThreads, int reexecutions, StarttlsType starttlsType) {

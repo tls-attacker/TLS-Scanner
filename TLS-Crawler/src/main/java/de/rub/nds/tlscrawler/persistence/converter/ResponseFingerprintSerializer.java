@@ -13,11 +13,10 @@ import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import java.io.IOException;
 
 /**
- *
  * @author robert
  */
 public class ResponseFingerprintSerializer extends StdSerializer<ResponseFingerprint> {
-    
+
     public ResponseFingerprintSerializer() {
         super(ResponseFingerprint.class);
     }

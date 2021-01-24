@@ -13,7 +13,6 @@ import java.io.IOException;
 import org.bouncycastle.crypto.tls.Certificate;
 
 /**
- *
  * @author robert
  */
 public class CertificateSerializer extends StdSerializer<Certificate> {
@@ -27,7 +26,7 @@ public class CertificateSerializer extends StdSerializer<Certificate> {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeArrayFieldStart("certificates");
         for (org.bouncycastle.asn1.x509.Certificate cert : certificate.getCertificateList()) {
-            jsonGenerator.writeString(ArrayConverter.bytesToHexString(cert.getEncoded(),false, false).replace(" ", ""));
+            jsonGenerator.writeString(ArrayConverter.bytesToHexString(cert.getEncoded(), false, false).replace(" ", ""));
         }
         jsonGenerator.writeEndArray();
         jsonGenerator.writeEndObject();

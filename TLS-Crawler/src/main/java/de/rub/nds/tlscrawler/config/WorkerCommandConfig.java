@@ -11,7 +11,6 @@ import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
 import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
 
 /**
- *
  * @author robert
  */
 public class WorkerCommandConfig {
@@ -26,10 +25,10 @@ public class WorkerCommandConfig {
     private String instanceId;
 
     @ParametersDelegate
-    private RedisDelegate redisDelegate;
+    private final RedisDelegate redisDelegate;
 
     @ParametersDelegate
-    private MongoDbDelegate mongoDbDelegate;
+    private final MongoDbDelegate mongoDbDelegate;
 
     public WorkerCommandConfig() {
         redisDelegate = new RedisDelegate();

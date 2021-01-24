@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * @author robert
  */
 public class ResponseFingerprintDeserializer extends StdDeserializer<ResponseFingerprint> {
@@ -36,7 +35,7 @@ public class ResponseFingerprintDeserializer extends StdDeserializer<ResponseFin
     }
 
     @Override
-    public ResponseFingerprint deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
+    public ResponseFingerprint deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
         String socketState = node.get("socketState").asText();
         ArrayNode arrayNode = (ArrayNode) node.get("receivedMessages");

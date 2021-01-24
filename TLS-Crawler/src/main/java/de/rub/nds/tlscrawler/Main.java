@@ -1,29 +1,28 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler;
 
-import de.rub.nds.tlscrawler.config.ControllerCommandConfig;
 import com.beust.jcommander.JCommander;
+import com.mongodb.ConnectionString;
 import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 import de.rub.nds.tlscrawler.config.AnalysisCommandConfig;
+import de.rub.nds.tlscrawler.config.ControllerCommandConfig;
 import de.rub.nds.tlscrawler.config.WorkerCommandConfig;
-import de.rub.nds.tlscrawler.core.ITlsCrawlerWorker;
-import de.rub.nds.tlscrawler.core.TlsCrawlerWorker;
 import de.rub.nds.tlscrawler.config.delegate.MongoDbDelegate;
 import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
 import de.rub.nds.tlscrawler.core.Controller;
+import de.rub.nds.tlscrawler.core.ITlsCrawlerWorker;
+import de.rub.nds.tlscrawler.core.TlsCrawlerWorker;
 import de.rub.nds.tlscrawler.orchestration.IOrchestrationProvider;
 import de.rub.nds.tlscrawler.orchestration.RedisOrchestrationProvider;
 import de.rub.nds.tlscrawler.persistence.IPersistenceProvider;
 import de.rub.nds.tlscrawler.persistence.MongoPersistenceProvider;
 import java.net.ConnectException;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -74,22 +73,22 @@ public class Main {
     }
 
     static IPersistenceProvider setUpPersistenceProvider(MongoDbDelegate delegate) {
-        ServerAddress address = new ServerAddress(delegate.getMongoDbHost(), delegate.getMongoDbPort());
+        ConnectionString connectionString = new ConnectionString("mongodb://" + delegate.getMongoDbHost() + ":" + delegate.getMongoDbPort());
         MongoCredential credential = null;
 
         credential = MongoCredential.createCredential(
-                delegate.getMongoDbUser(),
-                delegate.getMongoDbAuthSource(),
-                delegate.getMongoDbPass().toCharArray());
+            delegate.getMongoDbUser(),
+            delegate.getMongoDbAuthSource(),
+            delegate.getMongoDbPass().toCharArray());
 
-        return new MongoPersistenceProvider(address, credential);
+        return new MongoPersistenceProvider(connectionString, credential);
     }
 
     static IOrchestrationProvider setUpOrchestrationProvider(RedisDelegate delegate) throws ConnectException {
         RedisOrchestrationProvider redisOrchestrationProvider = new RedisOrchestrationProvider(
-                delegate.getRedisHost(),
-                delegate.getRedisPort(),
-                delegate.getRedisPass());
+            delegate.getRedisHost(),
+            delegate.getRedisPort(),
+            delegate.getRedisPass());
 
         redisOrchestrationProvider.init("TLSC-blacklist", delegate.getJobQueue());
 

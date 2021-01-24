@@ -11,7 +11,6 @@ import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlscrawler.config.delegate.RedisDelegate;
 
 /**
- *
  * @author robert
  */
 public class ControllerCommandConfig {
@@ -38,10 +37,10 @@ public class ControllerCommandConfig {
     private String hostFile;
 
     @ParametersDelegate
-    private RedisDelegate redisDelegate;
+    private final RedisDelegate redisDelegate;
 
     @ParametersDelegate
-    private StarttlsDelegate starttlsDelegate;
+    private final StarttlsDelegate starttlsDelegate;
 
     public ControllerCommandConfig() {
         redisDelegate = new RedisDelegate();
@@ -51,7 +50,7 @@ public class ControllerCommandConfig {
     public StarttlsDelegate getStarttlsDelegate() {
         return starttlsDelegate;
     }
-    
+
     public int getPort() {
         return port;
     }

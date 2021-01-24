@@ -12,7 +12,6 @@ import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import java.io.IOException;
 
 /**
- *
  * @author robert
  */
 public class ByteArraySerializer extends StdSerializer<byte[]> {

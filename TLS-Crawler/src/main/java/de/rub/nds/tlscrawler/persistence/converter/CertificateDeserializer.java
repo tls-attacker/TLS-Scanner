@@ -17,7 +17,6 @@ import java.io.IOException;
 import org.bouncycastle.crypto.tls.Certificate;
 
 /**
- *
  * @author robert
  */
 public class CertificateDeserializer extends StdDeserializer<Certificate> {
@@ -27,7 +26,7 @@ public class CertificateDeserializer extends StdDeserializer<Certificate> {
     }
 
     @Override
-    public Certificate deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
+    public Certificate deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
         try {
             JsonNode node = jp.getCodec().readTree(jp);
             String encodedCerts = node.get("certificates").asText();

@@ -13,7 +13,6 @@ import de.rub.nds.tlsattacker.attacks.pkcs1.Pkcs1Vector;
 import java.io.IOException;
 
 /**
- *
  * @author robert
  */
 public class Pkcs1Deserializer extends StdDeserializer<Pkcs1Vector> {
@@ -23,7 +22,7 @@ public class Pkcs1Deserializer extends StdDeserializer<Pkcs1Vector> {
     }
 
     @Override
-    public Pkcs1Vector deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
+    public Pkcs1Vector deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
 
         return null;
     }

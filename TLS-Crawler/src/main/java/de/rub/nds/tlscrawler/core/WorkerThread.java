@@ -1,8 +1,8 @@
 /**
  * TLS Crawler
- *
+ * <p>
  * Licensed under Apache 2.0
- *
+ * <p>
  * Copyright 2017 Ruhr-University Bochum
  */
 package de.rub.nds.tlscrawler.core;
@@ -25,12 +25,12 @@ import org.bson.Document;
  */
 public class WorkerThread extends Thread {
 
-    private static Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
     private final SynchronizedTaskRouter synchronizedTaskRouter;
     private final String workerInstanceId;
 
-    private IScanProvider scanProvider;
+    private final IScanProvider scanProvider;
 
     public WorkerThread(String workerInstanceId,
                         SynchronizedTaskRouter synchronizedTaskRouter,
@@ -43,7 +43,7 @@ public class WorkerThread extends Thread {
     @Override
     public void run() {
         try {
-            for (;;) {
+            for (; ; ) {
                 ScanTask todo = this.synchronizedTaskRouter.getTodo();
 
                 if (todo != null) {

@@ -13,7 +13,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.Bleichen
 import java.io.IOException;
 
 /**
- *
  * @author robert
  */
 public class BleichenbacherTestResultDeserializer extends StdDeserializer<BleichenbacherTestResult> {
@@ -23,7 +22,7 @@ public class BleichenbacherTestResultDeserializer extends StdDeserializer<Bleich
     }
 
     @Override
-    public BleichenbacherTestResult deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
+    public BleichenbacherTestResult deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
 
         return null;
     }
