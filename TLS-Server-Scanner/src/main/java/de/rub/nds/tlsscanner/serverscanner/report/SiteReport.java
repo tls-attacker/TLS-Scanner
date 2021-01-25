@@ -130,28 +130,61 @@ public class SiteReport extends Observable implements Serializable {
     private List<HpkpPin> normalHpkpPins;
     private List<HpkpPin> reportOnlyHpkpPins;
 
-    // Randomness
-    @JsonIgnore
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
-    @JsonIgnore
-    private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
 
-    // Randomness NEW
-    private LinkedList<ComparableByteArray> extractedIVList = null;
-    private LinkedList<ComparableByteArray> extractedRandomList = null;
-    private LinkedList<ComparableByteArray> extractedSessionIDList = null;
+    // Randomness
+    /**
+     * is this used anymore?
+     */
+    private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
+    /**
+     * Not sure what this is
+     */
     private RandomMinimalLengthResult randomMinimalLengthResult = RandomMinimalLengthResult.NOT_ANALYZED;
+    /**
+     * If the server is using a unixtimestamp within the first bytes of its random
+     */
     private Boolean usesUnixtime = null;
+    /**
+     * Randomness sources where we found duplicates
+     */
     private LinkedList<RandomType> randomTypeDuplicates = null;
+    /**
+     * Randomness sources that failed the monobit test
+     */
     private LinkedList<RandomType> failedMonoBitTypes = null;
+    /**
+     * Randomness sources that failed the frequency test
+     */
     private LinkedList<RandomType> failedFrequencyTypes = null;
+    /**
+     * Randomness sources that failed ?????? test
+     */
     private LinkedList<RandomType> failedRunsTypes = null;
+    /**
+     * Randomness sources that failed longest run block test
+     */
     private LinkedList<RandomType> failedLongestRunBlockTypes = null;
+    /**
+     * Randomness sources that failed the fourier test
+     */
     private LinkedList<RandomType> failedFourierTypes = null;
+    /**
+     * Randomness sources that failed the template test
+     */
     private LinkedList<RandomType> failedTemplateTypes = null;
+    /**
+     * Details to failed template tests
+     */
     private Map<RandomType, Double> failedTemplateMap = null;
+    /**
+     * Randomness sources that failed entropy tests
+     */
     private LinkedList<RandomType> failedEntropyTypes = null;
-    private Boolean prematureStop = null;
+    /**
+     * The randomness extraction was stopped due to some reason
+     */
+    private Boolean prematureRandomnessProbeStop = null;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -875,14 +908,14 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void putPrematureStopResult(boolean prematureStop) {
-        this.prematureStop = prematureStop;
+        this.prematureRandomnessProbeStop = prematureStop;
     }
 
     public synchronized boolean getPrematureStopResult() {
-        if (prematureStop == null) {
+        if (prematureRandomnessProbeStop == null) {
             return false;
         } else {
-            return prematureStop;
+            return prematureRandomnessProbeStop;
         }
     }
 
