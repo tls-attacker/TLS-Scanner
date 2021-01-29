@@ -114,6 +114,7 @@ public class TlsScanner {
         addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
         addProbeToProbeList(new CcaProbe(config, parallelExecutor));
         addProbeToProbeList(new EsniProbe(config, parallelExecutor));
+        addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());

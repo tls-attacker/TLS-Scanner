@@ -193,6 +193,8 @@ public enum AnalyzedProperty {
      */
     SUPPORTS_HTTP_FALSE_START(AnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_RECORD_FRAGMENTATION(AnalyzedPropertyCategory.QUIRKS),
+    SENDS_HELLO_RETRY_REQUEST(AnalyzedPropertyCategory.BEST_PRACTICES),
+    ISSUES_COOKIE_IN_HELLO_RETRY(AnalyzedPropertyCategory.EXTENSIONS),
     VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_DIRECT_RACCOON(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(AnalyzedPropertyCategory.ATTACKS),
