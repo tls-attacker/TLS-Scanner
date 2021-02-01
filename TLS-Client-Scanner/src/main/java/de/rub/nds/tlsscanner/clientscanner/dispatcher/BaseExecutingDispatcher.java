@@ -65,6 +65,7 @@ import de.rub.nds.tlsattacker.transport.ConnectionEndType;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ControlledClientDispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
+import de.rub.nds.tlsscanner.clientscanner.util.IPUtil;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
 
 public abstract class BaseExecutingDispatcher implements Dispatcher {
@@ -167,7 +168,11 @@ public abstract class BaseExecutingDispatcher implements Dispatcher {
 
         // add SAN
         List<GeneralName> altNames = new ArrayList<>();
-        altNames.add(new GeneralName(GeneralName.dNSName, hostname));
+        int hnType = GeneralName.dNSName;
+        if (IPUtil.validIP(hostname)) {
+            hnType = GeneralName.iPAddress;
+        }
+        altNames.add(new GeneralName(hnType, hostname));
         GeneralNames subjectAltNames = GeneralNames
                 .getInstance(new DERSequence(altNames.toArray(new GeneralName[] {})));
         certBuilder = certBuilder.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);

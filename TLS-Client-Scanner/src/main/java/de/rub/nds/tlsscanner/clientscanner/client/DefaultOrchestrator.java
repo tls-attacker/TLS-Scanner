@@ -48,13 +48,18 @@ public class DefaultOrchestrator implements Orchestrator {
     protected final ExecutorService secondaryExecutor;
 
     protected final String baseHostname;
+    protected final boolean singleHostname;
+    protected final boolean hnIsIp;
 
     public DefaultOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int serverThreads) {
         this.csConfig = csConfig;
         ScanClientCommandConfig scanCfg = csConfig.getSelectedSubcommand(ScanClientCommandConfig.class);
         clientAdapter = scanCfg.createClientAdapter(csConfig);
         baseHostname = csConfig.getServerBaseURL();
-        LOGGER.info("Using base hostname {}", baseHostname);
+        singleHostname = csConfig.isSingleDomain();
+        hnIsIp = csConfig.isServerBaseUrlAnIP();
+
+        LOGGER.info("Using base hostname {} {}", baseHostname, singleHostname?"(single domain)":"");
 
         SNIDispatcher sniD = new SNIDispatcher();
         ccDispatcher = new ControlledClientDispatcher();
@@ -165,7 +170,15 @@ public class DefaultOrchestrator implements Orchestrator {
     public ClientProbeResult runDispatcher(Dispatcher dispatcher, String hostnamePrefix, ClientReport report,
             Object additionalParameters)
             throws InterruptedException, ExecutionException {
-        String hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, report.uid, baseHostname);
+        String hostname;
+        if (hnIsIp) {
+            hostname = baseHostname;
+        } else {
+            if (singleHostname) {
+                hostnamePrefix = "single";
+            }
+            hostname = String.format("%s.cc.%s.uid.%s", hostnamePrefix, report.uid, baseHostname);
+        }
         try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(hostname)) {
             return runDispatcher(dispatcher, hostnamePrefix, hostname, report, additionalParameters);
         }

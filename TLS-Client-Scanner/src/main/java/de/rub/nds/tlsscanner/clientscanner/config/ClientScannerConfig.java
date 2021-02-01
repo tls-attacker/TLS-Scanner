@@ -26,6 +26,7 @@ import de.rub.nds.tlsattacker.core.connection.InboundConnection;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
+import de.rub.nds.tlsscanner.clientscanner.util.IPUtil;
 
 public class ClientScannerConfig extends TLSDelegateConfig {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -44,8 +45,10 @@ public class ClientScannerConfig extends TLSDelegateConfig {
     // #endregion
 
     // #region Variables that are handled elsewhere
-    @Parameter(names = "-serverBaseURL", required = false, description = "Base URL to use for the server. Defaults to 127.0.0.1.xip.io")
+    @Parameter(names = "-serverBaseURL", required = false, description = "Base URL to use for the server. Defaults to 127.0.0.1.xip.io. Can be set to an IPv4, in this case -noSubdomain is implied")
     protected String serverBaseURL = "127.0.0.1.xip.io";
+    @Parameter(names = "-singleDomain", description = "Use single domain instead of using unique subdomains for each probe. Note that this will most likely cause threading to be less effective")
+    protected boolean singleDomain = false;
     // #endregion
 
     protected final JCommander jCommander;
@@ -147,5 +150,13 @@ public class ClientScannerConfig extends TLSDelegateConfig {
 
     public String getServerBaseURL() {
         return serverBaseURL;
+    }
+
+    public boolean isServerBaseUrlAnIP() {
+        return IPUtil.validIP(serverBaseURL);
+    }
+
+    public boolean isSingleDomain() {
+        return isServerBaseUrlAnIP() || singleDomain;
     }
 }
