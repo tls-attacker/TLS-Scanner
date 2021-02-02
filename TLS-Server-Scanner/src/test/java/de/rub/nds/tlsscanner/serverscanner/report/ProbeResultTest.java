@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import static de.rub.nds.tlsattacker.util.ConsoleLogger.CONSOLE;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
@@ -57,7 +59,8 @@ public class ProbeResultTest {
                 if (c.getParameterCount() == 2) {
                     if (c.getParameterTypes()[0].equals(ScannerConfig.class)) {
                         LOGGER.info("Testing mergability:" + testName);
-                        TlsProbe probe = (TlsProbe) c.newInstance(null, null);
+                        TlsProbe probe = (TlsProbe) c.newInstance(new ScannerConfig(new GeneralDelegate()),
+                                new ParallelExecutor(1, 1));
                         SiteReport report = new SiteReport("somehost");
                         probe.getCouldNotExecuteResult().merge(report);
                         LOGGER.info("--Success");
