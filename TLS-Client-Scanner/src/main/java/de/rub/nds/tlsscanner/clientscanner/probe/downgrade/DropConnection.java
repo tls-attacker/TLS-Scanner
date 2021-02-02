@@ -35,7 +35,7 @@ public class DropConnection extends BaseStatefulProbe<DowngradeInternalState> {
     protected DowngradeInternalState execute(State state, DispatchInformation dispatchInformation,
             DowngradeInternalState internalState) throws DispatchException {
         // only analyze chlo
-        internalState.putCHLO(dispatchInformation.chlo);
+        internalState.putCHLO(dispatchInformation.getChlo(state));
         executeState(state, dispatchInformation);
         return internalState;
     }

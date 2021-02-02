@@ -26,7 +26,6 @@ import de.rub.nds.tlsattacker.core.connection.InboundConnection;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
-import de.rub.nds.tlsscanner.clientscanner.util.IPUtil;
 
 public class ClientScannerConfig extends TLSDelegateConfig {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -35,6 +34,8 @@ public class ClientScannerConfig extends TLSDelegateConfig {
     protected CACertDelegate certificateDelegate;
     @ParametersDelegate
     protected StarttlsDelegate startTlsDelegate;
+    @ParametersDelegate
+    protected OrchestratorDelegate orchestratorDelegate;
 
     // #region Variables to be applied in Config
     @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
@@ -42,13 +43,6 @@ public class ClientScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-bindaddr", required = false, description = "Hostname/IP to listen on. Defaults to any")
     protected String bindaddr = null;
-    // #endregion
-
-    // #region Variables that are handled elsewhere
-    @Parameter(names = "-serverBaseURL", required = false, description = "Base URL to use for the server. Defaults to 127.0.0.1.xip.io. Can be set to an IPv4, in this case -noSubdomain is implied")
-    protected String serverBaseURL = "127.0.0.1.xip.io";
-    @Parameter(names = "-singleDomain", description = "Use single domain instead of using unique subdomains for each probe. Note that this will most likely cause threading to be less effective")
-    protected boolean singleDomain = false;
     // #endregion
 
     protected final JCommander jCommander;
@@ -69,6 +63,9 @@ public class ClientScannerConfig extends TLSDelegateConfig {
 
         this.startTlsDelegate = new StarttlsDelegate();
         addDelegate(startTlsDelegate);
+
+        this.orchestratorDelegate = new OrchestratorDelegate();
+        addDelegate(orchestratorDelegate);
     }
 
     protected void registerSubcommands() {
@@ -148,15 +145,4 @@ public class ClientScannerConfig extends TLSDelegateConfig {
         return (T) selectedSubcommand;
     }
 
-    public String getServerBaseURL() {
-        return serverBaseURL;
-    }
-
-    public boolean isServerBaseUrlAnIP() {
-        return IPUtil.validIP(serverBaseURL);
-    }
-
-    public boolean isSingleDomain() {
-        return isServerBaseUrlAnIP() || singleDomain;
-    }
 }

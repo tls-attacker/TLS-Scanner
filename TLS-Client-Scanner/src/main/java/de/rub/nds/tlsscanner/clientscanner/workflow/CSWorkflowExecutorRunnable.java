@@ -42,33 +42,21 @@ public class CSWorkflowExecutorRunnable extends WorkflowExecutorRunnable {
 
     @Override
     protected void runInternal() {
-        LOGGER.debug("Trying to get CHLO");
+        LOGGER.debug("Preparing State");
         Config config = csConfig.createConfig();
-        config.setWorkflowExecutorShouldClose(false);
-        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultServerConnection());
-        ReceiveAction chloAction = new ReceiveAction(new ClientHelloMessage());
-        trace.addTlsAction(chloAction);
-        State state = new State(config, trace);
-        initConnectionForState(state);
-        WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
-        executor.executeWorkflow();
         // set config defaults for further use
-        config.setWorkflowExecutorShouldOpen(false);
+        config.setWorkflowExecutorShouldOpen(true);
         config.setWorkflowExecutorShouldClose(true);
         config.setResetTrace(false);
         config.setSkipExecutedActions(true);
+        // just an empty trace for now
+        WorkflowTrace trace = new WorkflowTrace();
 
-        if (chloAction.getMessages().size() != 1 || !(chloAction.getMessages().get(0) instanceof ClientHelloMessage)) {
-            LOGGER.error("Could not get ClientHello");
-            LOGGER.error("Aborting workflow trace execution");
-            return;
-        }
-        ClientHelloMessage chlo = (ClientHelloMessage) chloAction.getMessages().get(0);
-        LOGGER.debug("Got CHLO");
+        State state = new State(config, trace);
+        initConnectionForState(state);
 
         try {
-            rootDispatcher.execute(state, new DispatchInformation(chlo));
+            rootDispatcher.execute(state, new DispatchInformation());
         } catch (DispatchException e) {
             LOGGER.error("Got DispatchException", e);
         } catch (Exception e) {

@@ -67,8 +67,11 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchExceptio
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.util.IPUtil;
 import de.rub.nds.tlsscanner.clientscanner.util.SNIUtil;
+import de.rub.nds.tlsscanner.clientscanner.workflow.CertificatePatchAction;
+import de.rub.nds.tlsscanner.clientscanner.workflow.CertificatePatchException;
+import de.rub.nds.tlsscanner.clientscanner.workflow.CertificatePatcher;
 
-public abstract class BaseExecutingDispatcher implements Dispatcher {
+public abstract class BaseExecutingDispatcher implements Dispatcher, CertificatePatcher {
     private static final Logger LOGGER = LogManager.getLogger();
     private static long serialCounter = 0;
 
@@ -82,10 +85,12 @@ public abstract class BaseExecutingDispatcher implements Dispatcher {
         if (config.isEnforceSettings()) {
             selectedSuite = config.getDefaultSelectedCipherSuite();
         } else {
-            for (CipherSuite suite : config.getDefaultServerSupportedCiphersuites()) {
-                if (state.getTlsContext().getClientSupportedCiphersuites().contains(suite)) {
-                    selectedSuite = suite;
-                    break;
+            if (state.getTlsContext().getClientSupportedCiphersuites() != null) {
+                for (CipherSuite suite : config.getDefaultServerSupportedCiphersuites()) {
+                    if (state.getTlsContext().getClientSupportedCiphersuites().contains(suite)) {
+                        selectedSuite = suite;
+                        break;
+                    }
                 }
             }
             if (selectedSuite == null) {
@@ -200,11 +205,9 @@ public abstract class BaseExecutingDispatcher implements Dispatcher {
         return new Certificate(new org.bouncycastle.asn1.x509.Certificate[] { cert.toASN1Structure(), parentCert });
     }
 
-    protected void patchCertificate(State state, DispatchInformation dispatchInformation) throws IOException,
-            OperatorCreationException {
+    public void patchCertificate(State state) throws CertificatePatchException {
         String hostname;
-        ServerNameIndicationExtensionMessage sni = SNIUtil.getSNIFromExtensions(dispatchInformation.chlo
-                .getExtensions());
+        ServerNameIndicationExtensionMessage sni = SNIUtil.getSNIFromState(state);
         hostname = SNIUtil.getServerNameFromSNIExtension(sni);
         if (hostname == null) {
             hostname = state.getConfig().getDefaultServerConnection().getHostname();
@@ -219,10 +222,16 @@ public abstract class BaseExecutingDispatcher implements Dispatcher {
         CertificateKeyType ckt = determineCertificateKeyType(state);
         KeyPair ckp = generateCertificateKeyPair(ckt);
 
-        Certificate cert_lst = generateCertificateChain(state, hostname, ckp.getPublic());
-        CertificateKeyPair finalCert = new CertificateKeyPair(cert_lst, ckp.getPrivate(), ckp.getPublic());
-        config.setDefaultExplicitCertificateKeyPair(finalCert);
-        finalCert.adjustInConfig(config, ConnectionEndType.SERVER);
+        Certificate cert_lst;
+        try {
+            cert_lst = generateCertificateChain(state, hostname, ckp.getPublic());
+            CertificateKeyPair finalCert = new CertificateKeyPair(cert_lst, ckp.getPrivate(), ckp.getPublic());
+            config.setDefaultExplicitCertificateKeyPair(finalCert);
+            finalCert.adjustInConfig(config, ConnectionEndType.SERVER);
+        } catch (OperatorCreationException | IOException e) {
+            LOGGER.error("Failed to patch certificate", e);
+            throw new CertificatePatchException(e);
+        }
     }
 
     // #endregion
@@ -284,6 +293,9 @@ public abstract class BaseExecutingDispatcher implements Dispatcher {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace entryTrace = factory.createTlsEntryWorkflowtrace(config.getDefaultServerConnection());
         entryTrace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
+        if (traceWithCHLO.getTlsActions().isEmpty()) {
+            extendWorkflowTraceValidatingPrefix(traceWithCHLO, null, entryTrace);
+        }
         WorkflowTrace actionsToAppend = factory.createWorkflowTrace(type, RunningModeType.SERVER);
         extendWorkflowTraceValidatingPrefix(traceWithCHLO, entryTrace, actionsToAppend);
     }
@@ -295,15 +307,17 @@ public abstract class BaseExecutingDispatcher implements Dispatcher {
     }
 
     // #endregion
-
     protected ClientAdapterResult executeState(State state, DispatchInformation dispatchInformation)
-            throws PatchCertificateException {
+            throws DispatchException {
+        return executeState(state, dispatchInformation, true);
+    }
+
+    protected ClientAdapterResult executeState(State state, DispatchInformation dispatchInformation,
+            boolean patchCertificate)
+            throws DispatchException {
         WorkflowTrace trace = state.getWorkflowTrace();
-        try {
-            patchCertificate(state, dispatchInformation);
-        } catch (Exception e) {
-            LOGGER.error("Failed to patch certificate", e);
-            throw new PatchCertificateException(e);
+        if (patchCertificate) {
+            CertificatePatchAction.insertInto(state.getWorkflowTrace(), this);
         }
 
         WorkflowTraceNormalizer normalizer = new WorkflowTraceNormalizer();
@@ -312,6 +326,7 @@ public abstract class BaseExecutingDispatcher implements Dispatcher {
 
         WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
         executor.executeWorkflow();
+        state.getConfig().setWorkflowExecutorShouldOpen(false);
         if (state.getConfig().isWorkflowExecutorShouldClose() &&
                 dispatchInformation.additionalInformation.containsKey(ControlledClientDispatcher.class)) {
             ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(
@@ -331,12 +346,5 @@ public abstract class BaseExecutingDispatcher implements Dispatcher {
             }
         }
         return null;
-    }
-
-    public static class PatchCertificateException extends DispatchException {
-
-        public PatchCertificateException(Exception e) {
-            super(e);
-        }
     }
 }

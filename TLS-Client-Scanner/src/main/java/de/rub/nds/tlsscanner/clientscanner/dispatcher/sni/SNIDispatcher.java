@@ -47,8 +47,7 @@ public class SNIDispatcher implements Dispatcher {
             return dispatch(state, dispatchInformation, sniDInfo.remainingHostname);
         }
         // we are the first -> get hostname from SNI/CHLO
-        ServerNameIndicationExtensionMessage SNI = SNIUtil
-                .getSNIFromExtensions(dispatchInformation.chlo.getExtensions());
+        ServerNameIndicationExtensionMessage SNI = SNIUtil.getSNIFromChlo(dispatchInformation.getChlo());
         if (SNI == null) {
             LOGGER.debug("Did not find SNI Extension");
             throw new NoSNIExtensionException();

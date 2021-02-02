@@ -100,13 +100,13 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
     protected AlertDowngradeInternalState execute(State state, DispatchInformation dispatchInformation,
             AlertDowngradeInternalState internalState) throws DispatchException {
         // only analyze chlo
+        internalState.putCHLO(dispatchInformation.getChlo(state));
         if (!internalState.isFirstDone()) {
             WorkflowTrace trace = state.getWorkflowTrace();
             AlertMessage alertMsg = new AlertMessage();
             alertMsg.setConfig(alertLevel, alertDesc);
             trace.addTlsAction(new SendAction(alertMsg));
         }
-        internalState.putCHLO(dispatchInformation.chlo);
         executeState(state, dispatchInformation);
         return internalState;
     }

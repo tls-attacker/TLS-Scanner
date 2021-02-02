@@ -11,9 +11,14 @@ package de.rub.nds.tlsscanner.clientscanner.util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.sni.ServerNamePair;
+import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
 
 public class SNIUtil {
 
@@ -22,6 +27,25 @@ public class SNIUtil {
     }
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    public static ServerNameIndicationExtensionMessage getSNIFromState(State state) {
+        for (ReceivingAction a : state.getWorkflowTrace().getReceivingActions()) {
+            ReceivingAction ra = (ReceivingAction) a;
+            for (ProtocolMessage m : ra.getReceivedMessages()) {
+                if (m instanceof ClientHelloMessage) {
+                    return getSNIFromChlo((ClientHelloMessage) m);
+                }
+            }
+        }
+        return null;
+    }
+
+    public static ServerNameIndicationExtensionMessage getSNIFromChlo(ClientHelloMessage chlo) {
+        if (chlo == null) {
+            return null;
+        }
+        return getSNIFromExtensions(chlo.getExtensions());
+    }
 
     public static ServerNameIndicationExtensionMessage getSNIFromExtensions(Iterable<ExtensionMessage> extensions) {
         if (extensions == null) {

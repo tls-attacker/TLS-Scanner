@@ -33,7 +33,7 @@ public class HelloReconProbe extends BaseProbe {
 
     @Override
     public HelloReconResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
-        return new HelloReconResult(state, dispatchInformation.chlo);
+        return new HelloReconResult(state, dispatchInformation.getChlo(state));
     }
 
     @XmlTransient()

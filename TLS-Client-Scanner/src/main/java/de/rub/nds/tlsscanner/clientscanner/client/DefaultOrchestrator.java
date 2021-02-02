@@ -20,7 +20,9 @@ import org.apache.logging.log4j.Logger;
 import de.rub.nds.tlsscanner.clientscanner.Server;
 import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.OrchestratorDelegate;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
+import de.rub.nds.tlsscanner.clientscanner.dispatcher.ChloEntryDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.ControlledClientDispatcher.ClientProbeResultFuture;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
@@ -50,23 +52,30 @@ public class DefaultOrchestrator implements Orchestrator {
     protected final String baseHostname;
     protected final boolean singleHostname;
     protected final boolean hnIsIp;
+    protected final boolean noEntryDispatcher;
 
     public DefaultOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int serverThreads) {
         this.csConfig = csConfig;
         ScanClientCommandConfig scanCfg = csConfig.getSelectedSubcommand(ScanClientCommandConfig.class);
         clientAdapter = scanCfg.createClientAdapter(csConfig);
-        baseHostname = csConfig.getServerBaseURL();
-        singleHostname = csConfig.isSingleDomain();
-        hnIsIp = csConfig.isServerBaseUrlAnIP();
+        OrchestratorDelegate oDelegate = csConfig.getDelegate(OrchestratorDelegate.class);
+        baseHostname = oDelegate.getServerBaseURL();
+        singleHostname = oDelegate.isSingleDomain();
+        hnIsIp = oDelegate.isServerBaseUrlAnIP();
+        hnIsIp = noEntryDispatcher.isNoEntryDispatcher();
 
-        LOGGER.info("Using base hostname {} {}", baseHostname, singleHostname?"(single domain)":"");
+        LOGGER.info("Using base hostname {} {}", baseHostname, singleHostname ? "(single domain)" : "");
 
         SNIDispatcher sniD = new SNIDispatcher();
         ccDispatcher = new ControlledClientDispatcher();
         sniD.registerRule(baseHostname, sniD);
         sniD.registerRule("uid", new SNIUidDispatcher());
         sniD.registerRule("cc", ccDispatcher);
-        server = new Server(csConfig, new SNIFallingBackDispatcher(sniD, ccDispatcher), serverThreads);
+        Dispatcher rootDispatcher = new SNIFallingBackDispatcher(sniD, ccDispatcher);
+        if (!noEntryDispatcher) {
+            rootDispatcher = new ChloEntryDispatcher(rootDispatcher);
+        }
+        server = new Server(csConfig, rootDispatcher, serverThreads);
         this.secondaryExecutor = secondaryExecutor;
     }
 
@@ -109,7 +118,8 @@ public class DefaultOrchestrator implements Orchestrator {
         // this requires us to change the client adapter interface
         // unfortunately...
         String syncHostname = null;
-        if (report.hasResult(SNIProbe.class) && report.getResult(SNIProbe.class, SNIProbeResult.class).supported) {
+        if (report.hasResult(SNIProbe.class) && report.getResult(SNIProbe.class, SNIProbeResult.class).supported
+                && !noEntryDispatcher) {
             // if the client supports SNI we will only sync per hostname
             // otherwise we sync on null - i.e. "globally" per Orchestrator
             // TODO a "smart" orchestrator
@@ -117,6 +127,9 @@ public class DefaultOrchestrator implements Orchestrator {
             // back to a thread local approach
             // should:tm: be relatively easy to implement using the
             // ThreadLocalOrchestrator and this Orchestrator class
+
+            // if no entry dispatcher is used, we cannot rely on SNI - therefore we consider
+            // this the same as if the client does not support it
             syncHostname = hostname;
         }
         try (SyncObject _sync = syncObjectPool.get(syncHostname)) {

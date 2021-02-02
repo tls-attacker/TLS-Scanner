@@ -20,12 +20,11 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.connection.InboundConnection;
-import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.clientscanner.Main;
 import de.rub.nds.tlsscanner.clientscanner.Server;
-import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommandHolder;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.ExecutableSubcommand;
+import de.rub.nds.tlsscanner.clientscanner.config.OrchestratorDelegate;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.probe.BaseProbe;
@@ -62,8 +61,9 @@ public class StandaloneCommandConfig implements ExecutableSubcommand {
 
     private static Dispatcher getStandaloneDispatcher(ClientScannerConfig csConfig) {
         SNIDispatcher disp = new SNIDispatcher();
-        LOGGER.info("Using base URL {}", csConfig.getServerBaseURL());
-        disp.registerRule(csConfig.getServerBaseURL(), disp);
+        String baseUrl = csConfig.getDelegate(OrchestratorDelegate.class).getServerBaseURL();
+        LOGGER.info("Using base URL {}", baseUrl);
+        disp.registerRule(baseUrl, disp);
         List<Probe> probes = Main.getDefaultProbes(null);
         for (Probe p : probes) {
             if (p instanceof BaseProbe && p instanceof Dispatcher) {
