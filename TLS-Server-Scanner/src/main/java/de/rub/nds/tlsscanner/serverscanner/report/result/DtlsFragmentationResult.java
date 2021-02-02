@@ -19,16 +19,19 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
  */
 public class DtlsFragmentationResult extends ProbeResult {
 
-    private TestResult bla;
+    private TestResult messageSequenceChecks;
+    private TestResult sequenceNumberChecks;
 
-    public DtlsFragmentationResult(TestResult bla) {
+    public DtlsFragmentationResult(TestResult messageSequenceChecks, TestResult sequenceNumberChecks) {
         super(ProbeType.DTLS_FRAGMENTATION);
-        this.bla = bla;
+        this.messageSequenceChecks = messageSequenceChecks;
+        this.sequenceNumberChecks = sequenceNumberChecks;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        // report.putResult(AnalyzedProperty., bla);
+        report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, messageSequenceChecks);
+        report.putResult(AnalyzedProperty.MISSES_SEQUENCE_NUMBER_CHECKS, sequenceNumberChecks);
     }
 
 }

@@ -238,7 +238,9 @@ public enum AnalyzedProperty {
     HAS_DTLS_COOKIE_CHECKS(AnalyzedPropertyCategory.COOKIE),
     ACCEPT_UNENCRYPTED_APP_DATA(AnalyzedPropertyCategory.QUIRKS),
     HAS_EARLY_FINISHED_BUG(AnalyzedPropertyCategory.QUIRKS),
-    HAS_MULTIPLE_CSS_BUG(AnalyzedPropertyCategory.QUIRKS);
+    HAS_MULTIPLE_CSS_BUG(AnalyzedPropertyCategory.QUIRKS),
+    MISSES_MESSAGE_SEQUENCE_CHECKS(AnalyzedPropertyCategory.QUIRKS),
+    MISSES_SEQUENCE_NUMBER_CHECKS(AnalyzedPropertyCategory.QUIRKS);
 
     private AnalyzedPropertyCategory category;
 

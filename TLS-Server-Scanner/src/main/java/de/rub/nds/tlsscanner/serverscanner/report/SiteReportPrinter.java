@@ -172,6 +172,8 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Accept unencrypted App Data with Epoch 0", AnalyzedProperty.ACCEPT_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
         prettyAppend(builder, "Multiple CSS Bug", AnalyzedProperty.HAS_MULTIPLE_CSS_BUG);
+        prettyAppend(builder, "Checks message sequences", AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+        prettyAppend(builder, "Checks squence numbers", AnalyzedProperty.MISSES_SEQUENCE_NUMBER_CHECKS);
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {
