@@ -62,7 +62,7 @@ public class DefaultOrchestrator implements Orchestrator {
         baseHostname = oDelegate.getServerBaseURL();
         singleHostname = oDelegate.isSingleDomain();
         hnIsIp = oDelegate.isServerBaseUrlAnIP();
-        hnIsIp = noEntryDispatcher.isNoEntryDispatcher();
+        noEntryDispatcher = oDelegate.isNoEntryDispatcher();
 
         LOGGER.info("Using base hostname {} {}", baseHostname, singleHostname ? "(single domain)" : "");
 
