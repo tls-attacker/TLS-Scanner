@@ -37,7 +37,8 @@ public class RecordFragmentationProbe extends TlsProbe {
 
         executeState(state);
 
-        return new RecordFragmentationResult(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()));
+        return new RecordFragmentationResult(WorkflowTraceUtil.didReceiveMessage(
+                HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()));
     }
 
     @Override
