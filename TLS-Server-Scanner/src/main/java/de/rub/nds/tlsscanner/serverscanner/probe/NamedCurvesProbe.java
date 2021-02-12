@@ -356,13 +356,8 @@ public class NamedCurvesProbe extends TlsProbe {
         NamedGroup certificateGroup = null;
         NamedGroup certificateSigGroup = null;
         TlsContext context = null;
-        List<NamedGroup> toTestList = new LinkedList<>();
+        List<NamedGroup> toTestList = NamedGroup.getImplemented();
         List<NamedGroup> supportedGroups = new LinkedList<>();
-        for (NamedGroup group : NamedGroup.values()) {
-            if (group.isTls13()) {
-                toTestList.add(group);
-            }
-        }
         if (ecdsaPkGroupsTls13 != null) {
             placeRequiredGroupsLast(supportedGroups, ecdsaPkGroupsTls13);
         }
