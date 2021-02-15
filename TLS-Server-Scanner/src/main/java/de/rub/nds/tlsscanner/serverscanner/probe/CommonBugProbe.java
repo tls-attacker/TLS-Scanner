@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.EllipticCurvesExtensionMessage;
@@ -26,6 +27,7 @@ import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -157,6 +159,10 @@ public class CommonBugProbe extends TlsProbe {
             extension.setDataConfig(new byte[] { 00, 11, 22, 33 });
             message.getExtensions().add(extension);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -174,9 +180,13 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             config.setAddPaddingExtension(true);
-            config.setDefaultPaddingExtensionBytes(new byte[14000]);
+            config.setDefaultPaddingExtensionBytes(new byte[6000]);
             ClientHelloMessage message = new ClientHelloMessage(config);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -208,6 +218,10 @@ public class CommonBugProbe extends TlsProbe {
             extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -239,6 +253,10 @@ public class CommonBugProbe extends TlsProbe {
             extension.setSupportedGroups(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -263,6 +281,10 @@ public class CommonBugProbe extends TlsProbe {
             ClientHelloMessage message = new ClientHelloMessage(config);
             message.setCipherSuites(Modifiable.explicit(new byte[] { (byte) 0xEE, (byte) 0xCC }));
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -309,6 +331,10 @@ public class CommonBugProbe extends TlsProbe {
             extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -339,6 +365,10 @@ public class CommonBugProbe extends TlsProbe {
             EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
             message.addExtension(extension);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -377,6 +407,10 @@ public class CommonBugProbe extends TlsProbe {
             }
             message.setCipherSuites(Modifiable.explicit(stream.toByteArray()));
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -397,6 +431,10 @@ public class CommonBugProbe extends TlsProbe {
             ExtendedMasterSecretExtensionMessage extension = new ExtendedMasterSecretExtensionMessage();
             message.getExtensions().add(extension);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -416,6 +454,10 @@ public class CommonBugProbe extends TlsProbe {
             ClientHelloMessage message = new ClientHelloMessage(config);
             message.setProtocolVersion(Modifiable.explicit(new byte[] { 0x03, 0x05 }));
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -435,6 +477,10 @@ public class CommonBugProbe extends TlsProbe {
             ClientHelloMessage message = new ClientHelloMessage(config);
             message.setCompressions(new byte[] { (byte) 0xFF, (byte) 0x00 });
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -458,6 +504,10 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -477,6 +527,10 @@ public class CommonBugProbe extends TlsProbe {
             ClientHelloMessage message = new ClientHelloMessage(config);
             message.setCipherSuites(Modifiable.insert(new byte[] { (byte) 0xCF, (byte) 0xAA }, 1));
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -497,6 +551,10 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
@@ -527,6 +585,10 @@ public class CommonBugProbe extends TlsProbe {
             }
             message = new ClientHelloMessage(config);
             trace.addTlsAction(new SendAction(message));
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+                trace.addTlsAction(new SendAction(message));
+            }
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
