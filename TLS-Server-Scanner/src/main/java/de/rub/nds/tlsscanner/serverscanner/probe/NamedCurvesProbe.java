@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -202,7 +201,7 @@ public class NamedCurvesProbe extends TlsProbe {
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return state.getTlsContext();
         } else {
-            LOGGER.error("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
+            LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
         }
     }

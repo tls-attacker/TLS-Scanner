@@ -84,8 +84,7 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddAlpnExtension(true);
         tlsConfig.setDefaultProposedAlpnProtocols("http/1.1", "spdy/1", "spdy/2", "spdy/3", "stun.turn",
-
-        "stun.nat-discovery", "h2", "h2c", "webrtc", "c-webrtc", "ftp", "imap", "pop3", "managesieve");
+            "stun.nat-discovery", "h2", "h2c", "webrtc", "c-webrtc", "ftp", "imap", "pop3", "managesieve");
         tlsConfig.setAddEncryptThenMacExtension(true);
         tlsConfig.setAddExtendedMasterSecretExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
