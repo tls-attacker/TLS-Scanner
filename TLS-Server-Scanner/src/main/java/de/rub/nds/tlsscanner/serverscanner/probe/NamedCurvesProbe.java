@@ -112,7 +112,7 @@ public class NamedCurvesProbe extends TlsProbe {
     private Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsRsa() {
 
         Config tlsConfig = getBasicConfig();
-        tlsConfig.setDefaultClientSupportedCipherSuites(getEcRsaCiphersuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(getEcRsaCipherSuites());
         List<NamedGroup> toTestList = new ArrayList<>(Arrays.asList(NamedGroup.values()));
         TlsContext context;
         NamedGroup selectedGroup = null;
@@ -301,7 +301,7 @@ public class NamedCurvesProbe extends TlsProbe {
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.EXPLICIT_CHAR2);
         }
 
-        tlsConfig.setDefaultClientSupportedCipherSuites(getEcCiphersuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(getEcCipherSuites());
         State state = new State(tlsConfig);
         executeState(state);
 

@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -41,7 +43,7 @@ public class GreaseProbe extends TlsProbe {
         TestResult toleratesGreaseCipherSuite = getToleratesGreaseCipherSuite();
 
         return new GreaseResult(toleratesGreaseCipherSuite, toleratesGreaseNamedGroup,
-                toleratesGreaseSignatureAndHashAlgorithm);
+            toleratesGreaseSignatureAndHashAlgorithm);
     }
 
     @Override
@@ -51,13 +53,16 @@ public class GreaseProbe extends TlsProbe {
 
     private TestResult getToleratesGreaseSignatureAndHashAlgorithm() {
         Config config = getTestConfig();
-        Arrays.asList(SignatureAndHashAlgorithm.values()).stream()
-                .filter(algorithm -> algorithm.isGrease())
-                .forEach(greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
-        
+        Arrays
+            .asList(SignatureAndHashAlgorithm.values())
+            .stream()
+            .filter(algorithm -> algorithm.isGrease())
+            .forEach(
+                greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
+
         State state = new State(config);
         executeState(state);
-        if(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return TestResult.TRUE;
         }
         return TestResult.FALSE;
@@ -65,13 +70,12 @@ public class GreaseProbe extends TlsProbe {
 
     private TestResult getToleratesGreaseNamedGroup() {
         Config config = getTestConfig();
-        Arrays.asList(NamedGroup.values()).stream()
-                .filter(group -> group.isGrease())
-                .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
-        
+        Arrays.asList(NamedGroup.values()).stream().filter(group -> group.isGrease())
+            .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
+
         State state = new State(config);
         executeState(state);
-        if(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return TestResult.TRUE;
         }
         return TestResult.FALSE;
@@ -79,13 +83,12 @@ public class GreaseProbe extends TlsProbe {
 
     private TestResult getToleratesGreaseCipherSuite() {
         Config config = getTestConfig();
-        Arrays.asList(CipherSuite.values()).stream()
-                .filter(cipherSuite -> cipherSuite.isGrease())
-                .forEach(greaseCipher -> config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
-        
+        Arrays.asList(CipherSuite.values()).stream().filter(cipherSuite -> cipherSuite.isGrease())
+            .forEach(greaseCipher -> config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
+
         State state = new State(config);
         executeState(state);
-        if(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return TestResult.TRUE;
         }
         return TestResult.FALSE;

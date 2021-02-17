@@ -128,7 +128,7 @@ public class CipherSuiteProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getImplementedTls13SignatureAndHashAlgorithms());
+            .getImplementedTls13SignatureAndHashAlgorithms());
 
         State state = new State(tlsConfig);
         executeState(state);

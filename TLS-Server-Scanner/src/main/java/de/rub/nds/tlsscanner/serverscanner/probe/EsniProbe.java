@@ -49,9 +49,9 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(this.getClientSupportedCiphersuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(this.getClientSupportedCipherSuites());
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getImplementedTls13SignatureAndHashAlgorithms());
+            .getImplementedTls13SignatureAndHashAlgorithms());
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
@@ -67,7 +67,7 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setClientSupportedEsniCipherSuites(this.getClientSupportedCiphersuites());
+        tlsConfig.setClientSupportedEsniCipherSuites(this.getClientSupportedCipherSuites());
         tlsConfig.getClientSupportedEsniNamedGroups().addAll(this.getImplementedGroups());
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);

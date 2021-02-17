@@ -28,7 +28,7 @@ public class ResumptionResult extends ProbeResult {
     private final TestResult supportsTls13_0rtt;
 
     public ResumptionResult(TestResult supportsResumption, TestResult supportsTls13SessionTicket,
-            TestResult supportsTls13PskDhe, TestResult supportsTls13Psk, TestResult supportsTls13_0rtt) {
+        TestResult supportsTls13PskDhe, TestResult supportsTls13Psk, TestResult supportsTls13_0rtt) {
         super(ProbeType.RESUMPTION);
         this.supportsResumption = supportsResumption;
         this.supportsTls13SessionTicket = supportsTls13SessionTicket;

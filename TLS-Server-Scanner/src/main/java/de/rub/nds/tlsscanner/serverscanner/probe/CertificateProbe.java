@@ -348,7 +348,7 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
         List<SignatureAndHashAlgorithm> sigHashAlgos = Arrays.asList(SignatureAndHashAlgorithm.values());
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getImplementedTls13SignatureAndHashAlgorithms());
+            .getImplementedTls13SignatureAndHashAlgorithms());
         tlsConfig.setStopActionsAfterFatal(true);
 
         return tlsConfig;
@@ -392,7 +392,7 @@ public class CertificateProbe extends TlsProbe {
     }
 
     private void performEcCertScan(Config tlsConfig, List<NamedGroup> groupsToTest,
-            List<CipherSuite> cipherSuitesToTest, List<CertificateChain> certificateList) {
+        List<CipherSuite> cipherSuitesToTest, List<CertificateChain> certificateList) {
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         tlsConfig.setDefaultClientNamedGroups(groupsToTest);
         do {
@@ -415,8 +415,8 @@ public class CertificateProbe extends TlsProbe {
     }
 
     private void performEcCertScanEcdsa(Config tlsConfig, List<NamedGroup> groupsToTest,
-            List<CipherSuite> cipherSuitesToTest, List<CertificateChain> certificateList, List<NamedGroup> pkGroups,
-            List<NamedGroup> sigGroups) {
+        List<CipherSuite> cipherSuitesToTest, List<CertificateChain> certificateList, List<NamedGroup> pkGroups,
+        List<NamedGroup> sigGroups) {
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuitesToTest);
         tlsConfig.setDefaultClientNamedGroups(groupsToTest);
         tlsConfig.setDefaultClientKeyShareNamedGroups(groupsToTest);
@@ -447,7 +447,7 @@ public class CertificateProbe extends TlsProbe {
     private List<SignatureAndHashAlgorithm> getTls13RsaSigHash() {
         List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
         for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm
-                .getImplementedTls13SignatureAndHashAlgorithms()) {
+            .getImplementedTls13SignatureAndHashAlgorithms()) {
             if (algorithm.name().contains("RSA")) {
                 algorithms.add(algorithm);
             }
@@ -459,7 +459,7 @@ public class CertificateProbe extends TlsProbe {
     private List<SignatureAndHashAlgorithm> getTls13EcdsaSigHash() {
         List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
         for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm
-                .getImplementedTls13SignatureAndHashAlgorithms()) {
+            .getImplementedTls13SignatureAndHashAlgorithms()) {
             if (algorithm.name().contains("ECDSA")) {
                 algorithms.add(algorithm);
             }

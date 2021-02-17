@@ -61,12 +61,12 @@ public class ResumptionProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(),
-                    getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE), getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
-                    getSupports0rtt());
+                getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE), getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
+                getSupports0rtt());
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST);
+                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -77,7 +77,7 @@ public class ResumptionProbe extends TlsProbe {
             List<CipherSuite> cipherSuites = new LinkedList<>();
             cipherSuites.addAll(supportedSuites);
             // TODO this can fail in some rare occasions
-            tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites.get(0));
+            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites.get(0));
             tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
             tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setEnforceSettings(false);
@@ -135,8 +135,8 @@ public class ResumptionProbe extends TlsProbe {
             State state = new State(tlsConfig);
             executeState(state);
 
-            EncryptedExtensionsMessage encExt = state.getWorkflowTrace().getLastReceivedMessage(
-                    EncryptedExtensionsMessage.class);
+            EncryptedExtensionsMessage encExt =
+                state.getWorkflowTrace().getLastReceivedMessage(EncryptedExtensionsMessage.class);
             if (encExt != null && encExt.containsExtension(ExtensionType.EARLY_DATA)) {
                 return TestResult.TRUE;
             }
@@ -174,7 +174,7 @@ public class ResumptionProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getImplementedTls13SignatureAndHashAlgorithms());
+            .getImplementedTls13SignatureAndHashAlgorithms());
         tlsConfig.setTls13BackwardsCompatibilityMode(Boolean.TRUE);
         return tlsConfig;
     }
@@ -221,6 +221,6 @@ public class ResumptionProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new ResumptionResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 }

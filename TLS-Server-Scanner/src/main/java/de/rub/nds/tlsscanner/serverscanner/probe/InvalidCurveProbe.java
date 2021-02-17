@@ -282,7 +282,7 @@ public class InvalidCurveProbe extends TlsProbe {
             pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
             attacker.getTlsConfig().setPSKKeyExchangeModes(pskKex);
             attacker.getTlsConfig().setDefaultClientSupportedSignatureAndHashAlgorithms(
-                    SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
+                SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
         }
 
         attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
@@ -648,7 +648,7 @@ public class InvalidCurveProbe extends TlsProbe {
         return groupedMap;
     }
 
-    private boolean groupQualifiedForCiphersuite(NamedGroup testGroup, CipherSuite testCipher) {
+    private boolean groupQualifiedForCipherSuite(NamedGroup testGroup, CipherSuite testCipher) {
         if (!testCipher.isTLS13()) {
             if (namedCurveWitnesses.containsKey(testGroup) == false) {
                 return false;

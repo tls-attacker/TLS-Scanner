@@ -75,7 +75,7 @@ public class RenegotiationProbe extends TlsProbe {
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(supportedSuites);
         // TODO this can fail in some rare occasions
-        tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites.get(0));
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites.get(0));
         tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);

@@ -149,7 +149,7 @@ public class ECPointFormatProbe extends TlsProbe {
             tlsConfig.setAddCertificateStatusRequestExtension(true);
             tlsConfig.setUseFreshRandom(true);
             tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                    .getImplementedTls13SignatureAndHashAlgorithms());
+                .getImplementedTls13SignatureAndHashAlgorithms());
             tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             State state = new State(tlsConfig);
