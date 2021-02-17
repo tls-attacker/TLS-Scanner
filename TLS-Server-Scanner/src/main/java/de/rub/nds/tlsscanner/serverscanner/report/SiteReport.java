@@ -1,16 +1,18 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
-import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
+import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -23,14 +25,13 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.invalidCurve.InvalidCurveResponse;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
@@ -43,6 +44,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
+import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -110,6 +112,11 @@ public class SiteReport extends Observable implements Serializable {
 
     // OCSP
     private List<OcspCertificateResult> ocspResults;
+
+    // Certificate Transparency
+    private SignedCertificateTimestampList precertificateSctList = null;
+    private SignedCertificateTimestampList handshakeSctList = null;
+    private SignedCertificateTimestampList ocspSctList = null;
 
     // Ciphers
     private List<VersionSuiteListPair> versionSuitePairs = null;
@@ -200,13 +207,13 @@ public class SiteReport extends Observable implements Serializable {
         return getResult(property.toString());
     }
 
-    public synchronized void removeResult(AnalyzedProperty property) {
-        resultMap.remove(property.toString());
-    }
-
     public synchronized TestResult getResult(String property) {
         TestResult result = resultMap.get(property);
         return (result == null) ? TestResult.NOT_TESTED_YET : result;
+    }
+
+    public synchronized void removeResult(AnalyzedProperty property) {
+        resultMap.remove(property.toString());
     }
 
     public synchronized void putResult(AnalyzedProperty property, TestResult result) {
@@ -215,8 +222,8 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
         this.putResult(property,
-                Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
-                        : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
+            Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE : Objects.equals(result, Boolean.FALSE)
+                ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
     public synchronized void putResult(DrownVulnerabilityType result) {
@@ -284,7 +291,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedTokenBindingKeyParameters(
-            List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
+        List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
@@ -337,7 +344,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedSignatureAndHashAlgorithms(
-            List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
     }
 
@@ -467,7 +474,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setPaddingOracleTestResultList(
-            List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
+        List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 
@@ -476,7 +483,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setDirectRaccoonResultList(
-            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
+        List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
         this.directRaccoonResultList = directRaccoonResultList;
     }
 
@@ -525,7 +532,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setExtractedValueContainerList(
-            Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
+        Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
@@ -557,7 +564,8 @@ public class SiteReport extends Observable implements Serializable {
         return bleichenbacherTestResultList;
     }
 
-    public synchronized void setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
+    public synchronized void
+        setBleichenbacherTestResultList(List<BleichenbacherTestResult> bleichenbacherTestResultList) {
         this.bleichenbacherTestResultList = bleichenbacherTestResultList;
     }
 
@@ -622,7 +630,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedNamedGroupsWitnesses(
-            Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
+        Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
         this.supportedNamedGroupsWitnesses = supportedNamedGroupsWitnesses;
     }
 
@@ -663,7 +671,7 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void setSupportedNamedGroupsWitnessesTls13(
-            Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
+        Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
         this.supportedNamedGroupsWitnessesTls13 = supportedNamedGroupsWitnessesTls13;
     }
 
@@ -673,6 +681,30 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setOcspResults(List<OcspCertificateResult> ocspResults) {
         this.ocspResults = ocspResults;
+    }
+
+    public synchronized SignedCertificateTimestampList getPrecertificateSctList() {
+        return precertificateSctList;
+    }
+
+    public synchronized void setPrecertificateSctList(SignedCertificateTimestampList precertificateSctList) {
+        this.precertificateSctList = precertificateSctList;
+    }
+
+    public synchronized SignedCertificateTimestampList getHandshakeSctList() {
+        return handshakeSctList;
+    }
+
+    public synchronized void setHandshakeSctList(SignedCertificateTimestampList handshakeSctList) {
+        this.handshakeSctList = handshakeSctList;
+    }
+
+    public synchronized SignedCertificateTimestampList getOcspSctList() {
+        return ocspSctList;
+    }
+
+    public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
+        this.ocspSctList = ocspSctList;
     }
 
     public Boolean getSupportsRecordFragmentation() {

@@ -1,16 +1,14 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -26,15 +24,17 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
 import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class EsniProbe extends TlsProbe {
 
@@ -72,14 +72,16 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HELLO,
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HELLO,
                 RunningModeType.CLIENT);
         State state = new State(tlsConfig, trace);
         executeState(state);
 
         TlsContext context = state.getTlsContext();
         boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
-        boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
+        boolean isReceivedCorrectNonce =
+            context.getEsniServerNonce() != null
                 && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
             return new SniResult(TestResult.ERROR_DURING_TEST);
@@ -104,7 +106,7 @@ public class EsniProbe extends TlsProbe {
         return new SniResult(TestResult.COULD_NOT_TEST);
     }
 
-    private List<CipherSuite> getClientSupportedCiphersuites() {
+    private List<CipherSuite> getClientSupportedCipherSuites() {
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.add(CipherSuite.TLS_AES_128_GCM_SHA256);
         cipherSuites.add(CipherSuite.TLS_AES_256_GCM_SHA384);

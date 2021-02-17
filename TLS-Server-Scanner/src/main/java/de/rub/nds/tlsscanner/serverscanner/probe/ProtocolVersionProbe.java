@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -36,7 +38,7 @@ import java.util.List;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class ProtocolVersionProbe extends TlsProbe {
 
@@ -80,8 +82,8 @@ public class ProtocolVersionProbe extends TlsProbe {
                 unsupportedVersionList.add(ProtocolVersion.TLS13);
             }
             return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ProtocolVersionResult(null, null);
         }
     }
@@ -182,7 +184,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+            .getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

@@ -1,11 +1,13 @@
 /**
  * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
+ * and Hackmanit GmbH
  *
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -61,10 +63,10 @@ public class ResumptionProbe extends TlsProbe {
             return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(),
                     getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE), getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
                     getSupports0rtt());
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                    TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+                TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -72,8 +74,8 @@ public class ResumptionProbe extends TlsProbe {
         try {
             Config tlsConfig = getScannerConfig().createConfig();
             tlsConfig.setQuickReceive(true);
-            List<CipherSuite> ciphersuites = new LinkedList<>();
-            ciphersuites.addAll(supportedSuites);
+            List<CipherSuite> cipherSuites = new LinkedList<>();
+            cipherSuites.addAll(supportedSuites);
             // TODO this can fail in some rare occasions
             tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites.get(0));
             tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
@@ -92,8 +94,8 @@ public class ResumptionProbe extends TlsProbe {
             State state = new State(tlsConfig);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
-        } catch (Exception E) {
-            LOGGER.error("Could not test for support for Session Resumption");
+        } catch (Exception e) {
+            LOGGER.error("Could not test for support for Tls13PskDhe");
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -139,8 +141,8 @@ public class ResumptionProbe extends TlsProbe {
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
-        } catch (Exception E) {
-            LOGGER.error("Could not test for support for Tls13-0rtt");
+        } catch (Exception e) {
+            LOGGER.error("Could not test for support for Tls13PskDhe");
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -186,16 +188,17 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setPSKKeyExchangeModes(pskKex);
             tlsConfig.setAddPSKKeyExchangeModesExtension(true);
             State state = new State(tlsConfig);
-            state.getWorkflowTrace().addTlsAction(
+            state.getWorkflowTrace()
+                .addTlsAction(
                     new ReceiveAction(tlsConfig.getDefaultClientConnection().getAlias(), new NewSessionTicketMessage(
-                            false)));
+                        false)));
 
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
-        } catch (Exception E) {
+        } catch (Exception e) {
             LOGGER.error("Could not test for support for Tls13SessionTickets");
             return TestResult.ERROR_DURING_TEST;
         }
