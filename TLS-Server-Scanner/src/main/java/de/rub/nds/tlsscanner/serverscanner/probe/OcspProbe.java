@@ -94,7 +94,7 @@ public class OcspProbe extends TlsProbe {
             ocspCertResults.add(certResult);
         }
         List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
-        if (tls13NamedGroups != null) {
+        if (!tls13NamedGroups.isEmpty()) {
             tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
         }
         return new OcspResult(ocspCertResults, tls13CertStatus);
@@ -218,13 +218,17 @@ public class OcspProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+        } else {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        
         tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());
         tlsConfig.setAddCertificateStatusRequestExtension(true);
 
