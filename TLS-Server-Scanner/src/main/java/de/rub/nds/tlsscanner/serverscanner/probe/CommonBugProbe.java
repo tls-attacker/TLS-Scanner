@@ -180,7 +180,7 @@ public class CommonBugProbe extends TlsProbe {
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(config.getDefaultClientConnection());
             config.setAddPaddingExtension(true);
-            config.setDefaultPaddingExtensionBytes(new byte[6000]);
+            config.setDefaultPaddingExtensionBytes(new byte[14000]);
             ClientHelloMessage message = new ClientHelloMessage(config);
             trace.addTlsAction(new SendAction(message));
             if (getScannerConfig().getDtlsDelegate().isDTLS()) {
