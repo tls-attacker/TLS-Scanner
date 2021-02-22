@@ -109,7 +109,7 @@ public class ECPointFormatProbe extends TlsProbe {
         config.setAddECPointFormatExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setAddRenegotiationInfoExtension(true);
-        config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setQuickReceive(true);
         config.setDefaultSelectedPointFormat(format);
         config.setEarlyStop(true);
