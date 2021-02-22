@@ -324,12 +324,16 @@ public class NamedCurvesProbe extends TlsProbe {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+        } else {
+            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);

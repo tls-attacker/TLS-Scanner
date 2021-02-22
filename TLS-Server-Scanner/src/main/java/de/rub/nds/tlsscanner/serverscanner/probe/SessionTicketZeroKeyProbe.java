@@ -27,12 +27,20 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -105,8 +113,11 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             List<CipherSuite> ciphersuites = new LinkedList<>();
             ciphersuites.addAll(supportedSuites);
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-            tlsConfig.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
+            } else {
+                tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+            }
             tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites.get(0));
             tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
             tlsConfig.setAddECPointFormatExtension(true);
@@ -114,7 +125,13 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             tlsConfig.setAddSessionTicketTLSExtension(true);
             tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddRenegotiationInfoExtension(false);
-            state = new State(tlsConfig);
+            WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
+                    WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+            trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+            trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+            trace.addTlsAction(new ReceiveAction(new NewSessionTicketMessage(), new ChangeCipherSpecMessage(),
+                    new FinishedMessage()));
+            state = new State(tlsConfig, trace);
             executeState(state);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
