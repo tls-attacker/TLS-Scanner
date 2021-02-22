@@ -126,7 +126,7 @@ public class CertificateProbe extends TlsProbe {
         if (report.getResult(AnalyzedProperty.SUPPORTS_GOST) == TestResult.FALSE) {
             scanForGostCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
             scanForTls13 = false;
         }
     }
