@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve;
@@ -75,7 +74,7 @@ public class InvalidCurveResponse {
 
     /**
      * @param showsPointsAreNotValidated
-     * the showsPointsAreNotValidated to set
+     *                                   the showsPointsAreNotValidated to set
      */
     public void setShowsPointsAreNotValuated(TestResult showsPointsAreNotValidated) {
         this.showsPointsAreNotValidated = showsPointsAreNotValidated;
@@ -90,7 +89,7 @@ public class InvalidCurveResponse {
 
     /**
      * @param showsVulnerability
-     * the showsVulnerability to set
+     *                           the showsVulnerability to set
      */
     public void setShowsVulnerability(TestResult showsVulnerability) {
         this.showsVulnerability = showsVulnerability;
@@ -105,7 +104,7 @@ public class InvalidCurveResponse {
 
     /**
      * @param chosenGroupReusesKey
-     * the chosenGroupReusesKey to set
+     *                             the chosenGroupReusesKey to set
      */
     public void setChosenGroupReusesKey(TestResult chosenGroupReusesKey) {
         this.chosenGroupReusesKey = chosenGroupReusesKey;
@@ -120,7 +119,7 @@ public class InvalidCurveResponse {
 
     /**
      * @param receivedEcPublicKeys
-     * the receivedEcPublicKeys to set
+     *                             the receivedEcPublicKeys to set
      */
     public void setReceivedEcPublicKeys(List<Point> receivedEcPublicKeys) {
         this.receivedEcPublicKeys = receivedEcPublicKeys;
@@ -135,7 +134,7 @@ public class InvalidCurveResponse {
 
     /**
      * @param fingerprintSecretPairs
-     * the fingerprintSecretPairs to set
+     *                               the fingerprintSecretPairs to set
      */
     public void setFingerprintSecretPairs(List<FingerprintSecretPair> fingerprintSecretPairs) {
         this.fingerprintSecretPairs = fingerprintSecretPairs;
@@ -150,7 +149,7 @@ public class InvalidCurveResponse {
 
     /**
      * @param finishedHandshakeHadReusedKey
-     * the finishedHandshakeHadReusedKey to set
+     *                                      the finishedHandshakeHadReusedKey to set
      */
     public void setFinishedHandshakeHadReusedKey(TestResult finishedHandshakeHadReusedKey) {
         this.finishedHandshakeHadReusedKey = finishedHandshakeHadReusedKey;
@@ -165,7 +164,7 @@ public class InvalidCurveResponse {
 
     /**
      * @param receivedFinishedEcKeys
-     * the receivedFinishedEcKeys to set
+     *                               the receivedFinishedEcKeys to set
      */
     public void setReceivedFinishedEcKeys(List<Point> receivedFinishedEcKeys) {
         this.receivedFinishedEcKeys = receivedFinishedEcKeys;
@@ -180,7 +179,7 @@ public class InvalidCurveResponse {
 
     /**
      * @param dirtyKeysWarning
-     * the dirtyKeysWarning to set
+     *                         the dirtyKeysWarning to set
      */
     public void setDirtyKeysWarning(TestResult dirtyKeysWarning) {
         this.dirtyKeysWarning = dirtyKeysWarning;

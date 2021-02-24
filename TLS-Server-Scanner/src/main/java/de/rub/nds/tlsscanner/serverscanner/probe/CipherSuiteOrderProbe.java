@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
@@ -48,8 +47,8 @@ public class CipherSuiteOrderProbe extends TlsProbe {
             CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
             Collections.reverse(toTestList);
             CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-            return new CipherSuiteOrderResult(firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE
-                : TestResult.FALSE);
+            return new CipherSuiteOrderResult(
+                firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);
             return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);

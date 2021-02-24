@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
@@ -86,9 +85,8 @@ public class NamedCurvesProbe extends TlsProbe {
                     getSupportedNamedGroupsEcdsa(getEcdsaStaticCipherSuites(), null, ecdsaCertSigGroupsStatic);
             }
             if (testUsingEcdsaEphemeral) {
-                groupsEcdsaEphemeral =
-                    getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCipherSuites(), ecdsaPkGroupsEphemeral,
-                        ecdsaCertSigGroupsEphemeral);
+                groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCipherSuites(),
+                    ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
             }
             if (testUsingTls13) {
                 groupsTls13 = getTls13SupportedGroups();
@@ -308,9 +306,8 @@ public class NamedCurvesProbe extends TlsProbe {
             return TestResult.UNCERTAIN;
         } else if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE,
             state.getWorkflowTrace())) {
-            HandshakeMessage skeMsg =
-                WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE,
-                    state.getWorkflowTrace());
+            HandshakeMessage skeMsg = WorkflowTraceUtil
+                .getFirstReceivedMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
             if (skeMsg instanceof ECDHEServerKeyExchangeMessage) {
                 ECDHEServerKeyExchangeMessage kex = (ECDHEServerKeyExchangeMessage) skeMsg;
                 if (kex.getGroupType().getValue() == curveType.getValue()) {
@@ -422,8 +419,8 @@ public class NamedCurvesProbe extends TlsProbe {
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-            .getTls13SignatureAndHashAlgorithms());
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
+            SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
@@ -480,8 +477,8 @@ public class NamedCurvesProbe extends TlsProbe {
         Map<NamedGroup, NamedCurveWitness> groupsEcdsaEphemeral) {
         for (NamedGroup group : overallSupported.keySet()) {
             if (((testUsingRsa && !groupsRsa.containsKey(group))
-                || (testUsingEcdsaStatic && !groupsEcdsaStatic.containsKey(group)) || (testUsingEcdsaEphemeral && !groupsEcdsaEphemeral
-                .containsKey(group))) && group.isCurve()) {
+                || (testUsingEcdsaStatic && !groupsEcdsaStatic.containsKey(group))
+                || (testUsingEcdsaEphemeral && !groupsEcdsaEphemeral.containsKey(group))) && group.isCurve()) {
                 return TestResult.TRUE;
             }
         }

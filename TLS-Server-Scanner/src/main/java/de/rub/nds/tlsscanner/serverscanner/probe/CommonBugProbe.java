@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
@@ -258,12 +257,11 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-            ServerHelloMessage serverHelloMessage =
-                (ServerHelloMessage) WorkflowTraceUtil
-                    .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
+            ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
+                .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
             if (receivedShd) {
-                if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(), new byte[] { (byte) 0xEE,
-                    (byte) 0xCC })) {
+                if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(),
+                    new byte[] { (byte) 0xEE, (byte) 0xCC })) {
                     reflectsCipherSuiteOffering = TestResult.TRUE;
                     ignoresCipherSuiteOffering = TestResult.FALSE;
                 } else {
@@ -532,10 +530,10 @@ public class CommonBugProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+        return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+            TestResult.COULD_NOT_TEST);
     }
 }
