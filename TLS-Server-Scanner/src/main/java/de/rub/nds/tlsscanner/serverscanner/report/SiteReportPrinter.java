@@ -150,9 +150,6 @@ public class SiteReportPrinter {
         appendHandshakeSimulation(builder);
         appendHttps(builder);
         appendRandom(builder);
-        if (report.getSupportsDtls() == Boolean.TRUE) {
-            appendCookie(builder);
-        }
         appendPublicKeyIssues(builder);
         appendClientAuthentication(builder);
         if (report.getSupportsDtls() == Boolean.TRUE) {
@@ -170,8 +167,17 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Accept unencrypted App Data with Epoch 0", AnalyzedProperty.ACCEPT_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
         prettyAppend(builder, "Multiple CSS Bug", AnalyzedProperty.HAS_MULTIPLE_CSS_BUG);
-        prettyAppend(builder, "Checks message sequences", AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
-        prettyAppend(builder, "Checks squence numbers", AnalyzedProperty.MISSES_SEQUENCE_NUMBER_CHECKS);
+        prettyAppend(builder, "Overwrites Content", AnalyzedProperty.OVERWRITES_CONTENT);
+        prettyAppendHeading(builder, "DTLS Cookie");
+        prettyAppendCookie(builder, "Cookie", report.getCookieEvaluationResult());
+        prettyAppend(builder, "Checks complete", AnalyzedProperty.HAS_COOKIE_CHECKS);
+        prettyAppend(builder, "Checks with client parameters", AnalyzedProperty.USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS);
+        prettyAppendHeading(builder, "DTLS Message Sequences");
+        prettyAppend(builder, "Starts handshake with invalid message sequence",
+                AnalyzedProperty.STARTS_WITH_INVALID_MESSAGE_SEQUENCE);
+        prettyAppend(builder, "Misses message sequence checks", AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+        prettyAppendHeading(builder, "DTLS Sequence Numbers");
+        prettyAppend(builder, "Has retransmission bug", AnalyzedProperty.HAS_RETRANSMISSION_BUG);
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {
@@ -1406,13 +1412,6 @@ public class SiteReportPrinter {
     public void appendRandom(StringBuilder builder) {
         prettyAppendHeading(builder, "Nonce");
         prettyAppendRandom(builder, "Random", report.getRandomEvaluationResult());
-    }
-
-    public void appendCookie(StringBuilder builder) {
-        prettyAppendHeading(builder, "DTLS Cookie");
-        prettyAppendCookie(builder, "Cookie", report.getCookieEvaluationResult());
-        prettyAppend(builder, "Checks complete", AnalyzedProperty.HAS_COOKIE_CHECKS);
-        prettyAppend(builder, "Checks with client parameters", AnalyzedProperty.USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS);
     }
 
     public void appendPublicKeyIssues(StringBuilder builder) {

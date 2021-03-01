@@ -108,7 +108,9 @@ public class TlsScanner {
         if (config.getDtlsDelegate().isDTLS()) {
             probeList.add(new DtlsCookieProbe(config, parallelExecutor));
             probeList.add(new DtlsCcsProbe(config, parallelExecutor));
-            probeList.add(new DtlsFragmentationProbe(config, parallelExecutor));
+            probeList.add(new DtlsMessageSequenceProbe(config, parallelExecutor));
+            probeList.add(new DtlsSequenceNumberProbe(config, parallelExecutor));
+            probeList.add(new DtlsOverwritingContentProbe(config, parallelExecutor));
             afterList.add(new EvaluateCookieAfterProbe());
         } else {
             probeList.add(new TlsPoodleProbe(config, parallelExecutor));

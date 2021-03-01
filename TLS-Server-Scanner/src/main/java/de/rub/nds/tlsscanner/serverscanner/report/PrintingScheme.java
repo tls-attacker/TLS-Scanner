@@ -308,6 +308,12 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.HAS_COOKIE_CHECKS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(AnalyzedProperty.STARTS_WITH_INVALID_MESSAGE_SEQUENCE,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.HAS_RETRANSMISSION_BUG, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.OVERWRITES_CONTENT, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
 
         HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
