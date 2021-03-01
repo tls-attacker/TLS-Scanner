@@ -305,6 +305,10 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
 
+        colorMap.put(AnalyzedProperty.HAS_COOKIE_CHECKS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS,
+                getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+
         HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
         textMap.put(AnalyzedPropertyCategory.FRESHNESS, new TextEncoding(freshnessMap));

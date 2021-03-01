@@ -19,19 +19,19 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
  */
 public class DtlsCoookieResult extends ProbeResult {
 
-    private TestResult checksClientHello;
     private TestResult checksCookie;
+    private TestResult checksCookieWithClientParameters;
 
-    public DtlsCoookieResult(TestResult checksClientHello, TestResult checksCookie) {
+    public DtlsCoookieResult(TestResult checksCookie, TestResult checksCookieWithClientParameters) {
         super(ProbeType.DTLS_COOKIE);
-        this.checksClientHello = checksClientHello;
         this.checksCookie = checksCookie;
+        this.checksCookieWithClientParameters = checksCookieWithClientParameters;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.HAS_DTLS_SECOND_CLIENT_HELLO_CHECKS, checksClientHello);
-        report.putResult(AnalyzedProperty.HAS_DTLS_COOKIE_CHECKS, checksCookie);
+        report.putResult(AnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
+        report.putResult(AnalyzedProperty.USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS, checksCookieWithClientParameters);
     }
 
 }

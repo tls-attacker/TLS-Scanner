@@ -234,8 +234,8 @@ public enum AnalyzedProperty {
     /**
      * DTLS
      */
-    HAS_DTLS_SECOND_CLIENT_HELLO_CHECKS(AnalyzedPropertyCategory.COOKIE),
-    HAS_DTLS_COOKIE_CHECKS(AnalyzedPropertyCategory.COOKIE),
+    HAS_COOKIE_CHECKS(AnalyzedPropertyCategory.COOKIE),
+    USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS(AnalyzedPropertyCategory.COOKIE),
     ACCEPT_UNENCRYPTED_APP_DATA(AnalyzedPropertyCategory.QUIRKS),
     HAS_EARLY_FINISHED_BUG(AnalyzedPropertyCategory.QUIRKS),
     HAS_MULTIPLE_CSS_BUG(AnalyzedPropertyCategory.QUIRKS),

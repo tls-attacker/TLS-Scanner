@@ -167,8 +167,6 @@ public class SiteReportPrinter {
 
     private void appendDtlsSpecificResults(StringBuilder builder) {
         prettyAppendHeading(builder, "DTLS");
-        prettyAppend(builder, "Checks second ClientHello", AnalyzedProperty.HAS_DTLS_SECOND_CLIENT_HELLO_CHECKS);
-        prettyAppend(builder, "Checks cookie", AnalyzedProperty.HAS_DTLS_COOKIE_CHECKS);
         prettyAppend(builder, "Accept unencrypted App Data with Epoch 0", AnalyzedProperty.ACCEPT_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
         prettyAppend(builder, "Multiple CSS Bug", AnalyzedProperty.HAS_MULTIPLE_CSS_BUG);
@@ -1413,6 +1411,8 @@ public class SiteReportPrinter {
     public void appendCookie(StringBuilder builder) {
         prettyAppendHeading(builder, "DTLS Cookie");
         prettyAppendCookie(builder, "Cookie", report.getCookieEvaluationResult());
+        prettyAppend(builder, "Checks complete", AnalyzedProperty.HAS_COOKIE_CHECKS);
+        prettyAppend(builder, "Checks with client parameters", AnalyzedProperty.USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS);
     }
 
     public void appendPublicKeyIssues(StringBuilder builder) {
