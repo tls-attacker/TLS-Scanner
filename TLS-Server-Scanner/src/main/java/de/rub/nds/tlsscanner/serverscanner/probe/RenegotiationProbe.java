@@ -95,13 +95,6 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
-        // TODO: Prüfe, welche Flags gesetzt werden müssen
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setStopActionsAfterIOException(true);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(false);
-        }
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
         WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
                 RunningModeType.CLIENT);
@@ -141,13 +134,6 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
         tlsConfig.getDefaultClientNamedGroups().remove(NamedGroup.ECDH_X25519);
-        // TODO: Prüfe, welche Flags gesetzt werden müssen
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setStopActionsAfterIOException(true);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(false);
-        }
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
         WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
                 RunningModeType.CLIENT);

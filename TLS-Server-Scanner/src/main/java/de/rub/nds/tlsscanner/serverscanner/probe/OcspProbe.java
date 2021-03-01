@@ -227,6 +227,7 @@ public class OcspProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
 
         tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());

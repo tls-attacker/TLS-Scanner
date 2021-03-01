@@ -170,8 +170,9 @@ public class DtlsCookieProbe extends TlsProbe {
         List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
         config.setDefaultClientSupportedCompressionMethods(compressionList);
         config.setEnforceSettings(false);
+        config.setQuickReceive(true);
         config.setEarlyStop(true);
-        config.setStopReceivingAfterFatal(false);
+        config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
         config.setAddECPointFormatExtension(true);

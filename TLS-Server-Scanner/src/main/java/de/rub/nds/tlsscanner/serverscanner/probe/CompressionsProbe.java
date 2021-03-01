@@ -74,13 +74,6 @@ public class CompressionsProbe extends TlsProbe {
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
-        // TODO: Prüfe, welche Flags gesetzt werden müssen
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setStopActionsAfterIOException(true);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(false);
-        }
         List<CompressionMethod> toTestList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
 
         CompressionMethod selectedCompressionMethod;

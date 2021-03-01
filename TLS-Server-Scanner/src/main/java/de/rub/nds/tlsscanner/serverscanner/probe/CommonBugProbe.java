@@ -126,6 +126,7 @@ public class CommonBugProbe extends TlsProbe {
     private Config getWorkingConfig() {
         Config config = ConfigSelector.getNiceConfig(scannerConfig);
         config.setStopActionsAfterIOException(true);
+        config.setStopReceivingAfterFatal(true);
         return config;
     }
 

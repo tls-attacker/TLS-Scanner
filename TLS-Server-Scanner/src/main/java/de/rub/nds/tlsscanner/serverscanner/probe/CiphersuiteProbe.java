@@ -174,18 +174,12 @@ public class CiphersuiteProbe extends TlsProbe {
             config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
+            config.setStopReceivingAfterFatal(true);
             config.setStopActionsAfterIOException(true);
             config.setStopActionsAfterFatal(true);
             List<NamedGroup> namedGroup = new LinkedList<>();
             namedGroup.addAll(Arrays.asList(NamedGroup.values()));
             config.setDefaultClientNamedGroups(namedGroup);
-            // TODO: Prüfe, welche Flags gesetzt werden müssen
-            if (version.isDTLS()) {
-                config.setStopActionsAfterFatal(true);
-                config.setStopActionsAfterIOException(true);
-                config.setEarlyStop(true);
-                config.setStopReceivingAfterFatal(false);
-            }
             State state = new State(config);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

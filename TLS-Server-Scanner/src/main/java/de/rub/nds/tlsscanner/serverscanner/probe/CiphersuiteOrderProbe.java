@@ -72,15 +72,9 @@ public class CiphersuiteOrderProbe extends TlsProbe {
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
-        // TODO: Prüfe, welche Flags gesetzt werden müssen
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setStopActionsAfterIOException(true);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(false);
-        }
         State state = new State(tlsConfig);
         executeState(state);
         return state.getTlsContext().getSelectedCipherSuite();

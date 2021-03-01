@@ -110,6 +110,10 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         try {
             Config tlsConfig = getScannerConfig().createConfig();
             tlsConfig.setQuickReceive(true);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopReceivingAfterFatal(true);
+            tlsConfig.setStopActionsAfterFatal(true);
+            tlsConfig.setStopActionsAfterIOException(true);
             List<CipherSuite> ciphersuites = new LinkedList<>();
             ciphersuites.addAll(supportedSuites);
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());

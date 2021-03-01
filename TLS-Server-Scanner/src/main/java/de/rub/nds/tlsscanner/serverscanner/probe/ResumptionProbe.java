@@ -90,13 +90,6 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setAddRenegotiationInfoExtension(true);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-            // TODO: Prüfe, welche Flags gesetzt werden müssen
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                tlsConfig.setStopActionsAfterFatal(true);
-                tlsConfig.setStopActionsAfterIOException(true);
-                tlsConfig.setEarlyStop(true);
-                tlsConfig.setStopReceivingAfterFatal(false);
-            }
             State state = new State(tlsConfig);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;

@@ -123,13 +123,6 @@ public class ProtocolVersionProbe extends TlsProbe {
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
 
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
-        // TODO: Prüfe, welche Flags gesetzt werden müssen
-        if (toTest.isDTLS()) {
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setStopActionsAfterIOException(true);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(false);
-        }
         State state = new State(tlsConfig);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

@@ -341,6 +341,7 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setQuickReceive(true);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopActionsAfterIOException(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);

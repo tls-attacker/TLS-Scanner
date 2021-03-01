@@ -113,15 +113,10 @@ public class ECPointFormatProbe extends TlsProbe {
         config.setQuickReceive(true);
         config.setDefaultSelectedPointFormat(format);
         config.setEarlyStop(true);
+        config.setStopActionsAfterIOException(true);
         config.setStopActionsAfterFatal(true);
+        config.setStopReceivingAfterFatal(true);
         config.setDefaultClientNamedGroups(groups);
-        // TODO: Prüfe, welche Flags gesetzt werden müssen
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            config.setStopActionsAfterFatal(true);
-            config.setStopActionsAfterIOException(true);
-            config.setEarlyStop(true);
-            config.setStopReceivingAfterFatal(false);
-        }
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {

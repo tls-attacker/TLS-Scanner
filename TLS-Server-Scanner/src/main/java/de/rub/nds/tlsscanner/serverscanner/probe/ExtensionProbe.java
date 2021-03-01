@@ -105,13 +105,6 @@ public class ExtensionProbe extends TlsProbe {
 
         List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(nameGroups);
-        // TODO: Prüfe, welche Flags gesetzt werden müssen
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setStopActionsAfterIOException(true);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(false);
-        }
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
