@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.clientscanner.client;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -47,14 +47,14 @@ public class DefaultOrchestrator implements Orchestrator {
     protected final Server server;
     protected final ControlledClientDispatcher ccDispatcher;
     protected final ClientScannerConfig csConfig;
-    protected final ExecutorService secondaryExecutor;
+    protected final ThreadPoolExecutor secondaryExecutor;
 
     protected final String baseHostname;
     protected final boolean singleHostname;
     protected final boolean hnIsIp;
     protected final boolean noEntryDispatcher;
 
-    public DefaultOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int serverThreads) {
+    public DefaultOrchestrator(ClientScannerConfig csConfig, ThreadPoolExecutor secondaryExecutor, int serverThreads) {
         this.csConfig = csConfig;
         ScanClientCommandConfig scanCfg = csConfig.getSelectedSubcommand(ScanClientCommandConfig.class);
         clientAdapter = scanCfg.createClientAdapter(csConfig);
@@ -80,7 +80,7 @@ public class DefaultOrchestrator implements Orchestrator {
     }
 
     @Override
-    public ExecutorService getSecondaryExecutor() {
+    public ThreadPoolExecutor getSecondaryExecutor() {
         return secondaryExecutor;
     }
 

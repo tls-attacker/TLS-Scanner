@@ -70,7 +70,7 @@ class BaseDHEFunctionality {
         if (tls13) {
             suites.addAll(tls13_suites);
         }
-        config.setDefaultServerSupportedCiphersuites(suites);
+        config.setDefaultServerSupportedCipherSuites(suites);
         config.setDefaultSelectedCipherSuite(suites.get(0));
     }
 

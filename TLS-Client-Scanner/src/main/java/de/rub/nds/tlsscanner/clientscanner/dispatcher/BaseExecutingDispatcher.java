@@ -85,9 +85,9 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
         if (config.isEnforceSettings()) {
             selectedSuite = config.getDefaultSelectedCipherSuite();
         } else {
-            if (state.getTlsContext().getClientSupportedCiphersuites() != null) {
-                for (CipherSuite suite : config.getDefaultServerSupportedCiphersuites()) {
-                    if (state.getTlsContext().getClientSupportedCiphersuites().contains(suite)) {
+            if (state.getTlsContext().getClientSupportedCipherSuites() != null) {
+                for (CipherSuite suite : config.getDefaultServerSupportedCipherSuites()) {
+                    if (state.getTlsContext().getClientSupportedCipherSuites().contains(suite)) {
                         selectedSuite = suite;
                         break;
                     }
@@ -291,7 +291,7 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
 
     private void extendWorkflowTrace(WorkflowTrace traceWithCHLO, WorkflowTraceType type, Config config) {
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace entryTrace = factory.createTlsEntryWorkflowtrace(config.getDefaultServerConnection());
+        WorkflowTrace entryTrace = factory.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
         entryTrace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         if (traceWithCHLO.getTlsActions().isEmpty()) {
             extendWorkflowTraceValidatingPrefix(traceWithCHLO, null, entryTrace);

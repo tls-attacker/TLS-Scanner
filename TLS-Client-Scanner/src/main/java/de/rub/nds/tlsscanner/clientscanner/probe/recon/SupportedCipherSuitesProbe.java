@@ -25,7 +25,7 @@ public class SupportedCipherSuitesProbe extends BaseAnalyzingProbe {
 
     @Override
     ClientProbeResult analyzeChlo(ClientReport report, HelloReconResult chloResult) {
-        return new SupportedCipherSuitesResult(chloResult.state.getTlsContext().getClientSupportedCiphersuites());
+        return new SupportedCipherSuitesResult(chloResult.state.getTlsContext().getClientSupportedCipherSuites());
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

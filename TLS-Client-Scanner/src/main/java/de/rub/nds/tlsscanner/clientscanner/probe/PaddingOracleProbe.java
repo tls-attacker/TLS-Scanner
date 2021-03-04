@@ -156,7 +156,7 @@ public class PaddingOracleProbe extends BaseProbe {
 
         paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);
         paddingOracleConfig.setVectorGeneratorType(params.paddingVectorGeneratorType);
-        paddingOracleConfig.getCiphersuiteDelegate().setCipherSuites(params.cipherSuite);
+        paddingOracleConfig.getCipherSuiteDelegate().setCipherSuites(params.cipherSuite);
         paddingOracleConfig.getProtocolVersionDelegate().setProtocolVersion(params.protocolVersion);
         return paddingOracleConfig;
     }
@@ -174,7 +174,7 @@ public class PaddingOracleProbe extends BaseProbe {
         return new InformationLeakTest<>(
                 new PaddingOracleTestInfo(
                         paddingOracleConfig.getProtocolVersionDelegate().getProtocolVersion(),
-                        paddingOracleConfig.getCiphersuiteDelegate().getCipherSuites().get(0),
+                        paddingOracleConfig.getCipherSuiteDelegate().getCipherSuites().get(0),
                         paddingOracleConfig.getVectorGeneratorType(),
                         paddingOracleConfig.getRecordGeneratorType()),
                 attacker.getResponseMapList());

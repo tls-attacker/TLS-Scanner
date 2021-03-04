@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.clientscanner.client;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
@@ -29,5 +29,5 @@ public interface Orchestrator {
             Object additionalParameters)
             throws InterruptedException, ExecutionException;
 
-    ExecutorService getSecondaryExecutor();
+    ThreadPoolExecutor getSecondaryExecutor();
 }

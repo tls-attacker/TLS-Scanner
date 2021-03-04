@@ -131,7 +131,7 @@ public class VersionProbe extends BaseProbe {
 
     public static void patchConfigFor13(Config config) {
         // cf TLS-Attacker/resources/configs/tls13.config
-        config.setDefaultServerSupportedCiphersuites(suites13);
+        config.setDefaultServerSupportedCipherSuites(suites13);
         config.setDefaultSelectedCipherSuite(suites13.get(0));
         config.setAddECPointFormatExtension(false);
         config.setAddEllipticCurveExtension(true);

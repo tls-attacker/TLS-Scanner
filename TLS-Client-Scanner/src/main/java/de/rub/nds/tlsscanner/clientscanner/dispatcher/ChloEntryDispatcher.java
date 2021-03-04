@@ -30,7 +30,7 @@ public class ChloEntryDispatcher extends BaseExecutingDispatcher {
         config.setWorkflowExecutorShouldClose(false);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-        WorkflowTrace entryTrace = factory.createTlsEntryWorkflowtrace(config.getDefaultServerConnection());
+        WorkflowTrace entryTrace = factory.createTlsEntryWorkflowTrace(config.getDefaultServerConnection());
         ReceiveAction chloAction = new ReceiveAction(new ClientHelloMessage());
         entryTrace.addTlsAction(chloAction);
         extendWorkflowTraceValidatingPrefix(trace, trace, entryTrace);

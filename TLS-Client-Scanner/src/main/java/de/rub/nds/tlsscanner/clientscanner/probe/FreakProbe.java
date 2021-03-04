@@ -116,7 +116,7 @@ public class FreakProbe extends BaseProbe {
         config.setSupportedVersions(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
                 ProtocolVersion.TLS11, ProtocolVersion.TLS12);
         config.setDefaultSelectedCipherSuite(RSA_SUITES.get(0));
-        config.setDefaultServerSupportedCiphersuites(RSA_SUITES);
+        config.setDefaultServerSupportedCipherSuites(RSA_SUITES);
         extendWorkflowTraceToApplication(trace, config, false);
 
         BigInteger p, q, N, e, d, phi;

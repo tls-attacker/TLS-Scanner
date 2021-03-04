@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.clientscanner.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
@@ -37,20 +37,20 @@ public class ThreadLocalOrchestrator implements Orchestrator {
     // there
     private ThreadLocal<DefaultOrchestrator> localOrchestrator;
     private final List<DefaultOrchestrator> allOrchestrators = new ArrayList<>();
-    protected final ExecutorService secondaryExecutor;
+    protected final ThreadPoolExecutor secondaryExecutor;
 
-    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor) {
+    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ThreadPoolExecutor secondaryExecutor) {
         this.csConfig = csConfig;
         this.secondaryExecutor = secondaryExecutor;
     }
 
     // just so we have the same signature as the normal Orchestrator
-    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ExecutorService secondaryExecutor, int _ignored) {
+    public ThreadLocalOrchestrator(ClientScannerConfig csConfig, ThreadPoolExecutor secondaryExecutor, int _ignored) {
         this(csConfig, secondaryExecutor);
     }
 
     @Override
-    public ExecutorService getSecondaryExecutor() {
+    public ThreadPoolExecutor getSecondaryExecutor() {
         return secondaryExecutor;
     }
 
