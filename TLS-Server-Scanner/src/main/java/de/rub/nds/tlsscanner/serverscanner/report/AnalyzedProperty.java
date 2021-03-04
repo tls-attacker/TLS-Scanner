@@ -123,9 +123,6 @@ public enum AnalyzedProperty {
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
-    TOLERATES_GREASE_CIPHER_SUITE(AnalyzedPropertyCategory.BEST_PRACTICES),
-    TOLERATES_GREASE_NAMED_GROUP(AnalyzedPropertyCategory.BEST_PRACTICES),
-    TOLERATES_GREASE_SIGNATURE_AND_HASH_ALGORITHM(AnalyzedPropertyCategory.BEST_PRACTICES),
     /**
      * does it handle unknown versions correctly?
      */
@@ -199,6 +196,12 @@ public enum AnalyzedProperty {
      */
     SUPPORTS_HTTP_FALSE_START(AnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_RECORD_FRAGMENTATION(AnalyzedPropertyCategory.QUIRKS),
+    /**
+     * does it have a grease value intolerance?
+     */
+    HAS_GREASE_CIPHER_SUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_GREASE_NAMED_GROUP_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     SENDS_HELLO_RETRY_REQUEST(AnalyzedPropertyCategory.BEST_PRACTICES),
     ISSUES_COOKIE_IN_HELLO_RETRY(AnalyzedPropertyCategory.EXTENSIONS),
     VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),

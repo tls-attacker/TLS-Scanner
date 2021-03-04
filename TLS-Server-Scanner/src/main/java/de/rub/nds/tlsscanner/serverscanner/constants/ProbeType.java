@@ -50,6 +50,5 @@ public enum ProbeType {
     EC_POINT_FORMAT,
     RACCOON_ATTACK,
     HTTP_FALSE_START,
-    GREASE,
     HELLO_RETRY
 }

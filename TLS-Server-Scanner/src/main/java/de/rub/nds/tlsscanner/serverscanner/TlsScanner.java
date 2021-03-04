@@ -84,7 +84,6 @@ public class TlsScanner {
     }
 
     private void fillDefaultProbeLists() {
-        probeList.add(new GreaseProbe(config, parallelExecutor));
         probeList.add(new CommonBugProbe(config, parallelExecutor));
         probeList.add(new SniProbe(config, parallelExecutor));
         probeList.add(new CompressionsProbe(config, parallelExecutor));

@@ -14,6 +14,8 @@ import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
@@ -82,6 +84,12 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult ignoresOfferedSignatureAndHashAlgorithms;
     // server does not like really big client hello messages
     private TestResult maxLengthClientHelloIntolerant;
+    // does it accept grease values in the supported groups extension?
+    private TestResult greaseNamedGroupIntolerance;
+    // does it accept grease values in the cipher suites list?
+    private TestResult greaseCipherSuiteIntolerance;
+    // does it accept grease values in the signature and hash algorithms extension?
+    private TestResult greaseSignatureAndHashAlgorithmIntolerance;
 
     public CommonBugProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.COMMON_BUGS, config);
@@ -104,11 +112,15 @@ public class CommonBugProbe extends TlsProbe {
         ignoresOfferedNamedGroups = hasIgnoresNamedGroupsOfferingBug();
         ignoresOfferedSignatureAndHashAlgorithms = hasIgnoresSigHashAlgoOfferingBug();
         maxLengthClientHelloIntolerant = hasBigClientHelloIntolerance();
+        greaseNamedGroupIntolerance = hasGreaseNamedGroupIntolerance();
+        greaseCipherSuiteIntolerance = hasGreaseCipherSuiteIntolerance();
+        greaseSignatureAndHashAlgorithmIntolerance = hasGreaseSignatureAndHashAlgorithmIntolerance();
         return new CommonBugProbeResult(extensionIntolerance, cipherSuiteIntolerance, cipherSuiteLengthIntolerance512,
             compressionIntolerance, versionIntolerance, alpnIntolerance, clientHelloLengthIntolerance,
             emptyLastExtensionIntolerance, onlySecondCipherSuiteByteEvaluated, namedGroupIntolerant,
             namedSignatureAndHashAlgorithmIntolerance, ignoresCipherSuiteOffering, reflectsCipherSuiteOffering,
-            ignoresOfferedNamedGroups, ignoresOfferedSignatureAndHashAlgorithms, maxLengthClientHelloIntolerant);
+            ignoresOfferedNamedGroups, ignoresOfferedSignatureAndHashAlgorithms, maxLengthClientHelloIntolerant,
+            greaseNamedGroupIntolerance, greaseCipherSuiteIntolerance, greaseSignatureAndHashAlgorithmIntolerance);
 
     }
 
@@ -530,12 +542,55 @@ public class CommonBugProbe extends TlsProbe {
         }
     }
 
+    private TestResult hasGreaseCipherSuiteIntolerance() {
+        Config config = getWorkingConfig();
+        Arrays.asList(CipherSuite.values()).stream().filter(cipherSuite -> cipherSuite.isGrease())
+            .forEach(greaseCipher -> config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
+        return hasGreaseIntolerance(config);
+    }
+
+    private TestResult hasGreaseNamedGroupIntolerance() {
+        Config config = getWorkingConfig();
+        Arrays.asList(NamedGroup.values()).stream().filter(group -> group.isGrease())
+            .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
+        return hasGreaseIntolerance(config);
+    }
+
+    private TestResult hasGreaseSignatureAndHashAlgorithmIntolerance() {
+        Config config = getWorkingConfig();
+        Arrays
+            .asList(SignatureAndHashAlgorithm.values())
+            .stream()
+            .filter(algorithm -> algorithm.isGrease())
+            .forEach(
+                greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
+        return hasGreaseIntolerance(config);
+    }
+
+    private TestResult hasGreaseIntolerance(Config config) {
+        try {
+            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
+            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+            ClientHelloMessage message = new ClientHelloMessage(config);
+            trace.addTlsAction(new SendAction(message));
+            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            State state = new State(config, trace);
+            executeState(state);
+            return !WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) == true
+                ? TestResult.TRUE : TestResult.FALSE;
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for hasAlpnIntolerance():" + getProbeName(), e);
+            return TestResult.ERROR_DURING_TEST;
+        }
+    }
+
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+            TestResult.COULD_NOT_TEST);
     }
 }
