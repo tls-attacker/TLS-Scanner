@@ -30,48 +30,73 @@ public class SiteReportRater {
 
     private static String RECOMMENDATIONS_RESOURCE_LOCATION = "rating/recommendations";
 
-    private RatingInfluencers influencers;
+    private static HashMap<String, Recommendations> recommendationsMap;
 
-    private Recommendations recommendations;
-
-    private SiteReportRater(RatingInfluencers influencers, Recommendations recommendations) {
-        this.influencers = influencers;
-        this.recommendations = recommendations;
-    }
+    private static RatingInfluencers influencers;
 
     private SiteReportRater() {
     }
 
     /**
-     * Returns a generic SiteReportRater
+     * Returns a generic SiteReportRater Language of the recommendations. If no language file can be found for selected
+     * language a default recommendation file in english is returned
      *
-     * @param recommendationLanguage
-     * Language of the recommendations. If no language file can be found for selected language a default recommendation
-     * file in english is returned
      * @return A generated SiteReportRater
      * @throws JAXBException
      */
-    public static SiteReportRater getSiteReportRater(String recommendationLanguage) throws JAXBException {
+    public static SiteReportRater getSiteReportRater() throws JAXBException {
+        // only create a SiteReportRater, if the influencers can be parsed and accessed. Do not create a SiteReportRater
+        // and forward the exception if the influencers cannot be parsed.
+        if (influencers == null) {
+            parseRatingInfluencers();
+        }
+
+        SiteReportRater instance = new SiteReportRater();
+        return instance;
+
+    }
+
+    private static void parseRatingInfluencers() throws JAXBException {
+
         ClassLoader classLoader = SiteReport.class.getClassLoader();
         JAXBContext context = JAXBContext.newInstance(RatingInfluencers.class);
         Unmarshaller um = context.createUnmarshaller();
         InputStream in = classLoader.getResourceAsStream(INFLUENCERS_RESOURCE_LOCATION);
-        RatingInfluencers influencers = (RatingInfluencers) um.unmarshal(in);
+        influencers = (RatingInfluencers) um.unmarshal(in);
 
-        context = JAXBContext.newInstance(Recommendations.class);
-        um = context.createUnmarshaller();
-        String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + recommendationLanguage + ".xml";
-        URL u = classLoader.getResource(fileName);
-        if (u == null) {
-            LOGGER.warn("Could not find language resources \"" + fileName
-                + "\" for SiteReportRater. Using default (english).");
-            fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
+    }
+
+    public static RatingInfluencers getRatingInfluencers() throws JAXBException {
+        if (influencers == null) {
+            parseRatingInfluencers();
         }
-        in = classLoader.getResourceAsStream(fileName);
-        Recommendations recommendations = (Recommendations) um.unmarshal(in);
 
-        SiteReportRater instance = new SiteReportRater(influencers, recommendations);
-        return instance;
+        return influencers;
+    }
+
+    public static Recommendations getRecommendations(String recommendationLanguage) throws JAXBException {
+
+        if (recommendationsMap == null) {
+            recommendationsMap = new HashMap<>();
+        }
+
+        // only parse each recommendation xml once for every language
+        if (!recommendationsMap.containsKey(recommendationLanguage)) {
+            ClassLoader classLoader = SiteReport.class.getClassLoader();
+            JAXBContext context = JAXBContext.newInstance(Recommendations.class);
+            Unmarshaller um = context.createUnmarshaller();
+            String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + recommendationLanguage + ".xml";
+            URL u = classLoader.getResource(fileName);
+            if (u == null) {
+                LOGGER.warn("Could not find language resources \"" + fileName
+                    + "\" for SiteReportRater. Using default (english).");
+                fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
+            }
+            InputStream in = classLoader.getResourceAsStream(fileName);
+            recommendationsMap.put(recommendationLanguage, (Recommendations) um.unmarshal(in));
+        }
+
+        return recommendationsMap.get(recommendationLanguage);
     }
 
     public ScoreReport getScoreReport(HashMap<String, TestResult> resultMap) {
@@ -88,6 +113,7 @@ public class SiteReportRater {
 
         int score = computeScore(ratingInfluencers);
         return new ScoreReport(score, ratingInfluencers);
+
     }
 
     private int computeScore(HashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
@@ -105,13 +131,5 @@ public class SiteReportRater {
             }
         }
         return score;
-    }
-
-    public Recommendations getRecommendations() {
-        return recommendations;
-    }
-
-    public RatingInfluencers getRatingInfluencers() {
-        return influencers;
     }
 }

@@ -35,6 +35,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
@@ -164,6 +165,8 @@ public class SiteReport extends Observable implements Serializable {
     // Scan Timestamps
     private long scanStartTime;
     private long scanEndTime;
+
+    private ScoreReport scoreReport;
 
     public SiteReport() {
         resultMap = new HashMap<>();
@@ -742,5 +745,13 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setScanEndTime(long scanEndTime) {
         this.scanEndTime = scanEndTime;
+    }
+
+    public synchronized ScoreReport getScoreReport() {
+        return scoreReport;
+    }
+
+    public synchronized void setScoreReport(ScoreReport scoreReport) {
+        this.scoreReport = scoreReport;
     }
 }

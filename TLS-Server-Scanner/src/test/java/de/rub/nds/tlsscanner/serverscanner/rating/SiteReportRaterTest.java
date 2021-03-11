@@ -25,9 +25,14 @@ public class SiteReportRaterTest {
      */
     @Test
     public void testGetSiteReportRater() throws Exception {
-        SiteReportRater rater = SiteReportRater.getSiteReportRater("en");
+        SiteReportRater rater = SiteReportRater.getSiteReportRater();
         assertNotNull(rater);
-        assertFalse(rater.getRecommendations().getRecommendations().isEmpty());
+
+    }
+
+    @Test
+    public void testGetRecommendations() throws Exception {
+        assertFalse(SiteReportRater.getRecommendations("en").getRecommendations().isEmpty());
     }
 
     @Test
@@ -37,7 +42,7 @@ public class SiteReportRaterTest {
         resultMap.put(AnalyzedProperty.SUPPORTS_SSL_3.toString(), TestResult.TRUE);
         resultMap.put(AnalyzedProperty.SUPPORTS_TLS_1_0.toString(), TestResult.TRUE);
 
-        SiteReportRater rater = SiteReportRater.getSiteReportRater("en");
+        SiteReportRater rater = SiteReportRater.getSiteReportRater();
         ScoreReport report = rater.getScoreReport(resultMap);
 
         assertEquals(3, report.getInfluencers().size());
