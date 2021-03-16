@@ -41,7 +41,7 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ParametrizedClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.attacker.ClientParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
+import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 
 public class PaddingOracleProbe extends BaseProbe {
     // #region static

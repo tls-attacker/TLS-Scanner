@@ -18,12 +18,12 @@ import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
-import de.rub.nds.tlsattacker.core.workflow.ThreadedServerWorkflowExecutor;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.Dispatcher;
 import de.rub.nds.tlsscanner.clientscanner.workflow.CSWorkflowExecutor;
 
 public class Server extends Thread {
+    private static final int THREAD_POOL_KEEP_ALIVE_TIME_MINUTES = 10;
     private static int serverCounter = 0;
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -34,7 +34,7 @@ public class Server extends Thread {
         int i = serverCounter++;
         setName("Server-" + i);
         int corePoolSize = Math.max(poolSize / 2, 1);
-        ThreadPoolExecutor pool = new ThreadPoolExecutor(corePoolSize, poolSize, 10, TimeUnit.MINUTES,
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(corePoolSize, poolSize, THREAD_POOL_KEEP_ALIVE_TIME_MINUTES, TimeUnit.MINUTES,
                 new LinkedBlockingDeque<>(),
                 new NamedThreadFactory("Server-" + i + "-Worker"));
         this.executor = new CSWorkflowExecutor(csconfig, rootDispatcher, pool);

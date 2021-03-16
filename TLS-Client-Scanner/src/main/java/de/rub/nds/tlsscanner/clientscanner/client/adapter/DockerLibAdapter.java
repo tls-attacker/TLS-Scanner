@@ -80,11 +80,8 @@ public class DockerLibAdapter implements ClientAdapter {
             }
             Thread.currentThread().interrupt();
         }
-        if (client == null) {
-            // usually null should not be possible; An exception should have
-            // been thrown
-            throw new NullPointerException("Could not get client");
-        }
+        // client should not be able to be null;
+        // An exception should already have been thrown
         client.start();
     }
 
@@ -101,7 +98,9 @@ public class DockerLibAdapter implements ClientAdapter {
                     LOGGER.debug(ln);
                 }
             }
-            // TODO distinguish further details...
+            // TODO distinguish further details
+            // As of now we only check the exit code to determine whether the content was shown or not
+            // Some clients may behave differently, which would need to be handled here
             return new BasicClientAdapterResult(exitCode == 0 ? EContentShown.SHOWN : EContentShown.ERROR);
         } catch (DockerException e) {
             throw new RuntimeException("Failed to have client connect to target", e);

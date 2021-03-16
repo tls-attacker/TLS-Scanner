@@ -18,7 +18,6 @@ import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +36,9 @@ import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.NotExecutedResult;
 
 public class ClientScanExecutor implements Observer {
+
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int MERGE_TIMEOUT_MS = 1000 * 60 * 30;
 
     private Collection<Probe> notScheduledTasks;
     private Collection<IAfterProbe> afterProbes;
@@ -106,8 +107,10 @@ public class ClientScanExecutor implements Observer {
                     try {
                         ClientProbeResult probeResult = result.get();
                         finishedFutures.add(probeAndResultFuture);
-                        // TODO
+                        // TODO determine whether we need to emulate the following call
                         // report.markProbeAsExecuted(result.get().getType())
+                        // this was implemented in the serverscanner, however we did not yet find the need for it
+                        // most likely it will be needed for statistics
                         if (probeResult != null) {
                             LOGGER.info("+++ {} executed", probeAndResultFuture.probe);
                             probeResult.merge(report);
@@ -123,7 +126,7 @@ public class ClientScanExecutor implements Observer {
                     }
                 }
 
-                if (lastMerge + 1000 * 60 * 30 < System.currentTimeMillis()) {
+                if (lastMerge + MERGE_TIMEOUT_MS < System.currentTimeMillis()) {
                     LOGGER.error(
                             "Last result merge is more than 30 minutes ago. Starting to kill threads to unblock...");
                     try {
@@ -185,7 +188,8 @@ public class ClientScanExecutor implements Observer {
     }
 
     private void collectStatistics(ClientReport report) {
-        // TODO
+        // TODO collect statistics performed connections
+        // c.f. ThreadedScanJobExecutor.collectStatistics
     }
 
     private void executeAfterProbes(ClientReport report) {

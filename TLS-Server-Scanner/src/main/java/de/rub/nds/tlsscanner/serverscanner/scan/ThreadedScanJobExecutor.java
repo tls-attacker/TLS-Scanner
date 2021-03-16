@@ -29,13 +29,30 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
+import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+
+/**
+ *
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
+ */
 public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    private static final int MERGE_TIMEOUT_MS = 1000 * 60 * 30;
 
     private final ScannerConfig config;
 
