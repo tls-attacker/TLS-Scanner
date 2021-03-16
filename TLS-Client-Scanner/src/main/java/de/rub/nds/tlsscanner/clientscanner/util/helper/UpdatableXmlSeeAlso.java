@@ -41,7 +41,7 @@ public class UpdatableXmlSeeAlso implements XmlSeeAlso {
 
             annotations.put(XmlSeeAlso.class, ourAnnotation);
         } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-            // TODO Auto-generated catch block
+            // internal error, unsure how this should be handled
             e.printStackTrace();
             throw new RuntimeException(e);
         }

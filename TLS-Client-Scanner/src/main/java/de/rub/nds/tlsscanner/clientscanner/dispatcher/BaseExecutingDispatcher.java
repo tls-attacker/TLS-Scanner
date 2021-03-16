@@ -302,6 +302,8 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
 
     protected void extendWorkflowTraceToApplication(WorkflowTrace traceWithCHLO, Config config, boolean dynamic) {
         // TODO distinguish different application layers, for now only http(s)
+        // This would require us to either guess the correct application data at some point
+        // or the type has to set within the ClientScanner Config
         extendWorkflowTrace(traceWithCHLO, dynamic ? WorkflowTraceType.DYNAMIC_HTTPS : WorkflowTraceType.HTTPS, config);
         config.setHttpsParsingEnabled(true);
     }

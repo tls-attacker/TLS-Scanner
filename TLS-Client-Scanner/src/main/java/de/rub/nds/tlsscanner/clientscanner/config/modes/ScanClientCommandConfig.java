@@ -17,9 +17,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -33,8 +31,8 @@ import de.rub.nds.tlsscanner.clientscanner.client.adapter.ClientAdapter;
 import de.rub.nds.tlsscanner.clientscanner.config.BaseSubcommandHolder;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.ExecutableSubcommand;
-import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.DockerLibAdapterConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.ClientAdapterConfig;
+import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.DockerLibAdapterConfig;
 import de.rub.nds.tlsscanner.clientscanner.config.modes.scan.command.BaseCommandAdapterConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 
@@ -114,7 +112,7 @@ public class ScanClientCommandConfig extends BaseSubcommandHolder<ClientAdapterC
                 marsh.marshal(rep, file);
             }
         } catch (JAXBException e) {
-            // TODO Auto-generated catch block
+            // Nothing we can do about failing to serialize the report :/
             e.printStackTrace();
         }
     }

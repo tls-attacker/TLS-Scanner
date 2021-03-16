@@ -152,6 +152,7 @@ public class PaddingOracleProbe extends BaseProbe {
         startTlsDelegate.setStarttlsType(csConfig.getDelegate(StarttlsDelegate.class).getStarttlsType());
 
         // TODO set recordGeneratorType dynamically
+        // Would need to look into how the serverscanner determines the value and what it affects
         PaddingRecordGeneratorType recordGeneratorType = PaddingRecordGeneratorType.SHORT;
 
         paddingOracleConfig.setRecordGeneratorType(recordGeneratorType);

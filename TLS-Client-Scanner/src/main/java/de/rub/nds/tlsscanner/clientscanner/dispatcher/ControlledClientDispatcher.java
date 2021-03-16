@@ -21,7 +21,6 @@ import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIDispatcher.SNIDispatchInformation;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher;
 import de.rub.nds.tlsscanner.clientscanner.dispatcher.sni.SNIUidDispatcher.UidInformation;
-import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
@@ -29,8 +28,12 @@ import de.rub.nds.tlsscanner.clientscanner.util.helper.BaseFuture;
 import de.rub.nds.tlsscanner.clientscanner.util.helper.DuoMapQ;
 
 public class ControlledClientDispatcher implements Dispatcher {
-    // TODO utilize remote address in case of no sni...
     private static final Logger LOGGER = LogManager.getLogger();
+    // TODO utilize remote address in case of no sni...
+    // As of now if we do not have SNI we just take *any* job from the queue
+    // This disallows scanning multiple clients in parallel, as they would take jobs from other clients
+    // However, this would require the orchestrator to know the remote address of the client
+    // And still multiple clients behind one IP would still be affected of the issue above
     protected DuoMapQ<String, String, ClientProbeResultFuture> toRun;
     private boolean printedNoSNIWarning = false;
 
