@@ -13,11 +13,12 @@ package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 import de.rub.nds.modifiablevariable.util.UnformattedByteArrayAdapter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.protocol.handler.ClientHelloHandler;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.record.layer.TlsRecordLayer;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.SendMessageHelper;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
@@ -147,8 +148,7 @@ public class TlsClientConfig implements Serializable {
             .getExtensions());
         State s = new State(config);
         s.getTlsContext().setRecordLayer(new TlsRecordLayer(s.getTlsContext()));
-        ClientHelloHandler handler = new ClientHelloHandler(s.getTlsContext());
-        handler.prepareMessage(hello);
+        SendMessageHelper.prepareMessage(hello, s.getTlsContext());
         return hello;
     }
 
