@@ -347,8 +347,7 @@ public class CertificateProbe extends TlsProbe {
         List<NamedGroup> namedGroups = new ArrayList<>(Arrays.asList(NamedGroup.values()));
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
         List<SignatureAndHashAlgorithm> sigHashAlgos = Arrays.asList(SignatureAndHashAlgorithm.values());
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-            .getImplementedTls13SignatureAndHashAlgorithms());
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashAlgos);
         tlsConfig.setStopActionsAfterFatal(true);
 
         return tlsConfig;
