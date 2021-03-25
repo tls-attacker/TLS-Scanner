@@ -160,13 +160,11 @@ public class SiteReport extends Observable implements Serializable {
 
     // Rating
     private int score;
-    private List<String> recommendations;
+    private ScoreReport scoreReport;
 
     // Scan Timestamps
     private long scanStartTime;
     private long scanEndTime;
-
-    private ScoreReport scoreReport;
 
     public SiteReport() {
         resultMap = new HashMap<>();
@@ -721,14 +719,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setScore(int score) {
         this.score = score;
-    }
-
-    public synchronized List<String> getRecommendations() {
-        return recommendations;
-    }
-
-    public synchronized void setRecommendations(List<String> recommendations) {
-        this.recommendations = recommendations;
     }
 
     public synchronized long getScanStartTime() {

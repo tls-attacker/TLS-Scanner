@@ -1622,7 +1622,7 @@ public class SiteReportPrinter {
             prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription(), color);
             prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
         } catch (Exception ex) {
-            prettyAppend(builder, "Could not append recommendations - unrelated error", AnsiColor.RED);
+            prettyAppend(builder, "Could not append recommendations - recommendations or ratingInfluencers not found", AnsiColor.RED);
             LOGGER.error("Could not append recommendations", ex);
         }
     }
