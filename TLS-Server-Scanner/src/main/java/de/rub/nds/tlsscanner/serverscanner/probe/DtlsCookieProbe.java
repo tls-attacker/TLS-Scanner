@@ -27,6 +27,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
@@ -66,9 +67,19 @@ public class DtlsCookieProbe extends TlsProbe {
     }
 
     private TestResult isCookieChecked() {
-        int[] testPositions = new int[] { 0, 9, 19 };
+        Config config = getConfig();
+        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        State state = new State(config);
+        executeState(state);
+        int cookieLength = 0;
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            cookieLength = state.getTlsContext().getDtlsCookie().length;
+        } else {
+            return TestResult.ERROR_DURING_TEST;
+        }
+        int[] testPositions = new int[] { 0, cookieLength / 2, cookieLength - 1 };
         for (int totest : testPositions) {
-            Config config = getConfig();
+            config = getConfig();
             WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
                     .getDefaultClientConnection());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
@@ -79,7 +90,7 @@ public class DtlsCookieProbe extends TlsProbe {
             clientHelloMessage.setCookie(cookie);
             trace.addTlsAction(new SendAction(clientHelloMessage));
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            State state = new State(config, trace);
+            state = new State(config, trace);
             if (getResult(state) == TestResult.FALSE) {
                 return TestResult.FALSE;
             }
