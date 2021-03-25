@@ -372,12 +372,6 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SHA384_PRF, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 100), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CHACHA, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
-            TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SHA256_PRF, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
-            TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ECDSA, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 200), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
@@ -443,104 +437,91 @@ public class DefaultInfluencersTest {
             TestResult.TRUE, 50), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 100), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, -100), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, -800,500), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, -1200,500), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CCA, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.REQUIRES_CCA, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 50), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
+
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 100), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
+
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 100), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
+
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SCTS_PRECERTIFICATE, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 200), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SCTS_HANDSHAKE, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 200), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SCTS_OCSP, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 200), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
+
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CHROME_CT_POLICY, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 100), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 100), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
+
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_PRIME, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
+
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ANSIX962_COMPRESSED_CHAR2, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS13_SECP_COMPRESSION, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, -50), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
+
         influencers.add(new RatingInfluencer(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, new PropertyResultRatingInfluencer(
             TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
-        //TODO ------------- Missing --------------\\
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_ESNI, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(
+            TestResult.TRUE, 200), new PropertyResultRatingInfluencer(
             TestResult.FALSE, 0)));
 
 
