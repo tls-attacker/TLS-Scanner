@@ -137,8 +137,11 @@ public class TlsScanner {
         try {
             if (isConnectable()) {
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-                if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls())
-                        || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
+                if ((!config.getDtlsDelegate().isDTLS()
+                        && config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls())
+                        || (!config.getDtlsDelegate().isDTLS()
+                                && config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())
+                        || config.getDtlsDelegate().isDTLS() && speaksDtls()) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(), config
@@ -190,6 +193,18 @@ public class TlsScanner {
             return checker.speaksTls(tlsConfig);
         } catch (Exception E) {
             LOGGER.warn("Could not test if the server speaks TLS. Probably could not connect.");
+            LOGGER.debug(E);
+            return false;
+        }
+    }
+
+    private boolean speaksDtls() {
+        try {
+            Config tlsConfig = config.createConfig();
+            ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
+            return checker.speaksDTls(tlsConfig);
+        } catch (Exception E) {
+            LOGGER.warn("Could not test if the server speaks DTLS. Probably could not connect.");
             LOGGER.debug(E);
             return false;
         }
