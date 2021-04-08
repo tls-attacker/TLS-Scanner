@@ -88,6 +88,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
+    private List<String> supportedAlpns = null;
 
     // Compression
     private List<CompressionMethod> supportedCompressionMethods = null;
@@ -169,6 +170,14 @@ public class SiteReport extends Observable implements Serializable {
         cipherSuites = new HashSet<>();
         versionSuitePairs = new LinkedList<>();
         executedProbes = new HashSet<>();
+    }
+
+    public synchronized List<String> getSupportedAlpns() {
+        return supportedAlpns;
+    }
+
+    public synchronized void setSupportedAlpns(List<String> supportedAlpns) {
+        this.supportedAlpns = supportedAlpns;
     }
 
     public synchronized boolean isProbeAlreadyExecuted(ProbeType type) {

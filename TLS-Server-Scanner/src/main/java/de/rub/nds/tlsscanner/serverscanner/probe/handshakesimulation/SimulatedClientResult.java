@@ -36,7 +36,7 @@ public class SimulatedClientResult {
     private Boolean forwardSecrecy = null;
     private CompressionMethod selectedCompressionMethod = null;
     private String negotiatedExtensions = null;
-    private String alpnAnnouncedProtocols = null;
+    private List<String> alpnAnnouncedProtocols = null;
     private String selectedNamedGroup = null;
     private Integer serverPublicKeyParameter = null;
     private List<ProtocolVersion> supportedVersionList = null;
@@ -214,11 +214,11 @@ public class SimulatedClientResult {
         this.negotiatedExtensions = negotiatedExtensions;
     }
 
-    public String getAlpnAnnouncedProtocols() {
+    public List<String> getAlpnAnnouncedProtocols() {
         return alpnAnnouncedProtocols;
     }
 
-    public void setAlpnAnnouncedProtocols(String alpnAnnouncedProtocols) {
+    public void setAlpnAnnouncedProtocols(List<String> alpnAnnouncedProtocols) {
         this.alpnAnnouncedProtocols = alpnAnnouncedProtocols;
     }
 

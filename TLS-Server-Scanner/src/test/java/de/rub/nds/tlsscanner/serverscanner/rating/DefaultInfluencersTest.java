@@ -376,7 +376,15 @@ public class DefaultInfluencersTest {
         influencers.add(
             new RatingInfluencer(AnalyzedProperty.REQUIRES_SNI, new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
                 new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-
+        influencers.add(
+            new RatingInfluencer(AnalyzedProperty.STRICT_ALPN, new PropertyResultRatingInfluencer(TestResult.TRUE, 200),
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
+        influencers.add(
+            new RatingInfluencer(AnalyzedProperty.STRICT_SNI, new PropertyResultRatingInfluencer(TestResult.TRUE, 100),
+                new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.ALPACA_MITIGATED,
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 200),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, -200)));
         RatingIO.writeRatingInfluencers(new RatingInfluencers(influencers),
             new File("src/main/resources/" + RatingInfluencers.DEFAULT_RATING_FILE));
     }

@@ -14,6 +14,7 @@ package de.rub.nds.tlsscanner.serverscanner.constants;
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public enum ProbeType {
+    ALPN,
     ESNI,
     CERTIFICATE,
     OCSP,
@@ -47,5 +48,6 @@ public enum ProbeType {
     DIRECT_RACCOON,
     EC_POINT_FORMAT,
     RACCOON_ATTACK,
-    HTTP_FALSE_START
+    CROSS_PROTOCOL_ALPACA,
+    HTTP_FALSE_START,
 }

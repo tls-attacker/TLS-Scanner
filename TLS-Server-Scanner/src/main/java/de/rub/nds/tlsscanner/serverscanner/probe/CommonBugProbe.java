@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -482,7 +483,12 @@ public class CommonBugProbe extends TlsProbe {
         try {
             Config config = getWorkingConfig();
             config.setAddAlpnExtension(true);
-            config.setDefaultProposedAlpnProtocols("This is not an ALPN Protocol");
+            List<String> alpnProtocols = new LinkedList<>();
+            for (AlpnProtocol protocol : AlpnProtocol.values()) {
+                alpnProtocols.add(protocol.getConstant());
+            }
+            alpnProtocols.add("This is not an ALPN Protocol");
+            config.setDefaultProposedAlpnProtocols(alpnProtocols);
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);

@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestamp;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
+import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -135,8 +136,10 @@ public class SiteReportPrinter {
         appendExtensions(builder);
         appendCompressions(builder);
         appendEcPointFormats(builder);
+        appendAlpn(builder);
         appendIntolerances(builder);
         appendAttackVulnerabilities(builder);
+        appendAlpacaAttack(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
         sessionTicketZeroKeyDetails(builder);
@@ -429,7 +432,7 @@ public class SiteReportPrinter {
                 prettyAppend(builder, "Selected Compression Method", tmp);
             }
             prettyAppend(builder, "Negotiated Extensions", simulatedClient.getNegotiatedExtensions());
-            prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols().toString());
+            // prettyAppend(builder, "Alpn Protocols", simulatedClient.getAlpnAnnouncedProtocols());
         }
         return builder;
     }
@@ -893,6 +896,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Heartbleed", AnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
         prettyAppend(builder, "CVE-2020-13777 (Zero key)", AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
+        prettyAppend(builder, "ALPACA", AnalyzedProperty.ALPACA_MITIGATED);
 
         return builder;
     }
@@ -1479,6 +1483,33 @@ public class SiteReportPrinter {
         appendTls13Groups(builder);
         appendCurves(builder);
         appendSignatureAndHashAlgorithms(builder);
+        return builder;
+    }
+
+    public StringBuilder appendAlpacaAttack(StringBuilder builder) {
+        prettyAppendHeading(builder, "Alpaca Details");
+        prettyAppend(builder, "Strict ALPN", AnalyzedProperty.STRICT_ALPN);
+        prettyAppend(builder, "Strict SNI", AnalyzedProperty.STRICT_SNI);
+        prettyAppend(builder, "ALPACA Mitigation", AnalyzedProperty.ALPACA_MITIGATED);
+        return builder;
+    }
+
+    public StringBuilder appendAlpn(StringBuilder builder) {
+        if (report.getSupportedExtensions() != null && report.getSupportedExtensions().contains(ExtensionType.ALPN)) {
+            prettyAppendHeading(builder, "ALPN");
+            for (AlpnProtocol alpnProtocol : AlpnProtocol.values()) {
+                if (alpnProtocol.isGrease()) {
+                    continue;
+                }
+                if (report.getSupportedAlpns().contains(alpnProtocol.getConstant())) {
+                    prettyAppend(builder, alpnProtocol.getPrintableName(), true);
+                } else {
+                    if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        prettyAppend(builder, alpnProtocol.getPrintableName(), false);
+                    }
+                }
+            }
+        }
         return builder;
     }
 

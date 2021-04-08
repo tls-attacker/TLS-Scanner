@@ -120,6 +120,8 @@ public enum AnalyzedProperty {
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    STRICT_SNI(AnalyzedPropertyCategory.SNI),
+    STRICT_ALPN(AnalyzedPropertyCategory.EXTENSIONS),
     /**
      * does it handle unknown versions correctly?
      */
@@ -214,6 +216,7 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_FREAK(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RACCOON_ATTACK(AnalyzedPropertyCategory.ATTACKS),
+    ALPACA_MITIGATED(AnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),

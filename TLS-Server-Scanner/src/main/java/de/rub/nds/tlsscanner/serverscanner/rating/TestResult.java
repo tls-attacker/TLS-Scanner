@@ -12,6 +12,8 @@ package de.rub.nds.tlsscanner.serverscanner.rating;
 public enum TestResult {
     TRUE,
     FALSE,
+    PARTIALLY,
+    CANNOT_BE_TESTED,
     COULD_NOT_TEST,
     ERROR_DURING_TEST,
     UNCERTAIN,

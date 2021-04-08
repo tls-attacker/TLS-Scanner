@@ -23,6 +23,8 @@ public class PrintingScheme {
 
     private HashMap<AnalyzedPropertyCategory, TextEncoding> textEncodings;
 
+    private HashMap<AnalyzedProperty, TextEncoding> specialTextEncoding;
+
     private TextEncoding defaultTextEncoding;
     private ColorEncoding defaultColorEncoding;
     private boolean useColors;
@@ -32,12 +34,14 @@ public class PrintingScheme {
 
     public PrintingScheme(HashMap<AnalyzedProperty, ColorEncoding> colorEncodings,
         HashMap<AnalyzedPropertyCategory, TextEncoding> textEncodings, TextEncoding defaultTextEncoding,
-        ColorEncoding defaultColorEncoding, boolean useColors) {
+        ColorEncoding defaultColorEncoding, HashMap<AnalyzedProperty, TextEncoding> specialTextEncoding,
+        boolean useColors) {
         this.colorEncodings = colorEncodings;
         this.textEncodings = textEncodings;
         this.defaultTextEncoding = defaultTextEncoding;
         this.defaultColorEncoding = defaultColorEncoding;
         this.useColors = useColors;
+        this.specialTextEncoding = specialTextEncoding;
     }
 
     public HashMap<AnalyzedProperty, ColorEncoding> getColorEncodings() {
@@ -50,7 +54,10 @@ public class PrintingScheme {
 
     public String getEncodedString(SiteReport report, AnalyzedProperty property) {
         TestResult result = report.getResult(property);
-        TextEncoding textEncoding = textEncodings.getOrDefault(property.getCategory(), defaultTextEncoding);
+        TextEncoding textEncoding = specialTextEncoding.get(property);
+        if (textEncoding == null) {
+            textEncoding = textEncodings.getOrDefault(property.getCategory(), defaultTextEncoding);
+        }
         ColorEncoding colorEncoding = colorEncodings.getOrDefault(property, defaultColorEncoding);
         String encodedText = textEncoding.encode(result);
         if (useColors) {
@@ -307,18 +314,36 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-
+        colorMap.put(AnalyzedProperty.STRICT_ALPN, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.STRICT_SNI, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.ALPACA_MITIGATED, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
         textMap.put(AnalyzedPropertyCategory.FRESHNESS, new TextEncoding(freshnessMap));
         textMap.put(AnalyzedPropertyCategory.FFDHE, new TextEncoding(freshnessMap));
-
         TextEncoding defaultTextEncoding = new TextEncoding(textEncodingMap);
         ColorEncoding defaultColorEncoding = new ColorEncoding(ansiColorMap);
 
+        HashMap<AnalyzedProperty, TextEncoding> specialTextMap = new HashMap<>();
+
+        specialTextMap.put(AnalyzedProperty.ALPACA_MITIGATED, getAlpacaTextEncoding());
+
         PrintingScheme scheme =
-            new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding, useColors);
+            new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding, specialTextMap, useColors);
         return scheme;
+    }
+
+    private static TextEncoding getAlpacaTextEncoding() {
+        HashMap<TestResult, String> textEncodingMap = new HashMap<>();
+        textEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test");
+        textEncodingMap.put(TestResult.ERROR_DURING_TEST, "error");
+        textEncodingMap.put(TestResult.FALSE, "not mitigated");
+        textEncodingMap.put(TestResult.NOT_TESTED_YET, "not tested yet");
+        textEncodingMap.put(TestResult.TIMEOUT, "timeout");
+        textEncodingMap.put(TestResult.TRUE, "true");
+        textEncodingMap.put(TestResult.UNCERTAIN, "uncertain");
+        textEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by tls-scanner");
+        return new TextEncoding(textEncodingMap);
     }
 
     private static ColorEncoding getDefaultColorEncoding(AnsiColor trueColor, AnsiColor falseColor) {

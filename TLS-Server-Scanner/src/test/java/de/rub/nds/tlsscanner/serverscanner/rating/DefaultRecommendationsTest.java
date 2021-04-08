@@ -600,7 +600,22 @@ public class DefaultRecommendationsTest {
         // certificate issues
         recommendations.add(new Recommendation(AnalyzedProperty.HAS_CERTIFICATE_ISSUES, "Certificate issues", "",
             new PropertyResultRecommendation(TestResult.TRUE, "", ""), ""));
-
+        recommendations.add(new Recommendation(AnalyzedProperty.STRICT_ALPN, "Strict ALPN",
+            "Evaluated whether the server rejects unsupported ALPN Strings. This is important to mitigate the ALPACA attacks",
+            new PropertyResultRecommendation(TestResult.FALSE,
+                "The TLS server does not reject unsupported ALPN Strings",
+                "If possible configure your server to use strict ALPN verification"),
+            ""));
+        recommendations.add(new Recommendation(AnalyzedProperty.STRICT_SNI, "Strict SNI",
+            "Evaluated whether the server rejects invalid SNI names. This is important to mitigate the ALPACA attacks",
+            new PropertyResultRecommendation(TestResult.FALSE, "The TLS server does not reject invalid SNI names.",
+                "If possible configure your server to use strict SNI verification"),
+            ""));
+        recommendations.add(new Recommendation(AnalyzedProperty.ALPACA_MITIGATED, "ALPACA Mitigation",
+            "Evaluated whether the server is vulnerable to ALPACA",
+            new PropertyResultRecommendation(TestResult.FALSE, "The TLS does not reject invalid SNI names.",
+                "If possible configure your server to use strict SNI and strict ALPN verification"),
+            ""));
         RatingIO.writeRecommendations(new Recommendations(recommendations),
             new File("src/main/resources/" + Recommendations.DEFAULT_RECOMMENDATIONS_FILE));
         RatingIO.writeRecommendations(new Recommendations(recommendations),
