@@ -484,8 +484,7 @@ public class CommonBugProbe extends TlsProbe {
             Config config = getWorkingConfig();
             config.setAddAlpnExtension(true);
             List<String> alpnProtocols = new LinkedList<>();
-            for(AlpnProtocol protocol : AlpnProtocol.values())
-            {
+            for (AlpnProtocol protocol : AlpnProtocol.values()) {
                 alpnProtocols.add(protocol.getConstant());
             }
             alpnProtocols.add("This is not an ALPN Protocol");

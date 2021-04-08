@@ -1,3 +1,12 @@
+/**
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -53,7 +62,7 @@ public class AlpacaProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);

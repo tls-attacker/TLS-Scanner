@@ -119,7 +119,7 @@ public enum AnalyzedProperty {
     SUPPORTS_OCSP(AnalyzedPropertyCategory.OCSP),
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
-    ENFOCRES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(AnalyzedPropertyCategory.SNI),
     STRICT_ALPN(AnalyzedPropertyCategory.EXTENSIONS),
     /**

@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -53,7 +54,7 @@ public class AlpnProbe extends TlsProbe {
         ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
         ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
+        tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -111,7 +112,7 @@ public class AlpnProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)
-                && report.getSupportedExtensions().contains(ExtensionType.ALPN);
+            && report.getSupportedExtensions().contains(ExtensionType.ALPN);
 
     }
 
