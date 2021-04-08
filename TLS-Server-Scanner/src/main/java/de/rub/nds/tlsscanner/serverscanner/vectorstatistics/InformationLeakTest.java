@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
@@ -92,9 +91,8 @@ public class InformationLeakTest<T extends TestInfo> extends VectorStatisticTest
         long[] measured = new long[vectorContainerList.size()];
         for (int i = 0; i < vectorContainerList.size(); i++) {
             expected[i] = probability * vectorContainerList.get(i).getResponseFingerprintList().size();
-            measured[i] =
-                vectorContainerList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
-                    .getCounter();
+            measured[i] = vectorContainerList.get(i).getResponseCounterForFingerprint(defaultAnswer.getFingerprint())
+                .getCounter();
         }
         double chiSquare = test.chiSquare(expected, measured);
         ChiSquaredDistribution distribution = new ChiSquaredDistribution(1);

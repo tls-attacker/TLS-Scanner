@@ -10,21 +10,24 @@
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.List;
 
-public class HandshakeSimulationResult extends ProbeResult {
+/**
+ *
+ * @author ic0ns
+ */
+public class AlpnProbeResult extends ProbeResult {
 
-    private final List<SimulatedClientResult> simulatedClientList;
+    private List<String> supportedAlpns;
 
-    public HandshakeSimulationResult(List<SimulatedClientResult> simulatedClientList) {
-        super(ProbeType.HANDSHAKE_SIMULATION);
-        this.simulatedClientList = simulatedClientList;
+    public AlpnProbeResult(List<String> supportedAlpns) {
+        super(ProbeType.ALPN);
+        this.supportedAlpns = supportedAlpns;
     }
 
     @Override
-    public void mergeData(SiteReport report) {
-        report.setSimulatedClientList(simulatedClientList);
+    protected void mergeData(SiteReport report) {
+        report.setSupportedAlpns(supportedAlpns);
     }
 }

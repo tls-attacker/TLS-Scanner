@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.report;
@@ -97,7 +96,8 @@ public enum AnalyzedProperty {
     SUPPORTS_SESSION_IDS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_ROTATION_HINT(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SECURE_RENEGOTIATION_EXTENSION(AnalyzedPropertyCategory.RENEGOTIATION),
-    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE(AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_FALLBACK_SCSV(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_COMPRESSION(AnalyzedPropertyCategory.COMPRESSION),
@@ -123,6 +123,8 @@ public enum AnalyzedProperty {
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    STRICT_SNI(AnalyzedPropertyCategory.SNI),
+    STRICT_ALPN(AnalyzedPropertyCategory.EXTENSIONS),
     /**
      * does it handle unknown versions correctly?
      */
@@ -224,8 +226,10 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_BREACH(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_LOGJAM(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_FREAK(AnalyzedPropertyCategory.ATTACKS),
-    VULNERABLE_TO_RENEGOTIATION_ATTACK(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RACCOON_ATTACK(AnalyzedPropertyCategory.ATTACKS),
+    ALPACA_MITIGATED(AnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),

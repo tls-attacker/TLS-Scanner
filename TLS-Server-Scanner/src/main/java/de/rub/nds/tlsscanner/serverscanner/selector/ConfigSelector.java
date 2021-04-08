@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.selector;
@@ -33,13 +32,11 @@ public class ConfigSelector {
         config.setAddSignatureAndHashAlgorithmsExtension(Boolean.TRUE);
         config.setAddRenegotiationInfoExtension(Boolean.TRUE);
         List<CipherSuite> filteredCipherSuites =
-            Arrays
-                .asList(CipherSuite.values())
-                .stream()
-                .filter(
-                    cipherSuite -> !cipherSuite.isGrease()
-                        && cipherSuite != CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV
-                        && cipherSuite != CipherSuite.TLS_FALLBACK_SCSV).collect(Collectors.toList());
+            Arrays.asList(CipherSuite.values()).stream()
+                .filter(cipherSuite -> !cipherSuite.isGrease()
+                    && cipherSuite != CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV
+                    && cipherSuite != CipherSuite.TLS_FALLBACK_SCSV)
+                .collect(Collectors.toList());
         config.setDefaultClientSupportedCipherSuites(filteredCipherSuites);
         config.setDefaultSelectedCipherSuite(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
         List<SignatureAndHashAlgorithm> sigHashList = new LinkedList<>();

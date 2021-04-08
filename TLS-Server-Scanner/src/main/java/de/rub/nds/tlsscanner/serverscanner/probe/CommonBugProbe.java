@@ -1,17 +1,17 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -163,8 +163,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasExtensionIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -183,8 +183,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasBigClientHelloIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -270,12 +270,11 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
-            ServerHelloMessage serverHelloMessage =
-                (ServerHelloMessage) WorkflowTraceUtil
-                    .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
+            ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
+                .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
             if (receivedShd) {
-                if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(), new byte[] { (byte) 0xEE,
-                    (byte) 0xCC })) {
+                if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(),
+                    new byte[] { (byte) 0xEE, (byte) 0xCC })) {
                     reflectsCipherSuiteOffering = TestResult.TRUE;
                     ignoresCipherSuiteOffering = TestResult.FALSE;
                 } else {
@@ -316,8 +315,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasSignatureAndHashAlgorithmIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -404,8 +403,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasEmptyLastExtensionIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -423,8 +422,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasVersionIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -442,8 +441,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasCompressionIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -465,8 +464,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasCipherSuiteLengthIntolerance512():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -484,8 +483,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasCipherSuiteIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -496,7 +495,12 @@ public class CommonBugProbe extends TlsProbe {
         try {
             Config config = getWorkingConfig();
             config.setAddAlpnExtension(true);
-            config.setDefaultProposedAlpnProtocols("This is not an ALPN Protocol");
+            List<String> alpnProtocols = new LinkedList<>();
+            for (AlpnProtocol protocol : AlpnProtocol.values()) {
+                alpnProtocols.add(protocol.getConstant());
+            }
+            alpnProtocols.add("This is not an ALPN Protocol");
+            config.setDefaultProposedAlpnProtocols(alpnProtocols);
             WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
             WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
@@ -504,8 +508,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasAlpnIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -534,8 +538,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasClientHelloLengthIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -558,12 +562,8 @@ public class CommonBugProbe extends TlsProbe {
 
     private TestResult hasGreaseSignatureAndHashAlgorithmIntolerance() {
         Config config = getWorkingConfig();
-        Arrays
-            .asList(SignatureAndHashAlgorithm.values())
-            .stream()
-            .filter(algorithm -> algorithm.isGrease())
-            .forEach(
-                greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
+        Arrays.asList(SignatureAndHashAlgorithm.values()).stream().filter(algorithm -> algorithm.isGrease()).forEach(
+            greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
         return hasGreaseIntolerance(config);
     }
 
@@ -576,8 +576,8 @@ public class CommonBugProbe extends TlsProbe {
             trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
             State state = new State(config, trace);
             executeState(state);
-            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)
-                ? TestResult.FALSE : TestResult.TRUE;
+            return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
+                : TestResult.TRUE;
         } catch (Exception e) {
             LOGGER.error("Could not scan for hasGreaseIntolerance():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
@@ -586,11 +586,10 @@ public class CommonBugProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+        return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST);
+            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 }

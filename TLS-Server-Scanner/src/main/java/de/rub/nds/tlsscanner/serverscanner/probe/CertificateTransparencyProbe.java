@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
@@ -137,9 +136,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
         try {
             if (supportedExtensions.contains(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
                 if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-                    ServerHelloMessage serverHelloMessage =
-                        (ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(
-                            HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
+                    ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
+                        .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
                     if (serverHelloMessage != null
                         && serverHelloMessage.containsExtension(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
 
@@ -156,8 +154,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
                 }
             }
         } catch (Exception e) {
-            LOGGER
-                .warn("Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
+            LOGGER.warn(
+                "Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
         }
     }
 
