@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateVerifyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;

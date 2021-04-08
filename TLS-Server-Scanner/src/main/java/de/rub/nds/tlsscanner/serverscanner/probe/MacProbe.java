@@ -29,7 +29,8 @@ import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
 import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
 import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.TlsMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
@@ -88,7 +89,8 @@ public class MacProbe extends TlsProbe {
 
     private boolean receivedAppdata(ResponseFingerprint fingerprint) {
         for (ProtocolMessage message : fingerprint.getMessageList()) {
-            if (message.getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
+            if (message instanceof TlsMessage
+                && ((TlsMessage) message).getProtocolMessageType() == ProtocolMessageType.APPLICATION_DATA) {
                 return true;
             }
         }

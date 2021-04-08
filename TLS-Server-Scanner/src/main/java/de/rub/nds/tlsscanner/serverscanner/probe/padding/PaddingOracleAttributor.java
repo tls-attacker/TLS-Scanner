@@ -17,7 +17,7 @@ import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;

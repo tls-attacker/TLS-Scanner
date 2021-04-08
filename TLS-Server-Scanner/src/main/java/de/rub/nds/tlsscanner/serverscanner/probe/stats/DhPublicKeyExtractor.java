@@ -12,7 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.stats;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsattacker.core.protocol.message.DHEServerKeyExchangeMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
