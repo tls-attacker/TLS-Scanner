@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
@@ -30,8 +31,8 @@ public class DhValueAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        ExtractedValueContainer publicKeyContainer = report.getExtractedValueContainerMap().get(
-                TrackableValueType.DHE_PUBLICKEY);
+        ExtractedValueContainer publicKeyContainer =
+            report.getExtractedValueContainerMap().get(TrackableValueType.DHE_PUBLICKEY);
 
         List<CommonDhValues> loadedCommonDhValues = CommonDhLoader.loadCommonDhValues();
         Set<CommonDhValues> usedCommonValues = new HashSet<>();
@@ -41,7 +42,7 @@ public class DhValueAfterProbe extends AfterProbe {
 
         Integer shortestBitLength = Integer.MAX_VALUE;
         if (publicKeyContainer != null && publicKeyContainer.getExtractedValueList().size() > 2) {
-            if (!publicKeyContainer.areAllValuesDiffernt()) {
+            if (!publicKeyContainer.areAllValuesDifferent()) {
                 reuse = TestResult.TRUE;
             } else {
                 reuse = TestResult.FALSE;

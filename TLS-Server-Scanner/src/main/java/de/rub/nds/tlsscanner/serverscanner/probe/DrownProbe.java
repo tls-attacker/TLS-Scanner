@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.config.GeneralDrownCommandConfig;
@@ -36,49 +37,49 @@ public class DrownProbe extends TlsProbe {
 
     private TestResult testForGeneralDrown() {
         try {
-            GeneralDrownCommandConfig drownCommandConfig = new GeneralDrownCommandConfig(getScannerConfig()
-                    .getGeneralDelegate());
+            GeneralDrownCommandConfig drownCommandConfig =
+                new GeneralDrownCommandConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) drownCommandConfig
-                    .getDelegate(StarttlsDelegate.class);
+            StarttlsDelegate starttlsDelegate =
+                (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            GeneralDrownAttacker attacker = new GeneralDrownAttacker(drownCommandConfig,
-                    drownCommandConfig.createConfig());
+            GeneralDrownAttacker attacker =
+                new GeneralDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
             Boolean generalDrown = attacker.isVulnerable();
             if (Objects.equals(generalDrown, Boolean.TRUE)) {
                 return TestResult.TRUE;
             } else {
                 return TestResult.FALSE;
             }
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for testForGeneralDrown():" + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for testForGeneralDrown():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
         }
     }
 
     private TestResult testForExtraClearDrown() {
         try {
-            SpecialDrownCommandConfig drownCommandConfig = new SpecialDrownCommandConfig(getScannerConfig()
-                    .getGeneralDelegate());
+            SpecialDrownCommandConfig drownCommandConfig =
+                new SpecialDrownCommandConfig(getScannerConfig().getGeneralDelegate());
 
             ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) drownCommandConfig
-                    .getDelegate(StarttlsDelegate.class);
+            StarttlsDelegate starttlsDelegate =
+                (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            SpecialDrownAttacker attacker = new SpecialDrownAttacker(drownCommandConfig,
-                    drownCommandConfig.createConfig());
+            SpecialDrownAttacker attacker =
+                new SpecialDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
             Boolean generalDrown = attacker.isVulnerable();
             if (Objects.equals(generalDrown, Boolean.TRUE)) {
                 return TestResult.TRUE;
             } else {
                 return TestResult.FALSE;
             }
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for testForExtraClearDrown():" + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for testForExtraClearDrown():" + getProbeName(), e);
             return TestResult.ERROR_DURING_TEST;
         }
     }

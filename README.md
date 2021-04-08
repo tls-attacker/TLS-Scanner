@@ -1,17 +1,22 @@
 # TLS-Scanner
+
+[![release](https://img.shields.io/badge/Release-v4.0.0-blue.svg)](https://github.com/RUB-NDS/TLS-Scanner/releases)
+![licence](https://img.shields.io/badge/License-Apachev2-brightgreen.svg)
+[![Build Status](https://hydrogen.cloud.nds.rub.de/buildStatus/icon.svg?job=TLS-Scanner)](https://hydrogen.cloud.nds.rub.de/job/TLS-Scanner/)
+
 TLS-Scanner is a tool created by the Chair for Network and Data Security from the Ruhr-University Bochum to assist pentesters and security researchers in the evaluation of TLS Server configurations. 
 
 **Please note:**  *TLS-Scanner is a research tool intended for TLS developers, pentesters, administrators and researchers. There is no GUI. It is in the first version and may contain some bugs.*
 
 # Compiling
-In order to compile and use TLS-Scanner, you need to have Java and Maven installed, as well as [TLS-Attacker](https://github.com/RUB-NDS/TLS-Attacker) in Version 3.4.0
+In order to compile and use TLS-Scanner, you need to run:
  
 ```bash
 $ cd TLS-Scanner
 $ mvn clean package
 
 ```
-Alternatively, if you are in hurry, you can skip the tests by using:
+Alternatively, if you are in a hurry, you can skip the tests by using:
 ```bash
 $ mvn clean package -DskipTests=true
 ```
@@ -20,10 +25,6 @@ If you want to use TLS-Scanner as a library you need to install it with the foll
 ```bash
 $ mvn clean install
 ```
-
-For hints on installing the required libraries checkout the corresponding GitHub repositories.
-
-**Please note:**  *In order to run this tool you need TLS-Attacker version 3.4.0*
 
 # Running
 In order to run TLS-Scanner you need to run the jar file in the apps/ folder.
@@ -43,4 +44,5 @@ $ docker build . -t tlsscanner
 $ docker run -t tlsscanner
 ```
 
-**Please note:**  *I am by no means familiar with Docker best practices. If you know how to improve the Dockerfile feel free to issue a pullrequest*
+**Please note:**  *I am by no means familiar with Docker best practices. If you know how to improve the Dockerfile
+ feel free to issue a pull request*

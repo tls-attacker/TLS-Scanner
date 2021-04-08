@@ -1,16 +1,16 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
@@ -40,14 +40,14 @@ public class Main {
                 LOGGER.info("Performing Scan, this may take some time...");
                 SiteReport report = scanner.scan();
                 LOGGER.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n");
-                ConsoleLogger.CONSOLE.info(AnsiColor.RESET.getCode() + "Scanned in: "
-                        + ((System.currentTimeMillis() - time) / 1000) + "s\n"
-                        + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
-            } catch (ConfigurationException E) {
-                LOGGER.error("Encountered a ConfigurationException aborting.", E);
+                ConsoleLogger.CONSOLE
+                    .info(AnsiColor.RESET.getCode() + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000)
+                        + "s\n" + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
+            } catch (ConfigurationException e) {
+                LOGGER.error("Encountered a ConfigurationException aborting.", e);
             }
-        } catch (ParameterException E) {
-            LOGGER.error("Could not parse provided parameters", E);
+        } catch (ParameterException e) {
+            LOGGER.error("Could not parse provided parameters", e);
             commander.usage();
         }
     }

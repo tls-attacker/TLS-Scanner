@@ -1,16 +1,13 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.probe;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -26,14 +23,16 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class EsniProbe extends TlsProbe {
 
@@ -48,7 +47,7 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(this.getClientSupportedCiphersuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(this.getClientSupportedCipherSuites());
         tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(this.getTls13SignatureAndHashAlgorithms());
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -57,25 +56,28 @@ public class EsniProbe extends TlsProbe {
 
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
         tlsConfig.setDefaultSelectedNamedGroup(NamedGroup.ECDH_X25519);
+        List<NamedGroup> keyShareGroupList = new LinkedList<>();
+        keyShareGroupList.add(NamedGroup.ECDH_X25519);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroupList);
         tlsConfig.setAddECPointFormatExtension(false);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setClientSupportedEsniCiphersuites(this.getClientSupportedCiphersuites());
+        tlsConfig.setClientSupportedEsniCipherSuites(this.getClientSupportedCipherSuites());
         tlsConfig.getClientSupportedEsniNamedGroups().addAll(this.getImplementedGroups());
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
 
         WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HELLO,
-                RunningModeType.CLIENT);
+            RunningModeType.CLIENT);
         State state = new State(tlsConfig, trace);
         executeState(state);
 
         TlsContext context = state.getTlsContext();
         boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
         boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
-                && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
+            && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
             return new SniResult(TestResult.ERROR_DURING_TEST);
         } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
@@ -99,7 +101,7 @@ public class EsniProbe extends TlsProbe {
         return new SniResult(TestResult.COULD_NOT_TEST);
     }
 
-    private List<CipherSuite> getClientSupportedCiphersuites() {
+    private List<CipherSuite> getClientSupportedCipherSuites() {
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.add(CipherSuite.TLS_AES_128_GCM_SHA256);
         cipherSuites.add(CipherSuite.TLS_AES_256_GCM_SHA384);

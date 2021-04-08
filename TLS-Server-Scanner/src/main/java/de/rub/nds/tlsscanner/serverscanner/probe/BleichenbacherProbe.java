@@ -1,18 +1,19 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.BleichenbacherAttacker;
 import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.attacks.util.response.EqualityError;
-import de.rub.nds.tlsattacker.core.config.delegate.CiphersuiteDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.CipherSuiteDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
@@ -33,7 +34,7 @@ import java.util.List;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
 public class BleichenbacherProbe extends TlsProbe {
 
@@ -47,16 +48,16 @@ public class BleichenbacherProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            BleichenbacherCommandConfig bleichenbacherConfig = new BleichenbacherCommandConfig(getScannerConfig()
-                    .getGeneralDelegate());
+            BleichenbacherCommandConfig bleichenbacherConfig =
+                new BleichenbacherCommandConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) bleichenbacherConfig.getDelegate(ClientDelegate.class);
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) bleichenbacherConfig
-                    .getDelegate(StarttlsDelegate.class);
+            StarttlsDelegate starttlsDelegate =
+                (StarttlsDelegate) bleichenbacherConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            ((CiphersuiteDelegate) (bleichenbacherConfig.getDelegate(CiphersuiteDelegate.class)))
-                    .setCipherSuites(suiteList);
+            ((CipherSuiteDelegate) (bleichenbacherConfig.getDelegate(CipherSuiteDelegate.class)))
+                .setCipherSuites(suiteList);
             if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                 bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FULL);
             } else {
@@ -68,15 +69,15 @@ public class BleichenbacherProbe extends TlsProbe {
                 bleichenbacherConfig.setWorkflowType(bbWorkflowType);
                 LOGGER.debug("Testing: " + bbWorkflowType);
                 BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig,
-                        scannerConfig.createConfig(), getParallelExecutor());
+                    scannerConfig.createConfig(), getParallelExecutor());
                 EqualityError errorType = attacker.getEqualityError();
                 vulnerable |= (errorType != EqualityError.NONE);
-                resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE, bleichenbacherConfig
-                        .getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
+                resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE,
+                    bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
             }
             return new BleichenbacherResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE, resultList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new BleichenbacherResult(TestResult.ERROR_DURING_TEST, new LinkedList<BleichenbacherTestResult>());
         }
     }

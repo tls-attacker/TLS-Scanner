@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 public enum AnalyzedProperty {
@@ -62,6 +63,9 @@ public enum AnalyzedProperty {
     SUPPORTS_DH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_STATIC_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_ECDSA(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_RSA_CERT(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_DSS(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_GOST(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_SRP(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_KERBEROS(AnalyzedPropertyCategory.CIPHER_SUITES),
@@ -79,6 +83,10 @@ public enum AnalyzedProperty {
     SUPPORTS_CERTIFICATE_STATUS_REQUEST(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13(AnalyzedPropertyCategory.EXTENSIONS),
+    SUPPORTS_SCTS_PRECERTIFICATE(AnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
+    SUPPORTS_SCTS_HANDSHAKE(AnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
+    SUPPORTS_SCTS_OCSP(AnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
+    SUPPORTS_CHROME_CT_POLICY(AnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
     SUPPORTS_MONTGOMERY_CURVES(AnalyzedPropertyCategory.EC),
     SUPPORTS_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
@@ -105,6 +113,9 @@ public enum AnalyzedProperty {
     SUPPORTS_ANSIX962_COMPRESSED_PRIME(AnalyzedPropertyCategory.EC),
     SUPPORTS_ANSIX962_COMPRESSED_CHAR2(AnalyzedPropertyCategory.EC),
     SUPPORTS_TLS13_SECP_COMPRESSION(AnalyzedPropertyCategory.EC),
+    SUPPORTS_EXPLICIT_PRIME_CURVE(AnalyzedPropertyCategory.EC),
+    SUPPORTS_EXPLICIT_CHAR2_CURVE(AnalyzedPropertyCategory.EC),
+    GROUPS_DEPEND_ON_CIPHER(AnalyzedPropertyCategory.EC),
     SUPPORTS_OCSP(AnalyzedPropertyCategory.OCSP),
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
@@ -118,15 +129,15 @@ public enum AnalyzedProperty {
     /**
      * does it handle unknown cipher suites correctly?
      */
-    HAS_CIPHERSUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_CIPHER_SUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it handle unknown extensions correctly?
      */
     HAS_EXTENSION_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * does it handle long ciphersuite length values correctly?
+     * does it handle long cipher suite length values correctly?
      */
-    HAS_CIPHERSUITE_LENGTH_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_CIPHER_SUITE_LENGTH_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it handle unknown compression algorithms correctly
      */
@@ -156,17 +167,17 @@ public enum AnalyzedProperty {
      */
     HAS_NAMED_GROUP_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * is only the second byte of the ciphersuite evaluated
+     * is only the second byte of the cipher suite evaluated
      */
-    HAS_SECOND_CIPHERSUITE_BYTE_BUG(AnalyzedPropertyCategory.QUIRKS),
+    HAS_SECOND_CIPHER_SUITE_BYTE_BUG(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * does it ignore the offered ciphersuites
+     * does it ignore the offered cipher suites
      */
-    REFLECTS_OFFERED_CIPHERSUITES(AnalyzedPropertyCategory.QUIRKS),
+    REFLECTS_OFFERED_CIPHER_SUITES(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * does it ignore the offered ciphersuites
+     * does it ignore the offered cipher suites
      */
-    IGNORES_OFFERED_CIPHERSUITES(AnalyzedPropertyCategory.QUIRKS),
+    IGNORES_OFFERED_CIPHER_SUITES(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it ignore the offered named groups
      */
@@ -175,6 +186,14 @@ public enum AnalyzedProperty {
      * does it ignore the sig hash algorithms
      */
     IGNORES_OFFERED_SIG_HASH_ALGOS(AnalyzedPropertyCategory.QUIRKS),
+    /**
+     * does it accept that named groups for ecdsa are missing
+     */
+    IGNORES_ECDSA_GROUP_DISPARITY(AnalyzedPropertyCategory.QUIRKS),
+    /**
+     * does it handle a http false start
+     */
+    SUPPORTS_HTTP_FALSE_START(AnalyzedPropertyCategory.QUIRKS),
     VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_DIRECT_RACCOON(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(AnalyzedPropertyCategory.ATTACKS),

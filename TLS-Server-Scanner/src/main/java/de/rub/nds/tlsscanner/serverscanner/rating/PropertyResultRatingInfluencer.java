@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -35,7 +36,7 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
     }
 
     public PropertyResultRatingInfluencer(TestResult result, AnalyzedProperty referencedProperty,
-            TestResult referencedPropertyResult) {
+        TestResult referencedPropertyResult) {
         this.result = result;
         this.referencedProperty = referencedProperty;
         this.referencedPropertyResult = referencedPropertyResult;
@@ -51,12 +52,10 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         return result;
     }
 
-    @XmlElement(required = false)
     public Integer getInfluence() {
         return influence;
     }
 
-    @XmlElement(required = false)
     public Integer getScoreCap() {
         return scoreCap;
     }
@@ -113,4 +112,10 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         return this.getScoreCap().compareTo(t.getScoreCap());
     }
 
+    @Override
+    public String toString() {
+        return "PropertyResultRatingInfluencer{" + "result=" + result + ", influence=" + influence + ", scoreCap="
+            + scoreCap + ", referencedProperty=" + referencedProperty + ", referencedPropertyResult="
+            + referencedPropertyResult + '}';
+    }
 }
