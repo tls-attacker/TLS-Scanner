@@ -139,6 +139,7 @@ public class SiteReportPrinter {
         appendAlpn(builder);
         appendIntolerances(builder);
         appendAttackVulnerabilities(builder);
+        appendAlpacaAttack(builder);
         appendBleichenbacherResults(builder);
         appendPaddingOracleResults(builder);
         sessionTicketZeroKeyDetails(builder);
@@ -1481,6 +1482,14 @@ public class SiteReportPrinter {
         appendTls13Groups(builder);
         appendCurves(builder);
         appendSignatureAndHashAlgorithms(builder);
+        return builder;
+    }
+
+    public StringBuilder appendAlpacaAttack(StringBuilder builder) {
+        prettyAppendHeading(builder, "Alpaca Attack");
+        prettyAppend(builder, "Strict ALPN", AnalyzedProperty.STRICT_ALPN);
+        prettyAppend(builder, "Strict SNI", AnalyzedProperty.STRICT_SNI);
+        prettyAppend(builder, "ALPACA Mitigation", AnalyzedProperty.ALPACA_MITIGATED);
         return builder;
     }
 

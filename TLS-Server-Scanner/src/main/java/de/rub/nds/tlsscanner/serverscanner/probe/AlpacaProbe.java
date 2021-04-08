@@ -34,7 +34,7 @@ public class AlpacaProbe extends TlsProbe {
 
     private boolean alpnSupported;
 
-    public AlpacaProbe(ParallelExecutor parallelExecutor, ScannerConfig scannerConfig) {
+    public AlpacaProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
     }
 
