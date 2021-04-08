@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.report;
@@ -218,9 +217,8 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized void putResult(AnalyzedProperty property, Boolean result) {
-        this.putResult(property,
-            Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE : Objects.equals(result, Boolean.FALSE)
-                ? TestResult.FALSE : TestResult.UNCERTAIN);
+        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
+            : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
     }
 
     public synchronized void putResult(DrownVulnerabilityType result) {
@@ -287,8 +285,8 @@ public class SiteReport extends Observable implements Serializable {
         return supportedTokenBindingKeyParameters;
     }
 
-    public synchronized void setSupportedTokenBindingKeyParameters(
-        List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
+    public synchronized void
+        setSupportedTokenBindingKeyParameters(List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters) {
         this.supportedTokenBindingKeyParameters = supportedTokenBindingKeyParameters;
     }
 
@@ -340,8 +338,8 @@ public class SiteReport extends Observable implements Serializable {
         return supportedSignatureAndHashAlgorithms;
     }
 
-    public synchronized void setSupportedSignatureAndHashAlgorithms(
-        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+    public synchronized void
+        setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
     }
 
@@ -470,8 +468,8 @@ public class SiteReport extends Observable implements Serializable {
         return paddingOracleTestResultList;
     }
 
-    public synchronized void setPaddingOracleTestResultList(
-        List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
+    public synchronized void
+        setPaddingOracleTestResultList(List<InformationLeakTest<PaddingOracleTestInfo>> paddingOracleTestResultList) {
         this.paddingOracleTestResultList = paddingOracleTestResultList;
     }
 
@@ -479,8 +477,8 @@ public class SiteReport extends Observable implements Serializable {
         return directRaccoonResultList;
     }
 
-    public synchronized void setDirectRaccoonResultList(
-        List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
+    public synchronized void
+        setDirectRaccoonResultList(List<InformationLeakTest<DirectRaccoonOracleTestInfo>> directRaccoonResultList) {
         this.directRaccoonResultList = directRaccoonResultList;
     }
 
@@ -528,8 +526,8 @@ public class SiteReport extends Observable implements Serializable {
         return extractedValueContainerMap;
     }
 
-    public synchronized void setExtractedValueContainerList(
-        Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
+    public synchronized void
+        setExtractedValueContainerList(Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
@@ -602,7 +600,8 @@ public class SiteReport extends Observable implements Serializable {
         return raccoonAttackProbabilities;
     }
 
-    public synchronized void setRaccoonAttackProbabilities(List<RaccoonAttackProbabilities> raccoonAttackProbabilities) {
+    public synchronized void
+        setRaccoonAttackProbabilities(List<RaccoonAttackProbabilities> raccoonAttackProbabilities) {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
     }
 
@@ -626,8 +625,8 @@ public class SiteReport extends Observable implements Serializable {
         return supportedNamedGroupsWitnesses;
     }
 
-    public synchronized void setSupportedNamedGroupsWitnesses(
-        Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
+    public synchronized void
+        setSupportedNamedGroupsWitnesses(Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
         this.supportedNamedGroupsWitnesses = supportedNamedGroupsWitnesses;
     }
 
@@ -667,8 +666,8 @@ public class SiteReport extends Observable implements Serializable {
         return supportedNamedGroupsWitnessesTls13;
     }
 
-    public synchronized void setSupportedNamedGroupsWitnessesTls13(
-        Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
+    public synchronized void
+        setSupportedNamedGroupsWitnessesTls13(Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
         this.supportedNamedGroupsWitnessesTls13 = supportedNamedGroupsWitnessesTls13;
     }
 

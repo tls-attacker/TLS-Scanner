@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.trust;
@@ -96,9 +95,9 @@ public class TrustPlatform {
      * Returns the trust anchor as a CertificateEntry for the Subject.If the subject is not trusted or not found null is
      * returned
      *
-     * @param subject
-     * The subject to search for
-     * @return The relevant CertificateEntry or null if not found
+     * @param  subject
+     *                 The subject to search for
+     * @return         The relevant CertificateEntry or null if not found
      */
     public CertificateEntry getTrustedCertificateEntry(String subject) {
         for (CertificateEntry entry : certificateEntries) {
@@ -113,9 +112,9 @@ public class TrustPlatform {
      * Returns the trust anchor as a CertificateEntry for the Subject.If the subject is not trusted or not found null is
      * returned
      *
-     * @param subject
-     * The subject to search for
-     * @return The relevant CertificateEntry or null if not found
+     * @param  subject
+     *                 The subject to search for
+     * @return         The relevant CertificateEntry or null if not found
      */
     public CertificateEntry getBlacklistedCertificateEntry(String subject) {
         for (CertificateEntry entry : certificateEntries) {

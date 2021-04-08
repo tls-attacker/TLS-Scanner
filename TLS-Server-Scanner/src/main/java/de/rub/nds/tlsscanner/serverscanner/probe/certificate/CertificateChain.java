@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
@@ -143,8 +142,8 @@ public class CertificateChain {
                     // Could not find issuer for certificate - check if its in
                     // the trust store
                     if (TrustAnchorManager.getInstance().isInitialized()) {
-                        if (TrustAnchorManager.getInstance().isTrustAnchor(
-                            tempCertificate.convertToX509Certificate().getIssuerX500Principal())) {
+                        if (TrustAnchorManager.getInstance()
+                            .isTrustAnchor(tempCertificate.convertToX509Certificate().getIssuerX500Principal())) {
                             // Certificate is issued by trust anchor
                             LOGGER.debug("Could find issuer");
                             chainIsComplete = true;
@@ -163,8 +162,8 @@ public class CertificateChain {
                             chainIsComplete = false;
                         }
                     } else {
-                        LOGGER.error("Cannot check if the chain is complete since the trust manager is not "
-                            + "initialized");
+                        LOGGER.error(
+                            "Cannot check if the chain is complete since the trust manager is not " + "initialized");
                     }
                     break;
                 }
@@ -362,9 +361,8 @@ public class CertificateChain {
         CertPath path = new CertPath(certPath);
         X509ContentVerifierProviderBuilder verifier =
             new JcaX509ContentVerifierProviderBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME);
-        CertPathValidationResult result =
-            path.validate(new CertPathValidation[] { new ParentCertIssuedValidation(verifier),
-                new BasicConstraintsValidation(), new KeyUsageValidation() });
+        CertPathValidationResult result = path.validate(new CertPathValidation[] {
+            new ParentCertIssuedValidation(verifier), new BasicConstraintsValidation(), new KeyUsageValidation() });
 
         return result;
     }

@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
@@ -100,8 +99,8 @@ public class PaddingOracleProbe extends TlsProbe {
         return vectorTypeList;
     }
 
-    private PaddingOracleCommandConfig
-        createPaddingOracleCommandConfig(ProtocolVersion version, CipherSuite cipherSuite) {
+    private PaddingOracleCommandConfig createPaddingOracleCommandConfig(ProtocolVersion version,
+        CipherSuite cipherSuite) {
         PaddingOracleCommandConfig paddingOracleConfig =
             new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
@@ -124,8 +123,8 @@ public class PaddingOracleProbe extends TlsProbe {
         return paddingOracleConfig;
     }
 
-    private InformationLeakTest<PaddingOracleTestInfo> getPaddingOracleInformationLeakTest(
-        PaddingOracleCommandConfig paddingOracleConfig) {
+    private InformationLeakTest<PaddingOracleTestInfo>
+        getPaddingOracleInformationLeakTest(PaddingOracleCommandConfig paddingOracleConfig) {
         PaddingOracleAttacker attacker =
             new PaddingOracleAttacker(paddingOracleConfig, scannerConfig.createConfig(), getParallelExecutor());
         if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
@@ -140,9 +139,10 @@ public class PaddingOracleProbe extends TlsProbe {
             LOGGER.error("Encountered an exception while testing for PaddingOracles", e);
         }
 
-        return new InformationLeakTest<>(new PaddingOracleTestInfo(paddingOracleConfig.getProtocolVersionDelegate()
-            .getProtocolVersion(), paddingOracleConfig.getCipherSuiteDelegate().getCipherSuites().get(0),
-            paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType()),
+        return new InformationLeakTest<>(
+            new PaddingOracleTestInfo(paddingOracleConfig.getProtocolVersionDelegate().getProtocolVersion(),
+                paddingOracleConfig.getCipherSuiteDelegate().getCipherSuites().get(0),
+                paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType()),
             attacker.getResponseMapList());
     }
 
@@ -168,9 +168,8 @@ public class PaddingOracleProbe extends TlsProbe {
 
     private void extendFingerPrint(InformationLeakTest<PaddingOracleTestInfo> informationLeakTest,
         int numberOfAdditionalIterations) {
-        PaddingOracleCommandConfig paddingOracleCommandConfig =
-            createPaddingOracleCommandConfig(informationLeakTest.getTestInfo().getVersion(), informationLeakTest
-                .getTestInfo().getCipherSuite());
+        PaddingOracleCommandConfig paddingOracleCommandConfig = createPaddingOracleCommandConfig(
+            informationLeakTest.getTestInfo().getVersion(), informationLeakTest.getTestInfo().getCipherSuite());
         paddingOracleCommandConfig.setRecordGeneratorType(informationLeakTest.getTestInfo().getRecordGeneratorType());
         paddingOracleCommandConfig.setVectorGeneratorType(informationLeakTest.getTestInfo().getVectorGeneratorType());
         paddingOracleCommandConfig.setNumberOfIterations(numberOfAdditionalIterations);
