@@ -226,7 +226,9 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION,
+        colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));

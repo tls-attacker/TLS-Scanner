@@ -188,6 +188,14 @@ public class SiteReport extends Observable implements Serializable {
         executedProbes.add(type);
     }
 
+    public List<String> getSupportedAlpnProtocols() {
+        return supportedAlpns;
+    }
+
+    public void setSupportedAlpnProtocols(List<String> supportedAlpns) {
+        this.supportedAlpns = supportedAlpns;
+    }
+
     public synchronized Long getSessionTicketLengthHint() {
         return sessionTicketLengthHint;
     }

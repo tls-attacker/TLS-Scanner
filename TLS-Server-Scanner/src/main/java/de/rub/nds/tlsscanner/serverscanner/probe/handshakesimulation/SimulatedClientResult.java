@@ -45,9 +45,7 @@ public class SimulatedClientResult {
     private List<Integer> supportedDheKeySizeList = null;
 
     // private final State state;
-
     // private final TlsClientConfig tlsClientConfig;
-
     // To set in HandshakeSimulationAfterProbe
     private Boolean highestPossibleProtocolVersionSelected = null;
     private Boolean handshakeSuccessful = null;

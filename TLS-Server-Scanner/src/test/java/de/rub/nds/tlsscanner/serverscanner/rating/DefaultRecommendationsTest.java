@@ -256,18 +256,16 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.FALSE, "Secure renegotiation extension is disabled",
                 "Consider to enable secure renegotiation extension."),
             "https://tools.ietf.org/html/rfc5746"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION,
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
             "Support for client-side secure renegotiation",
             "Evaluates whether the TLS server supports client-side secure renegotiation.",
             "TLS secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.",
             "https://tools.ietf.org/html/rfc5746"));
-        recommendations
-            .add(new Recommendation(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
-                "Support for client-side insecure renegotiation",
-                "Evaluates whether the TLS server supports client-side insecure renegotiation.",
-                new PropertyResultRecommendation(TestResult.TRUE, "Insecure renegotiation is enabled",
-                    "Disable renegotiation or enable only secure renegotiation."),
-                "https://tools.ietf.org/html/rfc5746"));
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
+            "Support for client-side secure renegotiation",
+            "Evaluates whether the TLS server supports client-side secure renegotiation.",
+            "TLS secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.",
+            "https://tools.ietf.org/html/rfc5746"));
 
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
             "TLS Fallback Signaling Cipher Suite Value (SCSV) support",
@@ -534,7 +532,14 @@ public class DefaultRecommendationsTest {
                 "The TLS server is vulnerable to FREAK", "Disable export cipher suites."),
             "https://www.smacktls.com/smack.pdf"));
         recommendations
-            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK,
+            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE,
+                "Vulnerable to the renegotiation attack",
+                "Evaluates whether the TLS server is vulnerable to the renegotiation attack",
+                new PropertyResultRecommendation(TestResult.TRUE,
+                    "The TLS server is vulnerable to the renegotiation attack", "Disable insecure renegotiation."),
+                ""));
+        recommendations
+            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION,
                 "Vulnerable to the renegotiation attack",
                 "Evaluates whether the TLS server is vulnerable to the renegotiation attack",
                 new PropertyResultRecommendation(TestResult.TRUE,

@@ -20,20 +20,33 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
  */
 public class RenegotiationResult extends ProbeResult {
 
-    private TestResult secureRenegotiation;
-    private TestResult insecureRenegotiation;
+    private final TestResult secureRenegotiationExtension;
+    private final TestResult secureRenegotiationCipherSuite;
+    private final TestResult insecureRenegotiation;
+    private final TestResult vulnerableRenegotiationAttack;
+    private final TestResult vulnerableRenegotiationAttackCipherSuite;
 
-    public RenegotiationResult(TestResult secureRenegotiation, TestResult insecureRenegotiation) {
+    public RenegotiationResult(TestResult secureRenegotiationExtension, TestResult secureRenegotiationCipherSuite,
+        TestResult insecureRenegotiation, TestResult vulnerableRenegotiationAttack,
+        TestResult vulnerableRenegotiationAttackCipherSuite) {
         super(ProbeType.RENEGOTIATION);
-        this.secureRenegotiation = secureRenegotiation;
+        this.secureRenegotiationExtension = secureRenegotiationExtension;
+        this.secureRenegotiationCipherSuite = secureRenegotiationCipherSuite;
         this.insecureRenegotiation = insecureRenegotiation;
+        this.vulnerableRenegotiationAttack = vulnerableRenegotiationAttack;
+        this.vulnerableRenegotiationAttackCipherSuite = vulnerableRenegotiationAttackCipherSuite;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION, secureRenegotiation);
+        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
+            secureRenegotiationExtension);
+        report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
+            secureRenegotiationCipherSuite);
         report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, insecureRenegotiation);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK, insecureRenegotiation);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION, vulnerableRenegotiationAttack);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE,
+            vulnerableRenegotiationAttackCipherSuite);
     }
 
 }

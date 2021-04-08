@@ -446,9 +446,12 @@ public class SiteReportPrinter {
     }
 
     public StringBuilder appendRenegotiation(StringBuilder builder) {
-        prettyAppendHeading(builder, "Renegotiation");
-        prettyAppend(builder, "Clientside Secure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION);
-        prettyAppend(builder, "Clientside Insecure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION);
+        prettyAppendHeading(builder, "Renegotioation");
+        prettyAppend(builder, "Secure (Extension)",
+            AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION);
+        prettyAppend(builder, "Secure (CipherSuite)",
+            AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE);
+        prettyAppend(builder, "Insecure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION);
         return builder;
     }
 
@@ -897,6 +900,10 @@ public class SiteReportPrinter {
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
         prettyAppend(builder, "CVE-2020-13777 (Zero key)", AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
         prettyAppend(builder, "ALPACA", AnalyzedProperty.ALPACA_MITIGATED);
+        prettyAppend(builder, "Renegotiation Attack (ext)",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION);
+        prettyAppend(builder, "Renegotiation Attack (cs)",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE);
 
         return builder;
     }
@@ -1495,7 +1502,7 @@ public class SiteReportPrinter {
     }
 
     public StringBuilder appendAlpn(StringBuilder builder) {
-        if (report.getSupportedExtensions() != null && report.getSupportedExtensions().contains(ExtensionType.ALPN)) {
+        if (report.getSupportedAlpns() != null) {
             prettyAppendHeading(builder, "ALPN");
             for (AlpnProtocol alpnProtocol : AlpnProtocol.values()) {
                 if (alpnProtocol.isGrease()) {
@@ -2068,5 +2075,4 @@ public class SiteReportPrinter {
         }
         return builder;
     }
-
 }

@@ -179,15 +179,20 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 50),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION,
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers
-            .add(
-                new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
-                    new PropertyResultRatingInfluencer(TestResult.TRUE,
-                        AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK, TestResult.TRUE),
-                    new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
+            new PropertyResultRatingInfluencer(TestResult.TRUE,
+                AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION, TestResult.TRUE),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
+            new PropertyResultRatingInfluencer(TestResult.TRUE,
+                AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE, TestResult.TRUE),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
@@ -339,7 +344,10 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_FREAK,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK,
+        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION,
+            new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
 
