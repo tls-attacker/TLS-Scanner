@@ -116,8 +116,8 @@ public class TlsScanner {
         probeList.add(new CcaProbe(config, parallelExecutor));
         probeList.add(new EsniProbe(config, parallelExecutor));
         probeList.add(new CertificateTransparencyProbe(config, parallelExecutor));
-        probeList.add(new AlpacaProbe(config, parallelExecutor));
-        probeList.add(new AlpnProbe(config, parallelExecutor));
+        probeList.add(new RecordFragmentationProbe(config, parallelExecutor));
+        probeList.add(new HelloRetryProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());
