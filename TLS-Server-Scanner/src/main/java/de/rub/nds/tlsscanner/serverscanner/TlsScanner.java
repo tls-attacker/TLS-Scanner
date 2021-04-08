@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner;
@@ -54,9 +53,8 @@ public class TlsScanner {
 
         this.config = config;
         closeAfterFinishParallel = true;
-        parallelExecutor =
-            new ParallelExecutor(config.getOverallThreads(), 3, new NamedThreadFactory(config.getClientDelegate()
-                .getHost() + "-Worker"));
+        parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3,
+            new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         this.probesToExecute = config.getProbes();
@@ -146,9 +144,8 @@ public class TlsScanner {
                     || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
                     LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                     ScanJob job = new ScanJob(probeList, afterList);
-                    executor =
-                        new ThreadedScanJobExecutor(config, job, config.getParallelProbes(), config.getClientDelegate()
-                            .getHost());
+                    executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
+                        config.getClientDelegate().getHost());
                     SiteReport report = executor.execute();
                     return report;
                 } else {

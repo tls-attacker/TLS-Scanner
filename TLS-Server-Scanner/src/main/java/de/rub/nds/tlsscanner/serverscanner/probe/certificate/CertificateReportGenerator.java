@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
@@ -190,8 +189,8 @@ public class CertificateReportGenerator {
 
     }
 
-    private static void
-        setCertificateTransparency(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setCertificateTransparency(CertificateReport report,
+        org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
     private static void setOcspMustStaple(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
@@ -247,8 +246,8 @@ public class CertificateReportGenerator {
                     x509cert = new X509CertificateObject(cert);
                     issuerCert = trustAnchorManager.getTrustAnchorCertificate(x509cert.getIssuerX500Principal());
                 } catch (CertificateParsingException exp) {
-                    LOGGER
-                        .error("Certificate conversion to X509CertificateObject failed. Aborting OCSP revocation check.");
+                    LOGGER.error(
+                        "Certificate conversion to X509CertificateObject failed. Aborting OCSP revocation check.");
                     return;
                 }
             }
@@ -276,8 +275,8 @@ public class CertificateReportGenerator {
 
     private static void setSha256Hash(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         try {
-            report.setSha256Fingerprint(DatatypeConverter.printHexBinary(
-                MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
+            report.setSha256Fingerprint(DatatypeConverter
+                .printHexBinary(MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
         } catch (IOException | NoSuchAlgorithmException e) {
             LOGGER.warn("Could not create SHA-256 Hash", e);
         }

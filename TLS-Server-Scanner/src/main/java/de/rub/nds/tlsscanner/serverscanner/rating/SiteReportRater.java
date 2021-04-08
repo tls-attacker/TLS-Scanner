@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
@@ -45,10 +44,10 @@ public class SiteReportRater {
     /**
      * Returns a generic SiteReportRater
      *
-     * @param recommendationLanguage
-     * Language of the recommendations. If no language file can be found for selected language a default recommendation
-     * file in english is returned
-     * @return A generated SiteReportRater
+     * @param  recommendationLanguage
+     *                                Language of the recommendations. If no language file can be found for selected
+     *                                language a default recommendation file in english is returned
+     * @return                        A generated SiteReportRater
      * @throws JAXBException
      */
     public static SiteReportRater getSiteReportRater(String recommendationLanguage) throws JAXBException {
@@ -63,8 +62,8 @@ public class SiteReportRater {
         String fileName = RECOMMENDATIONS_RESOURCE_LOCATION + "_" + recommendationLanguage + ".xml";
         URL u = classLoader.getResource(fileName);
         if (u == null) {
-            LOGGER.warn("Could not find language resources \"" + fileName
-                + "\" for SiteReportRater. Using default (english).");
+            LOGGER.warn(
+                "Could not find language resources \"" + fileName + "\" for SiteReportRater. Using default (english).");
             fileName = RECOMMENDATIONS_RESOURCE_LOCATION + ".xml";
         }
         in = classLoader.getResourceAsStream(fileName);
