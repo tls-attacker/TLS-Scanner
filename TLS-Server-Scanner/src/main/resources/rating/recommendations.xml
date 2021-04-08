@@ -1546,4 +1546,49 @@
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
+    <recommendation>
+        <analyzedProperty>STRICT_ALPN</analyzedProperty>
+        <shortName>Strict ALPN</shortName>
+        <shortDescription>Evaluated whether the server rejects unsupported ALPN Strings. This is important to mitigate the ALPACA attacks</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The TLS server does not reject unsupported ALPN Strings</shortDescription>
+                <handlingRecommendation>If possible configure your server to use strict ALPN verification</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>STRICT_SNI</analyzedProperty>
+        <shortName>Strict SNI</shortName>
+        <shortDescription>Evaluated whether the server rejects invalid SNI names. This is important to mitigate the ALPACA attacks</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The TLS server does not reject invalid SNI names.</shortDescription>
+                <handlingRecommendation>If possible configure your server to use strict SNI verification</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>ALPACA_MITIGATED</analyzedProperty>
+        <shortName>ALPACA Mitigation</shortName>
+        <shortDescription>Evaluated whether the server is vulnerable to ALPACA</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The TLS does not reject invalid SNI names.</shortDescription>
+                <handlingRecommendation>If possible configure your server to use strict SNI and strict ALPN verification</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
 </recommendations>
