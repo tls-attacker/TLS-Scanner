@@ -18,13 +18,12 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -89,7 +88,7 @@ public class DtlsCookieProbe extends TlsProbe {
             cookie.setModification(ByteArrayModificationFactory.xor(ArrayConverter.hexStringToByteArray("FF"), totest));
             clientHelloMessage.setCookie(cookie);
             trace.addTlsAction(new SendAction(clientHelloMessage));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            trace.addTlsAction(new ReceiveAction(new ServerHelloMessage(config)));
             state = new State(config, trace);
             if (getResult(state) == TestResult.FALSE) {
                 return TestResult.FALSE;
@@ -109,7 +108,7 @@ public class DtlsCookieProbe extends TlsProbe {
         protocolVersion.setModification(ByteArrayModificationFactory.explicitValue(ProtocolVersion.DTLS10.getValue()));
         clientHelloMessage.setProtocolVersion(protocolVersion);
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new ServerHelloMessage(config)));
         State state = new State(config, trace);
         return getResult(state);
     }
@@ -125,7 +124,7 @@ public class DtlsCookieProbe extends TlsProbe {
         random.setModification(ByteArrayModificationFactory.xor(ArrayConverter.hexStringToByteArray("FFFF"), -2));
         clientHelloMessage.setRandom(random);
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new ServerHelloMessage(config)));
         State state = new State(config, trace);
         return getResult(state);
     }
@@ -141,7 +140,7 @@ public class DtlsCookieProbe extends TlsProbe {
         ciphersuites.setModification(ByteArrayModificationFactory.delete(1, 2));
         clientHelloMessage.setCipherSuites(ciphersuites);
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new ServerHelloMessage(config)));
         State state = new State(config, trace);
         return getResult(state);
     }
@@ -157,7 +156,7 @@ public class DtlsCookieProbe extends TlsProbe {
         compressions.setModification(ByteArrayModificationFactory.delete(-1, 1));
         clientHelloMessage.setCompressions(compressions);
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new ServerHelloMessage(config)));
         State state = new State(config, trace);
         return getResult(state);
     }
