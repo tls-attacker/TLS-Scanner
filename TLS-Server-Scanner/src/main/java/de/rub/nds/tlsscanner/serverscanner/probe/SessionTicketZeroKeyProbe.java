@@ -45,9 +45,11 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketZeroKeyResult;
+import java.util.Objects;
 
 /**
  * 
@@ -194,7 +196,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getCipherSuites() != null && (report.getCipherSuites().size() > 0);
+        return report.getCipherSuites() != null && (report.getCipherSuites().size() > 0)
+                && Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SESSION_TICKETS), TestResult.TRUE);
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {
