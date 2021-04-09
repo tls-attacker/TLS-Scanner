@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.RandomHelper;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.core.exceptions.TransportHandlerConnectException;
@@ -181,23 +182,25 @@ public class TlsRngProbe extends TlsProbe {
      *                      The random of the ClientHello to be sent
      * @return              TLS-Config ready for establishing a new connection
      */
-    private Config generateTestConfig(byte[] clientRandom) {
-        Config testConf = getScannerConfig().createConfig();
+    private Config generateTestConfig() {
+        Config config = getScannerConfig().createConfig();
 
-        testConf.setEnforceSettings(false);
-        testConf.setAddServerNameIndicationExtension(false);
-        testConf.setAddEllipticCurveExtension(true);
-        testConf.setAddECPointFormatExtension(true);
-        testConf.setAddSignatureAndHashAlgorithmsExtension(true);
-        testConf.setAddRenegotiationInfoExtension(false);
-        testConf.setUseFreshRandom(false);
-        testConf.setDefaultClientRandom(clientRandom);
-        testConf.setStopActionsAfterFatal(true);
-        testConf.setAddServerNameIndicationExtension(true);
-        testConf.setDefaultClientSessionId(intToByteArray(1));
+        config.setEnforceSettings(false);
+        config.setAddServerNameIndicationExtension(false);
+        config.setAddEllipticCurveExtension(true);
+        config.setAddECPointFormatExtension(true);
+        config.setAddSignatureAndHashAlgorithmsExtension(true);
+        config.setAddRenegotiationInfoExtension(false);
+        config.setUseFreshRandom(false);
+        byte[] random = new byte[32];
+        RandomHelper.getRandom().nextBytes(random);
+        config.setDefaultClientRandom(random);
+        config.setStopActionsAfterFatal(true);
+        config.setAddServerNameIndicationExtension(true);
+        config.setDefaultClientSessionId(new byte[0]);
 
-        testConf.setQuickReceive(true);
-        testConf.setEarlyStop(true);
+        config.setQuickReceive(true);
+        config.setEarlyStop(true);
 
         List<NamedGroup> supportedGroups = new LinkedList<>();
         for (NamedGroup group : latestReport.getSupportedNamedGroups()) {
@@ -207,43 +210,43 @@ public class TlsRngProbe extends TlsProbe {
             }
         }
         if (!(supportedGroups.size() == 0)) {
-            testConf.setDefaultClientNamedGroups(supportedGroups);
+            config.setDefaultClientNamedGroups(supportedGroups);
         }
 
-        return testConf;
+        return config;
     }
 
     /**
      * Same as generateTestConfig but adapted for TLS 1.3 Handshakes.
      *
-     * @param  clientRandom
-     *                      The random of the ClientHello to be sent
-     * @return              TLS-Config ready for establishing a new connection
+     * @return TLS-Config ready for establishing a new connection
      */
-    private Config generateTls13Config(byte[] clientRandom) {
-        Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-        tlsConfig.setEnforceSettings(false);
-        tlsConfig.setEarlyStop(true);
-        tlsConfig.setStopReceivingAfterFatal(true);
-        tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-        tlsConfig.setAddECPointFormatExtension(false);
-        tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-        tlsConfig.setAddSupportedVersionsExtension(true);
-        tlsConfig.setAddKeyShareExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
-        tlsConfig.setUseFreshRandom(false);
-        tlsConfig.setDefaultClientRandom(clientRandom);
+    private Config generateTls13Config() {
+        Config config = getScannerConfig().createConfig();
+        config.setQuickReceive(true);
+        config.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
+        config.setHighestProtocolVersion(ProtocolVersion.TLS13);
+        config.setSupportedVersions(ProtocolVersion.TLS13);
+        config.setEnforceSettings(false);
+        config.setEarlyStop(true);
+        config.setStopReceivingAfterFatal(true);
+        config.setStopActionsAfterFatal(true);
+        config.setDefaultClientNamedGroups(NamedGroup.getImplemented());
+        config.setAddECPointFormatExtension(false);
+        config.setAddEllipticCurveExtension(true);
+        config.setAddSignatureAndHashAlgorithmsExtension(true);
+        config.setAddSupportedVersionsExtension(true);
+        config.setAddKeyShareExtension(true);
+        config.setAddServerNameIndicationExtension(true);
+        config.setUseFreshRandom(false);
+        byte[] random = new byte[32];
+        RandomHelper.getRandom().nextBytes(random);
+        config.setDefaultClientRandom(random);
 
         List<SignatureAndHashAlgorithm> algos = SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms();
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(algos);
+        config.setDefaultClientSupportedSignatureAndHashAlgorithms(algos);
 
-        return tlsConfig;
+        return config;
     }
 
     /**
@@ -274,7 +277,7 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         for (int i = 0; i < numberOfHandshakes; i++) {
-            Config serverHelloConfig = generateTls13Config(intToByteArray(clientRandomInit + i));
+            Config serverHelloConfig = generateTls13Config();
 
             if (supportsExtendedRandom) {
                 LOGGER.debug("Extended Random Supported!");
@@ -370,7 +373,7 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         for (int i = 0; i < numberOfHandshakes; i++) {
-            Config serverHelloConfig = generateTestConfig(intToByteArray(clientRandomInit + i));
+            Config serverHelloConfig = generateTestConfig();
             byte[] sessionID = null;
 
             if (supportsExtendedRandom) {
@@ -488,7 +491,7 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         // Collect IV when CBC Suites are available
-        Config iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
+        Config iVCollectConfig = generateTestConfig();
 
         iVCollectConfig.setDefaultClientSupportedCipherSuites(selectedSuites);
 
@@ -528,7 +531,7 @@ public class TlsRngProbe extends TlsProbe {
                     break;
                 }
                 handshakeCounter++;
-                iVCollectConfig = generateTestConfig(intToByteArray(clientRandomInit + handshakeCounter));
+                iVCollectConfig = generateTestConfig();
                 iVCollectConfig.setDefaultClientSupportedCipherSuites(selectedSuites);
                 if (tlsConnectionCounter >= TLS_CONNECTIONS_UPPER_LIMIT) {
                     LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
@@ -642,9 +645,9 @@ public class TlsRngProbe extends TlsProbe {
         int matchCounter = 0;
 
         if (highestVersion == ProtocolVersion.TLS13) {
-            unixConfig = generateTls13Config(intToByteArray(UNIX_TIME_RANDOM_VALUE));
+            unixConfig = generateTls13Config();
         } else {
-            unixConfig = generateTestConfig(intToByteArray(UNIX_TIME_RANDOM_VALUE));
+            unixConfig = generateTestConfig();
             CipherSuite[] supportedSuites = new CipherSuite[latestReport.getCipherSuites().toArray().length];
             supportedSuites = latestReport.getCipherSuites().toArray(supportedSuites);
             unixConfig.setDefaultClientSupportedCipherSuites(supportedSuites);
@@ -753,20 +756,4 @@ public class TlsRngProbe extends TlsProbe {
         tlsConnectionCounter++;
         return state;
     }
-
-    /**
-     * Simple method to cast an int to a 32 byte byteArray for setting the ClientHello Random
-     *
-     * @param  number
-     *                number to be cast to 32 byte byteArray
-     * @return        number as 32 byte byteArray padded with zeroes.
-     */
-    private byte[] intToByteArray(int number) {
-        BigInteger bigNum = BigInteger.valueOf(number);
-        byte[] bigNumArray = bigNum.toByteArray();
-        byte[] output = new byte[32];
-        System.arraycopy(bigNumArray, 0, output, 0, bigNumArray.length);
-        return output;
-    }
-
 }
