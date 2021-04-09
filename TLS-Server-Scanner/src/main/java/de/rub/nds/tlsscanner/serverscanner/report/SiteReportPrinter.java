@@ -1545,7 +1545,7 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    public void appendRandom(StringBuilder builder) {
+    public void appendRandomness(StringBuilder builder) {
         prettyAppendHeading(builder, "Nonce");
         // prettyAppendRandom(builder, "Random",
         // report.getRandomEvaluationResult());
