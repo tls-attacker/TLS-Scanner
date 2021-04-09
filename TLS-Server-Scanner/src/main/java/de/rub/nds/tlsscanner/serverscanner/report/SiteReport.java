@@ -67,6 +67,7 @@ public class SiteReport extends Observable implements Serializable {
 
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
+    private Boolean supportsRecordFragmentation = null;
 
     // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
@@ -106,6 +107,8 @@ public class SiteReport extends Observable implements Serializable {
     private List<NamedGroup> ecdsaSigGroupsStatic;
     private List<NamedGroup> ecdsaSigGroupsEphemeral;
     private List<NamedGroup> ecdsaSigGroupsTls13;
+    private int minimumRsaCertKeySize;
+    private int minimumDssCertKeySize;
 
     // OCSP
     private List<OcspCertificateResult> ocspResults;
@@ -718,5 +721,29 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
         this.ocspSctList = ocspSctList;
+    }
+
+    public Boolean getSupportsRecordFragmentation() {
+        return supportsRecordFragmentation;
+    }
+
+    public void setSupportsRecordFragmentation(Boolean supportsRecordFragmentation) {
+        this.supportsRecordFragmentation = supportsRecordFragmentation;
+    }
+
+    public int getMinimumRsaCertKeySize() {
+        return minimumRsaCertKeySize;
+    }
+
+    public void setMinimumRsaCertKeySize(int minimumRsaCertKeySize) {
+        this.minimumRsaCertKeySize = minimumRsaCertKeySize;
+    }
+
+    public int getMinimumDssCertKeySize() {
+        return minimumDssCertKeySize;
+    }
+
+    public void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
+        this.minimumDssCertKeySize = minimumDssCertKeySize;
     }
 }

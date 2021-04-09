@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -281,8 +282,8 @@ public class InvalidCurveProbe extends TlsProbe {
             List<PskKeyExchangeMode> pskKex = new LinkedList<>();
             pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
             attacker.getTlsConfig().setPSKKeyExchangeModes(pskKex);
-            attacker.getTlsConfig()
-                .setDefaultClientSupportedSignatureAndHashAlgorithms(getTls13SignatureAndHashAlgorithms());
+            attacker.getTlsConfig().setDefaultClientSupportedSignatureAndHashAlgorithms(
+                SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
         }
 
         attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
@@ -647,23 +648,6 @@ public class InvalidCurveProbe extends TlsProbe {
         }
 
         return groupedMap;
-    }
-
-    private List<SignatureAndHashAlgorithm> getTls13SignatureAndHashAlgorithms() {
-        List<SignatureAndHashAlgorithm> algos = new LinkedList<>();
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA512);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA256);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA384);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA512);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512);
-        return algos;
     }
 
     private boolean groupQualifiedForCipherSuite(NamedGroup testGroup, CipherSuite testCipher) {

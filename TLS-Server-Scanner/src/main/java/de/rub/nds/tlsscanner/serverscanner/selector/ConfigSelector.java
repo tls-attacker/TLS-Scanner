@@ -17,6 +17,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConfigSelector {
 
@@ -30,9 +31,13 @@ public class ConfigSelector {
         config.setAddServerNameIndicationExtension(Boolean.TRUE);
         config.setAddSignatureAndHashAlgorithmsExtension(Boolean.TRUE);
         config.setAddRenegotiationInfoExtension(Boolean.TRUE);
-        config.setDefaultClientSupportedCipherSuites(CipherSuite.values());
-        config.getDefaultClientSupportedCipherSuites().remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.getDefaultClientSupportedCipherSuites().remove(CipherSuite.TLS_FALLBACK_SCSV);
+        List<CipherSuite> filteredCipherSuites =
+            Arrays.asList(CipherSuite.values()).stream()
+                .filter(cipherSuite -> !cipherSuite.isGrease()
+                    && cipherSuite != CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV
+                    && cipherSuite != CipherSuite.TLS_FALLBACK_SCSV)
+                .collect(Collectors.toList());
+        config.setDefaultClientSupportedCipherSuites(filteredCipherSuites);
         config.setDefaultSelectedCipherSuite(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
         List<SignatureAndHashAlgorithm> sigHashList = new LinkedList<>();
         sigHashList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));

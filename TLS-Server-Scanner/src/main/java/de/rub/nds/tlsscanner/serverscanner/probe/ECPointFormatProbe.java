@@ -30,6 +30,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ECPointFormatProbe extends TlsProbe {
 
@@ -147,7 +148,7 @@ public class ECPointFormatProbe extends TlsProbe {
             tlsConfig.setAddCertificateStatusRequestExtension(true);
             tlsConfig.setUseFreshRandom(true);
             tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-                SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms());
+                SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
             tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             State state = new State(tlsConfig);

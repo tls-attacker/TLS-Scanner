@@ -136,8 +136,10 @@ public class SiteReportPrinter {
         appendExtensions(builder);
         appendCompressions(builder);
         appendEcPointFormats(builder);
+        appendRecordFragmentation(builder);
         appendAlpn(builder);
         appendIntolerances(builder);
+        appendHelloRetry(builder);
         appendAttackVulnerabilities(builder);
         appendAlpacaAttack(builder);
         appendBleichenbacherResults(builder);
@@ -815,9 +817,12 @@ public class SiteReportPrinter {
 
     public StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
-        prettyAppend(builder, "Supports Session resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
+        prettyAppend(builder, "Supports Session Resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
         prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
         prettyAppend(builder, "Issues TLS 1.3 Session Tickets", AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
+        prettyAppend(builder, "Supports TLS 1.3 PSK", AnalyzedProperty.SUPPORTS_TLS13_PSK);
+        prettyAppend(builder, "Supports TLS 1.3 PSK-DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+        prettyAppend(builder, "Supports 0-RTT", AnalyzedProperty.SUPPORTS_TLS13_0_RTT);
         // prettyAppend(builder, "Session Ticket Hint",
         // report.getSessionTicketLengthHint());
         // prettyAppendYellowOnFailure(builder, "Session Ticket Rotation",
@@ -853,6 +858,12 @@ public class SiteReportPrinter {
         return builder;
     }
 
+    public StringBuilder appendRecordFragmentation(StringBuilder builder) {
+        prettyAppendHeading(builder, "Record Fragmentation");
+        prettyAppend(builder, "Supports Record Fragmentation", AnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+        return builder;
+    }
+
     public StringBuilder appendIntolerances(StringBuilder builder) {
         prettyAppendHeading(builder, "Common Bugs [EXPERIMENTAL]");
         prettyAppend(builder, "Version Intolerant", AnalyzedProperty.HAS_VERSION_INTOLERANCE);
@@ -871,6 +882,17 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Reflects offered Cipher suites", AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES);
         prettyAppend(builder, "Ignores offered NamedGroups", AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS);
         prettyAppend(builder, "Ignores offered SigHashAlgos", AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS);
+        prettyAppend(builder, "Grease CipherSuite Intolerant", AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE);
+        prettyAppend(builder, "Grease NamedGroup Intolerant", AnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE);
+        prettyAppend(builder, "Grease SigHashAlgo Intolerant",
+            AnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE);
+        return builder;
+    }
+
+    public StringBuilder appendHelloRetry(StringBuilder builder) {
+        prettyAppendHeading(builder, "TLS 1.3 Hello Retry Request");
+        prettyAppend(builder, "Sends Hello Retry Request", AnalyzedProperty.SENDS_HELLO_RETRY_REQUEST);
+        prettyAppend(builder, "Issues Cookie", AnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY);
         return builder;
     }
 

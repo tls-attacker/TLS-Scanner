@@ -23,13 +23,17 @@ public class ResumptionResult extends ProbeResult {
     private final TestResult supportsResumption;
     private final TestResult supportsTls13SessionTicket;
     private final TestResult supportsTls13PskDhe;
+    private final TestResult supportsTls13Psk;
+    private final TestResult supportsTls13_0rtt;
 
     public ResumptionResult(TestResult supportsResumption, TestResult supportsTls13SessionTicket,
-        TestResult supportsTls13PskDhe) {
+        TestResult supportsTls13PskDhe, TestResult supportsTls13Psk, TestResult supportsTls13_0rtt) {
         super(ProbeType.RESUMPTION);
         this.supportsResumption = supportsResumption;
         this.supportsTls13SessionTicket = supportsTls13SessionTicket;
         this.supportsTls13PskDhe = supportsTls13PskDhe;
+        this.supportsTls13_0rtt = supportsTls13_0rtt;
+        this.supportsTls13Psk = supportsTls13Psk;
     }
 
     @Override
@@ -37,6 +41,8 @@ public class ResumptionResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_SESSION_IDS, supportsResumption);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS, supportsTls13SessionTicket);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
+        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13_0rtt);
+        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
     }
 
 }

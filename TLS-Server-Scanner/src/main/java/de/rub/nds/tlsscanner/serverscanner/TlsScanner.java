@@ -82,6 +82,7 @@ public class TlsScanner {
     }
 
     private void fillDefaultProbeLists() {
+
         probeList.add(new CommonBugProbe(config, parallelExecutor));
         probeList.add(new SniProbe(config, parallelExecutor));
         probeList.add(new CompressionsProbe(config, parallelExecutor));
@@ -115,6 +116,8 @@ public class TlsScanner {
         probeList.add(new CcaProbe(config, parallelExecutor));
         probeList.add(new EsniProbe(config, parallelExecutor));
         probeList.add(new CertificateTransparencyProbe(config, parallelExecutor));
+        probeList.add(new RecordFragmentationProbe(config, parallelExecutor));
+        probeList.add(new HelloRetryProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());

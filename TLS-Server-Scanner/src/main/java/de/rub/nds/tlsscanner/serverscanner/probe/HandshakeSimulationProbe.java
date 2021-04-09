@@ -29,12 +29,14 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientCo
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 

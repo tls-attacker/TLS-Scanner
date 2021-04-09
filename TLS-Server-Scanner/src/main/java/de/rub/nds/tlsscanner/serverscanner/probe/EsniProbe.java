@@ -30,6 +30,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
+import java.util.stream.Collectors;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +49,8 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setUseFreshRandom(true);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(this.getClientSupportedCipherSuites());
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(this.getTls13SignatureAndHashAlgorithms());
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
+            SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
@@ -106,23 +108,6 @@ public class EsniProbe extends TlsProbe {
         cipherSuites.add(CipherSuite.TLS_AES_128_GCM_SHA256);
         cipherSuites.add(CipherSuite.TLS_AES_256_GCM_SHA384);
         return cipherSuites;
-    }
-
-    private List<SignatureAndHashAlgorithm> getTls13SignatureAndHashAlgorithms() {
-        List<SignatureAndHashAlgorithm> algos = new LinkedList<>();
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_SHA512);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA256);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA384);
-        algos.add(SignatureAndHashAlgorithm.ECDSA_SHA512);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_PSS_SHA512);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA256);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA384);
-        algos.add(SignatureAndHashAlgorithm.RSA_PSS_RSAE_SHA512);
-        return algos;
     }
 
     private List<NamedGroup> getImplementedGroups() {
