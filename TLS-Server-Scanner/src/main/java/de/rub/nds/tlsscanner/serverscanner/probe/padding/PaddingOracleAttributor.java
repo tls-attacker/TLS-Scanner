@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe.padding;
@@ -18,7 +17,7 @@ import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
@@ -53,8 +52,8 @@ public class PaddingOracleAttributor {
 
     private List<KnownPaddingOracleVulnerability> createCve20196593() {
         List<String> affectedProducts = new LinkedList<>();
-        affectedProducts
-            .add("BIG-IP (LTM, AAM, AFM, Analytics, APM, ASM, DNS, Edge Gateway, FPS, GTM, Link Controller, PEM, WebAccelerator)");
+        affectedProducts.add(
+            "BIG-IP (LTM, AAM, AFM, Analytics, APM, ASM, DNS, Edge Gateway, FPS, GTM, Link Controller, PEM, WebAccelerator)");
         List<ProtocolMessage> messageList = new LinkedList<>();
         ResponseFingerprint responseOne = new ResponseFingerprint(messageList, null, SocketState.CLOSED);
         ResponseFingerprint responseTwo = new ResponseFingerprint(messageList, null, SocketState.TIMEOUT);
@@ -328,8 +327,8 @@ public class PaddingOracleAttributor {
             "We know who is responsible for this behavior. This vulnerability is still in the process of being patched. \n"
                 + "We will add information once it is patched.";
         knownVulnList.add(new KnownPaddingOracleVulnerability("- To be announced -", "- To be announced -",
-            "- To be announced -", PaddingOracleStrength.STRONG, false, knownVulnerableSuites,
-            knownNotVulnerableSuites, description, affectedProducts, responseList, false));
+            "- To be announced -", PaddingOracleStrength.STRONG, false, knownVulnerableSuites, knownNotVulnerableSuites,
+            description, affectedProducts, responseList, false));
 
         return knownVulnList;
     }
@@ -389,12 +388,11 @@ public class PaddingOracleAttributor {
         List<CipherSuite> knownVulnerableSuites = new LinkedList<>();
         List<CipherSuite> knownNotVulnerableSuites = new LinkedList<>();
 
-        String description =
-            "A vulnerability has been identified in the Citrix Application Delivery Controller (ADC)\n"
-                + "formally known as NetScaler ADC and NetScaler Gateway platforms using hardware acceleration that \n"
-                + "could allow an attacker to exploit the appliance to decrypt TLS traffic. This vulnerability does \n"
-                + "not directly allow an attacker to obtain the TLS private key.\n " + "\n "
-                + "More Details: https://support.citrix.com/article/CTX240139";
+        String description = "A vulnerability has been identified in the Citrix Application Delivery Controller (ADC)\n"
+            + "formally known as NetScaler ADC and NetScaler Gateway platforms using hardware acceleration that \n"
+            + "could allow an attacker to exploit the appliance to decrypt TLS traffic. This vulnerability does \n"
+            + "not directly allow an attacker to obtain the TLS private key.\n " + "\n "
+            + "More Details: https://support.citrix.com/article/CTX240139";
         knownVulnList.add(new KnownPaddingOracleVulnerability("CVE-2019-6485", "Citrix CVE-2019-6485",
             "Citrix NetScaler CVE-2019-6485", PaddingOracleStrength.POODLE, true, knownVulnerableSuites,
             knownNotVulnerableSuites, description, affectedProducts, responseList, false));
@@ -466,20 +464,19 @@ public class PaddingOracleAttributor {
         List<CipherSuite> knownVulnerableSuites = new LinkedList<>();
         List<CipherSuite> knownNotVulnerableSuites = new LinkedList<>();
 
-        String description =
-            "If an application encounters a fatal protocol error and then calls\n"
-                + "SSL_shutdown() twice (once to send a close_notify, and once to receive one) then\n"
-                + "OpenSSL can respond differently to the calling application if a 0 byte record is\n"
-                + "received with invalid padding compared to if a 0 byte record is received with an\n"
-                + "invalid MAC. If the application then behaves differently based on that in a way\n"
-                + "that is detectable to the remote peer, then this amounts to a padding oracle\n"
-                + "that could be used to decrypt data.\n" + "\n"
-                + "In order for this to be exploitable then \"non-stitched\" cipher suites must be in\n"
-                + "use. Stitched cipher suites are optimised implementations of certain commonly\n"
-                + "used cipher suites. Also the application must call SSL_shutdown() twice even if a\n"
-                + "protocol error has occurred (applications should not do this but some do\n" + "anyway).\n" + "\n"
-                + "This issue does not impact OpenSSL 1.1.1 or 1.1.0.\n" + "\n"
-                + "OpenSSL 1.0.2 users should upgrade to 1.0.2r.\n";
+        String description = "If an application encounters a fatal protocol error and then calls\n"
+            + "SSL_shutdown() twice (once to send a close_notify, and once to receive one) then\n"
+            + "OpenSSL can respond differently to the calling application if a 0 byte record is\n"
+            + "received with invalid padding compared to if a 0 byte record is received with an\n"
+            + "invalid MAC. If the application then behaves differently based on that in a way\n"
+            + "that is detectable to the remote peer, then this amounts to a padding oracle\n"
+            + "that could be used to decrypt data.\n" + "\n"
+            + "In order for this to be exploitable then \"non-stitched\" cipher suites must be in\n"
+            + "use. Stitched cipher suites are optimised implementations of certain commonly\n"
+            + "used cipher suites. Also the application must call SSL_shutdown() twice even if a\n"
+            + "protocol error has occurred (applications should not do this but some do\n" + "anyway).\n" + "\n"
+            + "This issue does not impact OpenSSL 1.1.1 or 1.1.0.\n" + "\n"
+            + "OpenSSL 1.0.2 users should upgrade to 1.0.2r.\n";
         knownVulnList.add(new KnownPaddingOracleVulnerability("Openssl CVE-2019-1559", "Openssl CVE-2019-1559",
             "Openssl CVE-2019-1559", PaddingOracleStrength.STRONG, true, knownVulnerableSuites,
             knownNotVulnerableSuites, description, affectedProducts, responseList, false));
@@ -640,18 +637,17 @@ public class PaddingOracleAttributor {
 
         List<KnownPaddingOracleVulnerability> knownVulnList = new LinkedList<>();
 
-        String description =
-            "A MITM attacker can use a padding oracle attack to decrypt traffic\n"
-                + "when the connection uses an AES CBC cipher and the server support\n" + "AES-NI.\n" + "\n"
-                + "This issue was introduced as part of the fix for Lucky 13 padding\n"
-                + "attack (CVE-2013-0169). The padding check was rewritten to be in\n"
-                + "constant time by making sure that always the same bytes are read and\n"
-                + "compared against either the MAC or padding bytes. But it no longer\n"
-                + "checked that there was enough data to have both the MAC and padding\n" + "bytes.\n" + "\n"
-                + "OpenSSL 1.0.2 users should upgrade to 1.0.2h\n" + "OpenSSL 1.0.1 users should upgrade to 1.0.1t\n"
-                + "\n" + "This issue was reported to OpenSSL on 13th of April 2016 by Juraj\n"
-                + "Somorovsky using TLS-Attacker. The fix was developed by Kurt Roeckx\n"
-                + "of the OpenSSL development team.";
+        String description = "A MITM attacker can use a padding oracle attack to decrypt traffic\n"
+            + "when the connection uses an AES CBC cipher and the server support\n" + "AES-NI.\n" + "\n"
+            + "This issue was introduced as part of the fix for Lucky 13 padding\n"
+            + "attack (CVE-2013-0169). The padding check was rewritten to be in\n"
+            + "constant time by making sure that always the same bytes are read and\n"
+            + "compared against either the MAC or padding bytes. But it no longer\n"
+            + "checked that there was enough data to have both the MAC and padding\n" + "bytes.\n" + "\n"
+            + "OpenSSL 1.0.2 users should upgrade to 1.0.2h\n" + "OpenSSL 1.0.1 users should upgrade to 1.0.1t\n" + "\n"
+            + "This issue was reported to OpenSSL on 13th of April 2016 by Juraj\n"
+            + "Somorovsky using TLS-Attacker. The fix was developed by Kurt Roeckx\n"
+            + "of the OpenSSL development team.";
         knownVulnList.add(new KnownPaddingOracleVulnerability("CVE-2016-2107", "UnluckyHMAC",
             "UnluckyHMAC (CVE-2016-2107)", PaddingOracleStrength.WEAK, false, knownVulnerableSuites,
             knownNotVulnerableSuites, description, affectedProducts, responseList, false));
@@ -662,8 +658,8 @@ public class PaddingOracleAttributor {
         return knownVulnList;
     }
 
-    public KnownPaddingOracleVulnerability getKnownVulnerability(
-        List<InformationLeakTest<PaddingOracleTestInfo>> informationLeakTestList) {
+    public KnownPaddingOracleVulnerability
+        getKnownVulnerability(List<InformationLeakTest<PaddingOracleTestInfo>> informationLeakTestList) {
         LOGGER.trace("Trying to attribute PaddingOracle to a Known Vulnerability");
         for (KnownPaddingOracleVulnerability vulnerability : knownVulnerabilityList) {
             if (!checkCipherSuitesPlausible(vulnerability, informationLeakTestList)) {
@@ -721,8 +717,8 @@ public class PaddingOracleAttributor {
                     found = true;
                     // TODO This need to be a correct check - this currently
                     // just checks the first message
-                    if (FingerPrintChecker.checkEquality(response.getFingerprint(), vectorContainer
-                        .getResponseFingerprintList().get(0)) != EqualityError.NONE) {
+                    if (FingerPrintChecker.checkEquality(response.getFingerprint(),
+                        vectorContainer.getResponseFingerprintList().get(0)) != EqualityError.NONE) {
                         return false;
                     }
                     break;

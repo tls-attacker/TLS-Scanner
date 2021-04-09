@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.report.after;
@@ -96,9 +95,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             }
             Collections.sort(commonProtocolVersions);
             simulatedClient.setCommonProtocolVersions(commonProtocolVersions);
-            if (!commonProtocolVersions.isEmpty()
-                && commonProtocolVersions.get(commonProtocolVersions.size() - 1).equals(
-                    simulatedClient.getSelectedProtocolVersion())) {
+            if (!commonProtocolVersions.isEmpty() && commonProtocolVersions.get(commonProtocolVersions.size() - 1)
+                .equals(simulatedClient.getSelectedProtocolVersion())) {
                 simulatedClient.setHighestPossibleProtocolVersionSelected(true);
             } else {
                 simulatedClient.setHighestPossibleProtocolVersionSelected(false);
@@ -130,9 +128,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         if (simulatedClient.getSelectedCipherSuite()
             .isSupportedInProtocol(simulatedClient.getSelectedProtocolVersion())) {
             return false;
-        } else if (simulatedClient.getVersionAcceptForbiddenCipherSuiteList() != null
-            && simulatedClient.getVersionAcceptForbiddenCipherSuiteList().contains(
-                simulatedClient.getSelectedProtocolVersion())) {
+        } else if (simulatedClient.getVersionAcceptForbiddenCipherSuiteList() != null && simulatedClient
+            .getVersionAcceptForbiddenCipherSuiteList().contains(simulatedClient.getSelectedProtocolVersion())) {
             return false;
         }
         return true;
@@ -218,14 +215,14 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         Integer minDh = 1024;
         Integer minEcdh = 160;
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa() && pubKey <= minRsa) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - rsa > "
-                + minRsa);
+            simulatedClient
+                .addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - rsa > " + minRsa);
         } else if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeDh() && pubKey <= minDh) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - dh > "
-                + minDh);
+            simulatedClient
+                .addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - dh > " + minDh);
         } else if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeEcdh() && pubKey <= minEcdh) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason()
-                + " - ecdh > " + minEcdh);
+            simulatedClient.addToInsecureReasons(
+                ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - ecdh > " + minEcdh);
         }
     }
 

@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.report.result;
@@ -53,6 +52,12 @@ public class CommonBugProbeResult extends ProbeResult {
     private final TestResult ignoresOfferedSignatureAndHashAlgorithms;
     // server does not like really big client hello messages?
     private final TestResult maxLengthClientHelloIntolerant;
+    // does it accept grease values in the supported groups extension?
+    private TestResult greaseNamedGroupIntolerance;
+    // does it accept grease values in the cipher suites list?
+    private TestResult greaseCipherSuiteIntolerance;
+    // does it accept grease values in the signature and hash algorithms extension?
+    private TestResult greaseSignatureAndHashAlgorithmIntolerance;
 
     public CommonBugProbeResult(TestResult extensionIntolerance, TestResult cipherSuiteIntolerance,
         TestResult cipherSuiteLengthIntolerance512, TestResult compressionIntolerance, TestResult versionIntolerance,
@@ -60,7 +65,9 @@ public class CommonBugProbeResult extends ProbeResult {
         TestResult onlySecondCipherSuiteByteEvaluated, TestResult namedGroupIntolerant,
         TestResult namedSignatureAndHashAlgorithmIntolerance, TestResult ignoresCipherSuiteOffering,
         TestResult reflectsCipherSuiteOffering, TestResult ignoresOfferedNamedGroups,
-        TestResult ignoresOfferedSignatureAndHashAlgorithms, TestResult maxLengthClientHelloIntolerant) {
+        TestResult ignoresOfferedSignatureAndHashAlgorithms, TestResult maxLengthClientHelloIntolerant,
+        TestResult greaseNamedGroupIntolerance, TestResult greaseCipherSuiteIntolerance,
+        TestResult greaseSignatureAndHashAlgorithmIntolerance) {
         super(ProbeType.COMMON_BUGS);
         this.extensionIntolerance = extensionIntolerance;
         this.cipherSuiteIntolerance = cipherSuiteIntolerance;
@@ -78,6 +85,9 @@ public class CommonBugProbeResult extends ProbeResult {
         this.ignoresOfferedNamedGroups = ignoresOfferedNamedGroups;
         this.ignoresOfferedSignatureAndHashAlgorithms = ignoresOfferedSignatureAndHashAlgorithms;
         this.maxLengthClientHelloIntolerant = maxLengthClientHelloIntolerant;
+        this.greaseNamedGroupIntolerance = greaseNamedGroupIntolerance;
+        this.greaseCipherSuiteIntolerance = greaseCipherSuiteIntolerance;
+        this.greaseSignatureAndHashAlgorithmIntolerance = greaseSignatureAndHashAlgorithmIntolerance;
     }
 
     @Override
@@ -92,13 +102,17 @@ public class CommonBugProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.HAS_EMPTY_LAST_EXTENSION_INTOLERANCE, emptyLastExtensionIntolerance);
         report.putResult(AnalyzedProperty.HAS_SECOND_CIPHER_SUITE_BYTE_BUG, onlySecondCipherSuiteByteEvaluated);
         report.putResult(AnalyzedProperty.HAS_NAMED_GROUP_INTOLERANCE, namedGroupIntolerant);
-        report
-            .putResult(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE, namedSignatureAndHashAlgorithmIntolerance);
+        report.putResult(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+            namedSignatureAndHashAlgorithmIntolerance);
         report.putResult(AnalyzedProperty.IGNORES_OFFERED_CIPHER_SUITES, ignoresCipherSuiteOffering);
         report.putResult(AnalyzedProperty.REFLECTS_OFFERED_CIPHER_SUITES, reflectsCipherSuiteOffering);
         report.putResult(AnalyzedProperty.IGNORES_OFFERED_NAMED_GROUPS, ignoresOfferedNamedGroups);
         report.putResult(AnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS, ignoresOfferedSignatureAndHashAlgorithms);
         report.putResult(AnalyzedProperty.HAS_BIG_CLIENT_HELLO_INTOLERANCE, maxLengthClientHelloIntolerant);
+        report.putResult(AnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE, greaseNamedGroupIntolerance);
+        report.putResult(AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE, greaseCipherSuiteIntolerance);
+        report.putResult(AnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
+            greaseSignatureAndHashAlgorithmIntolerance);
     }
 
 }

@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
@@ -36,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CipherSuiteProbe extends TlsProbe {
 
@@ -126,8 +126,8 @@ public class CipherSuiteProbe extends TlsProbe {
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-            .getTls13SignatureAndHashAlgorithms());
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
+            SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
 
         State state = new State(tlsConfig);
         executeState(state);
@@ -201,9 +201,8 @@ public class CipherSuiteProbe extends TlsProbe {
                 LOGGER.debug(state.getWorkflowTrace().toString());
                 if (state.getTlsContext().isReceivedFatalAlert()) {
                     LOGGER.debug("Received Fatal Alert");
-                    AlertMessage alert =
-                        (AlertMessage) WorkflowTraceUtil.getFirstReceivedMessage(ProtocolMessageType.ALERT,
-                            state.getWorkflowTrace());
+                    AlertMessage alert = (AlertMessage) WorkflowTraceUtil
+                        .getFirstReceivedMessage(ProtocolMessageType.ALERT, state.getWorkflowTrace());
                     LOGGER.debug("Type:" + alert.toString());
 
                 }

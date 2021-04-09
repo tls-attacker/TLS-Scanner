@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe.directraccoon;
@@ -31,9 +30,8 @@ public class DirectRaccoonWorkflowGenerator {
 
     public static WorkflowTrace generateWorkflow(Config tlsConfig, DirectRaccoonWorkflowType type,
         BigInteger initialDhSecret, boolean withNullByte) {
-        WorkflowTrace trace =
-            new WorkflowConfigurationFactory(tlsConfig).createTlsEntryWorkflowTrace(tlsConfig
-                .getDefaultClientConnection());
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
         trace.addTlsAction(new SendRaccoonCkeAction(withNullByte, initialDhSecret));
@@ -45,8 +43,8 @@ public class DirectRaccoonWorkflowGenerator {
                     trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(tlsConfig)));
                     break;
                 case CKE_CCS_FIN:
-                    trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(tlsConfig), new FinishedMessage(
-                        tlsConfig)));
+                    trace.addTlsAction(
+                        new SendAction(new ChangeCipherSpecMessage(tlsConfig), new FinishedMessage(tlsConfig)));
                     break;
                 default:
                     break;
