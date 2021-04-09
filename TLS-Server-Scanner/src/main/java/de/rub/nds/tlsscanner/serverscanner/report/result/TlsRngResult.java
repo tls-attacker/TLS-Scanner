@@ -19,8 +19,6 @@ import java.util.LinkedList;
 
 public class TlsRngResult extends ProbeResult {
 
-    private boolean rng_extracted = false;
-
     private final LinkedList<ComparableByteArray> extractedIVList;
 
     private final LinkedList<ComparableByteArray> extractedServerRandomList;
@@ -29,28 +27,20 @@ public class TlsRngResult extends ProbeResult {
 
     private final boolean usesUnixtime;
 
-    private final boolean prematureStop;
-
-    public TlsRngResult(boolean rng_extracted, LinkedList<ComparableByteArray> extractedIVList,
+    public TlsRngResult(LinkedList<ComparableByteArray> extractedIVList,
         LinkedList<ComparableByteArray> extractedServerRandomList,
-        LinkedList<ComparableByteArray> extractedSessionIDList, boolean usesUnixtime, boolean prematureStop) {
+        LinkedList<ComparableByteArray> extractedSessionIDList, boolean usesUnixtime) {
         super(ProbeType.RNG);
-        this.rng_extracted = rng_extracted;
         this.extractedIVList = extractedIVList;
         this.extractedServerRandomList = extractedServerRandomList;
         this.extractedSessionIDList = extractedSessionIDList;
         this.usesUnixtime = usesUnixtime;
-        this.prematureStop = prematureStop;
     }
 
     @Override
     public void mergeData(SiteReport report) {
 
-        if (rng_extracted) {
-            report.putResult(AnalyzedProperty.RNG_EXTRACTED, TestResult.TRUE);
-        } else {
-            report.putResult(AnalyzedProperty.RNG_EXTRACTED, TestResult.FALSE);
-        }
+        report.putResult(AnalyzedProperty.RNG_EXTRACTED, TestResult.TRUE);
 
         // Add extracted values to report regardless if the required amount was
         // collected or not.
@@ -59,6 +49,5 @@ public class TlsRngResult extends ProbeResult {
         report.setExtractedSessionIDList(extractedSessionIDList);
 
         report.putUnixtimeResult(usesUnixtime);
-        report.putPrematureStopResult(prematureStop);
     }
 }
