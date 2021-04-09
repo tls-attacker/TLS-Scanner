@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.report;
@@ -92,11 +91,14 @@ public enum AnalyzedProperty {
     SUPPORTS_MONTGOMERY_CURVES(AnalyzedPropertyCategory.EC),
     SUPPORTS_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
-    SUPPORTS_TLS13_PSK_DHE(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_TLS13_PSK_DHE(AnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_TLS13_PSK(AnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_TLS13_0_RTT(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_IDS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_ROTATION_HINT(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SECURE_RENEGOTIATION_EXTENSION(AnalyzedPropertyCategory.RENEGOTIATION),
-    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE(AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_FALLBACK_SCSV(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_COMPRESSION(AnalyzedPropertyCategory.COMPRESSION),
@@ -122,6 +124,8 @@ public enum AnalyzedProperty {
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    STRICT_SNI(AnalyzedPropertyCategory.SNI),
+    STRICT_ALPN(AnalyzedPropertyCategory.EXTENSIONS),
     /**
      * does it handle unknown versions correctly?
      */
@@ -194,6 +198,15 @@ public enum AnalyzedProperty {
      * does it handle a http false start
      */
     SUPPORTS_HTTP_FALSE_START(AnalyzedPropertyCategory.QUIRKS),
+    SUPPORTS_RECORD_FRAGMENTATION(AnalyzedPropertyCategory.QUIRKS),
+    /**
+     * does it have a grease value intolerance?
+     */
+    HAS_GREASE_CIPHER_SUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_GREASE_NAMED_GROUP_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    SENDS_HELLO_RETRY_REQUEST(AnalyzedPropertyCategory.BEST_PRACTICES),
+    ISSUES_COOKIE_IN_HELLO_RETRY(AnalyzedPropertyCategory.EXTENSIONS),
     VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_DIRECT_RACCOON(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(AnalyzedPropertyCategory.ATTACKS),
@@ -214,8 +227,10 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_BREACH(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_LOGJAM(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_FREAK(AnalyzedPropertyCategory.ATTACKS),
-    VULNERABLE_TO_RENEGOTIATION_ATTACK(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RACCOON_ATTACK(AnalyzedPropertyCategory.ATTACKS),
+    ALPACA_MITIGATED(AnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),

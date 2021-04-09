@@ -728,7 +728,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION</analyzedProperty>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE</analyzedProperty>
         <shortName>Support for client-side secure renegotiation</shortName>
         <shortDescription>Evaluates whether the TLS server supports client-side secure renegotiation.</shortDescription>
         <detailedDescription>TLS secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.</detailedDescription>
@@ -738,19 +738,14 @@
         <resultingRecommendations/>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
-        <shortName>Support for client-side insecure renegotiation</shortName>
-        <shortDescription>Evaluates whether the TLS server supports client-side insecure renegotiation.</shortDescription>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
+        <shortName>Support for client-side secure renegotiation</shortName>
+        <shortDescription>Evaluates whether the TLS server supports client-side secure renegotiation.</shortDescription>
+        <detailedDescription>TLS secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.</detailedDescription>
         <links>
             <link>https://tools.ietf.org/html/rfc5746</link>
         </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription>Insecure renegotiation is enabled</shortDescription>
-                <handlingRecommendation>Disable renegotiation or enable only secure renegotiation.</handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
+        <resultingRecommendations/>
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_TLS_FALLBACK_SCSV</analyzedProperty>
@@ -1389,7 +1384,22 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK</analyzedProperty>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE</analyzedProperty>
+        <shortName>Vulnerable to the renegotiation attack</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to the renegotiation attack</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to the renegotiation attack</shortDescription>
+                <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION</analyzedProperty>
         <shortName>Vulnerable to the renegotiation attack</shortName>
         <shortDescription>Evaluates whether the TLS server is vulnerable to the renegotiation attack</shortDescription>
         <links>
@@ -1543,6 +1553,51 @@
                 <result>TRUE</result>
                 <shortDescription></shortDescription>
                 <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>STRICT_ALPN</analyzedProperty>
+        <shortName>Strict ALPN</shortName>
+        <shortDescription>Evaluated whether the server rejects unsupported ALPN Strings. This is important to mitigate the ALPACA attacks</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The TLS server does not reject unsupported ALPN Strings</shortDescription>
+                <handlingRecommendation>If possible configure your server to use strict ALPN verification</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>STRICT_SNI</analyzedProperty>
+        <shortName>Strict SNI</shortName>
+        <shortDescription>Evaluated whether the server rejects invalid SNI names. This is important to mitigate the ALPACA attacks</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The TLS server does not reject invalid SNI names.</shortDescription>
+                <handlingRecommendation>If possible configure your server to use strict SNI verification</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>ALPACA_MITIGATED</analyzedProperty>
+        <shortName>ALPACA Mitigation</shortName>
+        <shortDescription>Evaluated whether the server is vulnerable to ALPACA</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The TLS does not reject invalid SNI names.</shortDescription>
+                <handlingRecommendation>If possible configure your server to use strict SNI and strict ALPN verification</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>

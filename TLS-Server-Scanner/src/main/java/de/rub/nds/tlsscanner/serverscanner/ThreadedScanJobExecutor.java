@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner;
@@ -52,9 +51,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     private final ThreadPoolExecutor executor;
 
     public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
-        executor =
-            new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
-                new NamedThreadFactory(prefix));
+        executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
+            new NamedThreadFactory(prefix));
         this.config = config;
         this.scanJob = scanJob;
     }
@@ -110,8 +108,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                         }
 
                     } catch (InterruptedException | ExecutionException ex) {
-                        LOGGER
-                            .error("Encountered an exception before we could merge the result. Killing the task.", ex);
+                        LOGGER.error("Encountered an exception before we could merge the result. Killing the task.",
+                            ex);
                         result.cancel(true);
                         finishedFutures.add(result);
                     }

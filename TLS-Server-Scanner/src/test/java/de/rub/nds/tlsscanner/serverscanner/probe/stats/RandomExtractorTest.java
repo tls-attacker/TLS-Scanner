@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe.stats;
@@ -35,10 +34,10 @@ public class RandomExtractorTest {
     private RandomExtractor extractor;
     private final Logger LOGGER = LogManager.getLogger();
     @SuppressWarnings("SpellCheckingInspection")
-    private final static byte[] STATIC_RANDOM1 = ArrayConverter
-        .hexStringToByteArray("4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
-    private final static byte[] STATIC_RANDOM2 = ArrayConverter
-        .hexStringToByteArray("CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
+    private final static byte[] STATIC_RANDOM1 =
+        ArrayConverter.hexStringToByteArray("4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
+    private final static byte[] STATIC_RANDOM2 =
+        ArrayConverter.hexStringToByteArray("CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
     @SuppressWarnings("SpellCheckingInspection")
     private final static byte[] LONG_STATIC_RANDOM3 = ArrayConverter.hexStringToByteArray("19C26C4DD15B39"
         + "C49DFF3EAFB83130E8FAA462F252C2E0ED7F389ECC349A38DA1DB5D3E8D04BA6D77E6B05E81B04CF41CF737CC44E"
@@ -52,9 +51,9 @@ public class RandomExtractorTest {
     /**
      * Helper Method for generating serverHello-Messages
      * 
-     * @param rndBytes
-     * the random-bytes of the serverHello Message
-     * @return serverHello Message with the random-bytes set.
+     * @param  rndBytes
+     *                  the random-bytes of the serverHello Message
+     * @return          serverHello Message with the random-bytes set.
      */
     private ReceiveAction generateServerHello(byte[] rndBytes) {
         ReceiveAction testServerHello = new ReceiveAction();
