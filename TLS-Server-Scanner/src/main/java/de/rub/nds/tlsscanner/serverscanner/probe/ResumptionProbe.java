@@ -9,12 +9,15 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlertDescription;
+import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateVerifyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
@@ -24,6 +27,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
@@ -83,18 +87,28 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setStopActionsAfterIOException(true);
             tlsConfig.setStopReceivingAfterFatal(true);
             tlsConfig.setStopActionsAfterFatal(true);
-            tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_RESUMPTION);
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddRenegotiationInfoExtension(true);
             tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-            State state = new State(tlsConfig);
+            WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
+            WorkflowTrace trace = configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                    RunningModeType.CLIENT);
+            if (getScannerConfig().getDtlsDelegate().isDTLS() && tlsConfig.isFinishWithCloseNotify()) {
+                AlertMessage alert = new AlertMessage();
+                alert.setConfig(AlertLevel.WARNING, AlertDescription.CLOSE_NOTIFY);
+                trace.addTlsAction(new SendAction(alert));
+            }
+            trace.addTlsAction(new ResetConnectionAction());
+            trace.addTlsActions(configFactory.createWorkflowTrace(WorkflowTraceType.RESUMPTION, RunningModeType.CLIENT)
+                    .getTlsActions());
+            State state = new State(tlsConfig, trace);
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception E) {
-            LOGGER.error("Could not test for support for Tls13PskDhe");
+            LOGGER.error("Could not test for support for SessionResumption");
             return TestResult.ERROR_DURING_TEST;
         }
     }

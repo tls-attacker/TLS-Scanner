@@ -57,7 +57,7 @@ public class SniProbe extends TlsProbe {
             toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             config.setDefaultClientSupportedCiphersuites(toTestList);
             WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                    WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
+                    WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
             State state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {

@@ -15,11 +15,8 @@ import de.rub.nds.tlsattacker.core.connection.InboundConnection;
 import de.rub.nds.tlsattacker.core.connection.OutboundConnection;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
-import de.rub.nds.tlsattacker.core.workflow.action.executor.ActionOption;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.WorkflowExecutorType;
 import de.rub.nds.tlsattacker.transport.TransportHandlerType;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
@@ -50,10 +47,6 @@ public class DtlsDelegate extends Delegate {
         Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
 
         if (dtls) {
-            List<ActionOption> actionOptions = new ArrayList<>();
-            actionOptions.add(ActionOption.CHECK_ONLY_EXPECTED);
-            config.setMessageFactoryActionOptions(actionOptions);
-
             config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
             config.setDefaultSelectedProtocolVersion(ProtocolVersion.DTLS12);
 
