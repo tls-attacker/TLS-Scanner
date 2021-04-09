@@ -25,7 +25,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 import static de.rub.nds.tlsscanner.serverscanner.util.StatisticalTests.*;
 import static java.lang.Math.*;
 
@@ -42,10 +41,10 @@ public class TlsRngAfterProbe extends AfterProbe {
     // For differentiating the test_result using Fischer's method and the
     // percentage of failed templates of the
     // Template test
-    
+
     // TLS 1.3 specific message requesting to send a new ClientHello
     private final static byte[] HELLO_RETRY_REQUEST_CONST =
-            ArrayConverter.hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
+        ArrayConverter.hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
 
     // Minimum 32 000 Bytes ~ 1000 ServerHelloRandoms
     private final int MINIMUM_AMOUNT_OF_BYTES = 32000;
@@ -57,7 +56,6 @@ public class TlsRngAfterProbe extends AfterProbe {
     private final int LONGEST_RUN_BLOCK_SIZE = 8;
     private final int TEMPLATE_TEST_BLOCK_SIZE = 9;
     private final int ENTROPY_TEST_BLOCK_SIZE = 10;
-
 
     @Override
     public void analyze(SiteReport report) {
