@@ -27,7 +27,8 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -79,6 +80,7 @@ public class DtlsCcsProbe extends TlsProbe {
         record.setSequenceNumber(bigInteger);
         sendAction.setRecords(record);
         trace.addTlsAction(sendAction);
+        trace.addTlsAction(new ReceiveAction(new ApplicationMessage(config)));
         State state = new State(config, trace);
         executeState(state);
         // TODO: Wie überprüfe ich ob es akzeptiert hat? Bei DTLS kommt nicht
@@ -96,7 +98,7 @@ public class DtlsCcsProbe extends TlsProbe {
                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new FinishedMessage(config)));
-        trace.addTlsAction(new GenericReceiveAction());
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -113,7 +115,7 @@ public class DtlsCcsProbe extends TlsProbe {
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new ChangeCipherSpecMessage(),
                 new FinishedMessage(config)));
-        trace.addTlsAction(new GenericReceiveAction());
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
         State state = new State(config, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
