@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.util;
@@ -36,11 +35,11 @@ public class StatisticalTests {
      * Test checking for increasing cumulative sums when mapping 0 to -1 and 1, comparing the results to the
      * expectation.
      *
-     * @param byteSequence
-     * Array of random byte sequences
-     * @param forwardMode
-     * TRUE if forward-mode should be used, FALSE if backwards-mode should be used
-     * @return P-Value of the test
+     * @param  byteSequence
+     *                      Array of random byte sequences
+     * @param  forwardMode
+     *                      TRUE if forward-mode should be used, FALSE if backwards-mode should be used
+     * @return              P-Value of the test
      */
     public static Double cusumTest(ComparableByteArray[] byteSequence, boolean forwardMode) {
         double pValue = 0.0;
@@ -114,11 +113,11 @@ public class StatisticalTests {
     /***
      * Test to check the frequency of all possible bit-patterns of size blockLength, comparing them to the expectation.
      *
-     * @param byteSequence
-     * array of random byte values
-     * @param blockLength
-     * length of bit-patterns to check
-     * @return P-Value of the test
+     * @param  byteSequence
+     *                      array of random byte values
+     * @param  blockLength
+     *                      length of bit-patterns to check
+     * @return              P-Value of the test
      */
     public static Double approximateEntropyTest(ComparableByteArray[] byteSequence, int blockLength) {
         // TODO: Select m and n such that m < log_2)(n) - 5
@@ -184,11 +183,11 @@ public class StatisticalTests {
      * Test to check the frequency of all possible overlapping bit patterns of length blockLength, checking it against
      * the expectation.
      *
-     * @param byteSequence
-     * array of random byte values
-     * @param blockLength
-     * length of bit-patterns to check
-     * @return P-Value of the test
+     * @param  byteSequence
+     *                      array of random byte values
+     * @param  blockLength
+     *                      length of bit-patterns to check
+     * @return              P-Value of the test
      */
     public static Double serialTest(ComparableByteArray[] byteSequence, int blockLength) {
         double pValue = 0.0;
@@ -309,14 +308,14 @@ public class StatisticalTests {
      * non-periodic patterns in the generated sequence. Note, that frequencyTest etc. should be executed before this, as
      * a sequence consisting of only 1's would pass this test with a good p-value.
      *
-     * @param byteSequence
-     * The byte sequence to be examined
-     * @param templateSize
-     * The size of the templates which are examined for (NOTE: ONLY "9" CURRENTLY SUPPORTED)
-     * @return The ratio of failed tests to number of tests
+     * @param  byteSequence
+     *                      The byte sequence to be examined
+     * @param  templateSize
+     *                      The size of the templates which are examined for (NOTE: ONLY "9" CURRENTLY SUPPORTED)
+     * @return              The ratio of failed tests to number of tests
      */
-    public static Map<RngConstants.TEMPLATE_CONSTANTS, Double> nonOverlappingTemplateTest(
-        ComparableByteArray[] byteSequence, int templateSize, double minimum_p_value) {
+    public static Map<RngConstants.TEMPLATE_CONSTANTS, Double>
+        nonOverlappingTemplateTest(ComparableByteArray[] byteSequence, int templateSize, double minimum_p_value) {
         String fullSequence = "";
         int NUMBER_OF_BLOCKS = 8;
         int failedTests = 0;
@@ -424,9 +423,9 @@ public class StatisticalTests {
      * Shamelessly stolen from https://github.com/stamfest/randomtests/blob/master/src/main/java/net/
      * stamfest/randomtests/nist/DiscreteFourierTransform.java
      *
-     * @param byteSequence
-     * The random byte sequence as a ComparableByteArray array
-     * @return p values of the experiment
+     * @param  byteSequence
+     *                      The random byte sequence as a ComparableByteArray array
+     * @return              p values of the experiment
      */
     public static Double discreteFourierTest(ComparableByteArray[] byteSequence) {
         String fullSequence = "";
@@ -490,11 +489,11 @@ public class StatisticalTests {
      * Divides the bit sequence into blocks of size blockLength and counts the longest run of 1's in those blocks. The
      * found number of longest runs are then compared to the expected number of longest runs.
      *
-     * @param byteSequence
-     * The random byte sequence as a ComparableByteArray array
-     * @param blockLength
-     * The size of the blocks subdividing the sequence. Allowed values are 8, 128 and 10^4
-     * @return p values of the experiment
+     * @param  byteSequence
+     *                      The random byte sequence as a ComparableByteArray array
+     * @param  blockLength
+     *                      The size of the blocks subdividing the sequence. Allowed values are 8, 128 and 10^4
+     * @return              p values of the experiment
      */
     public static Double longestRunWithinBlock(ComparableByteArray[] byteSequence, int blockLength) {
         double pValue = 0.0;
@@ -634,9 +633,9 @@ public class StatisticalTests {
      * random sequences. NOTE: This test requires frequencyTest to be ran beforehand! Recommended Input Size is 100
      * bits. For cryptographic applications the P-Value should be > 0.01.
      *
-     * @param byteSequence
-     * The sequence of random bytes to be inspected.
-     * @return The P-Value resulting from the Test.
+     * @param  byteSequence
+     *                      The sequence of random bytes to be inspected.
+     * @return              The P-Value resulting from the Test.
      */
     public static Double runsTest(ComparableByteArray[] byteSequence) {
         double pValue = 0.0;
@@ -666,9 +665,8 @@ public class StatisticalTests {
             }
 
             // Chi-square fitting
-            double numerator =
-                (double) runCounter - (double) 2 * (double) fullSequence.length() * proportion
-                    * ((double) 1 - proportion);
+            double numerator = (double) runCounter
+                - (double) 2 * (double) fullSequence.length() * proportion * ((double) 1 - proportion);
             double denominator =
                 (double) 2 * Math.sqrt(2 * fullSequence.length()) * proportion * ((double) 1 - proportion);
 
@@ -686,9 +684,9 @@ public class StatisticalTests {
      * size M : M=>20, M>.01n and N<100, with n = Sequence Length, N = Number of Blocks. For cryptographic Applications
      * the P-Value should be > 0.01
      *
-     * @param byteSequence
-     * A ComparableByteArray-Array of the collected byte sequences in order
-     * @return P-Value of the Test
+     * @param  byteSequence
+     *                      A ComparableByteArray-Array of the collected byte sequences in order
+     * @return              P-Value of the Test
      */
     public static Double frequencyTest(ComparableByteArray[] byteSequence, Integer blockLength) {
         String fullSequence = "";
@@ -750,9 +748,9 @@ public class StatisticalTests {
     /***
      * https://stackoverflow.com/questions/12310017/how-to-convert-a-byte-to-its -binary-string-representation
      *
-     * @param byteArray
-     * A comparableByteArray, which should be returned as a Bit-String
-     * @return a String representing the byte as a sequence of 0's and 1's
+     * @param  byteArray
+     *                   A comparableByteArray, which should be returned as a Bit-String
+     * @return           a String representing the byte as a sequence of 0's and 1's
      */
     private static String byteArrayToBitString(ComparableByteArray byteArray) {
         String bitString = "";
@@ -765,7 +763,7 @@ public class StatisticalTests {
     /***
      * Small helper method to generate all possible bit strings of certain length
      *
-     * @param blockLength
+     * @param  blockLength
      * @return
      */
     private static String[] generateAllBitStrings(int blockLength) {

@@ -1576,7 +1576,8 @@ public class SiteReportPrinter {
         } else {
             prettyAppend(builder, "Session ID", "NO DUPLICATES", AnsiColor.GREEN);
         }
-        if (!(report.getRandomDuplicatesResult() == null) && report.getRandomDuplicatesResult().contains(RandomType.IV)) {
+        if (!(report.getRandomDuplicatesResult() == null)
+            && report.getRandomDuplicatesResult().contains(RandomType.IV)) {
             prettyAppend(builder, "IV", "DUPLICATES", AnsiColor.RED);
         } else {
             prettyAppend(builder, "IV", "NO DUPLICATES", AnsiColor.GREEN);
@@ -1604,8 +1605,8 @@ public class SiteReportPrinter {
         }
         if (!(report.getTemplateResult() == null)) {
             prettyAppend(builder, "Non Overlapping Template Test - Percentage of Failed Templates");
-            prettyAppend(builder, "Server Hello Random", (int) (report.getTemplatePercentageMap()
-                .get(RandomType.RANDOM) * 100) + "%");
+            prettyAppend(builder, "Server Hello Random",
+                (int) (report.getTemplatePercentageMap().get(RandomType.RANDOM) * 100) + "%");
             prettyAppend(builder, "Session ID",
                 (int) (report.getTemplatePercentageMap().get(RandomType.SESSION_ID) * 100) + "%");
             prettyAppend(builder, "IV", (int) (report.getTemplatePercentageMap().get(RandomType.IV) * 100) + "%");
