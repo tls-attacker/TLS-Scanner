@@ -620,8 +620,6 @@ public class TlsRngProbe extends TlsProbe {
      */
     private boolean checkForUnixTime() {
         Config config;
-        int matchCounter = 0;
-
         if (highestVersion == ProtocolVersion.TLS13) {
             config = generateTls13BaseConfig();
         } else {
@@ -632,7 +630,8 @@ public class TlsRngProbe extends TlsProbe {
 
         Integer lastUnixTime = null;
         Integer serverUnixTime = null;
-
+        int matchCounter = 0;
+        
         for (int i = 0; i < UNIX_TIME_CONNECTIONS; i++) {
 
             State state = new State(config);
