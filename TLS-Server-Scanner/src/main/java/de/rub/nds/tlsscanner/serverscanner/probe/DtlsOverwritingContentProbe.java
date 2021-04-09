@@ -15,16 +15,16 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
-import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeContextValueAction;
-import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
@@ -63,23 +63,23 @@ public class DtlsOverwritingContentProbe extends TlsProbe {
 
     private TestResult hasOverwritingContentBug() {
         Config config = getConfig();
+        config.setAddRetransmissionsToWorkflowTrace(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         config.setHighestProtocolVersion(serverSupportedSuites.get(0).getVersion());
         config.setDefaultClientSupportedCiphersuites(serverSupportedSuites.get(0).getCiphersuiteList().get(0));
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-        // trace.addTlsAction(new
-        // ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 1));
+        trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 1));
         trace.addTlsAction(new ChangeContextValueAction("serverSessionId", new byte[0]));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        clientHelloMessage.setCipherSuites(Modifiable.explicit(serverSupportedSuites.get(0).getCiphersuiteList().get(1)
-                .getByteValue()));
+        CipherSuite secondCipherSuite = serverSupportedSuites.get(0).getCiphersuiteList().get(1);
+        clientHelloMessage.setCipherSuites(Modifiable.explicit(secondCipherSuite.getByteValue()));
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new GenericReceiveAction());
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
 
         State state = new State(config, trace);
         executeState(state);
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+        if (state.getTlsContext().getSelectedCipherSuite() == secondCipherSuite) {
             return TestResult.TRUE;
         } else {
             return TestResult.FALSE;

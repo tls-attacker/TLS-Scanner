@@ -71,20 +71,23 @@ public class DtlsSequenceNumberProbe extends TlsProbe {
 
     private TestResult doesRetransmissions() {
         Config config = getConfig();
+        config.setAddRetransmissionsToWorkflowTrace(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
                 .getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 1));
         trace.addTlsAction(new ChangeContextValueAction("serverSessionId", new byte[0]));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage(config));
+        trace.addTlsAction(receiveTillAction);
 
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+        if (receiveTillAction.executedAsPlanned()) {
             return TestResult.TRUE;
         } else {
             return TestResult.FALSE;
