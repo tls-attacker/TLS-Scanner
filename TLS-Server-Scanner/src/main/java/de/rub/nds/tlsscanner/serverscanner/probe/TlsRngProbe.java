@@ -70,7 +70,7 @@ public class TlsRngProbe extends TlsProbe {
     private final int IV_MAXIMUM_CONNECTION_FAILURES = 3;
     // How much the time is allowed to deviate between two handshakes when
     // viewed using UNIX time prefix
-    private final int UNIX_TIME_ALLOWED_DEVIATION = 5;
+    private final int UNIX_TIME_ALLOWED_DEVIATION = 500;
     private final int TLS_CONNECTIONS_UPPER_LIMIT = 1000;
     // Amount of retries allowed when failing to receive ServerHello messages in
     // the Unix Time test
