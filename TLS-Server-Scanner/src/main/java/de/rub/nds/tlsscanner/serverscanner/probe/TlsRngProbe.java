@@ -618,7 +618,6 @@ public class TlsRngProbe extends TlsProbe {
      * @return TRUE if a counter has been detected.
      */
     private boolean checkForUnixTime() {
-        boolean usesUnixTime = false;
         Config unixConfig;
         int matchCounter = 0;
 
@@ -655,9 +654,6 @@ public class TlsRngProbe extends TlsProbe {
             State unixState = new State(unixConfig);
             executeState(unixState);
             long endTime = System.currentTimeMillis();
-
-            List<AbstractRecord> allReceivedMessages
-                    = WorkflowTraceUtil.getAllReceivedRecords(unixState.getWorkflowTrace());
 
             // current time is in milliseconds
             long duration = (endTime - startTime) / 1000;
@@ -696,14 +692,13 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         LOGGER.debug("MATCHCOUNTER: " + matchCounter);
-        if (matchCounter == MINIMUM_MATCH_COUNTER) {
+        if (matchCounter >= MINIMUM_MATCH_COUNTER) {
             LOGGER.debug("ServerRandom utilizes UnixTimestamps.");
-            usesUnixTime = true;
+            return true;
         } else {
             LOGGER.debug("No UnixTimestamps detected.");
+            return false;
         }
-
-        return usesUnixTime;
     }
 
     /**
