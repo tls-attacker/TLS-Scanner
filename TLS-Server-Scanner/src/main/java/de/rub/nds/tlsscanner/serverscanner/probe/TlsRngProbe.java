@@ -27,7 +27,6 @@ import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.MessageActionResult;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.ReceiveMessageHelper;
 import de.rub.nds.tlsattacker.core.workflow.action.executor.SendMessageHelper;
@@ -44,6 +43,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.TlsRngResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,10 +74,10 @@ public class TlsRngProbe extends TlsProbe {
     private final int TLS_CONNECTIONS_UPPER_LIMIT = 1000;
     // Amount of retries allowed when failing to receive ServerHello messages in
     // the Unix Time test
-    private final int UNIX_TIME_MAXIMUM_RETRIES = 3;
+    private final int UNIX_TIME_CONNECTIONS = 5;
     // How many of the 3 ServerHello randoms should pass the Unix Time test at
     // minimum.
-    private final int MINIMUM_MATCH_COUNTER = 3;
+    private final int MINIMUM_MATCH_COUNTER = 2;
 
     private ProtocolVersion highestVersion;
     private SiteReport latestReport;
@@ -179,7 +179,7 @@ public class TlsRngProbe extends TlsProbe {
      * @param clientRandom The random of the ClientHello to be sent
      * @return TLS-Config ready for establishing a new connection
      */
-    private Config generateTestConfig() {
+    private Config generateBaseConfig() {
         Config config = getScannerConfig().createConfig();
 
         config.setEnforceSettings(false);
@@ -218,7 +218,7 @@ public class TlsRngProbe extends TlsProbe {
      *
      * @return TLS-Config ready for establishing a new connection
      */
-    private Config generateTls13Config() {
+    private Config generateTls13BaseConfig() {
         Config config = getScannerConfig().createConfig();
         config.setQuickReceive(true);
         config.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
@@ -274,7 +274,7 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         for (int i = 0; i < numberOfHandshakes; i++) {
-            Config serverHelloConfig = generateTls13Config();
+            Config serverHelloConfig = generateTls13BaseConfig();
 
             if (supportsExtendedRandom) {
                 LOGGER.debug("Extended Random Supported!");
@@ -372,7 +372,7 @@ public class TlsRngProbe extends TlsProbe {
         }
 
         for (int i = 0; i < numberOfHandshakes; i++) {
-            Config serverHelloConfig = generateTestConfig();
+            Config serverHelloConfig = generateBaseConfig();
             byte[] sessionID = null;
 
             if (supportsExtendedRandom) {
@@ -470,7 +470,7 @@ public class TlsRngProbe extends TlsProbe {
 
         if (!cbcSuites.isEmpty()) {
             // Collect IV when CBC Suites are available
-            Config iVCollectConfig = generateTestConfig();
+            Config iVCollectConfig = generateBaseConfig();
 
             iVCollectConfig.setDefaultClientSupportedCipherSuites(cbcSuites);
 
@@ -510,7 +510,7 @@ public class TlsRngProbe extends TlsProbe {
                         break;
                     }
                     handshakeCounter++;
-                    iVCollectConfig = generateTestConfig();
+                    iVCollectConfig = generateBaseConfig();
                     iVCollectConfig.setDefaultClientSupportedCipherSuites(cbcSuites);
                     if (tlsConnectionCounter >= TLS_CONNECTIONS_UPPER_LIMIT) {
                         LOGGER.debug("Reached Hard Upper Limit for maximum allowed Tls Connections. Aborting.");
@@ -613,85 +613,55 @@ public class TlsRngProbe extends TlsProbe {
 
     /**
      * Checks if the Host utilities Unix time or similar counters for Server
-     * Randoms. This is done by examining 10 ServerHello randoms.
+     * Randoms.
      *
-     * @return TRUE if a counter has been detected.
+     * @return TRUE if the server is probably using a counter in its server
+     * random.
      */
     private boolean checkForUnixTime() {
-        Config unixConfig;
+        Config config;
         int matchCounter = 0;
 
         if (highestVersion == ProtocolVersion.TLS13) {
-            unixConfig = generateTls13Config();
+            config = generateTls13BaseConfig();
         } else {
-            unixConfig = generateTestConfig();
-            CipherSuite[] supportedSuites = new CipherSuite[latestReport.getCipherSuites().toArray().length];
-            supportedSuites = latestReport.getCipherSuites().toArray(supportedSuites);
-            unixConfig.setDefaultClientSupportedCipherSuites(supportedSuites);
+            config = generateBaseConfig();
         }
 
-        unixConfig.setEnforceSettings(true);
-        // unixConfig.setDefaultSelectedProtocolVersion(highestVersion);
-        LOGGER.debug("unixConfig set highest Version to " + highestVersion);
-        unixConfig.setHighestProtocolVersion(highestVersion);
-        unixConfig.setSupportedVersions(highestVersion);
-        unixConfig.setUseFreshRandom(false);
+        config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
 
-        unixConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        Integer lastUnixTime = null;
+        Integer serverUnixTime = null;
 
-        int lastUnixTime = 0;
-        int serverUnixTime = 0;
-        int attempts = 0;
+        for (int i = 0; i < UNIX_TIME_CONNECTIONS; i++) {
 
-        for (int i = 0; i < 11; i++) {
-            LOGGER.debug("Unix time Iteration " + i);
-            // int currentUnixTime = (int) (System.currentTimeMillis() / 1000);
-            if (attempts >= UNIX_TIME_MAXIMUM_RETRIES) {
-                break;
-            }
-
+            State state = new State(config);
             long startTime = System.currentTimeMillis();
-            State unixState = new State(unixConfig);
-            executeState(unixState);
+            executeState(state);
             long endTime = System.currentTimeMillis();
 
             // current time is in milliseconds
             long duration = (endTime - startTime) / 1000;
 
-            LOGGER.debug("UNIX_TIME_STAMP_TEST: SERVER RANDOM: "
-                    + ArrayConverter.bytesToHexString(unixState.getTlsContext().getServerRandom()));
-            LOGGER.debug(unixState.getTlsContext().getServerRandom());
-            byte[] serverRandom = unixState.getTlsContext().getServerRandom();
+            byte[] serverRandom = state.getTlsContext().getServerRandom();
             LOGGER.debug("Duration: " + duration);
-            if (!(serverRandom == null)) {
-                byte[] unixTimeStamp = new byte[4];
-                for (int j = 0; j < 4; j++) {
-                    unixTimeStamp[j] = serverRandom[j];
-                }
-                serverUnixTime = java.nio.ByteBuffer.wrap(unixTimeStamp).order(ByteOrder.BIG_ENDIAN).getInt();
-                LOGGER.debug("Previous Time: " + lastUnixTime);
-                LOGGER.debug("Current Time: " + serverUnixTime);
-                if (!(i == 0)) {
+            if (lastUnixTime != null) {
+                if (serverRandom != null) {
+                    byte[] unixTimeStamp = new byte[4];
+                    System.arraycopy(serverRandom, 0, unixTimeStamp, 0, HandshakeByteLength.UNIX_TIME);
+                    serverUnixTime = ArrayConverter.bytesToInt(unixTimeStamp);
+                    LOGGER.debug("Previous Time: " + lastUnixTime);
+                    LOGGER.debug("Current Time: " + serverUnixTime);
                     if (lastUnixTime - (UNIX_TIME_ALLOWED_DEVIATION + duration) <= serverUnixTime) {
                         if (lastUnixTime + (UNIX_TIME_ALLOWED_DEVIATION + duration) >= serverUnixTime) {
                             matchCounter++;
-                            LOGGER.debug("MATCH! Current Counter: " + matchCounter);
                         }
                     }
+                    lastUnixTime = serverUnixTime;
                 }
-            } else {
-                // Compensate timeout by setting the serverUnixTime to
-                // Expectation
-                LOGGER.debug("Server Random is null. Repeating current iteration and adding compensation.");
-                serverUnixTime = serverUnixTime + (int) duration;
-                // repeat last step
-                i--;
             }
-            lastUnixTime = serverUnixTime;
-            attempts++;
         }
 
-        LOGGER.debug("MATCHCOUNTER: " + matchCounter);
         if (matchCounter >= MINIMUM_MATCH_COUNTER) {
             LOGGER.debug("ServerRandom utilizes UnixTimestamps.");
             return true;
