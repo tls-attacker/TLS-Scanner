@@ -79,9 +79,7 @@ public class TlsRngProbe extends TlsProbe {
     // How many of the 10 ServerHello randoms should pass the Unix Time test at
     // minimum.
     private final int MINIMUM_MATCH_COUNTER = 10;
-    // ClientHello random to be sent when trying to determine Unix Time usage.
-    private final int UNIX_TIME_RANDOM_VALUE = 9999;
-
+    
     private ProtocolVersion highestVersion;
     private SiteReport latestReport;
     private LinkedList<ComparableByteArray> extractedIVList;
