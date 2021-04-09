@@ -319,6 +319,12 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.STRICT_ALPN, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.STRICT_SNI, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.ALPACA_MITIGATED, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
         textMap.put(AnalyzedPropertyCategory.FRESHNESS, new TextEncoding(freshnessMap));
