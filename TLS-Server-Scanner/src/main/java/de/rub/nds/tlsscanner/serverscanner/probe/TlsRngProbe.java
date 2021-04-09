@@ -96,10 +96,6 @@ public class TlsRngProbe extends TlsProbe {
             || report.getResult(AnalyzedProperty.GROUPS_DEPEND_ON_CIPHER) == TestResult.NOT_TESTED_YET) {
             return false;
         } else {
-            // We will conduct the rng extraction based on the test-results, so
-            // we need those properties to be tested
-            // before we conduct the RNG-Probe latestReport = report;
-            this.latestReport = report;
             return true;
         }
     }
@@ -111,6 +107,11 @@ public class TlsRngProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
+        // We will conduct the rng extraction based on the test-results, so
+        // we need those properties to be tested
+        // before we conduct the RNG-Probe latestReport = report;
+        this.latestReport = report;
+
     }
 
     private Config generateTls13BaseConfig() {
@@ -143,7 +144,6 @@ public class TlsRngProbe extends TlsProbe {
         // TODO prefer aes over 3des
         Config config = getScannerConfig().createConfig();
 
-        config.setEnforceSettings(false);
         config.setAddServerNameIndicationExtension(false);
         config.setAddEllipticCurveExtension(true);
         config.setAddECPointFormatExtension(true);
@@ -153,7 +153,9 @@ public class TlsRngProbe extends TlsProbe {
         config.setStopActionsAfterFatal(true);
         config.setAddServerNameIndicationExtension(true);
         config.setDefaultClientSessionId(new byte[0]);
-
+        config.setStopActionsAfterFatal(true);
+        config.setStopActionsAfterIOException(true);
+        config.setStopActionsAfterWarning(true);
         config.setQuickReceive(true);
         config.setEarlyStop(true);
 
@@ -200,7 +202,9 @@ public class TlsRngProbe extends TlsProbe {
             extractSessionIds(state);
             extractCbcIvs(state);
         }
+
         if (highestVersion.isTLS13()) {
+            stateList = new LinkedList<>();
             for (int i = 0; i < numberOfHandshakes; i++) {
                 Config config = generateBaseConfig();
                 if (supportsExtendedRandom) {
@@ -245,8 +249,6 @@ public class TlsRngProbe extends TlsProbe {
     }
 
     private void extractCbcIvs(State state) {
-        // TODO if we are tls 1.3 we should collect these separately
-        // Extract IV's
         List<AbstractRecord> allReceivedRecords = WorkflowTraceUtil.getAllReceivedRecords(state.getWorkflowTrace());
         for (AbstractRecord record : allReceivedRecords) {
             if (record instanceof Record) {
