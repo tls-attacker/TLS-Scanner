@@ -536,8 +536,7 @@ public class TlsRngProbe extends TlsProbe {
                         newConnectionCounter++;
                         receiveFailures = 0;
                     } catch (IOException e) {
-                        LOGGER.debug("Could not create new connection.");
-                        LOGGER.debug(e);
+                        LOGGER.debug("Could not create new connection.", e);
                         break;
                     }
 
@@ -551,8 +550,7 @@ public class TlsRngProbe extends TlsProbe {
                 try {
                     sendMessageHelper.sendMessages(messages, records, tlsContext);
                 } catch (IOException e) {
-                    LOGGER.debug("Encountered Problems sending Requests. Socket closed?");
-                    LOGGER.debug(e);
+                    LOGGER.debug("Encountered Problems sending Requests. Socket closed?", e);
                     receiveFailures++;
                     continue;
                 }
@@ -594,8 +592,7 @@ public class TlsRngProbe extends TlsProbe {
             try {
                 tlsContext.getTransportHandler().closeConnection();
             } catch (IOException e) {
-                LOGGER.debug("Could not close TransportHandler.");
-                LOGGER.debug(e);
+                LOGGER.debug("Could not close TransportHandler.", e);
             }
 
             if (receivedBlocksCounter < numberOfBlocks) {
@@ -729,8 +726,7 @@ public class TlsRngProbe extends TlsProbe {
         try {
             workflowExecutor.executeWorkflow();
         } catch (TransportHandlerConnectException ex) {
-            LOGGER.debug("Could not open new Connection.");
-            LOGGER.debug(ex);
+            LOGGER.debug("Could not open new Connection.", ex);
             return null;
         }
         tlsConnectionCounter++;
