@@ -135,6 +135,10 @@ public class SiteReport extends Observable implements Serializable {
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
 
     // Randomness
+    private List<ComparableByteArray> extractedIVList = null;
+    private List<ComparableByteArray> extractedRandomList = null;
+    private List<ComparableByteArray> extractedSessionIDList = null;
+
     /**
      * is this used anymore?
      */
@@ -187,8 +191,6 @@ public class SiteReport extends Observable implements Serializable {
      * The randomness extraction was stopped due to some reason
      */
     private Boolean prematureRandomnessProbeStop = null;
-
-    private LinkedList<ComparableByteArray> extractedIVList;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -698,7 +700,7 @@ public class SiteReport extends Observable implements Serializable {
      *
      * @return LinkedList of ComparableByteArrays containing the IVs
      */
-    public synchronized LinkedList<ComparableByteArray> getExtractedIVList() {
+    public synchronized List<ComparableByteArray> getExtractedIVList() {
         return extractedIVList;
     }
 
@@ -717,7 +719,7 @@ public class SiteReport extends Observable implements Serializable {
      *
      * @return LinkedList of ComparableByteArrays containing the Server Hello Randoms
      */
-    public synchronized LinkedList<ComparableByteArray> getExtractedRandomList() {
+    public synchronized List<ComparableByteArray> getExtractedRandomList() {
         return extractedRandomList;
     }
 
@@ -736,7 +738,7 @@ public class SiteReport extends Observable implements Serializable {
      *
      * @return LinkedList of ComparableByteArrays containing the Server Hello SessionIDs
      */
-    public synchronized LinkedList<ComparableByteArray> getExtractedSessionIDList() {
+    public synchronized List<ComparableByteArray> getExtractedSessionIDList() {
         return extractedSessionIDList;
     }
 

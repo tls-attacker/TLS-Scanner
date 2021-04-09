@@ -77,9 +77,9 @@ public class TlsRngAfterProbe extends AfterProbe {
             return;
         }
 
-        LinkedList<ComparableByteArray> extractedRandomList = report.getExtractedRandomList();
-        LinkedList<ComparableByteArray> extractedIVList = report.getExtractedIVList();
-        LinkedList<ComparableByteArray> extractedSessionIdList = report.getExtractedSessionIDList();
+        List<ComparableByteArray> extractedRandomList = report.getExtractedRandomList();
+        List<ComparableByteArray> extractedIVList = report.getExtractedIVList();
+        List<ComparableByteArray> extractedSessionIdList = report.getExtractedSessionIDList();
 
         // Check for HELLO_RETRY_REQUEST_CONSTANT when TLS 1.3
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
