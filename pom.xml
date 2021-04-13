@@ -177,6 +177,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${main.basedir}/apps/lib</outputDirectory>
+                            <useBaseVersion>false</useBaseVersion>
                             <!--Ensures only runnable dependencies are included-->
                             <includeScope>compile</includeScope>
                         </configuration>
