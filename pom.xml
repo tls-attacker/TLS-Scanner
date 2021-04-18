@@ -147,6 +147,22 @@
         <finalName>TLS-Scanner</finalName>
         <plugins>
             <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <useUniqueVersions>false</useUniqueVersions>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>de.rub.nds.tlscrawler.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
@@ -177,7 +193,6 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${main.basedir}/apps/lib</outputDirectory>
-                            <useBaseVersion>false</useBaseVersion>
                             <!--Ensures only runnable dependencies are included-->
                             <includeScope>compile</includeScope>
                         </configuration>
