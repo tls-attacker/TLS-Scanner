@@ -73,7 +73,6 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     private TestResult acceptsRandomMessageNumbers() {
         Config config = getConfig();
-        config.setSafelyFinishWithCloseNotify(true);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
                 .getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
@@ -97,7 +96,6 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     private TestResult skippsMessageNumbersMultiple() {
         Config config = getConfig();
-        config.setSafelyFinishWithCloseNotify(true);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
                 .getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
@@ -121,7 +119,6 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     private TestResult skippsMessageNumbersOnce() {
         Config config = getConfig();
-        config.setSafelyFinishWithCloseNotify(true);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
                 .getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));

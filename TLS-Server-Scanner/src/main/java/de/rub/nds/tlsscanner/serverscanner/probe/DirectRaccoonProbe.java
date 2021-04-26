@@ -132,11 +132,6 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setEarlyStop(true);
             config.setQuickReceive(true);
 
-            if (version.isDTLS()) {
-                config.setFinishWithCloseNotify(true);
-                config.setSafelyFinishWithCloseNotify(true);
-            }
-
             WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflow(config, workflowType,
                     initialClientDhSecret, nullByte);
             // Store

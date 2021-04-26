@@ -133,10 +133,6 @@ public class BleichenbacherProbe extends TlsProbe {
     private InformationLeakTest<BleichenbacherOracleTestInfo> getBleichenbacherOracleInformationLeakTest(
             BleichenbacherCommandConfig bleichenbacherConfig) {
         Config config = scannerConfig.createConfig();
-        if (bleichenbacherConfig.getProtocolVersionDelegate().getProtocolVersion().isDTLS()) {
-            config.setFinishWithCloseNotify(true);
-            config.setSafelyFinishWithCloseNotify(true);
-        }
         BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig, config,
                 getParallelExecutor());
         if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
