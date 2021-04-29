@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
@@ -461,6 +462,10 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized String getFullReport(ScannerDetail detail, boolean printColorful) {
         return new SiteReportPrinter(this, detail, printColorful).getFullReport();
+    }
+
+    public synchronized ObjectNode getJSONReport(ScannerDetail detail) {
+        return new SiteReportJSONprinter(this, detail).getJSONReport();
     }
 
     @Override
