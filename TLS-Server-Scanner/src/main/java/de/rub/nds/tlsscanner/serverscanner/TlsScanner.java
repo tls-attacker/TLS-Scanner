@@ -87,8 +87,6 @@ public class TlsScanner {
         probeList.add(new SniProbe(config, parallelExecutor));
         probeList.add(new CompressionsProbe(config, parallelExecutor));
         probeList.add(new NamedCurvesProbe(config, parallelExecutor));
-        probeList.add(new AlpnProbe(config, parallelExecutor));
-        probeList.add(new AlpacaProbe(config, parallelExecutor));
         probeList.add(new CertificateProbe(config, parallelExecutor));
         probeList.add(new OcspProbe(config, parallelExecutor));
         probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
@@ -121,6 +119,8 @@ public class TlsScanner {
             probeList.add(new DtlsOverwritingContentProbe(config, parallelExecutor));
             afterList.add(new EvaluateCookieAfterProbe());
         } else {
+            probeList.add(new AlpnProbe(config, parallelExecutor));
+            probeList.add(new AlpacaProbe(config, parallelExecutor));
             probeList.add(new HelloRetryProbe(config, parallelExecutor));
             probeList.add(new RecordFragmentationProbe(config, parallelExecutor));
             probeList.add(new TlsPoodleProbe(config, parallelExecutor));
