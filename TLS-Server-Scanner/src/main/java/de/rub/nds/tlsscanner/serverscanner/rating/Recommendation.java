@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -17,7 +18,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder = { "analyzedProperty", "shortName", "shortDescription", "detailedDescription", "testDocumentation",
-        "links", "propertyRecommendations" })
+    "links", "propertyRecommendations" })
 public class Recommendation {
 
     static final String NO_INFORMATION_FOUND = "No detailed information available";
@@ -43,7 +44,8 @@ public class Recommendation {
         links = new LinkedList<>();
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty, List<PropertyResultRecommendation> propertyRecommendations) {
+    public Recommendation(AnalyzedProperty analyzedProperty,
+        List<PropertyResultRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
         this.propertyRecommendations = propertyRecommendations;
     }
@@ -54,7 +56,7 @@ public class Recommendation {
     }
 
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
-            String detailedDescription, String... links) {
+        String detailedDescription, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
@@ -64,7 +66,7 @@ public class Recommendation {
     }
 
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
-            PropertyResultRecommendation propertyRecommendation, String... links) {
+        PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
@@ -74,7 +76,7 @@ public class Recommendation {
     }
 
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
-            String detailedDescription, PropertyResultRecommendation propertyRecommendation, String... links) {
+        String detailedDescription, PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
@@ -85,8 +87,8 @@ public class Recommendation {
     }
 
     public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
-            String detailedDescription, String testDocumentation, List<String> links,
-            List<PropertyResultRecommendation> propertyRecommendations) {
+        String detailedDescription, String testDocumentation, List<String> links,
+        List<PropertyResultRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
         this.shortName = shortName;
         this.shortDescription = shortDescription;

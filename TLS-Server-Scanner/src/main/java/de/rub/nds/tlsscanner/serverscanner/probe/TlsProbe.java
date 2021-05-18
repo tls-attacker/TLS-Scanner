@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.state.State;
@@ -25,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public abstract class TlsProbe implements Callable<ProbeResult> {
 
@@ -66,8 +67,8 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         ProbeResult result = executeTest();
         long stopTime = System.currentTimeMillis();
         if (result != null) {
-            result.setStarttime(startTime);
-            result.setStoptime(stopTime);
+            result.setStartTime(startTime);
+            result.setStopTime(stopTime);
         } else {
             LOGGER.warn("" + getProbeName() + " - is null result");
         }
@@ -82,7 +83,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     public final void executeState(List<State> states) {
-        parallelExecutor.bulkExecuteStateTasks(states);
+        parallelExecutor.bulkExecuteClientStateTasks(states);
         for (State state : states) {
             writer.extract(state);
         }

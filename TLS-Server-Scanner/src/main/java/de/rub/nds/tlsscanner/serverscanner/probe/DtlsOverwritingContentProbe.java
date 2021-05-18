@@ -1,16 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
@@ -66,13 +62,13 @@ public class DtlsOverwritingContentProbe extends TlsProbe {
         config.setAddRetransmissionsToWorkflowTrace(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         config.setHighestProtocolVersion(serverSupportedSuites.get(0).getVersion());
-        config.setDefaultClientSupportedCiphersuites(serverSupportedSuites.get(0).getCiphersuiteList().get(0));
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        config.setDefaultClientSupportedCipherSuites(serverSupportedSuites.get(0).getCipherSuiteList().get(0));
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 1));
         trace.addTlsAction(new ChangeContextValueAction("serverSessionId", new byte[0]));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        CipherSuite secondCipherSuite = serverSupportedSuites.get(0).getCiphersuiteList().get(1);
+        CipherSuite secondCipherSuite = serverSupportedSuites.get(0).getCipherSuiteList().get(1);
         clientHelloMessage.setCipherSuites(Modifiable.explicit(secondCipherSuite.getByteValue()));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
@@ -106,7 +102,7 @@ public class DtlsOverwritingContentProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         if (report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-                && report.isProbeAlreadyExecuted(ProbeType.CIPHERSUITE)) {
+            && report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)) {
             return true;
         } else {
             return false;

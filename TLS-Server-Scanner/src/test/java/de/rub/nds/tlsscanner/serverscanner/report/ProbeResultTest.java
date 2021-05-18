@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
@@ -26,7 +27,7 @@ import org.reflections.Reflections;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class ProbeResultTest {
 
@@ -41,7 +42,7 @@ public class ProbeResultTest {
      */
     @Test
     public void testResultMerge() throws Exception {
-        LOGGER.info("Testint result merging:");
+        LOGGER.info("Testing result merging:");
         Reflections reflections = new Reflections("de.rub.nds.tlsscanner.serverscanner.probe");
         Set<Class<? extends TlsProbe>> probeClasses = reflections.getSubTypesOf(TlsProbe.class);
         for (Class<? extends TlsProbe> someProbeClass : probeClasses) {
@@ -58,9 +59,9 @@ public class ProbeResultTest {
             for (Constructor c : someProbeClass.getConstructors()) {
                 if (c.getParameterCount() == 2) {
                     if (c.getParameterTypes()[0].equals(ScannerConfig.class)) {
-                        LOGGER.info("Testing mergability:" + testName);
+                        LOGGER.info("Testing mergeability:" + testName);
                         TlsProbe probe = (TlsProbe) c.newInstance(new ScannerConfig(new GeneralDelegate()),
-                                new ParallelExecutor(1, 1));
+                            new ParallelExecutor(1, 1));
                         SiteReport report = new SiteReport("somehost");
                         probe.getCouldNotExecuteResult().merge(report);
                         LOGGER.info("--Success");

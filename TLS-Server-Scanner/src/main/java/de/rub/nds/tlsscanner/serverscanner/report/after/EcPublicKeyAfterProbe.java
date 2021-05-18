@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
@@ -20,10 +21,10 @@ public class EcPublicKeyAfterProbe extends AfterProbe {
     public void analyze(SiteReport report) {
         TestResult reuse;
         try {
-            ExtractedValueContainer valueContainer = report.getExtractedValueContainerMap().get(
-                    TrackableValueType.ECDHE_PUBKEY);
+            ExtractedValueContainer valueContainer =
+                report.getExtractedValueContainerMap().get(TrackableValueType.ECDHE_PUBKEY);
             if (valueContainer.getNumberOfExtractedValues() >= 2) {
-                if (!valueContainer.areAllValuesDiffernt()) {
+                if (!valueContainer.areAllValuesDifferent()) {
                     reuse = TestResult.TRUE;
                 } else {
                     reuse = TestResult.FALSE;

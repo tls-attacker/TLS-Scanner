@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -16,6 +17,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConfigSelector {
 
@@ -29,15 +31,19 @@ public class ConfigSelector {
         config.setAddServerNameIndicationExtension(Boolean.TRUE);
         config.setAddSignatureAndHashAlgorithmsExtension(Boolean.TRUE);
         config.setAddRenegotiationInfoExtension(Boolean.TRUE);
-        config.setDefaultClientSupportedCiphersuites(CipherSuite.values());
-        config.getDefaultClientSupportedCiphersuites().remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.getDefaultClientSupportedCiphersuites().remove(CipherSuite.TLS_FALLBACK_SCSV);
+        List<CipherSuite> filteredCipherSuites =
+            Arrays.asList(CipherSuite.values()).stream()
+                .filter(cipherSuite -> !cipherSuite.isGrease()
+                    && cipherSuite != CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV
+                    && cipherSuite != CipherSuite.TLS_FALLBACK_SCSV)
+                .collect(Collectors.toList());
+        config.setDefaultClientSupportedCipherSuites(filteredCipherSuites);
         config.setDefaultSelectedCipherSuite(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA);
         List<SignatureAndHashAlgorithm> sigHashList = new LinkedList<>();
         sigHashList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(sigHashList);
         config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL, CompressionMethod.LZS,
-                CompressionMethod.DEFLATE);
+            CompressionMethod.DEFLATE);
         config.setQuickReceive(true);
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);
@@ -47,7 +53,7 @@ public class ConfigSelector {
 
     public static void cleanupConfig(Config config) {
         boolean hasEcCipherSuite = false;
-        for (CipherSuite suite : config.getDefaultClientSupportedCiphersuites()) {
+        for (CipherSuite suite : config.getDefaultClientSupportedCipherSuites()) {
             if (suite.name().toUpperCase().contains("_EC")) {
                 hasEcCipherSuite = true;
             }

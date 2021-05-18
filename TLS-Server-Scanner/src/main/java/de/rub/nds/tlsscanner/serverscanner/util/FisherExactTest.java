@@ -1,28 +1,29 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.util;
 
 public class FisherExactTest {
 
-    public static double getPValue(int inputAOutput1, int inputBOutput1, int inputAoutput2, int inputBOutput2) {
-        return Math.pow(2, FisherExactTest.getLog2PValue(inputAOutput1, inputBOutput1, inputAoutput2, inputBOutput2));
+    public static double getPValue(int inputAOutput1, int inputBOutput1, int inputAOutput2, int inputBOutput2) {
+        return Math.pow(2, FisherExactTest.getLog2PValue(inputAOutput1, inputBOutput1, inputAOutput2, inputBOutput2));
     }
 
-    private static double getLog2PValue(int inputAOutput1, int inputBOutput1, int inputAoutput2, int inputBOutput2) {
+    private static double getLog2PValue(int inputAOutput1, int inputBOutput1, int inputAOutput2, int inputBOutput2) {
         int a = inputAOutput1;
         int b = inputBOutput1;
-        int c = inputAoutput2;
+        int c = inputAOutput2;
         int d = inputBOutput2;
         int n = a + b + c + d;
         double nominator = log2Factorial(a + b) + log2Factorial(c + d) + log2Factorial(a + c) + log2Factorial(b + d);
-        double denominator = log2Factorial(a) + log2Factorial(b) + log2Factorial(c) + log2Factorial(d)
-                + log2Factorial(n);
+        double denominator =
+            log2Factorial(a) + log2Factorial(b) + log2Factorial(c) + log2Factorial(d) + log2Factorial(n);
         return nominator - denominator;
     }
 

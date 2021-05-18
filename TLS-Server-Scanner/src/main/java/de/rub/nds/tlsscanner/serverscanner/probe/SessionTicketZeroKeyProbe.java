@@ -1,25 +1,13 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -31,7 +19,7 @@ import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -49,21 +37,29 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketZeroKeyResult;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * 
  * The Probe checks for CVE-2020-13777.
  * 
- * Quote: "GnuTLS 3.6.x before 3.6.14 uses incorrect cryptography for encrypting
- * a session ticket (a loss of confidentiality in TLS 1.2, and an authentication
- * bypass in TLS 1.3). The earliest affected version is 3.6.4 (2018-09-24)
- * because of an error in a 2018-09-18 commit. Until the first key rotation, the
- * TLS server always uses wrong data in place of an encryption key derived from
- * an application."[1]
+ * Quote: "GnuTLS 3.6.x before 3.6.14 uses incorrect cryptography for encrypting a session ticket (a loss of
+ * confidentiality in TLS 1.2, and an authentication bypass in TLS 1.3). The earliest affected version is 3.6.4
+ * (2018-09-24) because of an error in a 2018-09-18 commit. Until the first key rotation, the TLS server always uses
+ * wrong data in place of an encryption key derived from an application."[1]
  * 
- * Reference [1]: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13777
- * Reference [2]: https://www.gnutls.org/security-new.html
+ * Reference [1]: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13777 Reference [2]:
+ * https://www.gnutls.org/security-new.html
  * 
  */
 public class SessionTicketZeroKeyProbe extends TlsProbe {
@@ -84,16 +80,14 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     public static final int IV_LEN = 16;
 
     /**
-     * Offset of the length field for the in the encrypted state according to
-     * the ticket struct in rfc5077
+     * Offset of the length field for the in the encrypted state according to the ticket struct in rfc5077
      */
-    public static final int SESSION_STATE_LENFIELD_OFFSET = 32;
+    public static final int SESSION_STATE_LEN_FIELD_OFFSET = 32;
 
     /**
-     * Length of the length field for the in the encrypted state according to
-     * the ticket struct in rfc5077
+     * Length of the length field for the in the encrypted state according to the ticket struct in rfc5077
      */
-    public static final int SESSION_STATE_LENFIELD_LEN = 2;
+    public static final int SESSION_STATE_LEN_FIELD_LEN = 2;
 
     /**
      * Offset of the encrypted state according to the ticket struct in rfc5077
@@ -116,31 +110,30 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             tlsConfig.setStopReceivingAfterFatal(true);
             tlsConfig.setStopActionsAfterFatal(true);
             tlsConfig.setStopActionsAfterIOException(true);
-            List<CipherSuite> ciphersuites = new LinkedList<>();
-            ciphersuites.addAll(supportedSuites);
+            List<CipherSuite> cipherSuites = new LinkedList<>();
+            cipherSuites.addAll(supportedSuites);
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
             if (getScannerConfig().getDtlsDelegate().isDTLS()) {
                 tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
             } else {
                 tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             }
-            tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites.get(0));
-            tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCiphersuites().get(0));
+            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites.get(0));
+            tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddSessionTicketTLSExtension(true);
-            tlsConfig.setAddServerNameIndicationExtension(true);
             tlsConfig.setAddRenegotiationInfoExtension(false);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(
-                    WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+            WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
             trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
             trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-            trace.addTlsAction(new ReceiveAction(new NewSessionTicketMessage(), new ChangeCipherSpecMessage(),
-                    new FinishedMessage()));
+            trace.addTlsAction(
+                new ReceiveAction(new NewSessionTicketMessage(), new ChangeCipherSpecMessage(), new FinishedMessage()));
             state = new State(tlsConfig, trace);
             executeState(state);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new SessionTicketZeroKeyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
 
@@ -157,21 +150,22 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         }
 
         byte[] key = new byte[32];
-        byte[] iv, encryptedSessionState;
+        byte[] iv;
+        byte[] encryptedSessionState;
         byte[] decryptedSessionState = null;
 
         try {
             iv = Arrays.copyOfRange(ticket, IV_OFFSET, IV_OFFSET + IV_LEN);
-            byte[] sessionStateLen = Arrays.copyOfRange(ticket, SESSION_STATE_LENFIELD_OFFSET,
-                    SESSION_STATE_LENFIELD_OFFSET + SESSION_STATE_LENFIELD_LEN);
+            byte[] sessionStateLen = Arrays.copyOfRange(ticket, SESSION_STATE_LEN_FIELD_OFFSET,
+                SESSION_STATE_LEN_FIELD_OFFSET + SESSION_STATE_LEN_FIELD_LEN);
             int sessionStateLenInt = ArrayConverter.bytesToInt(sessionStateLen);
-            encryptedSessionState = Arrays.copyOfRange(ticket, SESSION_STATE_OFFSET, SESSION_STATE_OFFSET
-                    + sessionStateLenInt);
+            encryptedSessionState =
+                Arrays.copyOfRange(ticket, SESSION_STATE_OFFSET, SESSION_STATE_OFFSET + sessionStateLenInt);
             Cipher cipher = Cipher.getInstance("AES/CBC/NOPADDING");
             SecretKey aesKey = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
             decryptedSessionState = cipher.doFinal(encryptedSessionState);
-            LOGGER.debug("decryptedSsessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
+            LOGGER.debug("decryptedSessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
         } catch (Exception e) {
             return new SessionTicketZeroKeyResult(TestResult.FALSE, TestResult.FALSE);
         }
@@ -197,7 +191,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return report.getCipherSuites() != null && (report.getCipherSuites().size() > 0)
-                && Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SESSION_TICKETS), TestResult.TRUE);
+            && Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SESSION_TICKETS), TestResult.TRUE);
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {
@@ -211,9 +205,11 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
 
     private boolean checkForGnuTlsMagicBytes(byte[] decState) {
         try {
-            for (int i = 0; i < GNU_TLS_MAGIC_BYTES.length; i++)
-                if (decState[i] != GNU_TLS_MAGIC_BYTES[i])
+            for (int i = 0; i < GNU_TLS_MAGIC_BYTES.length; i++) {
+                if (decState[i] != GNU_TLS_MAGIC_BYTES[i]) {
                     return false;
+                }
+            }
         } catch (Exception e) {
             return false;
         }

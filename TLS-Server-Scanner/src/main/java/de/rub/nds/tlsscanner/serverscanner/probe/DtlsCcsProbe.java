@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.biginteger.BigIntegerModificationFactory;
@@ -62,14 +63,14 @@ public class DtlsCcsProbe extends TlsProbe {
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new DtlsCcsResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                    TestResult.ERROR_DURING_TEST);
+                TestResult.ERROR_DURING_TEST);
         }
     }
 
     private TestResult isAcceptUnencryptedAppData() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
         SendAction sendAction = new SendAction(new ApplicationMessage(config));
         Record record = new Record(config);
         ModifiableInteger integer = new ModifiableInteger();
@@ -94,8 +95,8 @@ public class DtlsCcsProbe extends TlsProbe {
 
     private TestResult isEarlyFinished() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new SendAction(new FinishedMessage(config)));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
@@ -110,11 +111,11 @@ public class DtlsCcsProbe extends TlsProbe {
 
     private TestResult isAcceptMultipleCCS() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new ChangeCipherSpecMessage(),
-                new FinishedMessage(config)));
+        trace.addTlsAction(
+            new SendAction(new ChangeCipherSpecMessage(), new ChangeCipherSpecMessage(), new FinishedMessage(config)));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
         State state = new State(config, trace);
         executeState(state);
@@ -122,7 +123,7 @@ public class DtlsCcsProbe extends TlsProbe {
             Record msg = (Record) WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
             // TODO: Type Überprüfung notwendig?
             if (ProtocolMessageType.getContentType(msg.getContentType().getValue()) == ProtocolMessageType.HANDSHAKE
-                    && msg.getEpoch().getValue() == 2) {
+                && msg.getEpoch().getValue() == 2) {
                 return TestResult.TRUE;
             } else {
                 return TestResult.FALSE;
@@ -139,7 +140,7 @@ public class DtlsCcsProbe extends TlsProbe {
         ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
         ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCiphersuites(ciphersuites);
+        config.setDefaultClientSupportedCipherSuites(ciphersuites);
         List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
         config.setDefaultClientSupportedCompressionMethods(compressionList);
         config.setEnforceSettings(false);

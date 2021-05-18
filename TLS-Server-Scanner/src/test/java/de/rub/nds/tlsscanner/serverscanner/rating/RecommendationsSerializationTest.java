@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
@@ -45,8 +46,8 @@ public class RecommendationsSerializationTest {
         List<Recommendation> propertyRecommendations = new LinkedList<>();
         original = new Recommendations(propertyRecommendations);
         List<PropertyResultRecommendation> recommendations = new LinkedList<>();
-        PropertyResultRecommendation r = new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled",
-                "Disable SSLv2");
+        PropertyResultRecommendation r =
+            new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
         recommendations.add(r);
 
         propertyRecommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_2, recommendations));
@@ -69,8 +70,8 @@ public class RecommendationsSerializationTest {
         um = context.createUnmarshaller();
         result = (Recommendations) um.unmarshal(new StringReader(xmlString));
 
-        assertEquals("Recommendation length check.", original.getRecommendations().size(), result.getRecommendations()
-                .size());
+        assertEquals("Recommendation length check.", original.getRecommendations().size(),
+            result.getRecommendations().size());
 
         Recommendation oRecommendation = original.getRecommendations().get(0);
         Recommendation rRecommendation = result.getRecommendations().get(0);

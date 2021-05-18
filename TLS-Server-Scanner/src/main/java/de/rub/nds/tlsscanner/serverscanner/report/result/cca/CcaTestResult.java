@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result.cca;
 
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
@@ -22,7 +23,7 @@ public class CcaTestResult {
     private final CipherSuite cipherSuite;
 
     public CcaTestResult(Boolean succeeded, CcaWorkflowType workflowType, CcaCertificateType certificateType,
-            ProtocolVersion protocolVersion, CipherSuite cipherSuite) {
+        ProtocolVersion protocolVersion, CipherSuite cipherSuite) {
         this.succeeded = succeeded;
         this.workflowType = workflowType;
         this.certificateType = certificateType;

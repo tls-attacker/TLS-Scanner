@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -14,7 +15,7 @@
 package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
 import de.rub.nds.tlsattacker.attacks.config.BleichenbacherCommandConfig;
-import de.rub.nds.tlsattacker.attacks.constants.BleichenbacherWorkflowType;
+import de.rub.nds.tlsattacker.attacks.pkcs1.BleichenbacherWorkflowType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 
@@ -33,7 +34,7 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
     private final BleichenbacherCommandConfig.Type bleichenbacherType;
 
     public BleichenbacherOracleTestInfo(ProtocolVersion version, CipherSuite cipherSuite,
-            BleichenbacherWorkflowType bleichenbacherWorkflowType, BleichenbacherCommandConfig.Type bleichenbacherType) {
+        BleichenbacherWorkflowType bleichenbacherWorkflowType, BleichenbacherCommandConfig.Type bleichenbacherType) {
         this.version = version;
         this.cipherSuite = cipherSuite;
         this.bleichenbacherWorkflowType = bleichenbacherWorkflowType;
@@ -43,13 +44,13 @@ public class BleichenbacherOracleTestInfo extends TestInfo {
     @Override
     public String getTechnicalName() {
         return bleichenbacherType.name() + ":" + bleichenbacherWorkflowType.name() + ":" + version.name() + ":"
-                + cipherSuite.name();
+            + cipherSuite.name();
     }
 
     @Override
     public String getPrintableName() {
         return bleichenbacherType.name() + "\t" + bleichenbacherWorkflowType.name() + "\t" + version.name() + "\t"
-                + cipherSuite.name();
+            + cipherSuite.name();
     }
 
     @Override

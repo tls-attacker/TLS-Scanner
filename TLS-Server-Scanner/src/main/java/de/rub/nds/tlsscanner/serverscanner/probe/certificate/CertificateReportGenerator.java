@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
@@ -26,7 +27,6 @@ import java.security.PublicKey;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
@@ -41,7 +41,7 @@ import org.bouncycastle.jce.provider.X509CertificateObject;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class CertificateReportGenerator {
 
@@ -69,7 +69,7 @@ public class CertificateReportGenerator {
         setIssuer(report, cert);
         setSignatureAndHashAlgorithm(report, cert);
         setExtendedValidation(report, cert);
-        setCeritifcateTransparency(report, cert);
+        setCertificateTransparency(report, cert);
         setOcspMustStaple(report, cert);
         setCRLSupported(report, cert);
         setOcspSupported(report, cert);
@@ -154,7 +154,7 @@ public class CertificateReportGenerator {
     }
 
     private static void setSignatureAndHashAlgorithm(CertificateReport report,
-            org.bouncycastle.asn1.x509.Certificate cert) {
+        org.bouncycastle.asn1.x509.Certificate cert) {
         String sigAndHashString = null;
         try {
             X509CertificateObject x509Cert = new X509CertificateObject(cert);
@@ -176,12 +176,12 @@ public class CertificateReportGenerator {
                     LOGGER.warn("Parsed an unknown SignatureAlgorithm");
                     return;
                 }
-                SignatureAndHashAlgorithm sigHashAlgo = SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(
-                        signatureAlgorithm, hashAlgorithm);
+                SignatureAndHashAlgorithm sigHashAlgo =
+                    SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
                 report.setSignatureAndHashAlgorithm(sigHashAlgo);
             }
-        } catch (Exception E) {
-            LOGGER.debug("Could not extraxt SignatureAndHashAlgorithm from String:" + sigAndHashString, E);
+        } catch (Exception e) {
+            LOGGER.debug("Could not extract SignatureAndHashAlgorithm from String:" + sigAndHashString, e);
         }
     }
 
@@ -189,7 +189,8 @@ public class CertificateReportGenerator {
 
     }
 
-    private static void setCeritifcateTransparency(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setCertificateTransparency(CertificateReport report,
+        org.bouncycastle.asn1.x509.Certificate cert) {
     }
 
     private static void setOcspMustStaple(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
@@ -245,7 +246,8 @@ public class CertificateReportGenerator {
                     x509cert = new X509CertificateObject(cert);
                     issuerCert = trustAnchorManager.getTrustAnchorCertificate(x509cert.getIssuerX500Principal());
                 } catch (CertificateParsingException exp) {
-                    LOGGER.error("Certificate conversion to X509CertificateObject failed. Aborting OCSP revocation check.");
+                    LOGGER.error(
+                        "Certificate conversion to X509CertificateObject failed. Aborting OCSP revocation check.");
                     return;
                 }
             }
@@ -263,7 +265,7 @@ public class CertificateReportGenerator {
                     report.setRevoked(true);
                 }
             } catch (Exception e) {
-                LOGGER.error("Failed to get certificate revocation status via OCSP.");
+                LOGGER.error("Failed to get certificate revocation status via OCSP.", e);
             }
         }
     }
@@ -273,8 +275,8 @@ public class CertificateReportGenerator {
 
     private static void setSha256Hash(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         try {
-            report.setSha256Fingerprint(DatatypeConverter.printHexBinary(
-                    MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
+            report.setSha256Fingerprint(DatatypeConverter
+                .printHexBinary(MessageDigest.getInstance("SHA-256").digest(cert.getEncoded())).toLowerCase());
         } catch (IOException | NoSuchAlgorithmException e) {
             LOGGER.warn("Could not create SHA-256 Hash", e);
         }

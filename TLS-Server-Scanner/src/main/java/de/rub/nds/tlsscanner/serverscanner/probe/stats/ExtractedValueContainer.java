@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.stats;
 
 import java.util.HashSet;
@@ -41,7 +42,7 @@ public class ExtractedValueContainer<T> {
         return true;
     }
 
-    public boolean areAllValuesDiffernt() {
+    public boolean areAllValuesDifferent() {
         Set<T> set = new HashSet<>();
         set.addAll(extractedValueList);
         return set.size() == extractedValueList.size();

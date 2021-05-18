@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
@@ -19,7 +20,6 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -57,7 +57,7 @@ public class DtlsCookieProbe extends TlsProbe {
             TestResult checksCookie = isCookieChecked();
             TestResult checksCookieWithClientParameters = TestResult.TRUE;
             if (isVersionUsed() == TestResult.FALSE || isRandomUsed() == TestResult.FALSE
-                    || isCiphersuitesUsed() == TestResult.FALSE || isCompressionMethodsUsed() == TestResult.FALSE) {
+                || isCiphersuitesUsed() == TestResult.FALSE || isCompressionMethodsUsed() == TestResult.FALSE) {
                 checksCookieWithClientParameters = TestResult.FALSE;
             }
             return new DtlsCoookieResult(checksCookie, checksCookieWithClientParameters);
@@ -81,8 +81,8 @@ public class DtlsCookieProbe extends TlsProbe {
         int[] testPositions = new int[] { 0, cookieLength / 2, cookieLength - 1 };
         for (int totest : testPositions) {
             config = getConfig();
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
-                    .getDefaultClientConnection());
+            WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+                .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
             trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
@@ -101,8 +101,8 @@ public class DtlsCookieProbe extends TlsProbe {
 
     private TestResult isVersionUsed() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
-                .getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
@@ -117,8 +117,8 @@ public class DtlsCookieProbe extends TlsProbe {
 
     private TestResult isRandomUsed() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
-                .getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
@@ -133,8 +133,8 @@ public class DtlsCookieProbe extends TlsProbe {
 
     private TestResult isCiphersuitesUsed() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
-                .getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
@@ -149,8 +149,8 @@ public class DtlsCookieProbe extends TlsProbe {
 
     private TestResult isCompressionMethodsUsed() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
-                .getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
@@ -179,7 +179,7 @@ public class DtlsCookieProbe extends TlsProbe {
         ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
         ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCiphersuites(ciphersuites);
+        config.setDefaultClientSupportedCipherSuites(ciphersuites);
         List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
         config.setDefaultClientSupportedCompressionMethods(compressionList);
         config.setEnforceSettings(false);

@@ -1,16 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -61,7 +57,7 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
             TestResult startsWithInvalidMessageNumber = startsWithInvalidMessageNumber();
             TestResult skippsMessageNumber = TestResult.FALSE;
             if (skippsMessageNumbersOnce() == TestResult.TRUE || skippsMessageNumbersMultiple() == TestResult.TRUE
-                    || acceptsRandomMessageNumbers() == TestResult.TRUE) {
+                || acceptsRandomMessageNumbers() == TestResult.TRUE) {
                 skippsMessageNumber = TestResult.TRUE;
             }
             return new DtlsMessageSequenceResult(startsWithInvalidMessageNumber, skippsMessageNumber);
@@ -73,8 +69,8 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     private TestResult acceptsRandomMessageNumbers() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
-                .getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 8));
@@ -96,8 +92,8 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     private TestResult skippsMessageNumbersMultiple() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
-                .getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
@@ -119,8 +115,8 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     private TestResult skippsMessageNumbersOnce() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
-                .getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 4));
@@ -141,8 +137,8 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     private TestResult startsWithInvalidMessageNumber() {
         Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowtrace(config
-                .getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(0, new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 3));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
@@ -163,7 +159,7 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
         ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
         ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCiphersuites(ciphersuites);
+        config.setDefaultClientSupportedCipherSuites(ciphersuites);
         List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
         config.setDefaultClientSupportedCompressionMethods(compressionList);
         config.setEnforceSettings(false);
