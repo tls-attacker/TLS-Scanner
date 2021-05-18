@@ -141,7 +141,6 @@ public class RenegotiationProbe extends TlsProbe {
         }
         clientHelloMessage.setCipherSuites(Modifiable.explicit(outputStream.toByteArray()));
         trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
             trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(tlsConfig)));
             trace.addTlsAction(new SendAction(clientHelloMessage));
