@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<guideline>
+    <name>NIST SP 800-52r2</name>
+    <link>https://doi.org/10.6028/NIST.SP.800-52r2</link>
+    <checks>
+        <check>
+            <condition>
+                <and>
+                    <condition>
+                        <or>
+                            <condition>
+                                <analyzedProperty>SUPPORTS_SSL_2</analyzedProperty>
+                                <result>TRUE</result>
+                            </condition>
+                            <condition>
+                                <analyzedProperty>SUPPORTS_SSL_3</analyzedProperty>
+                                <result>TRUE</result>
+                            </condition>
+                            <condition>
+                                <analyzedProperty>SUPPORTS_TLS_1_0</analyzedProperty>
+                                <result>TRUE</result>
+                            </condition>
+                            <condition>
+                                <analyzedProperty>SUPPORTS_TLS_1_1</analyzedProperty>
+                                <result>TRUE</result>
+                            </condition>
+                        </or>
+                    </condition>
+                    <condition>
+                        <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+                        <result>FALSE</result>
+                    </condition>
+                </and>
+            </condition>
+            <analyzedProperty>SUPPORTS_TLS_FALLBACK_SCSV</analyzedProperty>
+            <description>
+                The Fallback Signaling Cipher Suite Value (SCSV) shall be supported if the server supports versions of
+                TLS prior to TLS 1.2 and does not support TLS 1.3.
+            </description>
+            <requirementLevel>MUST</requirementLevel>
+            <result>TRUE</result>
+        </check>
+        <check>
+
+            <analyzedProperty>SUPPORTS_ENCRYPT_THEN_MAC</analyzedProperty>
+            <description>
+                The Encrypt-then-MAC extension shall be supported if the server is configured to negotiate CBC
+                cipher suites.
+            </description>
+            <requirementLevel>MUST_NOT</requirementLevel>
+            <result>TRUE</result>
+        </check>
+    </checks>
+    <cipherSuites>
+        <cipherSuite>
+            <condition>
+                <analyzedProperty>SUPPORTS_ECDSA</analyzedProperty>
+                <result>TRUE</result>
+            </condition>
+            <cipherSuites>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</cipherSuite>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</cipherSuite>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_128_CCM</cipherSuite>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_256_CCM</cipherSuite>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8</cipherSuite>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8</cipherSuite>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</cipherSuite>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384</cipherSuite>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA</cipherSuite>
+                <cipherSuite>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA</cipherSuite>
+            </cipherSuites>
+        </cipherSuite>
+    </cipherSuites>
+</guideline>

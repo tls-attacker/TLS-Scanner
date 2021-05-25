@@ -35,6 +35,12 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
+import de.rub.nds.tlsscanner.serverscanner.guideline.model.Guideline;
+import de.rub.nds.tlsscanner.serverscanner.guideline.model.GuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.model.GuidelineCipherSuites;
+import de.rub.nds.tlsscanner.serverscanner.guideline.model.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
@@ -68,15 +74,12 @@ import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.Rando
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
+
+import java.io.IOException;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
@@ -163,6 +166,7 @@ public class SiteReportPrinter {
         appendScoringResults(builder);
         appendRecommendations(builder);
         appendPerformanceData(builder);
+        appendGuidelines(builder);
 
         return builder.toString();
     }
@@ -1615,6 +1619,47 @@ public class SiteReportPrinter {
         }
     }
 
+    public void appendGuidelines(StringBuilder builder) {
+        try {
+            appendGuideline(builder, GuidelineIO.readGuideline("/guideline/NIST.SP.800-52r2.xml"));
+        } catch (IOException ignored) {
+        }
+    }
+
+    private void appendGuideline(StringBuilder builder, Guideline guideline) {
+        prettyAppendHeading(builder, "Guideline " + guideline.getName());
+        for (GuidelineCheck check : guideline.getChecks()) {
+            appendGuidelineCheck(builder, check);
+        }
+        appendGuidelineCipherSuites(builder, guideline.getCipherSuites());
+    }
+
+    private void appendGuidelineCipherSuites(StringBuilder builder, List<GuidelineCipherSuites> suites) {
+        List<CipherSuite> disallowed = new GuidelineChecker().getDisallowedSuites(this.report, suites);
+        prettyAppend(builder, "Disallowed CipherSuites:");
+        for (CipherSuite suite : disallowed) {
+            prettyPrintCipherSuite(builder, suite);
+        }
+    }
+
+    private void appendGuidelineCheck(StringBuilder builder, GuidelineCheck check) {
+        GuidelineChecker checker = new GuidelineChecker();
+        if (checker.passesCheck(this.report, check)) {
+            if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                prettyAppend(builder, check.getDescription(), AnsiColor.GREEN);
+            }
+        } else {
+            RequirementLevel level = check.getRequirementLevel();
+            AnsiColor color;
+            if (RequirementLevel.MUST.equals(level) || RequirementLevel.MUST_NOT.equals(level)) {
+                color = AnsiColor.RED;
+            } else {
+                color = AnsiColor.YELLOW;
+            }
+            prettyAppend(builder, check.getDescription(), color);
+        }
+    }
+
     public void appendRecommendations(StringBuilder builder) {
         prettyAppendHeading(builder, "Recommendations");
 
@@ -1623,9 +1668,7 @@ public class SiteReportPrinter {
             rater = SiteReportRater.getSiteReportRater("en");
             ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
-            influencers.entrySet().stream().sorted((o1, o2) -> {
-                return o1.getValue().compareTo(o2.getValue());
-            }).forEach((entry) -> {
+            influencers.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
                     Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
