@@ -1601,4 +1601,34 @@
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
+    <recommendation>
+        <analyzedProperty>HAS_COOKIE_CHECKS</analyzedProperty>
+        <shortName>Has cookie checks</shortName>
+        <shortDescription>Evaluates whether the DTLS server verify the cookie values</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The DTLS server does not reject invalid cookie values</shortDescription>
+                <handlingRecommendation>Configure your server to always verify the cookie values</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>MISSES_MESSAGE_SEQUENCE_CHECKS</analyzedProperty>
+        <shortName>Misses message sequence number checks</shortName>
+        <shortDescription>Evaluates whether the DTLS server verify the message sequence numbers</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The DTLS server does not verify the message sequence numbers</shortDescription>
+                <handlingRecommendation>Configure your server to always verify the message sequence numbers</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
 </recommendations>

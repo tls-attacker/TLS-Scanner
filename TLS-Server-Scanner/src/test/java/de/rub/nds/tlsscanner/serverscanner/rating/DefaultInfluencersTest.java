@@ -393,6 +393,12 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.ALPACA_MITIGATED,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 200),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -200)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_COOKIE_CHECKS,
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
+            new PropertyResultRatingInfluencer(TestResult.TRUE, -200),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         RatingIO.writeRatingInfluencers(new RatingInfluencers(influencers),
             new File("src/main/resources/" + RatingInfluencers.DEFAULT_RATING_FILE));
     }

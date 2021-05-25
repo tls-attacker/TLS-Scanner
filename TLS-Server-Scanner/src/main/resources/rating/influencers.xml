@@ -1349,4 +1349,26 @@
             <influence>-200</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>HAS_COOKIE_CHECKS</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>MISSES_MESSAGE_SEQUENCE_CHECKS</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>-200</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
 </ratingInfluencers>

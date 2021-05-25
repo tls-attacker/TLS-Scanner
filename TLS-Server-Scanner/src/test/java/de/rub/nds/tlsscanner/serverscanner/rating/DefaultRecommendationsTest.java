@@ -621,6 +621,18 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.FALSE, "The TLS does not reject invalid SNI names.",
                 "If possible configure your server to use strict SNI and strict ALPN verification"),
             ""));
+        recommendations.add(new Recommendation(AnalyzedProperty.HAS_COOKIE_CHECKS, "Has cookie checks",
+            "Evaluates whether the DTLS server verify the cookie values",
+            new PropertyResultRecommendation(TestResult.FALSE, "The DTLS server does not reject invalid cookie values",
+                "Configure your server to always verify the cookie values"),
+            ""));
+        recommendations.add(
+            new Recommendation(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, "Misses message sequence number checks",
+                "Evaluates whether the DTLS server verify the message sequence numbers",
+                new PropertyResultRecommendation(TestResult.TRUE,
+                    "The DTLS server does not verify the message sequence numbers",
+                    "Configure your server to always verify the message sequence numbers"),
+                ""));
         RatingIO.writeRecommendations(new Recommendations(recommendations),
             new File("src/main/resources/" + Recommendations.DEFAULT_RECOMMENDATIONS_FILE));
         RatingIO.writeRecommendations(new Recommendations(recommendations),
