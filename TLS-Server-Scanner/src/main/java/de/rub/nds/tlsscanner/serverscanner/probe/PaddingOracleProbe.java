@@ -56,7 +56,7 @@ public class PaddingOracleProbe extends TlsProbe {
                         || pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.TLS12
                         || pair.getVersion() == ProtocolVersion.DTLS10 || pair.getVersion() == ProtocolVersion.DTLS12) {
                         for (CipherSuite suite : pair.getCipherSuiteList()) {
-                            if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
+                            if (!suite.isPsk() && suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
                                 PaddingOracleCommandConfig paddingOracleConfig =
                                     createPaddingOracleCommandConfig(pair.getVersion(), suite);
                                 paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);

@@ -59,7 +59,8 @@ public class BleichenbacherProbe extends TlsProbe {
                         || pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.DTLS10
                         || pair.getVersion() == ProtocolVersion.DTLS12) {
                         for (CipherSuite suite : pair.getCipherSuiteList()) {
-                            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
+                            if (!suite.isPsk()
+                                && AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
                                 && CipherSuite.getImplemented().contains(suite)) {
                                 BleichenbacherCommandConfig bleichenbacherConfig =
                                     createBleichenbacherCommandConfig(pair.getVersion(), suite);
