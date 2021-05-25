@@ -174,20 +174,20 @@ public class SiteReportPrinter {
     }
 
     private void appendDtlsSpecificResults(StringBuilder builder) {
-        prettyAppendHeading(builder, "DTLS");
+        prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
         prettyAppend(builder, "Accept unencrypted App Data with Epoch 0", AnalyzedProperty.ACCEPT_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
-        prettyAppend(builder, "Multiple CSS Bug", AnalyzedProperty.HAS_MULTIPLE_CSS_BUG);
+        prettyAppend(builder, "Multiple CCS Bug", AnalyzedProperty.HAS_MULTIPLE_CSS_BUG);
         prettyAppend(builder, "Overwrites Content", AnalyzedProperty.OVERWRITES_CONTENT);
-        prettyAppendHeading(builder, "DTLS Cookie");
+        prettyAppendHeading(builder, "DTLS Hello Verify Request");
         prettyAppendCookie(builder, "Cookie", report.getCookieEvaluationResult());
         prettyAppend(builder, "Checks complete", AnalyzedProperty.HAS_COOKIE_CHECKS);
         prettyAppend(builder, "Checks with client parameters",
             AnalyzedProperty.USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS);
         prettyAppendHeading(builder, "DTLS Message Sequences");
-        prettyAppend(builder, "Starts handshake with invalid message sequence",
+        prettyAppend(builder, "Starts handshake with invalid msg seq",
             AnalyzedProperty.STARTS_WITH_INVALID_MESSAGE_SEQUENCE);
-        prettyAppend(builder, "Misses message sequence checks", AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+        prettyAppend(builder, "Misses msg seq checks", AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
         prettyAppendHeading(builder, "DTLS Sequence Numbers");
         prettyAppend(builder, "Has retransmission bug", AnalyzedProperty.HAS_RETRANSMISSION_BUG);
     }
@@ -2020,13 +2020,13 @@ public class SiteReportPrinter {
         }
         switch (cookieEvaluationResult) {
             case DUPLICATES:
-                prettyAppend(builder, testName, "true - exploitable", AnsiColor.RED);
+                prettyAppend(builder, testName, "duplicates", AnsiColor.RED);
                 break;
             case NOT_ANALYZED:
                 prettyAppend(builder, testName, "not analyzed", AnsiColor.DEFAULT_COLOR);
                 break;
             case NO_DUPLICATES:
-                prettyAppend(builder, testName, "no duplicates (wip)", AnsiColor.GREEN);
+                prettyAppend(builder, testName, "no duplicates", AnsiColor.GREEN);
                 break;
         }
     }
