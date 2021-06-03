@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class Guideline implements Serializable {
     private String name;
     private String link;
     private List<GuidelineCheck> checks;
-    private List<GuidelineCipherSuites> cipherSuites;
+    private List<GuidelineForVersion> versions;
 
     public Guideline() {
     }
@@ -55,18 +54,13 @@ public class Guideline implements Serializable {
         this.checks = checks;
     }
 
-    public List<GuidelineCipherSuites> getCipherSuites() {
-        return cipherSuites;
+    public List<GuidelineForVersion> getVersions() {
+        return versions;
     }
 
-    @XmlElement(name = "cipherSuite")
-    @XmlElementWrapper(name = "cipherSuites")
-    public void setCipherSuites(List<GuidelineCipherSuites> cipherSuites) {
-        this.cipherSuites = cipherSuites;
-    }
-
-    @Override
-    public String toString() {
-        return "Guideline{" + "checks=" + checks + ", cipherSuites=" + cipherSuites + '}';
+    @XmlElement(name = "guideline")
+    @XmlElementWrapper(name = "versionDependant")
+    public void setVersions(List<GuidelineForVersion> versions) {
+        this.versions = versions;
     }
 }

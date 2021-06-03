@@ -39,8 +39,9 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.guideline.model.Guideline;
 import de.rub.nds.tlsscanner.serverscanner.guideline.model.GuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.model.GuidelineCipherSuites;
+import de.rub.nds.tlsscanner.serverscanner.guideline.model.GuidelineForVersion;
 import de.rub.nds.tlsscanner.serverscanner.guideline.model.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.model.extensions.GuidelineExtension;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
@@ -70,23 +71,20 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvalua
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.ResponseCounter;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.VectorContainer;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.DUPLICATES;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import javax.xml.bind.JAXBException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormat;
 
 public class SiteReportPrinter {
 
@@ -1621,33 +1619,172 @@ public class SiteReportPrinter {
 
     public void appendGuidelines(StringBuilder builder) {
         try {
-            appendGuideline(builder, GuidelineIO.readGuideline("/guideline/NIST.SP.800-52r2.xml"));
+            appendGuideline(builder, GuidelineIO.readGuideline("/guideline/BSI-TR-02102-2.xml"));
         } catch (IOException ignored) {
         }
     }
 
     private void appendGuideline(StringBuilder builder, Guideline guideline) {
         prettyAppendHeading(builder, "Guideline " + guideline.getName());
-        for (GuidelineCheck check : guideline.getChecks()) {
-            appendGuidelineCheck(builder, check);
+        GuidelineChecker checker = new GuidelineChecker(this.report);
+        if (guideline.getChecks() != null && guideline.getChecks().size() > 0) {
+            prettyAppendSubheading(builder, "General Checks");
+            for (GuidelineCheck check : guideline.getChecks()) {
+                appendGuidelineCheck(builder, check);
+            }
         }
-        appendGuidelineCipherSuites(builder, guideline.getCipherSuites());
+        for (GuidelineForVersion guidelineForVersion : guideline.getVersions()) {
+            if (!checker.supportsOneOf(guidelineForVersion.getVersions())) {
+                continue;
+            }
+            prettyAppendSubheading(builder, "Checks for Version " + guidelineForVersion.getVersions());
+            if (guidelineForVersion.getChecks() != null && guidelineForVersion.getChecks().size() > 0) {
+                prettyAppendSubheading(builder, "Checks");
+                for (GuidelineCheck check : guidelineForVersion.getChecks()) {
+                    appendGuidelineCheck(builder, check);
+                }
+            }
+            if (guidelineForVersion.getExtensions() != null && guidelineForVersion.getExtensions().size() > 0) {
+                prettyAppendSubheading(builder, "Extensions");
+                for (GuidelineExtension extension : guidelineForVersion.getExtensions()) {
+                    appendGuidelineExtension(builder, extension);
+                }
+            }
+            if (guidelineForVersion.getCipherSuites() != null && guidelineForVersion.getCipherSuites().size() > 0) {
+                prettyAppendSubheading(builder, "Cipher Suites");
+                appendGuidelineCipherSuites(builder, guidelineForVersion.getVersions(),
+                    guidelineForVersion.getCipherSuites());
+            }
+            if (guidelineForVersion.getNamedGroups() != null && guidelineForVersion.getNamedGroups().size() > 0) {
+                prettyAppendSubheading(builder, "Named Groups");
+                appendGuidelineNamedGroups(builder, guidelineForVersion.getNamedGroups(),
+                    guidelineForVersion.getVersions());
+            }
+            prettyAppendSubheading(builder, "Signature and Hash Algorithms");
+            appendGuidelineSignatureAndHashAlgorithms(builder, guidelineForVersion.getSignatureAndHashAlgorithms(),
+                guidelineForVersion.getSignatureAlgorithms(), guidelineForVersion.getHashAlgorithms());
+            if (guidelineForVersion.getSignatureAndHashAlgorithmsCert() != null
+                && guidelineForVersion.getSignatureAndHashAlgorithmsCert().size() > 0) {
+                prettyAppendSubheading(builder, "Signature and Hash Algorithms Certificate");
+                appendGuidelineSignatureAndHashAlgorithmsCert(builder,
+                    guidelineForVersion.getSignatureAndHashAlgorithmsCert());
+            }
+        }
     }
 
-    private void appendGuidelineCipherSuites(StringBuilder builder, List<GuidelineCipherSuites> suites) {
-        List<CipherSuite> disallowed = new GuidelineChecker().getDisallowedSuites(this.report, suites);
-        prettyAppend(builder, "Disallowed CipherSuites:");
+    private void appendGuidelineSignatureAndHashAlgorithmsCert(StringBuilder builder,
+        List<SignatureAndHashAlgorithm> algs) {
+        for (CertificateChain chain : this.report.getCertificateChainList()) {
+            for (CertificateReport report : chain.getCertificateReportList()) {
+                if (!algs.contains(report.getSignatureAndHashAlgorithm())) {
+                    prettyAppend(builder, report.getSignatureAndHashAlgorithm().name() + " is not recommended.",
+                        AnsiColor.RED);
+                } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                    prettyAppend(builder, report.getSignatureAndHashAlgorithm().name() + " is recommended.",
+                        AnsiColor.GREEN);
+                }
+            }
+        }
+    }
+
+    private void appendGuidelineSignatureAndHashAlgorithms(StringBuilder builder,
+        List<SignatureAndHashAlgorithm> sigAndHashAlgs, List<SignatureAlgorithm> sigAlgs,
+        List<HashAlgorithm> hashAlgs) {
+        if (this.report.getSupportedSignatureAndHashAlgorithms() == null) {
+            prettyAppend(builder, "Cannot check supported Signature and Hash Algorithms", AnsiColor.YELLOW);
+            return;
+        }
+        for (SignatureAndHashAlgorithm alg : this.report.getSupportedSignatureAndHashAlgorithms()) {
+            if (sigAndHashAlgs != null && sigAndHashAlgs.size() > 0) {
+                if (!sigAndHashAlgs.contains(alg)) {
+                    prettyAppend(builder, alg.name() + " is not recommended.", AnsiColor.RED);
+                } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                    prettyAppend(builder, alg.name() + " is recommended.", AnsiColor.GREEN);
+                }
+            }
+            if (sigAlgs != null && sigAlgs.size() > 0) {
+                if (!sigAlgs.contains(alg.getSignatureAlgorithm())) {
+                    prettyAppend(builder, alg.getSignatureAlgorithm().name() + " is not recommended.", AnsiColor.RED);
+                } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                    prettyAppend(builder, alg.getSignatureAlgorithm().name() + " is recommended.", AnsiColor.GREEN);
+                }
+            }
+            if (hashAlgs != null && hashAlgs.size() > 0) {
+                if (!hashAlgs.contains(alg.getHashAlgorithm())) {
+                    prettyAppend(builder, alg.getHashAlgorithm().name() + " is not recommended.", AnsiColor.RED);
+                } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                    prettyAppend(builder, alg.getHashAlgorithm().name() + " is recommended.", AnsiColor.GREEN);
+                }
+            }
+        }
+    }
+
+    private void appendGuidelineNamedGroups(StringBuilder builder, List<NamedGroup> groups,
+        List<ProtocolVersion> versions) {
+        List<NamedGroup> supportedGroups = versions.size() == 1 && ProtocolVersion.TLS13.equals(versions.get(0))
+            ? this.report.getSupportedTls13Groups() : this.report.getSupportedNamedGroups();
+        for (NamedGroup group : supportedGroups) {
+            if (!groups.contains(group)) {
+                prettyAppend(builder, group.name() + " is not recommended.", AnsiColor.RED);
+            } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                prettyAppend(builder, group.name() + " is recommended.", AnsiColor.GREEN);
+            }
+        }
+    }
+
+    private void appendGuidelineExtension(StringBuilder builder, GuidelineExtension extension) {
+        switch (extension.getRequirementLevel()) {
+            case MUST:
+                if (!this.report.getSupportedExtensions().contains(extension.getType())) {
+                    prettyAppend(builder, extension.getType().name() + " is missing.", AnsiColor.RED);
+                }
+                break;
+            case SHOULD:
+                if (!this.report.getSupportedExtensions().contains(extension.getType())) {
+                    prettyAppend(builder, extension.getType().name() + " is missing.", AnsiColor.YELLOW);
+                }
+                break;
+            case MUST_NOT:
+                if (this.report.getSupportedExtensions().contains(extension.getType())) {
+                    prettyAppend(builder, extension.getType().name() + " is not supported.", AnsiColor.RED);
+                }
+                break;
+            case SHOULD_NOT:
+                if (this.report.getSupportedExtensions().contains(extension.getType())) {
+                    prettyAppend(builder, extension.getType().name() + " is not supported.", AnsiColor.YELLOW);
+                }
+                break;
+        }
+        // if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+        builder.append("Extension ").append(extension.getType().name()).append(' ')
+            .append(extension.getRequirementLevel()).append(" be supported and was ")
+            .append(this.report.getSupportedExtensions().contains(extension.getType()) ? "supported" : "not supported")
+            .append(".\n");
+        // }
+    }
+
+    private void appendGuidelineCipherSuites(StringBuilder builder, List<ProtocolVersion> versions,
+        List<CipherSuite> suites) {
+        List<CipherSuite> disallowed = new GuidelineChecker(this.report).getDisallowedSuites(versions, suites);
+        prettyAppend(builder, "The Server supports the following CipherSuites that are not recommended:");
         for (CipherSuite suite : disallowed) {
             prettyPrintCipherSuite(builder, suite);
         }
     }
 
     private void appendGuidelineCheck(StringBuilder builder, GuidelineCheck check) {
-        GuidelineChecker checker = new GuidelineChecker();
-        if (checker.passesCheck(this.report, check)) {
-            if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                prettyAppend(builder, check.getDescription(), AnsiColor.GREEN);
-            }
+        GuidelineChecker checker = new GuidelineChecker(this.report);
+        if (!checker.isTrue(check.getCondition())) {
+            // if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+            builder.append("Condition for Check \"").append(StringUtils.normalizeSpace(check.getDescription().trim()))
+                .append("\" is not met.\n");
+            // }
+            return;
+        }
+        if (checker.passesCheck(check)) {
+            // if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            prettyAppend(builder, StringUtils.normalizeSpace(check.getDescription().trim()), AnsiColor.GREEN);
+            // }
         } else {
             RequirementLevel level = check.getRequirementLevel();
             AnsiColor color;
@@ -1656,8 +1793,13 @@ public class SiteReportPrinter {
             } else {
                 color = AnsiColor.YELLOW;
             }
-            prettyAppend(builder, check.getDescription(), color);
+            prettyAppend(builder, StringUtils.normalizeSpace(check.getDescription().trim()), color);
         }
+        // if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+        builder.append("AnalysedProperty ").append(check.getAnalyzedProperty()).append(' ')
+            .append(check.getRequirementLevel()).append(" be ").append(check.getResult()).append(" and was ")
+            .append(report.getResult(check.getAnalyzedProperty())).append(".\n");
+        // }
     }
 
     public void appendRecommendations(StringBuilder builder) {
