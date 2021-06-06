@@ -9,11 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.model.certificate;
 
-import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
+import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 
 import java.util.List;
+import java.util.function.Predicate;
 
-public class GuidelineCertificateCheck {
-    private List<SignatureAlgorithm> requiredSignatureAlgorithms;
-    private Boolean requiresOCSP;
+public interface IGuidelineCertificateCheck extends Predicate<List<CertificateChain>> {
+
 }
