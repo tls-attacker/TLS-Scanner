@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.guideline.model;
+package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -21,9 +21,11 @@ public class Guideline implements Serializable {
     private String name;
     private String link;
     private List<GuidelineCheck> checks;
-    private List<GuidelineForVersion> versions;
 
-    public Guideline() {
+    public Guideline(String name, String link, List<GuidelineCheck> checks) {
+        this.name = name;
+        this.link = link;
+        this.checks = checks;
     }
 
     public String getName() {
@@ -52,15 +54,5 @@ public class Guideline implements Serializable {
     @XmlElementWrapper(name = "checks")
     public void setChecks(List<GuidelineCheck> checks) {
         this.checks = checks;
-    }
-
-    public List<GuidelineForVersion> getVersions() {
-        return versions;
-    }
-
-    @XmlElement(name = "guideline")
-    @XmlElementWrapper(name = "versionDependant")
-    public void setVersions(List<GuidelineForVersion> versions) {
-        this.versions = versions;
     }
 }

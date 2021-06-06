@@ -9,8 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.tlsscanner.serverscanner.guideline.model.Guideline;
-
 import javax.xml.bind.JAXB;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +26,7 @@ public class GuidelineIO {
     }
 
     public static Guideline readGuideline(String resource) throws IOException {
-        try (InputStream is = GuidelineIO.class.getResourceAsStream(resource)) {
+        try (InputStream is = GuidelineIO.class.getResourceAsStream("/guideline/" + resource)) {
             if (is == null) {
                 throw new IOException("Resource not found. " + resource);
             }

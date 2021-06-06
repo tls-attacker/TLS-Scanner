@@ -24,6 +24,7 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
@@ -44,6 +45,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateRes
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -155,6 +157,9 @@ public class SiteReport extends Observable implements Serializable {
     private Boolean ccaSupported = null;
     private Boolean ccaRequired = null;
     private List<CcaTestResult> ccaTestResultList;
+
+    // Guidelines
+    private List<GuidelineReport> guidelineReports;
 
     private List<ProbeType> probeTypeList;
 
@@ -745,5 +750,13 @@ public class SiteReport extends Observable implements Serializable {
 
     public void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
         this.minimumDssCertKeySize = minimumDssCertKeySize;
+    }
+
+    public List<GuidelineReport> getGuidelineReports() {
+        return guidelineReports;
+    }
+
+    public void setGuidelineReports(List<GuidelineReport> guidelineReports) {
+        this.guidelineReports = guidelineReports;
     }
 }

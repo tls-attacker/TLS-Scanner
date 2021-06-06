@@ -24,7 +24,6 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
@@ -36,13 +35,12 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
-import de.rub.nds.tlsscanner.serverscanner.guideline.model.Guideline;
-import de.rub.nds.tlsscanner.serverscanner.guideline.model.GuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.model.GuidelineForVersion;
-import de.rub.nds.tlsscanner.serverscanner.guideline.model.RequirementLevel;
-import de.rub.nds.tlsscanner.serverscanner.guideline.model.extensions.GuidelineExtension;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
@@ -72,7 +70,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvalua
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.ResponseCounter;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.VectorContainer;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
@@ -1625,188 +1622,56 @@ public class SiteReportPrinter {
     }
 
     public void appendGuidelines(StringBuilder builder) {
-        try {
-            appendGuideline(builder, GuidelineIO.readGuideline("/guideline/BSI-TR-02102-2.xml"));
-        } catch (IOException ignored) {
+        for (String file : GuidelineIO.GUIDELINES) {
+            try {
+                Guideline guideline = GuidelineIO.readGuideline(file);
+                GuidelineChecker checker = new GuidelineChecker(guideline);
+                checker.fillReport(this.report);
+            } catch (IOException ignored) {
+            }
+        }
+        for (GuidelineReport report : this.report.getGuidelineReports()) {
+            appendGuideline(builder, report);
         }
     }
 
-    private void appendGuideline(StringBuilder builder, Guideline guideline) {
-        prettyAppendHeading(builder, "Guideline " + guideline.getName());
-        GuidelineChecker checker = new GuidelineChecker(this.report);
-        if (guideline.getChecks() != null && guideline.getChecks().size() > 0) {
-            prettyAppendSubheading(builder, "General Checks");
-            for (GuidelineCheck check : guideline.getChecks()) {
-                appendGuidelineCheck(builder, check);
-            }
+    private void appendGuideline(StringBuilder builder, GuidelineReport guidelineReport) {
+        prettyAppendHeading(builder, "Guideline " + guidelineReport.getName());
+        if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            prettyAppend(builder, guidelineReport.getLink(), AnsiColor.BLUE);
         }
-        for (GuidelineForVersion guidelineForVersion : guideline.getVersions()) {
-            if (!checker.supportsOneOf(guidelineForVersion.getVersions())) {
-                continue;
-            }
-            prettyAppendSubheading(builder, "Checks for Version " + guidelineForVersion.getVersions());
-            if (guidelineForVersion.getChecks() != null && guidelineForVersion.getChecks().size() > 0) {
-                prettyAppendSubheading(builder, "Checks");
-                for (GuidelineCheck check : guidelineForVersion.getChecks()) {
-                    appendGuidelineCheck(builder, check);
+        for (GuidelineCheckResult result : guidelineReport.getResults()) {
+            if (GuidelineCheckStatus.UNCERTAIN.equals(result.getStatus())) {
+                if (!this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    continue;
                 }
             }
-            if (guidelineForVersion.getExtensions() != null && guidelineForVersion.getExtensions().size() > 0) {
-                prettyAppendSubheading(builder, "Extensions");
-                for (GuidelineExtension extension : guidelineForVersion.getExtensions()) {
-                    appendGuidelineExtension(builder, extension);
+            if (GuidelineCheckStatus.PASSED.equals(result.getStatus())) {
+                if (!this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                    continue;
                 }
             }
-            if (guidelineForVersion.getCipherSuites() != null && guidelineForVersion.getCipherSuites().size() > 0) {
-                prettyAppendSubheading(builder, "Cipher Suites");
-                appendGuidelineCipherSuites(builder, guidelineForVersion.getVersions(),
-                    guidelineForVersion.getCipherSuites());
-            }
-            if (guidelineForVersion.getNamedGroups() != null && guidelineForVersion.getNamedGroups().size() > 0) {
-                prettyAppendSubheading(builder, "Named Groups");
-                appendGuidelineNamedGroups(builder, guidelineForVersion.getNamedGroups(),
-                    guidelineForVersion.getVersions());
-            }
-            prettyAppendSubheading(builder, "Signature and Hash Algorithms");
-            appendGuidelineSignatureAndHashAlgorithms(builder, guidelineForVersion.getSignatureAndHashAlgorithms(),
-                guidelineForVersion.getSignatureAlgorithms(), guidelineForVersion.getHashAlgorithms());
-            if (guidelineForVersion.getSignatureAndHashAlgorithmsCert() != null
-                && guidelineForVersion.getSignatureAndHashAlgorithmsCert().size() > 0) {
-                prettyAppendSubheading(builder, "Signature and Hash Algorithms Certificate");
-                appendGuidelineSignatureAndHashAlgorithmsCert(builder,
-                    guidelineForVersion.getSignatureAndHashAlgorithmsCert());
-            }
-        }
-    }
-
-    private void appendGuidelineSignatureAndHashAlgorithmsCert(StringBuilder builder,
-        List<SignatureAndHashAlgorithm> algs) {
-        for (CertificateChain chain : this.report.getCertificateChainList()) {
-            for (CertificateReport report : chain.getCertificateReportList()) {
-                if (!algs.contains(report.getSignatureAndHashAlgorithm())) {
-                    prettyAppend(builder, report.getSignatureAndHashAlgorithm().name() + " is not recommended.",
-                        AnsiColor.RED);
-                } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                    prettyAppend(builder, report.getSignatureAndHashAlgorithm().name() + " is recommended.",
-                        AnsiColor.GREEN);
-                }
+            switch (result.getStatus()) {
+                case PASSED:
+                    if (!this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                        continue;
+                    }
+                    prettyAppend(builder, "Passed Check " + result.getName(), AnsiColor.GREEN);
+                    prettyAppend(builder, "\t" + result.getDescription());
+                    break;
+                case FAILED:
+                    prettyAppend(builder, "Failed Check " + result.getName(), AnsiColor.RED);
+                    prettyAppend(builder, "\t" + result.getDescription());
+                    break;
+                case UNCERTAIN:
+                    if (!this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                        continue;
+                    }
+                    prettyAppend(builder, "Uncertain on Check " + result.getName(), AnsiColor.GREEN);
+                    prettyAppend(builder, "\t" + result.getDescription());
+                    break;
             }
         }
-    }
-
-    private void appendGuidelineSignatureAndHashAlgorithms(StringBuilder builder,
-        List<SignatureAndHashAlgorithm> sigAndHashAlgs, List<SignatureAlgorithm> sigAlgs,
-        List<HashAlgorithm> hashAlgs) {
-        if (this.report.getSupportedSignatureAndHashAlgorithms() == null) {
-            prettyAppend(builder, "Cannot check supported Signature and Hash Algorithms", AnsiColor.YELLOW);
-            return;
-        }
-        for (SignatureAndHashAlgorithm alg : this.report.getSupportedSignatureAndHashAlgorithms()) {
-            if (sigAndHashAlgs != null && sigAndHashAlgs.size() > 0) {
-                if (!sigAndHashAlgs.contains(alg)) {
-                    prettyAppend(builder, alg.name() + " is not recommended.", AnsiColor.RED);
-                } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                    prettyAppend(builder, alg.name() + " is recommended.", AnsiColor.GREEN);
-                }
-            }
-            if (sigAlgs != null && sigAlgs.size() > 0) {
-                if (!sigAlgs.contains(alg.getSignatureAlgorithm())) {
-                    prettyAppend(builder, alg.getSignatureAlgorithm().name() + " is not recommended.", AnsiColor.RED);
-                } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                    prettyAppend(builder, alg.getSignatureAlgorithm().name() + " is recommended.", AnsiColor.GREEN);
-                }
-            }
-            if (hashAlgs != null && hashAlgs.size() > 0) {
-                if (!hashAlgs.contains(alg.getHashAlgorithm())) {
-                    prettyAppend(builder, alg.getHashAlgorithm().name() + " is not recommended.", AnsiColor.RED);
-                } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                    prettyAppend(builder, alg.getHashAlgorithm().name() + " is recommended.", AnsiColor.GREEN);
-                }
-            }
-        }
-    }
-
-    private void appendGuidelineNamedGroups(StringBuilder builder, List<NamedGroup> groups,
-        List<ProtocolVersion> versions) {
-        List<NamedGroup> supportedGroups = versions.size() == 1 && ProtocolVersion.TLS13.equals(versions.get(0))
-            ? this.report.getSupportedTls13Groups() : this.report.getSupportedNamedGroups();
-        for (NamedGroup group : supportedGroups) {
-            if (!groups.contains(group)) {
-                prettyAppend(builder, group.name() + " is not recommended.", AnsiColor.RED);
-            } else {// if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                prettyAppend(builder, group.name() + " is recommended.", AnsiColor.GREEN);
-            }
-        }
-    }
-
-    private void appendGuidelineExtension(StringBuilder builder, GuidelineExtension extension) {
-        switch (extension.getRequirementLevel()) {
-            case MUST:
-                if (!this.report.getSupportedExtensions().contains(extension.getType())) {
-                    prettyAppend(builder, extension.getType().name() + " is missing.", AnsiColor.RED);
-                }
-                break;
-            case SHOULD:
-                if (!this.report.getSupportedExtensions().contains(extension.getType())) {
-                    prettyAppend(builder, extension.getType().name() + " is missing.", AnsiColor.YELLOW);
-                }
-                break;
-            case MUST_NOT:
-                if (this.report.getSupportedExtensions().contains(extension.getType())) {
-                    prettyAppend(builder, extension.getType().name() + " is not supported.", AnsiColor.RED);
-                }
-                break;
-            case SHOULD_NOT:
-                if (this.report.getSupportedExtensions().contains(extension.getType())) {
-                    prettyAppend(builder, extension.getType().name() + " is not supported.", AnsiColor.YELLOW);
-                }
-                break;
-        }
-        // if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-        builder.append("Extension ").append(extension.getType().name()).append(' ')
-            .append(extension.getRequirementLevel()).append(" be supported and was ")
-            .append(this.report.getSupportedExtensions().contains(extension.getType()) ? "supported" : "not supported")
-            .append(".\n");
-        // }
-    }
-
-    private void appendGuidelineCipherSuites(StringBuilder builder, List<ProtocolVersion> versions,
-        List<CipherSuite> suites) {
-        List<CipherSuite> disallowed = new GuidelineChecker(this.report).getDisallowedSuites(versions, suites);
-        prettyAppend(builder, "The Server supports the following CipherSuites that are not recommended:");
-        for (CipherSuite suite : disallowed) {
-            prettyPrintCipherSuite(builder, suite);
-        }
-    }
-
-    private void appendGuidelineCheck(StringBuilder builder, GuidelineCheck check) {
-        GuidelineChecker checker = new GuidelineChecker(this.report);
-        if (!checker.isTrue(check.getCondition())) {
-            // if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-            builder.append("Condition for Check \"").append(StringUtils.normalizeSpace(check.getDescription().trim()))
-                .append("\" is not met.\n");
-            // }
-            return;
-        }
-        if (checker.passesCheck(check)) {
-            // if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            prettyAppend(builder, StringUtils.normalizeSpace(check.getDescription().trim()), AnsiColor.GREEN);
-            // }
-        } else {
-            RequirementLevel level = check.getRequirementLevel();
-            AnsiColor color;
-            if (RequirementLevel.MUST.equals(level) || RequirementLevel.MUST_NOT.equals(level)) {
-                color = AnsiColor.RED;
-            } else {
-                color = AnsiColor.YELLOW;
-            }
-            prettyAppend(builder, StringUtils.normalizeSpace(check.getDescription().trim()), color);
-        }
-        // if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-        builder.append("AnalysedProperty ").append(check.getAnalyzedProperty()).append(' ')
-            .append(check.getRequirementLevel()).append(" be ").append(check.getResult()).append(" and was ")
-            .append(report.getResult(check.getAnalyzedProperty())).append(".\n");
-        // }
     }
 
     public void appendRecommendations(StringBuilder builder) {
