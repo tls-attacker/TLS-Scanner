@@ -28,6 +28,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ChangeContextValueAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
@@ -59,11 +60,10 @@ public class DtlsCcsProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            return new DtlsCcsResult(isAcceptUnencryptedAppData(), isEarlyFinished(), isAcceptMultipleCCS());
+            return new DtlsCcsResult(isAcceptUnencryptedAppData(), isEarlyFinished());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsCcsResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST);
+            return new DtlsCcsResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -84,8 +84,6 @@ public class DtlsCcsProbe extends TlsProbe {
         trace.addTlsAction(new ReceiveAction(new ApplicationMessage(config)));
         State state = new State(config, trace);
         executeState(state);
-        // TODO: Wie überprüfe ich ob es akzeptiert hat? Bei DTLS kommt nicht
-        // zwingend eine Fehlernachricht
         if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.APPLICATION_DATA, state.getWorkflowTrace())) {
             return TestResult.TRUE;
         } else {
@@ -104,30 +102,6 @@ public class DtlsCcsProbe extends TlsProbe {
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResult.TRUE;
-        } else {
-            return TestResult.FALSE;
-        }
-    }
-
-    private TestResult isAcceptMultipleCCS() {
-        Config config = getConfig();
-        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(
-            new SendAction(new ChangeCipherSpecMessage(), new ChangeCipherSpecMessage(), new FinishedMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
-        State state = new State(config, trace);
-        executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
-            Record msg = (Record) WorkflowTraceUtil.getLastReceivedRecord(state.getWorkflowTrace());
-            // TODO: Type Überprüfung notwendig?
-            if (ProtocolMessageType.getContentType(msg.getContentType().getValue()) == ProtocolMessageType.HANDSHAKE
-                && msg.getEpoch().getValue() == 2) {
-                return TestResult.TRUE;
-            } else {
-                return TestResult.FALSE;
-            }
         } else {
             return TestResult.FALSE;
         }
@@ -163,7 +137,7 @@ public class DtlsCcsProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsCcsResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new DtlsCcsResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 
     @Override

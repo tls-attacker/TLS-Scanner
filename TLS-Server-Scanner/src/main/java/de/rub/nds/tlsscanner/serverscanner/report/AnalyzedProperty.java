@@ -263,7 +263,6 @@ public enum AnalyzedProperty {
     USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS(AnalyzedPropertyCategory.COOKIE),
     ACCEPT_UNENCRYPTED_APP_DATA(AnalyzedPropertyCategory.QUIRKS),
     HAS_EARLY_FINISHED_BUG(AnalyzedPropertyCategory.QUIRKS),
-    HAS_MULTIPLE_CSS_BUG(AnalyzedPropertyCategory.QUIRKS),
     STARTS_WITH_INVALID_MESSAGE_SEQUENCE(AnalyzedPropertyCategory.QUIRKS),
     MISSES_MESSAGE_SEQUENCE_CHECKS(AnalyzedPropertyCategory.QUIRKS),
     HAS_RETRANSMISSION_BUG(AnalyzedPropertyCategory.QUIRKS),

@@ -177,7 +177,6 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
         prettyAppend(builder, "Accept unencrypted App Data with Epoch 0", AnalyzedProperty.ACCEPT_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
-        prettyAppend(builder, "Multiple CCS Bug", AnalyzedProperty.HAS_MULTIPLE_CSS_BUG);
         prettyAppend(builder, "Overwrites Content", AnalyzedProperty.OVERWRITES_CONTENT);
         prettyAppendHeading(builder, "DTLS Hello Verify Request");
         prettyAppendCookie(builder, "Cookie", report.getCookieEvaluationResult());

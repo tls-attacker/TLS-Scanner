@@ -21,22 +21,18 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 public class DtlsCcsResult extends ProbeResult {
 
     private TestResult isEarlyFinished;
-    private TestResult isAcceptMultipleCCS;
     private TestResult isAcceptUnencryptedAppData;
 
-    public DtlsCcsResult(TestResult isAcceptUnencryptedAppData, TestResult isEarlyFinished,
-        TestResult isAcceptMultipleCCS) {
+    public DtlsCcsResult(TestResult isAcceptUnencryptedAppData, TestResult isEarlyFinished) {
         super(ProbeType.DTLS_CCS);
         this.isAcceptUnencryptedAppData = isAcceptUnencryptedAppData;
         this.isEarlyFinished = isEarlyFinished;
-        this.isAcceptMultipleCCS = isAcceptMultipleCCS;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
         report.putResult(AnalyzedProperty.ACCEPT_UNENCRYPTED_APP_DATA, isAcceptUnencryptedAppData);
         report.putResult(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
-        report.putResult(AnalyzedProperty.HAS_MULTIPLE_CSS_BUG, isAcceptMultipleCCS);
     }
 
 }
