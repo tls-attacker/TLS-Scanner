@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.config.EarlyCCSCommandConfig;
@@ -29,20 +30,20 @@ public class EarlyCcsProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            EarlyCCSCommandConfig earlyCcsCommandConfig = new EarlyCCSCommandConfig(getScannerConfig()
-                    .getGeneralDelegate());
+            EarlyCCSCommandConfig earlyCcsCommandConfig =
+                new EarlyCCSCommandConfig(getScannerConfig().getGeneralDelegate());
             ClientDelegate delegate = (ClientDelegate) earlyCcsCommandConfig.getDelegate(ClientDelegate.class);
             delegate.setHost(getScannerConfig().getClientDelegate().getHost());
             delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) earlyCcsCommandConfig
-                    .getDelegate(StarttlsDelegate.class);
+            StarttlsDelegate starttlsDelegate =
+                (StarttlsDelegate) earlyCcsCommandConfig.getDelegate(StarttlsDelegate.class);
             starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            EarlyCCSAttacker attacker = new EarlyCCSAttacker(earlyCcsCommandConfig,
-                    earlyCcsCommandConfig.createConfig());
+            EarlyCCSAttacker attacker =
+                new EarlyCCSAttacker(earlyCcsCommandConfig, earlyCcsCommandConfig.createConfig());
             EarlyCcsVulnerabilityType earlyCcsVulnerabilityType = attacker.getEarlyCcsVulnerabilityType();
             return new EarlyCcsResult(earlyCcsVulnerabilityType);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new EarlyCcsResult(null);
         }
     }

@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -36,7 +37,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
 
     private static final int MAX_CONSIDERED_PSK_LENGTH_BYTES = 128;
 
-    private static final double MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION = 0x0100000000000000l;
+    private static final double MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION = 0x0100000000000000L;
 
     private Boolean supportsSha384;
 
@@ -44,7 +45,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
 
     private Boolean supportsLegacyPrf;
 
-    private Boolean supportsSslv3;
+    private Boolean supportsSSLv3;
 
     private List<RaccoonAttackProbabilities> attackProbabilityList;
 
@@ -57,9 +58,9 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         supportsLegacyPrf = report.getResult(AnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResult.TRUE;
         supportsSha256 = report.getResult(AnalyzedProperty.SUPPORTS_SHA256_PRF) == TestResult.TRUE;
         supportsSha384 = report.getResult(AnalyzedProperty.SUPPORTS_SHA384_PRF) == TestResult.TRUE;
-        supportsSslv3 = report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE;
-        ExtractedValueContainer publicKeyContainer = report.getExtractedValueContainerMap().get(
-                TrackableValueType.DHE_PUBLICKEY);
+        supportsSSLv3 = report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE;
+        ExtractedValueContainer publicKeyContainer =
+            report.getExtractedValueContainerMap().get(TrackableValueType.DHE_PUBLICKEY);
         List extractedValueList = publicKeyContainer.getExtractedValueList();
         Map<Integer, BigInteger> smallestByteSizeModuloMap = generateSmallestByteSizeModuloMap(extractedValueList);
         for (Integer i : smallestByteSizeModuloMap.keySet()) {
@@ -78,10 +79,9 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
     }
 
     /**
-     * Create a map which contains for each observed byte size the smallest seen
-     * modulus
+     * Create a map which contains for each observed byte size the smallest seen modulus
      *
-     * @param extractedValueList
+     * @param  extractedValueList
      * @return
      */
     public Map<Integer, BigInteger> generateSmallestByteSizeModuloMap(List extractedValueList) {
@@ -113,11 +113,11 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         if (supportsSha384) {
             probabilityList.add(computeSha384PrfProbability(modulus));
         }
-        if (supportsSslv3) {
-            probabilityList.add(computeSslv3OuterMd5Probability(modulus));
-            probabilityList.add(computeSslv3Sha1AInnerProbability(modulus));
-            probabilityList.add(computeSslv3Sha1BBInnerProbability(modulus));
-            probabilityList.add(computeSslv3Sha1CCCInnerProbability(modulus));
+        if (supportsSSLv3) {
+            probabilityList.add(computeSSLv3OuterMd5Probability(modulus));
+            probabilityList.add(computeSSLv3Sha1AInnerProbability(modulus));
+            probabilityList.add(computeSSLv3Sha1BBInnerProbability(modulus));
+            probabilityList.add(computeSSLv3Sha1CCCInnerProbability(modulus));
         }
         return probabilityList;
     }
@@ -128,8 +128,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         int maxPadding = blockLength - 8;
         int hashLengthField = 64;
         /**
-         * For Legacy PRF the input gets halved rounded up into the hash
-         * function
+         * For Legacy PRF the input gets halved rounded up into the hash function
          */
         int inputLength = (ArrayConverter.bigIntegerToByteArray(modulus).length);
         if (inputLength % 2 == 1) {
@@ -141,31 +140,29 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
          */
         inputLength = inputLength * 8;
 
-        int bitsToNextSmallerBlock = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding,
-                hashLengthField);
+        int bitsToNextSmallerBlock =
+            bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding, hashLengthField);
 
-        List<RaccoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength,
-                fixedLength, maxPadding, hashLengthField, modulus);
-        return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.TLS_LEGACY_PRF,
-                bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList,
-                modulus);
+        List<RaccoonAttackPskProbabilities> pskProbabilityList =
+            computePskProbabilitiesList(blockLength, inputLength, fixedLength, maxPadding, hashLengthField, modulus);
+        return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.TLS_LEGACY_PRF, bitsToNextSmallerBlock,
+            attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
     /**
-     * For PSK we have to attach 2 * 2 length byts and the psk to the pms
+     * For PSK we have to attach 2 * 2 length bytes and the psk to the pms
      */
-    private List<RaccoonAttackPskProbabilities> computePskProbabilitiesList(int blockLänge, int inputLength,
-            int fixedLength, int minPadding, int hashLengthField, BigInteger modulus) {
+    private List<RaccoonAttackPskProbabilities> computePskProbabilitiesList(int blockLength, int inputLength,
+        int fixedLength, int minPadding, int hashLengthField, BigInteger modulus) {
         List<RaccoonAttackPskProbabilities> pskProbabilityList = new LinkedList<>();
         for (int i = 0; i < MAX_CONSIDERED_PSK_LENGTH_BYTES; i++) {
-            int bitsToNextSmallerBlockPsk = bitsToNextSmallerBlock(blockLänge, inputLength + 2 * 8 + 2 * 8 + i * 8,
-                    fixedLength, minPadding, hashLengthField);
+            int bitsToNextSmallerBlockPsk = bitsToNextSmallerBlock(blockLength, inputLength + 2 * 8 + 2 * 8 + i * 8,
+                fixedLength, minPadding, hashLengthField);
             BigDecimal attackSuccessChance = attackSuccessChance(bitsToNextSmallerBlockPsk, modulus);
-            if (attackSuccessChance.multiply(
-                    new BigDecimal("" + MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION, new MathContext(256,
-                            RoundingMode.DOWN))).compareTo(BigDecimal.ONE) > 0) {
-                pskProbabilityList.add(new RaccoonAttackPskProbabilities(i, bitsToNextSmallerBlockPsk,
-                        attackSuccessChance));
+            if (attackSuccessChance.multiply(new BigDecimal("" + MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION,
+                new MathContext(256, RoundingMode.DOWN))).compareTo(BigDecimal.ONE) > 0) {
+                pskProbabilityList
+                    .add(new RaccoonAttackPskProbabilities(i, bitsToNextSmallerBlockPsk, attackSuccessChance));
             } else {
                 // TOO small probability
             }
@@ -193,14 +190,13 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         int hashLengthField = 64;
         int inputLength = modulus.bitLength();
 
-        int bitsToNextSmallerBlock = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding,
-                hashLengthField);
+        int bitsToNextSmallerBlock =
+            bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding, hashLengthField);
 
-        List<RaccoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength,
-                fixedLength, maxPadding, hashLengthField, modulus);
+        List<RaccoonAttackPskProbabilities> pskProbabilityList =
+            computePskProbabilitiesList(blockLength, inputLength, fixedLength, maxPadding, hashLengthField, modulus);
         return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.TLS12_SHA256PRF,
-                bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList,
-                modulus);
+            bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
 
     }
 
@@ -210,84 +206,80 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         int maxPadding = blockLength - 8;
         int hashLengthField = 128;
         int inputLength = modulus.bitLength();
-        int bitsToNextBorder = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding,
-                hashLengthField);
-        List<RaccoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength,
-                fixedLength, maxPadding, hashLengthField, modulus);
+        int bitsToNextBorder =
+            bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding, hashLengthField);
+        List<RaccoonAttackPskProbabilities> pskProbabilityList =
+            computePskProbabilitiesList(blockLength, inputLength, fixedLength, maxPadding, hashLengthField, modulus);
         return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.TLS12_SHA384PRF, bitsToNextBorder,
-                attackSuccessChance(bitsToNextBorder, modulus), pskProbabilityList, modulus);
+            attackSuccessChance(bitsToNextBorder, modulus), pskProbabilityList, modulus);
     }
 
-    private RaccoonAttackProbabilities computeSslv3OuterMd5Probability(BigInteger modulus) {
+    private RaccoonAttackProbabilities computeSSLv3OuterMd5Probability(BigInteger modulus) {
         int blockLength = 512;
         int fixedLength = 160;
         int maxPadding = blockLength - 8;
         int hashLengthField = 64;
         int inputLength = modulus.bitLength();
 
-        int bitsToNextSmallerBlock = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding,
-                hashLengthField);
+        int bitsToNextSmallerBlock =
+            bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding, hashLengthField);
 
-        List<RaccoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength,
-                fixedLength, maxPadding, hashLengthField, modulus);
-        return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.SSL3_OUTER_MD5,
-                bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList,
-                modulus);
+        List<RaccoonAttackPskProbabilities> pskProbabilityList =
+            computePskProbabilitiesList(blockLength, inputLength, fixedLength, maxPadding, hashLengthField, modulus);
+        return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.SSL3_OUTER_MD5, bitsToNextSmallerBlock,
+            attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
-    private RaccoonAttackProbabilities computeSslv3Sha1AInnerProbability(BigInteger modulus) {
+    private RaccoonAttackProbabilities computeSSLv3Sha1AInnerProbability(BigInteger modulus) {
         int blockLength = 512;
         int fixedLength = 65;
         int maxPadding = blockLength - 8;
         int hashLengthField = 64;
         int inputLength = modulus.bitLength();
 
-        int bitsToNextSmallerBlock = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding,
-                hashLengthField);
+        int bitsToNextSmallerBlock =
+            bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding, hashLengthField);
 
-        List<RaccoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength,
-                fixedLength, maxPadding, hashLengthField, modulus);
+        List<RaccoonAttackPskProbabilities> pskProbabilityList =
+            computePskProbabilitiesList(blockLength, inputLength, fixedLength, maxPadding, hashLengthField, modulus);
         return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.SSL3_INNER_SHA1_A,
-                bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList,
-                modulus);
+            bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
-    private RaccoonAttackProbabilities computeSslv3Sha1BBInnerProbability(BigInteger modulus) {
+    private RaccoonAttackProbabilities computeSSLv3Sha1BBInnerProbability(BigInteger modulus) {
         int blockLength = 512;
         int fixedLength = 66;
         int maxPadding = blockLength - 8;
         int hashLengthField = 64;
         int inputLength = modulus.bitLength();
 
-        int bitsToNextSmallerBlock = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding,
-                hashLengthField);
+        int bitsToNextSmallerBlock =
+            bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding, hashLengthField);
 
-        List<RaccoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength,
-                fixedLength, maxPadding, hashLengthField, modulus);
+        List<RaccoonAttackPskProbabilities> pskProbabilityList =
+            computePskProbabilitiesList(blockLength, inputLength, fixedLength, maxPadding, hashLengthField, modulus);
         return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.SSL3_INNER_SHA1_BB,
-                bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList,
-                modulus);
+            bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
-    private RaccoonAttackProbabilities computeSslv3Sha1CCCInnerProbability(BigInteger modulus) {
+    private RaccoonAttackProbabilities computeSSLv3Sha1CCCInnerProbability(BigInteger modulus) {
         int blockLength = 512;
         int fixedLength = 67;
         int maxPadding = blockLength - 8;
         int hashLengthField = 64;
         int inputLength = modulus.bitLength();
 
-        int bitsToNextSmallerBlock = bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding,
-                hashLengthField);
+        int bitsToNextSmallerBlock =
+            bitsToNextSmallerBlock(blockLength, inputLength, fixedLength, maxPadding, hashLengthField);
 
-        List<RaccoonAttackPskProbabilities> pskProbabilityList = computePskProbabilitiesList(blockLength, inputLength,
-                fixedLength, maxPadding, hashLengthField, modulus);
+        List<RaccoonAttackPskProbabilities> pskProbabilityList =
+            computePskProbabilitiesList(blockLength, inputLength, fixedLength, maxPadding, hashLengthField, modulus);
         return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.SSL3_INNER_SHA1_CCC,
-                bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList,
-                modulus);
+            bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
     private int bitsToNextSmallerBlock(int blocksize, int inputBitLength, int fixedLength, int minimalPaddingLength,
-            int contentLengthFieldSize) {
+        int contentLengthFieldSize) {
         int minimalPaddingSize = inputBitLength + fixedLength + minimalPaddingLength + contentLengthFieldSize;
         return minimalPaddingSize % blocksize;
     }

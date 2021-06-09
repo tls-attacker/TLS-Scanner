@@ -1,20 +1,18 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result.ocsp;
 
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
-import org.bouncycastle.crypto.tls.Certificate;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,8 +35,8 @@ public class OcspCertificateResult {
     }
 
     public OcspCertificateResult(CertificateChain certificate, Boolean supportsOcsp, boolean supportsStapling,
-            boolean mustStaple, boolean supportsNonce, OCSPResponse stapledResponse, OCSPResponse firstResponse,
-            OCSPResponse secondResponse, OCSPResponse httpGetResponse) {
+        boolean mustStaple, boolean supportsNonce, OCSPResponse stapledResponse, OCSPResponse firstResponse,
+        OCSPResponse secondResponse, OCSPResponse httpGetResponse) {
         this.certificate = certificate;
         this.supportsOcsp = supportsOcsp;
         this.supportsStapling = supportsStapling;
@@ -125,8 +123,8 @@ public class OcspCertificateResult {
 
                 // Check if status is actually outdated and not valid anymore
                 CertificateStatus certificateStatus = stapledResponse.getCertificateStatusList().get(0);
-                LocalDateTime certificateStatusUpdateValidTill = LocalDateTime.parse(
-                        certificateStatus.getTimeOfNextUpdate(), inputFormatter);
+                LocalDateTime certificateStatusUpdateValidTill =
+                    LocalDateTime.parse(certificateStatus.getTimeOfNextUpdate(), inputFormatter);
                 LocalDateTime currentTime = LocalDateTime.now();
 
                 if (certificateStatusUpdateValidTill.isBefore(currentTime)) {
@@ -162,10 +160,8 @@ public class OcspCertificateResult {
             // Check if the client nonce was used
             if (firstResponse.getNonce().intValue() != OcspProbe.NONCE_TEST_VALUE_1) {
                 return true;
-            }
-            // Check if a nonce was reused, e.g. caching didn't respect
-            // given client nonce
-            else if (secondResponse != null) {
+            } else if (secondResponse != null) {
+                // Check if a nonce was reused, e.g. caching didn't respect given client nonce
                 if (firstResponse.getNonce().equals(secondResponse.getNonce())) {
                     return true;
                 } else {

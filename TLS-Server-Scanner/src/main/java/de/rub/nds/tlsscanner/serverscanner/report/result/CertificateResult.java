@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -18,7 +19,7 @@ import java.util.Set;
 
 /**
  *
- * @author Robert Merget <robert.merget@rub.de>
+ * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
 public class CertificateResult extends ProbeResult {
 
@@ -31,9 +32,9 @@ public class CertificateResult extends ProbeResult {
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
     public CertificateResult(Set<CertificateChain> certificates, List<NamedGroup> ecdsaPkGroupsStatic,
-            List<NamedGroup> ecdsaPkGroupsEphemeral, List<NamedGroup> ecdsaSigGroupsStatic,
-            List<NamedGroup> ecdsaSigGroupsEphemeral, List<NamedGroup> ecdsaPkGroupsTls13,
-            List<NamedGroup> ecdsaCertSigGroupsTls13) {
+        List<NamedGroup> ecdsaPkGroupsEphemeral, List<NamedGroup> ecdsaSigGroupsStatic,
+        List<NamedGroup> ecdsaSigGroupsEphemeral, List<NamedGroup> ecdsaPkGroupsTls13,
+        List<NamedGroup> ecdsaCertSigGroupsTls13) {
         super(ProbeType.CERTIFICATE);
         this.certificates = certificates;
         this.ecdsaPkGroupsStatic = ecdsaPkGroupsStatic;

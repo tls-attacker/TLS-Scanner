@@ -1,12 +1,15 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
+
+import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NONCE;
 
 import de.rub.nds.asn1.Asn1Encodable;
 import de.rub.nds.asn1.encoder.Asn1Encoder;
@@ -17,22 +20,32 @@ import de.rub.nds.asn1.model.Asn1Sequence;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequest;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPRequestMessage;
-import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseParser;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateStatusMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.cert.CertificateEntry;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.CertificateStatusRequestExtensionMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.OcspResult;
-import org.bouncycastle.crypto.tls.Certificate;
-
+import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,25 +53,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-
-import static de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponseTypes.NONCE;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.cert.CertificateEntry;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.CertificateStatusRequestExtensionMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
+import org.bouncycastle.crypto.tls.Certificate;
 
 /**
  *
- * @author Nils Hanke - nils.hanke@rub.de
+ * @author Nils Hanke - {@literal nils.hanke@rub.de}
  */
 public class OcspProbe extends TlsProbe {
 
@@ -118,9 +117,10 @@ public class OcspProbe extends TlsProbe {
         CertificateStatusMessage certificateStatusMessage = null;
         if (supportedExtensions.contains(ExtensionType.STATUS_REQUEST)) {
             certResult.setSupportsStapling(true);
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace())) {
-                certificateStatusMessage = (CertificateStatusMessage) WorkflowTraceUtil.getFirstReceivedMessage(
-                        HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace());
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_STATUS,
+                state.getWorkflowTrace())) {
+                certificateStatusMessage = (CertificateStatusMessage) WorkflowTraceUtil
+                    .getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE_STATUS, state.getWorkflowTrace());
             }
         } else {
             certResult.setSupportsStapling(false);
@@ -128,8 +128,8 @@ public class OcspProbe extends TlsProbe {
 
         if (certificateStatusMessage != null) {
             try {
-                certResult.setStapledResponse(OCSPResponseParser.parseResponse(certificateStatusMessage
-                        .getOcspResponseBytes().getValue()));
+                certResult.setStapledResponse(
+                    OCSPResponseParser.parseResponse(certificateStatusMessage.getOcspResponseBytes().getValue()));
             } catch (Exception e) {
                 LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
             }
@@ -138,8 +138,8 @@ public class OcspProbe extends TlsProbe {
 
     private void performRequest(Certificate serverCertificateChain, OcspCertificateResult certResult) {
         try {
-            CertificateInformationExtractor mainCertExtractor = new CertificateInformationExtractor(
-                    serverCertificateChain.getCertificateAt(0));
+            CertificateInformationExtractor mainCertExtractor =
+                new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
             URL ocspResponderUrl;
 
             // Check if leaf certificate supports OCSP
@@ -147,7 +147,8 @@ public class OcspProbe extends TlsProbe {
                 ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
                 certResult.setSupportsOcsp(true);
             } catch (NoSuchFieldException ex) {
-                LOGGER.debug("Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
+                LOGGER.debug(
+                    "Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
                 certResult.setSupportsOcsp(false);
                 return;
             } catch (Exception ex) {
@@ -217,7 +218,7 @@ public class OcspProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -235,7 +236,7 @@ public class OcspProbe extends TlsProbe {
     public boolean canBeExecuted(SiteReport report) {
         // We also need the tls13 groups to perform a tls13 handshake
         return report.getCertificateChainList() != null && !report.getCertificateChainList().isEmpty()
-                && report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS);
+            && report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS);
     }
 
     @Override
@@ -251,7 +252,7 @@ public class OcspProbe extends TlsProbe {
         List<CertificateStatusRequestExtensionMessage> certificateStatuses = new LinkedList<>();
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplementedTls13CipherSuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setEnforceSettings(false);
@@ -266,11 +267,10 @@ public class OcspProbe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setDefaultClientKeyShareNamedGroups(tls13NamedGroups);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
+            SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         List<PskKeyExchangeMode> pskKex = new LinkedList<>();
         pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
@@ -279,8 +279,8 @@ public class OcspProbe extends TlsProbe {
         tlsConfig.setAddPSKKeyExchangeModesExtension(true);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())) {
-            CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil.getFirstReceivedMessage(
-                    HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
+            CertificateMessage certificateMessage = (CertificateMessage) WorkflowTraceUtil
+                .getFirstReceivedMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace());
             List<CertificateEntry> certificateEntries = certificateMessage.getCertificatesListAsEntry();
             for (CertificateEntry certificateEntry : certificateEntries) {
                 for (ExtensionMessage extensionMessage : certificateEntry.getExtensions()) {

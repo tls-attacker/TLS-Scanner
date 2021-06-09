@@ -1,33 +1,25 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
-import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateStatus;
-import de.rub.nds.tlsattacker.core.certificate.ocsp.OCSPResponse;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.CertificateStatusRequestExtensionMessage;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 /**
  *
- * @author Nils Hanke <nils.hanke@rub.de>
+ * @author Nils Hanke {@literal <nils.hanke@rub.de>}
  */
 public class OcspResult extends ProbeResult {
 
@@ -36,7 +28,7 @@ public class OcspResult extends ProbeResult {
     private final List<CertificateStatusRequestExtensionMessage> tls13CertStatus;
 
     public OcspResult(List<OcspCertificateResult> certResults,
-            List<CertificateStatusRequestExtensionMessage> tls13CertStatus) {
+        List<CertificateStatusRequestExtensionMessage> tls13CertStatus) {
         super(ProbeType.OCSP);
         this.certResults = certResults;
         this.tls13CertStatus = tls13CertStatus;

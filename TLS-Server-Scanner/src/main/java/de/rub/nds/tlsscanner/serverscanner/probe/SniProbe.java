@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -49,9 +50,9 @@ public class SniProbe extends TlsProbe {
             toTestList.addAll(Arrays.asList(CipherSuite.values()));
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
             toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            config.setDefaultClientSupportedCiphersuites(toTestList);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(
-                    WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
+            config.setDefaultClientSupportedCipherSuites(toTestList);
+            WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+                .createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
             State state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
@@ -60,7 +61,7 @@ public class SniProbe extends TlsProbe {
             // Test if we can get a hello with SNI
             config.setAddServerNameIndicationExtension(true);
             trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
-                    RunningModeType.CLIENT);
+                RunningModeType.CLIENT);
             state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
@@ -69,8 +70,8 @@ public class SniProbe extends TlsProbe {
             // We cannot get a ServerHello from this Server...
             LOGGER.debug("SNI Test could not get a ServerHello message from the Server!");
             return new SniResult(TestResult.UNCERTAIN);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new SniResult(TestResult.ERROR_DURING_TEST);
         }
     }

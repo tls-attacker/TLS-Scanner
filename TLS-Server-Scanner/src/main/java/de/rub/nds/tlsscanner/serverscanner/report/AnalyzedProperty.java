@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 public enum AnalyzedProperty {
@@ -82,14 +83,21 @@ public enum AnalyzedProperty {
     SUPPORTS_CERTIFICATE_STATUS_REQUEST(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2(AnalyzedPropertyCategory.EXTENSIONS),
     SUPPORTS_CERTIFICATE_STATUS_REQUEST_TLS13(AnalyzedPropertyCategory.EXTENSIONS),
+    SUPPORTS_SCTS_PRECERTIFICATE(AnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
+    SUPPORTS_SCTS_HANDSHAKE(AnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
+    SUPPORTS_SCTS_OCSP(AnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
+    SUPPORTS_CHROME_CT_POLICY(AnalyzedPropertyCategory.CERTIFICATE_TRANSPARENCY),
     SUPPORTS_MONTGOMERY_CURVES(AnalyzedPropertyCategory.EC),
     SUPPORTS_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
-    SUPPORTS_TLS13_PSK_DHE(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_TLS13_PSK_DHE(AnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_TLS13_PSK(AnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_TLS13_0_RTT(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_IDS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_ROTATION_HINT(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SECURE_RENEGOTIATION_EXTENSION(AnalyzedPropertyCategory.RENEGOTIATION),
-    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE(AnalyzedPropertyCategory.RENEGOTIATION),
+    SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_FALLBACK_SCSV(AnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_TLS_COMPRESSION(AnalyzedPropertyCategory.COMPRESSION),
@@ -114,7 +122,9 @@ public enum AnalyzedProperty {
     SUPPORTS_OCSP(AnalyzedPropertyCategory.OCSP),
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
-    ENFOCRES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    STRICT_SNI(AnalyzedPropertyCategory.SNI),
+    STRICT_ALPN(AnalyzedPropertyCategory.EXTENSIONS),
     /**
      * does it handle unknown versions correctly?
      */
@@ -122,15 +132,15 @@ public enum AnalyzedProperty {
     /**
      * does it handle unknown cipher suites correctly?
      */
-    HAS_CIPHERSUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_CIPHER_SUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it handle unknown extensions correctly?
      */
     HAS_EXTENSION_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * does it handle long ciphersuite length values correctly?
+     * does it handle long cipher suite length values correctly?
      */
-    HAS_CIPHERSUITE_LENGTH_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_CIPHER_SUITE_LENGTH_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it handle unknown compression algorithms correctly
      */
@@ -160,17 +170,17 @@ public enum AnalyzedProperty {
      */
     HAS_NAMED_GROUP_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * is only the second byte of the ciphersuite evaluated
+     * is only the second byte of the cipher suite evaluated
      */
-    HAS_SECOND_CIPHERSUITE_BYTE_BUG(AnalyzedPropertyCategory.QUIRKS),
+    HAS_SECOND_CIPHER_SUITE_BYTE_BUG(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * does it ignore the offered ciphersuites
+     * does it ignore the offered cipher suites
      */
-    REFLECTS_OFFERED_CIPHERSUITES(AnalyzedPropertyCategory.QUIRKS),
+    REFLECTS_OFFERED_CIPHER_SUITES(AnalyzedPropertyCategory.QUIRKS),
     /**
-     * does it ignore the offered ciphersuites
+     * does it ignore the offered cipher suites
      */
-    IGNORES_OFFERED_CIPHERSUITES(AnalyzedPropertyCategory.QUIRKS),
+    IGNORES_OFFERED_CIPHER_SUITES(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it ignore the offered named groups
      */
@@ -183,6 +193,19 @@ public enum AnalyzedProperty {
      * does it accept that named groups for ecdsa are missing
      */
     IGNORES_ECDSA_GROUP_DISPARITY(AnalyzedPropertyCategory.QUIRKS),
+    /**
+     * does it handle a http false start
+     */
+    SUPPORTS_HTTP_FALSE_START(AnalyzedPropertyCategory.QUIRKS),
+    SUPPORTS_RECORD_FRAGMENTATION(AnalyzedPropertyCategory.QUIRKS),
+    /**
+     * does it have a grease value intolerance?
+     */
+    HAS_GREASE_CIPHER_SUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_GREASE_NAMED_GROUP_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    SENDS_HELLO_RETRY_REQUEST(AnalyzedPropertyCategory.BEST_PRACTICES),
+    ISSUES_COOKIE_IN_HELLO_RETRY(AnalyzedPropertyCategory.EXTENSIONS),
     VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_DIRECT_RACCOON(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_BLEICHENBACHER(AnalyzedPropertyCategory.ATTACKS),
@@ -203,8 +226,10 @@ public enum AnalyzedProperty {
     VULNERABLE_TO_BREACH(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_LOGJAM(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_FREAK(AnalyzedPropertyCategory.ATTACKS),
-    VULNERABLE_TO_RENEGOTIATION_ATTACK(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION(AnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE(AnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RACCOON_ATTACK(AnalyzedPropertyCategory.ATTACKS),
+    ALPACA_MITIGATED(AnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_MAC_FINISHED_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_VERIFY_DATA_CHECKS(AnalyzedPropertyCategory.COMPARISON_FAILURE),

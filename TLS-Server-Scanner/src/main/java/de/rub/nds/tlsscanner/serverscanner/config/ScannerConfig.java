@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.config;
 
 import com.beust.jcommander.Parameter;
@@ -17,18 +18,23 @@ import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import org.bouncycastle.util.IPAddress;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class ScannerConfig extends TLSDelegateConfig {
 
     @ParametersDelegate
     private ClientDelegate clientDelegate;
 
-    @Parameter(names = "-parallelProbes", required = false, description = "Defines the number of threads responsible for different TLS probes. If set to 1, only one specific TLS probe (e.g., TLS version scan) can be run in time.")
+    @Parameter(names = "-parallelProbes", required = false,
+        description = "Defines the number of threads responsible for different TLS probes. If set to 1, only one specific TLS probe (e.g., TLS version scan) can be run in time.")
     private int parallelProbes = 1;
 
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
@@ -40,10 +46,12 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
     private ScannerDetail reportDetail = ScannerDetail.NORMAL;
 
-    @Parameter(names = "-threads", required = false, description = "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed server.")
+    @Parameter(names = "-threads", required = false,
+        description = "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed server.")
     private int overallThreads = 1;
 
-    @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
+    @Parameter(names = "-timeout", required = false,
+        description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
 
     @ParametersDelegate
@@ -51,6 +59,10 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
+
+    private List<ProbeType> probes = null;
+
+    private Config baseConfig = null;
 
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
@@ -122,9 +134,13 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Override
     public Config createConfig() {
+        if (baseConfig != null) {
+            return baseConfig.createCopy();
+        }
+
         Config config = super.createConfig(Config.createConfig());
         if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
-                || clientDelegate.getSniHostname() != null) {
+            || clientDelegate.getSniHostname() != null) {
             config.setAddServerNameIndicationExtension(true);
         } else {
             config.setAddServerNameIndicationExtension(false);
@@ -140,5 +156,25 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public Config getBaseConfig() {
+        return baseConfig;
+    }
+
+    public void setBaseConfig(Config baseConfig) {
+        this.baseConfig = baseConfig;
+    }
+
+    public List<ProbeType> getProbes() {
+        return probes;
+    }
+
+    public void setProbes(List<ProbeType> probes) {
+        this.probes = probes;
+    }
+
+    public void setProbes(ProbeType... probes) {
+        this.probes = Arrays.asList(probes);
     }
 }

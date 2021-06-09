@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -36,7 +37,7 @@ import java.util.List;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class ProtocolVersionProbe extends TlsProbe {
 
@@ -80,8 +81,8 @@ public class ProtocolVersionProbe extends TlsProbe {
                 unsupportedVersionList.add(ProtocolVersion.TLS13);
             }
             return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ProtocolVersionResult(null, null);
         }
     }
@@ -101,7 +102,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         }
         tlsConfig.setDefaultSelectedProtocolVersion(toTest);
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(cipherSuites);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(toTest);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -109,7 +110,6 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
@@ -139,7 +139,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setRecordLayerType(RecordLayerType.BLOB);
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = factory.createTlsEntryWorkflowtrace(tlsConfig.getDefaultClientConnection());
+        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
 
         trace.addTlsAction(new SendAction(new SSL2ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveAction(new SSL2ServerHelloMessage(tlsConfig)));
@@ -165,7 +165,7 @@ public class ProtocolVersionProbe extends TlsProbe {
     private boolean isTls13Supported() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        tlsConfig.setDefaultClientSupportedCiphersuites(CipherSuite.getImplemented());
+        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplemented());
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
         tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
         tlsConfig.setEnforceSettings(false);
@@ -180,11 +180,10 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setAddSupportedVersionsExtension(true);
         tlsConfig.setAddKeyShareExtension(true);
         tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);
         tlsConfig.setUseFreshRandom(true);
-        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(SignatureAndHashAlgorithm
-                .getTls13SignatureAndHashAlgorithms());
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
+            SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms());
         State state = new State(tlsConfig);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {

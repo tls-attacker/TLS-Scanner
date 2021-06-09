@@ -1,23 +1,24 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.ConnectionInsecure;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.HandshakeFailureReasons;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionInsecure;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFailureReasons;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.CiphersuiteRater;
+import de.rub.nds.tlsscanner.serverscanner.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -64,15 +65,15 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private void checkWhyAlert(SiteReport report, SimulatedClientResult simulatedClient) {
-        if (isCiphersuiteMismatch(report, simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailureReasons.CIPHERSUITE_MISMATCH);
+        if (isCipherSuiteMismatch(report, simulatedClient)) {
+            simulatedClient.addToFailReasons(HandshakeFailureReasons.CIPHER_SUITE_MISMATCH);
         }
     }
 
-    private boolean isCiphersuiteMismatch(SiteReport report, SimulatedClientResult simulatedClient) {
+    private boolean isCipherSuiteMismatch(SiteReport report, SimulatedClientResult simulatedClient) {
         if (report.getCipherSuites() != null) {
             for (CipherSuite serverCipherSuite : report.getCipherSuites()) {
-                for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCiphersuites()) {
+                for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCipherSuites()) {
                     if (serverCipherSuite.equals(clientCipherSuite)) {
                         return false;
                     }
@@ -94,12 +95,11 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
             }
             Collections.sort(commonProtocolVersions);
             simulatedClient.setCommonProtocolVersions(commonProtocolVersions);
-            if (!commonProtocolVersions.isEmpty()
-                    && commonProtocolVersions.get(commonProtocolVersions.size() - 1).equals(
-                            simulatedClient.getSelectedProtocolVersion())) {
-                simulatedClient.setHighestPossibleProtocolVersionSeleceted(true);
+            if (!commonProtocolVersions.isEmpty() && commonProtocolVersions.get(commonProtocolVersions.size() - 1)
+                .equals(simulatedClient.getSelectedProtocolVersion())) {
+                simulatedClient.setHighestPossibleProtocolVersionSelected(true);
             } else {
-                simulatedClient.setHighestPossibleProtocolVersionSeleceted(false);
+                simulatedClient.setHighestPossibleProtocolVersionSelected(false);
             }
         }
     }
@@ -108,8 +108,8 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         if (isProtocolMismatch(simulatedClient)) {
             simulatedClient.addToFailReasons(HandshakeFailureReasons.PROTOCOL_MISMATCH);
         }
-        if (isCiphersuiteForbidden(simulatedClient)) {
-            simulatedClient.addToFailReasons(HandshakeFailureReasons.CIPHERSUITE_FORBIDDEN);
+        if (isCipherSuiteForbidden(simulatedClient)) {
+            simulatedClient.addToFailReasons(HandshakeFailureReasons.CIPHER_SUITE_FORBIDDEN);
         }
         if (isPublicKeyLengthRsaNotAccepted(simulatedClient)) {
             simulatedClient.addToFailReasons(HandshakeFailureReasons.RSA_CERTIFICATE_MODULUS_SIZE_NOT_ACCEPTED);
@@ -121,16 +121,15 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
 
     private boolean isProtocolMismatch(SimulatedClientResult simulatedClient) {
         return simulatedClient.getCommonProtocolVersions() != null
-                && simulatedClient.getCommonProtocolVersions().isEmpty();
+            && simulatedClient.getCommonProtocolVersions().isEmpty();
     }
 
-    private boolean isCiphersuiteForbidden(SimulatedClientResult simulatedClient) {
-        if (simulatedClient.getSelectedCiphersuite()
-                .isSupportedInProtocol(simulatedClient.getSelectedProtocolVersion())) {
+    private boolean isCipherSuiteForbidden(SimulatedClientResult simulatedClient) {
+        if (simulatedClient.getSelectedCipherSuite()
+            .isSupportedInProtocol(simulatedClient.getSelectedProtocolVersion())) {
             return false;
-        } else if (simulatedClient.getVersionAcceptForbiddenCiphersuiteList() != null
-                && simulatedClient.getVersionAcceptForbiddenCiphersuiteList().contains(
-                        simulatedClient.getSelectedProtocolVersion())) {
+        } else if (simulatedClient.getVersionAcceptForbiddenCipherSuiteList() != null && simulatedClient
+            .getVersionAcceptForbiddenCipherSuiteList().contains(simulatedClient.getSelectedProtocolVersion())) {
             return false;
         }
         return true;
@@ -140,10 +139,10 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa()
-                && simulatedClient.getSupportedRsaKeySizeList() != null) {
+            && simulatedClient.getSupportedRsaKeySizeList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedRsaKeySizeList();
             if (publicKeyLength < supportedKeyLengths.get(0)
-                    || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
+                || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
                 return true;
             }
         }
@@ -154,10 +153,10 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         List<Integer> supportedKeyLengths;
         Integer publicKeyLength = simulatedClient.getServerPublicKeyParameter();
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeDh()
-                && simulatedClient.getSupportedDheKeySizeList() != null) {
+            && simulatedClient.getSupportedDheKeySizeList() != null) {
             supportedKeyLengths = simulatedClient.getSupportedDheKeySizeList();
             if (publicKeyLength < supportedKeyLengths.get(0)
-                    || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
+                || supportedKeyLengths.get(supportedKeyLengths.size() - 1) < publicKeyLength) {
                 return true;
             }
         }
@@ -175,36 +174,36 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private void checkIfConnectionIsInsecure(SiteReport report, SimulatedClientResult simulatedClient) {
-        if (simulatedClient.getSelectedCiphersuite() != null && isCipherSuiteGradeLow(simulatedClient)) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.CIPHERSUITE_GRADE_LOW.getReason());
+        if (simulatedClient.getSelectedCipherSuite() != null && isCipherSuiteGradeLow(simulatedClient)) {
+            simulatedClient.addToInsecureReasons(ConnectionInsecure.CIPHER_SUITE_GRADE_LOW.getReason());
         }
         checkVulnerabilities(report, simulatedClient);
         checkPublicKeySize(simulatedClient);
     }
 
     private boolean isCipherSuiteGradeLow(SimulatedClientResult simulatedClient) {
-        return CiphersuiteRater.getGrade(simulatedClient.getSelectedCiphersuite()).equals(CipherSuiteGrade.LOW);
+        return CipherSuiteRater.getGrade(simulatedClient.getSelectedCipherSuite()).equals(CipherSuiteGrade.LOW);
     }
 
     private void checkVulnerabilities(SiteReport report, SimulatedClientResult simulatedClient) {
-        CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
+        CipherSuite cipherSuite = simulatedClient.getSelectedCipherSuite();
         if (report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) != null
-                && report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) == TestResult.TRUE
-                && cipherSuite.isCBC()) {
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) == TestResult.TRUE
+            && cipherSuite.isCBC()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PADDING_ORACLE.getReason());
         }
         if (report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) != null
-                && report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) == TestResult.TRUE
-                && simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa()) {
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) == TestResult.TRUE
+            && simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.BLEICHENBACHER.getReason());
         }
         if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.CRIME.getReason());
         }
         if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) != null
-                && report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) == TestResult.TRUE) {
+            && report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) == TestResult.TRUE) {
             if (cipherSuite.name().contains("3DES") || cipherSuite.name().contains("IDEA")
-                    || cipherSuite.name().contains("GOST")) {
+                || cipherSuite.name().contains("GOST")) {
                 simulatedClient.addToInsecureReasons(ConnectionInsecure.SWEET32.getReason());
             }
         }
@@ -216,25 +215,24 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
         Integer minDh = 1024;
         Integer minEcdh = 160;
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa() && pubKey <= minRsa) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - rsa > "
-                    + minRsa);
+            simulatedClient
+                .addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - rsa > " + minRsa);
         } else if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeDh() && pubKey <= minDh) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - dh > "
-                    + minDh);
+            simulatedClient
+                .addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - dh > " + minDh);
         } else if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeEcdh() && pubKey <= minEcdh) {
-            simulatedClient.addToInsecureReasons(ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason()
-                    + " - ecdh > " + minEcdh);
+            simulatedClient.addToInsecureReasons(
+                ConnectionInsecure.PUBLIC_KEY_SIZE_TOO_SMALL.getReason() + " - ecdh > " + minEcdh);
         }
     }
 
     private void checkIfConnectionIsRfc7918Secure(SimulatedClientResult simulatedClient) {
         boolean isRfc7918Secure = false;
-        CipherSuite cipherSuite = simulatedClient.getSelectedCiphersuite();
+        CipherSuite cipherSuite = simulatedClient.getSelectedCipherSuite();
         Integer pubKey = simulatedClient.getServerPublicKeyParameter();
         if (cipherSuite != null && pubKey != null) {
             if (isProtocolVersionWhitelisted(simulatedClient) && isSymmetricCipherRfc7918Whitelisted(cipherSuite)
-                    && isKeyExchangeMethodWhitelisted(simulatedClient)
-                    && isKeyLengthWhitelisted(simulatedClient, pubKey)) {
+                && isKeyExchangeMethodWhitelisted(simulatedClient) && isKeyLengthWhitelisted(simulatedClient, pubKey)) {
                 isRfc7918Secure = true;
             }
         }
@@ -242,9 +240,9 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
     }
 
     private boolean isProtocolVersionWhitelisted(SimulatedClientResult simulatedClient) {
-        return Objects.equals(simulatedClient.getHighestPossibleProtocolVersionSeleceted(), Boolean.TRUE)
-                && simulatedClient.getSelectedProtocolVersion() != ProtocolVersion.TLS10
-                && simulatedClient.getSelectedProtocolVersion() != ProtocolVersion.TLS11;
+        return Objects.equals(simulatedClient.getHighestPossibleProtocolVersionSelected(), Boolean.TRUE)
+            && simulatedClient.getSelectedProtocolVersion() != ProtocolVersion.TLS10
+            && simulatedClient.getSelectedProtocolVersion() != ProtocolVersion.TLS11;
     }
 
     private boolean isSymmetricCipherRfc7918Whitelisted(CipherSuite cipherSuite) {
@@ -265,13 +263,13 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
 
     private boolean isKeyLengthWhitelisted(SimulatedClientResult simulatedClient, Integer keyLength) {
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeEcdh()
-                && simulatedClient.getSelectedCiphersuite().isEphemeral()) {
+            && simulatedClient.getSelectedCipherSuite().isEphemeral()) {
             if (keyLength >= 3072) {
                 return true;
             }
         }
         if (simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeEcdh()
-                && simulatedClient.getSelectedCiphersuite().isEphemeral()) {
+            && simulatedClient.getSelectedCipherSuite().isEphemeral()) {
             if (keyLength >= 256) {
                 return true;
             }

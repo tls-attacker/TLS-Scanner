@@ -1,16 +1,17 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack;
 
 import java.math.BigDecimal;
@@ -33,8 +34,8 @@ public class RaccoonAttackProbabilities {
     }
 
     public RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition position,
-            int zeroBitsRequiredToNextBlockBorder, BigDecimal chanceForEquation,
-            List<RaccoonAttackPskProbabilities> pskProbabilityList, BigInteger modulus) {
+        int zeroBitsRequiredToNextBlockBorder, BigDecimal chanceForEquation,
+        List<RaccoonAttackPskProbabilities> pskProbabilityList, BigInteger modulus) {
         this.position = position;
         this.bitsLeaked = zeroBitsRequiredToNextBlockBorder;
         this.chanceForEquation = chanceForEquation;

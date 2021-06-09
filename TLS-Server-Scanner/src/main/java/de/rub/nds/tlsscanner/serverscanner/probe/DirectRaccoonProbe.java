@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
@@ -19,17 +20,17 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon.DirectRaccoonVector;
-import de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.tlsscanner.serverscanner.probe.directRaccoon.DirectRaccoontWorkflowGenerator;
+import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonVector;
+import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowGenerator;
+import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.vectorStatistics.InformationLeakTest;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DirectRaccoonResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -62,11 +63,12 @@ public class DirectRaccoonProbe extends TlsProbe {
             List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
             loop: for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
-                        || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
-                    for (CipherSuite suite : pair.getCiphersuiteList()) {
+                    || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
+                    for (CipherSuite suite : pair.getCipherSuiteList()) {
                         if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
-                            InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest = createDirectRaccoonInformationLeakTest(
-                                    pair.getVersion(), suite, DirectRaccoonWorkflowType.CKE_CCS_FIN);
+                            InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
+                                createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
+                                    DirectRaccoonWorkflowType.CKE_CCS_FIN);
                             testResultList.add(informationLeakTest);
 
                         }
@@ -74,19 +76,19 @@ public class DirectRaccoonProbe extends TlsProbe {
                 }
             }
             return new DirectRaccoonResult(testResultList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new DirectRaccoonResult(TestResult.ERROR_DURING_TEST);
         }
     }
 
     private InformationLeakTest<DirectRaccoonOracleTestInfo> createDirectRaccoonInformationLeakTest(
-            ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
+        ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
 
-        List<VectorResponse> responseMap = createVectorResponseList(version, suite, workflowType,
-                iterationsPerHandshake);
-        InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest = new InformationLeakTest<>(
-                new DirectRaccoonOracleTestInfo(suite, version, workflowType), responseMap);
+        List<VectorResponse> responseMap =
+            createVectorResponseList(version, suite, workflowType, iterationsPerHandshake);
+        InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
+            new InformationLeakTest<>(new DirectRaccoonOracleTestInfo(suite, version, workflowType), responseMap);
 
         if (informationLeakTest.isDistinctAnswers()) {
             LOGGER.debug("Found non identical answers, performing " + iterationsPerHandshake + " additional tests");
@@ -97,7 +99,7 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     private List<VectorResponse> createVectorResponseList(ProtocolVersion version, CipherSuite suite,
-            DirectRaccoonWorkflowType type, int numberOfExecutionsEach) {
+        DirectRaccoonWorkflowType type, int numberOfExecutionsEach) {
         Random r = new Random();
         BigInteger initialDhSecret = new BigInteger("" + (r.nextInt()));
         List<Boolean> booleanList = new LinkedList<>();
@@ -110,18 +112,17 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     private List<VectorResponse> getVectorResponseList(ProtocolVersion version, CipherSuite suite,
-            DirectRaccoonWorkflowType workflowType, BigInteger initialClientDhSecret, List<Boolean> withNullByteList) {
+        DirectRaccoonWorkflowType workflowType, BigInteger initialClientDhSecret, List<Boolean> withNullByteList) {
         List<TlsTask> taskList = new LinkedList<>();
         for (Boolean nullByte : withNullByteList) {
             Config config = getScannerConfig().createConfig();
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
-            config.setDefaultClientSupportedCiphersuites(suite);
+            config.setDefaultClientSupportedCipherSuites(suite);
             config.setDefaultSelectedCipherSuite(suite);
             config.setAddECPointFormatExtension(false);
             config.setAddEllipticCurveExtension(false);
             config.setAddRenegotiationInfoExtension(true);
-            config.setAddServerNameIndicationExtension(true);
             config.setAddSignatureAndHashAlgorithmsExtension(true);
 
             config.setWorkflowExecutorShouldClose(false);
@@ -131,8 +132,8 @@ public class DirectRaccoonProbe extends TlsProbe {
             config.setEarlyStop(true);
             config.setQuickReceive(true);
 
-            WorkflowTrace trace = DirectRaccoontWorkflowGenerator.generateWorkflow(config, workflowType,
-                    initialClientDhSecret, nullByte);
+            WorkflowTrace trace =
+                DirectRaccoonWorkflowGenerator.generateWorkflow(config, workflowType, initialClientDhSecret, nullByte);
             // Store
             trace.setName("" + nullByte);
             State state = new State(config, trace);
@@ -146,8 +147,8 @@ public class DirectRaccoonProbe extends TlsProbe {
         for (TlsTask task : taskList) {
             FingerPrintTask fingerPrintTask = (FingerPrintTask) task;
             Boolean nullByte = Boolean.parseBoolean(fingerPrintTask.getState().getWorkflowTrace().getName());
-            VectorResponse vectorResponse = evaluateFingerPrintTask(version, suite, workflowType, nullByte,
-                    fingerPrintTask);
+            VectorResponse vectorResponse =
+                evaluateFingerPrintTask(version, suite, workflowType, nullByte, fingerPrintTask);
             if (vectorResponse != null) {
                 responseList.add(vectorResponse);
             }
@@ -157,11 +158,11 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     private VectorResponse evaluateFingerPrintTask(ProtocolVersion version, CipherSuite suite,
-            DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
+        DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
         DirectRaccoonVector raccoonVector = new DirectRaccoonVector(workflowType, version, suite, withNullByte);
         if (fingerPrintTask.isHasError()) {
             LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version=" + version + ", suite="
-                    + suite + ", pmsWithNullByte=" + withNullByte + ";");
+                + suite + ", pmsWithNullByte=" + withNullByte + ";");
             return null;
         } else {
             return new VectorResponse(raccoonVector, fingerPrintTask.getFingerprint());
@@ -171,9 +172,9 @@ public class DirectRaccoonProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         if (!(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SSL_3), TestResult.TRUE))
-                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
-                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
-                && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0), TestResult.TRUE))
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1), TestResult.TRUE))
+            && !(Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2), TestResult.TRUE))) {
             return false;
         }
         if (report.getCipherSuites() == null) {

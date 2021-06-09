@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -30,7 +31,7 @@ import java.util.List;
 
 /**
  *
- * @author Robert Merget - robert.merget@rub.de
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class CompressionsProbe extends TlsProbe {
 
@@ -43,8 +44,8 @@ public class CompressionsProbe extends TlsProbe {
         try {
             List<CompressionMethod> compressions = getSupportedCompressionMethods();
             return new CompressionsResult(compressions);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new CompressionsResult(null);
         }
     }
@@ -52,11 +53,11 @@ public class CompressionsProbe extends TlsProbe {
     private List<CompressionMethod> getSupportedCompressionMethods() {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        tlsConfig.setDefaultClientSupportedCiphersuites(ciphersuites);
+        List<CipherSuite> cipherSuites = new LinkedList<>();
+        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+        cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
@@ -66,7 +67,6 @@ public class CompressionsProbe extends TlsProbe {
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
-        tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());

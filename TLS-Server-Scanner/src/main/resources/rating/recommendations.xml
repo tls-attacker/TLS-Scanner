@@ -182,7 +182,7 @@
                 <result>TRUE</result>
                 <shortDescription>Fortezza ciphers are supported</shortDescription>
                 <handlingRecommendation>Disable Fortezza cipher suites</handlingRecommendation>
-                <detailedDescription>Fortezza cipher suittes were developed by NSA in the 90s. You should better get rid of Fortezza algorithms.</detailedDescription>
+                <detailedDescription>Fortezza cipher suites were developed by NSA in the 90s. You should better get rid of Fortezza algorithms.</detailedDescription>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
@@ -376,7 +376,7 @@
         <resultingRecommendations>
             <resultingRecommendation>
                 <result>FALSE</result>
-                <shortDescription>PFS cipher suites are not prefered</shortDescription>
+                <shortDescription>PFS cipher suites are not preferred</shortDescription>
                 <handlingRecommendation>Enable cipher suite ordering and prefer PFS cipher suites</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
@@ -574,7 +574,7 @@
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_NEWHOPE</analyzedProperty>
-        <shortName>Post quantum new hope algorihtm support</shortName>
+        <shortName>Post quantum new hope algorithm support</shortName>
         <shortDescription>Evaluates whether the TLS server supports the new hope post quantum algorithm</shortDescription>
         <detailedDescription></detailedDescription>
         <links/>
@@ -691,7 +691,7 @@
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_RENEGOTIATION</analyzedProperty>
-        <shortName>TLS renegoatiation support</shortName>
+        <shortName>TLS renegotiation support</shortName>
         <shortDescription>Evaluates whether the TLS server supports renegotiation.</shortDescription>
         <detailedDescription></detailedDescription>
         <links/>
@@ -699,7 +699,7 @@
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_INSECURE_RENEGOTIATION</analyzedProperty>
-        <shortName>TLS insecure renegoatiation support</shortName>
+        <shortName>TLS insecure renegotiation support</shortName>
         <shortDescription>Evaluates whether the TLS server supports renegotiation.</shortDescription>
         <links>
             <link></link>
@@ -728,7 +728,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION</analyzedProperty>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE</analyzedProperty>
         <shortName>Support for client-side secure renegotiation</shortName>
         <shortDescription>Evaluates whether the TLS server supports client-side secure renegotiation.</shortDescription>
         <detailedDescription>TLS secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.</detailedDescription>
@@ -738,25 +738,20 @@
         <resultingRecommendations/>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
-        <shortName>Support for client-side insecure renegotiation</shortName>
-        <shortDescription>Evaluates whether the TLS server supports client-side insecure renegotiation.</shortDescription>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
+        <shortName>Support for client-side secure renegotiation</shortName>
+        <shortDescription>Evaluates whether the TLS server supports client-side secure renegotiation.</shortDescription>
+        <detailedDescription>TLS secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.</detailedDescription>
         <links>
             <link>https://tools.ietf.org/html/rfc5746</link>
         </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription>Insecure renegotiation is enabled</shortDescription>
-                <handlingRecommendation>Disable renegotiation or enable only secure renegotiation.</handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
+        <resultingRecommendations/>
     </recommendation>
     <recommendation>
         <analyzedProperty>SUPPORTS_TLS_FALLBACK_SCSV</analyzedProperty>
         <shortName>TLS Fallback Signaling Cipher Suite Value (SCSV) support</shortName>
         <shortDescription>Evaluates whether the TLS server supports TLS Fallback Signaling Cipher Suite Value (SCSV)</shortDescription>
-        <detailedDescription>In order to establish the highest possible TLS version, TLS clients attempt to perform several TLS handshake starting with the one with the highetst version. If a TLS handshake with a particular version does not work, the TLS client attampts to execute the handshake with a lower version. This of course allows an attacker to downgrade the TLS connection. TLS Fallback Signaling Cipher Suite Value (SCSV) was introduced to prevent downgrade attacks. For example, if a TLS client attempts to establish a TLS 1.1 conenction after an unsuccessful TLS 1.2 handshake attempt, it includes a TLS SCSV cipher suite into the ClientHello message. The server accepts this handshake if and only if its highest version is TLS 1.1.</detailedDescription>
+        <detailedDescription>In order to establish the highest possible TLS version, TLS clients attempt to perform several TLS handshake starting with the one with the highest version. If a TLS handshake with a particular version does not work, the TLS client attempts to execute the handshake with a lower version. This of course allows an attacker to downgrade the TLS connection. TLS Fallback Signaling Cipher Suite Value (SCSV) was introduced to prevent downgrade attacks. For example, if a TLS client attempts to establish a TLS 1.1 connection after an unsuccessful TLS 1.2 handshake attempt, it includes a TLS SCSV cipher suite into the ClientHello message. The server accepts this handshake if and only if its highest version is TLS 1.1.</detailedDescription>
         <links>
             <link>https://tools.ietf.org/html/rfc7507</link>
         </links>
@@ -771,7 +766,7 @@
     <recommendation>
         <analyzedProperty>SUPPORTS_TLS_COMPRESSION</analyzedProperty>
         <shortName>TLS compression support</shortName>
-        <shortDescription>Evaluates whether the TLS server supports TLS compresssion</shortDescription>
+        <shortDescription>Evaluates whether the TLS server supports TLS compression</shortDescription>
         <links>
             <link></link>
         </links>
@@ -893,7 +888,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>ENFOCRES_CS_ORDERING</analyzedProperty>
+        <analyzedProperty>ENFORCES_CS_ORDERING</analyzedProperty>
         <shortName>Cipher suite ordering support</shortName>
         <shortDescription>Evaluates whether the TLS server supports cipher suite ordering</shortDescription>
         <links>
@@ -923,7 +918,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>HAS_CIPHERSUITE_INTOLERANCE</analyzedProperty>
+        <analyzedProperty>HAS_CIPHER_SUITE_INTOLERANCE</analyzedProperty>
         <shortName>TLS cipher suite intolerance</shortName>
         <shortDescription>Evaluates whether the TLS server is cipher suite intolerant</shortDescription>
         <links>
@@ -953,7 +948,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>HAS_CIPHERSUITE_LENGTH_INTOLERANCE</analyzedProperty>
+        <analyzedProperty>HAS_CIPHER_SUITE_LENGTH_INTOLERANCE</analyzedProperty>
         <shortName>TLS cipher suite length intolerance</shortName>
         <shortDescription>Evaluates whether the TLS server has TLS cipher suite length intolerance</shortDescription>
         <links>
@@ -1073,7 +1068,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>HAS_SECOND_CIPHERSUITE_BYTE_BUG</analyzedProperty>
+        <analyzedProperty>HAS_SECOND_CIPHER_SUITE_BYTE_BUG</analyzedProperty>
         <shortName>Second cipher suite bug</shortName>
         <shortDescription>Evaluates whether the TLS server always evaluates only the second cipher suite byte</shortDescription>
         <links>
@@ -1088,7 +1083,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>REFLECTS_OFFERED_CIPHERSUITES</analyzedProperty>
+        <analyzedProperty>REFLECTS_OFFERED_CIPHER_SUITES</analyzedProperty>
         <shortName>Cipher suite reflection</shortName>
         <shortDescription>Evaluates whether the TLS server reflects offered cipher suites</shortDescription>
         <links>
@@ -1103,7 +1098,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>IGNORES_OFFERED_CIPHERSUITES</analyzedProperty>
+        <analyzedProperty>IGNORES_OFFERED_CIPHER_SUITES</analyzedProperty>
         <shortName>Ignoring offered cipher suites</shortName>
         <shortDescription>Evaluates whether the TLS server ignores offered cipher suites</shortDescription>
         <links>
@@ -1194,8 +1189,8 @@
     </recommendation>
     <recommendation>
         <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL</analyzedProperty>
-        <shortName>Vulnerable to an innvalid curve attack on ephemeral cipher suites</shortName>
-        <shortDescription>Evaluates whether the TLS server is vulnerable to an innvalid curve attack on ephemeral cipher suites</shortDescription>
+        <shortName>Vulnerable to an invalid curve attack on ephemeral cipher suites</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites</shortDescription>
         <links>
             <link></link>
         </links>
@@ -1209,8 +1204,8 @@
     </recommendation>
     <recommendation>
         <analyzedProperty>VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE</analyzedProperty>
-        <shortName>Vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse</shortName>
-        <shortDescription>Evaluates whether the TLS server is vulnerable to an innvalid curve attack on ephemeral cipher suites with key reuse</shortDescription>
+        <shortName>Vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse</shortDescription>
         <links>
             <link></link>
         </links>
@@ -1263,14 +1258,14 @@
             <resultingRecommendation>
                 <result>TRUE</result>
                 <shortDescription>The TLS server is vulnerable to Sweet32</shortDescription>
-                <handlingRecommendation>Disable 64 bit block siphers like 3DES.</handlingRecommendation>
+                <handlingRecommendation>Disable 64 bit block ciphers like 3DES.</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
     <recommendation>
         <analyzedProperty>VULNERABLE_TO_GENERAL_DROWN</analyzedProperty>
         <shortName>Vulnerable to DROWN</shortName>
-        <shortDescription>Evaluates whether the TLS server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened eNcryption)</shortDescription>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to DROWN (Decrypting RSA with Obsolete and Weakened encryption)</shortDescription>
         <links>
             <link>https://drownattack.com</link>
         </links>
@@ -1389,7 +1384,22 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK</analyzedProperty>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE</analyzedProperty>
+        <shortName>Vulnerable to the renegotiation attack</shortName>
+        <shortDescription>Evaluates whether the TLS server is vulnerable to the renegotiation attack</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The TLS server is vulnerable to the renegotiation attack</shortDescription>
+                <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION</analyzedProperty>
         <shortName>Vulnerable to the renegotiation attack</shortName>
         <shortDescription>Evaluates whether the TLS server is vulnerable to the renegotiation attack</shortDescription>
         <links>
@@ -1543,6 +1553,51 @@
                 <result>TRUE</result>
                 <shortDescription></shortDescription>
                 <handlingRecommendation></handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>STRICT_ALPN</analyzedProperty>
+        <shortName>Strict ALPN</shortName>
+        <shortDescription>Evaluated whether the server rejects unsupported ALPN Strings. This is important to mitigate the ALPACA attacks</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The TLS server does not reject unsupported ALPN Strings</shortDescription>
+                <handlingRecommendation>If possible configure your server to use strict ALPN verification</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>STRICT_SNI</analyzedProperty>
+        <shortName>Strict SNI</shortName>
+        <shortDescription>Evaluated whether the server rejects invalid SNI names. This is important to mitigate the ALPACA attacks</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The TLS server does not reject invalid SNI names.</shortDescription>
+                <handlingRecommendation>If possible configure your server to use strict SNI verification</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>ALPACA_MITIGATED</analyzedProperty>
+        <shortName>ALPACA Mitigation</shortName>
+        <shortDescription>Evaluated whether the server is vulnerable to ALPACA</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The TLS does not reject invalid SNI names.</shortDescription>
+                <handlingRecommendation>If possible configure your server to use strict SNI and strict ALPN verification</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>

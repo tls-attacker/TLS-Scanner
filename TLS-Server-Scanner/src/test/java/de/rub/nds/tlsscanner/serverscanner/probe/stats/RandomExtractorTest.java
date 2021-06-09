@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.stats;
 
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
@@ -22,9 +23,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test-Class for RandomExtractor.java, which currently looks for the
- * serverHello-message of the TLS-Handshake and extracts the random-bytes
- * transmitted
+ * Test-Class for RandomExtractor.java, which currently looks for the serverHello-message of the TLS-Handshake and
+ * extracts the random-bytes transmitted
  *
  * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
  */
@@ -33,14 +33,16 @@ public class RandomExtractorTest {
     private WorkflowTrace testTrace;
     private RandomExtractor extractor;
     private final Logger LOGGER = LogManager.getLogger();
-    private final static byte[] STATIC_RANDOM1 = ArrayConverter
-            .hexStringToByteArray("4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
-    private final static byte[] STATIC_RANDOM2 = ArrayConverter
-            .hexStringToByteArray("CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
+    @SuppressWarnings("SpellCheckingInspection")
+    private final static byte[] STATIC_RANDOM1 =
+        ArrayConverter.hexStringToByteArray("4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
+    private final static byte[] STATIC_RANDOM2 =
+        ArrayConverter.hexStringToByteArray("CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
+    @SuppressWarnings("SpellCheckingInspection")
     private final static byte[] LONG_STATIC_RANDOM3 = ArrayConverter.hexStringToByteArray("19C26C4DD15B39"
-            + "C49DFF3EAFB83130E8FAA462F252C2E0ED7F389ECC349A38DA1DB5D3E8D04BA6D77E6B05E81B04CF41CF737CC44E"
-            + "F614E2B05672A18BE97E94345A112186A15529B05918CE3662D4DD18B909C161AA76AF7192CA6D20E074788E0059"
-            + "42DD3C46FBCB6C7C2D620B2AF65E98A8C06BEBA0FF");
+        + "C49DFF3EAFB83130E8FAA462F252C2E0ED7F389ECC349A38DA1DB5D3E8D04BA6D77E6B05E81B04CF41CF737CC44E"
+        + "F614E2B05672A18BE97E94345A112186A15529B05918CE3662D4DD18B909C161AA76AF7192CA6D20E074788E0059"
+        + "42DD3C46FBCB6C7C2D620B2AF65E98A8C06BEBA0FF");
     private SendAction testClientHello;
 
     public RandomExtractorTest() {
@@ -49,9 +51,9 @@ public class RandomExtractorTest {
     /**
      * Helper Method for generating serverHello-Messages
      * 
-     * @param rndBytes
-     *            the random-bytes of the serverHello Message
-     * @return serverHello Message with the random-bytes set.
+     * @param  rndBytes
+     *                  the random-bytes of the serverHello Message
+     * @return          serverHello Message with the random-bytes set.
      */
     private ReceiveAction generateServerHello(byte[] rndBytes) {
         ReceiveAction testServerHello = new ReceiveAction();
@@ -62,9 +64,8 @@ public class RandomExtractorTest {
     }
 
     /**
-     * Setting up a test ClientHello-message for filtering and an empty
-     * WorkflowTrace for filling it with the generated ServerHello-messages and
-     * an fresh extractor.
+     * Setting up a test ClientHello-message for filtering and an empty WorkflowTrace for filling it with the generated
+     * ServerHello-messages and an fresh extractor.
      */
     @Before
     public void setUp() {
@@ -181,8 +182,7 @@ public class RandomExtractorTest {
     }
 
     /**
-     * Check if values are extracted correctly by checking if all values are
-     * equal
+     * Check if values are extracted correctly by checking if all values are equal
      */
     @Test
     public void testEqualRandomNumbers() {
@@ -202,8 +202,7 @@ public class RandomExtractorTest {
     }
 
     /***
-     * Testing a mix of valid and invalid ServerHello-Messages inside the
-     * WorkflowTrace.
+     * Testing a mix of valid and invalid ServerHello-Messages inside the WorkflowTrace.
      */
     @Test
     public void testValidEmptyMixExtract() {

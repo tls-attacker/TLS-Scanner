@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -21,20 +22,21 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.ConfigFileList;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulatedClientResult;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.SimulationRequest;
-import de.rub.nds.tlsscanner.serverscanner.probe.handshakeSimulation.TlsClientConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConfigFileList;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationRequest;
+import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.HandshakeSimulationResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
@@ -42,23 +44,23 @@ public class HandshakeSimulationProbe extends TlsProbe {
 
     private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
-    private final List<SimulationRequest> simmulationRequestList;
+    private final List<SimulationRequest> simulationRequestList;
 
     public HandshakeSimulationProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config);
-        simmulationRequestList = new LinkedList<>();
+        simulationRequestList = new LinkedList<>();
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {
             try {
-                TlsClientConfig tlsClientConfig = TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/"
-                        + configFileName);
+                TlsClientConfig tlsClientConfig =
+                    TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/" + configFileName);
                 if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                    simmulationRequestList.add(new SimulationRequest(tlsClientConfig));
+                    simulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 } else {
-                    simmulationRequestList.add(new SimulationRequest(tlsClientConfig));
+                    simulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 }
-            } catch (Exception E) {
-                LOGGER.error("Could not load " + configFileName, E);
+            } catch (Exception e) {
+                LOGGER.error("Could not load " + configFileName, e);
             }
         }
     }
@@ -68,7 +70,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         try {
             List<State> clientStateList = new LinkedList<>();
             List<SimulatedClientResult> resultList = new LinkedList<>();
-            for (SimulationRequest request : simmulationRequestList) {
+            for (SimulationRequest request : simulationRequestList) {
                 State state = request.getExecutableState(scannerConfig);
                 clientStateList.add(state);
             }
@@ -78,8 +80,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
                 // evaluateReceivedMessages(result);
             }
             return new HandshakeSimulationResult(resultList);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            LOGGER.error("Could not scan for " + getProbeName(), e);
             return new HandshakeSimulationResult(null);
         }
     }
@@ -88,31 +90,31 @@ public class HandshakeSimulationProbe extends TlsProbe {
         Config config = state.getConfig();
         config.setStopActionsAfterIOException(true);
         simulatedClient.setHighestClientProtocolVersion(config.getHighestProtocolVersion());
-        simulatedClient.setClientSupportedCiphersuites(config.getDefaultClientSupportedCiphersuites());
+        simulatedClient.setClientSupportedCipherSuites(config.getDefaultClientSupportedCipherSuites());
         if (config.isAddAlpnExtension()) {
-            simulatedClient.setAlpnAnnouncedProtocols(Arrays.toString(config.getAlpnAnnouncedProtocols()));
+            simulatedClient.setAlpnAnnouncedProtocols(config.getDefaultProposedAlpnProtocols());
         } else {
-            simulatedClient.setAlpnAnnouncedProtocols("-");
+            simulatedClient.setAlpnAnnouncedProtocols(new LinkedList<>());
         }
         simulatedClient.setSupportedVersionList(simulatedClient.getTlsClientConfig().getSupportedVersionList());
-        simulatedClient.setVersionAcceptForbiddenCiphersuiteList(simulatedClient.getTlsClientConfig()
-                .getVersionAcceptForbiddenCiphersuiteList());
+        simulatedClient.setVersionAcceptForbiddenCipherSuiteList(
+            simulatedClient.getTlsClientConfig().getVersionAcceptForbiddenCipherSuiteList());
         simulatedClient.setSupportedRsaKeySizeList(simulatedClient.getTlsClientConfig().getSupportedRsaKeySizeList());
         simulatedClient.setSupportedDheKeySizeList(simulatedClient.getTlsClientConfig().getSupportedDheKeySizeList());
     }
 
     private void evaluateReceivedMessages(SimulatedClientResult simulatedClient, State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
-        simulatedClient.setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO,
-                trace));
-        simulatedClient.setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE,
-                trace));
-        simulatedClient.setReceivedServerKeyExchange(WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
-        simulatedClient.setReceivedCertificateRequest(WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.CERTIFICATE_REQUEST, trace));
-        simulatedClient.setReceivedServerHelloDone(WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO_DONE, trace));
+        simulatedClient
+            .setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
+        simulatedClient
+            .setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace));
+        simulatedClient.setReceivedServerKeyExchange(
+            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
+        simulatedClient.setReceivedCertificateRequest(
+            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, trace));
+        simulatedClient.setReceivedServerHelloDone(
+            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
         simulatedClient.setReceivedAlert(WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, trace));
         simulatedClient.setReceivedUnknown(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.UNKNOWN, trace));
         if (!simulatedClient.getReceivedAlert()) {
@@ -157,7 +159,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     private void evaluateServerHello(TlsContext context, SimulatedClientResult simulatedClient) {
         simulatedClient.setSelectedProtocolVersion(context.getSelectedProtocolVersion());
         CipherSuite cipherSuite = context.getSelectedCipherSuite();
-        simulatedClient.setSelectedCiphersuite(cipherSuite);
+        simulatedClient.setSelectedCipherSuite(cipherSuite);
         if (cipherSuite.isEphemeral()) {
             simulatedClient.setForwardSecrecy(true);
         } else {
@@ -192,8 +194,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
             }
             if (simulatedClient.getServerPublicKeyParameter() == null) {
                 if (context.getServerEcPublicKey() != null) {
-                    simulatedClient.setServerPublicKeyParameter(context.getServerEcPublicKey().getX().getData()
-                            .bitLength() * 8);
+                    simulatedClient.setServerPublicKeyParameter(
+                        context.getServerEcPublicKey().getFieldX().getData().bitLength() * 8);
                 }
             }
         }

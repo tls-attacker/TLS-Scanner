@@ -582,7 +582,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION</analyzedProperty>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>0</influence>
@@ -596,7 +596,30 @@
         <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK</referencedProperty>
+            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION</referencedProperty>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE</referencedProperty>
             <referencedPropertyResult>TRUE</referencedPropertyResult>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
@@ -773,7 +796,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>ENFOCRES_CS_ORDERING</analyzedProperty>
+        <analyzedProperty>ENFORCES_CS_ORDERING</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>50</influence>
@@ -795,7 +818,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_CIPHERSUITE_INTOLERANCE</analyzedProperty>
+        <analyzedProperty>HAS_CIPHER_SUITE_INTOLERANCE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-200</influence>
@@ -817,7 +840,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_CIPHERSUITE_LENGTH_INTOLERANCE</analyzedProperty>
+        <analyzedProperty>HAS_CIPHER_SUITE_LENGTH_INTOLERANCE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-200</influence>
@@ -905,7 +928,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>HAS_SECOND_CIPHERSUITE_BYTE_BUG</analyzedProperty>
+        <analyzedProperty>HAS_SECOND_CIPHER_SUITE_BYTE_BUG</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-200</influence>
@@ -916,7 +939,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>REFLECTS_OFFERED_CIPHERSUITES</analyzedProperty>
+        <analyzedProperty>REFLECTS_OFFERED_CIPHER_SUITES</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-200</influence>
@@ -927,7 +950,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>IGNORES_OFFERED_CIPHERSUITES</analyzedProperty>
+        <analyzedProperty>IGNORES_OFFERED_CIPHER_SUITES</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-200</influence>
@@ -1119,8 +1142,7 @@
         <analyzedProperty>VULNERABLE_TO_BREACH</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-200</influence>
-            <scoreCap>0</scoreCap>
+            <influence>-100</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1152,7 +1174,19 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK</analyzedProperty>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
@@ -1280,6 +1314,39 @@
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
             <influence>0</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>STRICT_ALPN</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>STRICT_SNI</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>ALPACA_MITIGATED</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>-200</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
 </ratingInfluencers>

@@ -1,14 +1,19 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomDsaPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomEcPublicKey;
+import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
@@ -22,11 +27,11 @@ import org.bouncycastle.jce.provider.X509CertificateObject;
 
 public class CertificateReport {
 
-    private final static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private String subject;
     private String commonNames;
-    private String alternativenames;
+    private String alternativeNames;
     private Date validFrom;
     private Date validTo;
     private PublicKey publicKey;
@@ -89,8 +94,8 @@ public class CertificateReport {
         return commonNames;
     }
 
-    public String getAlternativenames() {
-        return alternativenames;
+    public String getAlternativeNames() {
+        return alternativeNames;
     }
 
     public Date getValidFrom() {
@@ -157,8 +162,8 @@ public class CertificateReport {
         this.commonNames = commonNames;
     }
 
-    public void setAlternativenames(String alternativenames) {
-        this.alternativenames = alternativenames;
+    public void setAlternativeNames(String alternativeNames) {
+        this.alternativeNames = alternativeNames;
     }
 
     public void setValidFrom(Date validFrom) {
@@ -227,8 +232,8 @@ public class CertificateReport {
         if (commonNames != null) {
             builder.append("CommonNames: ").append(commonNames).append("\n");
         }
-        if (alternativenames != null) {
-            builder.append("AltNames   : ").append(alternativenames).append("\n");
+        if (alternativeNames != null) {
+            builder.append("AltNames   : ").append(alternativeNames).append("\n");
         }
         if (validFrom != null) {
             builder.append("Valid From : ").append(validFrom.toString()).append("\n");
@@ -237,7 +242,7 @@ public class CertificateReport {
             builder.append("Valid Till : ").append(validTo.toString()).append("\n");
         }
         if (publicKey != null) {
-            builder.append("PublicKey  : ").append(publicKey.toString()).append("\n");
+            builder.append("PublicKey  : ").append(printPublicKey(publicKey)).append("\n");
         }
         if (weakDebianKey != null) {
             builder.append("Weak Debian Key: ").append(weakDebianKey).append("\n");
@@ -247,11 +252,11 @@ public class CertificateReport {
         }
         if (signatureAndHashAlgorithm != null) {
             builder.append("Signature Algorithm: ").append(signatureAndHashAlgorithm.getSignatureAlgorithm().name())
-                    .append("\n");
+                .append("\n");
         }
         if (signatureAndHashAlgorithm != null) {
             builder.append("Hash Algorithm     : ").append(signatureAndHashAlgorithm.getHashAlgorithm().name())
-                    .append("\n");
+                .append("\n");
         }
         if (extendedValidation != null) {
             builder.append("Extended Validation: ").append(extendedValidation).append("\n");
@@ -339,29 +344,28 @@ public class CertificateReport {
 
         final CertificateReport otherReport = (CertificateReport) obj;
         if (!Objects.equals(subject, otherReport.getSubject())
-                || !Objects.equals(commonNames, otherReport.getCommonNames())
-                || !Objects.equals(alternativenames, otherReport.getAlternativenames())
-                || !Objects.equals(validFrom, otherReport.getValidFrom())
-                || !Objects.equals(validTo, otherReport.getValidTo())
-                || !Objects.equals(publicKey, otherReport.getPublicKey())
-                || !Objects.equals(weakDebianKey, otherReport.getWeakDebianKey())
-                || !Objects.equals(issuer, otherReport.getIssuer())
-                || !Objects.equals(signatureAndHashAlgorithm, otherReport.getSignatureAndHashAlgorithm())
-                || !Objects.equals(extendedValidation, otherReport.getExtendedValidation())
-                || !Objects.equals(certificateTransparency, otherReport.getCertificateTransparency())
-                || !Objects.equals(ocspMustStaple, otherReport.getOcspMustStaple())
-                || !Objects.equals(crlSupported, otherReport.getCrlSupported())
-                || !Objects.equals(ocspSupported, otherReport.getOcspSupported())
-                || !Objects.equals(revoked, otherReport.getRevoked())
-                || !Objects.equals(dnsCAA, otherReport.getDnsCAA())
-                || !Objects.equals(trusted, otherReport.getTrusted())
-                || !Objects.equals(sha256Fingerprint, otherReport.getSHA256Fingerprint())
-                || !Objects.equals(rocaVulnerable, otherReport.getRocaVulnerable())
-                || !Objects.equals(trustAnchor, otherReport.isTrustAnchor())
-                || !Objects.equals(selfSigned, otherReport.getSelfSigned())
-                || !Objects.equals(leafCertificate, otherReport.getLeafCertificate())
-                || !Objects.equals(sha256Pin, otherReport.getSha256Pin())
-                || !Objects.equals(certificate.getSerialNumber(), otherReport.getCertificate().getSerialNumber())) {
+            || !Objects.equals(commonNames, otherReport.getCommonNames())
+            || !Objects.equals(alternativeNames, otherReport.getAlternativeNames())
+            || !Objects.equals(validFrom, otherReport.getValidFrom())
+            || !Objects.equals(validTo, otherReport.getValidTo())
+            || !Objects.equals(publicKey, otherReport.getPublicKey())
+            || !Objects.equals(weakDebianKey, otherReport.getWeakDebianKey())
+            || !Objects.equals(issuer, otherReport.getIssuer())
+            || !Objects.equals(signatureAndHashAlgorithm, otherReport.getSignatureAndHashAlgorithm())
+            || !Objects.equals(extendedValidation, otherReport.getExtendedValidation())
+            || !Objects.equals(certificateTransparency, otherReport.getCertificateTransparency())
+            || !Objects.equals(ocspMustStaple, otherReport.getOcspMustStaple())
+            || !Objects.equals(crlSupported, otherReport.getCrlSupported())
+            || !Objects.equals(ocspSupported, otherReport.getOcspSupported())
+            || !Objects.equals(revoked, otherReport.getRevoked()) || !Objects.equals(dnsCAA, otherReport.getDnsCAA())
+            || !Objects.equals(trusted, otherReport.getTrusted())
+            || !Objects.equals(sha256Fingerprint, otherReport.getSHA256Fingerprint())
+            || !Objects.equals(rocaVulnerable, otherReport.getRocaVulnerable())
+            || !Objects.equals(trustAnchor, otherReport.isTrustAnchor())
+            || !Objects.equals(selfSigned, otherReport.getSelfSigned())
+            || !Objects.equals(leafCertificate, otherReport.getLeafCertificate())
+            || !Objects.equals(sha256Pin, otherReport.getSha256Pin())
+            || !Objects.equals(certificate.getSerialNumber(), otherReport.getCertificate().getSerialNumber())) {
             return false;
         }
 
@@ -373,7 +377,7 @@ public class CertificateReport {
         int hash = 5;
         hash = 71 * hash + Objects.hashCode(this.subject);
         hash = 71 * hash + Objects.hashCode(this.commonNames);
-        hash = 71 * hash + Objects.hashCode(this.alternativenames);
+        hash = 71 * hash + Objects.hashCode(this.alternativeNames);
         hash = 71 * hash + Objects.hashCode(this.validFrom);
         hash = 71 * hash + Objects.hashCode(this.validTo);
         hash = 71 * hash + Objects.hashCode(this.publicKey);
@@ -395,5 +399,42 @@ public class CertificateReport {
         hash = 71 * hash + Objects.hashCode(this.leafCertificate);
         hash = 71 * hash + Objects.hashCode(this.sha256Pin);
         return hash;
+    }
+
+    private String printPublicKey(PublicKey publicKey) {
+        StringBuilder builder = new StringBuilder();
+        if (publicKey instanceof CustomDhPublicKey) {
+            CustomDhPublicKey dhPublicKey = (CustomDhPublicKey) publicKey;
+            builder.append("Static Diffie Hellman\n");
+            builder.append("\t Modulus:").append(dhPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Generator:").append(dhPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Y:").append(dhPublicKey.getY().toString(16)).append("\n");
+        } else if (publicKey instanceof CustomDsaPublicKey) {
+            CustomDsaPublicKey dsaPublicKey = (CustomDsaPublicKey) publicKey;
+            builder.append("DSA\n");
+            builder.append("\t Modulus:").append(dsaPublicKey.getDsaP().toString(16)).append("\n");
+            builder.append("\t Generator:").append(dsaPublicKey.getDsaG().toString(16)).append("\n");
+            builder.append("\t Q:").append(dsaPublicKey.getDsaQ().toString(16)).append("\n");
+            builder.append("\t X:").append(dsaPublicKey.getY().toString(16)).append("\n");
+        } else if (publicKey instanceof CustomRsaPublicKey) {
+            CustomRsaPublicKey rsaPublicKey = (CustomRsaPublicKey) publicKey;
+            builder.append("RSA\n");
+            builder.append("\t Modulus:").append(rsaPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Generator:").append(rsaPublicKey.getModulus().toString(16)).append("\n");
+            builder.append("\t Public exponent:").append(rsaPublicKey.getPublicExponent().toString(16)).append("\n");
+        } else if (publicKey instanceof CustomEcPublicKey) {
+            CustomEcPublicKey ecPublicKey = (CustomEcPublicKey) publicKey;
+            builder.append("Elliptic Curve\n");
+            if (ecPublicKey.getGroup() == null) {
+                builder.append("\t Group (GOST):").append(ecPublicKey.getGostCurve()).append("\n");
+            } else {
+                builder.append("\t Group:").append(ecPublicKey.getGroup()).append("\n");
+            }
+            builder.append("\t Public Point:").append(ecPublicKey.getPoint().toString()).append("\n");
+
+        } else {
+            builder.append(publicKey.toString()).append("\n");
+        }
+        return builder.toString();
     }
 }

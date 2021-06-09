@@ -1,6 +1,6 @@
-TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+${project.name} - ${description}
 
-Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+Copyright ${startYear}-${year} ${owner}
 
-Licensed under Apache License 2.0
-http://www.apache.org/licenses/LICENSE-2.0
+Licensed under ${licenseName}
+${licenseURL}
