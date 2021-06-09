@@ -1,8 +1,9 @@
+outputcerts/
 target/
 apps/
 trust_stores_observatory/
 log/
-src/main/resources/trust/*
+*/src/main/resources/trust/*
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -10,8 +11,12 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
+nbactions.xml
 .mvn/timing.properties
 .classpath
 .project
 .settings/
 /nbproject/
+.factorypath
+.idea
+*.iml
