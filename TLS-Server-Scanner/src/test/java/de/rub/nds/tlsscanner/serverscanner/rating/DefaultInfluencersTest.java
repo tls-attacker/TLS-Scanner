@@ -375,8 +375,6 @@ public class DefaultInfluencersTest {
             TestResult.TRUE, 50), new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DSS, new PropertyResultRatingInfluencer(
             TestResult.TRUE, -100), new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_SRP, new PropertyResultRatingInfluencer(
-            TestResult.TRUE, 0), new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_EXPLICIT_PRIME_CURVE,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -100), new PropertyResultRatingInfluencer(
                 TestResult.FALSE, 0)));
