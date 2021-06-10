@@ -13,6 +13,7 @@ In order to compile and use TLS-Scanner, you need to run:
  
 ```bash
 $ cd TLS-Scanner
+$ git submodule update --init --recursive
 $ mvn clean package
 
 ```
@@ -30,7 +31,7 @@ $ mvn clean install
 In order to run TLS-Scanner you need to run the jar file in the apps/ folder.
 
 ```bash
-$ java -jar apps/TLS-Scanner.jar -connect localhost:4433
+$ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
 ```
 
 You can specify a host you want to scan with the -connect parameter. If you want to improve the performance of the scan you can use the -threads parameter (default=1).
