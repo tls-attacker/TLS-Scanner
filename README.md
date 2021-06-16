@@ -1,6 +1,6 @@
 # TLS-Scanner
 
-[![release](https://img.shields.io/badge/Release-v4.0.0-blue.svg)](https://github.com/RUB-NDS/TLS-Scanner/releases)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/tls-attacker/TLS-Scanner)
 ![licence](https://img.shields.io/badge/License-Apachev2-brightgreen.svg)
 [![Build Status](https://hydrogen.cloud.nds.rub.de/buildStatus/icon.svg?job=TLS-Scanner)](https://hydrogen.cloud.nds.rub.de/job/TLS-Scanner/)
 
