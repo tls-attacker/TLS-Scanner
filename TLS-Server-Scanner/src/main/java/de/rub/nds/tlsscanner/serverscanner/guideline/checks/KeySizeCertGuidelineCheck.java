@@ -1,8 +1,8 @@
 /**
  * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
- *
+ * <p>
  * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
- *
+ * <p>
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
@@ -14,6 +14,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Locale;
@@ -24,6 +25,16 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     private Integer rsa;
     private Integer ec;
     private Integer dh;
+
+    @Override
+    public Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report) {
+        if (report.getWeakestDhStrength() != null && this.dh != null) {
+            if (report.getWeakestDhStrength() < this.dh) {
+                return Pair.of(GuidelineCheckStatus.FAILED, String.format("Weakest DH size %d<%d", report.getWeakestDhStrength(), this.dh));
+            }
+        }
+        return super.evaluateStatus(report);
+    }
 
     @Override
     public Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain) {
