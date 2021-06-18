@@ -13,15 +13,17 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.ConditionalGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class ExtensionGuidelineCheck extends ConditionalGuidelineCheck {
 
     private ExtensionType extension;
 
     @Override
-    public GuidelineCheckStatus evaluateStatus(SiteReport report) {
-        return report.getSupportedExtensions().contains(extension) ? GuidelineCheckStatus.PASSED
-            : GuidelineCheckStatus.FAILED;
+    public Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report) {
+        return report.getSupportedExtensions().contains(extension)
+            ? Pair.of(GuidelineCheckStatus.PASSED, "The server supports " + this.extension)
+            : Pair.of(GuidelineCheckStatus.FAILED, "The server does not support " + this.extension);
     }
 
     public ExtensionType getExtension() {

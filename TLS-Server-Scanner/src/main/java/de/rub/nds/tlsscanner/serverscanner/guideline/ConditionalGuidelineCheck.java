@@ -9,25 +9,22 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.tlsscanner.serverscanner.ConsoleLogger;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class ConditionalGuidelineCheck extends GuidelineCheck {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(ConditionalGuidelineCheck.class);
 
     private GuidelineCheckCondition condition;
 
     @Override
     public GuidelineCheckResult evaluate(SiteReport report) {
         return this.passesCondition(report, this.condition) ? super.evaluate(report)
-            : new GuidelineCheckResult(this.getName(), this.getDescription(), GuidelineCheckStatus.PASSED);
+            : new GuidelineCheckResult(this.getName(),
+                this.getDescription() + "\nCondition was not met => Check is skipped.", GuidelineCheckStatus.PASSED);
     }
 
     private boolean passesCondition(SiteReport report, GuidelineCheckCondition condition) {
         if (condition == null) {
-            LOGGER.warn("Conditional Guideline Check does not have condition.");
             return true;
         }
         if (condition.getAnd() != null) {
@@ -47,7 +44,7 @@ public abstract class ConditionalGuidelineCheck extends GuidelineCheck {
         } else if (condition.getAnalyzedProperty() != null && condition.getResult() != null) {
             return condition.getResult().equals(report.getResult(condition.getAnalyzedProperty()));
         }
-        LOGGER.warn("Invalid condition object.");
+        ConsoleLogger.CONSOLE.warn("Invalid condition object.");
         return false;
     }
 

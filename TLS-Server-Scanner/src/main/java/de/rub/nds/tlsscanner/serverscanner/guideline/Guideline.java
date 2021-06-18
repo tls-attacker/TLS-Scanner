@@ -22,6 +22,9 @@ public class Guideline implements Serializable {
     private String link;
     private List<GuidelineCheck> checks;
 
+    public Guideline() {
+    }
+
     public Guideline(String name, String link, List<GuidelineCheck> checks) {
         this.name = name;
         this.link = link;

@@ -14,6 +14,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class AnalyzedPropertyGuidelineCheck extends ConditionalGuidelineCheck {
 
@@ -21,10 +22,10 @@ public class AnalyzedPropertyGuidelineCheck extends ConditionalGuidelineCheck {
     private TestResult result;
 
     @Override
-    public GuidelineCheckStatus evaluateStatus(SiteReport report) {
+    public Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report) {
         TestResult reportResult = report.getResult(this.property);
         if (reportResult == null) {
-            return GuidelineCheckStatus.UNCERTAIN;
+            return Pair.of(GuidelineCheckStatus.UNCERTAIN, "No Test Result available.");
         }
         switch (reportResult) {
             case UNCERTAIN:
@@ -33,9 +34,11 @@ public class AnalyzedPropertyGuidelineCheck extends ConditionalGuidelineCheck {
             case ERROR_DURING_TEST:
             case NOT_TESTED_YET:
             case TIMEOUT:
-                return GuidelineCheckStatus.UNCERTAIN;
+                return Pair.of(GuidelineCheckStatus.UNCERTAIN, "Test Result: " + reportResult);
         }
-        return reportResult.equals(this.result) ? GuidelineCheckStatus.PASSED : GuidelineCheckStatus.FAILED;
+        return reportResult.equals(this.result)
+            ? Pair.of(GuidelineCheckStatus.PASSED, this.property + "=" + reportResult)
+            : Pair.of(GuidelineCheckStatus.FAILED, this.property + "=" + reportResult);
     }
 
     public AnalyzedProperty getProperty() {

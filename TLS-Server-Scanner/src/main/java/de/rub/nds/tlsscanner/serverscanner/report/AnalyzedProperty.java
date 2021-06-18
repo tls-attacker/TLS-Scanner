@@ -62,6 +62,7 @@ public enum AnalyzedProperty {
     SUPPORTS_RSA(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_DH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_ECDHE(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_STATIC_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ECDSA(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_RSA_CERT(AnalyzedPropertyCategory.CIPHER_SUITES),

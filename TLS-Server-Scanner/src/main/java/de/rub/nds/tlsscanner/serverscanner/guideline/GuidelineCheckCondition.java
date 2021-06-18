@@ -34,11 +34,6 @@ public class GuidelineCheckCondition {
         this.result = result;
     }
 
-    public GuidelineCheckCondition(List<GuidelineCheckCondition> and, List<GuidelineCheckCondition> or) {
-        this.and = and;
-        this.or = or;
-    }
-
     public AnalyzedProperty getAnalyzedProperty() {
         return analyzedProperty;
     }

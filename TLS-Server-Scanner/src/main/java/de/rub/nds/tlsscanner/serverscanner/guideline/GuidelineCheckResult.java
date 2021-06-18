@@ -12,12 +12,12 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 public class GuidelineCheckResult {
 
     private final String name;
-    private final String description;
+    private final String detail;
     private final GuidelineCheckStatus status;
 
-    public GuidelineCheckResult(String name, String description, GuidelineCheckStatus status) {
+    public GuidelineCheckResult(String name, String detail, GuidelineCheckStatus status) {
         this.name = name;
-        this.description = description;
+        this.detail = detail;
         this.status = status;
     }
 
@@ -25,8 +25,8 @@ public class GuidelineCheckResult {
         return name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDetail() {
+        return detail;
     }
 
     public GuidelineCheckStatus getStatus() {

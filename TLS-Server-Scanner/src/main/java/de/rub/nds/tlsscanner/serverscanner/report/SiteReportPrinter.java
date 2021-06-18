@@ -37,7 +37,6 @@ import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
@@ -70,6 +69,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvalua
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.ResponseCounter;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.VectorContainer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
@@ -77,7 +77,6 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
 import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -1622,13 +1621,9 @@ public class SiteReportPrinter {
     }
 
     public void appendGuidelines(StringBuilder builder) {
-        for (String file : GuidelineIO.GUIDELINES) {
-            try {
-                Guideline guideline = GuidelineIO.readGuideline(file);
-                GuidelineChecker checker = new GuidelineChecker(guideline);
-                checker.fillReport(this.report);
-            } catch (IOException ignored) {
-            }
+        for (Guideline guideline : GuidelineIO.readGuidelines(GuidelineIO.GUIDELINES)) {
+            GuidelineChecker checker = new GuidelineChecker(guideline);
+            checker.fillReport(this.report);
         }
         for (GuidelineReport report : this.report.getGuidelineReports()) {
             appendGuideline(builder, report);
@@ -1636,39 +1631,29 @@ public class SiteReportPrinter {
     }
 
     private void appendGuideline(StringBuilder builder, GuidelineReport guidelineReport) {
-        prettyAppendHeading(builder, "Guideline " + guidelineReport.getName());
+        prettyAppendHeading(builder, "Guideline " + StringUtils.trim(guidelineReport.getName()));
         if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            prettyAppend(builder, guidelineReport.getLink(), AnsiColor.BLUE);
+            prettyAppend(builder, StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE);
         }
         for (GuidelineCheckResult result : guidelineReport.getResults()) {
-            if (GuidelineCheckStatus.UNCERTAIN.equals(result.getStatus())) {
-                if (!this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                    continue;
-                }
-            }
-            if (GuidelineCheckStatus.PASSED.equals(result.getStatus())) {
-                if (!this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                    continue;
-                }
-            }
             switch (result.getStatus()) {
                 case PASSED:
                     if (!this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                        continue;
+                        // continue; TODO
                     }
-                    prettyAppend(builder, "Passed Check " + result.getName(), AnsiColor.GREEN);
-                    prettyAppend(builder, "\t" + result.getDescription());
+                    prettyAppend(builder, "Passed Check " + StringUtils.trim(result.getName()), AnsiColor.GREEN);
+                    prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
                     break;
                 case FAILED:
-                    prettyAppend(builder, "Failed Check " + result.getName(), AnsiColor.RED);
-                    prettyAppend(builder, "\t" + result.getDescription());
+                    prettyAppend(builder, "Failed Check " + StringUtils.trim(result.getName()), AnsiColor.RED);
+                    prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
                     break;
                 case UNCERTAIN:
                     if (!this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        continue;
+                        // continue; TODO
                     }
-                    prettyAppend(builder, "Uncertain on Check " + result.getName(), AnsiColor.GREEN);
-                    prettyAppend(builder, "\t" + result.getDescription());
+                    prettyAppend(builder, "Uncertain on Check " + StringUtils.trim(result.getName()), AnsiColor.YELLOW);
+                    prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
                     break;
             }
         }
