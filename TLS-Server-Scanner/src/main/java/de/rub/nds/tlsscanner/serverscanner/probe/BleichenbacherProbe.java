@@ -74,7 +74,7 @@ public class BleichenbacherProbe extends TlsProbe {
             // If we found some difference in the server behavior we need to
             if (isPotentiallyVulnerable(testResultList)
                 || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
-                LOGGER.debug("We found non-determinism during the padding oracle scan");
+                LOGGER.debug("We found non-determinism during the bleichenbacher scan");
                 LOGGER.debug("Starting non-determinism evaluation");
                 for (InformationLeakTest<BleichenbacherOracleTestInfo> fingerprint : testResultList) {
                     if (fingerprint.isDistinctAnswers()
@@ -145,7 +145,7 @@ public class BleichenbacherProbe extends TlsProbe {
         try {
             attacker.isVulnerable();
         } catch (Exception e) {
-            LOGGER.error("Encountered an exception while testing for PaddingOracles", e);
+            LOGGER.error("Encountered an exception while testing for Bleichenbacher", e);
         }
         return new InformationLeakTest<>(
             new BleichenbacherOracleTestInfo(bleichenbacherConfig.getProtocolVersionDelegate().getProtocolVersion(),
