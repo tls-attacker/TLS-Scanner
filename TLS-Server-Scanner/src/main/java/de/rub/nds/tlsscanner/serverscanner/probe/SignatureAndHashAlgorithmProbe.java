@@ -57,8 +57,12 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
             do {
                 context = this.testAlgorithms(toTestList, tlsConfig);
                 if (context != null) {
-                    supported.add(context.getSelectedSignatureAndHashAlgorithm());
-                    toTestList.remove(context.getSelectedSignatureAndHashAlgorithm());
+                    SignatureAndHashAlgorithm selected = context.getSelectedSignatureAndHashAlgorithm();
+                    supported.add(selected);
+                    if (!toTestList.contains(selected)) {
+                        break;
+                    }
+                    toTestList.remove(selected);
                 }
             } while (context != null && toTestList.size() > 0);
         }
