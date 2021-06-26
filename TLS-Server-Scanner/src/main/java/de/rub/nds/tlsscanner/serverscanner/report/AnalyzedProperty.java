@@ -198,6 +198,7 @@ public enum AnalyzedProperty {
      * does it handle a http false start
      */
     SUPPORTS_HTTP_FALSE_START(AnalyzedPropertyCategory.QUIRKS),
+    USES_UNIX_TIME_IN_SERVER_RANDOM(AnalyzedPropertyCategory.BEST_PRACTICES),
     SUPPORTS_RECORD_FRAGMENTATION(AnalyzedPropertyCategory.QUIRKS),
     /**
      * does it have a grease value intolerance?

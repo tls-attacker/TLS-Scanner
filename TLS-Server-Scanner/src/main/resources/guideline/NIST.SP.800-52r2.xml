@@ -281,7 +281,17 @@
             <result>FALSE</result>
             <requirementLevel>MUST</requirementLevel>
         </check>
-        <!-- TODO timestamp should be random -->
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>
+                The random number generator should be used to generate the 4-byte timestamp of the server random value.
+            </name>
+            <description>
+                The random number generator should be used to generate the 4-byte timestamp of the server random value.
+            </description>
+            <property>USES_UNIX_TIME_IN_SERVER_RANDOM</property>
+            <result>FALSE</result>
+            <requirementLevel>SHOULD</requirementLevel>
+        </check>
         <!-- Mandatory TLS Extensions -->
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>The server shall support secure renegotiation Extension.</name>

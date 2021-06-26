@@ -52,4 +52,5 @@ public enum ProbeType {
     HTTP_FALSE_START,
     HELLO_RETRY,
     CROSS_PROTOCOL_ALPACA,
+    RNG
 }
