@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
@@ -20,32 +19,33 @@ public abstract class CertificateGuidelineCheck extends ConditionalGuidelineChec
     private Integer count;
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report) {
-        StringBuilder sb = new StringBuilder();
+    public void evaluate(SiteReport report, GuidelineCheckResult result) {
         int passCount = 0;
         int uncertainCount = 0;
         for (int i = 0; i < report.getCertificateChainList().size(); i++) {
             CertificateChain chain = report.getCertificateChainList().get(i);
-            Pair<GuidelineCheckStatus, String> result = this.evaluateChain(chain);
-            sb.append("Certificate Check #").append(i + 1).append(" ").append(result.getLeft()).append('\n');
-            sb.append(result.getRight()).append('\n');
-            if (GuidelineCheckStatus.PASSED.equals(result.getLeft())) {
+            result.append("Certificate Check #").append(i + 1).append('\n');
+            GuidelineCheckStatus status = this.evaluateChain(chain, result);
+            result.append("Status: ").append(status).append('\n');
+            if (GuidelineCheckStatus.PASSED.equals(status)) {
                 passCount++;
-            } else if (GuidelineCheckStatus.UNCERTAIN.equals(result.getLeft())) {
+            } else if (GuidelineCheckStatus.UNCERTAIN.equals(status)) {
                 uncertainCount++;
             }
         }
         int required = this.requiredPassCount(report.getCertificateChainList());
         if (passCount >= required) {
-            return Pair.of(GuidelineCheckStatus.PASSED, sb.toString());
+            result.setStatus(GuidelineCheckStatus.PASSED);
+            return;
         }
         if (passCount + uncertainCount >= required) {
-            return Pair.of(GuidelineCheckStatus.UNCERTAIN, sb.toString());
+            result.setStatus(GuidelineCheckStatus.UNCERTAIN);
+            return;
         }
-        return Pair.of(GuidelineCheckStatus.FAILED, sb.toString());
+        result.setStatus(GuidelineCheckStatus.FAILED);
     }
 
-    public abstract Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain);
+    public abstract GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result);
 
     public int requiredPassCount(List<CertificateChain> chains) {
         return this.count == null ? chains.size() : this.count;

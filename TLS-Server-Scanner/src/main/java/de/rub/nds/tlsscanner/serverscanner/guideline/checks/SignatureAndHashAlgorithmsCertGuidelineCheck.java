@@ -12,10 +12,10 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 import com.google.common.base.Joiner;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +25,12 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheck extends CertificateGui
     private List<SignatureAndHashAlgorithm> algorithms;
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain) {
+    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
         List<SignatureAndHashAlgorithm> nonRecommended = new ArrayList<>();
         for (CertificateReport report : chain.getCertificateReportList()) {
             if (report.getSignatureAndHashAlgorithm() == null) {
-                return Pair.of(GuidelineCheckStatus.UNCERTAIN, "Certificate is missing supported algorithms.");
+                result.append("Certificate is missing supported algorithms.");
+                return GuidelineCheckStatus.UNCERTAIN;
             }
 
             if (!this.algorithms.contains(report.getSignatureAndHashAlgorithm())) {
@@ -37,11 +38,12 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheck extends CertificateGui
             }
         }
         if (nonRecommended.isEmpty()) {
-            return Pair.of(GuidelineCheckStatus.PASSED, "Only listed signature and hash algorithms are supported.");
+            result.append("Only listed signature and hash algorithms are supported.");
+            return GuidelineCheckStatus.PASSED;
         }
-        return Pair.of(GuidelineCheckStatus.FAILED,
-            "The following signature and hash algorithms were supported but not recommended:\n"
-                + Joiner.on('\n').join(nonRecommended));
+        result.append("The following signature and hash algorithms were supported but not recommended:\n");
+        result.append(Joiner.on('\n').join(nonRecommended));
+        return GuidelineCheckStatus.FAILED;
     }
 
     public List<SignatureAndHashAlgorithm> getAlgorithms() {

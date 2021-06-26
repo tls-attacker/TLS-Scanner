@@ -16,11 +16,14 @@ public class GuidelineReport {
     private String name;
     private String link;
     private List<GuidelineCheckResult> results;
+    private List<GuidelineCheckResult> skipped;
 
-    public GuidelineReport(String name, String link, List<GuidelineCheckResult> results) {
+    public GuidelineReport(String name, String link, List<GuidelineCheckResult> results,
+        List<GuidelineCheckResult> skipped) {
         this.name = name;
         this.link = link;
         this.results = results;
+        this.skipped = skipped;
     }
 
     public String getName() {
@@ -45,5 +48,13 @@ public class GuidelineReport {
 
     public void setResults(List<GuidelineCheckResult> results) {
         this.results = results;
+    }
+
+    public List<GuidelineCheckResult> getSkipped() {
+        return skipped;
+    }
+
+    public void setSkipped(List<GuidelineCheckResult> skipped) {
+        this.skipped = skipped;
     }
 }

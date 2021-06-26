@@ -10,11 +10,11 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.ConditionalGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class AnalyzedPropertyGuidelineCheck extends ConditionalGuidelineCheck {
 
@@ -22,10 +22,11 @@ public class AnalyzedPropertyGuidelineCheck extends ConditionalGuidelineCheck {
     private TestResult result;
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report) {
+    public void evaluate(SiteReport report, GuidelineCheckResult result) {
         TestResult reportResult = report.getResult(this.property);
         if (reportResult == null) {
-            return Pair.of(GuidelineCheckStatus.UNCERTAIN, "No Test Result available.");
+            result.update(GuidelineCheckStatus.UNCERTAIN, "No Test Result available.");
+            return;
         }
         switch (reportResult) {
             case UNCERTAIN:
@@ -34,11 +35,14 @@ public class AnalyzedPropertyGuidelineCheck extends ConditionalGuidelineCheck {
             case ERROR_DURING_TEST:
             case NOT_TESTED_YET:
             case TIMEOUT:
-                return Pair.of(GuidelineCheckStatus.UNCERTAIN, "Test Result: " + reportResult);
+                result.update(GuidelineCheckStatus.UNCERTAIN, "Test Result: " + reportResult);
+                return;
         }
-        return reportResult.equals(this.result)
-            ? Pair.of(GuidelineCheckStatus.PASSED, this.property + "=" + reportResult)
-            : Pair.of(GuidelineCheckStatus.FAILED, this.property + "=" + reportResult);
+        if (reportResult.equals(this.result)) {
+            result.update(GuidelineCheckStatus.PASSED, this.property + "=" + reportResult);
+        } else {
+            result.update(GuidelineCheckStatus.FAILED, this.property + "=" + reportResult);
+        }
     }
 
     public AnalyzedProperty getProperty() {

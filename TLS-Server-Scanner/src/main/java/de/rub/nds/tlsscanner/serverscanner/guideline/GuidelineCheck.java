@@ -10,7 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class GuidelineCheck {
 
@@ -18,25 +17,7 @@ public abstract class GuidelineCheck {
     private String description;
     private RequirementLevel requirementLevel;
 
-    public GuidelineCheckResult evaluate(SiteReport report) {
-        Pair<GuidelineCheckStatus, String> result = this.evaluateStatus(report);
-        GuidelineCheckStatus status = result.getKey();
-        if (RequirementLevel.MUST_NOT.equals(requirementLevel)
-            || RequirementLevel.SHOULD_NOT.equals(requirementLevel)) {
-            // the server must/should not pass this test -> result has to be inverted
-            if (GuidelineCheckStatus.PASSED.equals(status)) {
-                status = GuidelineCheckStatus.FAILED;
-            } else if (GuidelineCheckStatus.FAILED.equals(status)) {
-                status = GuidelineCheckStatus.PASSED;
-            }
-        }
-        if (RequirementLevel.MAY.equals(requirementLevel) && GuidelineCheckStatus.FAILED.equals(status)) {
-            status = GuidelineCheckStatus.UNCERTAIN;
-        }
-        return new GuidelineCheckResult(this.name, result.getValue(), status);
-    }
-
-    public abstract Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report);
+    public abstract void evaluate(SiteReport report, GuidelineCheckResult result);
 
     public String getName() {
         return name;

@@ -11,10 +11,10 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,16 +40,17 @@ public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
     private HashAlgorithm min;
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain) {
+    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
         Comparator<HashAlgorithm> comparator = Comparator.comparing(STRENGTH::get);
         for (CertificateReport report : chain.getCertificateReportList()) {
             int comparison = comparator.compare(report.getSignatureAndHashAlgorithm().getHashAlgorithm(), this.min);
             if (comparison < 0) {
-                return Pair.of(GuidelineCheckStatus.FAILED,
-                    report.getSignatureAndHashAlgorithm().getHashAlgorithm() + " is too weak.");
+                result.append(report.getSignatureAndHashAlgorithm().getHashAlgorithm() + " is too weak.");
+                return GuidelineCheckStatus.FAILED;
             }
         }
-        return Pair.of(GuidelineCheckStatus.PASSED, "Used Hash Algorithms are strong enough.");
+        result.append("Used Hash Algorithms are strong enough.");
+        return GuidelineCheckStatus.PASSED;
     }
 
     public HashAlgorithm getMin() {

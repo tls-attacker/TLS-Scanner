@@ -1657,6 +1657,12 @@ public class SiteReportPrinter {
                     break;
             }
         }
+        // if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) { TODO
+        for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
+            prettyAppend(builder, "Skipped Check: " + StringUtils.trim(result.getName()));
+            prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
+        }
+        // }
     }
 
     public void appendRecommendations(StringBuilder builder) {

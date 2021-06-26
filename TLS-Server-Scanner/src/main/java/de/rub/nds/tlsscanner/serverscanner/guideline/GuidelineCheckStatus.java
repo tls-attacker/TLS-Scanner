@@ -9,8 +9,11 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+/**
+ * Order is important for {@link StatusReasonPair#updateStatus(GuidelineCheckStatus)}.
+ */
 public enum GuidelineCheckStatus {
     PASSED,
+    UNCERTAIN,
     FAILED,
-    UNCERTAIN
 }

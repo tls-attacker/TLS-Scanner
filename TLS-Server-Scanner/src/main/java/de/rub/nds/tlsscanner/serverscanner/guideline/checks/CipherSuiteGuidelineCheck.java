@@ -13,10 +13,10 @@ import com.google.common.base.Joiner;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashSet;
 import java.util.List;
@@ -29,13 +29,15 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck {
     private List<CipherSuite> cipherSuites;
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report) {
+    public void evaluate(SiteReport report, GuidelineCheckResult result) {
         List<CipherSuite> nonRecommended = this.nonRecommendedSuites(report);
         if (nonRecommended.isEmpty()) {
-            return Pair.of(GuidelineCheckStatus.PASSED, "Only listed Cipher Suites are supported.");
+            result.update(GuidelineCheckStatus.PASSED, "Only listed Cipher Suites are supported.");
+        } else {
+            result.setStatus(GuidelineCheckStatus.FAILED);
+            result.append("The following Cipher Suites were supported but not recommended:\n");
+            result.append(Joiner.on('\n').join(nonRecommended));
         }
-        return Pair.of(GuidelineCheckStatus.FAILED,
-            "The following Cipher Suites were supported but not recommended:\n" + Joiner.on('\n').join(nonRecommended));
     }
 
     private List<CipherSuite> nonRecommendedSuites(SiteReport report) {

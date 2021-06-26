@@ -1,8 +1,8 @@
 /**
  * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
- * <p>
+ *
  * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
- * <p>
+ *
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
@@ -11,11 +11,11 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Locale;
 
@@ -27,18 +27,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
     private Integer dh;
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report) {
-        if (report.getWeakestDhStrength() != null && this.dh != null) {
-            if (report.getWeakestDhStrength() < this.dh) {
-                return Pair.of(GuidelineCheckStatus.FAILED, String.format("Weakest DH size %d<%d", report.getWeakestDhStrength(), this.dh));
-            }
-        }
-        return super.evaluateStatus(report);
-    }
-
-    @Override
-    public Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain) {
-        StringBuilder sb = new StringBuilder();
+    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult sb) {
         int passCount = 0;
         int uncertainCount = 0;
         int failedCount = 0;
@@ -89,12 +78,23 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
             }
         }
         if (failedCount > 0) {
-            return Pair.of(GuidelineCheckStatus.FAILED, sb.toString());
+            return GuidelineCheckStatus.FAILED;
         }
         if (uncertainCount > 0 || passCount == 0) {
-            return Pair.of(GuidelineCheckStatus.UNCERTAIN, sb.toString());
+            return GuidelineCheckStatus.UNCERTAIN;
         }
-        return Pair.of(GuidelineCheckStatus.PASSED, sb.toString());
+        return GuidelineCheckStatus.PASSED;
+    }
+
+    @Override
+    public void evaluate(SiteReport report, GuidelineCheckResult result) {
+        if (report.getWeakestDhStrength() != null && this.dh != null) {
+            result.append(String.format("Weakest DH size %d<%d", report.getWeakestDhStrength(), this.dh));
+            if (report.getWeakestDhStrength() < this.dh) {
+                result.updateStatus(GuidelineCheckStatus.FAILED);
+            }
+        }
+        super.evaluate(report, result);
     }
 
     public Integer getDsa() {

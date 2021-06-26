@@ -9,15 +9,47 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import java.util.Objects;
+
 public class GuidelineCheckResult {
 
     private final String name;
-    private final String detail;
-    private final GuidelineCheckStatus status;
+    private final StringBuilder detail = new StringBuilder();
 
-    public GuidelineCheckResult(String name, String detail, GuidelineCheckStatus status) {
+    private GuidelineCheckStatus status;
+
+    public GuidelineCheckResult(String name) {
         this.name = name;
-        this.detail = detail;
+    }
+
+    public GuidelineCheckResult append(Object object) {
+        this.detail.append(object);
+        return this;
+    }
+
+    /**
+     * Can be used in case there are multiple checks performed in one {@link GuidelineCheck}.
+     * <p>
+     * Not a normal setter: The status can only be "worsened". If the status is {@link GuidelineCheckStatus#PASSED} it
+     * can be set to {@link GuidelineCheckStatus#UNCERTAIN} or {@link GuidelineCheckStatus#FAILED}. If the status is
+     * <code>UNCERTAIN</code> it can be set to <code>FAILED</code>. If the status is <code>FAILED</code> it can no
+     * longer be changed.
+     *
+     * @param status
+     *               the status.
+     */
+    public void updateStatus(GuidelineCheckStatus status) {
+        if (this.status == null || status.ordinal() > this.status.ordinal()) {
+            this.status = Objects.requireNonNull(status);
+        }
+    }
+
+    public void update(GuidelineCheckStatus status, String message) {
+        this.updateStatus(status);
+        this.append(message).append('\n');
+    }
+
+    public void setStatus(GuidelineCheckStatus status) {
         this.status = status;
     }
 
@@ -26,7 +58,7 @@ public class GuidelineCheckResult {
     }
 
     public String getDetail() {
-        return detail;
+        return detail.toString();
     }
 
     public GuidelineCheckStatus getStatus() {

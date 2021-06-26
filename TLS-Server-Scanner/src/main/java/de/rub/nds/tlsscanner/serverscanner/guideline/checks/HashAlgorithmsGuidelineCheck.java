@@ -13,9 +13,9 @@ import com.google.common.base.Joiner;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.ConditionalGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +25,10 @@ public class HashAlgorithmsGuidelineCheck extends ConditionalGuidelineCheck {
     private List<HashAlgorithm> algorithms;
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report) {
+    public void evaluate(SiteReport report, GuidelineCheckResult result) {
         if (report.getSupportedSignatureAndHashAlgorithms() == null) {
-            return Pair.of(GuidelineCheckStatus.UNCERTAIN, "Site Report is missing supported algorithms.");
+            result.update(GuidelineCheckStatus.UNCERTAIN, "Site Report is missing supported algorithms.");
+            return;
         }
         List<HashAlgorithm> nonRecommended = new ArrayList<>();
         for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
@@ -36,11 +37,12 @@ public class HashAlgorithmsGuidelineCheck extends ConditionalGuidelineCheck {
             }
         }
         if (nonRecommended.isEmpty()) {
-            return Pair.of(GuidelineCheckStatus.PASSED, "Only listed hash algorithms are supported.");
+            result.update(GuidelineCheckStatus.PASSED, "Only listed hash algorithms are supported.");
+        } else {
+            result.append("The following hash algorithms were supported but not recommended:\n");
+            result.append(Joiner.on('\n').join(nonRecommended));
+            result.setStatus(GuidelineCheckStatus.FAILED);
         }
-        return Pair.of(GuidelineCheckStatus.FAILED,
-            "The following hash algorithms were supported but not recommended:\n"
-                + Joiner.on('\n').join(nonRecommended));
     }
 
     public List<HashAlgorithm> getAlgorithms() {

@@ -28,10 +28,35 @@ public class GuidelineChecker {
             guidelineReports = new ArrayList<>();
             report.setGuidelineReports(guidelineReports);
         }
-        List<GuidelineCheckResult> results = new ArrayList<>(this.guideline.getChecks().size());
+        List<GuidelineCheckResult> results = new ArrayList<>();
+        List<GuidelineCheckResult> skipped = new ArrayList<>();
         for (GuidelineCheck check : this.guideline.getChecks()) {
-            results.add(check.evaluate(report));
+            GuidelineCheckResult result = new GuidelineCheckResult(check.getName());
+            if (check instanceof ConditionalGuidelineCheck) {
+                if (((ConditionalGuidelineCheck) check).passesCondition(report)) {
+                    check.evaluate(report, result);
+                } else {
+                    result.append("Condition was not met => Check is skipped.");
+                }
+            } else {
+                check.evaluate(report, result);
+            }
+            if (result.getStatus() != null) {
+                if (check.getRequirementLevel().equals(RequirementLevel.MAY)) {
+                    result.setStatus(GuidelineCheckStatus.PASSED);
+                }
+                if (check.getRequirementLevel().name().contains("NOT")) {
+                    if (result.getStatus().equals(GuidelineCheckStatus.PASSED)) {
+                        result.setStatus(GuidelineCheckStatus.FAILED);
+                    } else if (result.getStatus().equals(GuidelineCheckStatus.FAILED)) {
+                        result.setStatus(GuidelineCheckStatus.PASSED);
+                    }
+                }
+                results.add(result);
+            } else {
+                skipped.add(result);
+            }
         }
-        guidelineReports.add(new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
+        guidelineReports.add(new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results, skipped));
     }
 }

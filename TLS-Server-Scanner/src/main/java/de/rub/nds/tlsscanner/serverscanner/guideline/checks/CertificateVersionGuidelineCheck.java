@@ -10,23 +10,23 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck {
 
     private int version;
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain) {
+    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
         CertificateReport report = chain.getCertificateReportList().get(0);
+        result.append("Certificate has Version " + report.getCertificate().getVersionNumber());
         if (this.version != report.getCertificate().getVersionNumber()) {
-            return Pair.of(GuidelineCheckStatus.FAILED,
-                "Certificate has Version " + report.getCertificate().getVersionNumber());
+            return GuidelineCheckStatus.FAILED;
         }
-        return Pair.of(GuidelineCheckStatus.PASSED, "Certificate has Version " + this.version);
+        return GuidelineCheckStatus.PASSED;
     }
 
     public int getVersion() {

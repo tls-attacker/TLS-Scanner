@@ -12,20 +12,22 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
 import de.rub.nds.tlsscanner.serverscanner.guideline.ConditionalGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
 public class CertificateAgilityGuidelineCheck extends ConditionalGuidelineCheck {
+
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateStatus(SiteReport report) {
+    public void evaluate(SiteReport report, GuidelineCheckResult result) {
         List<CertificateChain> chains = report.getCertificateChainList();
         if (chains.size() < 2) {
-            return Pair.of(GuidelineCheckStatus.FAILED, "Server has less than two Certificates.");
+            result.update(GuidelineCheckStatus.FAILED, "Server does not have multiple Certificates.");
+            return;
         }
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         SignatureAndHashAlgorithm firstAlg = firstReport.getSignatureAndHashAlgorithm();
@@ -37,14 +39,16 @@ public class CertificateAgilityGuidelineCheck extends ConditionalGuidelineCheck 
             CertificateChain chain = chains.get(i);
             CertificateReport certReport = chain.getCertificateReportList().get(0);
             if (!firstAlg.equals(certReport.getSignatureAndHashAlgorithm())) {
-                return Pair.of(GuidelineCheckStatus.PASSED, "Server supports multiple Algorithms.");
+                result.update(GuidelineCheckStatus.PASSED, "Server supports multiple Algorithms.");
+                return;
             }
             if (firstKey != null && certReport.getPublicKey() instanceof CustomPublicKey) {
                 if (firstKey != ((CustomPublicKey) certReport.getPublicKey()).keySize()) {
-                    return Pair.of(GuidelineCheckStatus.PASSED, "Server supports multiple Key Sizes.");
+                    result.update(GuidelineCheckStatus.PASSED, "Server supports multiple Key Sizes.");
+                    return;
                 }
             }
         }
-        return Pair.of(GuidelineCheckStatus.FAILED, "Server does not support multiple Certificate types.");
+        result.update(GuidelineCheckStatus.FAILED, "Server does not support multiple Certificate types.");
     }
 }

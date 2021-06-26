@@ -16,11 +16,8 @@ public abstract class ConditionalGuidelineCheck extends GuidelineCheck {
 
     private GuidelineCheckCondition condition;
 
-    @Override
-    public GuidelineCheckResult evaluate(SiteReport report) {
-        return this.passesCondition(report, this.condition) ? super.evaluate(report)
-            : new GuidelineCheckResult(this.getName(),
-                this.getDescription() + "\nCondition was not met => Check is skipped.", GuidelineCheckStatus.PASSED);
+    public boolean passesCondition(SiteReport report) {
+        return this.passesCondition(report, this.condition);
     }
 
     private boolean passesCondition(SiteReport report, GuidelineCheckCondition condition) {

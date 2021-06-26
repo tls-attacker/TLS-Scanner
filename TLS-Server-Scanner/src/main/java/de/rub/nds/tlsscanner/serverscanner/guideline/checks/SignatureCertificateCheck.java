@@ -11,45 +11,42 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Locale;
 
 public class SignatureCertificateCheck extends CertificateGuidelineCheck {
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain) {
+    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         SignatureAlgorithm signatureAlgorithm = report.getSignatureAndHashAlgorithm().getSignatureAlgorithm();
         String keyAlgorithm = report.getPublicKey().getAlgorithm().toUpperCase(Locale.ENGLISH);
-        GuidelineCheckStatus status = GuidelineCheckStatus.UNCERTAIN;
+        result.append(keyAlgorithm + " key is signed with " + signatureAlgorithm);
         switch (keyAlgorithm) {
             case "EC":
                 if (signatureAlgorithm.equals(SignatureAlgorithm.ECDSA)) {
-                    status = GuidelineCheckStatus.PASSED;
+                    return GuidelineCheckStatus.PASSED;
                 } else {
-                    status = GuidelineCheckStatus.FAILED;
+                    return GuidelineCheckStatus.FAILED;
                 }
-                break;
             case "DH":
                 if (signatureAlgorithm.equals(SignatureAlgorithm.DSA)) {
-                    status = GuidelineCheckStatus.PASSED;
+                    return GuidelineCheckStatus.PASSED;
                 } else {
-                    status = GuidelineCheckStatus.FAILED;
+                    return GuidelineCheckStatus.FAILED;
                 }
-                break;
             case "RSA":
             case "DSA":
                 if (signatureAlgorithm.equals(SignatureAlgorithm.valueOf(keyAlgorithm))) {
-                    status = GuidelineCheckStatus.PASSED;
+                    return GuidelineCheckStatus.PASSED;
                 } else {
-                    status = GuidelineCheckStatus.FAILED;
+                    return GuidelineCheckStatus.FAILED;
                 }
-                break;
         }
-        return Pair.of(status, keyAlgorithm + " key is signed with " + signatureAlgorithm);
+        return GuidelineCheckStatus.UNCERTAIN;
     }
 }

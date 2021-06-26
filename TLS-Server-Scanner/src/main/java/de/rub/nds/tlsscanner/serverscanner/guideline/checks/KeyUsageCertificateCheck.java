@@ -12,10 +12,10 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bouncycastle.asn1.x509.KeyUsage;
 
 import java.util.Arrays;
@@ -27,23 +27,28 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         Arrays.asList(SignatureAlgorithm.RSA, SignatureAlgorithm.ECDSA, SignatureAlgorithm.DSA);
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain) {
+    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         KeyUsage extension = KeyUsage.fromExtensions(report.convertToCertificateHolder().getExtensions());
         if (extension == null) {
-            return Pair.of(GuidelineCheckStatus.FAILED, "Certificate is missing Key Usage extension.");
+            result.append("Certificate is missing Key Usage extension.");
+            return GuidelineCheckStatus.FAILED;
         }
         if (DIGITAL_SIGNATURE.contains(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
             if (!extension.hasUsages(KeyUsage.digitalSignature)) {
-                return Pair.of(GuidelineCheckStatus.FAILED, "Missing digitalSignature Key Usage.");
+                result.append("Missing digitalSignature Key Usage.");
+                return GuidelineCheckStatus.FAILED;
             }
         }
         if (report.getPublicKey() instanceof CustomDhPublicKey) {
             // TODO only for ECDH certificate, DH certificate
             if (!extension.hasUsages(KeyUsage.keyAgreement)) {
-                return Pair.of(GuidelineCheckStatus.FAILED, "Missing keyAgreement Key Usage.");
+                result.append("Missing keyAgreement Key Usage.");
+                return GuidelineCheckStatus.FAILED;
             }
         }
-        return Pair.of(GuidelineCheckStatus.PASSED, "Key Usage has correct purposes.");
+        result.append("Key Usage has correct purposes.");
+        return GuidelineCheckStatus.PASSED;
     }
+
 }

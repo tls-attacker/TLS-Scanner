@@ -10,22 +10,24 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
 public class HasPublicKeyCertificateCheck extends CertificateGuidelineCheck {
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain) {
+    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         if (report.getPublicKey() != null) {
-            return Pair.of(GuidelineCheckStatus.PASSED, "Certificate has Public Key.");
+            result.append("Certificate has Public Key.");
+            return GuidelineCheckStatus.PASSED;
         }
-        return Pair.of(GuidelineCheckStatus.FAILED, "Certificate has no Public Key.");
+        result.append("Certificate has no Public Key.");
+        return GuidelineCheckStatus.FAILED;
     }
 
     @Override

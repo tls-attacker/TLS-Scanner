@@ -10,10 +10,10 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -23,15 +23,17 @@ public class CertificateValidityGuidelineCheck extends CertificateGuidelineCheck
     private int years;
 
     @Override
-    public Pair<GuidelineCheckStatus, String> evaluateChain(CertificateChain chain) {
+    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         Duration validityPeriod = Duration.between(Instant.ofEpochMilli(report.getValidFrom().getTime()),
             Instant.ofEpochMilli(report.getValidTo().getTime()));
 
         if (validityPeriod.toDays() > this.years * 365L) {
-            return Pair.of(GuidelineCheckStatus.FAILED, "Certificate is valid for too long.");
+            result.append("Certificate is valid for too long.");
+            return GuidelineCheckStatus.FAILED;
         }
-        return Pair.of(GuidelineCheckStatus.PASSED, "Certificate Validity is okay.");
+        result.append("Certificate Validity is okay.");
+        return GuidelineCheckStatus.PASSED;
     }
 
     public int getYears() {
