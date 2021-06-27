@@ -671,6 +671,39 @@
             <property>SUPPORTS_TLS13_SESSION_TICKETS</property>
             <result>TRUE</result>
         </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>
+                The Pre-Shared Key Exchange Modes extension shall be supported if the server supports TLS 1.3 and the
+                Pre-Shared Key extension.
+            </name>
+            <description>
+                The Pre-Shared Key Exchange Modes extension shall be supported if the server supports TLS 1.3 and the
+                Pre-Shared Key extension.
+            </description>
+            <condition>
+                <and>
+                    <condition>
+                        <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+                        <result>TRUE</result>
+                    </condition>
+                    <condition>
+                        <or>
+                            <condition>
+                                <analyzedProperty>SUPPORTS_TLS13_PSK</analyzedProperty>
+                                <result>TRUE</result>
+                            </condition>
+                            <condition>
+                                <analyzedProperty>SUPPORTS_TLS13_PSK_DHE</analyzedProperty>
+                                <result>TRUE</result>
+                            </condition>
+                        </or>
+                    </condition>
+                </and>
+            </condition>
+            <requirementLevel>MUST</requirementLevel>
+            <property>SUPPORTS_TLS13_PSK_EXCHANGE_MODES</property>
+            <result>TRUE</result>
+        </check>
         <!-- Compression -->
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>

@@ -31,17 +31,18 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ResumptionResult;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
  * @author robert
  */
 public class ResumptionProbe extends TlsProbe {
 
     private List<CipherSuite> supportedSuites;
+    private TestResult respectsPskModes;
 
     public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig);
@@ -49,14 +50,16 @@ public class ResumptionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
+        this.respectsPskModes = TestResult.NOT_TESTED_YET;
         try {
             return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(),
                 getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE), getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
-                getSupports0rtt());
+                getSupports0rtt(), this.respectsPskModes);
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -104,6 +107,20 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
             State state = new State(tlsConfig);
             executeState(state);
+            // Check PSK Modes
+            if (PskKeyExchangeMode.PSK_KE.equals(exchangeMode)) {
+                if (state.getTlsContext().isExtensionNegotiated(ExtensionType.KEY_SHARE)) {
+                    this.respectsPskModes = TestResult.FALSE;
+                } else {
+                    this.respectsPskModes = TestResult.TRUE;
+                }
+            } else if (PskKeyExchangeMode.PSK_DHE_KE.equals(exchangeMode)) {
+                if (state.getTlsContext().isExtensionNegotiated(ExtensionType.KEY_SHARE)) {
+                    this.respectsPskModes = TestResult.TRUE;
+                } else {
+                    this.respectsPskModes = TestResult.FALSE;
+                }
+            }
             MessageAction lastRcv = (MessageAction) state.getWorkflowTrace().getLastReceivingAction();
             if (lastRcv.executedAsPlanned()) {
                 return TestResult.TRUE;
@@ -210,6 +227,6 @@ public class ResumptionProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new ResumptionResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 }

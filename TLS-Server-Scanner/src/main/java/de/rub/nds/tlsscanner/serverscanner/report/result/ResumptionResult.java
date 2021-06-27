@@ -15,7 +15,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 /**
- *
  * @author robert
  */
 public class ResumptionResult extends ProbeResult {
@@ -25,15 +24,18 @@ public class ResumptionResult extends ProbeResult {
     private final TestResult supportsTls13PskDhe;
     private final TestResult supportsTls13Psk;
     private final TestResult supportsTls13_0rtt;
+    private final TestResult respectsPskModes;
 
     public ResumptionResult(TestResult supportsResumption, TestResult supportsTls13SessionTicket,
-        TestResult supportsTls13PskDhe, TestResult supportsTls13Psk, TestResult supportsTls13_0rtt) {
+        TestResult supportsTls13PskDhe, TestResult supportsTls13Psk, TestResult supportsTls13_0rtt,
+        TestResult respectsPskModes) {
         super(ProbeType.RESUMPTION);
         this.supportsResumption = supportsResumption;
         this.supportsTls13SessionTicket = supportsTls13SessionTicket;
         this.supportsTls13PskDhe = supportsTls13PskDhe;
         this.supportsTls13_0rtt = supportsTls13_0rtt;
         this.supportsTls13Psk = supportsTls13Psk;
+        this.respectsPskModes = respectsPskModes;
     }
 
     @Override
@@ -43,6 +45,7 @@ public class ResumptionResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE, supportsTls13PskDhe);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_0_RTT, supportsTls13_0rtt);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, supportsTls13Psk);
+        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, respectsPskModes);
     }
 
 }
