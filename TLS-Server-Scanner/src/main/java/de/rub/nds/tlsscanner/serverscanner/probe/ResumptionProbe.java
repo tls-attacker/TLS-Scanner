@@ -111,12 +111,14 @@ public class ResumptionProbe extends TlsProbe {
             if (PskKeyExchangeMode.PSK_KE.equals(exchangeMode)) {
                 if (state.getTlsContext().isExtensionNegotiated(ExtensionType.KEY_SHARE)) {
                     this.respectsPskModes = TestResult.FALSE;
-                } else {
+                } else if (!this.respectsPskModes.equals(TestResult.FALSE)) {
                     this.respectsPskModes = TestResult.TRUE;
                 }
             } else if (PskKeyExchangeMode.PSK_DHE_KE.equals(exchangeMode)) {
                 if (state.getTlsContext().isExtensionNegotiated(ExtensionType.KEY_SHARE)) {
-                    this.respectsPskModes = TestResult.TRUE;
+                    if (!this.respectsPskModes.equals(TestResult.FALSE)) {
+                        this.respectsPskModes = TestResult.TRUE;
+                    }
                 } else {
                     this.respectsPskModes = TestResult.FALSE;
                 }
