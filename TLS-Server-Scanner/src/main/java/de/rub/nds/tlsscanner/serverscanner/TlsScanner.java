@@ -119,7 +119,7 @@ public class TlsScanner {
         addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
         addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(config, parallelExecutor));
-        addProbeToProbeList(new TlsRngProbe(config, parallelExecutor));
+        addProbeToProbeList(new UnixTimeRngProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());

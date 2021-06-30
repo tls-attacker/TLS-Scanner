@@ -17,8 +17,9 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SignatureAlgorithmsGuidelineCheck extends ConditionalGuidelineCheck {
 
@@ -30,7 +31,7 @@ public class SignatureAlgorithmsGuidelineCheck extends ConditionalGuidelineCheck
             result.update(GuidelineCheckStatus.UNCERTAIN, "Site Report is missing supported algorithms.");
             return;
         }
-        List<SignatureAlgorithm> nonRecommended = new ArrayList<>();
+        Set<SignatureAlgorithm> nonRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
             if (!this.algorithms.contains(alg.getSignatureAlgorithm())) {
                 nonRecommended.add(alg.getSignatureAlgorithm());

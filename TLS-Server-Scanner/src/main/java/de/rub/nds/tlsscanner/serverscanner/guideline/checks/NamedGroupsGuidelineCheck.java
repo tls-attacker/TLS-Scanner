@@ -16,8 +16,9 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class NamedGroupsGuidelineCheck extends GuidelineCheck {
 
@@ -60,7 +61,7 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck {
                 String.format("Server Supports less than %d groups.", this.minGroups));
             return;
         }
-        List<NamedGroup> nonRecommended = new ArrayList<>();
+        Set<NamedGroup> nonRecommended = new HashSet<>();
         for (NamedGroup group : supportedGroups) {
             if (this.groups != null && !this.groups.contains(group)) {
                 nonRecommended.add(group);

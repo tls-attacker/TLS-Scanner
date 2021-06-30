@@ -26,7 +26,7 @@ public abstract class CertificateGuidelineCheck extends ConditionalGuidelineChec
             CertificateChain chain = report.getCertificateChainList().get(i);
             result.append("Certificate Check #").append(i + 1).append('\n');
             GuidelineCheckStatus status = this.evaluateChain(chain, result);
-            result.append("Status: ").append(status).append('\n');
+            result.append("\nStatus: ").append(status).append('\n');
             if (GuidelineCheckStatus.PASSED.equals(status)) {
                 passCount++;
             } else if (GuidelineCheckStatus.UNCERTAIN.equals(status)) {

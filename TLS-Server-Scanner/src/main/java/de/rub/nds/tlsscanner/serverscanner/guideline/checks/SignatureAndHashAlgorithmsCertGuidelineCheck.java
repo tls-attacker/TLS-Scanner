@@ -17,8 +17,9 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SignatureAndHashAlgorithmsCertGuidelineCheck extends CertificateGuidelineCheck {
 
@@ -26,7 +27,7 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheck extends CertificateGui
 
     @Override
     public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
-        List<SignatureAndHashAlgorithm> nonRecommended = new ArrayList<>();
+        Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
         for (CertificateReport report : chain.getCertificateReportList()) {
             if (report.getSignatureAndHashAlgorithm() == null) {
                 result.append("Certificate is missing supported algorithms.");

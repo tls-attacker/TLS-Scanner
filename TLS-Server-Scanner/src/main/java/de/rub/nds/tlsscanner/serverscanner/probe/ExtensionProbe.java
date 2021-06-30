@@ -26,13 +26,15 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
- *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class ExtensionProbe extends TlsProbe {
@@ -54,15 +56,19 @@ public class ExtensionProbe extends TlsProbe {
     }
 
     public List<ExtensionType> getSupportedExtensions() {
-        List<ExtensionType> allSupportedExtensions = new LinkedList<>();
-        List<ExtensionType> commonExtensions = getCommonExtension();
+        Set<ExtensionType> allSupportedExtensions = new HashSet<>();
+        List<ExtensionType> commonExtensions = getCommonExtension(ProtocolVersion.TLS12);
         if (commonExtensions != null) {
             allSupportedExtensions.addAll(commonExtensions);
         }
-        return allSupportedExtensions;
+        commonExtensions = getCommonExtension(ProtocolVersion.TLS13);
+        if (commonExtensions != null) {
+            allSupportedExtensions.addAll(commonExtensions);
+        }
+        return new ArrayList<>(allSupportedExtensions);
     }
 
-    private List<ExtensionType> getCommonExtension() {
+    private List<ExtensionType> getCommonExtension(ProtocolVersion highestVersion) {
         Config tlsConfig = getScannerConfig().createConfig();
         List<CipherSuite> cipherSuites = new LinkedList<>();
         cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
@@ -70,7 +76,7 @@ public class ExtensionProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
+        tlsConfig.setHighestProtocolVersion(highestVersion);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
@@ -102,6 +108,11 @@ public class ExtensionProbe extends TlsProbe {
         requestV2List.add(emptyRequest);
         tlsConfig.setStatusRequestV2RequestList(requestV2List);
         tlsConfig.setAddCertificateStatusRequestV2Extension(true);
+
+        if (highestVersion.isTLS13()) {
+            tlsConfig.setAddSupportedVersionsExtension(true);
+            tlsConfig.setAddKeyShareExtension(true);
+        }
 
         List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(nameGroups);
