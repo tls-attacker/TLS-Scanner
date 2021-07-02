@@ -127,6 +127,7 @@ public enum AnalyzedProperty {
     ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(AnalyzedPropertyCategory.SNI),
     STRICT_ALPN(AnalyzedPropertyCategory.EXTENSIONS),
+    RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION(AnalyzedPropertyCategory.EXTENSIONS),
     /**
      * does it handle unknown versions correctly?
      */

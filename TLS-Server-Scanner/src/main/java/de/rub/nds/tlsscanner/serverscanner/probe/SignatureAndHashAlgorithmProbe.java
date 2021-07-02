@@ -9,25 +9,32 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReportGenerator;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SignatureAndHashAlgorithmResult;
+import org.bouncycastle.asn1.x509.Certificate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
@@ -42,7 +49,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        List<SignatureAndHashAlgorithm> supported = new ArrayList<>();
+        Set<SignatureAndHashAlgorithm> supported = new HashSet<>();
+        TestResult respectsExtension = TestResult.TRUE;
         for (ProtocolVersion version : this.versions) {
             Config tlsConfig = this.getBasicConfig();
             tlsConfig.setHighestProtocolVersion(version);
@@ -52,29 +60,56 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
             List<SignatureAndHashAlgorithm> toTestList =
                 new ArrayList<>(Arrays.asList(SignatureAndHashAlgorithm.values()));
             toTestList.removeAll(supported);
-            TlsContext context;
+            State state;
 
             do {
-                context = this.testAlgorithms(toTestList, tlsConfig);
-                if (context != null) {
-                    SignatureAndHashAlgorithm selected = context.getSelectedSignatureAndHashAlgorithm();
-                    supported.add(selected);
-                    if (!toTestList.contains(selected)) {
+                state = this.testAlgorithms(toTestList, tlsConfig);
+                if (state != null) {
+                    Set<SignatureAndHashAlgorithm> selected = getSelectedSignatureAndHashAlgorithms(state);
+                    supported.addAll(selected);
+                    if (!toTestList.containsAll(selected)) {
+                        respectsExtension = TestResult.FALSE;
                         break;
                     }
-                    toTestList.remove(selected);
+                    toTestList.removeAll(selected);
                 }
-            } while (context != null && toTestList.size() > 0);
+            } while (state != null && toTestList.size() > 0);
         }
-        return new SignatureAndHashAlgorithmResult(supported);
+        return new SignatureAndHashAlgorithmResult(new ArrayList<>(supported), respectsExtension);
     }
 
-    private TlsContext testAlgorithms(List<SignatureAndHashAlgorithm> algorithms, Config config) {
+    private Set<SignatureAndHashAlgorithm> getSelectedSignatureAndHashAlgorithms(State state) {
+        Set<SignatureAndHashAlgorithm> selected = new HashSet<>();
+        for (Certificate cert : state.getTlsContext().getServerCertificate().getCertificateList()) {
+            SignatureAndHashAlgorithm sigHashAlgo = CertificateReportGenerator.getSignatureAndHashAlgorithm(cert);
+            if (sigHashAlgo != null) {
+                selected.add(sigHashAlgo);
+            }
+        }
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace())) {
+            HandshakeMessage message = WorkflowTraceUtil
+                .getLastReceivedMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
+            if (message instanceof ServerKeyExchangeMessage) {
+                ServerKeyExchangeMessage msg = (ServerKeyExchangeMessage) message;
+                ModifiableByteArray algByte = msg.getSignatureAndHashAlgorithm();
+                if (algByte != null) {
+                    SignatureAndHashAlgorithm sigHashAlgo =
+                        SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(algByte.getValue());
+                    if (sigHashAlgo != null) {
+                        selected.add(sigHashAlgo);
+                    }
+                }
+            }
+        }
+        return selected;
+    }
+
+    private State testAlgorithms(List<SignatureAndHashAlgorithm> algorithms, Config config) {
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(algorithms);
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return state.getTlsContext();
+            return state;
         } else {
             LOGGER.debug("Did not receive a ServerHello, something went wrong or the Server has some intolerance");
             return null;
@@ -110,6 +145,6 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new SignatureAndHashAlgorithmResult(null);
+        return new SignatureAndHashAlgorithmResult(null, TestResult.COULD_NOT_TEST);
     }
 }

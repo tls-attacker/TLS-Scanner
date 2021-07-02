@@ -19,6 +19,17 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.crypto.tls.Certificate;
+import org.bouncycastle.jce.provider.X509CertificateObject;
+
+import javax.annotation.Nullable;
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -29,18 +40,8 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bouncycastle.asn1.x500.RDN;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x500.style.IETFUtils;
-import org.bouncycastle.crypto.tls.Certificate;
-import org.bouncycastle.jce.provider.X509CertificateObject;
 
 /**
- *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class CertificateReportGenerator {
@@ -153,8 +154,8 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setSignatureAndHashAlgorithm(CertificateReport report,
-        org.bouncycastle.asn1.x509.Certificate cert) {
+    @Nullable
+    public static SignatureAndHashAlgorithm getSignatureAndHashAlgorithm(org.bouncycastle.asn1.x509.Certificate cert) {
         String sigAndHashString = null;
         try {
             X509CertificateObject x509Cert = new X509CertificateObject(cert);
@@ -164,24 +165,31 @@ public class CertificateReportGenerator {
                 String[] algos = sigAndHashString.toUpperCase().split("WITH");
                 if (algos.length != 2) {
                     LOGGER.warn("Could not parse " + sigAndHashString + " into a reasonable SignatureAndHashAlgorithm");
-                    return;
+                    return null;
                 }
                 SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.valueOf(algos[1]);
                 HashAlgorithm hashAlgorithm = HashAlgorithm.valueOf(algos[0]);
                 if (hashAlgorithm == null) {
                     LOGGER.warn("Parsed an unknown HashAlgorithm");
-                    return;
+                    return null;
                 }
                 if (signatureAlgorithm == null) {
                     LOGGER.warn("Parsed an unknown SignatureAlgorithm");
-                    return;
+                    return null;
                 }
-                SignatureAndHashAlgorithm sigHashAlgo =
-                    SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
-                report.setSignatureAndHashAlgorithm(sigHashAlgo);
+                return SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(signatureAlgorithm, hashAlgorithm);
             }
         } catch (Exception e) {
             LOGGER.debug("Could not extract SignatureAndHashAlgorithm from String:" + sigAndHashString, e);
+        }
+        return null;
+    }
+
+    private static void setSignatureAndHashAlgorithm(CertificateReport report,
+        org.bouncycastle.asn1.x509.Certificate cert) {
+        SignatureAndHashAlgorithm sigHashAlgo = getSignatureAndHashAlgorithm(cert);
+        if (sigHashAlgo != null) {
+            report.setSignatureAndHashAlgorithm(sigHashAlgo);
         }
     }
 
