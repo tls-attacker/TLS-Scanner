@@ -18,7 +18,9 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.EncryptedExtensionsMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -35,6 +37,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ResumptionResult;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author robert
@@ -50,7 +53,7 @@ public class ResumptionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        this.respectsPskModes = TestResult.NOT_TESTED_YET;
+        this.respectsPskModes = TestResult.TRUE;
         try {
             return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(),
                 getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE), getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
@@ -93,6 +96,17 @@ public class ResumptionProbe extends TlsProbe {
         }
     }
 
+    private TestResult isKeyShareExtensionNegotiated(State state) {
+        List<HandshakeMessage> handshakes = WorkflowTraceUtil.getAllReceivedHandshakeMessages(state.getWorkflowTrace());
+        List<ServerHelloMessage> hellos = handshakes.stream().filter(message -> message instanceof ServerHelloMessage)
+            .map(message -> (ServerHelloMessage) message).collect(Collectors.toList());
+        if (hellos.size() < 2) {
+            return TestResult.COULD_NOT_TEST;
+        }
+        ServerHelloMessage second = hellos.get(1);
+        return second.containsExtension(ExtensionType.KEY_SHARE) ? TestResult.TRUE : TestResult.FALSE;
+    }
+
     private TestResult getSupportsTls13Psk(PskKeyExchangeMode exchangeMode) {
         try {
             Config tlsConfig = createConfig();
@@ -108,19 +122,11 @@ public class ResumptionProbe extends TlsProbe {
             State state = new State(tlsConfig);
             executeState(state);
             // Check PSK Modes
-            if (PskKeyExchangeMode.PSK_KE.equals(exchangeMode)) {
-                if (state.getTlsContext().isExtensionNegotiated(ExtensionType.KEY_SHARE)) {
-                    this.respectsPskModes = TestResult.FALSE;
-                } else if (!this.respectsPskModes.equals(TestResult.FALSE)) {
-                    this.respectsPskModes = TestResult.TRUE;
-                }
-            } else if (PskKeyExchangeMode.PSK_DHE_KE.equals(exchangeMode)) {
-                if (state.getTlsContext().isExtensionNegotiated(ExtensionType.KEY_SHARE)) {
-                    if (!this.respectsPskModes.equals(TestResult.FALSE)) {
-                        this.respectsPskModes = TestResult.TRUE;
-                    }
-                } else {
-                    this.respectsPskModes = TestResult.FALSE;
+            TestResult keyShareExtensionNegotiated = isKeyShareExtensionNegotiated(state);
+            TestResult keyShareRequired = TestResult.of(exchangeMode.equals(PskKeyExchangeMode.PSK_DHE_KE));
+            if (!keyShareExtensionNegotiated.equals(keyShareRequired)) {
+                if (!TestResult.COULD_NOT_TEST.equals(keyShareExtensionNegotiated)) {
+                    respectsPskModes = TestResult.FALSE;
                 }
             }
             MessageAction lastRcv = (MessageAction) state.getWorkflowTrace().getLastReceivingAction();
