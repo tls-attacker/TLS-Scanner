@@ -113,9 +113,6 @@ public class ResumptionProbe extends TlsProbe {
             List<PskKeyExchangeMode> pskKex = new LinkedList<>();
             pskKex.add(exchangeMode);
             tlsConfig.setPSKKeyExchangeModes(pskKex);
-            if (exchangeMode == PskKeyExchangeMode.PSK_KE) {
-                tlsConfig.setAddKeyShareExtension(false);
-            }
             tlsConfig.setAddPSKKeyExchangeModesExtension(true);
             tlsConfig.setAddPreSharedKeyExtension(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
