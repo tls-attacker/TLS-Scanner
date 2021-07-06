@@ -55,18 +55,18 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
         Set<SignatureAndHashAlgorithm> supported = new HashSet<>();
         TestResult respectsExtension = TestResult.TRUE;
         for (ProtocolVersion version : this.versions) {
-            Set<Set<SignatureAndHashAlgorithm>> tested = new HashSet<>();
+            Set<List<SignatureAndHashAlgorithm>> tested = new HashSet<>();
             Config tlsConfig = this.getBasicConfig();
             tlsConfig.setHighestProtocolVersion(version);
             tlsConfig.setDefaultClientSupportedCipherSuites(ProtocolVersion.TLS13.equals(version)
                 ? CipherSuite.getImplementedTls13CipherSuites() : CipherSuite.getImplemented());
 
-            Queue<Set<SignatureAndHashAlgorithm>> testQueue = new LinkedList<>();
-            testQueue.add(new HashSet<>(Arrays.asList(SignatureAndHashAlgorithm.values())));
+            Queue<List<SignatureAndHashAlgorithm>> testQueue = new LinkedList<>();
+            testQueue.add(Arrays.asList(SignatureAndHashAlgorithm.values()));
             State state;
 
             while (!testQueue.isEmpty()) {
-                Set<SignatureAndHashAlgorithm> testSet = testQueue.poll();
+                List<SignatureAndHashAlgorithm> testSet = testQueue.poll();
                 if (tested.contains(testSet)) {
                     continue;
                 }
@@ -79,11 +79,17 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
                         respectsExtension = TestResult.FALSE;
                         break;
                     }
+                    // move selected to end
+                    List<SignatureAndHashAlgorithm> selectedToEnd = new ArrayList<>(testSet);
+                    selectedToEnd.removeAll(selected);
+                    selectedToEnd.addAll(selected);
+                    testQueue.add(selectedToEnd);
+                    // remove possible combinations of selected
                     for (Set<SignatureAndHashAlgorithm> subSet : Sets.powerSet(selected)) {
                         if (subSet.isEmpty()) {
                             continue;
                         }
-                        Set<SignatureAndHashAlgorithm> newTestSet = new HashSet<>(testSet);
+                        List<SignatureAndHashAlgorithm> newTestSet = new ArrayList<>(testSet);
                         newTestSet.removeAll(subSet);
                         testQueue.add(newTestSet);
                     }
@@ -119,8 +125,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
         return selected;
     }
 
-    private State testAlgorithms(Set<SignatureAndHashAlgorithm> algorithms, Config config) {
-        config.setDefaultClientSupportedSignatureAndHashAlgorithms(new ArrayList<>(algorithms));
+    private State testAlgorithms(List<SignatureAndHashAlgorithm> algorithms, Config config) {
+        config.setDefaultClientSupportedSignatureAndHashAlgorithms(algorithms);
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
