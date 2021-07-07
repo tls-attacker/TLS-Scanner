@@ -16,6 +16,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
+import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.asn1.x509.KeyUsage;
 
 import java.util.Arrays;
@@ -29,7 +30,12 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
     @Override
     public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
         CertificateReport report = chain.getCertificateReportList().get(0);
-        KeyUsage extension = KeyUsage.fromExtensions(report.convertToCertificateHolder().getExtensions());
+        Extensions extensions = report.convertToCertificateHolder().getExtensions();
+        if (extensions == null) {
+            result.append("Certificate is missing extensions block.");
+            return GuidelineCheckStatus.FAILED;
+        }
+        KeyUsage extension = KeyUsage.fromExtensions(extensions);
         if (extension == null) {
             result.append("Certificate is missing Key Usage extension.");
             return GuidelineCheckStatus.FAILED;

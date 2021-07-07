@@ -16,6 +16,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
+import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 
 public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck {
@@ -25,8 +26,12 @@ public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck 
     @Override
     public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
         CertificateReport report = chain.getCertificateReportList().get(0);
-        ExtendedKeyUsage extension =
-            ExtendedKeyUsage.fromExtensions(report.convertToCertificateHolder().getExtensions());
+        Extensions extensions = report.convertToCertificateHolder().getExtensions();
+        if (extensions == null) {
+            result.append("Certificate is missing extensions block.");
+            return GuidelineCheckStatus.FAILED;
+        }
+        ExtendedKeyUsage extension = ExtendedKeyUsage.fromExtensions(extensions);
         if (extension == null) {
             result.append("Certificate is missing Extended Key Usage extension.");
             return GuidelineCheckStatus.FAILED;

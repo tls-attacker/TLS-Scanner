@@ -22,6 +22,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HasPublicKeyCertific
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmStrengthCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsCertGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
@@ -48,15 +49,15 @@ public class GuidelineIO {
 
     public static final List<String> GUIDELINES = Arrays.asList("BSI-TR-02102-2.xml", "NIST.SP.800-52r2.xml");
 
-    private static final List<Class<? extends GuidelineCheck>> CHECKS =
-        Arrays.asList(AnalyzedPropertyGuidelineCheck.class, CertificateAgilityGuidelineCheck.class,
-            CertificateCurveGuidelineCheck.class, CertificateValidityGuidelineCheck.class,
-            CertificateVersionGuidelineCheck.class, CipherSuiteGuidelineCheck.class,
-            ExtendedKeyUsageCertificateCheck.class, ExtensionGuidelineCheck.class, HashAlgorithmsGuidelineCheck.class,
-            HashAlgorithmStrengthCheck.class, HasPublicKeyCertificateCheck.class, KeySizeCertGuidelineCheck.class,
-            NamedGroupsGuidelineCheck.class, SignatureAlgorithmsCertGuidelineCheck.class,
-            SignatureAlgorithmsGuidelineCheck.class, SignatureAndHashAlgorithmsGuidelineCheck.class,
-            SignatureAndHashAlgorithmsCertGuidelineCheck.class, SignatureCertificateCheck.class);
+    private static final List<Class<? extends GuidelineCheck>> CHECKS = Arrays.asList(
+        AnalyzedPropertyGuidelineCheck.class, CertificateAgilityGuidelineCheck.class,
+        CertificateCurveGuidelineCheck.class, CertificateValidityGuidelineCheck.class,
+        CertificateVersionGuidelineCheck.class, CipherSuiteGuidelineCheck.class, ExtendedKeyUsageCertificateCheck.class,
+        ExtensionGuidelineCheck.class, HashAlgorithmsGuidelineCheck.class, HashAlgorithmStrengthCheck.class,
+        HasPublicKeyCertificateCheck.class, KeySizeCertGuidelineCheck.class, KeyUsageCertificateCheck.class,
+        NamedGroupsGuidelineCheck.class, SignatureAlgorithmsCertGuidelineCheck.class,
+        SignatureAlgorithmsGuidelineCheck.class, SignatureAndHashAlgorithmsGuidelineCheck.class,
+        SignatureAndHashAlgorithmsCertGuidelineCheck.class, SignatureCertificateCheck.class);
 
     public static Guideline readGuideline(String resource) throws IOException, JAXBException, XMLStreamException {
         List<Class<?>> classes = new ArrayList<>(CHECKS);
