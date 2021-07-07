@@ -9,12 +9,18 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GuidelineChecker {
+
+    protected static final Logger LOGGER = LogManager.getLogger(GuidelineChecker.class.getName());
 
     private final Guideline guideline;
 
@@ -34,12 +40,24 @@ public class GuidelineChecker {
             GuidelineCheckResult result = new GuidelineCheckResult(check.getName());
             if (check instanceof ConditionalGuidelineCheck) {
                 if (((ConditionalGuidelineCheck) check).passesCondition(report)) {
-                    check.evaluate(report, result);
+                    try {
+                        check.evaluate(report, result);
+                    } catch (Throwable throwable) {
+                        LOGGER.debug("Failed evaluating check: ", throwable);
+                        result.setStatus(GuidelineCheckStatus.UNCERTAIN);
+                        result.append(throwable.getMessage());
+                    }
                 } else {
                     result.append("Condition was not met => Check is skipped.");
                 }
             } else {
-                check.evaluate(report, result);
+                try {
+                    check.evaluate(report, result);
+                } catch (Throwable throwable) {
+                    LOGGER.debug("Failed evaluating check: ", throwable);
+                    result.setStatus(GuidelineCheckStatus.UNCERTAIN);
+                    result.append(throwable.getMessage());
+                }
             }
             if (result.getStatus() != null) {
                 if (check.getRequirementLevel().equals(RequirementLevel.MAY)) {
