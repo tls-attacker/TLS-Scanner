@@ -30,7 +30,9 @@ public class Sweet32AfterProbe extends AfterProbe {
                         vulnerable = TestResult.TRUE;
                     }
                 }
-                vulnerable = TestResult.FALSE;
+                if (vulnerable == TestResult.NOT_TESTED_YET) {
+                    vulnerable = TestResult.FALSE;
+                }
             } else {
                 vulnerable = TestResult.UNCERTAIN;
             }
