@@ -12,8 +12,10 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import com.google.common.collect.Sets;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
@@ -38,6 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
@@ -45,6 +48,8 @@ import java.util.Set;
 public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     private List<ProtocolVersion> versions;
+    private Set<SignatureAndHashAlgorithm> supported;
+    private TestResult respectsExtension;
 
     public SignatureAndHashAlgorithmProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.SIGNATURE_AND_HASH, config);
@@ -52,51 +57,64 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Set<SignatureAndHashAlgorithm> supported = new HashSet<>();
-        TestResult respectsExtension = TestResult.TRUE;
+        this.supported = new HashSet<>();
+        this.respectsExtension = TestResult.TRUE;
         for (ProtocolVersion version : this.versions) {
-            Set<List<SignatureAndHashAlgorithm>> tested = new HashSet<>();
-            Config tlsConfig = this.getBasicConfig();
-            tlsConfig.setHighestProtocolVersion(version);
-            tlsConfig.setDefaultClientSupportedCipherSuites(ProtocolVersion.TLS13.equals(version)
-                ? CipherSuite.getImplementedTls13CipherSuites() : CipherSuite.getImplemented());
-
-            Queue<List<SignatureAndHashAlgorithm>> testQueue = new LinkedList<>();
-            testQueue.add(Arrays.asList(SignatureAndHashAlgorithm.values()));
-            State state;
-
-            while (!testQueue.isEmpty()) {
-                List<SignatureAndHashAlgorithm> testSet = testQueue.poll();
-                if (tested.contains(testSet)) {
-                    continue;
-                }
-                tested.add(testSet);
-                state = testAlgorithms(testSet, tlsConfig);
-                if (state != null) {
-                    Set<SignatureAndHashAlgorithm> selected = getSelectedSignatureAndHashAlgorithms(state);
-                    supported.addAll(selected);
-                    if (!testSet.containsAll(selected)) {
-                        respectsExtension = TestResult.FALSE;
-                        break;
-                    }
-                    // move selected to end
-                    List<SignatureAndHashAlgorithm> selectedToEnd = new ArrayList<>(testSet);
-                    selectedToEnd.removeAll(selected);
-                    selectedToEnd.addAll(selected);
-                    testQueue.add(selectedToEnd);
-                    // remove possible combinations of selected
-                    for (Set<SignatureAndHashAlgorithm> subSet : Sets.powerSet(selected)) {
-                        if (subSet.isEmpty()) {
-                            continue;
-                        }
-                        List<SignatureAndHashAlgorithm> newTestSet = new ArrayList<>(testSet);
-                        newTestSet.removeAll(subSet);
-                        testQueue.add(newTestSet);
-                    }
-                }
+            if (version.isTLS13()) {
+                testForVersion(version, CipherSuite::isTLS13);
+            } else {
+                testForVersion(version,
+                    suite -> !suite.isTLS13() && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeRsa());
+                testForVersion(version,
+                    suite -> !suite.isTLS13() && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh());
+                testForVersion(version,
+                    suite -> !suite.isTLS13() && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeDh());
             }
         }
         return new SignatureAndHashAlgorithmResult(new ArrayList<>(supported), respectsExtension);
+    }
+
+    private void testForVersion(ProtocolVersion version, Predicate<CipherSuite> predicate) {
+        Set<List<SignatureAndHashAlgorithm>> tested = new HashSet<>();
+        Config tlsConfig = version.isTLS13() ? getTls13Config() : this.getBasicConfig();
+        tlsConfig.setHighestProtocolVersion(version);
+
+        tlsConfig.getDefaultClientSupportedCipherSuites().removeIf(predicate.negate());
+
+        Queue<List<SignatureAndHashAlgorithm>> testQueue = new LinkedList<>();
+        testQueue.add(version.isTLS13() ? SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()
+            : Arrays.asList(SignatureAndHashAlgorithm.values()));
+        State state;
+
+        while (!testQueue.isEmpty()) {
+            List<SignatureAndHashAlgorithm> testSet = testQueue.poll();
+            if (tested.contains(testSet)) {
+                continue;
+            }
+            tested.add(testSet);
+            state = testAlgorithms(testSet, tlsConfig);
+            if (state != null) {
+                Set<SignatureAndHashAlgorithm> selected = getSelectedSignatureAndHashAlgorithms(state);
+                supported.addAll(selected);
+                if (!testSet.containsAll(selected)) {
+                    respectsExtension = TestResult.FALSE;
+                }
+                // move selected to end
+                List<SignatureAndHashAlgorithm> selectedToEnd = new ArrayList<>(testSet);
+                selectedToEnd.removeAll(selected);
+                selectedToEnd.addAll(selected);
+                testQueue.add(selectedToEnd);
+                // remove possible combinations of selected
+                for (Set<SignatureAndHashAlgorithm> subSet : Sets.powerSet(selected)) {
+                    if (subSet.isEmpty()) {
+                        continue;
+                    }
+                    List<SignatureAndHashAlgorithm> newTestSet = new ArrayList<>(testSet);
+                    newTestSet.removeAll(subSet);
+                    testQueue.add(newTestSet);
+                }
+            }
+        }
     }
 
     private Set<SignatureAndHashAlgorithm> getSelectedSignatureAndHashAlgorithms(State state) {
@@ -150,7 +168,31 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplemented());
 
+        return tlsConfig;
+    }
+
+    private Config getTls13Config() {
+        Config tlsConfig = getScannerConfig().createConfig();
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
+        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
+        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.values());
+        tlsConfig.setDefaultClientKeyShareNamedGroups(NamedGroup.values());
+        tlsConfig.setAddECPointFormatExtension(false);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setAddCertificateStatusRequestExtension(true);
+        tlsConfig.setUseFreshRandom(true);
         return tlsConfig;
     }
 
@@ -161,7 +203,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        this.versions = report.getVersions();
+        this.versions = new ArrayList<>(report.getVersions());
+        this.versions.removeIf(version -> version.compare(ProtocolVersion.TLS12) < 0);
     }
 
     @Override
