@@ -49,109 +49,8 @@
             <requirementLevel>SHOULD</requirementLevel>
         </check>
         <!-- TLS 1.2 Recommendations -->
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Secure Renegotiation Extension wird unterstüzt.</name>
-            <description>
-                Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den
-                Client initiierte Renegotiation sollte vom Server abgelehnt werden.
-            </description>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
-            <result>TRUE</result>
-            <requirementLevel>SHOULD</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Client Secure Renegotiation Extension wird nicht unterstüzt.</name>
-            <description>
-                Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den
-                Client initiierte Renegotiation sollte vom Server abgelehnt werden.
-            </description>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</property>
-            <result>FALSE</result>
-            <requirementLevel>SHOULD</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Client Secure Renegotiation Extension wird nicht unterstüzt.</name>
-            <description>
-                Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den
-                Client initiierte Renegotiation sollte vom Server abgelehnt werden.
-            </description>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
-            <result>FALSE</result>
-            <requirementLevel>SHOULD</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>TLS Compression wird nicht unterstüzt.</name>
-            <description>
-                Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.
-            </description>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_TLS_COMPRESSION</property>
-            <result>FALSE</result>
-            <requirementLevel>SHOULD</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>„Encrypt-then-MAC“ wird unterstüzt.</name>
-            <description>
-                Der Einsatz der TLS-Erweiterung „Encrypt-then-MAC“ gemäß [RFC7366] wird empfohlen.
-            </description>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
-            <result>TRUE</result>
-            <requirementLevel>SHOULD</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Extended Master Secret wird unterstüzt.</name>
-            <description>
-                Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC7627] wird empfohlen.
-            </description>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
-            <result>TRUE</result>
-            <requirementLevel>SHOULD</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="extensionGuidelineCheck">
-            <name>truncated_hmac</name>
-            <description>truncated_hmac sollte nicht unterstüzt werden.</description>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <requirementLevel>SHOULD_NOT</requirementLevel>
-            <extension>TRUNCATED_HMAC</extension>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="extensionGuidelineCheck">
-            <name>Heartbeat</name>
-            <description>Heartbeat sollte nicht unterstüzt werden.</description>
-            <condition>
-                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
-                <result>TRUE</result>
-            </condition>
-            <requirementLevel>SHOULD_NOT</requirementLevel>
-            <extension>HEARTBEAT</extension>
-        </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cipherSuiteGuidelineCheck">
-            <name>Unterstützte Cipher Suites</name>
+            <name>Unterstützte Cipher Suites TLS 1.2</name>
             <description>
                 Grundsätzlich wird empfohlen, nur Cipher-Suiten einzusetzen, die die Anforderungen an die Algorithmen
                 und Schlüssellängen der [TR-02102-1] erfüllen.
@@ -251,6 +150,107 @@
             <algorithms>SHA384</algorithms>
             <algorithms>SHA512</algorithms>
         </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>Secure Renegotiation Extension wird unterstüzt.</name>
+            <description>
+                Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den
+                Client initiierte Renegotiation sollte vom Server abgelehnt werden.
+            </description>
+            <condition>
+                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                <result>TRUE</result>
+            </condition>
+            <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
+            <result>TRUE</result>
+            <requirementLevel>SHOULD</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>Client Secure Renegotiation Extension wird nicht unterstüzt.</name>
+            <description>
+                Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den
+                Client initiierte Renegotiation sollte vom Server abgelehnt werden.
+            </description>
+            <condition>
+                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                <result>TRUE</result>
+            </condition>
+            <property>SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION</property>
+            <result>FALSE</result>
+            <requirementLevel>SHOULD</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>Client Secure Renegotiation Extension wird nicht unterstüzt.</name>
+            <description>
+                Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den
+                Client initiierte Renegotiation sollte vom Server abgelehnt werden.
+            </description>
+            <condition>
+                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                <result>TRUE</result>
+            </condition>
+            <property>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</property>
+            <result>FALSE</result>
+            <requirementLevel>SHOULD</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="extensionGuidelineCheck">
+            <name>truncated_hmac</name>
+            <description>truncated_hmac sollte nicht unterstüzt werden.</description>
+            <condition>
+                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                <result>TRUE</result>
+            </condition>
+            <requirementLevel>SHOULD_NOT</requirementLevel>
+            <extension>TRUNCATED_HMAC</extension>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>TLS Compression wird nicht unterstüzt.</name>
+            <description>
+                Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.
+            </description>
+            <condition>
+                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                <result>TRUE</result>
+            </condition>
+            <property>SUPPORTS_TLS_COMPRESSION</property>
+            <result>FALSE</result>
+            <requirementLevel>SHOULD</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>„Encrypt-then-MAC“ wird unterstüzt.</name>
+            <description>
+                Der Einsatz der TLS-Erweiterung „Encrypt-then-MAC“ gemäß [RFC7366] wird empfohlen.
+            </description>
+            <condition>
+                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                <result>TRUE</result>
+            </condition>
+            <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
+            <result>TRUE</result>
+            <requirementLevel>SHOULD</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="extensionGuidelineCheck">
+            <name>Heartbeat</name>
+            <description>Heartbeat sollte nicht unterstüzt werden.</description>
+            <condition>
+                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                <result>TRUE</result>
+            </condition>
+            <requirementLevel>SHOULD_NOT</requirementLevel>
+            <extension>HEARTBEAT</extension>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>Extended Master Secret wird unterstüzt.</name>
+            <description>
+                Der Einsatz der TLS-Erweiterung Extended Master Secret gemäß [RFC7627] wird empfohlen.
+            </description>
+            <condition>
+                <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                <result>TRUE</result>
+            </condition>
+            <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
+            <result>TRUE</result>
+            <requirementLevel>SHOULD</requirementLevel>
+        </check>
         <!-- TLS 1.3 Recommendations -->
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.</name>
@@ -264,17 +264,6 @@
             <property>SUPPORTS_TLS13_0_RTT</property>
             <result>TRUE</result>
             <requirementLevel>SHOULD_NOT</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cipherSuiteGuidelineCheck">
-            <name>Unterstützte Cipher Suites</name>
-            <description>
-                Die folgenden Cipher-Suiten werden empfohlen.
-            </description>
-            <requirementLevel>SHOULD</requirementLevel>
-            <versions>TLS13</versions>
-            <cipherSuites>TLS_AES_128_GCM_SHA256</cipherSuites>
-            <cipherSuites>TLS_AES_256_GCM_SHA384</cipherSuites>
-            <cipherSuites>TLS_AES_128_CCM_SHA256</cipherSuites>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="namedGroupsGuidelineCheck">
             <name>Named Groups</name>
@@ -334,6 +323,17 @@
             <algorithms>ECDSA_BRAINPOOLP256R1TLS13_SHA256</algorithms>
             <algorithms>ECDSA_BRAINPOOLP384R1TLS13_SHA384</algorithms>
             <algorithms>ECDSA_BRAINPOOLP512R1TLS13_SHA512</algorithms>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cipherSuiteGuidelineCheck">
+            <name>Unterstützte Cipher Suites TLS 1.3</name>
+            <description>
+                Die folgenden Cipher-Suiten werden empfohlen.
+            </description>
+            <requirementLevel>SHOULD</requirementLevel>
+            <versions>TLS13</versions>
+            <cipherSuites>TLS_AES_128_GCM_SHA256</cipherSuites>
+            <cipherSuites>TLS_AES_256_GCM_SHA384</cipherSuites>
+            <cipherSuites>TLS_AES_128_CCM_SHA256</cipherSuites>
         </check>
         <!-- Key Sizes -->
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="keySizeCertGuidelineCheck">

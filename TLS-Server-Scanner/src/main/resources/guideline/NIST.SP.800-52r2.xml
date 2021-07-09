@@ -23,14 +23,14 @@
             <description>Support of TLS 1.0 is discouraged.</description>
             <property>SUPPORTS_TLS_1_0</property>
             <result>FALSE</result>
-            <requirementLevel>SHOULD</requirementLevel>
+            <requirementLevel>MAY</requirementLevel>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>Support of TLS 1.1 is discouraged.</name>
             <description>Support of TLS 1.1 is discouraged.</description>
             <property>SUPPORTS_TLS_1_1</property>
             <result>FALSE</result>
-            <requirementLevel>SHOULD</requirementLevel>
+            <requirementLevel>MAY</requirementLevel>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>Servers shall not support SSL 3.0.</name>
@@ -47,6 +47,69 @@
             <requirementLevel>MUST</requirementLevel>
         </check>
         <!-- Certificate -->
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hasPublicKeyCertificateCheck">
+            <name>Shall be configured with one or more public-key certificates and the associated private keys</name>
+            <description>
+                Shall be configured with one or more public-key certificates and the associated private keys
+            </description>
+            <requirementLevel>MUST</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateAgilityGuidelineCheck">
+            <name>
+                Should support the use of multiple server certificates with their associated private keys to support
+                algorithm and key size agility
+            </name>
+            <description>
+                Should support the use of multiple server certificates with their associated private keys to support
+                algorithm and key size agility
+            </description>
+            <requirementLevel>SHOULD</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="signatureAlgorithmsCertGuidelineCheck">
+            <name>Shall be configured with an RSA signature certificate or an ECDSA signature certificate</name>
+            <description>
+                Shall be configured with an RSA signature certificate or an ECDSA signature certificate
+            </description>
+            <requirementLevel>MUST</requirementLevel>
+            <count>1</count>
+            <algorithms>RSA</algorithms>
+            <algorithms>ECDSA</algorithms>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateCurveGuidelineCheck">
+            <name>For ECDSA: Curve P-256 or curve P-384 should be used in the public key</name>
+            <description>For ECDSA: Curve P-256 or curve P-384 should be used in the public key</description>
+            <groups>SECP256R1</groups>
+            <groups>SECP384R1</groups>
+            <requirementLevel>SHOULD</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>Certificates shall be issued by CA that publishes revocation information in OCSP responses</name>
+            <description>
+                Certificates shall be issued by CA that publishes revocation information in OCSP responses
+            </description>
+            <property>SUPPORTS_OCSP</property>
+            <result>TRUE</result>
+            <requirementLevel>MUST</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateVersionGuidelineCheck">
+            <name>Server certificate shall be an X.509 version 3 certificate</name>
+            <description>Server certificate shall be an X.509 version 3 certificate</description>
+            <version>3</version>
+            <requirementLevel>MUST</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="keySizeCertGuidelineCheck">
+            <name>
+                All server and client certificates shall contain public keys that offer at least 112 bits of security.
+            </name>
+            <description>
+                All server and client certificates shall contain public keys that offer at least 112 bits of security.
+            </description>
+            <requirementLevel>MUST</requirementLevel>
+            <ec>224</ec>
+            <dsa>2048</dsa>
+            <rsa>2048</rsa>
+            <dh>2048</dh>
+        </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="signatureCertificateCheck">
             <name>
                 If the server supports TLS versions prior to TLS 1.2, the certificate should be signed with an algorithm
@@ -70,53 +133,23 @@
             </condition>
             <requirementLevel>SHOULD</requirementLevel>
         </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hasPublicKeyCertificateCheck">
-            <name>Shall be configured with one or more public-key certificates and the associated private keys</name>
-            <description>
-                Shall be configured with one or more public-key certificates and the associated private keys
-            </description>
-            <requirementLevel>MUST</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateAgilityGuidelineCheck">
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateValidityGuidelineCheck">
             <name>
-                Should support the use of multiple server certificates with their associated private keys to support
-                algorithm and key size agility
+                Certificate Validity Period should be 3 years or less.
             </name>
             <description>
-                Should support the use of multiple server certificates with their associated private keys to support
-                algorithm and key size agility
+                Certificate Validity Period should be 3 years or less.
             </description>
-            <requirementLevel>MUST</requirementLevel>
+            <requirementLevel>SHOULD</requirementLevel>
+            <years>3</years>
         </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="signatureAlgorithmsCertGuidelineCheck">
-            <name>Shall be configured with an RSA signature certificate or an ECDSA signature certificate</name>
-            <description>Shall be configured with an RSA signature certificate or an ECDSA signature certificate
-            </description>
-            <requirementLevel>MUST</requirementLevel>
-            <count>1</count>
-            <algorithms>RSA</algorithms>
-            <algorithms>ECDSA</algorithms>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Certificates shall be issued by CA that publishes revocation information in OCSP responses</name>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="keyUsageCertificateCheck">
+            <name>
+                Key Usage Extension should be used with digitalSignature and keyAgreement values.
+            </name>
             <description>
-                Certificates shall be issued by CA that publishes revocation information in OCSP responses
+                Key Usage Extension should be used with digitalSignature and keyAgreement values.
             </description>
-            <property>SUPPORTS_OCSP</property>
-            <result>TRUE</result>
-            <requirementLevel>MUST</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateVersionGuidelineCheck">
-            <name>Server certificate shall be an X.509 version 3 certificate</name>
-            <description>Server certificate shall be an X.509 version 3 certificate</description>
-            <version>3</version>
-            <requirementLevel>MUST</requirementLevel>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateCurveGuidelineCheck">
-            <name>For ECDSA: Curve P-256 or curve P-384 should be used in the public key</name>
-            <description>For ECDSA: Curve P-256 or curve P-384 should be used in the public key</description>
-            <groups>SECP256R1</groups>
-            <groups>SECP384R1</groups>
             <requirementLevel>SHOULD</requirementLevel>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="extendedKeyUsageCertificateCheck">
@@ -131,46 +164,11 @@
             <purpose>1.3.6.1.5.5.7.3.1</purpose>
             <requirementLevel>SHOULD</requirementLevel>
         </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="keySizeCertGuidelineCheck">
-            <name>
-                All server and client certificates shall contain public keys that offer at least 112 bits of security.
-            </name>
-            <description>
-                All server and client certificates shall contain public keys that offer at least 112 bits of security.
-            </description>
-            <requirementLevel>MUST</requirementLevel>
-            <ec>224</ec>
-            <dsa>2048</dsa>
-            <rsa>2048</rsa>
-            <dh>2048</dh>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hashAlgorithmStrengthCheck">
-            <name>
-                All server and client certificates and certificates in their certification paths shall be signed using
-                SHA-224 or a stronger hashing algorithm.
-            </name>
-            <description>
-                All server and client certificates and certificates in their certification paths shall be signed using
-                SHA-224 or a stronger hashing algorithm.
-            </description>
-            <requirementLevel>MUST</requirementLevel>
-            <min>SHA224</min>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateValidityGuidelineCheck">
-            <name>
-                Certificate Validity Period should be 3 years or less.
-            </name>
-            <description>
-                Certificate Validity Period should be 3 years or less.
-            </description>
-            <requirementLevel>SHOULD</requirementLevel>
-            <years>3</years>
-        </check>
         <!-- Cipher Suites -->
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cipherSuiteGuidelineCheck">
-            <name>Only listed Cipher Suites shall be used.</name>
+            <name>Only listed Cipher Suites shall be used</name>
             <description>
-                Only listed Cipher Suites shall be used.
+                Only listed Cipher Suites shall be used
             </description>
             <requirementLevel>MUST</requirementLevel>
             <versions>TLS10</versions>
@@ -261,9 +259,9 @@
             <cipherSuites>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA</cipherSuites>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cipherSuiteGuidelineCheck">
-            <name>Only listed Cipher Suites shall be used.</name>
+            <name>Only listed Cipher Suites shall be used for TLS 1.3</name>
             <description>
-                Only listed Cipher Suites shall be used.
+                Only listed Cipher Suites shall be used for TLS 1.3
             </description>
             <requirementLevel>MUST</requirementLevel>
             <versions>TLS13</versions>
@@ -282,6 +280,13 @@
             <requirementLevel>MUST</requirementLevel>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>Servers shall not be vulnerable to POODLE attack.</name>
+            <description>Servers shall not be vulnerable to POODLE attack.</description>
+            <property>VULNERABLE_TO_TLS_POODLE</property>
+            <result>FALSE</result>
+            <requirementLevel>MUST</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>
                 The random number generator should be used to generate the 4-byte timestamp of the server random value.
             </name>
@@ -291,6 +296,18 @@
             <property>USES_UNIX_TIME_IN_SERVER_RANDOM</property>
             <result>FALSE</result>
             <requirementLevel>SHOULD</requirementLevel>
+        </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hashAlgorithmStrengthCheck">
+            <name>
+                All server and client certificates and certificates in their certification paths shall be signed using
+                SHA-224 or a stronger hashing algorithm.
+            </name>
+            <description>
+                All server and client certificates and certificates in their certification paths shall be signed using
+                SHA-224 or a stronger hashing algorithm.
+            </description>
+            <requirementLevel>MUST</requirementLevel>
+            <min>SHA224</min>
         </check>
         <!-- Mandatory TLS Extensions -->
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
@@ -367,7 +384,25 @@
             <result>TRUE</result>
             <requirementLevel>MUST</requirementLevel>
         </check>
-        <!-- TODO Signature Algorithms -->
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>The Certificate Status Request extension shall be supported.</name>
+            <description>The Certificate Status Request extension shall be supported.</description>
+            <condition>
+                <or>
+                    <condition>
+                        <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
+                        <result>TRUE</result>
+                    </condition>
+                    <condition>
+                        <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+                        <result>TRUE</result>
+                    </condition>
+                </or>
+            </condition>
+            <property>RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION</property>
+            <result>TRUE</result>
+            <requirementLevel>MUST</requirementLevel>
+        </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>The Certificate Status Request extension shall be supported.</name>
             <description>The Certificate Status Request extension shall be supported.</description>
@@ -592,6 +627,39 @@
             <property>SUPPORTS_ENCRYPT_THEN_MAC</property>
             <result>TRUE</result>
         </check>
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
+            <name>
+                The Pre-Shared Key Exchange Modes extension shall be supported if the server supports TLS 1.3 and the
+                Pre-Shared Key extension.
+            </name>
+            <description>
+                The Pre-Shared Key Exchange Modes extension shall be supported if the server supports TLS 1.3 and the
+                Pre-Shared Key extension.
+            </description>
+            <condition>
+                <and>
+                    <condition>
+                        <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
+                        <result>TRUE</result>
+                    </condition>
+                    <condition>
+                        <or>
+                            <condition>
+                                <analyzedProperty>SUPPORTS_TLS13_PSK</analyzedProperty>
+                                <result>TRUE</result>
+                            </condition>
+                            <condition>
+                                <analyzedProperty>SUPPORTS_TLS13_PSK_DHE</analyzedProperty>
+                                <result>TRUE</result>
+                            </condition>
+                        </or>
+                    </condition>
+                </and>
+            </condition>
+            <requirementLevel>MUST</requirementLevel>
+            <property>SUPPORTS_TLS13_PSK_EXCHANGE_MODES</property>
+            <result>TRUE</result>
+        </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="extensionGuidelineCheck">
             <name>
                 The Supported Versions extension shall be supported if the server supports TLS 1.3
@@ -669,39 +737,6 @@
             </condition>
             <requirementLevel>SHOULD</requirementLevel>
             <property>SUPPORTS_TLS13_SESSION_TICKETS</property>
-            <result>TRUE</result>
-        </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>
-                The Pre-Shared Key Exchange Modes extension shall be supported if the server supports TLS 1.3 and the
-                Pre-Shared Key extension.
-            </name>
-            <description>
-                The Pre-Shared Key Exchange Modes extension shall be supported if the server supports TLS 1.3 and the
-                Pre-Shared Key extension.
-            </description>
-            <condition>
-                <and>
-                    <condition>
-                        <analyzedProperty>SUPPORTS_TLS_1_3</analyzedProperty>
-                        <result>TRUE</result>
-                    </condition>
-                    <condition>
-                        <or>
-                            <condition>
-                                <analyzedProperty>SUPPORTS_TLS13_PSK</analyzedProperty>
-                                <result>TRUE</result>
-                            </condition>
-                            <condition>
-                                <analyzedProperty>SUPPORTS_TLS13_PSK_DHE</analyzedProperty>
-                                <result>TRUE</result>
-                            </condition>
-                        </or>
-                    </condition>
-                </and>
-            </condition>
-            <requirementLevel>MUST</requirementLevel>
-            <property>SUPPORTS_TLS13_PSK_EXCHANGE_MODES</property>
             <result>TRUE</result>
         </check>
         <!-- Compression -->
