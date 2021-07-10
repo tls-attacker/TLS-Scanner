@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
@@ -187,8 +186,8 @@ public class CertificateProbe extends TlsProbe {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
-                && (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.DHE_RSA || AlgorithmResolver
-                    .getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_RSA)) {
+                && (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.DHE_RSA
+                    || AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite) == KeyExchangeAlgorithm.ECDHE_RSA)) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -383,8 +382,8 @@ public class CertificateProbe extends TlsProbe {
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, state.getWorkflowTrace())
             && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
             && state.getTlsContext().getServerCertificate() != null) {
-            return new CertificateChain(state.getTlsContext().getServerCertificate(), tlsConfig
-                .getDefaultClientConnection().getHostname());
+            return new CertificateChain(state.getTlsContext().getServerCertificate(),
+                tlsConfig.getDefaultClientConnection().getHostname());
         } else {
             return null;
         }
@@ -403,8 +402,8 @@ public class CertificateProbe extends TlsProbe {
                 && state.getTlsContext().getEcCertificateCurve() != null
                 && groupsToTest.contains(state.getTlsContext().getEcCertificateCurve())) {
                 groupsToTest.remove(state.getTlsContext().getEcCertificateCurve());
-                certificateList.add(new CertificateChain(state.getTlsContext().getServerCertificate(), tlsConfig
-                    .getDefaultClientConnection().getHostname()));
+                certificateList.add(new CertificateChain(state.getTlsContext().getServerCertificate(),
+                    tlsConfig.getDefaultClientConnection().getHostname()));
             } else {
                 // selected cipher suite or certificate named group invalid
                 cipherSuitesToTest.clear();
@@ -428,8 +427,8 @@ public class CertificateProbe extends TlsProbe {
                 && state.getTlsContext().getEcCertificateCurve() != null
                 && groupsToTest.contains(state.getTlsContext().getEcCertificateCurve())) {
                 groupsToTest.remove(state.getTlsContext().getEcCertificateCurve());
-                certificateList.add(new CertificateChain(state.getTlsContext().getServerCertificate(), tlsConfig
-                    .getDefaultClientConnection().getHostname()));
+                certificateList.add(new CertificateChain(state.getTlsContext().getServerCertificate(),
+                    tlsConfig.getDefaultClientConnection().getHostname()));
                 pkGroups.add(state.getTlsContext().getEcCertificateCurve());
                 if (state.getTlsContext().getEcCertificateSignatureCurve() != null
                     && !sigGroups.contains(state.getTlsContext().getEcCertificateSignatureCurve())) {
@@ -445,7 +444,8 @@ public class CertificateProbe extends TlsProbe {
 
     private List<SignatureAndHashAlgorithm> getTls13RsaSigHash() {
         List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
-        for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()) {
+        for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm
+            .getImplementedTls13SignatureAndHashAlgorithms()) {
             if (algorithm.name().contains("RSA")) {
                 algorithms.add(algorithm);
             }
@@ -456,7 +456,8 @@ public class CertificateProbe extends TlsProbe {
 
     private List<SignatureAndHashAlgorithm> getTls13EcdsaSigHash() {
         List<SignatureAndHashAlgorithm> algorithms = new LinkedList<>();
-        for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()) {
+        for (SignatureAndHashAlgorithm algorithm : SignatureAndHashAlgorithm
+            .getImplementedTls13SignatureAndHashAlgorithms()) {
             if (algorithm.name().contains("ECDSA")) {
                 algorithms.add(algorithm);
             }

@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
@@ -37,7 +36,7 @@ public class SimulatedClientResult {
     private Boolean forwardSecrecy = null;
     private CompressionMethod selectedCompressionMethod = null;
     private String negotiatedExtensions = null;
-    private String alpnAnnouncedProtocols = null;
+    private List<String> alpnAnnouncedProtocols = null;
     private String selectedNamedGroup = null;
     private Integer serverPublicKeyParameter = null;
     private List<ProtocolVersion> supportedVersionList = null;
@@ -46,9 +45,7 @@ public class SimulatedClientResult {
     private List<Integer> supportedDheKeySizeList = null;
 
     // private final State state;
-
     // private final TlsClientConfig tlsClientConfig;
-
     // To set in HandshakeSimulationAfterProbe
     private Boolean highestPossibleProtocolVersionSelected = null;
     private Boolean handshakeSuccessful = null;
@@ -215,11 +212,11 @@ public class SimulatedClientResult {
         this.negotiatedExtensions = negotiatedExtensions;
     }
 
-    public String getAlpnAnnouncedProtocols() {
+    public List<String> getAlpnAnnouncedProtocols() {
         return alpnAnnouncedProtocols;
     }
 
-    public void setAlpnAnnouncedProtocols(String alpnAnnouncedProtocols) {
+    public void setAlpnAnnouncedProtocols(List<String> alpnAnnouncedProtocols) {
         this.alpnAnnouncedProtocols = alpnAnnouncedProtocols;
     }
 
