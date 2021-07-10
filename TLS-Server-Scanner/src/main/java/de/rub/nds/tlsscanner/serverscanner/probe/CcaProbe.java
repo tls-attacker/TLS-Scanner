@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
@@ -97,16 +96,14 @@ public class CcaProbe extends TlsProbe {
                 for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                     for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
 
-                        CcaVector ccaVector =
-                            new CcaVector(versionSuiteListPair.getVersion(), cipherSuite, ccaWorkflowType,
-                                ccaCertificateType);
+                        CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite,
+                            ccaWorkflowType, ccaCertificateType);
                         Config tlsConfig = generateConfig();
                         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
                         tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
 
-                        CcaTask ccaTask =
-                            new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout,
-                                increasingTimeout, reexecutions, additionalTcpTimeout);
+                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout,
+                            increasingTimeout, reexecutions, additionalTcpTimeout);
                         taskList.add(ccaTask);
                         taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
                     }
@@ -122,16 +119,17 @@ public class CcaProbe extends TlsProbe {
                 LOGGER.warn("Failed to scan " + ccaTaskVectorPair);
             } else {
                 Boolean vectorVulnerable = false;
-                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, ccaTaskVectorPair.getCcaTask()
-                    .getState().getWorkflowTrace())) {
+                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED,
+                    ccaTaskVectorPair.getCcaTask().getState().getWorkflowTrace())) {
                     handshakeSucceeded = true;
                     vectorVulnerable = true;
                 } else {
                     vectorVulnerable = false;
                 }
                 resultList.add(new CcaTestResult(vectorVulnerable, ccaTaskVectorPair.getVector().getCcaWorkflowType(),
-                    ccaTaskVectorPair.getVector().getCcaCertificateType(), ccaTaskVectorPair.getVector()
-                        .getProtocolVersion(), ccaTaskVectorPair.getVector().getCipherSuite()));
+                    ccaTaskVectorPair.getVector().getCcaCertificateType(),
+                    ccaTaskVectorPair.getVector().getProtocolVersion(),
+                    ccaTaskVectorPair.getVector().getCipherSuite()));
             }
         }
 
@@ -191,8 +189,8 @@ public class CcaProbe extends TlsProbe {
         return versionSuiteListPairList;
     }
 
-    private List<VersionSuiteListPair> getDetailedVersionSuitePairList(
-        List<VersionSuiteListPair> versionSuiteListPairs, List<CipherSuite> implementedCipherSuites) {
+    private List<VersionSuiteListPair> getDetailedVersionSuitePairList(List<VersionSuiteListPair> versionSuiteListPairs,
+        List<CipherSuite> implementedCipherSuites) {
         List<VersionSuiteListPair> versionSuiteListPairList = new LinkedList<>();
         for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
             List<CipherSuite> cipherSuites = new LinkedList<>();
@@ -222,8 +220,8 @@ public class CcaProbe extends TlsProbe {
                     }
                 }
                 if (!cipherSuites.isEmpty()) {
-                    versionSuiteListPairList.add(new VersionSuiteListPair(versionSuiteListPair.getVersion(),
-                        cipherSuites));
+                    versionSuiteListPairList
+                        .add(new VersionSuiteListPair(versionSuiteListPair.getVersion(), cipherSuites));
                 }
             }
         }

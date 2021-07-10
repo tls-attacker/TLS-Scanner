@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.report;
@@ -24,6 +23,8 @@ public class PrintingScheme {
 
     private HashMap<AnalyzedPropertyCategory, TextEncoding> textEncodings;
 
+    private HashMap<AnalyzedProperty, TextEncoding> specialTextEncoding;
+
     private TextEncoding defaultTextEncoding;
     private ColorEncoding defaultColorEncoding;
     private boolean useColors;
@@ -33,12 +34,14 @@ public class PrintingScheme {
 
     public PrintingScheme(HashMap<AnalyzedProperty, ColorEncoding> colorEncodings,
         HashMap<AnalyzedPropertyCategory, TextEncoding> textEncodings, TextEncoding defaultTextEncoding,
-        ColorEncoding defaultColorEncoding, boolean useColors) {
+        ColorEncoding defaultColorEncoding, HashMap<AnalyzedProperty, TextEncoding> specialTextEncoding,
+        boolean useColors) {
         this.colorEncodings = colorEncodings;
         this.textEncodings = textEncodings;
         this.defaultTextEncoding = defaultTextEncoding;
         this.defaultColorEncoding = defaultColorEncoding;
         this.useColors = useColors;
+        this.specialTextEncoding = specialTextEncoding;
     }
 
     public HashMap<AnalyzedProperty, ColorEncoding> getColorEncodings() {
@@ -51,7 +54,10 @@ public class PrintingScheme {
 
     public String getEncodedString(SiteReport report, AnalyzedProperty property) {
         TestResult result = report.getResult(property);
-        TextEncoding textEncoding = textEncodings.getOrDefault(property.getCategory(), defaultTextEncoding);
+        TextEncoding textEncoding = specialTextEncoding.get(property);
+        if (textEncoding == null) {
+            textEncoding = textEncodings.getOrDefault(property.getCategory(), defaultTextEncoding);
+        }
         ColorEncoding colorEncoding = colorEncodings.getOrDefault(property, defaultColorEncoding);
         String encodedText = textEncoding.encode(result);
         if (useColors) {
@@ -180,8 +186,8 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.SUPPORTS_ECDH,
             getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_STATIC_ECDH, getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
-        colorMap
-            .put(AnalyzedProperty.SUPPORTS_GOST, getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_GOST,
+            getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_SRP,
             getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_KERBEROS,
@@ -196,8 +202,8 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_NEWHOPE,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap
-            .put(AnalyzedProperty.SUPPORTS_ECMQV, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_ECMQV,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_STREAM_CIPHERS,
             getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS,
@@ -220,14 +226,16 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION,
+        colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap
-            .put(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES,
             getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI,
@@ -298,8 +306,8 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.SUPPORTS_OCSP, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.INCLUDES_CERTIFICATE_STATUS_MESSAGE,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap
-            .put(AnalyzedProperty.SUPPORTS_NONCE, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_NONCE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.NONCE_MISMATCH, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.STAPLED_RESPONSE_EXPIRED,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
@@ -308,18 +316,44 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-
+        colorMap.put(AnalyzedProperty.STRICT_ALPN, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.STRICT_SNI, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.ALPACA_MITIGATED, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();
         textMap.put(AnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
         textMap.put(AnalyzedPropertyCategory.FRESHNESS, new TextEncoding(freshnessMap));
         textMap.put(AnalyzedPropertyCategory.FFDHE, new TextEncoding(freshnessMap));
-
         TextEncoding defaultTextEncoding = new TextEncoding(textEncodingMap);
         ColorEncoding defaultColorEncoding = new ColorEncoding(ansiColorMap);
 
+        HashMap<AnalyzedProperty, TextEncoding> specialTextMap = new HashMap<>();
+
+        specialTextMap.put(AnalyzedProperty.ALPACA_MITIGATED, getAlpacaTextEncoding());
+
         PrintingScheme scheme =
-            new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding, useColors);
+            new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding, specialTextMap, useColors);
         return scheme;
+    }
+
+    private static TextEncoding getAlpacaTextEncoding() {
+        HashMap<TestResult, String> textEncodingMap = new HashMap<>();
+        textEncodingMap.put(TestResult.CANNOT_BE_TESTED, "cannot be tested");
+        textEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test");
+        textEncodingMap.put(TestResult.ERROR_DURING_TEST, "error");
+        textEncodingMap.put(TestResult.FALSE, "not mitigated");
+        textEncodingMap.put(TestResult.NOT_TESTED_YET, "not tested yet");
+        textEncodingMap.put(TestResult.TIMEOUT, "timeout");
+        textEncodingMap.put(TestResult.TRUE, "true");
+        textEncodingMap.put(TestResult.UNCERTAIN, "uncertain");
+        textEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by tls-scanner");
+        textEncodingMap.put(TestResult.PARTIALLY, "partially");
+        return new TextEncoding(textEncodingMap);
     }
 
     private static ColorEncoding getDefaultColorEncoding(AnsiColor trueColor, AnsiColor falseColor) {

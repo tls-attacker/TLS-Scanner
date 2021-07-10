@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.report.result;
@@ -135,9 +134,8 @@ public class HttpHeaderResult extends ProbeResult {
                         if (value.trim().startsWith("pin-")) {
                             try {
                                 String[] pinString = value.split("=");
-                                HpkpPin pin =
-                                    new HpkpPin(pinString[0], Base64.getDecoder()
-                                        .decode(pinString[1].replace("\"", "")));
+                                HpkpPin pin = new HpkpPin(pinString[0],
+                                    Base64.getDecoder().decode(pinString[1].replace("\"", "")));
                                 reportOnlyPinList.add(pin);
                             } catch (Exception e) {
                                 LOGGER.warn("HPKP was not parseable", e);

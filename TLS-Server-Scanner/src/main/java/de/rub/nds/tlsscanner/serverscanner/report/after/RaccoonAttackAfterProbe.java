@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.report.after;
@@ -82,7 +81,7 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
     /**
      * Create a map which contains for each observed byte size the smallest seen modulus
      *
-     * @param extractedValueList
+     * @param  extractedValueList
      * @return
      */
     public Map<Integer, BigInteger> generateSmallestByteSizeModuloMap(List extractedValueList) {
@@ -146,8 +145,8 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
 
         List<RaccoonAttackPskProbabilities> pskProbabilityList =
             computePskProbabilitiesList(blockLength, inputLength, fixedLength, maxPadding, hashLengthField, modulus);
-        return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.TLS_LEGACY_PRF,
-            bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
+        return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.TLS_LEGACY_PRF, bitsToNextSmallerBlock,
+            attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
     /**
@@ -157,15 +156,13 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         int fixedLength, int minPadding, int hashLengthField, BigInteger modulus) {
         List<RaccoonAttackPskProbabilities> pskProbabilityList = new LinkedList<>();
         for (int i = 0; i < MAX_CONSIDERED_PSK_LENGTH_BYTES; i++) {
-            int bitsToNextSmallerBlockPsk =
-                bitsToNextSmallerBlock(blockLength, inputLength + 2 * 8 + 2 * 8 + i * 8, fixedLength, minPadding,
-                    hashLengthField);
+            int bitsToNextSmallerBlockPsk = bitsToNextSmallerBlock(blockLength, inputLength + 2 * 8 + 2 * 8 + i * 8,
+                fixedLength, minPadding, hashLengthField);
             BigDecimal attackSuccessChance = attackSuccessChance(bitsToNextSmallerBlockPsk, modulus);
-            if (attackSuccessChance.multiply(
-                new BigDecimal("" + MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION, new MathContext(256,
-                    RoundingMode.DOWN))).compareTo(BigDecimal.ONE) > 0) {
-                pskProbabilityList.add(new RaccoonAttackPskProbabilities(i, bitsToNextSmallerBlockPsk,
-                    attackSuccessChance));
+            if (attackSuccessChance.multiply(new BigDecimal("" + MAX_CONSIDERED_NUMBER_OF_GUESSES_PER_EQUATION,
+                new MathContext(256, RoundingMode.DOWN))).compareTo(BigDecimal.ONE) > 0) {
+                pskProbabilityList
+                    .add(new RaccoonAttackPskProbabilities(i, bitsToNextSmallerBlockPsk, attackSuccessChance));
             } else {
                 // TOO small probability
             }
@@ -229,8 +226,8 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
 
         List<RaccoonAttackPskProbabilities> pskProbabilityList =
             computePskProbabilitiesList(blockLength, inputLength, fixedLength, maxPadding, hashLengthField, modulus);
-        return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.SSL3_OUTER_MD5,
-            bitsToNextSmallerBlock, attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
+        return new RaccoonAttackProbabilities(RaccoonAttackVulnerabilityPosition.SSL3_OUTER_MD5, bitsToNextSmallerBlock,
+            attackSuccessChance(bitsToNextSmallerBlock, modulus), pskProbabilityList, modulus);
     }
 
     private RaccoonAttackProbabilities computeSSLv3Sha1AInnerProbability(BigInteger modulus) {

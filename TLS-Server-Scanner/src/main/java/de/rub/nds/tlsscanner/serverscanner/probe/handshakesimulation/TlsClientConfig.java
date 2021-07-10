@@ -1,11 +1,10 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2020 Ruhr University Bochum, Paderborn University,
- * and Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
 package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
@@ -13,11 +12,12 @@ package de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation;
 import de.rub.nds.modifiablevariable.util.UnformattedByteArrayAdapter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.protocol.handler.ClientHelloHandler;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.record.layer.TlsRecordLayer;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.SendMessageHelper;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
@@ -143,12 +143,11 @@ public class TlsClientConfig implements Serializable {
 
     public ClientHelloMessage createClientHello() {
         ClientHelloMessage hello = new ClientHelloMessage(config);
-        hello.setExtensions(((ClientHelloMessage) trace.getLastReceivingAction().getReceivedMessages().get(0))
-            .getExtensions());
+        hello.setExtensions(
+            ((ClientHelloMessage) trace.getLastReceivingAction().getReceivedMessages().get(0)).getExtensions());
         State s = new State(config);
         s.getTlsContext().setRecordLayer(new TlsRecordLayer(s.getTlsContext()));
-        ClientHelloHandler handler = new ClientHelloHandler(s.getTlsContext());
-        handler.prepareMessage(hello);
+        SendMessageHelper.prepareMessage(hello, s.getTlsContext());
         return hello;
     }
 
