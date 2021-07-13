@@ -26,9 +26,11 @@ import java.util.Observer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,9 +52,12 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
 
     private final ThreadPoolExecutor executor;
 
+    // Used for waiting for Threads in the ThreadPoolExecutor
+    private final Semaphore semaphore = new Semaphore(0);
+
     public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
-        executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
-            new NamedThreadFactory(prefix));
+        executor = new ScannerThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
+            new NamedThreadFactory(prefix), semaphore);
         this.config = config;
         this.scanJob = scanJob;
     }
@@ -92,7 +97,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     }
 
     private void executeProbesTillNoneCanBeExecuted(SiteReport report) {
-        do {
+        while (true) {
+            // handle all Finished Results
             long lastMerge = System.currentTimeMillis();
             List<Future<ProbeResult>> finishedFutures = new LinkedList<>();
             for (Future<ProbeResult> result : futureResults) {
@@ -130,8 +136,21 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                 }
             }
             futureResults.removeAll(finishedFutures);
+            int oldFutures = futureResults.size();
+            //  execute possible new probes
             update(report, this);
-        } while (!futureResults.isEmpty());
+            if (futureResults.size() == 0) {
+                // nothing can be executed anymore
+                return;
+            } else {
+                try {
+                    // wait for at least one probe to finish executing before checking again
+                    semaphore.acquire();
+                } catch (Exception e) {
+                    LOGGER.info("Interrupted while waiting for probe execution");
+                }
+            }
+        }
     }
 
     private void reportAboutNotExecutedProbes() {
