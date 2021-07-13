@@ -47,7 +47,11 @@ public class CcaSupportProbe extends TlsProbe {
         try {
             executeState(state);
         } catch (Exception e) {
-            LOGGER.warn("Could not test for client authentication support.");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.warn("Could not test for client authentication support.");
+            }
         }
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
             return new CcaSupportResult(TestResult.TRUE);

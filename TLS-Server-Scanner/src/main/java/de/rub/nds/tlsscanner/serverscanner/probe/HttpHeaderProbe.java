@@ -103,7 +103,11 @@ public class HttpHeaderProbe extends HttpsProbe {
             }
             return new HttpHeaderResult(speaksHttps == true ? TestResult.TRUE : TestResult.FALSE, headerList);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new HttpHeaderResult(TestResult.ERROR_DURING_TEST, new LinkedList<HttpsHeader>());
         }
     }

@@ -75,28 +75,37 @@ public class OcspProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config tlsConfig = initTlsConfig();
-        List<OcspCertificateResult> ocspCertResults = new LinkedList<>();
+        try {
+            Config tlsConfig = initTlsConfig();
+            List<OcspCertificateResult> ocspCertResults = new LinkedList<>();
 
-        if (serverCertChains == null) {
-            LOGGER.warn("Couldn't fetch certificate chains from server!");
-            return getCouldNotExecuteResult();
+            if (serverCertChains == null) {
+                LOGGER.warn("Couldn't fetch certificate chains from server!");
+                return getCouldNotExecuteResult();
+            }
+
+            for (CertificateChain serverCertChain : serverCertChains) {
+                OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
+
+                getMustStaple(serverCertChain.getCertificate(), certResult);
+                getStapledResponse(tlsConfig, certResult);
+                performRequest(serverCertChain.getCertificate(), certResult);
+
+                ocspCertResults.add(certResult);
+            }
+            List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
+            if (tls13NamedGroups != null) {
+                tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
+            }
+            return new OcspResult(ocspCertResults, tls13CertStatus);
+        } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
+            return new OcspResult(new LinkedList<>(), new LinkedList<>());
         }
-
-        for (CertificateChain serverCertChain : serverCertChains) {
-            OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
-
-            getMustStaple(serverCertChain.getCertificate(), certResult);
-            getStapledResponse(tlsConfig, certResult);
-            performRequest(serverCertChain.getCertificate(), certResult);
-
-            ocspCertResults.add(certResult);
-        }
-        List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
-        if (tls13NamedGroups != null) {
-            tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
-        }
-        return new OcspResult(ocspCertResults, tls13CertStatus);
     }
 
     private void getMustStaple(Certificate certChain, OcspCertificateResult certResult) {
@@ -105,7 +114,11 @@ public class OcspProbe extends TlsProbe {
         try {
             certResult.setMustStaple(certInformationExtractor.getMustStaple());
         } catch (Exception e) {
-            LOGGER.warn("Couldn't determine OCSP must staple flag in certificate.");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.warn("Couldn't determine OCSP must staple flag in certificate.");
+            }
         }
     }
 
@@ -131,7 +144,11 @@ public class OcspProbe extends TlsProbe {
                 certResult.setStapledResponse(
                     OCSPResponseParser.parseResponse(certificateStatusMessage.getOcspResponseBytes().getValue()));
             } catch (Exception e) {
-                LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
+                if (e.getCause() instanceof InterruptedException) {
+                    LOGGER.error("Timeout on " + getProbeName());
+                } else {
+                    LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
+                }
             }
         }
     }
@@ -151,8 +168,13 @@ public class OcspProbe extends TlsProbe {
                     "Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
                 certResult.setSupportsOcsp(false);
                 return;
-            } catch (Exception ex) {
-                LOGGER.warn("Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
+            } catch (Exception e) {
+                if (e.getCause() instanceof InterruptedException) {
+                    LOGGER.error("Timeout on " + getProbeName());
+                } else {
+                    LOGGER.warn("Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
+
+                }
                 return;
             }
 
@@ -178,7 +200,11 @@ public class OcspProbe extends TlsProbe {
                 certResult.setSupportsNonce(false);
             }
         } catch (Exception e) {
-            LOGGER.error("OCSP probe failed.");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("OCSP probe failed.");
+            }
         }
     }
 

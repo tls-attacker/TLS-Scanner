@@ -62,7 +62,11 @@ public class ECPointFormatProbe extends TlsProbe {
                 return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
             }
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new ECPointFormatResult(null, TestResult.ERROR_DURING_TEST);
         }
     }
@@ -159,7 +163,11 @@ public class ECPointFormatProbe extends TlsProbe {
             }
             return TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for Tls13SecpCompression", e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not test for Tls13SecpCompression", e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }

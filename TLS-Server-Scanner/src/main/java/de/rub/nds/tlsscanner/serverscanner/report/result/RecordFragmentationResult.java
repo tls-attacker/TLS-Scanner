@@ -10,11 +10,12 @@
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 public class RecordFragmentationResult extends ProbeResult {
-    private Boolean supported = null;
+    private Boolean supported;
 
     public RecordFragmentationResult(Boolean supported) {
         super(ProbeType.RECORD_FRAGMENTATION);

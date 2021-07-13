@@ -7,9 +7,10 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner;
+package de.rub.nds.tlsscanner.serverscanner.scan;
 
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
+import de.rub.nds.tlsscanner.serverscanner.ConsoleLogger;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
@@ -23,13 +24,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,8 +55,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     private final Semaphore semaphore = new Semaphore(0);
 
     public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
-        executor = new ScannerThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
-            new NamedThreadFactory(prefix), semaphore);
+        long probeTimeout = config.getProbeTimeout();
+        executor = new ScannerThreadPoolExecutor(threadCount, new NamedThreadFactory(prefix), semaphore, probeTimeout);
         this.config = config;
         this.scanJob = scanJob;
     }
@@ -118,20 +117,10 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                             ex);
                         result.cancel(true);
                         finishedFutures.add(result);
-                    }
-                }
-
-                if (lastMerge + 1000 * 60 * 30 < System.currentTimeMillis()) {
-                    LOGGER
-                        .error("Last result merge is more than 30 minutes ago. Starting to kill threads to unblock...");
-                    try {
-                        ProbeResult probeResult = result.get(1, TimeUnit.MINUTES);
+                    } catch (CancellationException ex) {
+                        LOGGER.info("Could not retrieve a task because it was cancelled after "
+                                + config.getProbeTimeout() + " milliseconds");
                         finishedFutures.add(result);
-                        probeResult.merge(report);
-                    } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                        result.cancel(true);
-                        finishedFutures.add(result);
-                        LOGGER.error("Killed task", ex);
                     }
                 }
             }

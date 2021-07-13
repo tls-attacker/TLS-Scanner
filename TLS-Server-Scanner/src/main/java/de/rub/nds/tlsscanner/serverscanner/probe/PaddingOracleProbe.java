@@ -83,7 +83,11 @@ public class PaddingOracleProbe extends TlsProbe {
             }
             return new PaddingOracleResult(testResultList);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new PaddingOracleResult(null);
         }
     }
@@ -133,11 +137,7 @@ public class PaddingOracleProbe extends TlsProbe {
         } else {
             attacker.setAdditionalTimeout(50);
         }
-        try {
-            attacker.isVulnerable();
-        } catch (Exception e) {
-            LOGGER.error("Encountered an exception while testing for PaddingOracles", e);
-        }
+        attacker.isVulnerable();
 
         return new InformationLeakTest<>(
             new PaddingOracleTestInfo(paddingOracleConfig.getProtocolVersionDelegate().getProtocolVersion(),

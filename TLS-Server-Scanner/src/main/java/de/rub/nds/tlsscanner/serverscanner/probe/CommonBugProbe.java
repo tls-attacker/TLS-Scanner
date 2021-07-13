@@ -166,7 +166,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasExtensionIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -186,7 +190,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasBigClientHelloIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -217,7 +225,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.TRUE
                 : TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasIgnoresSigHashAlgoOfferingBug():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -252,7 +264,11 @@ public class CommonBugProbe extends TlsProbe {
             }
             return TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasIgnoresNamedGroupsOfferingBug():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -286,7 +302,11 @@ public class CommonBugProbe extends TlsProbe {
                 ignoresCipherSuiteOffering = TestResult.FALSE;
             }
         } catch (Exception e) {
-            LOGGER.error("Could not scan for adjustCipherSuiteSelectionBugs():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             reflectsCipherSuiteOffering = TestResult.ERROR_DURING_TEST;
             ignoresCipherSuiteOffering = TestResult.ERROR_DURING_TEST;
         }
@@ -318,7 +338,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasSignatureAndHashAlgorithmIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -357,7 +381,11 @@ public class CommonBugProbe extends TlsProbe {
                 return TestResult.FALSE;
             }
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasNamedGroupIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -386,7 +414,11 @@ public class CommonBugProbe extends TlsProbe {
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
             return receivedShd ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasOnlySecondCipherSuiteByteEvaluatedBug():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -406,7 +438,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasEmptyLastExtensionIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -425,7 +461,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasVersionIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -444,7 +484,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasCompressionIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -467,7 +511,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasCipherSuiteLengthIntolerance512():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -486,7 +534,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasCipherSuiteIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -511,7 +563,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasAlpnIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -541,7 +597,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasClientHelloLengthIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -579,7 +639,11 @@ public class CommonBugProbe extends TlsProbe {
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
                 : TestResult.TRUE;
         } catch (Exception e) {
-            LOGGER.error("Could not scan for hasGreaseIntolerance():" + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }

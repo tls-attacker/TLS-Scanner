@@ -60,7 +60,11 @@ public class HandshakeSimulationProbe extends TlsProbe {
                     simulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 }
             } catch (Exception e) {
-                LOGGER.error("Could not load " + configFileName, e);
+                if (e.getCause() instanceof InterruptedException) {
+                    LOGGER.error("Timeout on " + getProbeName());
+                } else {
+                    LOGGER.error("Could not load " + configFileName, e);
+                }
             }
         }
     }
@@ -81,7 +85,11 @@ public class HandshakeSimulationProbe extends TlsProbe {
             }
             return new HandshakeSimulationResult(resultList);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new HandshakeSimulationResult(null);
         }
     }

@@ -43,7 +43,11 @@ public class EarlyCcsProbe extends TlsProbe {
             EarlyCcsVulnerabilityType earlyCcsVulnerabilityType = attacker.getEarlyCcsVulnerabilityType();
             return new EarlyCcsResult(earlyCcsVulnerabilityType);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new EarlyCcsResult(null);
         }
     }

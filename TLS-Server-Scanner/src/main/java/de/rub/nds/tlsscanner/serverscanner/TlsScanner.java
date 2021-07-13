@@ -28,6 +28,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.after.PaddingOracleIdentificat
 import de.rub.nds.tlsscanner.serverscanner.report.after.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.scan.ScanJob;
+import de.rub.nds.tlsscanner.serverscanner.scan.ThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
 import java.util.List;

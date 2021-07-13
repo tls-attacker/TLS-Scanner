@@ -47,8 +47,12 @@ public class HelloRetryProbe extends TlsProbe {
         try {
             testHelloRetry();
             return new HelloRetryResult(sendsHelloRetryRequest, issuesCookie);
-        } catch (Exception E) {
-            LOGGER.error("Could not test for Cookie in Hello Retry :" + E.getMessage());
+        } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new HelloRetryResult(null, null);
         }
     }

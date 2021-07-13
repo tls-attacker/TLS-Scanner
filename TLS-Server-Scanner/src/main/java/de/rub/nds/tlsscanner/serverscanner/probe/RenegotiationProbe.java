@@ -70,8 +70,12 @@ public class RenegotiationProbe extends TlsProbe {
             return new RenegotiationResult(supportsSecureRenegotiationExtension, supportsSecureRenegotiationCipherSuite,
                 supportsInsecureRenegotiation, vulnerableToRenegotiationAttackExtension,
                 vulnerableToRenegotiationAttackCipherSuite);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+        } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new RenegotiationResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
                 TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }

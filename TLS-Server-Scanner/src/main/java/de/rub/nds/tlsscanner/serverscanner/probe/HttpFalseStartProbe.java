@@ -85,8 +85,12 @@ public class HttpFalseStartProbe extends HttpsProbe {
             // received no http response -> maybe server did not understand
             // request
             return new HttpFalseStartResult(TestResult.UNCERTAIN);
-        } catch (Exception exc) {
-            LOGGER.error("Could not scan for " + getProbeName(), exc);
+        } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new HttpFalseStartResult(TestResult.ERROR_DURING_TEST);
         }
     }

@@ -122,7 +122,11 @@ public class InvalidCurveProbe extends TlsProbe {
             }
             return evaluateResponses(responses);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
                 TestResult.ERROR_DURING_TEST, null);
         }
@@ -436,8 +440,12 @@ public class InvalidCurveProbe extends TlsProbe {
             }
             return new InvalidCurveResponse(vector, attacker.getResponsePairs(), showsPointsAreNotValidated,
                 attacker.getReceivedEcPublicKeys(), attacker.getFinishedKeys(), dirtyKeysWarning, scanType);
-        } catch (Exception ex) {
-            LOGGER.warn("Was unable to get results for " + vector.toString() + " Message: " + ex.getMessage());
+        } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.warn("Was unable to get results for " + vector.toString() + " Message: " + e.getMessage());
+            }
             return new InvalidCurveResponse(vector, TestResult.ERROR_DURING_TEST);
         }
     }

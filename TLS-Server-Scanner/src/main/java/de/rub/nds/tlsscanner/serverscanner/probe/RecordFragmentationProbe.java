@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.RecordFragmentationResult;
@@ -30,16 +31,26 @@ public class RecordFragmentationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config config = getScannerConfig().createConfig();
-        config.setDefaultMaxRecordData(50);
+        try {
+            Config config = getScannerConfig().createConfig();
+            config.setDefaultMaxRecordData(50);
 
-        State state = new State(config, new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
+            State state = new State(config, new WorkflowConfigurationFactory(config)
+                    .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
 
-        executeState(state);
+            executeState(state);
 
-        return new RecordFragmentationResult(
-            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()));
+            return new RecordFragmentationResult(
+                    (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE,
+                            state.getWorkflowTrace())));
+        } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
+            return new RecordFragmentationResult(Boolean.FALSE);
+        }
     }
 
     @Override

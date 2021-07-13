@@ -82,7 +82,11 @@ public class ProtocolVersionProbe extends TlsProbe {
             }
             return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new ProtocolVersionResult(null, null);
         }
     }

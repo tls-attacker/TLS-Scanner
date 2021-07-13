@@ -101,7 +101,11 @@ public class NamedCurvesProbe extends TlsProbe {
             return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
                 groupsDependOnCipherSuite, ignoresEcdsaGroupDisparity);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return getCouldNotExecuteResult();
         }
     }

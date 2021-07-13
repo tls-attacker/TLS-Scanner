@@ -76,7 +76,11 @@ public class CipherSuiteProbe extends TlsProbe {
             }
             return new CipherSuiteProbeResult(pairLists);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new CipherSuiteProbeResult(null);
         }
     }

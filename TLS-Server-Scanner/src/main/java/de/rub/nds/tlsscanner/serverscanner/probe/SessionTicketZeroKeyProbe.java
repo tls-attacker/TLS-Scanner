@@ -110,59 +110,77 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             state = new State(tlsConfig);
             executeState(state);
         } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return new SessionTicketZeroKeyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
-
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
-            return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
-        }
-
-        byte[] ticket = null;
-        for (ProtocolMessage msg : WorkflowTraceUtil.getAllReceivedMessages(state.getWorkflowTrace())) {
-            if (msg instanceof NewSessionTicketMessage) {
-                NewSessionTicketMessage newSessionTicketMessage = (NewSessionTicketMessage) msg;
-                ticket = newSessionTicketMessage.getTicket().getIdentity().getValue();
-            }
-        }
-
-        byte[] key = new byte[32];
-        byte[] iv;
-        byte[] encryptedSessionState;
-        byte[] decryptedSessionState = null;
-
         try {
-            iv = Arrays.copyOfRange(ticket, IV_OFFSET, IV_OFFSET + IV_LEN);
-            byte[] sessionStateLen = Arrays.copyOfRange(ticket, SESSION_STATE_LEN_FIELD_OFFSET,
-                SESSION_STATE_LEN_FIELD_OFFSET + SESSION_STATE_LEN_FIELD_LEN);
-            int sessionStateLenInt = ArrayConverter.bytesToInt(sessionStateLen);
-            encryptedSessionState =
-                Arrays.copyOfRange(ticket, SESSION_STATE_OFFSET, SESSION_STATE_OFFSET + sessionStateLenInt);
-            Cipher cipher = Cipher.getInstance("AES/CBC/NOPADDING");
-            SecretKey aesKey = new SecretKeySpec(key, "AES");
-            cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
-            decryptedSessionState = cipher.doFinal(encryptedSessionState);
-            LOGGER.debug("decryptedSessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
+
+            if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
+                return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+            }
+
+            byte[] ticket = null;
+            for (ProtocolMessage msg : WorkflowTraceUtil.getAllReceivedMessages(state.getWorkflowTrace())) {
+                if (msg instanceof NewSessionTicketMessage) {
+                    NewSessionTicketMessage newSessionTicketMessage = (NewSessionTicketMessage) msg;
+                    ticket = newSessionTicketMessage.getTicket().getIdentity().getValue();
+                }
+            }
+
+            byte[] key = new byte[32];
+            byte[] iv;
+            byte[] encryptedSessionState;
+            byte[] decryptedSessionState = null;
+
+            try {
+                iv = Arrays.copyOfRange(ticket, IV_OFFSET, IV_OFFSET + IV_LEN);
+                byte[] sessionStateLen = Arrays.copyOfRange(ticket, SESSION_STATE_LEN_FIELD_OFFSET,
+                        SESSION_STATE_LEN_FIELD_OFFSET + SESSION_STATE_LEN_FIELD_LEN);
+                int sessionStateLenInt = ArrayConverter.bytesToInt(sessionStateLen);
+                encryptedSessionState =
+                        Arrays.copyOfRange(ticket, SESSION_STATE_OFFSET, SESSION_STATE_OFFSET + sessionStateLenInt);
+                Cipher cipher = Cipher.getInstance("AES/CBC/NOPADDING");
+                SecretKey aesKey = new SecretKeySpec(key, "AES");
+                cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));
+                decryptedSessionState = cipher.doFinal(encryptedSessionState);
+                LOGGER.debug("decryptedSessionState" + ArrayConverter.bytesToHexString(decryptedSessionState));
+            } catch (Exception e) {
+                if (e.getCause() instanceof InterruptedException) {
+                    LOGGER.error("Timeout on " + getProbeName());
+                } else {
+                    LOGGER.error("Could not scan for " + getProbeName(), e);
+                }
+                return new SessionTicketZeroKeyResult(TestResult.FALSE, TestResult.FALSE);
+            }
+            TestResult hasDecryptableMasterSecret;
+            TestResult hasGnuTlsMagicBytes;
+
+            if (checkForMasterSecret(decryptedSessionState, state.getTlsContext())) {
+                hasDecryptableMasterSecret = TestResult.TRUE;
+            } else {
+                hasDecryptableMasterSecret = TestResult.FALSE;
+            }
+
+            if (checkForGnuTlsMagicBytes(decryptedSessionState)) {
+                hasGnuTlsMagicBytes = TestResult.TRUE;
+
+            } else {
+                hasGnuTlsMagicBytes = TestResult.FALSE;
+            }
+
+            return new SessionTicketZeroKeyResult(hasDecryptableMasterSecret, hasGnuTlsMagicBytes);
         } catch (Exception e) {
-            return new SessionTicketZeroKeyResult(TestResult.FALSE, TestResult.FALSE);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
+            return new SessionTicketZeroKeyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
-        TestResult hasDecryptableMasterSecret;
-        TestResult hasGnuTlsMagicBytes;
-
-        if (checkForMasterSecret(decryptedSessionState, state.getTlsContext())) {
-            hasDecryptableMasterSecret = TestResult.TRUE;
-        } else {
-            hasDecryptableMasterSecret = TestResult.FALSE;
-        }
-
-        if (checkForGnuTlsMagicBytes(decryptedSessionState)) {
-            hasGnuTlsMagicBytes = TestResult.TRUE;
-
-        } else {
-            hasGnuTlsMagicBytes = TestResult.FALSE;
-        }
-
-        return new SessionTicketZeroKeyResult(hasDecryptableMasterSecret, hasGnuTlsMagicBytes);
     }
 
     @Override
@@ -179,7 +197,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         return true;
     }
 
-    private boolean checkForGnuTlsMagicBytes(byte[] decState) {
+    private boolean checkForGnuTlsMagicBytes(byte[] decState) throws InterruptedException {
         try {
             for (int i = 0; i < GNU_TLS_MAGIC_BYTES.length; i++) {
                 if (decState[i] != GNU_TLS_MAGIC_BYTES[i]) {
@@ -187,6 +205,10 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
                 }
             }
         } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw (InterruptedException) e.getCause();
+            }
             return false;
         }
         return true;

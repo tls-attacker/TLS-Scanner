@@ -11,22 +11,23 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import org.bouncycastle.crypto.tls.Certificate;
 
 public class CertificateTransparencyResult extends ProbeResult {
 
-    private boolean supportsPrecertificateSCTs;
-    private boolean supportsHandshakeSCTs;
-    private boolean supportsOcspSCTs;
-    private boolean meetsChromeCTPolicy;
+    private TestResult supportsPrecertificateSCTs;
+    private TestResult supportsHandshakeSCTs;
+    private TestResult supportsOcspSCTs;
+    private TestResult meetsChromeCTPolicy;
     private SignedCertificateTimestampList precertificateSctList;
     private SignedCertificateTimestampList handshakeSctList;
     private SignedCertificateTimestampList ocspSctList;
 
-    public CertificateTransparencyResult(boolean supportsPrecertificateSCTs, boolean supportsHandshakeSCTs,
-        boolean supportsOcspSCTs, boolean meetsChromeCTPolicy, SignedCertificateTimestampList precertificateSctList,
+    public CertificateTransparencyResult(TestResult supportsPrecertificateSCTs, TestResult supportsHandshakeSCTs,
+                                         TestResult supportsOcspSCTs, TestResult meetsChromeCTPolicy, SignedCertificateTimestampList precertificateSctList,
         SignedCertificateTimestampList handshakeSctList, SignedCertificateTimestampList ocspSctList) {
         super(ProbeType.CERTIFICATE_TRANSPARENCY);
         this.supportsPrecertificateSCTs = supportsPrecertificateSCTs;

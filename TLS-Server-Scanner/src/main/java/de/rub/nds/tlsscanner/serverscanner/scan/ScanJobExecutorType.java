@@ -7,17 +7,13 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner;
-
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+package de.rub.nds.tlsscanner.serverscanner.scan;
 
 /**
  *
  * @author robert
  */
-public abstract class ScanJobExecutor {
-
-    public abstract SiteReport execute();
-
-    public abstract void shutdown();
+public enum ScanJobExecutorType {
+    SINGLE,
+    MULTI
 }

@@ -29,6 +29,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateTransparencyResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -56,19 +57,32 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        Config tlsConfig = initTlsConfig();
+        try {
+            Config tlsConfig = initTlsConfig();
 
-        if (serverCertChain == null) {
-            LOGGER.warn("Couldn't fetch certificate chain from server!");
+            if (serverCertChain == null) {
+                LOGGER.warn("Couldn't fetch certificate chain from server!");
+                return getCouldNotExecuteResult();
+            }
+
+            getPrecertificateSCTs();
+            getTlsHandshakeSCTs(tlsConfig);
+            evaluateChromeCtPolicy();
+
+            TestResult supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResult.TRUE : TestResult.FALSE);
+            TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResult.TRUE : TestResult.FALSE);
+            TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResult.TRUE : TestResult.FALSE);
+            TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResult.TRUE : TestResult.FALSE);
+            return new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult, supportsOcspSCTsResult,
+                    meetsChromeCTPolicyResult, precertificateSctList, handshakeSctList, ocspSctList);
+        } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
             return getCouldNotExecuteResult();
         }
-
-        getPrecertificateSCTs();
-        getTlsHandshakeSCTs(tlsConfig);
-        evaluateChromeCtPolicy();
-
-        return new CertificateTransparencyResult(supportsPrecertificateSCTs, supportsHandshakeSCTs, supportsOcspSCTs,
-            meetsChromeCTPolicy, precertificateSctList, handshakeSctList, ocspSctList);
     }
 
     private Config initTlsConfig() {
@@ -122,7 +136,11 @@ public class CertificateTransparencyProbe extends TlsProbe {
                 precertificateSctList = sctListParser.parse();
             }
         } catch (Exception e) {
-            LOGGER.warn("Couldn't determine Signed Certificate Timestamp Extension in certificate.", e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.warn("Couldn't determine Signed Certificate Timestamp Extension in certificate.", e);
+            }
         }
     }
 
@@ -154,8 +172,12 @@ public class CertificateTransparencyProbe extends TlsProbe {
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn(
-                "Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.warn(
+                        "Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
+            }
         }
     }
 
@@ -229,7 +251,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CertificateTransparencyResult(false, false, false, false, null, null, null);
+        return new CertificateTransparencyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, new SignedCertificateTimestampList(), new SignedCertificateTimestampList(), new SignedCertificateTimestampList());
     }
 
     @Override

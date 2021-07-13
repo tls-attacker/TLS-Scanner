@@ -35,7 +35,7 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-parallelProbes", required = false,
         description = "Defines the number of threads responsible for different TLS probes. If set to 1, only one specific TLS probe (e.g., TLS version scan) can be run in time.")
-    private int parallelProbes = 1;
+    private int parallelProbes = 8;
 
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
     private boolean noColor = false;
@@ -53,6 +53,10 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-timeout", required = false,
         description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
+
+    @Parameter(names = "-probeTimeout", required = false,
+            description = "The timeout for each probe in ms (default 1800000)")
+    private int probeTimeout = 1800000;
 
     @ParametersDelegate
     private CcaDelegate ccaDelegate;
@@ -176,5 +180,13 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setProbes(ProbeType... probes) {
         this.probes = Arrays.asList(probes);
+    }
+
+    public int getProbeTimeout() {
+        return probeTimeout;
+    }
+
+    public void setProbeTimeout(int probeTimeout) {
+        this.probeTimeout = probeTimeout;
     }
 }
