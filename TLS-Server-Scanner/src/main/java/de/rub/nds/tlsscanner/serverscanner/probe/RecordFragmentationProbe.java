@@ -36,13 +36,12 @@ public class RecordFragmentationProbe extends TlsProbe {
             config.setDefaultMaxRecordData(50);
 
             State state = new State(config, new WorkflowConfigurationFactory(config)
-                    .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
+                .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
 
             executeState(state);
 
-            return new RecordFragmentationResult(
-                    (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE,
-                            state.getWorkflowTrace())));
+            return new RecordFragmentationResult((WorkflowTraceUtil
+                .didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())));
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());

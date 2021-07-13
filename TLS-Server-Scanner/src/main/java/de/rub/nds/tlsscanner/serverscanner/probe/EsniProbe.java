@@ -53,7 +53,7 @@ public class EsniProbe extends TlsProbe {
             tlsConfig.setQuickReceive(true);
             tlsConfig.setDefaultClientSupportedCipherSuites(this.getClientSupportedCipherSuites());
             tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-                    SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
+                SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
             tlsConfig.setEnforceSettings(false);
             tlsConfig.setEarlyStop(true);
             tlsConfig.setStopReceivingAfterFatal(true);
@@ -74,15 +74,15 @@ public class EsniProbe extends TlsProbe {
             tlsConfig.setAddServerNameIndicationExtension(false);
             tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
 
-            WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HELLO,
-                    RunningModeType.CLIENT);
+            WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+                .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
             State state = new State(tlsConfig, trace);
             executeState(state);
 
             TlsContext context = state.getTlsContext();
             boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
             boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
-                    && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
+                && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
             if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
                 return new SniResult(TestResult.ERROR_DURING_TEST);
             } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {

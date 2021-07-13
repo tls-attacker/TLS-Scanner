@@ -172,7 +172,8 @@ public class OcspProbe extends TlsProbe {
                 if (e.getCause() instanceof InterruptedException) {
                     LOGGER.error("Timeout on " + getProbeName());
                 } else {
-                    LOGGER.warn("Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
+                    LOGGER.warn(
+                        "Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
 
                 }
                 return;

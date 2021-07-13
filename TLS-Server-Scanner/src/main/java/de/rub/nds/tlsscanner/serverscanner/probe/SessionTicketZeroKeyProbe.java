@@ -119,7 +119,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         }
         try {
 
-            if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET, state.getWorkflowTrace())) {
+            if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET,
+                state.getWorkflowTrace())) {
                 return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
             }
 
@@ -139,10 +140,10 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
             try {
                 iv = Arrays.copyOfRange(ticket, IV_OFFSET, IV_OFFSET + IV_LEN);
                 byte[] sessionStateLen = Arrays.copyOfRange(ticket, SESSION_STATE_LEN_FIELD_OFFSET,
-                        SESSION_STATE_LEN_FIELD_OFFSET + SESSION_STATE_LEN_FIELD_LEN);
+                    SESSION_STATE_LEN_FIELD_OFFSET + SESSION_STATE_LEN_FIELD_LEN);
                 int sessionStateLenInt = ArrayConverter.bytesToInt(sessionStateLen);
                 encryptedSessionState =
-                        Arrays.copyOfRange(ticket, SESSION_STATE_OFFSET, SESSION_STATE_OFFSET + sessionStateLenInt);
+                    Arrays.copyOfRange(ticket, SESSION_STATE_OFFSET, SESSION_STATE_OFFSET + sessionStateLenInt);
                 Cipher cipher = Cipher.getInstance("AES/CBC/NOPADDING");
                 SecretKey aesKey = new SecretKeySpec(key, "AES");
                 cipher.init(Cipher.DECRYPT_MODE, aesKey, new IvParameterSpec(iv));

@@ -1,3 +1,12 @@
+/**
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tlsscanner.serverscanner.scan;
 
 import java.util.concurrent.Callable;
@@ -13,9 +22,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Extends {@link ThreadPoolExecutor} with its own afterExecute function.
- * A ScannerThreadPoolExecutor hold a semaphore which is released each time a
- * Thread finished executing.
+ * Extends {@link ThreadPoolExecutor} with its own afterExecute function. A ScannerThreadPoolExecutor hold a semaphore
+ * which is released each time a Thread finished executing.
  *
  * @author JonSnowWhite
  */
@@ -23,8 +31,7 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final RejectedExecutionHandler defaultHandler =
-            new AbortPolicy();
+    private static final RejectedExecutionHandler defaultHandler = new AbortPolicy();
 
     private final Semaphore semaphore;
 
@@ -35,12 +42,11 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
 
     /**
      * Call super and assign the semaphore
-     * @param timeout The timeout after which tasks are cancelled in milliseconds.
+     * 
+     * @param timeout
+     *                The timeout after which tasks are cancelled in milliseconds.
      */
-    public ScannerThreadPoolExecutor(int corePoolSize,
-                                     ThreadFactory threadFactory,
-                                     Semaphore semaphore,
-                                     long timeout) {
+    public ScannerThreadPoolExecutor(int corePoolSize, ThreadFactory threadFactory, Semaphore semaphore, long timeout) {
         super(corePoolSize, threadFactory, defaultHandler);
         this.semaphore = semaphore;
         this.timeout = timeout;
@@ -48,8 +54,11 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
 
     /**
      * Releases the semaphore when the Runnable r finished executing.
-     * @param r The runnable that finished executing.
-     * @param t Should r fail, t holds the exception.
+     * 
+     * @param r
+     *          The runnable that finished executing.
+     * @param t
+     *          Should r fail, t holds the exception.
      */
     @Override
     protected void afterExecute(Runnable r, Throwable t) {

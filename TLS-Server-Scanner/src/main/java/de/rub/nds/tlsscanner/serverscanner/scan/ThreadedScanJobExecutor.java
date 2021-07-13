@@ -119,14 +119,14 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                         finishedFutures.add(result);
                     } catch (CancellationException ex) {
                         LOGGER.info("Could not retrieve a task because it was cancelled after "
-                                + config.getProbeTimeout() + " milliseconds");
+                            + config.getProbeTimeout() + " milliseconds");
                         finishedFutures.add(result);
                     }
                 }
             }
             futureResults.removeAll(finishedFutures);
             int oldFutures = futureResults.size();
-            //  execute possible new probes
+            // execute possible new probes
             update(report, this);
             if (futureResults.size() == 0) {
                 // nothing can be executed anymore

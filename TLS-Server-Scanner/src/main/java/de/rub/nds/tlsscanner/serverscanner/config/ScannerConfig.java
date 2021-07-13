@@ -55,7 +55,7 @@ public class ScannerConfig extends TLSDelegateConfig {
     private int timeout = 1000;
 
     @Parameter(names = "-probeTimeout", required = false,
-            description = "The timeout for each probe in ms (default 1800000)")
+        description = "The timeout for each probe in ms (default 1800000)")
     private int probeTimeout = 1800000;
 
     @ParametersDelegate

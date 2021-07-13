@@ -69,12 +69,14 @@ public class CertificateTransparencyProbe extends TlsProbe {
             getTlsHandshakeSCTs(tlsConfig);
             evaluateChromeCtPolicy();
 
-            TestResult supportsPrecertificateSCTsResult = (supportsPrecertificateSCTs ? TestResult.TRUE : TestResult.FALSE);
+            TestResult supportsPrecertificateSCTsResult =
+                (supportsPrecertificateSCTs ? TestResult.TRUE : TestResult.FALSE);
             TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResult.TRUE : TestResult.FALSE);
             TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResult.TRUE : TestResult.FALSE);
             TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResult.TRUE : TestResult.FALSE);
-            return new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult, supportsOcspSCTsResult,
-                    meetsChromeCTPolicyResult, precertificateSctList, handshakeSctList, ocspSctList);
+            return new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult,
+                supportsOcspSCTsResult, meetsChromeCTPolicyResult, precertificateSctList, handshakeSctList,
+                ocspSctList);
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
@@ -176,7 +178,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
                 LOGGER.error("Timeout on " + getProbeName());
             } else {
                 LOGGER.warn(
-                        "Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
+                    "Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
             }
         }
     }
@@ -252,7 +254,8 @@ public class CertificateTransparencyProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new CertificateTransparencyResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, new SignedCertificateTimestampList(), new SignedCertificateTimestampList(), new SignedCertificateTimestampList());
+            TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, new SignedCertificateTimestampList(),
+            new SignedCertificateTimestampList(), new SignedCertificateTimestampList());
     }
 
     @Override

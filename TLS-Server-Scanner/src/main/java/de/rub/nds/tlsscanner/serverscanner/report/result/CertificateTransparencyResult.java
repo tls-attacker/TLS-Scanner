@@ -27,8 +27,9 @@ public class CertificateTransparencyResult extends ProbeResult {
     private SignedCertificateTimestampList ocspSctList;
 
     public CertificateTransparencyResult(TestResult supportsPrecertificateSCTs, TestResult supportsHandshakeSCTs,
-                                         TestResult supportsOcspSCTs, TestResult meetsChromeCTPolicy, SignedCertificateTimestampList precertificateSctList,
-        SignedCertificateTimestampList handshakeSctList, SignedCertificateTimestampList ocspSctList) {
+        TestResult supportsOcspSCTs, TestResult meetsChromeCTPolicy,
+        SignedCertificateTimestampList precertificateSctList, SignedCertificateTimestampList handshakeSctList,
+        SignedCertificateTimestampList ocspSctList) {
         super(ProbeType.CERTIFICATE_TRANSPARENCY);
         this.supportsPrecertificateSCTs = supportsPrecertificateSCTs;
         this.supportsHandshakeSCTs = supportsHandshakeSCTs;

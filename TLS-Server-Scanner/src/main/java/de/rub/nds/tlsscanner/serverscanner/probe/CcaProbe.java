@@ -86,26 +86,27 @@ public class CcaProbe extends TlsProbe {
             for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
                 for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
                     /**
-                     * Skip certificate types for which we are lacking the corresponding CLI parameters Additionally skip
-                     * certificate types that aren't required. I.e. a flow not sending a certificate message can simply run
-                     * once with the CcaCertificateType EMPTY
+                     * Skip certificate types for which we are lacking the corresponding CLI parameters Additionally
+                     * skip certificate types that aren't required. I.e. a flow not sending a certificate message can
+                     * simply run once with the CcaCertificateType EMPTY
                      */
                     if ((ccaCertificateType.getRequiresCertificate() && !haveClientCertificate)
-                            || (ccaCertificateType.getRequiresCaCertAndKeys() && !gotDirectoryParameters)
-                            || (!ccaWorkflowType.getRequiresCertificate() && ccaCertificateType != CcaCertificateType.EMPTY)) {
+                        || (ccaCertificateType.getRequiresCaCertAndKeys() && !gotDirectoryParameters)
+                        || (!ccaWorkflowType.getRequiresCertificate()
+                            && ccaCertificateType != CcaCertificateType.EMPTY)) {
                         continue;
                     }
                     for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
                         for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
 
                             CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite,
-                                    ccaWorkflowType, ccaCertificateType);
+                                ccaWorkflowType, ccaCertificateType);
                             Config tlsConfig = generateConfig();
                             tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
                             tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
 
-                            CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager, additionalTimeout,
-                                    increasingTimeout, reexecutions, additionalTcpTimeout);
+                            CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager,
+                                additionalTimeout, increasingTimeout, reexecutions, additionalTcpTimeout);
                             taskList.add(ccaTask);
                             taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
                         }
@@ -122,13 +123,14 @@ public class CcaProbe extends TlsProbe {
                 } else {
                     Boolean vectorVulnerable = false;
                     if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED,
-                            ccaTaskVectorPair.getCcaTask().getState().getWorkflowTrace())) {
+                        ccaTaskVectorPair.getCcaTask().getState().getWorkflowTrace())) {
                         handshakeSucceeded = true;
                         vectorVulnerable = true;
                     } else {
                         vectorVulnerable = false;
                     }
-                    resultList.add(new CcaTestResult(vectorVulnerable, ccaTaskVectorPair.getVector().getCcaWorkflowType(),
+                    resultList
+                        .add(new CcaTestResult(vectorVulnerable, ccaTaskVectorPair.getVector().getCcaWorkflowType(),
                             ccaTaskVectorPair.getVector().getCcaCertificateType(),
                             ccaTaskVectorPair.getVector().getProtocolVersion(),
                             ccaTaskVectorPair.getVector().getCipherSuite()));
