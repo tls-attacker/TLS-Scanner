@@ -385,8 +385,14 @@
             <requirementLevel>MUST</requirementLevel>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>The Certificate Status Request extension shall be supported.</name>
-            <description>The Certificate Status Request extension shall be supported.</description>
+            <name>
+                Servers shall support the processing of the signature algorithms extension received in a ClientHello
+                message.
+            </name>
+            <description>
+                Servers shall support the processing of the signature algorithms extension received in a ClientHello
+                message.
+            </description>
             <condition>
                 <or>
                     <condition>

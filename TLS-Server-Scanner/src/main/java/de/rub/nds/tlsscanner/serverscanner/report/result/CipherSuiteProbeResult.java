@@ -71,6 +71,7 @@ public class CipherSuiteProbeResult extends ProbeResult {
     private TestResult supportsLegacyPrf = TestResult.FALSE;
     private TestResult supportsSha256Prf = TestResult.FALSE;
     private TestResult supportsSha384Prf = TestResult.FALSE;
+    private TestResult supportsCbc = TestResult.FALSE;
 
     public CipherSuiteProbeResult(List<VersionSuiteListPair> pairLists) {
         super(ProbeType.CIPHER_SUITE);
@@ -107,6 +108,7 @@ public class CipherSuiteProbeResult extends ProbeResult {
                 adjustKeyExchange(suite);
                 adjustCipherType(suite);
                 adjustCertificate(suite);
+                adjustCipherBlockModes(suite);
             }
             report.addCipherSuites(allSupported);
         } else {
@@ -152,8 +154,15 @@ public class CipherSuiteProbeResult extends ProbeResult {
             supportsLegacyPrf = TestResult.COULD_NOT_TEST;
             supportsSha256Prf = TestResult.COULD_NOT_TEST;
             supportsSha384Prf = TestResult.COULD_NOT_TEST;
+            supportsCbc = TestResult.COULD_NOT_TEST;
         }
         writeToReport(report);
+    }
+
+    private void adjustCipherBlockModes(CipherSuite suite) {
+        if(suite.isCBC()) {
+            supportsCbc = TestResult.TRUE;
+        }
     }
 
     private void adjustCipherType(CipherSuite suite) {
@@ -339,6 +348,7 @@ public class CipherSuiteProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
         report.putResult(AnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
         report.putResult(AnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
+        report.putResult(AnalyzedProperty.SUPPORTS_CBC, supportsCbc);
         report.setVersionSuitePairs(pairLists);
     }
 

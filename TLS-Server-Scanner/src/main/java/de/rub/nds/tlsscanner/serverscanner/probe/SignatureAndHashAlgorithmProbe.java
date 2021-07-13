@@ -63,12 +63,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
             if (version.isTLS13()) {
                 testForVersion(version, CipherSuite::isTLS13);
             } else {
-                testForVersion(version,
-                    suite -> !suite.isTLS13() && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeRsa());
-                testForVersion(version,
-                    suite -> !suite.isTLS13() && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh());
-                testForVersion(version,
-                    suite -> !suite.isTLS13() && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeDh());
+                testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral());
+                testForVersion(version, suite -> !suite.isTLS13() && !suite.isEphemeral());
             }
         }
         return new SignatureAndHashAlgorithmResult(new ArrayList<>(supported), respectsExtension);
