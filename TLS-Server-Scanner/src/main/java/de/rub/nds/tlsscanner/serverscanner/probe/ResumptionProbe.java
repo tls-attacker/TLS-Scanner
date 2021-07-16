@@ -118,12 +118,15 @@ public class ResumptionProbe extends TlsProbe {
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
             State state = new State(tlsConfig);
             executeState(state);
-            // Check PSK Modes
-            TestResult keyShareExtensionNegotiated = isKeyShareExtensionNegotiated(state);
-            TestResult keyShareRequired = TestResult.of(exchangeMode.equals(PskKeyExchangeMode.PSK_DHE_KE));
-            if (!keyShareExtensionNegotiated.equals(keyShareRequired)) {
-                if (!TestResult.COULD_NOT_TEST.equals(keyShareExtensionNegotiated)) {
-                    respectsPskModes = TestResult.FALSE;
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.NEW_SESSION_TICKET,
+                state.getWorkflowTrace())) {
+                // Check PSK Modes
+                TestResult keyShareExtensionNegotiated = isKeyShareExtensionNegotiated(state);
+                TestResult keyShareRequired = TestResult.of(exchangeMode.equals(PskKeyExchangeMode.PSK_DHE_KE));
+                if (!keyShareExtensionNegotiated.equals(keyShareRequired)) {
+                    if (!TestResult.COULD_NOT_TEST.equals(keyShareExtensionNegotiated)) {
+                        respectsPskModes = TestResult.FALSE;
+                    }
                 }
             }
             MessageAction lastRcv = (MessageAction) state.getWorkflowTrace().getLastReceivingAction();
