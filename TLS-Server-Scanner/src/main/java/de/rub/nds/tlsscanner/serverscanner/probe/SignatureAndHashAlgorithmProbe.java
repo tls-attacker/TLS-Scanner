@@ -12,7 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import com.google.common.collect.Sets;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -35,12 +34,15 @@ import org.bouncycastle.asn1.x509.Certificate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
@@ -48,7 +50,6 @@ import java.util.function.Predicate;
 public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     private List<ProtocolVersion> versions;
-    private Set<SignatureAndHashAlgorithm> supported;
     private TestResult respectsExtension;
 
     public SignatureAndHashAlgorithmProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -57,29 +58,37 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        this.supported = new HashSet<>();
+        Set<SignatureAndHashAlgorithm> supportedCert = new HashSet<>();
+        Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         this.respectsExtension = TestResult.TRUE;
         for (ProtocolVersion version : this.versions) {
             if (version.isTLS13()) {
-                testForVersion(version, CipherSuite::isTLS13);
+                supportedCert.addAll(testForVersion(version, CipherSuite::isTLS13, AlgorithmLocation.CERT));
+                supportedSke.addAll(testForVersion(version, CipherSuite::isTLS13, AlgorithmLocation.SKE));
             } else {
-                testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral());
-                testForVersion(version, suite -> !suite.isTLS13() && !suite.isEphemeral());
+                supportedCert.addAll(testForVersion(version, suite -> !suite.isTLS13(), AlgorithmLocation.CERT));
+                supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13(), AlgorithmLocation.SKE));
+                supportedSke.addAll(
+                    testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral(), AlgorithmLocation.SKE));
             }
         }
-        return new SignatureAndHashAlgorithmResult(new ArrayList<>(supported), respectsExtension);
+        return new SignatureAndHashAlgorithmResult(new ArrayList<>(supportedCert), new ArrayList<>(supportedSke),
+            respectsExtension);
     }
 
-    private void testForVersion(ProtocolVersion version, Predicate<CipherSuite> predicate) {
+    private Set<SignatureAndHashAlgorithm> testForVersion(ProtocolVersion version, Predicate<CipherSuite> predicate,
+        AlgorithmLocation location) {
+        Set<SignatureAndHashAlgorithm> found = new HashSet<>();
         Set<List<SignatureAndHashAlgorithm>> tested = new HashSet<>();
+
         Config tlsConfig = version.isTLS13() ? getTls13Config() : this.getBasicConfig();
         tlsConfig.setHighestProtocolVersion(version);
-
         tlsConfig.getDefaultClientSupportedCipherSuites().removeIf(predicate.negate());
 
         Queue<List<SignatureAndHashAlgorithm>> testQueue = new LinkedList<>();
         testQueue.add(version.isTLS13() ? SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()
             : Arrays.asList(SignatureAndHashAlgorithm.values()));
+
         State state;
 
         while (!testQueue.isEmpty()) {
@@ -88,55 +97,40 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
                 continue;
             }
             tested.add(testSet);
+
             state = testAlgorithms(testSet, tlsConfig);
             if (state != null) {
-                Set<SignatureAndHashAlgorithm> selected = getSelectedSignatureAndHashAlgorithms(state);
-                supported.addAll(selected);
-                if (!testSet.containsAll(selected)) {
+                Set<SignatureAndHashAlgorithm> selected = location.extract(state);
+                if (!testSet.containsAll(selected) && (!version.isTLS13() || location.isStrict())) {
+                    found.addAll(selected);
                     respectsExtension = TestResult.FALSE;
+                    break;
                 }
-                // move selected to end
-                List<SignatureAndHashAlgorithm> selectedToEnd = new ArrayList<>(testSet);
-                selectedToEnd.removeAll(selected);
-                selectedToEnd.addAll(selected);
-                testQueue.add(selectedToEnd);
-                // remove possible combinations of selected
-                for (Set<SignatureAndHashAlgorithm> subSet : Sets.powerSet(selected)) {
-                    if (subSet.isEmpty()) {
-                        continue;
+                // if any new algorithms were found
+                if (selected.stream().anyMatch(algorithm -> !found.contains(algorithm))) {
+                    // move selected to end
+                    List<SignatureAndHashAlgorithm> selectedContained =
+                        selected.stream().filter(selected::contains).collect(Collectors.toList());
+                    if (selectedContained.size() > 0) {
+                        List<SignatureAndHashAlgorithm> selectedToEnd = new ArrayList<>(testSet);
+                        selectedToEnd.removeAll(selectedContained);
+                        selectedToEnd.addAll(selectedContained);
+                        testQueue.add(selectedToEnd);
                     }
-                    List<SignatureAndHashAlgorithm> newTestSet = new ArrayList<>(testSet);
-                    newTestSet.removeAll(subSet);
-                    testQueue.add(newTestSet);
-                }
-            }
-        }
-    }
-
-    private Set<SignatureAndHashAlgorithm> getSelectedSignatureAndHashAlgorithms(State state) {
-        Set<SignatureAndHashAlgorithm> selected = new HashSet<>();
-        for (Certificate cert : state.getTlsContext().getServerCertificate().getCertificateList()) {
-            SignatureAndHashAlgorithm sigHashAlgo = CertificateReportGenerator.getSignatureAndHashAlgorithm(cert);
-            if (sigHashAlgo != null) {
-                selected.add(sigHashAlgo);
-            }
-        }
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace())) {
-            HandshakeMessage message = WorkflowTraceUtil
-                .getLastReceivedMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
-            if (message instanceof ServerKeyExchangeMessage) {
-                ServerKeyExchangeMessage msg = (ServerKeyExchangeMessage) message;
-                ModifiableByteArray algByte = msg.getSignatureAndHashAlgorithm();
-                if (algByte != null) {
-                    SignatureAndHashAlgorithm sigHashAlgo =
-                        SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(algByte.getValue());
-                    if (sigHashAlgo != null) {
-                        selected.add(sigHashAlgo);
+                    // remove possible combinations of selected
+                    for (Set<SignatureAndHashAlgorithm> subSet : Sets.powerSet(selected)) {
+                        if (subSet.isEmpty()) {
+                            continue;
+                        }
+                        List<SignatureAndHashAlgorithm> newTestSet = new ArrayList<>(testSet);
+                        newTestSet.removeAll(subSet);
+                        testQueue.add(newTestSet);
                     }
                 }
+                found.addAll(selected);
             }
         }
-        return selected;
+        return found;
     }
 
     private State testAlgorithms(List<SignatureAndHashAlgorithm> algorithms, Config config) {
@@ -205,6 +199,59 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new SignatureAndHashAlgorithmResult(null, TestResult.COULD_NOT_TEST);
+        return new SignatureAndHashAlgorithmResult(null, null, TestResult.COULD_NOT_TEST);
+    }
+
+    private enum AlgorithmLocation {
+
+        CERT(AlgorithmLocation::getSelectedSignatureAndHashAlgorithmsCert, false),
+        SKE(AlgorithmLocation::getSelectedSignatureAndHashAlgorithmsSke, true);
+
+        private final Function<State, Set<SignatureAndHashAlgorithm>> extractor;
+        private final boolean strict;
+
+        AlgorithmLocation(Function<State, Set<SignatureAndHashAlgorithm>> extractor, boolean strict) {
+            this.extractor = extractor;
+            this.strict = strict;
+        }
+
+        public Set<SignatureAndHashAlgorithm> extract(State state) {
+            return this.extractor.apply(state);
+        }
+
+        public boolean isStrict() {
+            return strict;
+        }
+
+        private static Set<SignatureAndHashAlgorithm> getSelectedSignatureAndHashAlgorithmsCert(State state) {
+            Set<SignatureAndHashAlgorithm> selected = new HashSet<>();
+            for (Certificate cert : state.getTlsContext().getServerCertificate().getCertificateList()) {
+                SignatureAndHashAlgorithm sigHashAlgo = CertificateReportGenerator.getSignatureAndHashAlgorithm(cert);
+                if (sigHashAlgo != null) {
+                    selected.add(sigHashAlgo);
+                }
+            }
+            return selected;
+        }
+
+        private static Set<SignatureAndHashAlgorithm> getSelectedSignatureAndHashAlgorithmsSke(State state) {
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE,
+                state.getWorkflowTrace())) {
+                HandshakeMessage message = WorkflowTraceUtil
+                    .getLastReceivedMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, state.getWorkflowTrace());
+                if (message instanceof ServerKeyExchangeMessage) {
+                    ServerKeyExchangeMessage msg = (ServerKeyExchangeMessage) message;
+                    ModifiableByteArray algByte = msg.getSignatureAndHashAlgorithm();
+                    if (algByte != null) {
+                        SignatureAndHashAlgorithm sigHashAlgo =
+                            SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(algByte.getValue());
+                        if (sigHashAlgo != null) {
+                            return Collections.singleton(sigHashAlgo);
+                        }
+                    }
+                }
+            }
+            return Collections.emptySet();
+        }
     }
 }

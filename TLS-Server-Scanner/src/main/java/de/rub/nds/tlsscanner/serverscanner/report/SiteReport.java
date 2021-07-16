@@ -47,6 +47,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvalua
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -88,7 +89,8 @@ public class SiteReport extends Observable implements Serializable {
     private Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses;
     private Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13;
     private List<NamedGroup> supportedTls13Groups = null;
-    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
+    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsCert = null;
+    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsSke = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
     private List<String> supportedAlpns = null;
@@ -360,12 +362,20 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
-        return supportedSignatureAndHashAlgorithms;
+        HashSet<SignatureAndHashAlgorithm> combined = new HashSet<>();
+        combined.addAll(supportedSignatureAndHashAlgorithmsCert);
+        combined.addAll(supportedSignatureAndHashAlgorithmsSke);
+        return new ArrayList<>(combined);
+    }
+
+    public synchronized void setSupportedSignatureAndHashAlgorithmsCert(
+        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+        this.supportedSignatureAndHashAlgorithmsCert = supportedSignatureAndHashAlgorithms;
     }
 
     public synchronized void
-        setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
-        this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
+        setSupportedSignatureAndHashAlgorithmsSke(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+        this.supportedSignatureAndHashAlgorithmsSke = supportedSignatureAndHashAlgorithms;
     }
 
     public synchronized List<ExtensionType> getSupportedExtensions() {

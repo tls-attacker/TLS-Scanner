@@ -160,7 +160,7 @@ public class CipherSuiteProbeResult extends ProbeResult {
     }
 
     private void adjustCipherBlockModes(CipherSuite suite) {
-        if(suite.isCBC()) {
+        if (suite.isCBC()) {
             supportsCbc = TestResult.TRUE;
         }
     }

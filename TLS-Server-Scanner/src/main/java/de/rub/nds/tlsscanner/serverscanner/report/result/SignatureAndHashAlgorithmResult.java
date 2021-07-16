@@ -22,19 +22,22 @@ import java.util.List;
  */
 public class SignatureAndHashAlgorithmResult extends ProbeResult {
 
-    private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmList;
+    private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListCert;
+    private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke;
     private final TestResult respectsExtension;
 
-    public SignatureAndHashAlgorithmResult(List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmList,
-        TestResult respectsExtension) {
+    public SignatureAndHashAlgorithmResult(List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListCert,
+        List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke, TestResult respectsExtension) {
         super(ProbeType.SIGNATURE_AND_HASH);
-        this.signatureAndHashAlgorithmList = signatureAndHashAlgorithmList;
+        this.signatureAndHashAlgorithmListCert = signatureAndHashAlgorithmListCert;
+        this.signatureAndHashAlgorithmListSke = signatureAndHashAlgorithmListSke;
         this.respectsExtension = respectsExtension;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setSupportedSignatureAndHashAlgorithms(signatureAndHashAlgorithmList);
+        report.setSupportedSignatureAndHashAlgorithmsCert(signatureAndHashAlgorithmListCert);
+        report.setSupportedSignatureAndHashAlgorithmsSke(signatureAndHashAlgorithmListSke);
         report.putResult(AnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION, respectsExtension);
     }
 
