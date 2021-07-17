@@ -39,9 +39,6 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_3,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 500),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT,
-            new PropertyResultRatingInfluencer(TestResult.TRUE, -200),
-            new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DTLS_1_0,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -300),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
@@ -299,12 +296,10 @@ public class DefaultInfluencersTest {
 
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500),
-            new PropertyResultRatingInfluencer(TestResult.FALSE, 0),
-            new PropertyResultRatingInfluencer(TestResult.COULD_NOT_TEST, 0)));
+            new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -800, 500),
-            new PropertyResultRatingInfluencer(TestResult.FALSE, 0),
-            new PropertyResultRatingInfluencer(TestResult.COULD_NOT_TEST, 0)));
+            new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -500, 1000),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
@@ -582,9 +577,6 @@ public class DefaultInfluencersTest {
             new PropertyResultRatingInfluencer(TestResult.TRUE, 200),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
 
-        influencers.add(
-            new RatingInfluencer(AnalyzedProperty.REQUIRES_SNI, new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
-                new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(
             new RatingInfluencer(AnalyzedProperty.STRICT_ALPN, new PropertyResultRatingInfluencer(TestResult.TRUE, 200),
                 new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));

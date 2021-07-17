@@ -70,17 +70,6 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_TLS_1_3_DRAFT</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
         <analyzedProperty>SUPPORTS_DTLS_1_0</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
@@ -993,10 +982,6 @@
             <result>FALSE</result>
             <influence>0</influence>
         </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>COULD_NOT_TEST</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
         <analyzedProperty>VULNERABLE_TO_GENERAL_DROWN</analyzedProperty>
@@ -1007,10 +992,6 @@
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>COULD_NOT_TEST</result>
             <influence>0</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
@@ -1976,17 +1957,6 @@
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>200</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>REQUIRES_SNI</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
