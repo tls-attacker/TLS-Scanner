@@ -6,6 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.math.BigInteger;
@@ -22,9 +23,9 @@ import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModificatio
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientKeyExchangeMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.RSAServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerKeyExchangeMessage;
@@ -63,18 +64,15 @@ public class FreakProbe extends BaseProbe {
 
     @Override
     protected ProbeRequirements getRequirements() {
-        return ProbeRequirements.TRUE()
-                .needResultOfTypeMatching(
-                        SupportedCipherSuitesProbe.class,
-                        SupportedCipherSuitesResult.class,
-                        SupportedCipherSuitesResult::supportsKeyExchangeRSA,
-                        "Client does not support RSA key exchange");
+        return ProbeRequirements.TRUE().needResultOfTypeMatching(SupportedCipherSuitesProbe.class,
+            SupportedCipherSuitesResult.class, SupportedCipherSuitesResult::supportsKeyExchangeRSA,
+            "Client does not support RSA key exchange");
     }
 
     @SuppressWarnings("squid:S3776")
     // sonarlint says this function is too complex...
     private void patchTrace(WorkflowTrace trace, ServerKeyExchangeMessage ske, TlsAction fixKeysAction)
-            throws DispatchException {
+        throws DispatchException {
         // patch send action (which sends SH, CERT, SHD) to include SKE after
         // CERT
         boolean done = false;
@@ -114,7 +112,7 @@ public class FreakProbe extends BaseProbe {
         WorkflowTrace trace = state.getWorkflowTrace();
         config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS12);
         config.setSupportedVersions(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
-                ProtocolVersion.TLS11, ProtocolVersion.TLS12);
+            ProtocolVersion.TLS11, ProtocolVersion.TLS12);
         config.setDefaultSelectedCipherSuite(RSA_SUITES.get(0));
         config.setDefaultServerSupportedCipherSuites(RSA_SUITES);
         extendWorkflowTraceToApplication(trace, config, false);

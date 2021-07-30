@@ -6,6 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.util.ArrayList;
@@ -20,10 +21,10 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
@@ -48,13 +49,11 @@ public class VersionProbe extends BaseProbe {
     }
 
     public static Collection<VersionProbe> getDefaultProbes(Orchestrator orchestrator) {
-        return Arrays.asList(
-                new VersionProbe(orchestrator, ProtocolVersion.SSL2),
-                new VersionProbe(orchestrator, ProtocolVersion.SSL3),
-                new VersionProbe(orchestrator, ProtocolVersion.TLS10),
-                new VersionProbe(orchestrator, ProtocolVersion.TLS11),
-                new VersionProbe(orchestrator, ProtocolVersion.TLS12),
-                new VersionProbe(orchestrator, ProtocolVersion.TLS13));
+        return Arrays.asList(new VersionProbe(orchestrator, ProtocolVersion.SSL2),
+            new VersionProbe(orchestrator, ProtocolVersion.SSL3), new VersionProbe(orchestrator, ProtocolVersion.TLS10),
+            new VersionProbe(orchestrator, ProtocolVersion.TLS11),
+            new VersionProbe(orchestrator, ProtocolVersion.TLS12),
+            new VersionProbe(orchestrator, ProtocolVersion.TLS13));
     }
 
     private final ProtocolVersion versionToTest;
@@ -109,7 +108,7 @@ public class VersionProbe extends BaseProbe {
         }
         if (recvApp == null) {
             LOGGER.warn("[{}] Did not find app message in trace - results might be inaccurate; {}", versionToTest,
-                    trace);
+                trace);
         } else if (recvFin == null) {
             // dynamic handshake does not add clients CCS/FIN if we use tls1.3,
             // because reasons
@@ -145,8 +144,7 @@ public class VersionProbe extends BaseProbe {
     }
 
     @Override
-    public VersionProbeResult execute(State state,
-            DispatchInformation dispatchInformation) throws DispatchException {
+    public VersionProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
         LOGGER.debug("Testing version {}", versionToTest);
         Config config = state.getConfig();
         WorkflowTrace trace = state.getWorkflowTrace();
@@ -164,7 +162,7 @@ public class VersionProbe extends BaseProbe {
         }
         ClientAdapterResult cres = executeState(state, dispatchInformation);
         boolean res = state.getTlsContext().getSelectedProtocolVersion() == versionToTest
-                && state.getWorkflowTrace().executedAsPlanned();
+            && state.getWorkflowTrace().executedAsPlanned();
         if (cres != null) {
             res = res && cres.contentShown.wasShown();
         }

@@ -6,6 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 
 import java.io.ByteArrayInputStream;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.apache.hc.core5.http.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.DERSequence;
@@ -47,8 +49,9 @@ import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPrivateKey;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.TlsMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ServerNameIndicationExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.DefaultWorkflowExecutor;
@@ -150,7 +153,7 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
     }
 
     protected X509v3CertificateBuilder generateLeafCertificate(String hostname,
-            org.bouncycastle.asn1.x509.Certificate parent, PublicKey myPubKey) throws CertIOException {
+        org.bouncycastle.asn1.x509.Certificate parent, PublicKey myPubKey) throws CertIOException {
         X500Name issuer = parent.getSubject();
         @SuppressWarnings("squid:S2696")
         BigInteger serial = BigInteger.valueOf(serialCounter++);
@@ -159,17 +162,12 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
         Calendar notAfter = new GregorianCalendar();
         notAfter.add(Calendar.DAY_OF_MONTH, -1);
         notAfter.add(Calendar.YEAR, 1);
-        X500Name subject = new X500NameBuilder(BCStyle.INSTANCE)
-                .addRDN(BCStyle.C, "DE")
-                .addRDN(BCStyle.ST, "NRW")
-                .addRDN(BCStyle.L, "Bochum")
-                .addRDN(BCStyle.O, "RUB")
-                .addRDN(BCStyle.OU, "NDS")
-                .addRDN(BCStyle.CN, hostname)
-                .build();
+        X500Name subject = new X500NameBuilder(BCStyle.INSTANCE).addRDN(BCStyle.C, "DE").addRDN(BCStyle.ST, "NRW")
+            .addRDN(BCStyle.L, "Bochum").addRDN(BCStyle.O, "RUB").addRDN(BCStyle.OU, "NDS").addRDN(BCStyle.CN, hostname)
+            .build();
 
-        X509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(issuer, serial, notBefore.getTime(),
-                notAfter.getTime(), subject, myPubKey);
+        X509v3CertificateBuilder certBuilder =
+            new JcaX509v3CertificateBuilder(issuer, serial, notBefore.getTime(), notAfter.getTime(), subject, myPubKey);
 
         // add SAN
         List<GeneralName> altNames = new ArrayList<>();
@@ -178,22 +176,22 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
             hnType = GeneralName.iPAddress;
         }
         altNames.add(new GeneralName(hnType, hostname));
-        GeneralNames subjectAltNames = GeneralNames
-                .getInstance(new DERSequence(altNames.toArray(new GeneralName[] {})));
+        GeneralNames subjectAltNames =
+            GeneralNames.getInstance(new DERSequence(altNames.toArray(new GeneralName[] {})));
         certBuilder = certBuilder.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);
 
         return certBuilder;
     }
 
     protected Certificate generateCertificateChain(State state, String hostname, PublicKey pubKey)
-            throws OperatorCreationException, IOException {
+        throws OperatorCreationException, IOException {
         CertificateKeyPair kp = state.getConfig().getDefaultExplicitCertificateKeyPair();
         ByteArrayInputStream stream = new ByteArrayInputStream(kp.getCertificateBytes());
         Certificate origCertChain = Certificate.parse(stream);
         // TODO allow more complex chains
         if (origCertChain.getLength() != 1) {
             throw new IllegalStateException(
-                    "Can only handle original cert chains of length 1, got " + origCertChain.getLength());
+                "Can only handle original cert chains of length 1, got " + origCertChain.getLength());
         }
         org.bouncycastle.asn1.x509.Certificate parentCert = origCertChain.getCertificateAt(0);
         CustomPrivateKey parentSk = kp.getPrivateKey();
@@ -251,22 +249,28 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
         }
         if (entryMsgs.size() != appendMsgs.size()) {
             throw new RuntimeException(
-                    "[internal error] entryTrace and actions we want to append diverge (different message count in action):"
-                            + aAction + ", " + bAction);
+                "[internal error] entryTrace and actions we want to append diverge (different message count in action):"
+                    + aAction + ", " + bAction);
         }
         for (int i = 0; i < entryMsgs.size(); i++) {
             ProtocolMessage aMsg = entryMsgs.get(i);
             ProtocolMessage bMsg = appendMsgs.get(i);
-            if (!aMsg.getProtocolMessageType().equals(bMsg.getProtocolMessageType())) {
-                throw new RuntimeException(
+            if (aMsg instanceof TlsMessage && bMsg instanceof TlsMessage) {
+                if (!((TlsMessage) aMsg).getProtocolMessageType()
+                    .equals(((TlsMessage) bMsg).getProtocolMessageType())) {
+                    throw new RuntimeException(
                         "[internal error] entryTrace and actions we want to append diverge (different message type)"
-                                + aMsg + ", " + bMsg);
+                            + aMsg + ", " + bMsg);
+                }
+            } else {
+                throw new RuntimeException(
+                    new NotImplementedException("Comparing non TLS messages is not implemented as of now"));
             }
         }
     }
 
     protected void extendWorkflowTraceValidatingPrefix(WorkflowTrace traceToExtend, WorkflowTrace prefixTrace,
-            WorkflowTrace actionsToAppendWithPrefix) {
+        WorkflowTrace actionsToAppendWithPrefix) {
         final List<TlsAction> prefixActions;
         if (prefixTrace != null) {
             prefixActions = prefixTrace.getTlsActions();
@@ -279,7 +283,7 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
             TlsAction appendAction = prefixActions.get(i);
             if (!prefixAction.getClass().equals(appendAction.getClass())) {
                 throw new RuntimeException(
-                        "[internal error] prefixTrace and actions we want to append diverge (different classes)");
+                    "[internal error] prefixTrace and actions we want to append diverge (different classes)");
             }
 
             if (prefixAction instanceof MessageAction) {
@@ -310,13 +314,12 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
 
     // #endregion
     protected ClientAdapterResult executeState(State state, DispatchInformation dispatchInformation)
-            throws DispatchException {
+        throws DispatchException {
         return executeState(state, dispatchInformation, true);
     }
 
     protected ClientAdapterResult executeState(State state, DispatchInformation dispatchInformation,
-            boolean patchCertificate)
-            throws DispatchException {
+        boolean patchCertificate) throws DispatchException {
         WorkflowTrace trace = state.getWorkflowTrace();
         if (patchCertificate) {
             CertificatePatchAction.insertInto(state.getWorkflowTrace(), this);
@@ -329,10 +332,10 @@ public abstract class BaseExecutingDispatcher implements Dispatcher, Certificate
         WorkflowExecutor executor = new DefaultWorkflowExecutor(state);
         executor.executeWorkflow();
         state.getConfig().setWorkflowExecutorShouldOpen(false);
-        if (state.getConfig().isWorkflowExecutorShouldClose() &&
-                dispatchInformation.additionalInformation.containsKey(ControlledClientDispatcher.class)) {
-            ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(
-                    ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
+        if (state.getConfig().isWorkflowExecutorShouldClose()
+            && dispatchInformation.additionalInformation.containsKey(ControlledClientDispatcher.class)) {
+            ControlledClientDispatchInformation ccInfo = dispatchInformation
+                .getAdditionalInformation(ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
             Future<ClientAdapterResult> cFuture = ccInfo.clientFuture;
             try {
                 ClientAdapterResult res = cFuture.get();

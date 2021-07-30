@@ -6,6 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import java.io.Serializable;
@@ -19,8 +20,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.DHEServerKeyExchangeMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.action.SendingAction;
 import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
@@ -51,12 +52,12 @@ public class DHEWeakPrivateKeyProbe extends BaseDHEParametrizedProbe<PrivateKeyT
 
     public DHEWeakPrivateKeyProbe(Orchestrator orchestrator, PrivateKeyType keyType) {
         super(orchestrator, keyType.toString().startsWith("TLS13_"), keyType.toString().startsWith("EC_"),
-                keyType.toString().startsWith("FF_"), keyType);
+            keyType.toString().startsWith("FF_"), keyType);
     }
 
     @Override
     public DHWeakPrivateKeyProbeResult executeInternal(State state, DispatchInformation dispatchInformation)
-            throws DispatchException {
+        throws DispatchException {
         Config config = state.getConfig();
         prepareConfig(config);
         switch (enumValue) {
