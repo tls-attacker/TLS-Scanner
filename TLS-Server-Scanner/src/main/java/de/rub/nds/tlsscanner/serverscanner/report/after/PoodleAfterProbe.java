@@ -45,6 +45,6 @@ public class PoodleAfterProbe extends AfterProbe {
         } catch (Exception e) {
             vulnerable = TestResult.ERROR_DURING_TEST;
         }
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_LOGJAM, vulnerable);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_POODLE, vulnerable);
     }
 }
