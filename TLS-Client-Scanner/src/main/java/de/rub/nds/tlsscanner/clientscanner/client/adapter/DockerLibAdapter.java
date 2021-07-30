@@ -6,6 +6,7 @@
  * Licensed under Apache License 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package de.rub.nds.tlsscanner.clientscanner.client.adapter;
 
 import java.util.List;
@@ -20,9 +21,9 @@ import org.apache.logging.log4j.Logger;
 import de.rub.nds.tls.subject.ConnectionRole;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tls.subject.docker.DockerExecInstance;
+import de.rub.nds.tls.subject.docker.DockerTlsClientInstance;
 import de.rub.nds.tls.subject.docker.DockerTlsManagerFactory;
 import de.rub.nds.tls.subject.exceptions.TlsVersionNotFoundException;
-import de.rub.nds.tls.subject.instance.TlsClientInstance;
 import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
 import de.rub.nds.tlsscanner.clientscanner.report.result.BasicClientAdapterResult;
 import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
@@ -32,7 +33,7 @@ public class DockerLibAdapter implements ClientAdapter {
     private static final Logger LOGGER = LogManager.getLogger();
     private final TlsImplementationType type;
     private final String version;
-    private TlsClientInstance client;
+    private DockerTlsClientInstance client;
     private final UnaryOperator<HostConfig> hostConfigHook;
 
     public DockerLibAdapter(TlsImplementationType type, String version, UnaryOperator<HostConfig> hostConfigHook) {
