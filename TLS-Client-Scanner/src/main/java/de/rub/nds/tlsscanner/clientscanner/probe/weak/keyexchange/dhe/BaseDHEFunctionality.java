@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import java.util.ArrayList;
@@ -48,12 +49,9 @@ class BaseDHEFunctionality {
     }
 
     public static ProbeRequirements getRequirements(boolean tls13, boolean ec, boolean ff) {
-        return ProbeRequirements.TRUE()
-                .needResultOfTypeMatching(
-                        SupportedCipherSuitesProbe.class,
-                        SupportedCipherSuitesResult.class,
-                        r -> r.supportsKeyExchangeDHE(tls13, ec, ff),
-                        "Client does not support DHE key exchange");
+        return ProbeRequirements.TRUE().needResultOfTypeMatching(SupportedCipherSuitesProbe.class,
+            SupportedCipherSuitesResult.class, r -> r.supportsKeyExchangeDHE(tls13, ec, ff),
+            "Client does not support DHE key exchange");
     }
 
     public static void prepareConfig(Config config, boolean tls13, boolean ec, boolean ff) {

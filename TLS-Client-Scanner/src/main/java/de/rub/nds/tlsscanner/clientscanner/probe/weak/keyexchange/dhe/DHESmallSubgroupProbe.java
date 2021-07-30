@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import java.io.Serializable;
@@ -33,11 +34,10 @@ public class DHESmallSubgroupProbe extends BaseDHEParametrizedProbe<SmallSubgrou
     }
 
     public static Collection<DHESmallSubgroupProbe> getDefaultProbes(Orchestrator orchestrator) {
-        return Arrays.asList(
-                new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.ONE),
-                new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.MINUS_ONE),
-                new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.ZERO),
-                new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.P_ONE));
+        return Arrays.asList(new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.ONE),
+            new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.MINUS_ONE),
+            new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.ZERO),
+            new DHESmallSubgroupProbe(orchestrator, SmallSubgroupType.P_ONE));
     }
 
     public DHESmallSubgroupProbe(Orchestrator orchestrator, SmallSubgroupType groupType) {
@@ -46,7 +46,7 @@ public class DHESmallSubgroupProbe extends BaseDHEParametrizedProbe<SmallSubgrou
 
     @Override
     public DHESmallSubgroupResult executeInternal(State state, DispatchInformation dispatchInformation)
-            throws DispatchException {
+        throws DispatchException {
         Config config = state.getConfig();
         prepareConfig(config);
         switch (enumValue) {

@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.io.Serializable;
@@ -39,12 +40,11 @@ public class Version13RandomProbe extends BaseProbe {
     private static final byte[] SERVER_RANDOM_PRE_12_POSTFIX = { 0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x00 };
 
     public static Collection<Version13RandomProbe> getDefaultProbes(Orchestrator orchestrator) {
-        return Arrays.asList(
-                new Version13RandomProbe(orchestrator, ProtocolVersion.SSL2),
-                new Version13RandomProbe(orchestrator, ProtocolVersion.SSL3),
-                new Version13RandomProbe(orchestrator, ProtocolVersion.TLS10),
-                new Version13RandomProbe(orchestrator, ProtocolVersion.TLS11),
-                new Version13RandomProbe(orchestrator, ProtocolVersion.TLS12));
+        return Arrays.asList(new Version13RandomProbe(orchestrator, ProtocolVersion.SSL2),
+            new Version13RandomProbe(orchestrator, ProtocolVersion.SSL3),
+            new Version13RandomProbe(orchestrator, ProtocolVersion.TLS10),
+            new Version13RandomProbe(orchestrator, ProtocolVersion.TLS11),
+            new Version13RandomProbe(orchestrator, ProtocolVersion.TLS12));
     }
 
     private final Random random = new Random();
@@ -67,22 +67,16 @@ public class Version13RandomProbe extends BaseProbe {
     @Override
     protected ProbeRequirements getRequirements() {
         return ProbeRequirements.TRUE()
-                .needResultOfTypeMatching(
-                        VersionProbe.class,
-                        VersionProbeResult.class,
-                        res -> res.supportsVersion(ProtocolVersion.TLS13),
-                        "Client does not support TLS 1.3")
-                .needResultOfTypeMatching(
-                        VersionProbe.class,
-                        VersionProbeResult.class,
-                        res -> res.supportsVersion(versionToTest),
-                        "Client does not support " + versionToTest
-                                + " - will not test downgrade protection against it");
+            .needResultOfTypeMatching(VersionProbe.class, VersionProbeResult.class,
+                res -> res.supportsVersion(ProtocolVersion.TLS13), "Client does not support TLS 1.3")
+            .needResultOfTypeMatching(VersionProbe.class, VersionProbeResult.class,
+                res -> res.supportsVersion(versionToTest),
+                "Client does not support " + versionToTest + " - will not test downgrade protection against it");
     }
 
     @Override
     public ParametrizedClientProbeResult<ProtocolVersion, VersionProbe13RandomResult> execute(State state,
-            DispatchInformation dispatchInformation) throws DispatchException {
+        DispatchInformation dispatchInformation) throws DispatchException {
         LOGGER.debug("Testing version {}", versionToTest);
         Config config = state.getConfig();
         WorkflowTrace trace = state.getWorkflowTrace();

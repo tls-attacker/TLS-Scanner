@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.report.requirements;
 
 import java.io.Serializable;
@@ -31,20 +32,19 @@ public abstract class ProbeRequirements {
     }
 
     public <T extends ClientProbeResult> ProbeRequirements needResultOfType(Class<? extends Probe> requiredClass,
-            Class<T> resType) {
+        Class<T> resType) {
         return new NeedResultOfType(this, requiredClass, resType);
     }
 
     public <T extends ClientProbeResult> ProbeRequirements needResultOfTypeMatching(
-            Class<? extends Probe> requiredClass,
-            Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
+        Class<? extends Probe> requiredClass, Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
         return new NeedResultOfTypeMatching<>(this, requiredClass, resType, predicate, notMatchedDescription);
     }
 
     public abstract boolean evaluateRequirementsMet(ClientReport report);
 
     protected abstract NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
-            ClientReport report);
+        ClientReport report);
 
     public final NotExecutedResult evaluateWhyRequirementsNotMet(Class<? extends Probe> probe, ClientReport report) {
         NotExecutedResult res = evaluateWhyRequirementsNotMetInternal(probe, report);
@@ -68,7 +68,7 @@ public abstract class ProbeRequirements {
 
         @Override
         public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
-                ClientReport report) {
+            ClientReport report) {
             if (previous == null) {
                 return null;
             }
@@ -91,7 +91,7 @@ public abstract class ProbeRequirements {
 
         @Override
         public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
-                ClientReport report) {
+            ClientReport report) {
             NotExecutedResult ret = super.evaluateWhyRequirementsNotMetInternal(probe, report);
             if (ret != null) {
                 return ret;
@@ -107,7 +107,7 @@ public abstract class ProbeRequirements {
         protected final Class<? extends Serializable> requiredResultType;
 
         protected NeedResultOfType(ProbeRequirements previous, Class<? extends Probe> requiredClass,
-                Class<? extends Serializable> resType) {
+            Class<? extends Serializable> resType) {
             super(previous, requiredClass);
             this.requiredResultType = resType;
         }
@@ -115,23 +115,21 @@ public abstract class ProbeRequirements {
         @Override
         public boolean evaluateRequirementsMet(ClientReport report) {
             return super.evaluateRequirementsMet(report)
-                    && requiredResultType.isInstance(report.getResult(requiredClass));
+                && requiredResultType.isInstance(report.getResult(requiredClass));
         }
 
         @Override
         public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
-                ClientReport report) {
+            ClientReport report) {
             NotExecutedResult ret = super.evaluateWhyRequirementsNotMetInternal(probe, report);
             if (ret != null) {
                 return ret;
             }
             Object res = report.getResult(requiredClass);
             if (!requiredResultType.isInstance(res)) {
-                return new NotExecutedResult(
-                        probe,
-                        String.format(
-                                "This probe could not be executed, as it depends on the result of the probe '%s' with type '%s' but type '%s' was found",
-                                requiredClass.getName(), requiredResultType.getName(), res.getClass().getName()));
+                return new NotExecutedResult(probe, String.format(
+                    "This probe could not be executed, as it depends on the result of the probe '%s' with type '%s' but type '%s' was found",
+                    requiredClass.getName(), requiredResultType.getName(), res.getClass().getName()));
             }
             return null;
         }
@@ -142,7 +140,7 @@ public abstract class ProbeRequirements {
         protected final String notMatchedDescription;
 
         protected NeedResultOfTypeMatching(ProbeRequirements previous, Class<? extends Probe> requiredClass,
-                Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
+            Class<T> resType, Predicate<T> predicate, String notMatchedDescription) {
             super(previous, requiredClass, resType);
             this.predicate = predicate;
             this.notMatchedDescription = notMatchedDescription;
@@ -164,7 +162,7 @@ public abstract class ProbeRequirements {
 
         @Override
         public NotExecutedResult evaluateWhyRequirementsNotMetInternal(Class<? extends Probe> probe,
-                ClientReport report) {
+            ClientReport report) {
             NotExecutedResult ret = super.evaluateWhyRequirementsNotMetInternal(probe, report);
             if (ret != null) {
                 return ret;
@@ -176,7 +174,7 @@ public abstract class ProbeRequirements {
                 }
             } catch (RuntimeException e) {
                 return new NotExecutedResult(probe,
-                        String.format("Failed to evaluate predicate [%s] %s", notMatchedDescription, e));
+                    String.format("Failed to evaluate predicate [%s] %s", notMatchedDescription, e));
             }
             return null;
         }

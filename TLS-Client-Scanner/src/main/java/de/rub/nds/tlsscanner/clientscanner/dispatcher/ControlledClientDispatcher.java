@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.dispatcher;
 
 import java.util.concurrent.Future;
@@ -47,10 +48,10 @@ public class ControlledClientDispatcher implements Dispatcher {
 
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
-        SNIDispatchInformation sniD = dispatchInformation.getAdditionalInformation(SNIDispatcher.class,
-                SNIDispatchInformation.class);
-        UidInformation uidD = dispatchInformation
-                .getAdditionalInformation(SNIUidDispatcher.class, UidInformation.class);
+        SNIDispatchInformation sniD =
+            dispatchInformation.getAdditionalInformation(SNIDispatcher.class, SNIDispatchInformation.class);
+        UidInformation uidD =
+            dispatchInformation.getAdditionalInformation(SNIUidDispatcher.class, UidInformation.class);
         String sni = null, uid = null;
         if (sniD != null) {
             sni = sniD.remainingHostname;
@@ -67,13 +68,11 @@ public class ControlledClientDispatcher implements Dispatcher {
             LOGGER.debug("Patching HN to {}", task.expectedFullHostname);
             state.getConfig().getDefaultServerConnection().setHostname(task.expectedFullHostname);
         }
-        try (final CloseableThreadContext.Instance ctc = CloseableThreadContext.push(task.dispatcher.getClass()
-                .getSimpleName()).push(task.creatorThreadName)) {
+        try (final CloseableThreadContext.Instance ctc =
+            CloseableThreadContext.push(task.dispatcher.getClass().getSimpleName()).push(task.creatorThreadName)) {
             task.setGotConnection();
             LOGGER.trace("Got connection for sni {} uid {}", sni, uid);
-            dispatchInformation.additionalInformation.put(
-                    getClass(),
-                    new ControlledClientDispatchInformation(task));
+            dispatchInformation.additionalInformation.put(getClass(), new ControlledClientDispatchInformation(task));
             ClientProbeResult res = task.dispatcher.execute(state, dispatchInformation);
             task.setResult(res);
             return res;
@@ -102,13 +101,13 @@ public class ControlledClientDispatcher implements Dispatcher {
                 LOGGER.warn("Got hostname which we do not have a task for. sni={} uid={}", sni, uid);
             } else {
                 LOGGER.debug("Got task {} from thread {}", task.dispatcher.getClass().getSimpleName(),
-                        task.creatorThreadName);
+                    task.creatorThreadName);
             }
         } else {
             if (!printedNoSNIWarning) {
                 printedNoSNIWarning = true;
                 LOGGER.warn(
-                        "Got no SNI - If the runner is using multiple threads this may cause issues as hostnames may not be matched to probes correctly");
+                    "Got no SNI - If the runner is using multiple threads this may cause issues as hostnames may not be matched to probes correctly");
             }
             // pick any probe
             Triple<String, String, ClientProbeResultFuture> taskTriple = toRun.dequeueAny();
@@ -117,22 +116,19 @@ public class ControlledClientDispatcher implements Dispatcher {
                 LOGGER.warn("Got no tasks left (NO SNI)");
             } else {
                 LOGGER.debug("Chose task with sni {} and uid {} (NO SNI) from thread {} (full HN: {})",
-                        taskTriple.getLeft(),
-                        taskTriple.getMiddle(), task.creatorThreadName, task.expectedFullHostname);
+                    taskTriple.getLeft(), taskTriple.getMiddle(), task.creatorThreadName, task.expectedFullHostname);
             }
         }
         return task;
     }
 
     public ClientProbeResultFuture enqueueDispatcher(Dispatcher probe, String expectedHostnamePrefix,
-            String expectedUid,
-            String expectedFullHostname,
-            Future<ClientAdapterResult> clientResultHolder, ClientReport report, Object additionalParameters) {
-        ClientProbeResultFuture ret = new ClientProbeResultFuture(probe, clientResultHolder, report,
-                expectedFullHostname,
-                additionalParameters);
+        String expectedUid, String expectedFullHostname, Future<ClientAdapterResult> clientResultHolder,
+        ClientReport report, Object additionalParameters) {
+        ClientProbeResultFuture ret =
+            new ClientProbeResultFuture(probe, clientResultHolder, report, expectedFullHostname, additionalParameters);
         LOGGER.trace("Adding entry for sni {} with uid {} (full Hostname: {})", expectedHostnamePrefix, expectedUid,
-                expectedFullHostname);
+            expectedFullHostname);
         toRun.enqueue(expectedHostnamePrefix, expectedUid, ret);
         return ret;
     }
@@ -159,7 +155,7 @@ public class ControlledClientDispatcher implements Dispatcher {
         private boolean gotConnection = false;
 
         public ClientProbeResultFuture(Dispatcher dispatcher, Future<ClientAdapterResult> clientResultFuture,
-                ClientReport report, String expectedFullHostname, Object additionalParameters) {
+            ClientReport report, String expectedFullHostname, Object additionalParameters) {
             this.dispatcher = dispatcher;
             this.report = report;
             this.clientResultFuture = clientResultFuture;

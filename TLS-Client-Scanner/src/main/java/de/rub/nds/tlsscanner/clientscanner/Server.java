@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner;
 
 import java.net.InetAddress;
@@ -34,9 +35,8 @@ public class Server extends Thread {
         int i = serverCounter++;
         setName("Server-" + i);
         int corePoolSize = Math.max(poolSize / 2, 1);
-        ThreadPoolExecutor pool = new ThreadPoolExecutor(corePoolSize, poolSize, THREAD_POOL_KEEP_ALIVE_TIME_MINUTES, TimeUnit.MINUTES,
-                new LinkedBlockingDeque<>(),
-                new NamedThreadFactory("Server-" + i + "-Worker"));
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(corePoolSize, poolSize, THREAD_POOL_KEEP_ALIVE_TIME_MINUTES,
+            TimeUnit.MINUTES, new LinkedBlockingDeque<>(), new NamedThreadFactory("Server-" + i + "-Worker"));
         this.executor = new CSWorkflowExecutor(csconfig, rootDispatcher, pool);
     }
 

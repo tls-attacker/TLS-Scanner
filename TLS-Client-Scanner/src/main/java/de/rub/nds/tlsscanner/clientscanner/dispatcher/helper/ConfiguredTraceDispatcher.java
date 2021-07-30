@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.dispatcher.helper;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -32,15 +33,14 @@ public class ConfiguredTraceDispatcher extends BaseExecutingDispatcher {
 
     @Override
     public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
-        ControlledClientDispatchInformation info = dispatchInformation.getAdditionalInformation(
-                ControlledClientDispatcher.class,
-                ControlledClientDispatchInformation.class);
+        ControlledClientDispatchInformation info = dispatchInformation
+            .getAdditionalInformation(ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
         if (info == null) {
             throw new DispatchException("Was not dispatched by a controlled client");
         }
         if (!(info.additionalParameters instanceof ConfiguredTraceDispatcherParameter)) {
             throw new DispatchException(
-                    "Got invalid parameter of type " + info.additionalParameters.getClass().getName());
+                "Got invalid parameter of type " + info.additionalParameters.getClass().getName());
         }
         ConfiguredTraceDispatcherParameter tc = (ConfiguredTraceDispatcherParameter) info.additionalParameters;
         Config origConfig = state.getConfig();

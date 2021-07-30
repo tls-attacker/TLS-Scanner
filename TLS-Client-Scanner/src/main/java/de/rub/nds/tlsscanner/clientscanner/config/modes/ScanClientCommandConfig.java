@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.config.modes;
 
 import java.io.File;
@@ -44,8 +45,8 @@ public class ScanClientCommandConfig extends BaseSubcommandHolder<ClientAdapterC
     @Parameter(names = { "-primaryThreads", "-pT" }, required = false, description = "Primary threads")
     protected Integer primaryThreads = null;
 
-    @Parameter(names = { "-secondaryThreads",
-            "-sT" }, required = false, description = "Secondary threads - these may be used by Probes to run more tasks")
+    @Parameter(names = { "-secondaryThreads", "-sT" }, required = false,
+        description = "Secondary threads - these may be used by Probes to run more tasks")
     protected Integer secondaryThreads = null;
 
     public ScanClientCommandConfig() {
@@ -77,19 +78,16 @@ public class ScanClientCommandConfig extends BaseSubcommandHolder<ClientAdapterC
             secondaryThreads = primaryThreads;
         }
         ThreadPoolExecutor pool = new ThreadPoolExecutor(primaryThreads, primaryThreads, 1, TimeUnit.MINUTES,
-                new LinkedBlockingDeque<>(),
-                new NamedThreadFactory("cs-probe-runner"));
+            new LinkedBlockingDeque<>(), new NamedThreadFactory("cs-probe-runner"));
         // can't decrease core size without additional hassle
         // https://stackoverflow.com/a/15485841/3578387
         ThreadPoolExecutor secondaryPool = new ThreadPoolExecutor(secondaryThreads, secondaryThreads, 1,
-                TimeUnit.MINUTES,
-                new LinkedBlockingDeque<>(),
-                new NamedThreadFactory("cs-secondary-pool"));
+            TimeUnit.MINUTES, new LinkedBlockingDeque<>(), new NamedThreadFactory("cs-secondary-pool"));
         // Orchestrator types: DefaultOrchestrator and ThreadLocalOrchestrator
         Orchestrator orchestrator = new DefaultOrchestrator(csConfig, secondaryPool, primaryThreads + secondaryThreads);
 
-        ClientScanExecutor executor = new ClientScanExecutor(Main.getDefaultProbes(orchestrator), null, orchestrator,
-                pool);
+        ClientScanExecutor executor =
+            new ClientScanExecutor(Main.getDefaultProbes(orchestrator), null, orchestrator, pool);
         ClientReport rep;
         try {
             rep = executor.execute();

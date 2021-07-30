@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.config.modes.scan;
 
 import java.util.List;
@@ -29,7 +30,8 @@ public class DockerLibAdapterConfig implements ClientAdapterConfig {
     protected TlsImplementationType type = null;
     @Parameter(names = "-version", required = true, description = "Version of client to use")
     protected String version = null;
-    @Parameter(names = "-DNS", required = false, description = "DNS Server entry to add to the docker container(s). Useful if containers experience DNS problems")
+    @Parameter(names = "-DNS", required = false,
+        description = "DNS Server entry to add to the docker container(s). Useful if containers experience DNS problems")
     protected List<String> dns = null;
 
     @Override

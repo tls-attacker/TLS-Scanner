@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.probe.downgrade;
 
 import java.io.Serializable;
@@ -41,22 +42,21 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
     private final AlertDescription alertDesc;
 
     public static Collection<SendAlert> getDefaultProbes(Orchestrator orchestrator) {
-        return Arrays.asList(
-                new SendAlert(orchestrator, AlertLevel.WARNING, AlertDescription.CLOSE_NOTIFY),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY),
-                new SendAlert(orchestrator, AlertLevel.WARNING, AlertDescription.UNEXPECTED_MESSAGE),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.UNEXPECTED_MESSAGE),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.HANDSHAKE_FAILURE),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.ACCESS_DENIED),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.DECODE_ERROR),
-                new SendAlert(orchestrator, AlertLevel.WARNING, AlertDescription.PROTOCOL_VERSION),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.PROTOCOL_VERSION),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.INTERNAL_ERROR),
-                new SendAlert(orchestrator, AlertLevel.WARNING, AlertDescription.INAPPROPRIATE_FALLBACK),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.INAPPROPRIATE_FALLBACK),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.UNRECOGNIZED_NAME),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.MISSING_EXTENSION),
-                new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.NO_APPLICATION_PROTOCOL));
+        return Arrays.asList(new SendAlert(orchestrator, AlertLevel.WARNING, AlertDescription.CLOSE_NOTIFY),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY),
+            new SendAlert(orchestrator, AlertLevel.WARNING, AlertDescription.UNEXPECTED_MESSAGE),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.UNEXPECTED_MESSAGE),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.HANDSHAKE_FAILURE),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.ACCESS_DENIED),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.DECODE_ERROR),
+            new SendAlert(orchestrator, AlertLevel.WARNING, AlertDescription.PROTOCOL_VERSION),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.PROTOCOL_VERSION),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.INTERNAL_ERROR),
+            new SendAlert(orchestrator, AlertLevel.WARNING, AlertDescription.INAPPROPRIATE_FALLBACK),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.INAPPROPRIATE_FALLBACK),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.UNRECOGNIZED_NAME),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.MISSING_EXTENSION),
+            new SendAlert(orchestrator, AlertLevel.FATAL, AlertDescription.NO_APPLICATION_PROTOCOL));
     }
 
     public static Collection<SendAlert> getAllProbes(Orchestrator orchestrator) {
@@ -98,7 +98,7 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
 
     @Override
     protected AlertDowngradeInternalState execute(State state, DispatchInformation dispatchInformation,
-            AlertDowngradeInternalState internalState) throws DispatchException {
+        AlertDowngradeInternalState internalState) throws DispatchException {
         // only analyze chlo
         internalState.putCHLO(dispatchInformation.getChlo(state));
         if (!internalState.isFirstDone()) {
@@ -116,7 +116,7 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
         private final AlertDescription alertDesc;
 
         public AlertDowngradeInternalState(Class<? extends Probe> clazz, AlertLevel alertLevel,
-                AlertDescription alertDesc) {
+            AlertDescription alertDesc) {
             super(clazz);
             this.alertLevel = alertLevel;
             this.alertDesc = alertDesc;
@@ -144,7 +144,7 @@ public class SendAlert extends BaseStatefulProbe<SendAlert.AlertDowngradeInterna
         private final Map<RfcAlert, DowngradeResult> resultMap;
 
         public AlertDowngradeResult(Class<? extends Probe> clazz, ClientHelloMessage chlo1, ClientHelloMessage chlo2,
-                AlertLevel alertLevel, AlertDescription alertDesc) {
+            AlertLevel alertLevel, AlertDescription alertDesc) {
             resultMap = new HashMap<>();
             resultMap.put(new RfcAlert(alertLevel, alertDesc), new DowngradeResult(clazz, chlo1, chlo2));
         }

@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.config.modes;
 
 import java.util.List;
@@ -75,8 +76,8 @@ public class StandaloneCommandConfig implements ExecutableSubcommand {
                     disp.registerRule(prefix, (Dispatcher) p);
                     LOGGER.info("Adding {} at prefix {}", p.getClass().getSimpleName(), prefix);
                 } else {
-                    LOGGER.debug("Not adding {} as it did not provide a hostname (returned null)", p.getClass()
-                            .getSimpleName());
+                    LOGGER.debug("Not adding {} as it did not provide a hostname (returned null)",
+                        p.getClass().getSimpleName());
                 }
             } else {
                 LOGGER.debug("Not adding {} as it is not extended from BaseProbe", p.getClass().getSimpleName());

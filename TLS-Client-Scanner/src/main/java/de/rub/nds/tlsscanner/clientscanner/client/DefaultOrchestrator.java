@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.client;
 
 import java.util.concurrent.ExecutionException;
@@ -107,8 +108,7 @@ public class DefaultOrchestrator implements Orchestrator {
     }
 
     private ClientProbeResult runDispatcher(Dispatcher dispatcher, String hostnamePrefix, String hostname,
-            ClientReport report, Object additionalParameters)
-            throws InterruptedException, ExecutionException {
+        ClientReport report, Object additionalParameters) throws InterruptedException, ExecutionException {
         FutureClientAdapterResult clientResultHolder = new FutureClientAdapterResult();
         ClientProbeResultFuture serverResultFuture;
 
@@ -119,7 +119,7 @@ public class DefaultOrchestrator implements Orchestrator {
         // unfortunately...
         String syncHostname = null;
         if (report.hasResult(SNIProbe.class) && report.getResult(SNIProbe.class, SNIProbeResult.class).supported
-                && !noEntryDispatcher) {
+            && !noEntryDispatcher) {
             // if the client supports SNI we will only sync per hostname
             // otherwise we sync on null - i.e. "globally" per Orchestrator
             // TODO a "smart" orchestrator
@@ -135,7 +135,7 @@ public class DefaultOrchestrator implements Orchestrator {
         try (SyncObject _sync = syncObjectPool.get(syncHostname)) {
             // enqueue probe on server-side
             serverResultFuture = ccDispatcher.enqueueDispatcher(dispatcher, hostnamePrefix, report.uid, hostname,
-                    clientResultHolder, report, additionalParameters);
+                clientResultHolder, report, additionalParameters);
 
             // tell client to connect and get its result
             ClientAdapterResult clientResult = null;
@@ -181,8 +181,7 @@ public class DefaultOrchestrator implements Orchestrator {
 
     @Override
     public ClientProbeResult runDispatcher(Dispatcher dispatcher, String hostnamePrefix, ClientReport report,
-            Object additionalParameters)
-            throws InterruptedException, ExecutionException {
+        Object additionalParameters) throws InterruptedException, ExecutionException {
         String hostname;
         if (hnIsIp) {
             hostname = baseHostname;

@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.dispatcher.sni;
 
 import de.rub.nds.tlsattacker.core.state.State;
@@ -33,7 +34,7 @@ public class SNIFallingBackDispatcher implements Dispatcher {
     }
 
     public SNIFallingBackDispatcher(Dispatcher next, Dispatcher fallbackNoSNI, Dispatcher fallbackNoSNIName,
-            Dispatcher fallbackUnknownSNIName, Dispatcher fallbackOtherSNIException) {
+        Dispatcher fallbackUnknownSNIName, Dispatcher fallbackOtherSNIException) {
         this.next = next;
         this.fallbackNoSNI = fallbackNoSNI;
         this.fallbackNoSNIName = fallbackNoSNIName;
@@ -42,7 +43,7 @@ public class SNIFallingBackDispatcher implements Dispatcher {
     }
 
     private ClientProbeResult fallback(SNIDispatchException ex, State state, DispatchInformation dispatchInformation)
-            throws DispatchException {
+        throws DispatchException {
         Dispatcher fallback = fallbackOtherSNIException;
         LOGGER.debug("Falling back, got Exception {}", ex.getClass().getSimpleName());
         if (ex instanceof NoSNIExtensionException) {

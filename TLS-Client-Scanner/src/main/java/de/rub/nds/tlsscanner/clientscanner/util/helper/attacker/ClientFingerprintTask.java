@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.util.helper.attacker;
 
 import java.util.concurrent.ExecutionException;
@@ -48,13 +49,9 @@ public class ClientFingerprintTask extends FingerPrintTask {
             hostnamePrefix = RandString.getRandomAlphaNumeric(10) + "." + hostnamePrefix;
         }
         try {
-            res = (ConfiguredTraceDispatcherResult) executorWithParameters.orchestrator
-                    .runDispatcher(
-                            ConfiguredTraceDispatcher.getInstance(),
-                            hostnamePrefix,
-                            executorWithParameters.report,
-                            new ConfiguredTraceDispatcherParameter(inputState.getWorkflowTrace(),
-                                    inputState.getConfig()));
+            res = (ConfiguredTraceDispatcherResult) executorWithParameters.orchestrator.runDispatcher(
+                ConfiguredTraceDispatcher.getInstance(), hostnamePrefix, executorWithParameters.report,
+                new ConfiguredTraceDispatcherParameter(inputState.getWorkflowTrace(), inputState.getConfig()));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);

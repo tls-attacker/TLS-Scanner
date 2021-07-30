@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.probe.weak.keyexchange.dhe;
 
 import java.io.Serializable;
@@ -38,9 +39,8 @@ public class DHECompositeModulusProbe extends BaseDHEParametrizedProbe<Composite
     }
 
     public static Collection<DHECompositeModulusProbe> getDefaultProbes(Orchestrator orchestrator) {
-        return Arrays.asList(
-                new DHECompositeModulusProbe(orchestrator, CompositeType.EVEN),
-                new DHECompositeModulusProbe(orchestrator, CompositeType.MOD3));
+        return Arrays.asList(new DHECompositeModulusProbe(orchestrator, CompositeType.EVEN),
+            new DHECompositeModulusProbe(orchestrator, CompositeType.MOD3));
     }
 
     public DHECompositeModulusProbe(Orchestrator orchestrator, CompositeType compType) {
@@ -49,10 +49,8 @@ public class DHECompositeModulusProbe extends BaseDHEParametrizedProbe<Composite
 
     @Override
     protected ProbeRequirements getRequirements() {
-        return super.getRequirements()
-                .needResultOfType(
-                        DHEMinimumModulusLengthProbe.class,
-                        DHMinimumModulusLengthResult.class);
+        return super.getRequirements().needResultOfType(DHEMinimumModulusLengthProbe.class,
+            DHMinimumModulusLengthResult.class);
     }
 
     protected BigInteger createModulus(int minBitLength) {
@@ -74,14 +72,14 @@ public class DHECompositeModulusProbe extends BaseDHEParametrizedProbe<Composite
 
     @Override
     public DHCompositeModulusProbeResult executeInternal(State state, DispatchInformation dispatchInformation)
-            throws DispatchException {
+        throws DispatchException {
         Config config = state.getConfig();
         int keylength = 2048;
-        ControlledClientDispatchInformation ccInfo = dispatchInformation.getAdditionalInformation(
-                ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
+        ControlledClientDispatchInformation ccInfo = dispatchInformation
+            .getAdditionalInformation(ControlledClientDispatcher.class, ControlledClientDispatchInformation.class);
         if (ccInfo != null) {
             keylength = ccInfo.report.getResult(DHEMinimumModulusLengthProbe.class,
-                    DHMinimumModulusLengthResult.class).lowestBitlengthAccepted;
+                DHMinimumModulusLengthResult.class).lowestBitlengthAccepted;
         }
         prepareConfig(config);
         config.setDefaultServerDhModulus(createModulus(keylength));

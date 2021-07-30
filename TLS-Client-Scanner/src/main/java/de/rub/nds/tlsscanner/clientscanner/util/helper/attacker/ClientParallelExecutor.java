@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.util.helper.attacker;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class ClientParallelExecutor extends ParallelExecutor {
     public final boolean exactHostname;
 
     public ClientParallelExecutor(Orchestrator orchestrator, ClientReport report, String hostnamePrefix,
-            boolean exactHostname) {
+        boolean exactHostname) {
         super(orchestrator.getSecondaryExecutor(), 3);
         this.orchestrator = orchestrator;
         this.report = report;

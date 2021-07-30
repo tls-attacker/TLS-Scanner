@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import java.io.Serializable;
@@ -45,21 +46,15 @@ import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 
 public class PaddingOracleProbe extends BaseProbe {
     // #region static
-    private static final ProtocolVersion[] VERSIONS_TO_TEST = {
-            ProtocolVersion.TLS10,
-            ProtocolVersion.TLS11,
-            ProtocolVersion.TLS12
-    };
+    private static final ProtocolVersion[] VERSIONS_TO_TEST =
+        { ProtocolVersion.TLS10, ProtocolVersion.TLS11, ProtocolVersion.TLS12 };
     // FINISHED_RESUMPTION is not supported, as we do not have means to force a
     // client to resume the session (yet)
     // don't use CLASSIC_DYNAMIC as it is slower and does not provide any
     // benefit
     // from the server side
-    private static final PaddingVectorGeneratorType[] VECTOR_TYPES = {
-            PaddingVectorGeneratorType.CLASSIC,
-            PaddingVectorGeneratorType.FINISHED,
-            PaddingVectorGeneratorType.CLOSE_NOTIFY,
-    };
+    private static final PaddingVectorGeneratorType[] VECTOR_TYPES = { PaddingVectorGeneratorType.CLASSIC,
+        PaddingVectorGeneratorType.FINISHED, PaddingVectorGeneratorType.CLOSE_NOTIFY, };
 
     public static Collection<PaddingOracleProbe> getDefaultProbes(Orchestrator orchestrator) {
         Collection<PaddingOracleProbe> ret = new ArrayList<>();
@@ -67,8 +62,7 @@ public class PaddingOracleProbe extends BaseProbe {
         PaddingVectorGeneratorType vectorGeneratorType = PaddingVectorGeneratorType.CLASSIC;
         for (CipherSuite suite : CipherSuite.getImplemented()) {
             if (suite.isSupportedInProtocol(version) && suite.isCBC()) {
-                PaddingOracleParameters params = new PaddingOracleParameters(version, suite,
-                        vectorGeneratorType);
+                PaddingOracleParameters params = new PaddingOracleParameters(version, suite, vectorGeneratorType);
                 ret.add(new PaddingOracleProbe(orchestrator, params));
             }
         }
@@ -81,8 +75,8 @@ public class PaddingOracleProbe extends BaseProbe {
             for (CipherSuite suite : CipherSuite.getImplemented()) {
                 if (suite.isSupportedInProtocol(version) && suite.isCBC()) {
                     for (PaddingVectorGeneratorType vectorGeneratorType : VECTOR_TYPES) {
-                        PaddingOracleParameters params = new PaddingOracleParameters(version, suite,
-                                vectorGeneratorType);
+                        PaddingOracleParameters params =
+                            new PaddingOracleParameters(version, suite, vectorGeneratorType);
                         ret.add(new PaddingOracleProbe(orchestrator, params));
                     }
                 }
@@ -109,32 +103,20 @@ public class PaddingOracleProbe extends BaseProbe {
 
     @Override
     protected String getHostnamePrefix() {
-        return String.join(".", (CharSequence[]) new String[] {
-                params.paddingVectorGeneratorType.toString(),
-                params.cipherSuite.toString(),
-                params.protocolVersion.toString(),
-                super.getHostnamePrefix()
-        });
+        return String.join(".", (CharSequence[]) new String[] { params.paddingVectorGeneratorType.toString(),
+            params.cipherSuite.toString(), params.protocolVersion.toString(), super.getHostnamePrefix() });
     }
 
     @Override
     protected ProbeRequirements getRequirements() {
         return ProbeRequirements.TRUE()
-                .needResultOfTypeMatching(
-                        SupportedCipherSuitesProbe.class,
-                        SupportedCipherSuitesResult.class,
-                        SupportedCipherSuitesResult::supportsBlockCiphers,
-                        "Client does not support block ciphers")
-                .needResultOfTypeMatching(
-                        VersionProbe.class,
-                        VersionProbeResult.class,
-                        res -> res.supportsVersion(params.protocolVersion),
-                        "Client does not support ProtocolVersion " + params.protocolVersion)
-                .needResultOfTypeMatching(
-                        SupportedCipherSuitesProbe.class,
-                        SupportedCipherSuitesResult.class,
-                        res -> res.supports(params.cipherSuite),
-                        "Client does not support CipherSuite " + params.cipherSuite);
+            .needResultOfTypeMatching(SupportedCipherSuitesProbe.class, SupportedCipherSuitesResult.class,
+                SupportedCipherSuitesResult::supportsBlockCiphers, "Client does not support block ciphers")
+            .needResultOfTypeMatching(VersionProbe.class, VersionProbeResult.class,
+                res -> res.supportsVersion(params.protocolVersion),
+                "Client does not support ProtocolVersion " + params.protocolVersion)
+            .needResultOfTypeMatching(SupportedCipherSuitesProbe.class, SupportedCipherSuitesResult.class,
+                res -> res.supports(params.cipherSuite), "Client does not support CipherSuite " + params.cipherSuite);
     }
 
     // #endregion
@@ -142,8 +124,7 @@ public class PaddingOracleProbe extends BaseProbe {
     // #region helper functions
     public PaddingOracleCommandConfig createPaddingOracleCommandConfig() {
         ClientScannerConfig csConfig = orchestrator.getCSConfig();
-        PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(
-                csConfig.getGeneralDelegate());
+        PaddingOracleCommandConfig paddingOracleConfig = new PaddingOracleCommandConfig(csConfig.getGeneralDelegate());
         // set any remote Address - this is just to avoid any exception
         ClientDelegate clientDelegate = paddingOracleConfig.getDelegate(ClientDelegate.class);
         clientDelegate.setHost("localhost:0");
@@ -163,36 +144,31 @@ public class PaddingOracleProbe extends BaseProbe {
     }
 
     public InformationLeakTest<PaddingOracleTestInfo> getPaddingOracleInformationLeakTest(
-            PaddingOracleCommandConfig paddingOracleConfig, ClientParallelExecutor executor) {
-        PaddingOracleAttacker attacker = new PaddingOracleAttacker(
-                paddingOracleConfig,
-                orchestrator.getCSConfig().createConfig(),
-                executor);
+        PaddingOracleCommandConfig paddingOracleConfig, ClientParallelExecutor executor) {
+        PaddingOracleAttacker attacker =
+            new PaddingOracleAttacker(paddingOracleConfig, orchestrator.getCSConfig().createConfig(), executor);
         Config config = attacker.getGeneratedConfig();
         config.setDefaultRunningMode(RunningModeType.SERVER);
         config.setAddServerNameIndicationExtension(false);
         attacker.isVulnerable();
         return new InformationLeakTest<>(
-                new PaddingOracleTestInfo(
-                        paddingOracleConfig.getProtocolVersionDelegate().getProtocolVersion(),
-                        paddingOracleConfig.getCipherSuiteDelegate().getCipherSuites().get(0),
-                        paddingOracleConfig.getVectorGeneratorType(),
-                        paddingOracleConfig.getRecordGeneratorType()),
-                attacker.getResponseMapList());
+            new PaddingOracleTestInfo(paddingOracleConfig.getProtocolVersionDelegate().getProtocolVersion(),
+                paddingOracleConfig.getCipherSuiteDelegate().getCipherSuites().get(0),
+                paddingOracleConfig.getVectorGeneratorType(), paddingOracleConfig.getRecordGeneratorType()),
+            attacker.getResponseMapList());
     }
 
     // #endregion
 
     @Override
     protected ClientProbeResult callInternal(ClientReport report, String hostnamePrefix)
-            throws InterruptedException, ExecutionException {
+        throws InterruptedException, ExecutionException {
         PaddingOracleCommandConfig paddingOracleConfig = createPaddingOracleCommandConfig();
         ClientParallelExecutor executor = new ClientParallelExecutor(orchestrator, report, hostnamePrefix, false);
-        InformationLeakTest<PaddingOracleTestInfo> res = getPaddingOracleInformationLeakTest(paddingOracleConfig,
-                executor);
-        return new ParametrizedClientProbeResult<PaddingOracleParameters, PaddingOracleResult>(
-                getClass(), params,
-                new PaddingOracleResult(res));
+        InformationLeakTest<PaddingOracleTestInfo> res =
+            getPaddingOracleInformationLeakTest(paddingOracleConfig, executor);
+        return new ParametrizedClientProbeResult<PaddingOracleParameters, PaddingOracleResult>(getClass(), params,
+            new PaddingOracleResult(res));
     }
 
     @Override
@@ -208,7 +184,7 @@ public class PaddingOracleProbe extends BaseProbe {
         public final PaddingVectorGeneratorType paddingVectorGeneratorType;
 
         public PaddingOracleParameters(ProtocolVersion protocolVersion, CipherSuite cipherSuite,
-                PaddingVectorGeneratorType paddingVectorGeneratorType) {
+            PaddingVectorGeneratorType paddingVectorGeneratorType) {
             this.protocolVersion = protocolVersion;
             this.cipherSuite = cipherSuite;
             this.paddingVectorGeneratorType = paddingVectorGeneratorType;

@@ -1,11 +1,12 @@
 /**
- * TLS-Scanner - A TLS configuration and analysis tool based on TLS-Attacker.
+ * TLS-Client-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
  *
- * Copyright 2017-2019 Ruhr University Bochum / Hackmanit GmbH
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
- * Licensed under Apache License 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.clientscanner.config;
 
 import java.util.List;
@@ -38,7 +39,8 @@ public class ClientScannerConfig extends TLSDelegateConfig {
     protected OrchestratorDelegate orchestratorDelegate;
 
     // #region Variables to be applied in Config
-    @Parameter(names = "-timeout", required = false, description = "The timeout used for the scans in ms (default 1000)")
+    @Parameter(names = "-timeout", required = false,
+        description = "The timeout used for the scans in ms (default 1000)")
     protected int timeout = 1000;
 
     @Parameter(names = "-bindaddr", required = false, description = "Hostname/IP to listen on. Defaults to any")
