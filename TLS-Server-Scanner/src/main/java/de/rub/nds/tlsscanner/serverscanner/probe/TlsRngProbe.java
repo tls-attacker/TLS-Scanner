@@ -45,8 +45,6 @@ import java.util.List;
 
 /**
  * A probe which samples random material from the target host using ServerHello randoms, SessionIDs and IVs.
- *
- * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
  */
 public class TlsRngProbe extends TlsProbe {
 
