@@ -150,9 +150,11 @@ public class UnixTimeRngProbe extends TlsProbe {
                     lastUnixTime = serverUnixTime;
                 }
             } else {
-                byte[] unixTimeStamp = new byte[4];
-                System.arraycopy(serverRandom, 0, unixTimeStamp, 0, HandshakeByteLength.UNIX_TIME);
-                lastUnixTime = ArrayConverter.bytesToInt(unixTimeStamp);
+                if (serverRandom != null) {
+                    byte[] unixTimeStamp = new byte[4];
+                    System.arraycopy(serverRandom, 0, unixTimeStamp, 0, HandshakeByteLength.UNIX_TIME);
+                    lastUnixTime = ArrayConverter.bytesToInt(unixTimeStamp);
+                }
             }
         }
 

@@ -25,7 +25,7 @@ public class CertificateAgilityGuidelineCheck extends ConditionalGuidelineCheck 
     @Override
     public void evaluate(SiteReport report, GuidelineCheckResult result) {
         List<CertificateChain> chains = report.getCertificateChainList();
-        if (chains.size() < 2) {
+        if (chains == null || chains.size() < 2) {
             result.update(GuidelineCheckStatus.FAILED, "Server does not have multiple Certificates.");
             return;
         }

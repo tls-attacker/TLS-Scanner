@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
@@ -363,9 +364,17 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
         HashSet<SignatureAndHashAlgorithm> combined = new HashSet<>();
-        combined.addAll(supportedSignatureAndHashAlgorithmsCert);
-        combined.addAll(supportedSignatureAndHashAlgorithmsSke);
+        if (supportedSignatureAndHashAlgorithmsCert != null) {
+            combined.addAll(supportedSignatureAndHashAlgorithmsCert);
+        }
+        if (supportedSignatureAndHashAlgorithmsSke != null) {
+            combined.addAll(supportedSignatureAndHashAlgorithmsSke);
+        }
         return new ArrayList<>(combined);
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsCert() {
+        return supportedSignatureAndHashAlgorithmsCert;
     }
 
     public synchronized void setSupportedSignatureAndHashAlgorithmsCert(
@@ -376,6 +385,10 @@ public class SiteReport extends Observable implements Serializable {
     public synchronized void
         setSupportedSignatureAndHashAlgorithmsSke(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
         this.supportedSignatureAndHashAlgorithmsSke = supportedSignatureAndHashAlgorithms;
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsSke() {
+        return supportedSignatureAndHashAlgorithmsSke;
     }
 
     public synchronized List<ExtensionType> getSupportedExtensions() {
@@ -498,7 +511,7 @@ public class SiteReport extends Observable implements Serializable {
     public synchronized void setPerformanceList(List<PerformanceData> performanceList) {
         this.performanceList = performanceList;
     }
-
+    
     public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
         return paddingOracleTestResultList;
     }

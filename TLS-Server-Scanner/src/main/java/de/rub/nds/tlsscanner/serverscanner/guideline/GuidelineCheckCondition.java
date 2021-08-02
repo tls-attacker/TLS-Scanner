@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import java.util.List;
+import java.util.StringJoiner;
 
 @XmlType
 public class GuidelineCheckCondition {
@@ -74,7 +75,23 @@ public class GuidelineCheckCondition {
 
     @Override
     public String toString() {
-        return "GuidelineCheckCondition{" + "and=" + and + ", or=" + or + ", analyzedProperty=" + analyzedProperty
-            + ", result=" + result + '}';
+        StringBuilder builder = new StringBuilder("{");
+        if (and != null) {
+            StringJoiner joiner = new StringJoiner("\u2227");
+            for (GuidelineCheckCondition condition : and) {
+                joiner.add(condition.toString());
+            }
+            builder.append(joiner);
+        } else if (or != null) {
+            StringJoiner joiner = new StringJoiner("\u2228");
+            for (GuidelineCheckCondition condition : or) {
+                joiner.add(condition.toString());
+            }
+            builder.append(joiner);
+        } else if (analyzedProperty != null && result != null) {
+            builder.append(analyzedProperty).append("=").append(result);
+        }
+        builder.append('}');
+        return builder.toString();
     }
 }

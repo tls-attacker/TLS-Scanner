@@ -37,7 +37,7 @@ public class GuidelineChecker {
         List<GuidelineCheckResult> results = new ArrayList<>();
         List<GuidelineCheckResult> skipped = new ArrayList<>();
         for (GuidelineCheck check : this.guideline.getChecks()) {
-            GuidelineCheckResult result = new GuidelineCheckResult(check.getName());
+            GuidelineCheckResult result = new GuidelineCheckResult(check.getId(), check.getName());
             if (check instanceof ConditionalGuidelineCheck) {
                 if (((ConditionalGuidelineCheck) check).passesCondition(report)) {
                     try {

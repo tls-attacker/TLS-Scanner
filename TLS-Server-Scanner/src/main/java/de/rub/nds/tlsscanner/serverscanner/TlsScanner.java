@@ -16,6 +16,9 @@ import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
@@ -120,6 +123,7 @@ public class TlsScanner {
         addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(config, parallelExecutor));
         addProbeToProbeList(new UnixTimeRngProbe(config, parallelExecutor));
+        addProbeToProbeList(new TlsFallbackScsvProbe(parallelExecutor, config));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());
@@ -154,6 +158,10 @@ public class TlsScanner {
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
                         config.getClientDelegate().getHost());
                     SiteReport report = executor.execute();
+                    for (Guideline guideline : GuidelineIO.readGuidelines(GuidelineIO.GUIDELINES)) {
+                        GuidelineChecker checker = new GuidelineChecker(guideline);
+                        checker.fillReport(report);
+                    }
                     return report;
                 } else {
                     isConnectable = true;

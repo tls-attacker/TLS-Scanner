@@ -9,16 +9,26 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Objects;
 
 public class GuidelineCheckResult {
 
+    private final String id;
     private final String name;
     private final StringBuilder detail = new StringBuilder();
 
+    @JsonIgnore
     private GuidelineCheckStatus status;
 
     public GuidelineCheckResult(String name) {
+        this.id = "_";
+        this.name = name;
+    }
+
+    public GuidelineCheckResult(String id, String name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -51,6 +61,10 @@ public class GuidelineCheckResult {
 
     public void setStatus(GuidelineCheckStatus status) {
         this.status = status;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {

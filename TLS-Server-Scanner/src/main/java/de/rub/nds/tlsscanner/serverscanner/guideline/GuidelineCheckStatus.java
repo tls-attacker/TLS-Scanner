@@ -10,7 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 /**
- * Order is important for {@link StatusReasonPair#updateStatus(GuidelineCheckStatus)}.
+ * Order is important for {@link GuidelineCheckResult#updateStatus(GuidelineCheckStatus)}.
  */
 public enum GuidelineCheckStatus {
     PASSED,

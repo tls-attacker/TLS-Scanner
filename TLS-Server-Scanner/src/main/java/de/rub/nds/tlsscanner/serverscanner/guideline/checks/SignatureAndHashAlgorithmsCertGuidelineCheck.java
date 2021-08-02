@@ -12,39 +12,37 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 import com.google.common.base.Joiner;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.ConditionalGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SignatureAndHashAlgorithmsCertGuidelineCheck extends CertificateGuidelineCheck {
+public class SignatureAndHashAlgorithmsCertGuidelineCheck extends ConditionalGuidelineCheck {
 
     private List<SignatureAndHashAlgorithm> algorithms;
 
     @Override
-    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
+    public void evaluate(SiteReport report, GuidelineCheckResult result) {
         Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
-        for (CertificateReport report : chain.getCertificateReportList()) {
-            if (report.getSignatureAndHashAlgorithm() == null) {
-                result.append("Certificate is missing supported algorithms.");
-                return GuidelineCheckStatus.UNCERTAIN;
-            }
-
-            if (!this.algorithms.contains(report.getSignatureAndHashAlgorithm())) {
-                nonRecommended.add(report.getSignatureAndHashAlgorithm());
+        for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithmsCert()) {
+            if (!this.algorithms.contains(algorithm)) {
+                nonRecommended.add(algorithm);
             }
         }
         if (nonRecommended.isEmpty()) {
-            result.append("Only listed signature and hash algorithms are supported.");
-            return GuidelineCheckStatus.PASSED;
+            result.update(GuidelineCheckStatus.PASSED, "Only listed signature and hash algorithms are supported.");
+            return;
         }
         result.append("The following signature and hash algorithms were supported but not recommended:\n");
         result.append(Joiner.on('\n').join(nonRecommended));
-        return GuidelineCheckStatus.FAILED;
+        result.updateStatus(GuidelineCheckStatus.FAILED);
     }
 
     public List<SignatureAndHashAlgorithm> getAlgorithms() {
@@ -54,4 +52,5 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheck extends CertificateGui
     public void setAlgorithms(List<SignatureAndHashAlgorithm> algorithms) {
         this.algorithms = algorithms;
     }
+
 }

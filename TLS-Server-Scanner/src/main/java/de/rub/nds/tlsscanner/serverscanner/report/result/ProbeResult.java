@@ -56,7 +56,9 @@ public abstract class ProbeResult {
     }
 
     public void merge(SiteReport report) {
-        report.getPerformanceList().add(getPerformanceData());
+        if (startTime != 0 && stopTime != 0) {
+            report.getPerformanceList().add(getPerformanceData());
+        }
         this.mergeData(report);
         report.markAsChangedAndNotify();
     }

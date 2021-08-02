@@ -225,10 +225,14 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
         private static Set<SignatureAndHashAlgorithm> getSelectedSignatureAndHashAlgorithmsCert(State state) {
             Set<SignatureAndHashAlgorithm> selected = new HashSet<>();
-            for (Certificate cert : state.getTlsContext().getServerCertificate().getCertificateList()) {
-                SignatureAndHashAlgorithm sigHashAlgo = CertificateReportGenerator.getSignatureAndHashAlgorithm(cert);
-                if (sigHashAlgo != null) {
-                    selected.add(sigHashAlgo);
+            org.bouncycastle.crypto.tls.Certificate certificate = state.getTlsContext().getServerCertificate();
+            if (certificate != null && certificate.getCertificateList() != null) {
+                for (Certificate cert : certificate.getCertificateList()) {
+                    SignatureAndHashAlgorithm sigHashAlgo =
+                        CertificateReportGenerator.getSignatureAndHashAlgorithm(cert);
+                    if (sigHashAlgo != null) {
+                        selected.add(sigHashAlgo);
+                    }
                 }
             }
             return selected;

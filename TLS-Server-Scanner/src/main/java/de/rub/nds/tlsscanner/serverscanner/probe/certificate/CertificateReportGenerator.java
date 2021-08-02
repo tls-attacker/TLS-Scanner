@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -265,13 +266,17 @@ public class CertificateReportGenerator {
                 mainCertOcspUrl = new URL(mainCertExtractor.getOcspServerUrl());
                 ocspRequest = new OCSPRequest(cert, issuerCert, mainCertOcspUrl);
                 OCSPResponse ocspResponse = ocspRequest.makeRequest();
-                CertificateStatus certificateStatus = ocspResponse.getCertificateStatusList().get(0);
-                int revocationStatus = certificateStatus.getCertificateStatus();
-                if (revocationStatus == 0) {
-                    report.setRevoked(false);
-                } else if (revocationStatus == 1) {
-                    report.setRevoked(true);
+                if (ocspResponse != null) {
+                    CertificateStatus certificateStatus = ocspResponse.getCertificateStatusList().get(0);
+                    int revocationStatus = certificateStatus.getCertificateStatus();
+                    if (revocationStatus == 0) {
+                        report.setRevoked(false);
+                    } else if (revocationStatus == 1) {
+                        report.setRevoked(true);
+                    }
                 }
+            } catch (UnknownHostException exc) {
+                LOGGER.error("OCSP Server URL is unknown host: {}", exc.getMessage());
             } catch (Exception e) {
                 LOGGER.error("Failed to get certificate revocation status via OCSP.", e);
             }

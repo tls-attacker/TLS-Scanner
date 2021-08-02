@@ -175,7 +175,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
             }
 
             meetsChromeCTPolicy = hasGoogleAndNonGoogleScts(combinedSctList);
-        } else {
+        } else if (precertificateSctList != null) {
             Date endDate = serverCertChain.getCertificateAt(0).getEndDate().getDate();
             Date startDate = serverCertChain.getCertificateAt(0).getStartDate().getDate();
             Duration validityDuration = Duration.between(startDate.toInstant(), endDate.toInstant());

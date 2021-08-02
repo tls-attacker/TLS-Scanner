@@ -10,6 +10,12 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import org.reflections.ReflectionUtils;
+
+import java.lang.reflect.Field;
+import java.util.Objects;
+import java.util.Set;
+import java.util.StringJoiner;
 
 public abstract class GuidelineCheck {
 
@@ -41,5 +47,24 @@ public abstract class GuidelineCheck {
 
     public void setRequirementLevel(RequirementLevel requirementLevel) {
         this.requirementLevel = requirementLevel;
+    }
+
+    @SuppressWarnings("unchecked")
+    public String getId() {
+        Set<Field> fields = ReflectionUtils.getAllFields(this.getClass());
+        fields.removeAll(ReflectionUtils.getFields(GuidelineCheck.class));
+        StringJoiner joiner = new StringJoiner("_");
+        joiner.add(this.getClass().getSimpleName()).add(String.valueOf(requirementLevel));
+        for (Field field : fields) {
+            field.setAccessible(true);
+            try {
+                Object result = field.get(this);
+                if (result != null) {
+                    joiner.add(String.valueOf(field.get(this)));
+                }
+            } catch (IllegalAccessException ignored) {
+            }
+        }
+        return joiner.toString();
     }
 }

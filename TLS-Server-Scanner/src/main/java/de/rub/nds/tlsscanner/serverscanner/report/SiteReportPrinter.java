@@ -35,10 +35,7 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateIssue;
@@ -1621,9 +1618,8 @@ public class SiteReportPrinter {
     }
 
     public void appendGuidelines(StringBuilder builder) {
-        for (Guideline guideline : GuidelineIO.readGuidelines(GuidelineIO.GUIDELINES)) {
-            GuidelineChecker checker = new GuidelineChecker(guideline);
-            checker.fillReport(this.report);
+        if (this.report.getGuidelineReports().size() > 0) {
+            prettyAppendHeading(builder, "Guidelines");
         }
         for (GuidelineReport report : this.report.getGuidelineReports()) {
             appendGuideline(builder, report);
@@ -1631,38 +1627,36 @@ public class SiteReportPrinter {
     }
 
     private void appendGuideline(StringBuilder builder, GuidelineReport guidelineReport) {
-        prettyAppendHeading(builder, "Guideline " + StringUtils.trim(guidelineReport.getName()));
+        prettyAppendSubheading(builder, "Guideline " + StringUtils.trim(guidelineReport.getName()));
         if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppend(builder, StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE);
         }
-        for (GuidelineCheckResult result : guidelineReport.getResults()) {
-            switch (result.getStatus()) {
-                case PASSED:
-                    if (!this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-                        // continue; TODO
-                    }
-                    prettyAppend(builder, "Passed Check " + StringUtils.trim(result.getName()), AnsiColor.GREEN);
-                    prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
-                    break;
-                case FAILED:
-                    prettyAppend(builder, "Failed Check " + StringUtils.trim(result.getName()), AnsiColor.RED);
-                    prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
-                    break;
-                case UNCERTAIN:
-                    if (!this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        // continue; TODO
-                    }
-                    prettyAppend(builder, "Uncertain on Check " + StringUtils.trim(result.getName()), AnsiColor.YELLOW);
-                    prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
-                    break;
+        if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+            prettyAppendSubSubheading(builder, "Passed Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getPassed()) {
+                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.GREEN);
+                prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
             }
         }
-        // if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) { TODO
-        for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
-            prettyAppend(builder, "Skipped Check: " + StringUtils.trim(result.getName()));
+        prettyAppendSubSubheading(builder, "Failed Checks:");
+        for (GuidelineCheckResult result : guidelineReport.getFailed()) {
+            prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.RED);
             prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
         }
-        // }
+        if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            prettyAppendSubSubheading(builder, "Uncertain Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getUncertain()) {
+                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.YELLOW);
+                prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
+            }
+        }
+        if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+            prettyAppendSubSubheading(builder, "Skipped Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
+                prettyAppend(builder, StringUtils.trim(result.getName()));
+                prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
+            }
+        }
     }
 
     public void appendRecommendations(StringBuilder builder) {

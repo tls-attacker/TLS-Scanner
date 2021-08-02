@@ -9,20 +9,31 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import com.google.common.base.Predicates;
+
+import javax.sql.rowset.Predicate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GuidelineReport {
 
     private String name;
     private String link;
-    private List<GuidelineCheckResult> results;
+    private List<GuidelineCheckResult> passed;
+    private List<GuidelineCheckResult> failed;
+    private List<GuidelineCheckResult> uncertain;
     private List<GuidelineCheckResult> skipped;
 
     public GuidelineReport(String name, String link, List<GuidelineCheckResult> results,
         List<GuidelineCheckResult> skipped) {
         this.name = name;
         this.link = link;
-        this.results = results;
+        this.passed = results.stream().filter(result -> GuidelineCheckStatus.PASSED.equals(result.getStatus()))
+            .collect(Collectors.toList());
+        this.failed = results.stream().filter(result -> GuidelineCheckStatus.FAILED.equals(result.getStatus()))
+            .collect(Collectors.toList());
+        this.uncertain = results.stream().filter(result -> GuidelineCheckStatus.UNCERTAIN.equals(result.getStatus()))
+            .collect(Collectors.toList());
         this.skipped = skipped;
     }
 
@@ -42,12 +53,28 @@ public class GuidelineReport {
         this.link = link;
     }
 
-    public List<GuidelineCheckResult> getResults() {
-        return results;
+    public List<GuidelineCheckResult> getPassed() {
+        return passed;
     }
 
-    public void setResults(List<GuidelineCheckResult> results) {
-        this.results = results;
+    public void setPassed(List<GuidelineCheckResult> passed) {
+        this.passed = passed;
+    }
+
+    public List<GuidelineCheckResult> getFailed() {
+        return failed;
+    }
+
+    public void setFailed(List<GuidelineCheckResult> failed) {
+        this.failed = failed;
+    }
+
+    public List<GuidelineCheckResult> getUncertain() {
+        return uncertain;
+    }
+
+    public void setUncertain(List<GuidelineCheckResult> uncertain) {
+        this.uncertain = uncertain;
     }
 
     public List<GuidelineCheckResult> getSkipped() {
