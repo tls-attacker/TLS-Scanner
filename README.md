@@ -1,6 +1,6 @@
 # TLS-Scanner
 
-[![release](https://img.shields.io/badge/Release-v4.0.0-blue.svg)](https://github.com/RUB-NDS/TLS-Scanner/releases)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/tls-attacker/TLS-Scanner)
 ![licence](https://img.shields.io/badge/License-Apachev2-brightgreen.svg)
 [![Build Status](https://hydrogen.cloud.nds.rub.de/buildStatus/icon.svg?job=TLS-Scanner)](https://hydrogen.cloud.nds.rub.de/job/TLS-Scanner/)
 
@@ -13,6 +13,7 @@ In order to compile and use TLS-Scanner, you need to run:
  
 ```bash
 $ cd TLS-Scanner
+$ git submodule update --init --recursive
 $ mvn clean package
 
 ```
@@ -30,7 +31,7 @@ $ mvn clean install
 In order to run TLS-Scanner you need to run the jar file in the apps/ folder.
 
 ```bash
-$ java -jar apps/TLS-Scanner.jar -connect localhost:4433
+$ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
 ```
 
 You can specify a host you want to scan with the -connect parameter. If you want to improve the performance of the scan you can use the -threads parameter (default=1).

@@ -343,6 +343,7 @@ public class PrintingScheme {
 
     private static TextEncoding getAlpacaTextEncoding() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
+        textEncodingMap.put(TestResult.CANNOT_BE_TESTED, "cannot be tested");
         textEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test");
         textEncodingMap.put(TestResult.ERROR_DURING_TEST, "error");
         textEncodingMap.put(TestResult.FALSE, "not mitigated");
@@ -351,6 +352,7 @@ public class PrintingScheme {
         textEncodingMap.put(TestResult.TRUE, "true");
         textEncodingMap.put(TestResult.UNCERTAIN, "uncertain");
         textEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by tls-scanner");
+        textEncodingMap.put(TestResult.PARTIALLY, "partially");
         return new TextEncoding(textEncodingMap);
     }
 
