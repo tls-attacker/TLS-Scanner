@@ -14,8 +14,6 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.report.after.TlsRngAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
@@ -30,6 +28,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.after.PaddingOracleIdentificat
 import de.rub.nds.tlsscanner.serverscanner.report.after.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.TlsRngAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
 import java.util.List;
