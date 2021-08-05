@@ -16,7 +16,6 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.special.Gamma;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jtransforms.fft.DoubleFFT_1D;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -24,6 +23,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.*;
 import static org.apache.commons.math3.special.Erf.erfc;
+import org.jtransforms.fft.DoubleFFT_1D;
 
 public class StatisticalTests {
 
@@ -137,7 +137,7 @@ public class StatisticalTests {
      * * Test to check the frequency of all possible bit-patterns of size blockLength, comparing them to the
      * expectation.
      *
-     * @param  byteSequence
+     * @param  bitString
      *                      array of random byte values
      * @param  blockLength
      *                      length of bit-patterns to check
