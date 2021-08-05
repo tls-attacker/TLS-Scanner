@@ -49,6 +49,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.serverscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.serverscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.serverscanner.rating.Recommendation;
+import de.rub.nds.tlsscanner.serverscanner.rating.Recommendations;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
@@ -1533,20 +1534,22 @@ public class SiteReportPrinter {
     }
 
     public void appendScoringResults(StringBuilder builder) {
-        prettyAppendHeading(builder, "Scoring results");
+        if (report.getScoreReport() == null) {
+            return;
+        }
 
-        SiteReportRater rater;
+        prettyAppendHeading(builder, "Scoring results");
         try {
-            rater = SiteReportRater.getSiteReportRater("en");
-            ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
-            prettyAppend(builder, "Score: " + scoreReport.getScore());
+
+            prettyAppend(builder, "Score: " + report.getScoreReport().getScore());
             if (!detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                 return;
             }
             prettyAppend(builder, "");
-            scoreReport.getInfluencers().entrySet().forEach((entry) -> {
+            Recommendations recommendations = SiteReportRater.getRecommendations("en");
+            report.getScoreReport().getInfluencers().entrySet().forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
-                Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
+                Recommendation recommendation = recommendations.getRecommendation(entry.getKey());
                 int scoreInfluence = 0;
                 StringBuilder additionalInfo = new StringBuilder();
                 if (influencer.getReferencedProperty() != null) {
@@ -1576,23 +1579,25 @@ public class SiteReportPrinter {
     }
 
     public void appendRecommendations(StringBuilder builder) {
+        if (report.getScoreReport() == null) {
+            return;
+        }
         prettyAppendHeading(builder, "Recommendations");
 
-        SiteReportRater rater;
         try {
-            rater = SiteReportRater.getSiteReportRater("en");
-            ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
+            ScoreReport scoreReport = report.getScoreReport();
+            Recommendations recommendations = SiteReportRater.getRecommendations("en");
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
             influencers.entrySet().stream().sorted((o1, o2) -> {
                 return o1.getValue().compareTo(o2.getValue());
             }).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
-                    Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
+                    Recommendation recommendation = recommendations.getRecommendation(entry.getKey());
                     PropertyResultRecommendation resultRecommendation =
                         recommendation.getPropertyResultRecommendation(influencer.getResult());
                     if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        printFullRecommendation(builder, rater, recommendation, influencer, resultRecommendation);
+                        printFullRecommendation(builder, recommendation, influencer, resultRecommendation);
                     } else {
                         printShortRecommendation(builder, influencer, resultRecommendation);
                     }
@@ -1604,28 +1609,37 @@ public class SiteReportPrinter {
         }
     }
 
-    private void printFullRecommendation(StringBuilder builder, SiteReportRater rater, Recommendation recommendation,
+    private void printFullRecommendation(StringBuilder builder, Recommendation recommendation,
         PropertyResultRatingInfluencer influencer, PropertyResultRecommendation resultRecommendation) {
+        if (report.getScoreReport() == null) {
+            return;
+        }
         AnsiColor color = getRecommendationColor(influencer);
         prettyAppend(builder, "", color);
         prettyAppend(builder, recommendation.getShortName() + ": " + influencer.getResult(), color);
         int scoreInfluence = 0;
         String additionalInfo = "";
-        if (influencer.getReferencedProperty() != null) {
-            scoreInfluence =
-                rater.getRatingInfluencers().getPropertyRatingInfluencer(influencer.getReferencedProperty(),
-                    influencer.getReferencedPropertyResult()).getInfluence();
-            Recommendation r = rater.getRecommendations().getRecommendation(influencer.getReferencedProperty());
-            additionalInfo = " -> This score comes from \"" + r.getShortName() + "\"";
-        } else {
-            scoreInfluence = influencer.getInfluence();
+        try {
+            if (influencer.getReferencedProperty() != null) {
+                scoreInfluence = SiteReportRater.getRatingInfluencers().getPropertyRatingInfluencer(
+                    influencer.getReferencedProperty(), influencer.getReferencedPropertyResult()).getInfluence();
+                Recommendation r =
+                    SiteReportRater.getRecommendations("en").getRecommendation(influencer.getReferencedProperty());
+                additionalInfo = " -> This score comes from \"" + r.getShortName() + "\"";
+            } else {
+                scoreInfluence = influencer.getInfluence();
+            }
+            prettyAppend(builder, "  Score: " + scoreInfluence + additionalInfo, color);
+            if (influencer.hasScoreCap()) {
+                prettyAppend(builder, "  Score cap: " + influencer.getScoreCap(), color);
+            }
+            prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription(), color);
+            prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
+        } catch (Exception ex) {
+            prettyAppend(builder, "Could not append recommendations - recommendations or ratingInfluencers not found: "
+                + recommendation.getShortName(), AnsiColor.RED);
+            LOGGER.error("Could not append recommendations for: " + recommendation.getShortName(), ex);
         }
-        prettyAppend(builder, "  Score: " + scoreInfluence + additionalInfo, color);
-        if (influencer.hasScoreCap()) {
-            prettyAppend(builder, "  Score cap: " + influencer.getScoreCap(), color);
-        }
-        prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription(), color);
-        prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
     }
 
     private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer,

@@ -24,7 +24,6 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
@@ -35,6 +34,8 @@ import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -150,6 +151,14 @@ public class SiteReport extends Observable implements Serializable {
     private List<ProbeType> probeTypeList;
 
     private int performedTcpConnections = 0;
+
+    // Rating
+    private int score;
+    private ScoreReport scoreReport;
+
+    // Scan Timestamps
+    private long scanStartTime;
+    private long scanEndTime;
 
     public SiteReport() {
         resultMap = new HashMap<>();
@@ -704,6 +713,38 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setOcspSctList(SignedCertificateTimestampList ocspSctList) {
         this.ocspSctList = ocspSctList;
+    }
+
+    public synchronized int getScore() {
+        return score;
+    }
+
+    public synchronized void setScore(int score) {
+        this.score = score;
+    }
+
+    public synchronized long getScanStartTime() {
+        return scanStartTime;
+    }
+
+    public synchronized void setScanStartTime(long scanStartTime) {
+        this.scanStartTime = scanStartTime;
+    }
+
+    public synchronized long getScanEndTime() {
+        return scanEndTime;
+    }
+
+    public synchronized void setScanEndTime(long scanEndTime) {
+        this.scanEndTime = scanEndTime;
+    }
+
+    public synchronized ScoreReport getScoreReport() {
+        return scoreReport;
+    }
+
+    public synchronized void setScoreReport(ScoreReport scoreReport) {
+        this.scoreReport = scoreReport;
     }
 
     public int getMinimumRsaCertKeySize() {

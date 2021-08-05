@@ -18,6 +18,8 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
+import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
@@ -32,6 +34,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.after.RandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
 import java.util.List;
+import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -154,8 +157,23 @@ public class TlsScanner {
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
                         config.getClientDelegate().getHost());
-                    SiteReport report = executor.execute();
-                    return report;
+
+                    long scanStartTime = System.currentTimeMillis();
+                    SiteReport siteReport = executor.execute();
+                    SiteReportRater rater;
+                    try {
+                        rater = SiteReportRater.getSiteReportRater();
+                        ScoreReport scoreReport = rater.getScoreReport(siteReport.getResultMap());
+                        siteReport.setScore(scoreReport.getScore());
+                        siteReport.setScoreReport(scoreReport);
+
+                    } catch (JAXBException ex) {
+                        LOGGER.error("Could not retrieve scoring results");
+                    }
+                    long scanEndTime = System.currentTimeMillis();
+                    siteReport.setScanStartTime(scanStartTime);
+                    siteReport.setScanEndTime(scanEndTime);
+                    return siteReport;
                 } else {
                     isConnectable = true;
                 }
