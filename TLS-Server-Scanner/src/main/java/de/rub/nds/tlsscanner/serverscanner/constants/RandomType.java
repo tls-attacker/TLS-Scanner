@@ -14,13 +14,20 @@ package de.rub.nds.tlsscanner.serverscanner.constants;
  */
 public enum RandomType {
     // Initialization Vectors used in CBC Cipher suites.
-    IV,
+    CBC_IV("CBC IV"),
     // Session IDs used for session resumption used in the ServerHello Message
-    SESSION_ID,
+    SESSION_ID("Session ID"),
     // Random byte string to ensure unique TLS Handshakes used in the
     // ServerHello Message
-    RANDOM,
-    // Complete Sequence consisting of concatenated Randoms, Session IDs and
-    // IVs.
-    COMPLETE_SEQUENCE
+    RANDOM(" Nonce (Random)");
+
+    private String humanReadableName;
+
+    private RandomType(String humanReadableName) {
+        this.humanReadableName = humanReadableName;
+    }
+
+    public String getHumanReadableName() {
+        return humanReadableName;
+    }
 }

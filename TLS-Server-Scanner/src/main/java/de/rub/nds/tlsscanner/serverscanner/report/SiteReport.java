@@ -23,9 +23,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
@@ -44,8 +42,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomMinimalLengthResult;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.io.Serializable;
 import java.util.*;
@@ -63,7 +59,6 @@ public class SiteReport extends Observable implements Serializable {
 
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
-    private Boolean supportsRecordFragmentation = null;
 
     // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
@@ -134,63 +129,7 @@ public class SiteReport extends Observable implements Serializable {
 
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
 
-    // Randomness
-    private List<ComparableByteArray> extractedIVList = null;
-    private List<ComparableByteArray> extractedRandomList = null;
-    private List<ComparableByteArray> extractedSessionIDList = null;
-
-    /**
-     * is this used anymore?
-     */
-    private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
-    /**
-     * Not sure what this is
-     */
-    private RandomMinimalLengthResult randomMinimalLengthResult = RandomMinimalLengthResult.NOT_ANALYZED;
-    /**
-     * If the server is using a unixtimestamp within the first bytes of its random
-     */
-    private Boolean usesUnixtime = null;
-    /**
-     * Randomness sources where we found duplicates
-     */
-    private LinkedList<RandomType> randomTypeDuplicates = null;
-    /**
-     * Randomness sources that failed the monobit test
-     */
-    private LinkedList<RandomType> failedMonoBitTypes = null;
-    /**
-     * Randomness sources that failed the frequency test
-     */
-    private LinkedList<RandomType> failedFrequencyTypes = null;
-    /**
-     * Randomness sources that failed ?????? test
-     */
-    private LinkedList<RandomType> failedRunsTypes = null;
-    /**
-     * Randomness sources that failed longest run block test
-     */
-    private LinkedList<RandomType> failedLongestRunBlockTypes = null;
-    /**
-     * Randomness sources that failed the fourier test
-     */
-    private LinkedList<RandomType> failedFourierTypes = null;
-    /**
-     * Randomness sources that failed the template test
-     */
-    private LinkedList<RandomType> failedTemplateTypes = null;
-    /**
-     * Details to failed template tests
-     */
-    private Map<RandomType, Double> failedTemplateMap = null;
-    /**
-     * Randomness sources that failed entropy tests
-     */
-    private LinkedList<RandomType> failedEntropyTypes = null;
-    /**
-     * The randomness extraction was stopped due to some reason
-     */
-    private Boolean prematureRandomnessProbeStop = null;
+    private List<EntropyReport> entropyReportList;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -603,22 +542,6 @@ public class SiteReport extends Observable implements Serializable {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
-    public synchronized RandomEvaluationResult getRandomEvaluationResult() {
-        return randomEvaluationResult;
-    }
-
-    public synchronized void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
-        this.randomEvaluationResult = randomEvaluationResult;
-    }
-
-    public synchronized RandomMinimalLengthResult getRandomMinimalLengthResult() {
-        return randomMinimalLengthResult;
-    }
-
-    public synchronized void setRandomMinimalLengthResult(RandomMinimalLengthResult randomMinimalLengthResult) {
-        this.randomMinimalLengthResult = randomMinimalLengthResult;
-    }
-
     public synchronized Set<CommonDhValues> getUsedCommonDhValueList() {
         return usedCommonDhValueList;
     }
@@ -683,262 +606,6 @@ public class SiteReport extends Observable implements Serializable {
     public synchronized void
         setRaccoonAttackProbabilities(List<RaccoonAttackProbabilities> raccoonAttackProbabilities) {
         this.raccoonAttackProbabilities = raccoonAttackProbabilities;
-    }
-
-    /**
-     * Sets the List of extracted IVs in the SiteReport and is used by the TlsRngProbe
-     *
-     * @param extractedIVList
-     *                        LinkedList of extracted IVs.
-     */
-    public synchronized void setExtractedIVList(LinkedList<ComparableByteArray> extractedIVList) {
-        this.extractedIVList = extractedIVList;
-    }
-
-    /**
-     * Returns the List of IVs extracted by the TlsRngProbe
-     *
-     * @return LinkedList of ComparableByteArrays containing the IVs
-     */
-    public synchronized List<ComparableByteArray> getExtractedIVList() {
-        return extractedIVList;
-    }
-
-    /**
-     * Sets the List of extracted Randoms in the SiteReport and is used by the TlsRngProbe
-     *
-     * @param extractedRandomList
-     *                            LinkedList of extracted Server Hello Randoms.
-     */
-    public synchronized void setExtractedRandomList(LinkedList<ComparableByteArray> extractedRandomList) {
-        this.extractedRandomList = extractedRandomList;
-    }
-
-    /**
-     * Returns the List of Server Hello Randoms extracted by the TlsRngProbe
-     *
-     * @return LinkedList of ComparableByteArrays containing the Server Hello Randoms
-     */
-    public synchronized List<ComparableByteArray> getExtractedRandomList() {
-        return extractedRandomList;
-    }
-
-    /**
-     * Sets the List of extracted SessionIDs in the SiteReport and is used by the TlsRngProbe
-     *
-     * @param extractedSessionIDList
-     *                               LinkedList of extracted Server Hello Session IDs.
-     */
-    public synchronized void setExtractedSessionIDList(LinkedList<ComparableByteArray> extractedSessionIDList) {
-        this.extractedSessionIDList = extractedSessionIDList;
-    }
-
-    /**
-     * Returns the List of Server Hello SessionIDs extracted by the TlsRngProbe
-     *
-     * @return LinkedList of ComparableByteArrays containing the Server Hello SessionIDs
-     */
-    public synchronized List<ComparableByteArray> getExtractedSessionIDList() {
-        return extractedSessionIDList;
-    }
-
-    /**
-     * Method used to set the List of RandomTypes which failed the Duplicate Test in the TlsRngAfterProbe
-     *
-     * @param duplicatesDetected
-     *                           LinkedList of RandomTypes
-     */
-    public synchronized void putRandomDuplicatesResult(LinkedList<RandomType> duplicatesDetected) {
-        this.randomTypeDuplicates = duplicatesDetected;
-    }
-
-    /**
-     * Method used to get the List of RandomTypes which failed the Duplicate Test in the TlsRngAfterProbe
-     *
-     * @return LinkedList of RandomTypes which failed the Duplicate Test
-     */
-    public synchronized LinkedList<RandomType> getRandomDuplicatesResult() {
-        return this.randomTypeDuplicates;
-    }
-
-    /**
-     * Method used to set the List of RandomTypes which failed the MonoBit Test in the TlsRngAfterProbe
-     *
-     * @param failedTypes
-     *                    LinkedList of RandomTypes which failed the MonoBitTest
-     */
-    public synchronized void putMonoBitResult(LinkedList<RandomType> failedTypes) {
-        this.failedMonoBitTypes = failedTypes;
-    }
-
-    /**
-     * Method used to get the List of RandomTypes which failed the MonoBit Test in the TlsRngAfterProbe
-     *
-     * @return LinkedList of RandomTypes which failed the MonoBitTest
-     */
-    public synchronized LinkedList<RandomType> getMonoBitResult() {
-        return failedMonoBitTypes;
-    }
-
-    /**
-     * Method used to set the List of RandomTypes which failed the Frequency Test in the TlsRngAfterProbe
-     *
-     * @param failedTypes
-     *                    LinkedList of Randomtyes which failed the Frequency Test
-     */
-    public synchronized void putFrequencyResult(LinkedList<RandomType> failedTypes) {
-        this.failedFrequencyTypes = failedTypes;
-    }
-
-    /**
-     * Method used to get the List of RandomTypes which failed the Frequency Test in the TlsRngAfterProbe
-     *
-     * @return LinkedList of RandomTypes which failed the Frequency Test
-     */
-    public synchronized LinkedList<RandomType> getFrequencyResult() {
-        return failedFrequencyTypes;
-    }
-
-    /**
-     * Method used to set the List of RandomTypes which failed the Runs Test in the TlsRngAfterProbe
-     *
-     * @param failedTypes
-     *                    LinkedList of RandomTypes which failed the Runs Test
-     */
-    public synchronized void putRunsResult(LinkedList<RandomType> failedTypes) {
-        this.failedRunsTypes = failedTypes;
-    }
-
-    /**
-     * Method used to get the List of RandomTypes which failed the Runs Test in the TlsRngAfterProbe
-     *
-     * @return LinkedList of RandomTypes which failed the Frequency Test
-     */
-    public synchronized LinkedList<RandomType> getRunsResult() {
-        return failedRunsTypes;
-    }
-
-    /**
-     * Method used to set the List of RandomTypes which failed the Longest Run within a Block Test in the
-     * TlsRngAfterProbe
-     *
-     * @param failedTypes
-     *                    LinkedList of RandomTypes which failed the Longest Run within a Block Test
-     */
-    public synchronized void putLongestRunBlockResult(LinkedList<RandomType> failedTypes) {
-        this.failedLongestRunBlockTypes = failedTypes;
-    }
-
-    /**
-     * Method used to get the List of RandomTypes which failed the Longest Run within a Block Test in the
-     * TlsRngAfterProbe
-     *
-     * @return LinkedList of RandomTypes which failed the Longest Run within a Block Test
-     */
-    public synchronized LinkedList<RandomType> getLongestRunBlockResult() {
-        return failedLongestRunBlockTypes;
-    }
-
-    /**
-     * Method used to set the List of RandomTypes which failed the discrete Fourier Test in the TlsRngAfterProbe
-     *
-     * @param failedTypes
-     *                    LinkedList of RandomTypes which failed the discrete Fourier Test
-     */
-    public synchronized void putFourierResult(LinkedList<RandomType> failedTypes) {
-        this.failedFourierTypes = failedTypes;
-    }
-
-    /**
-     * Method used to get the List of RandomTypes which failed the discrete Fourier Test in the TlsRngAfterProbe
-     *
-     * @return LinkedList of RandomTypes which failed the discrete Fourier Test
-     */
-    public synchronized LinkedList<RandomType> getFourierResult() {
-        return failedFourierTypes;
-    }
-
-    /**
-     * Method used to set the Map of RandomTypes with the associated percentage of failed Templates in the Overlapping
-     * Template Test in the TlsRngAfterProbe
-     *
-     * @param failedTypes
-     *                    LinkedList of RandomTypes which failed the Non Overlapping Template Test
-     */
-    public synchronized void putTemplatePercentageMap(Map<RandomType, Double> failedTypes) {
-        this.failedTemplateMap = failedTypes;
-    }
-
-    /**
-     * Method used to get the Map of RandomTypes with the associated percentage of failed Templates in the the Non
-     * Overlapping Template Test in the TlsRngAfterProbe
-     *
-     * @return Map of RandomTypes with percentage of failed Templates in the Non Overlapping Template Test
-     */
-    public synchronized Map<RandomType, Double> getTemplatePercentageMap() {
-        return failedTemplateMap;
-    }
-
-    /**
-     * * Method used to set the Linked List of RandomTypes which failed the Non Overlapping Template Test.
-     *
-     * @param failedTypes
-     *                    RandomTypes that failed the Non Overlapping Template Test.
-     */
-    public synchronized void putTemplateResult(LinkedList<RandomType> failedTypes) {
-        this.failedTemplateTypes = failedTypes;
-    }
-
-    /**
-     * * Method used to get the Linked List of RandomTypes which failed the Non Overlapping Template Test.
-     *
-     * @return Linked List of RandomTypes that failed the Non Overlapping Template Test
-     */
-    public synchronized LinkedList<RandomType> getTemplateResult() {
-        return failedTemplateTypes;
-    }
-
-    /**
-     * Method used to set the List of RandomTypes which failed the Approximate Entropy Test in the TlsRngAfterProbe
-     *
-     * @param failedTypes
-     *                    LinkedList of RandomTypes which failed the Approximate Entropy Test
-     */
-    public synchronized void putEntropyResult(LinkedList<RandomType> failedTypes) {
-        this.failedEntropyTypes = failedTypes;
-    }
-
-    /**
-     * Method used to get the List of RandomTypes which failed the Approximate Entropy Test in the TlsRngAfterProbe
-     *
-     * @return LinkedList of RandomTypes which failed the Approximate Entropy Test
-     */
-    public synchronized LinkedList<RandomType> getEntropyResult() {
-        return failedEntropyTypes;
-    }
-
-    public synchronized void putUnixtimeResult(boolean usesUnixtime) {
-        this.usesUnixtime = usesUnixtime;
-    }
-
-    public synchronized boolean getUnixtimeResult() {
-        if (usesUnixtime == null) {
-            return false;
-        } else {
-            return usesUnixtime;
-        }
-    }
-
-    public synchronized void putPrematureStopResult(boolean prematureStop) {
-        this.prematureRandomnessProbeStop = prematureStop;
-    }
-
-    public synchronized boolean getPrematureStopResult() {
-        if (prematureRandomnessProbeStop == null) {
-            return false;
-        } else {
-            return prematureRandomnessProbeStop;
-        }
     }
 
     public synchronized List<NamedGroup> getEcdsaPkGroupsStatic() {
@@ -1039,14 +706,6 @@ public class SiteReport extends Observable implements Serializable {
         this.ocspSctList = ocspSctList;
     }
 
-    public Boolean getSupportsRecordFragmentation() {
-        return supportsRecordFragmentation;
-    }
-
-    public void setSupportsRecordFragmentation(Boolean supportsRecordFragmentation) {
-        this.supportsRecordFragmentation = supportsRecordFragmentation;
-    }
-
     public int getMinimumRsaCertKeySize() {
         return minimumRsaCertKeySize;
     }
@@ -1061,5 +720,13 @@ public class SiteReport extends Observable implements Serializable {
 
     public void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
         this.minimumDssCertKeySize = minimumDssCertKeySize;
+    }
+
+    public List<EntropyReport> getEntropyReportList() {
+        return entropyReportList;
+    }
+
+    public void setEntropyReportList(List<EntropyReport> entropyReportList) {
+        this.entropyReportList = entropyReportList;
     }
 }

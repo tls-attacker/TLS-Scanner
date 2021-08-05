@@ -38,10 +38,8 @@ public class PoodleAfterProbe extends AfterProbe {
                         }
                     }
                 }
-                report.putResult(AnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.FALSE);
-            } else {
-                report.putResult(AnalyzedProperty.VULNERABLE_TO_POODLE, ssl3Result);
             }
+            report.putResult(AnalyzedProperty.VULNERABLE_TO_POODLE, Boolean.FALSE);
         } catch (Exception e) {
             vulnerable = TestResult.ERROR_DURING_TEST;
         }

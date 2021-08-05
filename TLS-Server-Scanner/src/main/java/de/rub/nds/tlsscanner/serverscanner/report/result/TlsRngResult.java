@@ -10,44 +10,16 @@
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
-import java.util.LinkedList;
 
 public class TlsRngResult extends ProbeResult {
 
-    private final LinkedList<ComparableByteArray> extractedIVList;
-
-    private final LinkedList<ComparableByteArray> extractedServerRandomList;
-
-    private final LinkedList<ComparableByteArray> extractedSessionIDList;
-
-    private final boolean usesUnixtime;
-
-    public TlsRngResult(LinkedList<ComparableByteArray> extractedIVList,
-        LinkedList<ComparableByteArray> extractedServerRandomList,
-        LinkedList<ComparableByteArray> extractedSessionIDList, boolean usesUnixtime) {
-        super(ProbeType.RNG);
-        this.extractedIVList = extractedIVList;
-        this.extractedServerRandomList = extractedServerRandomList;
-        this.extractedSessionIDList = extractedSessionIDList;
-        this.usesUnixtime = usesUnixtime;
+    public TlsRngResult() {
+        super(ProbeType.RANDOMNESS);
     }
 
     @Override
     public void mergeData(SiteReport report) {
-
-        report.putResult(AnalyzedProperty.RNG_EXTRACTED, TestResult.TRUE);
-
-        // Add extracted values to report regardless if the required amount was
-        // collected or not.
-        report.setExtractedIVList(extractedIVList);
-        report.setExtractedRandomList(extractedServerRandomList);
-        report.setExtractedSessionIDList(extractedSessionIDList);
-
-        report.putUnixtimeResult(usesUnixtime);
+        // Nothing to do here - all data analysis is done in the after probe
     }
 }

@@ -125,11 +125,11 @@ public class SiteReportPrinter {
         builder.append("Report for ");
         builder.append(report.getHost());
         builder.append("\n");
-        if (report.getServerIsAlive() == Boolean.FALSE) {
+        if (Objects.equals(report.getServerIsAlive(), Boolean.FALSE)) {
             builder.append("Cannot reach the Server. Is it online?");
             return builder.toString();
         }
-        if (report.getSupportsSslTls() == Boolean.FALSE) {
+        if (Objects.equals(report.getSupportsSslTls(), Boolean.FALSE)) {
             builder.append("Server does not seem to support SSL / TLS on the scanned port");
             return builder.toString();
         }
@@ -158,7 +158,6 @@ public class SiteReportPrinter {
         appendCertificateTransparency(builder);
         appendSession(builder);
         appendRenegotiation(builder);
-        appendHandshakeSimulation(builder);
         appendHttps(builder);
         appendRandomness(builder);
         appendPublicKeyIssues(builder);
@@ -180,19 +179,6 @@ public class SiteReportPrinter {
         appendInformationLeakTestList(builder, informationLeakTestList, "Direct Raccoon Results");
     }
 
-    public StringBuilder appendHandshakeSimulation(StringBuilder builder) {
-        if (report.getSimulatedClientList() != null) {
-            appendHsNormal(builder);
-            if (detail == ScannerDetail.DETAILED) {
-                appendHandshakeSimulationTable(builder);
-            } else if (detail == ScannerDetail.ALL) {
-                appendHandshakeSimulationTable(builder);
-                appendHandshakeSimulationDetails(builder);
-            }
-        }
-        return builder;
-    }
-
     public StringBuilder appendHsNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Overview");
         prettyAppend(builder, "Tested Clients", Integer.toString(report.getSimulatedClientList().size()));
@@ -212,31 +198,6 @@ public class SiteReportPrinter {
             prettyAppend(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()), AnsiColor.RED);
         }
         builder.append("\n");
-        return builder;
-    }
-
-    public StringBuilder appendHandshakeSimulationTable(StringBuilder builder) {
-        prettyAppendHeading(builder, "Handshake Simulation");
-        int counter = 0;
-        appendHandshakeSimulationTableRowHeading(builder, "Client", "Version", "CipherSuite", "Forward Secrecy",
-            "Server Public Key");
-        builder.append("\n");
-        for (SimulatedClientResult simulatedClient : report.getSimulatedClientList()) {
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || simulatedClient.getTlsClientConfig().isDefaultVersion()) {
-                if (simulatedClient.getHandshakeSuccessful()) {
-                    appendHandshakeTableRowSuccessful(builder, simulatedClient);
-                    counter++;
-                } else {
-                    appendHandshakeTableRowFailed(builder, simulatedClient);
-                    counter++;
-                }
-            }
-        }
-
-        if (counter == 0) {
-            prettyAppend(builder, "-");
-        }
         return builder;
     }
 
@@ -262,37 +223,6 @@ public class SiteReportPrinter {
         builder.append("| ").append(getCipherSuiteColor(simulatedClient.getSelectedCipherSuite(), hsCipherSuiteFormat));
         builder.append("| ").append(getForwardSecrecyColor(simulatedClient.getForwardSecrecy()));
         builder.append("| ").append(getServerPublicKeyParameterColor(simulatedClient));
-        builder.append("\n");
-        return builder;
-    }
-
-    public StringBuilder appendHandshakeTableRowFailed(StringBuilder builder, SimulatedClientResult simulatedClient) {
-        // String clientName = simulatedClient.getTlsClientConfig().getType() +
-        // ":"
-        // + simulatedClient.getTlsClientConfig().getVersion();
-        // builder.append(String.format("%s", getRedString(clientName,
-        // hsClientFormat)));
-        // if (!simulatedClient.getFailReasons().isEmpty()) {
-        // for (HandshakeFailureReasons reason :
-        // simulatedClient.getFailReasons()) {
-        // builder.append(String.format("| %s", getRedString(reason.getReason(),
-        // hsVersionFormat)));
-        // }
-        // } else {
-        // ReceivingAction action =
-        // simulatedClient.getState().getWorkflowTrace().getLastReceivingAction();
-        // if (action.getReceivedMessages().isEmpty()) {
-        // builder.append(String.format("| %s",
-        // getRedString("Failed - No answer from server", "%s")));
-        // } else {
-        // StringBuilder messages = new StringBuilder();
-        // for (ProtocolMessage message : action.getReceivedMessages()) {
-        // messages.append(message.toCompactString()).append(", ");
-        // }
-        // builder.append(String.format("| %s", getRedString("Failed - " +
-        // messages, "%s")));
-        // }
-        // }
         builder.append("\n");
         return builder;
     }
@@ -1546,75 +1476,35 @@ public class SiteReportPrinter {
     }
 
     public void appendRandomness(StringBuilder builder) {
-        prettyAppendHeading(builder, "Nonce");
-        // prettyAppendRandom(builder, "Random",
-        // report.getRandomEvaluationResult());
-        if (report.getRandomMinimalLengthResult() == RandomMinimalLengthResult.FULFILLED) {
-            prettyAppend(builder, "At least 100 KB of Random Data", "TRUE", AnsiColor.GREEN);
-        } else {
-            prettyAppend(builder, "At least 100 KB of Random Data", "FALSE", AnsiColor.RED);
-        }
-        if (report.getPrematureStopResult() == true) {
-            prettyAppend(builder, "Handshakelimit reached", "TRUE", AnsiColor.RED);
-        } else {
-            prettyAppend(builder, "Handshakelimit reached", "FALSE", AnsiColor.GREEN);
-        }
-        if (report.getUnixtimeResult() == true) {
-            prettyAppend(builder, "Uses Unixtime", "TRUE");
-        } else {
-            prettyAppend(builder, "Uses Unixtime", "FALSE");
-        }
-        if (!(report.getRandomDuplicatesResult() == null)
-            && report.getRandomDuplicatesResult().contains(RandomType.RANDOM)) {
-            prettyAppend(builder, "Server Hello Random", "DUPLICATES", AnsiColor.RED);
-        } else {
-            prettyAppend(builder, "Server Hello Random", "NO DUPLICATES", AnsiColor.GREEN);
-        }
-        if (!(report.getRandomDuplicatesResult() == null)
-            && report.getRandomDuplicatesResult().contains(RandomType.SESSION_ID)) {
-            prettyAppend(builder, "Session ID", "DUPLICATES", AnsiColor.RED);
-        } else {
-            prettyAppend(builder, "Session ID", "NO DUPLICATES", AnsiColor.GREEN);
-        }
-        if (!(report.getRandomDuplicatesResult() == null)
-            && report.getRandomDuplicatesResult().contains(RandomType.IV)) {
-            prettyAppend(builder, "IV", "DUPLICATES", AnsiColor.RED);
-        } else {
-            prettyAppend(builder, "IV", "NO DUPLICATES", AnsiColor.GREEN);
-        }
-        if (!(report.getMonoBitResult() == null)) {
-            prettyAppend(builder, "Types failing MONOBIT_TEST", report.getMonoBitResult().toString());
-        }
-        if (!(report.getFrequencyResult() == null)) {
-            prettyAppend(builder, "Types failing FREQUENCY_TEST", report.getFrequencyResult().toString());
-        }
-        if (!(report.getRunsResult() == null)) {
-            prettyAppend(builder, "Types failing RUNS_TEST", report.getRunsResult().toString());
-        }
-        if (!(report.getLongestRunBlockResult() == null)) {
-            prettyAppend(builder, "Types failing LONGEST_RUN_TEST", report.getLongestRunBlockResult().toString());
-        }
-        if (!(report.getFourierResult() == null)) {
-            prettyAppend(builder, "Types failing FOURIER_TEST", report.getFourierResult().toString());
-        }
-        if (!(report.getEntropyResult() == null)) {
-            prettyAppend(builder, "Types failing ENTROPY_TEST", report.getEntropyResult().toString());
-        }
-        if (!(report.getTemplateResult() == null)) {
-            prettyAppend(builder, "Types failing TEMPLATE_TEST", report.getTemplateResult().toString());
-        }
-        if (!(report.getTemplateResult() == null)) {
-            prettyAppend(builder, "Non Overlapping Template Test - Percentage of Failed Templates");
-            prettyAppend(builder, "Server Hello Random",
-                (int) (report.getTemplatePercentageMap().get(RandomType.RANDOM) * 100) + "%");
-            prettyAppend(builder, "Session ID",
-                (int) (report.getTemplatePercentageMap().get(RandomType.SESSION_ID) * 100) + "%");
-            prettyAppend(builder, "IV", (int) (report.getTemplatePercentageMap().get(RandomType.IV) * 100) + "%");
-            prettyAppend(builder, "Complete Sequence",
-                (int) (report.getTemplatePercentageMap().get(RandomType.COMPLETE_SEQUENCE) * 100) + "%");
+        if (report.getEntropyReportList() != null) {
+            prettyAppendHeading(builder, "Entropy");
+            prettyAppend(builder, "Uses Unixtime", AnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM);
 
-        }
+            for (EntropyReport entropyReport : report.getEntropyReportList()) {
+                prettyAppendSubheading(builder, entropyReport.getType().getHumanReadableName());
+                prettyAppend(builder, "Datapoints", "" + entropyReport.getNumberOfValues());
+                int bytesTotal = entropyReport.getNumberOfBytes();
+                if (bytesTotal > 32000) {
+                    prettyAppend(builder, "Bytes total", "" + bytesTotal + " (good)", AnsiColor.GREEN);
+                } else if (bytesTotal < 16000) {
+                    prettyAppend(builder, "Bytes total", "" + bytesTotal + " (not enough data collected)",
+                        AnsiColor.RED);
+                } else {
+                    prettyAppend(builder, "Bytes total", "" + bytesTotal + " (not siginificant)", AnsiColor.YELLOW);
 
+                }
+
+                prettyAppend(builder, "Duplicates", entropyReport.isDuplicates());
+                prettyAppend(builder, "Failed Entropy Test", entropyReport.isFailedEntropyTest());
+                prettyAppend(builder, "Failed Fourier Test", entropyReport.isFailedFourierTest());
+                prettyAppend(builder, "Failed Frequency Test", entropyReport.isFailedFrequencyTest());
+                prettyAppend(builder, "Failed Runs Test", entropyReport.isFailedRunsTest());
+                prettyAppend(builder, "Failed Longest Run Test", entropyReport.isFailedLongestRunTest());
+                prettyAppend(builder, "Failed Monobit Test", entropyReport.isFailedMonoBitTest());
+                prettyAppend(builder, "Failed TemplateTests",
+                    "" + (Math.round(entropyReport.getFailedTemplateTestPercentage() * 100.0) / 100.0) + " %");
+            }
+        }
     }
 
     public void appendPublicKeyIssues(StringBuilder builder) {
@@ -1864,6 +1754,10 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
         return builder.append(value == null ? "Unknown" : value).append("\n");
+    }
+
+    private StringBuilder prettyAppend(StringBuilder builder, String name, double value) {
+        return prettyAppend(builder, name, "" + value);
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String value, AnsiColor color) {
