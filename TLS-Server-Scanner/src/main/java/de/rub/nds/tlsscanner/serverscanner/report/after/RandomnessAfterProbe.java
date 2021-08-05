@@ -155,7 +155,7 @@ public class RandomnessAfterProbe extends AfterProbe {
 
     private List<ComparableByteArray> filterRandoms(List<ComparableByteArray> extractedValueList,
         boolean usesUnixTime) {
-        // Filter usenix Time
+        // Filter unix Time
         List<ComparableByteArray> filteredList = new LinkedList<>();
         for (ComparableByteArray random : extractedValueList) {
             if (Arrays.equals(random.getArray(), HELLO_RETRY_REQUEST_CONST)) {
