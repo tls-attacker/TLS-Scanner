@@ -123,18 +123,19 @@ public class RandomnessAfterProbe extends AfterProbe {
         byte[] bytesToAnalyze = convertToSingleByteArray(byteArrayList);
         StatisticalTests.approximateEntropyTest(HELLO_RETRY_REQUEST_CONST, LONGEST_RUN_BLOCK_SIZE);
         boolean duplicates = containsDuplicates(byteArrayList);
+        String bitString = StatisticalTests.byteArrayToBitString(bytesToAnalyze);
         boolean entropyTestPassed =
-            StatisticalTests.approximateEntropyTest(bytesToAnalyze, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE;
-        boolean discreteFourierTestPassed = StatisticalTests.discreteFourierTest(bytesToAnalyze) <= MINIMUM_P_VALUE;
+            StatisticalTests.approximateEntropyTest(bitString, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE;
+        boolean discreteFourierTestPassed = StatisticalTests.discreteFourierTest(bitString) <= MINIMUM_P_VALUE;
         boolean frequencyTestPassed =
-            StatisticalTests.frequencyTest(bytesToAnalyze, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE;
+            StatisticalTests.frequencyTest(bitString, FREQUENCY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE;
         boolean longestRunTestPassed =
-            StatisticalTests.longestRunWithinBlock(bytesToAnalyze, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE;
-        boolean runsTestPassed = StatisticalTests.runsTest(bytesToAnalyze) <= MINIMUM_P_VALUE;
+            StatisticalTests.longestRunWithinBlock(bitString, LONGEST_RUN_BLOCK_SIZE) <= MINIMUM_P_VALUE;
+        boolean runsTestPassed = StatisticalTests.runsTest(bitString) <= MINIMUM_P_VALUE;
         boolean monobitTestPassed =
-            StatisticalTests.frequencyTest(bytesToAnalyze, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE;
+            StatisticalTests.frequencyTest(bitString, MONOBIT_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE;
         double templateTests =
-            StatisticalTests.nonOverlappingTemplateTest(bytesToAnalyze, TEMPLATE_TEST_BLOCK_SIZE, MINIMUM_P_VALUE);
+            StatisticalTests.nonOverlappingTemplateTest(bitString, TEMPLATE_TEST_BLOCK_SIZE, MINIMUM_P_VALUE);
 
         return new EntropyReport(type, byteArrayList.size(), bytesToAnalyze.length, duplicates, frequencyTestPassed,
             monobitTestPassed, runsTestPassed, longestRunTestPassed, discreteFourierTestPassed, entropyTestPassed,
