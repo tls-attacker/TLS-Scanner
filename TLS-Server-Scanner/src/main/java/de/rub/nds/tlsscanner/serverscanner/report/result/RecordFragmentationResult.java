@@ -24,7 +24,6 @@ public class RecordFragmentationResult extends ProbeResult {
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.setSupportsRecordFragmentation(supported);
         report.putResult(AnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, supported);
     }
 

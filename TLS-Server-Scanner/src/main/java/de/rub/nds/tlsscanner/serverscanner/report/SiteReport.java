@@ -24,6 +24,7 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
@@ -34,7 +35,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.bleichenbacher.BleichenbacherTestResult;
@@ -42,17 +42,9 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Observable;
-import java.util.Set;
+import java.util.*;
 
 public class SiteReport extends Observable implements Serializable {
 
@@ -67,7 +59,6 @@ public class SiteReport extends Observable implements Serializable {
 
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
-    private Boolean supportsRecordFragmentation = null;
 
     // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
@@ -136,9 +127,9 @@ public class SiteReport extends Observable implements Serializable {
     private List<HpkpPin> normalHpkpPins;
     private List<HpkpPin> reportOnlyHpkpPins;
 
-    // Randomness
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
-    private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
+
+    private List<EntropyReport> entropyReportList;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -551,14 +542,6 @@ public class SiteReport extends Observable implements Serializable {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
-    public synchronized RandomEvaluationResult getRandomEvaluationResult() {
-        return randomEvaluationResult;
-    }
-
-    public synchronized void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
-        this.randomEvaluationResult = randomEvaluationResult;
-    }
-
     public synchronized Set<CommonDhValues> getUsedCommonDhValueList() {
         return usedCommonDhValueList;
     }
@@ -723,14 +706,6 @@ public class SiteReport extends Observable implements Serializable {
         this.ocspSctList = ocspSctList;
     }
 
-    public Boolean getSupportsRecordFragmentation() {
-        return supportsRecordFragmentation;
-    }
-
-    public void setSupportsRecordFragmentation(Boolean supportsRecordFragmentation) {
-        this.supportsRecordFragmentation = supportsRecordFragmentation;
-    }
-
     public int getMinimumRsaCertKeySize() {
         return minimumRsaCertKeySize;
     }
@@ -745,5 +720,13 @@ public class SiteReport extends Observable implements Serializable {
 
     public void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
         this.minimumDssCertKeySize = minimumDssCertKeySize;
+    }
+
+    public List<EntropyReport> getEntropyReportList() {
+        return entropyReportList;
+    }
+
+    public void setEntropyReportList(List<EntropyReport> entropyReportList) {
+        this.entropyReportList = entropyReportList;
     }
 }
