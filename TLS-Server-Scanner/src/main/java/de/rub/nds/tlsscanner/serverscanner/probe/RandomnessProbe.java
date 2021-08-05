@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -38,7 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A probe which samples random material from the target host using ServerHello randoms, SessionIDs and IVs.
+ * A probe which samples random material from the target host using ServerHello
+ * randoms, SessionIDs and IVs.
  */
 public class RandomnessProbe extends TlsProbe {
 
@@ -59,8 +59,8 @@ public class RandomnessProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)) {
+                && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
+                && report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS)) {
             return true;
         } else {
             return false;
@@ -92,7 +92,7 @@ public class RandomnessProbe extends TlsProbe {
                 if (!pair.getVersion().isTLS13()) {
                     score += 64; // random + session id
                     if (suite.isCBC()
-                        && (pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.TLS11)) {
+                            && (pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.TLS11)) {
                         score += AlgorithmResolver.getCipher(suite).getBlocksize();
                     }
                 } else {
@@ -138,8 +138,10 @@ public class RandomnessProbe extends TlsProbe {
         config.setHighestProtocolVersion(bestVersion);
         config.setDefaultClientSupportedCipherSuites(bestCipherSuite);
         config.setAddServerNameIndicationExtension(false);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddECPointFormatExtension(true);
+        if (bestCipherSuite.name().contains("ECDH")) {
+            config.setAddEllipticCurveExtension(true);
+            config.setAddECPointFormatExtension(true);
+        }
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setAddRenegotiationInfoExtension(false);
         config.setUseFreshRandom(true);
@@ -167,7 +169,7 @@ public class RandomnessProbe extends TlsProbe {
                 config.setAddExtendedRandomExtension(true);
             }
             WorkflowTrace workflowTrace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+                    .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
             if (scannerConfig.getApplicationProtocol() == ApplicationProtocol.HTTP) {
                 config.setHttpsParsingEnabled(true);
                 workflowTrace.addTlsAction(new SendAction(new HttpsRequestMessage(config)));
