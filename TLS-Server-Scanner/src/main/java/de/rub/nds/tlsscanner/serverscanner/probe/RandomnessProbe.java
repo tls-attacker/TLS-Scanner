@@ -31,7 +31,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.TlsRngResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.RandomnessResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 
 import java.util.LinkedList;
@@ -53,7 +53,7 @@ public class RandomnessProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         collectData(scannerConfig.getAdditionalRandomnessHandshakes());
-        return new TlsRngResult();
+        return new RandomnessResult();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class RandomnessProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new TlsRngResult();
+        return new RandomnessResult();
     }
 
     @Override

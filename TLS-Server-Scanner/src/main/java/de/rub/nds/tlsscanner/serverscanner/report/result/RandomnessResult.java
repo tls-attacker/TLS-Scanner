@@ -12,9 +12,9 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-public class TlsRngResult extends ProbeResult {
+public class RandomnessResult extends ProbeResult {
 
-    public TlsRngResult() {
+    public RandomnessResult() {
         super(ProbeType.RANDOMNESS);
     }
 
