@@ -7,17 +7,14 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.stats;
+package de.rub.nds.tlsscanner.serverscanner.constants;
 
-/**
- *
- * @author robert
- */
-public enum TrackableValueType {
-    RANDOM,
-    SESSION_ID,
-    DHE_PUBLICKEY,
-    ECDHE_PUBKEY,
-    GCM_NONCE_EXPLICIT,
-    CBC_IV,
+public enum ApplicationProtocol {
+    HTTP,
+    FTP,
+    SMTP,
+    IMAP,
+    LDAP,
+    UNKNOWN,
+    OTHER,
 }

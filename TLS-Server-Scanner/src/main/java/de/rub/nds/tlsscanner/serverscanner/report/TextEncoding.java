@@ -28,6 +28,11 @@ public class TextEncoding {
     }
 
     public String encode(TestResult result) {
-        return textEncodingMap.get(result);
+        String string = textEncodingMap.get(result);
+        if (string == null) {
+            return result.name();
+        } else {
+            return string;
+        }
     }
 }
