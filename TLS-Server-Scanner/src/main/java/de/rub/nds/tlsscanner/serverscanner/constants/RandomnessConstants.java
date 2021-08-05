@@ -9,10 +9,10 @@
 
 package de.rub.nds.tlsscanner.serverscanner.constants;
 
-/***
- * Constants used by the statistical tests employed by the TlsRngAfterProbe
+/**
+ * * Constants used by the statistical tests employed by the TlsRngAfterProbe
  */
-public class RngConstants {
+public class RandomnessConstants {
 
     // See NIST SP 800-22 2.4.4 (3)
     public final static int[][] LONGEST_RUN_VALUES = { { 8, 3, 16 }, { 128, 5, 49 }, { 10000, 6, 75 } };
@@ -50,10 +50,5 @@ public class RngConstants {
         { "111011010" }, { "111011100" }, { "111100000" }, { "111100010" }, { "111100100" }, { "111100110" },
         { "111101000" }, { "111101010" }, { "111101100" }, { "111101110" }, { "111110000" }, { "111110010" },
         { "111110100" }, { "111110110" }, { "111111000" }, { "111111010" }, { "111111100" }, { "111111110" } };
-
-    public enum TEMPLATE_CONSTANTS {
-        TEST_RESULT,
-        PERCENTAGE
-    }
 
 }

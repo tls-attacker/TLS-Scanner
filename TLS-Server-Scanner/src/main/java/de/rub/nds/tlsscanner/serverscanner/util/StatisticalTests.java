@@ -9,8 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.util;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.RngConstants;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
+import de.rub.nds.tlsscanner.serverscanner.constants.RandomnessConstants;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -309,7 +308,6 @@ public class StatisticalTests {
         int failedTests = 0;
         double fisherSum = 0.0;
         double pValue = 0.0;
-        Map<RngConstants.TEMPLATE_CONSTANTS, Double> result = new HashMap<>();
 
         if (!(templateSize == 9)) {
             LOGGER.debug("Currently only templateSize of 9 supported!");
@@ -329,7 +327,7 @@ public class StatisticalTests {
         double theoVar =
             blockSize * ((1.0 / pow(2, templateSize)) - (2.0 * templateSize - 1.0) / pow(2, 2.0 * templateSize));
 
-        for (int currentTemplate = 0; currentTemplate < RngConstants.TEMPLATE_NINE.length; currentTemplate++) {
+        for (int currentTemplate = 0; currentTemplate < RandomnessConstants.TEMPLATE_NINE.length; currentTemplate++) {
             int[] templateCount = new int[NUMBER_OF_BLOCKS];
             Matcher m = Pattern.compile(".{1," + blockSize + "}").matcher(fullSequence);
 
@@ -341,7 +339,7 @@ public class StatisticalTests {
                 // block
                 while (currentIndex <= (currentBlock.length() - templateSize)) {
                     String window = currentBlock.substring(currentIndex, currentIndex + templateSize);
-                    if (window.equals(RngConstants.TEMPLATE_NINE[currentTemplate][0])) {
+                    if (window.equals(RandomnessConstants.TEMPLATE_NINE[currentTemplate][0])) {
                         currentTemplateCount++;
                         currentIndex = currentIndex + templateSize;
                     } else {
@@ -379,20 +377,17 @@ public class StatisticalTests {
         } else {
             // Using Fishers Method we get Chi Square Distribution with
             // TEMPLATE_NINE.length * 2 degrees of Freedom.
-            pValue = Gamma.regularizedGammaQ(RngConstants.TEMPLATE_NINE.length, fisherResult / 2.0);
+            pValue = Gamma.regularizedGammaQ(RandomnessConstants.TEMPLATE_NINE.length, fisherResult / 2.0);
             LOGGER.debug("P Value is : " + pValue);
         }
         LOGGER.debug("Failed Tests : " + failedTests);
 
-        double failurePercent = (double) failedTests / RngConstants.TEMPLATE_NINE.length;
+        double failurePercent = (double) failedTests / RandomnessConstants.TEMPLATE_NINE.length;
         // Use 0 and 1 to represent False and True to use the Map
         double testPassed = 0;
         if (pValue >= minimum_p_value) {
             testPassed = 1;
         }
-        result.put(RngConstants.TEMPLATE_CONSTANTS.TEST_RESULT, testPassed);
-        result.put(RngConstants.TEMPLATE_CONSTANTS.PERCENTAGE, failurePercent);
-
         return failurePercent;
     }
 
@@ -482,21 +477,21 @@ public class StatisticalTests {
             return 0.0;
         }
 
-        if (blockLength == RngConstants.LONGEST_RUN_VALUES[0][0]) {
+        if (blockLength == RandomnessConstants.LONGEST_RUN_VALUES[0][0]) {
             category = 0;
             if (fullSequence.length() < 128) {
                 LOGGER.debug("Sequence is too short for this block size");
                 return pValue;
             }
         }
-        if (blockLength == RngConstants.LONGEST_RUN_VALUES[1][0]) {
+        if (blockLength == RandomnessConstants.LONGEST_RUN_VALUES[1][0]) {
             category = 1;
             if (fullSequence.length() < 6272) {
                 LOGGER.debug("Sequence is too short for this block size");
                 return pValue;
             }
         }
-        if (blockLength == RngConstants.LONGEST_RUN_VALUES[2][0]) {
+        if (blockLength == RandomnessConstants.LONGEST_RUN_VALUES[2][0]) {
             category = 2;
             if (fullSequence.length() < 750000) {
                 LOGGER.debug("Sequence is too short for this block size");
@@ -542,10 +537,10 @@ public class StatisticalTests {
             }
 
             // Count how many runs of certain length appear in blocks
-            int k = RngConstants.LONGEST_RUN_VALUES[category][1];
+            int k = RandomnessConstants.LONGEST_RUN_VALUES[category][1];
             int[][] categoryCount = new int[k + 1][2];
             for (int i = 0; i <= k; i++) {
-                categoryCount[i][0] = RngConstants.LONGEST_RUN_EXPECTATION[category][i];
+                categoryCount[i][0] = RandomnessConstants.LONGEST_RUN_EXPECTATION[category][i];
                 categoryCount[i][1] = 0;
             }
 
@@ -567,8 +562,8 @@ public class StatisticalTests {
             }
 
             // Chi-square fitting
-            double[] categoryProbabilities = RngConstants.LONGEST_RUN_PROBABILITIES[category];
-            int[] categoryExpectation = RngConstants.LONGEST_RUN_EXPECTATION[category];
+            double[] categoryProbabilities = RandomnessConstants.LONGEST_RUN_PROBABILITIES[category];
+            int[] categoryExpectation = RandomnessConstants.LONGEST_RUN_EXPECTATION[category];
             double numerator;
             double denominator;
             int currentCountIndex = 0;
