@@ -19,7 +19,7 @@ public enum RandomType {
     SESSION_ID("Session ID"),
     // Random byte string to ensure unique TLS Handshakes used in the
     // ServerHello Message
-    RANDOM(" Nonce (Random)");
+    RANDOM("Nonce (Random)");
 
     private String humanReadableName;
 
