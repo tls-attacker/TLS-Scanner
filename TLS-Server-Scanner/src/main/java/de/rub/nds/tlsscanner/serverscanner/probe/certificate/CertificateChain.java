@@ -226,7 +226,9 @@ public class CertificateChain {
                 CertPathValidationException[] causes = certPathValidationResult.getCauses();
                 if (causes != null) {
                     for (CertPathValidationException exception : causes) {
-                        if (exception.getCause().getMessage().contains("Unhandled Critical Extensions")) {
+                        if (exception.getMessage().contains("Unhandled Critical Extensions")
+                            || (exception.getCause() != null && exception.getCause().getMessage() != null
+                                && exception.getCause().getMessage().contains("Unhandled Critical Extensions"))) {
                             certificateIssues.add(CertificateIssue.UNHANDLED_CRITICAL_EXTENSIONS);
                         } else {
                             LOGGER.error("Unknown path validation issue", exception);

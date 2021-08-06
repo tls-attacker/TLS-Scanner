@@ -64,13 +64,13 @@ public class TlsFallbackScsvProbe extends TlsProbe {
         State state = new State(tlsConfig);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            LOGGER.info("Did not receive ServerHello Message");
-            LOGGER.info(state.getWorkflowTrace().toString());
+            LOGGER.debug("Did not receive ServerHello Message");
+            LOGGER.debug(state.getWorkflowTrace().toString());
             return new TlsFallbackScsvResult(TestResult.TRUE);
         } else {
-            LOGGER.info("Received ServerHelloMessage");
-            LOGGER.info(state.getWorkflowTrace().toString());
-            LOGGER.info("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
+            LOGGER.debug("Received ServerHelloMessage");
+            LOGGER.debug(state.getWorkflowTrace().toString());
+            LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
             return new TlsFallbackScsvResult(TestResult.FALSE);
         }
     }

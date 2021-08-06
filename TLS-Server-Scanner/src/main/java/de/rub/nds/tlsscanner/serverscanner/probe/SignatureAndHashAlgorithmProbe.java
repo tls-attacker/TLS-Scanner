@@ -188,7 +188,9 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION);
+        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
+            && (report.getVersions().contains(ProtocolVersion.TLS12)
+                || report.getVersions().contains(ProtocolVersion.TLS13));
     }
 
     @Override

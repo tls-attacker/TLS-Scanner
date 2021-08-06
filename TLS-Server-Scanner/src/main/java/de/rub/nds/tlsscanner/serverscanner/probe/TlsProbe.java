@@ -23,6 +23,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  *
@@ -62,13 +63,17 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     @Override
     public ProbeResult call() {
-        LOGGER.info("Executing:" + getProbeName());
+        ThreadContext.put("host",
+            this.scannerConfig.getClientDelegate().getSniHostname() == null
+                ? this.scannerConfig.getClientDelegate().getHost()
+                : this.scannerConfig.getClientDelegate().getSniHostname());
+        LOGGER.debug("Executing:" + getProbeName());
         long startTime = System.currentTimeMillis();
         ProbeResult result = null;
         try {
             result = executeTest();
         } catch (Throwable throwable) {
-            LOGGER.warn("Executing Probe Failed: ", throwable);
+            LOGGER.warn("Executing " + getProbeName() + " Probe Failed: ", throwable);
             result = this.getCouldNotExecuteResult();
         } finally {
             long stopTime = System.currentTimeMillis();
@@ -79,6 +84,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
                 LOGGER.warn("" + getProbeName() + " - is null result");
             }
             LOGGER.debug("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
+            ThreadContext.remove("host");
         }
         return result;
     }

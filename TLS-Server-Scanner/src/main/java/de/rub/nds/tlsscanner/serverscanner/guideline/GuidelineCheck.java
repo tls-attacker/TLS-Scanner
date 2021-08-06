@@ -13,6 +13,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import org.reflections.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -56,6 +57,9 @@ public abstract class GuidelineCheck {
         StringJoiner joiner = new StringJoiner("_");
         joiner.add(this.getClass().getSimpleName()).add(String.valueOf(requirementLevel));
         for (Field field : fields) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
             field.setAccessible(true);
             try {
                 Object result = field.get(this);

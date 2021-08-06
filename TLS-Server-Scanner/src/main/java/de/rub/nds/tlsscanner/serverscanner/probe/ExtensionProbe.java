@@ -23,6 +23,8 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
@@ -38,6 +40,8 @@ import java.util.Set;
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class ExtensionProbe extends TlsProbe {
+
+    private boolean supportsTls13;
 
     public ExtensionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.EXTENSIONS, config);
@@ -61,9 +65,11 @@ public class ExtensionProbe extends TlsProbe {
         if (commonExtensions != null) {
             allSupportedExtensions.addAll(commonExtensions);
         }
-        commonExtensions = getCommonExtension(ProtocolVersion.TLS13);
-        if (commonExtensions != null) {
-            allSupportedExtensions.addAll(commonExtensions);
+        if (this.supportsTls13) {
+            commonExtensions = getCommonExtension(ProtocolVersion.TLS13);
+            if (commonExtensions != null) {
+                allSupportedExtensions.addAll(commonExtensions);
+            }
         }
         return new ArrayList<>(allSupportedExtensions);
     }
@@ -128,11 +134,12 @@ public class ExtensionProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
+        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION);
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
+        this.supportsTls13 = TestResult.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3));
     }
 
     @Override
