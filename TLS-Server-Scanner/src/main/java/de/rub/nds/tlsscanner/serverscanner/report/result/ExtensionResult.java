@@ -60,7 +60,7 @@ public class ExtensionResult extends ProbeResult {
                     certStatusRequest = TestResult.TRUE;
                 }
                 if (type == ExtensionType.STATUS_REQUEST_V2) {
-                    certStatusRequest = TestResult.TRUE;
+                    certStatusRequestV2 = TestResult.TRUE;
                 }
             }
         } else {
