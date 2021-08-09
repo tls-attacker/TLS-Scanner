@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.rub.nds.tlsscanner.serverscanner.converter;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -16,9 +11,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-/**
- * @author robert
- */
 public class CertificateDeserializer extends StdDeserializer<Certificate> {
 
     public CertificateDeserializer() {

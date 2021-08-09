@@ -1,12 +1,3 @@
-/**
- * TLS-Crawler - A tool to perform large scale scans with the TLS-Scanner
- *
- * Copyright 2018-2021 Paderborn University, Ruhr University Bochum
- *
- * Licensed under Apache License, Version 2.0
- * http://www.apache.org/licenses/LICENSE-2.0.txt
- */
-
 package de.rub.nds.tlsscanner.serverscanner.converter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -23,6 +14,7 @@ public class Asn1EncodableSerializer extends StdSerializer<Asn1Encodable> {
 
     @Override
     public void serialize(Asn1Encodable asn1Encodable, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        // TODO NEED TO BE IMPLEMENTED
         jsonGenerator.writeNull();
     }
 }

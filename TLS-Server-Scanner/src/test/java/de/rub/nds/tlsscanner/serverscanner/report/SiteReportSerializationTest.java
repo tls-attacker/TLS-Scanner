@@ -65,13 +65,6 @@ public class SiteReportSerializationTest {
 	public void tearDown() {
 	}
 
-	@Test
-	public void testJSONWriter() {
-		SiteReportJSONprinter jsonReport = new SiteReportJSONprinter(report, config.getReportDetail());
-		ObjectNode jsonResult = jsonReport.getJSONReport();
-		assertNotNull(jsonResult.get("hostname").toString());
-	}
-
 	@SuppressWarnings("unused")
 	@Test
 	public void testCralwerSerializers() {
