@@ -1752,18 +1752,39 @@ public class SiteReportPrinter {
     }
 
     private String getGreenString(String value, String format) {
-        return (printColorful ? AnsiColor.GREEN.getCode() : AnsiColor.RESET.getCode())
-            + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        String greenString = new String();
+        if(printColorful) {
+            greenString += AnsiColor.GREEN.getCode();
+        }
+        greenString += String.format(format, value == null ? "Unknown" : value);
+        if(printColorful) {
+            greenString += AnsiColor.RESET.getCode();
+        }
+        return greenString;
     }
 
     private String getYellowString(String value, String format) {
-        return (printColorful ? AnsiColor.YELLOW.getCode() : AnsiColor.RESET.getCode())
-            + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        String yellowString = new String();
+        if(printColorful) {
+            yellowString += AnsiColor.YELLOW.getCode();
+        }
+        yellowString += String.format(format, value == null ? "Unknown" : value);
+        if(printColorful) {
+            yellowString += AnsiColor.RESET.getCode();
+        }
+        return yellowString;
     }
 
     private String getRedString(String value, String format) {
-        return (printColorful ? AnsiColor.RED.getCode() : AnsiColor.RESET.getCode())
-            + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        String redString = new String();
+        if(printColorful) {
+            redString += AnsiColor.RED.getCode();
+        }
+        redString += String.format(format, value == null ? "Unknown" : value);
+        if(printColorful) {
+            redString += AnsiColor.RESET.getCode();
+        }
+        return redString;
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
@@ -1827,11 +1848,14 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         depth = 0;
-
-        return builder
-            .append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode() : AnsiColor.RESET.getCode())
-            .append("\n------------------------------------------------------------\n").append(value).append("\n\n")
-            .append(AnsiColor.RESET.getCode());
+        if(printColorful) {
+            builder.append(AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode());
+        }
+        builder.append("\n------------------------------------------------------------\n").append(value).append("\n\n");
+        if(printColorful) {
+            builder.append(AnsiColor.RESET.getCode());
+        }
+        return builder;
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, String value) {
