@@ -50,19 +50,26 @@ public class PaddingOracleProbe extends TlsProbe {
         try {
             List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
             List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
-            for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
-                for (VersionSuiteListPair pair : serverSupportedSuites) {
-                    if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
-                        || pair.getVersion() == ProtocolVersion.TLS12) {
-                        for (CipherSuite suite : pair.getCipherSuiteList()) {
-                            if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
-                                PaddingOracleCommandConfig paddingOracleConfig =
-                                    createPaddingOracleCommandConfig(pair.getVersion(), suite);
-                                paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
-                                testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
-                            }
+            ProtocolVersion version = null;
+            CipherSuite cipherSuite = null;
+            versions: for (VersionSuiteListPair pair : serverSupportedSuites) {
+                if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
+                    || pair.getVersion() == ProtocolVersion.TLS12) {
+                    for (CipherSuite suite : pair.getCipherSuiteList()) {
+                        if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
+                            version = pair.getVersion();
+                            cipherSuite = suite;
+                            break versions;
                         }
                     }
+                }
+            }
+            if (cipherSuite != null) {
+                for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
+                    PaddingOracleCommandConfig paddingOracleConfig =
+                        createPaddingOracleCommandConfig(version, cipherSuite);
+                    paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
+                    testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
                 }
             }
             // If we found some difference in the server behavior we need to

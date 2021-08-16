@@ -511,7 +511,8 @@ public class SiteReport extends Observable implements Serializable {
     public synchronized void setPerformanceList(List<PerformanceData> performanceList) {
         this.performanceList = performanceList;
     }
-    
+
+    @JsonIgnore
     public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
         return paddingOracleTestResultList;
     }
