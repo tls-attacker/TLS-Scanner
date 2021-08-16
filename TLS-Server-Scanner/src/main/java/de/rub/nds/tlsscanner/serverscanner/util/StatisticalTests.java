@@ -138,10 +138,10 @@ public class StatisticalTests {
      * expectation.
      *
      * @param  bitString
-     *                      array of random byte values
+     *                     array of random byte values
      * @param  blockLength
-     *                      length of bit-patterns to check
-     * @return              P-Value of the test
+     *                     length of bit-patterns to check
+     * @return             P-Value of the test
      */
     public static Double approximateEntropyTest(String bitString, int blockLength) {
         // TODO: Select m and n such that m < log_2)(n) - 5

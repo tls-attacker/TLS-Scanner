@@ -123,7 +123,6 @@ public class TlsScanner {
         addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
         addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
         addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
-        afterList.add(new RandomnessAfterProbe());
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());
