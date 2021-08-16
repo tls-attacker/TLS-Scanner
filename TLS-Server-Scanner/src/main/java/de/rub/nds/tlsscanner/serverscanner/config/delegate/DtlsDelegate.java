@@ -44,9 +44,6 @@ public class DtlsDelegate extends Delegate {
 
     @Override
     public void applyDelegate(Config config) throws ConfigurationException {
-        // TODO: Nach dem testen löschen
-        Configurator.setAllLevels("de.rub.nds.tlsattacker", Level.INFO);
-
         if (dtls) {
             config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
             config.setDefaultSelectedProtocolVersion(ProtocolVersion.DTLS12);
