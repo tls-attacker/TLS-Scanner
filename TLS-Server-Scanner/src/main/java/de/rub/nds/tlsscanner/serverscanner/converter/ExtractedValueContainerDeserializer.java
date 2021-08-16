@@ -19,7 +19,6 @@ public class ExtractedValueContainerDeserializer extends StdDeserializer<Extract
     public ExtractedValueContainer deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
         TrackableValueType type = TrackableValueType.valueOf(node.get("type").asText());
-        //System.out.println(socketState);
         //TODO THIS HAS TO HAVE A FULL IMPLEMENTATION
         return new ExtractedValueContainer(type);
 

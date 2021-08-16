@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.tls.Certificate;
 
 import java.io.ByteArrayInputStream;
@@ -16,6 +18,8 @@ public class CertificateDeserializer extends StdDeserializer<Certificate> {
     public CertificateDeserializer() {
         super(Certificate.class);
     }
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     public Certificate deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
@@ -38,7 +42,7 @@ public class CertificateDeserializer extends StdDeserializer<Certificate> {
             Certificate cert = Certificate.parse(new ByteArrayInputStream(ArrayConverter.concatenate(ArrayConverter.intToBytes(stream.toByteArray().length, 3), stream.toByteArray())));
             return cert;
         } catch (Exception E) {
-            //E.printStackTrace();
+            LOGGER.error("Could not deserialize certificate", E);
             return null;
         }
     }

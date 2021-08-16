@@ -50,8 +50,6 @@ public class ResponseFingerprintDeserializer extends StdDeserializer<ResponseFin
                 messageList.add(new ChangeCipherSpecMessage());
             } else if (compactString.equals("APPLICATION")) {
                 messageList.add(new ApplicationMessage());
-            } else {
-                System.out.println(compactString);
             }
         }
         return new ResponseFingerprint(messageList, null, SocketState.valueOf(socketState));
