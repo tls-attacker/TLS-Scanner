@@ -29,13 +29,15 @@ public class StatsWriter {
         extractorList.add(new RandomExtractor());
         extractorList.add(new DhPublicKeyExtractor());
         extractorList.add(new EcPublicKeyExtractor());
+        extractorList.add(new CbcIvExtractor());
+        extractorList.add(new SessionIdExtractor());
     }
 
     public void extract(State state) {
         for (StatExtractor extractor : extractorList) {
             extractor.extract(state);
-            stateCounter++;
         }
+        stateCounter++;
     }
 
     public List<ExtractedValueContainer> getCumulatedExtractedValues() {

@@ -7,18 +7,10 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.probe.stats;
+package de.rub.nds.tlsscanner.serverscanner.report.result.statistics;
 
-/**
- *
- * @author robert
- */
-public enum TrackableValueType {
-    COOKIE,
-    RANDOM,
-    SESSION_ID,
-    DHE_PUBLICKEY,
-    ECDHE_PUBKEY,
-    GCM_NONCE_EXPLICIT,
-    CBC_IV,
+public enum RandomMinimalLengthResult {
+    FULFILLED,
+    NOT_FULFILLED,
+    NOT_ANALYZED
 }

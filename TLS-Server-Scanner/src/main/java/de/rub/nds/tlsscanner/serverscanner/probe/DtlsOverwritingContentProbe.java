@@ -59,7 +59,7 @@ public class DtlsOverwritingContentProbe extends TlsProbe {
 
     private TestResult hasOverwritingContentBug() {
         Config config = getConfig();
-        config.setAddRetransmissionsToWorkflowTrace(true);
+        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         config.setHighestProtocolVersion(serverSupportedSuites.get(0).getVersion());
         config.setDefaultClientSupportedCipherSuites(serverSupportedSuites.get(0).getCipherSuiteList().get(0));

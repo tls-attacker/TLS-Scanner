@@ -204,6 +204,7 @@ public enum AnalyzedProperty {
     HAS_GREASE_CIPHER_SUITE_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     HAS_GREASE_NAMED_GROUP_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
     HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE(AnalyzedPropertyCategory.QUIRKS),
+    USES_UNIX_TIMESTAMPS_IN_RANDOM(AnalyzedPropertyCategory.QUIRKS),
     SENDS_HELLO_RETRY_REQUEST(AnalyzedPropertyCategory.BEST_PRACTICES),
     ISSUES_COOKIE_IN_HELLO_RETRY(AnalyzedPropertyCategory.EXTENSIONS),
     VULNERABLE_TO_SESSION_TICKET_ZERO_KEY(AnalyzedPropertyCategory.ATTACKS),
@@ -268,7 +269,7 @@ public enum AnalyzedProperty {
     HAS_RETRANSMISSION_BUG(AnalyzedPropertyCategory.QUIRKS),
     OVERWRITES_CONTENT(AnalyzedPropertyCategory.QUIRKS);
 
-    private AnalyzedPropertyCategory category;
+    private final AnalyzedPropertyCategory category;
 
     AnalyzedProperty(AnalyzedPropertyCategory category) {
         this.category = category;

@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.rub.nds.tlsscanner</groupId>
         <artifactId>TLS-Scanner</artifactId>
-        <version>4.1.0</version>
+        <version>4.2.0-SNAPSHOT</version>
     </parent>
     <name>TLS-Client-Scanner</name>
     <packaging>jar</packaging>
@@ -23,6 +23,8 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>de.rub.nds.tlsscanner.clientscanner.Main</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
                 </configuration>

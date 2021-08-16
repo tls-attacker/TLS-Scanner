@@ -3,8 +3,53 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TLS-Scanner</artifactId>
     <groupId>de.rub.nds.tlsscanner</groupId>
-    <version>4.1.0</version>
+    <version>4.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>TLS-Scanner</name>
+    <url>https://github.com/tls-attacker/TLS-Scanner</url>
+    <description>TLS-Scanner is a tool created by the Chair for Network and Data Security from the Ruhr-University Bochum to assist pentesters and security researchers in the evaluation of TLS Server configurations.</description>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>rub-nexus</id>
+            <name>TLS-Attacker Internal Repository</name>
+            <url>https://hydrogen.cloud.nds.rub.de/nexus/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <!-- Information to version control system -->
+    <scm>
+        <connection>scm:git:git://github.com/tls-attacker/TLS-Scanner.git</connection>
+        <developerConnection>scm:git:ssh://github.com/tls-attacker/TLS-Scanner.git</developerConnection>
+        <url>https://github.com/tls-attacker/TLS-Scanner/tree/master</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>ic0ns</id>
+            <name>Robert Merget</name>
+            <email>robert.merget@rub.de</email>
+            <url>http://www.nds.rub.de/</url>
+            <organization>NDS</organization>
+            <organizationUrl>http://www.nds.rub.de</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <modules>
         <module>TLS-Scanner-Core</module>
         <module>TLS-Server-Scanner</module>
@@ -24,17 +69,17 @@
         <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>TLS-Core</artifactId>
-            <version>3.7.0-SNAPSHOT</version>
+            <version>3.8.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tlsattacker</groupId>
             <artifactId>Attacks</artifactId>
-            <version>3.7.0-SNAPSHOT</version>
+            <version>3.8.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -74,6 +119,12 @@
             <artifactId>joda-time</artifactId>
             <version>2.10.5</version>
         </dependency>
+	<dependency>
+            <groupId>com.github.wendykierp</groupId>
+            <artifactId>JTransforms</artifactId>
+            <version>3.1</version>
+    	    <classifier>with-dependencies</classifier>
+ 	</dependency>
     </dependencies>
     <profiles>
         <profile>
@@ -280,6 +331,11 @@
                     <!-- deploy with the following command: mvn nexus-staging:release -->
                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
             </plugin>
         </plugins>
     </build>

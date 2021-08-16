@@ -62,7 +62,7 @@ public class DtlsDelegate extends Delegate {
 
             config.setWorkflowExecutorType(WorkflowExecutorType.DTLS);
             config.setFinishWithCloseNotify(true);
-            config.setIgnoreRetransmittedCss(true);
+            config.setIgnoreRetransmittedCssInDtls(true);
         }
     }
 }

@@ -64,7 +64,7 @@ public class DtlsSequenceNumberProbe extends TlsProbe {
 
     private TestResult doesRetransmissions() {
         Config config = getConfig();
-        config.setAddRetransmissionsToWorkflowTrace(true);
+        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
