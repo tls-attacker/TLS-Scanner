@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.tlsscanner.serverscanner.constants.CertificateLength;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.tls.Certificate;
@@ -35,11 +36,11 @@ public class CertificateDeserializer extends StdDeserializer<Certificate> {
                 split = split.replace(" ", "");
 
                 byte[] cert = ArrayConverter.hexStringToByteArray(split);
-                stream.write(ArrayConverter.intToBytes(cert.length, 2));
+                stream.write(ArrayConverter.intToBytes(cert.length, CertificateLength.TWO.getLength()));
                 stream.write(cert);
                 i++;
             }
-            Certificate cert = Certificate.parse(new ByteArrayInputStream(ArrayConverter.concatenate(ArrayConverter.intToBytes(stream.toByteArray().length, 3), stream.toByteArray())));
+            Certificate cert = Certificate.parse(new ByteArrayInputStream(ArrayConverter.concatenate(ArrayConverter.intToBytes(stream.toByteArray().length, CertificateLength.THREE.getLength()), stream.toByteArray())));
             return cert;
         } catch (Exception E) {
             LOGGER.error("Could not deserialize certificate", E);
