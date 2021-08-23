@@ -10,46 +10,47 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
+import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
-import org.bouncycastle.asn1.x509.Extensions;
-import org.bouncycastle.asn1.x509.KeyPurposeId;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
 public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck {
 
-    private String purpose;
+    private ExtendedKeyUsageCertificateCheck() {
+        super(null, null);
+    }
+
+    public ExtendedKeyUsageCertificateCheck(String name, RequirementLevel requirementLevel) {
+        super(name, requirementLevel);
+    }
+
+    public ExtendedKeyUsageCertificateCheck(String name, RequirementLevel requirementLevel,
+        boolean onlyOneCertificate) {
+        super(name, requirementLevel, onlyOneCertificate);
+    }
+
+    public ExtendedKeyUsageCertificateCheck(String name, RequirementLevel requirementLevel,
+        GuidelineCheckCondition condition, boolean onlyOneCertificate) {
+        super(name, requirementLevel, condition, onlyOneCertificate);
+    }
 
     @Override
-    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
-        CertificateReport report = chain.getCertificateReportList().get(0);
-        Extensions extensions = report.convertToCertificateHolder().getExtensions();
-        if (extensions == null) {
-            result.append("Certificate is missing extensions block.");
-            return GuidelineCheckStatus.FAILED;
-        }
-        ExtendedKeyUsage extension = ExtendedKeyUsage.fromExtensions(extensions);
-        if (extension == null) {
-            result.append("Certificate is missing Extended Key Usage extension.");
-            return GuidelineCheckStatus.FAILED;
-        }
-        KeyPurposeId id = KeyPurposeId.getInstance(new ASN1ObjectIdentifier(this.purpose));
-        if (!extension.hasKeyPurposeId(id)) {
-            result.append("Missing purpose id " + id);
-            return GuidelineCheckStatus.FAILED;
-        }
-        result.append("Extended Key Usage has purpose " + id);
-        return GuidelineCheckStatus.PASSED;
+    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+        return new GuidelineCheckResult(
+            TestResult.of(chain.getCertificateReportList().get(0).getExtendedKeyUsageServerAuth())) {
+            @Override
+            public String display() {
+                return TestResult.TRUE.equals(getResult()) ? "Certificate has extended key usage for server auth."
+                    : "Certificate is missing extended key usage for server auth.";
+            }
+        };
     }
 
-    public String getPurpose() {
-        return purpose;
+    @Override
+    public String getId() {
+        return "ExtendedKeyUsage_" + getRequirementLevel();
     }
 
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
-    }
 }

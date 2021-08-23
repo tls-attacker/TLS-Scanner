@@ -12,17 +12,19 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.List;
 
 @XmlRootElement(name = "guideline")
+@XmlType(propOrder = { "name", "link", "checks" })
 public class Guideline implements Serializable {
 
     private String name;
     private String link;
     private List<GuidelineCheck> checks;
 
-    public Guideline() {
+    private Guideline() {
     }
 
     public Guideline(String name, String link, List<GuidelineCheck> checks) {

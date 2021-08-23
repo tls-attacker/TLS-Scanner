@@ -10,8 +10,8 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,11 +26,11 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
         report
             .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
 
-        SignatureAndHashAlgorithmsCertGuidelineCheck check = new SignatureAndHashAlgorithmsCertGuidelineCheck();
-        check.setAlgorithms(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
-        check.evaluate(report, result);
-        Assert.assertEquals(GuidelineCheckStatus.PASSED, result.getStatus());
+        SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
+            new SignatureAndHashAlgorithmsCertificateGuidelineCheck(null, null,
+                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+        GuidelineCheckResult result = check.evaluate(report);
+        Assert.assertEquals(TestResult.TRUE, result.getResult());
     }
 
     @Test
@@ -39,10 +39,10 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
         report
             .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
 
-        SignatureAndHashAlgorithmsCertGuidelineCheck check = new SignatureAndHashAlgorithmsCertGuidelineCheck();
-        check.setAlgorithms(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
-        check.evaluate(report, result);
-        Assert.assertEquals(GuidelineCheckStatus.FAILED, result.getStatus());
+        SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
+            new SignatureAndHashAlgorithmsCertificateGuidelineCheck(null, null,
+                Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+        GuidelineCheckResult result = check.evaluate(report);
+        Assert.assertEquals(TestResult.FALSE, result.getResult());
     }
 }

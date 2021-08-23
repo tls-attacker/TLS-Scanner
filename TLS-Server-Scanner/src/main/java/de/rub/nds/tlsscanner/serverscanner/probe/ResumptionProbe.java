@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.EncryptedExtensionsMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -104,6 +105,7 @@ public class ResumptionProbe extends TlsProbe {
             return TestResult.COULD_NOT_TEST;
         }
         ServerHelloMessage second = hellos.get(1);
+        KeyShareExtensionMessage keyShareExtensionMessage = second.getExtension(KeyShareExtensionMessage.class);
         return second.containsExtension(ExtensionType.KEY_SHARE) ? TestResult.TRUE : TestResult.FALSE;
     }
 

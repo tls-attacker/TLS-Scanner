@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.tlsscanner.serverscanner.ConsoleLogger;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
@@ -18,27 +17,30 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateVersionGu
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtendedKeyUsageCertificateCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HasPublicKeyCertificateCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmStrengthCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.HashAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeyUsageCertificateCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsCertGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureCertificateCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateSignatureCheck;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,17 +49,18 @@ import java.util.stream.Collectors;
 
 public class GuidelineIO {
 
-    public static final List<String> GUIDELINES = Arrays.asList("BSI-TR-02102-2.xml", "NIST.SP.800-52r2.xml");
+    private static final Logger LOGGER = LogManager.getLogger(GuidelineIO.class.getName());
+    public static final List<String> GUIDELINES = Arrays.asList("bsi.xml", "nist.xml");
 
-    private static final List<Class<? extends GuidelineCheck>> CHECKS = Arrays.asList(
-        AnalyzedPropertyGuidelineCheck.class, CertificateAgilityGuidelineCheck.class,
-        CertificateCurveGuidelineCheck.class, CertificateValidityGuidelineCheck.class,
-        CertificateVersionGuidelineCheck.class, CipherSuiteGuidelineCheck.class, ExtendedKeyUsageCertificateCheck.class,
-        ExtensionGuidelineCheck.class, HashAlgorithmsGuidelineCheck.class, HashAlgorithmStrengthCheck.class,
-        HasPublicKeyCertificateCheck.class, KeySizeCertGuidelineCheck.class, KeyUsageCertificateCheck.class,
-        NamedGroupsGuidelineCheck.class, SignatureAlgorithmsCertGuidelineCheck.class,
-        SignatureAlgorithmsGuidelineCheck.class, SignatureAndHashAlgorithmsGuidelineCheck.class,
-        SignatureAndHashAlgorithmsCertGuidelineCheck.class, SignatureCertificateCheck.class);
+    private static final List<Class<? extends GuidelineCheck>> CHECKS =
+        Arrays.asList(AnalyzedPropertyGuidelineCheck.class, CertificateAgilityGuidelineCheck.class,
+            CertificateCurveGuidelineCheck.class, CertificateValidityGuidelineCheck.class,
+            CertificateVersionGuidelineCheck.class, CipherSuiteGuidelineCheck.class,
+            ExtendedKeyUsageCertificateCheck.class, ExtensionGuidelineCheck.class, HashAlgorithmsGuidelineCheck.class,
+            HashAlgorithmStrengthCheck.class, KeySizeCertGuidelineCheck.class, KeyUsageCertificateCheck.class,
+            NamedGroupsGuidelineCheck.class, SignatureAlgorithmsCertificateGuidelineCheck.class,
+            SignatureAlgorithmsGuidelineCheck.class, SignatureAndHashAlgorithmsGuidelineCheck.class,
+            SignatureAndHashAlgorithmsCertificateGuidelineCheck.class, CertificateSignatureCheck.class);
 
     public static Guideline readGuideline(String resource) throws IOException, JAXBException, XMLStreamException {
         List<Class<?>> classes = new ArrayList<>(CHECKS);
@@ -74,11 +77,19 @@ public class GuidelineIO {
         }
     }
 
+    public static void writeGuideline(Guideline guideline, Path path) throws JAXBException {
+        List<Class<?>> classes = new ArrayList<>(CHECKS);
+        classes.add(Guideline.class);
+        JAXBContext jc = JAXBContext.newInstance(classes.toArray(new Class[0]));
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.marshal(guideline, path.toFile());
+    }
+
     private static Guideline readGuidelineUnchecked(String resource) {
         try {
             return readGuideline(resource);
         } catch (IOException | XMLStreamException | JAXBException exc) {
-            ConsoleLogger.CONSOLE.warn("Failed reading Guideline.", exc);
+            LOGGER.warn("Failed reading Guideline.", exc);
         }
         return null;
     }

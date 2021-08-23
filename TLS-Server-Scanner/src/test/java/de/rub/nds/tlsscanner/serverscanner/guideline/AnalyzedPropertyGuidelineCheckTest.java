@@ -13,7 +13,6 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuid
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,15 +23,12 @@ public class AnalyzedPropertyGuidelineCheckTest {
         SiteReport report = new SiteReport("test");
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
-        AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck();
-        check.setProperty(AnalyzedProperty.SUPPORTS_TLS13_PSK);
-        check.setResult(TestResult.TRUE);
+        AnalyzedPropertyGuidelineCheck check =
+            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
 
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
+        GuidelineCheckResult result = check.evaluate(report);
 
-        check.evaluate(report, result);
-
-        Assert.assertEquals(GuidelineCheckStatus.PASSED, result.getStatus());
+        Assert.assertEquals(TestResult.TRUE, result.getResult());
     }
 
     @Test
@@ -40,29 +36,23 @@ public class AnalyzedPropertyGuidelineCheckTest {
         SiteReport report = new SiteReport("test");
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
-        AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck();
-        check.setProperty(AnalyzedProperty.SUPPORTS_TLS13_PSK);
-        check.setResult(TestResult.FALSE);
+        AnalyzedPropertyGuidelineCheck check =
+            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.FALSE);
 
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
+        GuidelineCheckResult result = check.evaluate(report);
 
-        check.evaluate(report, result);
-
-        Assert.assertEquals(GuidelineCheckStatus.FAILED, result.getStatus());
+        Assert.assertEquals(TestResult.FALSE, result.getResult());
     }
 
     @Test
     public void testUncertain() {
         SiteReport report = new SiteReport("test");
 
-        AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck();
-        check.setProperty(AnalyzedProperty.SUPPORTS_TLS13_PSK);
-        check.setResult(TestResult.FALSE);
+        AnalyzedPropertyGuidelineCheck check =
+            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.FALSE);
 
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
+        GuidelineCheckResult result = check.evaluate(report);
 
-        check.evaluate(report, result);
-
-        Assert.assertEquals(GuidelineCheckStatus.UNCERTAIN, result.getStatus());
+        Assert.assertEquals(TestResult.NOT_TESTED_YET, result.getResult());
     }
 }

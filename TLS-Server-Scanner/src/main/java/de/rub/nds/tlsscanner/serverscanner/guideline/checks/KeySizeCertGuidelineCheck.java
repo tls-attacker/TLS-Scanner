@@ -11,121 +11,181 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
+import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeCertGuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeySizeData;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
 
-    private Integer dsa;
-    private Integer rsa;
-    private Integer ec;
-    private Integer dh;
+    private Integer minimumDsaKeyLength;
+    private Integer minimumRsaKeyLength;
+    private Integer minimumEcKeyLength;
+    private Integer minimumDhKeyLength;
+
+    private KeySizeCertGuidelineCheck() {
+        super(null, null);
+    }
+
+    public KeySizeCertGuidelineCheck(String name, RequirementLevel requirementLevel, Integer minimumDsaKeyLength,
+        Integer minimumRsaKeyLength, Integer minimumEcKeyLength, Integer minimumDhKeyLength) {
+        super(name, requirementLevel);
+        this.minimumDsaKeyLength = minimumDsaKeyLength;
+        this.minimumRsaKeyLength = minimumRsaKeyLength;
+        this.minimumEcKeyLength = minimumEcKeyLength;
+        this.minimumDhKeyLength = minimumDhKeyLength;
+    }
+
+    public KeySizeCertGuidelineCheck(String name, RequirementLevel requirementLevel, boolean onlyOneCertificate,
+        Integer minimumDsaKeyLength, Integer minimumRsaKeyLength, Integer minimumEcKeyLength,
+        Integer minimumDhKeyLength) {
+        super(name, requirementLevel, onlyOneCertificate);
+        this.minimumDsaKeyLength = minimumDsaKeyLength;
+        this.minimumRsaKeyLength = minimumRsaKeyLength;
+        this.minimumEcKeyLength = minimumEcKeyLength;
+        this.minimumDhKeyLength = minimumDhKeyLength;
+    }
+
+    public KeySizeCertGuidelineCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition,
+        boolean onlyOneCertificate, Integer minimumDsaKeyLength, Integer minimumRsaKeyLength,
+        Integer minimumEcKeyLength, Integer minimumDhKeyLength) {
+        super(name, requirementLevel, condition, onlyOneCertificate);
+        this.minimumDsaKeyLength = minimumDsaKeyLength;
+        this.minimumRsaKeyLength = minimumRsaKeyLength;
+        this.minimumEcKeyLength = minimumEcKeyLength;
+        this.minimumDhKeyLength = minimumDhKeyLength;
+    }
 
     @Override
-    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult sb) {
-        int passCount = 0;
-        int uncertainCount = 0;
-        int failedCount = 0;
+    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+        boolean passFlag = false;
+        boolean uncertainFlag = false;
+        boolean failedFlag = false;
+        KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult();
         for (CertificateReport report : chain.getCertificateReportList()) {
             if (!(report.getPublicKey() instanceof CustomPublicKey)) {
-                uncertainCount++;
+                uncertainFlag = true;
                 continue;
             }
             CustomPublicKey key = (CustomPublicKey) report.getPublicKey();
-            sb.append(report.getPublicKey().getAlgorithm()).append(" Key Size: ").append(key.keySize());
             switch (report.getPublicKey().getAlgorithm().toUpperCase(Locale.ENGLISH)) {
                 case "DSA":
-                    if (this.dsa != null && key.keySize() < this.dsa) {
-                        sb.append('<').append(this.dsa).append('\n');
-                        failedCount++;
-                    } else {
-                        sb.append('≥').append(this.dsa).append('\n');
-                        passCount++;
+                    if (this.minimumDsaKeyLength != null) {
+                        result.addKeySize(new KeySizeData(report.getPublicKey().getAlgorithm(),
+                            this.minimumDsaKeyLength, key.keySize()));
+                        if (key.keySize() < this.minimumDsaKeyLength) {
+                            failedFlag = true;
+                        } else {
+                            passFlag = true;
+                        }
                     }
                     break;
                 case "RSA":
-                    if (this.rsa != null && key.keySize() < this.rsa) {
-                        sb.append('<').append(this.rsa).append('\n');
-                        failedCount++;
-                    } else {
-                        sb.append('≥').append(this.rsa).append('\n');
-                        passCount++;
+                    if (this.minimumRsaKeyLength != null) {
+                        result.addKeySize(new KeySizeData(report.getPublicKey().getAlgorithm(),
+                            this.minimumRsaKeyLength, key.keySize()));
+                        if (key.keySize() < this.minimumRsaKeyLength) {
+                            failedFlag = true;
+                        } else {
+                            passFlag = true;
+                        }
                     }
+
                     break;
                 case "EC":
-                    if (this.ec != null && key.keySize() < this.ec) {
-                        sb.append('<').append(this.ec).append('\n');
-                        failedCount++;
-                    } else {
-                        sb.append('≥').append(this.ec).append('\n');
-                        passCount++;
+                    if (this.minimumEcKeyLength != null) {
+                        result.addKeySize(new KeySizeData(report.getPublicKey().getAlgorithm(), this.minimumEcKeyLength,
+                            key.keySize()));
+                        if (key.keySize() < this.minimumEcKeyLength) {
+                            failedFlag = true;
+                        } else {
+                            passFlag = true;
+                        }
                     }
                     break;
                 case "DH":
-                    if (this.dh != null && key.keySize() < this.dh) {
-                        sb.append('<').append(this.dh).append('\n');
-                        failedCount++;
-                    } else {
-                        sb.append('≥').append(this.dh).append('\n');
-                        passCount++;
+                    if (this.minimumDhKeyLength != null) {
+                        result.addKeySize(new KeySizeData(report.getPublicKey().getAlgorithm(), this.minimumDhKeyLength,
+                            key.keySize()));
+                        if (key.keySize() < this.minimumDhKeyLength) {
+                            failedFlag = true;
+                        } else {
+                            passFlag = true;
+                        }
                     }
                     break;
             }
         }
-        if (failedCount > 0) {
-            return GuidelineCheckStatus.FAILED;
+        if (failedFlag) {
+            result.setResult(TestResult.FALSE);
+        } else if (uncertainFlag || !passFlag) {
+            result.setResult(TestResult.UNCERTAIN);
+        } else {
+            result.setResult(TestResult.TRUE);
         }
-        if (uncertainCount > 0 || passCount == 0) {
-            return GuidelineCheckStatus.UNCERTAIN;
-        }
-        return GuidelineCheckStatus.PASSED;
+        return result;
     }
 
     @Override
-    public void evaluate(SiteReport report, GuidelineCheckResult result) {
-        if (report.getWeakestDhStrength() != null && this.dh != null) {
-            result.append(String.format("Weakest DH size %d<%d", report.getWeakestDhStrength(), this.dh));
-            if (report.getWeakestDhStrength() < this.dh) {
-                result.updateStatus(GuidelineCheckStatus.FAILED);
+    public GuidelineCheckResult evaluate(SiteReport report) {
+        if (report.getWeakestDhStrength() != null && this.minimumDhKeyLength != null) {
+            if (report.getWeakestDhStrength() < this.minimumDhKeyLength) {
+                return new GuidelineCheckResult(TestResult.FALSE) {
+                    @Override
+                    public String display() {
+                        return String.format("Weakest DH size %d<%d", report.getWeakestDhStrength(),
+                            minimumDhKeyLength);
+                    }
+                };
             }
         }
-        super.evaluate(report, result);
+        return super.evaluate(report);
     }
 
-    public Integer getDsa() {
-        return dsa;
+    @Override
+    public String getId() {
+        return "KeySizeCert_" + getRequirementLevel() + "_" + minimumDsaKeyLength + "_" + minimumRsaKeyLength + "_"
+            + minimumEcKeyLength + "_" + minimumDhKeyLength;
     }
 
-    public void setDsa(Integer dsa) {
-        this.dsa = dsa;
+    public Integer getMinimumDsaKeyLength() {
+        return minimumDsaKeyLength;
     }
 
-    public Integer getRsa() {
-        return rsa;
+    public void setMinimumDsaKeyLength(Integer minimumDsaKeyLength) {
+        this.minimumDsaKeyLength = minimumDsaKeyLength;
     }
 
-    public void setRsa(Integer rsa) {
-        this.rsa = rsa;
+    public Integer getMinimumRsaKeyLength() {
+        return minimumRsaKeyLength;
     }
 
-    public Integer getEc() {
-        return ec;
+    public void setMinimumRsaKeyLength(Integer minimumRsaKeyLength) {
+        this.minimumRsaKeyLength = minimumRsaKeyLength;
     }
 
-    public void setEc(Integer ec) {
-        this.ec = ec;
+    public Integer getMinimumEcKeyLength() {
+        return minimumEcKeyLength;
     }
 
-    public Integer getDh() {
-        return dh;
+    public void setMinimumEcKeyLength(Integer minimumEcKeyLength) {
+        this.minimumEcKeyLength = minimumEcKeyLength;
     }
 
-    public void setDh(Integer dh) {
-        this.dh = dh;
+    public Integer getMinimumDhKeyLength() {
+        return minimumDhKeyLength;
+    }
+
+    public void setMinimumDhKeyLength(Integer minimumDhKeyLength) {
+        this.minimumDhKeyLength = minimumDhKeyLength;
     }
 }

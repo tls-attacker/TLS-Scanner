@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import de.rub.nds.tlsattacker.attacks.cca.CcaCertificateType;
 import de.rub.nds.tlsattacker.attacks.cca.CcaWorkflowType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
@@ -1618,11 +1621,21 @@ public class SiteReportPrinter {
     }
 
     public void appendGuidelines(StringBuilder builder) {
-        if (this.report.getGuidelineReports().size() > 0) {
+        if (this.report.getGuidelineReports() != null && this.report.getGuidelineReports().size() > 0) {
             prettyAppendHeading(builder, "Guidelines");
-        }
-        for (GuidelineReport report : this.report.getGuidelineReports()) {
-            appendGuideline(builder, report);
+            for (GuidelineReport report : this.report.getGuidelineReports()) {
+                appendGuideline(builder, report);
+            }
+            System.out.println("JSON: ");
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+            String s = null;
+            try {
+                s = mapper.writeValueAsString(this.report.getGuidelineReports());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            System.out.println(s);
         }
     }
 
@@ -1635,26 +1648,26 @@ public class SiteReportPrinter {
             prettyAppendSubSubheading(builder, "Passed Checks:");
             for (GuidelineCheckResult result : guidelineReport.getPassed()) {
                 prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.GREEN);
-                prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
+                prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
             }
         }
         prettyAppendSubSubheading(builder, "Failed Checks:");
         for (GuidelineCheckResult result : guidelineReport.getFailed()) {
             prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.RED);
-            prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
+            prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
         }
         if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppendSubSubheading(builder, "Uncertain Checks:");
             for (GuidelineCheckResult result : guidelineReport.getUncertain()) {
                 prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.YELLOW);
-                prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
+                prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
             }
         }
         if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
             prettyAppendSubSubheading(builder, "Skipped Checks:");
             for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
                 prettyAppend(builder, StringUtils.trim(result.getName()));
-                prettyAppend(builder, "\t" + StringUtils.trim(result.getDetail()).replace("\n", "\n\t"));
+                prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
             }
         }
     }

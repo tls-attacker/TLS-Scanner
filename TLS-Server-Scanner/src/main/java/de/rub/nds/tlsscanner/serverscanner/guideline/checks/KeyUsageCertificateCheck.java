@@ -12,10 +12,13 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
+import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.KeyUsageCertificateCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.asn1.x509.KeyUsage;
 
@@ -27,34 +30,51 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
     private final static List<SignatureAlgorithm> DIGITAL_SIGNATURE =
         Arrays.asList(SignatureAlgorithm.RSA, SignatureAlgorithm.ECDSA, SignatureAlgorithm.DSA);
 
+    private KeyUsageCertificateCheck() {
+        super(null, null);
+    }
+
+    public KeyUsageCertificateCheck(String name, RequirementLevel requirementLevel) {
+        super(name, requirementLevel);
+    }
+
+    public KeyUsageCertificateCheck(String name, RequirementLevel requirementLevel, boolean onlyOneCertificate) {
+        super(name, requirementLevel, onlyOneCertificate);
+    }
+
+    public KeyUsageCertificateCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition,
+        boolean onlyOneCertificate) {
+        super(name, requirementLevel, condition, onlyOneCertificate);
+    }
+
     @Override
-    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
+    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         Extensions extensions = report.convertToCertificateHolder().getExtensions();
         if (extensions == null) {
-            result.append("Certificate is missing extensions block.");
-            return GuidelineCheckStatus.FAILED;
+            return new KeyUsageCertificateCheckResult(TestResult.FALSE, null);
         }
         KeyUsage extension = KeyUsage.fromExtensions(extensions);
         if (extension == null) {
-            result.append("Certificate is missing Key Usage extension.");
-            return GuidelineCheckStatus.FAILED;
+            return new KeyUsageCertificateCheckResult(TestResult.FALSE, null);
         }
         if (DIGITAL_SIGNATURE.contains(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
             if (!extension.hasUsages(KeyUsage.digitalSignature)) {
-                result.append("Missing digitalSignature Key Usage.");
-                return GuidelineCheckStatus.FAILED;
+                return new KeyUsageCertificateCheckResult(TestResult.FALSE, "digitalSignature");
             }
         }
         if (report.getPublicKey() instanceof CustomDhPublicKey) {
             // TODO only for ECDH certificate, DH certificate
             if (!extension.hasUsages(KeyUsage.keyAgreement)) {
-                result.append("Missing keyAgreement Key Usage.");
-                return GuidelineCheckStatus.FAILED;
+                return new KeyUsageCertificateCheckResult(TestResult.FALSE, "keyAgreement");
             }
         }
-        result.append("Key Usage has correct purposes.");
-        return GuidelineCheckStatus.PASSED;
+        return new KeyUsageCertificateCheckResult(TestResult.TRUE, null);
+    }
+
+    @Override
+    public String getId() {
+        return "KeyUsageCertificate_" + getRequirementLevel();
     }
 
 }

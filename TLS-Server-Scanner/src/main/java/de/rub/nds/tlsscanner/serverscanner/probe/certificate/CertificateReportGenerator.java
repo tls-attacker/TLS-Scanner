@@ -18,13 +18,19 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
+import org.bouncycastle.asn1.x509.Extensions;
+import org.bouncycastle.asn1.x509.KeyPurposeId;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
@@ -78,6 +84,7 @@ public class CertificateReportGenerator {
         setRevoked(report, cert);
         setDnsCCA(report, cert);
         setSha256Hash(report, cert);
+        setExtendedKeyUsageServerAuth(report, cert);
         report.setCertificate(cert);
         setVulnerableRoca(report, cert);
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
@@ -101,6 +108,20 @@ public class CertificateReportGenerator {
         } else {
             report.setSubject("--not specified--");
         }
+    }
+
+    private static void setExtendedKeyUsageServerAuth(CertificateReport report,
+        org.bouncycastle.asn1.x509.Certificate cert) {
+        Extensions extensions = new X509CertificateHolder(cert).getExtensions();
+        if (extensions == null) {
+            return;
+        }
+        ExtendedKeyUsage extension = ExtendedKeyUsage.fromExtensions(extensions);
+        if (extension == null) {
+            return;
+        }
+        KeyPurposeId id = KeyPurposeId.getInstance(new ASN1ObjectIdentifier("1.3.6.1.5.5.7.3.1"));
+        report.setExtendedKeyUsageServerAuth(extension.hasKeyPurposeId(id));
     }
 
     private static void setCommonNames(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {

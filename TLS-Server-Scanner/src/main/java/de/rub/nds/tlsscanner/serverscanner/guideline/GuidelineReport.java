@@ -9,9 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import com.google.common.base.Predicates;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
-import javax.sql.rowset.Predicate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,12 +27,12 @@ public class GuidelineReport {
         List<GuidelineCheckResult> skipped) {
         this.name = name;
         this.link = link;
-        this.passed = results.stream().filter(result -> GuidelineCheckStatus.PASSED.equals(result.getStatus()))
-            .collect(Collectors.toList());
-        this.failed = results.stream().filter(result -> GuidelineCheckStatus.FAILED.equals(result.getStatus()))
-            .collect(Collectors.toList());
-        this.uncertain = results.stream().filter(result -> GuidelineCheckStatus.UNCERTAIN.equals(result.getStatus()))
-            .collect(Collectors.toList());
+        this.passed =
+            results.stream().filter(result -> TestResult.TRUE.equals(result.getResult())).collect(Collectors.toList());
+        this.failed =
+            results.stream().filter(result -> TestResult.FALSE.equals(result.getResult())).collect(Collectors.toList());
+        this.uncertain = results.stream().filter(result -> !TestResult.TRUE.equals(result.getResult()))
+            .filter(result -> !TestResult.FALSE.equals(result.getResult())).collect(Collectors.toList());
         this.skipped = skipped;
     }
 

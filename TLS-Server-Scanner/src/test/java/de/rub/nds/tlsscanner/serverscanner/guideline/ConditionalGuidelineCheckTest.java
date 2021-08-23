@@ -24,21 +24,21 @@ public class ConditionalGuidelineCheckTest {
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, false);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, true);
 
-        AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck();
-        check.setProperty(AnalyzedProperty.SUPPORTS_TLS13_PSK);
-        check.setResult(TestResult.TRUE);
+        AnalyzedPropertyGuidelineCheck check =
+            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
 
         GuidelineCheckCondition condition =
             new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
         check.setCondition(condition);
 
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
+        GuidelineCheckResult result = null;
 
         if (check.passesCondition(report)) {
-            check.evaluate(report, result);
+            result = check.evaluate(report);
         }
 
-        Assert.assertEquals(GuidelineCheckStatus.FAILED, result.getStatus());
+        Assert.assertNotNull(result);
+        Assert.assertEquals(TestResult.FALSE, result.getResult());
     }
 
     @Test
@@ -47,20 +47,19 @@ public class ConditionalGuidelineCheckTest {
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, false);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, false);
 
-        AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck();
-        check.setProperty(AnalyzedProperty.SUPPORTS_TLS13_PSK);
-        check.setResult(TestResult.TRUE);
+        AnalyzedPropertyGuidelineCheck check =
+            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
 
         GuidelineCheckCondition condition =
             new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
         check.setCondition(condition);
 
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
+        GuidelineCheckResult result = null;
 
         if (check.passesCondition(report)) {
-            check.evaluate(report, result);
+            result = check.evaluate(report);
         }
 
-        Assert.assertNull(result.getStatus());
+        Assert.assertNull(result);
     }
 }

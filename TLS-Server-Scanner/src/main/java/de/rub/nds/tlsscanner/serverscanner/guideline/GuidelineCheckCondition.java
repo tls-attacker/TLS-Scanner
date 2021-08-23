@@ -9,16 +9,16 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 import java.util.StringJoiner;
 
-@XmlType
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GuidelineCheckCondition {
 
     private List<GuidelineCheckCondition> and;
@@ -27,12 +27,25 @@ public class GuidelineCheckCondition {
     private AnalyzedProperty analyzedProperty;
     private TestResult result;
 
-    public GuidelineCheckCondition() {
+    private GuidelineCheckCondition() {
+    }
+
+    private GuidelineCheckCondition(List<GuidelineCheckCondition> and, List<GuidelineCheckCondition> or) {
+        this.and = and;
+        this.or = or;
     }
 
     public GuidelineCheckCondition(AnalyzedProperty analyzedProperty, TestResult result) {
         this.analyzedProperty = analyzedProperty;
         this.result = result;
+    }
+
+    public static GuidelineCheckCondition and(List<GuidelineCheckCondition> conditions) {
+        return new GuidelineCheckCondition(conditions, null);
+    }
+
+    public static GuidelineCheckCondition or(List<GuidelineCheckCondition> conditions) {
+        return new GuidelineCheckCondition(null, conditions);
     }
 
     public AnalyzedProperty getAnalyzedProperty() {
@@ -75,23 +88,21 @@ public class GuidelineCheckCondition {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("{");
         if (and != null) {
             StringJoiner joiner = new StringJoiner("\u2227");
             for (GuidelineCheckCondition condition : and) {
                 joiner.add(condition.toString());
             }
-            builder.append(joiner);
+            return "{" + joiner + "}";
         } else if (or != null) {
             StringJoiner joiner = new StringJoiner("\u2228");
             for (GuidelineCheckCondition condition : or) {
                 joiner.add(condition.toString());
             }
-            builder.append(joiner);
+            return "{" + joiner + "}";
         } else if (analyzedProperty != null && result != null) {
-            builder.append(analyzedProperty).append("=").append(result);
+            return "{" + analyzedProperty + "=" + result + "}";
         }
-        builder.append('}');
-        return builder.toString();
+        return "{}";
     }
 }

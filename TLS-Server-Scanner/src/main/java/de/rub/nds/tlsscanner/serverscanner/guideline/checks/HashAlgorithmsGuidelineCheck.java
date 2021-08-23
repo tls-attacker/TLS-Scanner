@@ -12,45 +12,63 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 import com.google.common.base.Joiner;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.guideline.ConditionalGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
+import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmsGuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class HashAlgorithmsGuidelineCheck extends ConditionalGuidelineCheck {
+public class HashAlgorithmsGuidelineCheck extends GuidelineCheck {
 
-    private List<HashAlgorithm> algorithms;
+    private List<HashAlgorithm> recommendedAlgorithms;
+
+    private HashAlgorithmsGuidelineCheck() {
+        super(null, null);
+    }
+
+    public HashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
+        List<HashAlgorithm> recommendedAlgorithms) {
+        super(name, requirementLevel);
+        this.recommendedAlgorithms = recommendedAlgorithms;
+    }
+
+    public HashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
+        GuidelineCheckCondition condition, List<HashAlgorithm> recommendedAlgorithms) {
+        super(name, requirementLevel, condition);
+        this.recommendedAlgorithms = recommendedAlgorithms;
+    }
 
     @Override
-    public void evaluate(SiteReport report, GuidelineCheckResult result) {
+    public GuidelineCheckResult evaluate(SiteReport report) {
         if (report.getSupportedSignatureAndHashAlgorithms() == null) {
-            result.update(GuidelineCheckStatus.UNCERTAIN, "Site Report is missing supported algorithms.");
-            return;
+            return new HashAlgorithmsGuidelineCheckResult(TestResult.UNCERTAIN, Collections.emptySet());
         }
         Set<HashAlgorithm> nonRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
-            if (!this.algorithms.contains(alg.getHashAlgorithm())) {
+            if (!this.recommendedAlgorithms.contains(alg.getHashAlgorithm())) {
                 nonRecommended.add(alg.getHashAlgorithm());
             }
         }
-        if (nonRecommended.isEmpty()) {
-            result.update(GuidelineCheckStatus.PASSED, "Only listed hash algorithms are supported.");
-        } else {
-            result.append("The following hash algorithms were supported but not recommended:\n");
-            result.append(Joiner.on('\n').join(nonRecommended));
-            result.setStatus(GuidelineCheckStatus.FAILED);
-        }
+        return new HashAlgorithmsGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
-    public List<HashAlgorithm> getAlgorithms() {
-        return algorithms;
+    @Override
+    public String getId() {
+        return "HashAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
     }
 
-    public void setAlgorithms(List<HashAlgorithm> algorithms) {
-        this.algorithms = algorithms;
+    public List<HashAlgorithm> getRecommendedAlgorithms() {
+        return recommendedAlgorithms;
+    }
+
+    public void setRecommendedAlgorithms(List<HashAlgorithm> recommendedAlgorithms) {
+        this.recommendedAlgorithms = recommendedAlgorithms;
     }
 }

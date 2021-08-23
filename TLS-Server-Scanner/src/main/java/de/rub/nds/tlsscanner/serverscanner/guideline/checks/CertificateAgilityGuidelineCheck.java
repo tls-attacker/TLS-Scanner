@@ -11,23 +11,38 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomPublicKey;
-import de.rub.nds.tlsscanner.serverscanner.guideline.ConditionalGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
+import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateAgilityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 import java.util.List;
 
-public class CertificateAgilityGuidelineCheck extends ConditionalGuidelineCheck {
+public class CertificateAgilityGuidelineCheck extends GuidelineCheck {
+
+    private CertificateAgilityGuidelineCheck() {
+        super(null, null);
+    }
+
+    public CertificateAgilityGuidelineCheck(String name, RequirementLevel requirementLevel) {
+        super(name, requirementLevel);
+    }
+
+    public CertificateAgilityGuidelineCheck(String name, RequirementLevel requirementLevel,
+        GuidelineCheckCondition condition) {
+        super(name, requirementLevel, condition);
+    }
 
     @Override
-    public void evaluate(SiteReport report, GuidelineCheckResult result) {
+    public GuidelineCheckResult evaluate(SiteReport report) {
         List<CertificateChain> chains = report.getCertificateChainList();
         if (chains == null || chains.size() < 2) {
-            result.update(GuidelineCheckStatus.FAILED, "Server does not have multiple Certificates.");
-            return;
+            return new CertificateAgilityGuidelineCheckResult(TestResult.FALSE);
         }
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         SignatureAndHashAlgorithm firstAlg = firstReport.getSignatureAndHashAlgorithm();
@@ -39,16 +54,20 @@ public class CertificateAgilityGuidelineCheck extends ConditionalGuidelineCheck 
             CertificateChain chain = chains.get(i);
             CertificateReport certReport = chain.getCertificateReportList().get(0);
             if (!firstAlg.equals(certReport.getSignatureAndHashAlgorithm())) {
-                result.update(GuidelineCheckStatus.PASSED, "Server supports multiple Algorithms.");
-                return;
+                return new CertificateAgilityGuidelineCheckResult(TestResult.TRUE);
             }
             if (firstKey != null && certReport.getPublicKey() instanceof CustomPublicKey) {
                 if (firstKey != ((CustomPublicKey) certReport.getPublicKey()).keySize()) {
-                    result.update(GuidelineCheckStatus.PASSED, "Server supports multiple Key Sizes.");
-                    return;
+                    return new CertificateAgilityGuidelineCheckResult(TestResult.TRUE);
                 }
             }
         }
-        result.update(GuidelineCheckStatus.FAILED, "Server does not support multiple Certificate types.");
+        return new CertificateAgilityGuidelineCheckResult(TestResult.FALSE);
     }
+
+    @Override
+    public String getId() {
+        return "CertificateAgility_" + getRequirementLevel();
+    }
+
 }

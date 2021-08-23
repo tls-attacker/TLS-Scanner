@@ -10,37 +10,62 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
+import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateValidityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
 import java.time.Duration;
 import java.time.Instant;
 
 public class CertificateValidityGuidelineCheck extends CertificateGuidelineCheck {
 
-    private int years;
+    private int days;
+
+    private CertificateValidityGuidelineCheck() {
+        super(null, null);
+    }
+
+    public CertificateValidityGuidelineCheck(String name, RequirementLevel requirementLevel, int days) {
+        super(name, requirementLevel);
+        this.days = days;
+    }
+
+    public CertificateValidityGuidelineCheck(String name, RequirementLevel requirementLevel, boolean onlyOneCertificate,
+        int days) {
+        super(name, requirementLevel, onlyOneCertificate);
+        this.days = days;
+    }
+
+    public CertificateValidityGuidelineCheck(String name, RequirementLevel requirementLevel,
+        GuidelineCheckCondition condition, boolean onlyOneCertificate, int days) {
+        super(name, requirementLevel, condition, onlyOneCertificate);
+        this.days = days;
+    }
 
     @Override
-    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
+    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         Duration validityPeriod = Duration.between(Instant.ofEpochMilli(report.getValidFrom().getTime()),
             Instant.ofEpochMilli(report.getValidTo().getTime()));
-
-        if (validityPeriod.toDays() > this.years * 365L) {
-            result.append("Certificate is valid for too long.");
-            return GuidelineCheckStatus.FAILED;
-        }
-        result.append("Certificate Validity is okay.");
-        return GuidelineCheckStatus.PASSED;
+        return new CertificateValidityGuidelineCheckResult(TestResult.of(validityPeriod.toDays() <= this.days), days,
+            validityPeriod.toDays());
     }
 
-    public int getYears() {
-        return years;
+    @Override
+    public String getId() {
+        return "CertificateValidity_" + getRequirementLevel() + "_" + days;
     }
 
-    public void setYears(int years) {
-        this.years = years;
+    public int getDays() {
+        return days;
     }
+
+    public void setDays(int days) {
+        this.days = days;
+    }
+
 }

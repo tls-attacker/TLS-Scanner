@@ -11,14 +11,14 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
+import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Ordered according to NIST.SP.800-57pt1r5.
@@ -27,37 +27,73 @@ import java.util.Map;
  */
 public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
 
-    private static final Map<HashAlgorithm, Integer> STRENGTH = new HashMap<HashAlgorithm, Integer>() {
-        {
-            put(HashAlgorithm.SHA1, 80);
-            put(HashAlgorithm.SHA224, 112);
-            put(HashAlgorithm.SHA256, 128);
-            put(HashAlgorithm.SHA384, 192);
-            put(HashAlgorithm.SHA512, 256);
-        }
-    };
+    private HashAlgorithm minimumStrength;
 
-    private HashAlgorithm min;
+    private HashAlgorithmStrengthCheck() {
+        super(null, null);
+    }
+
+    public HashAlgorithmStrengthCheck(String name, RequirementLevel requirementLevel, HashAlgorithm minimumStrength) {
+        super(name, requirementLevel);
+        this.minimumStrength = minimumStrength;
+    }
+
+    public HashAlgorithmStrengthCheck(String name, RequirementLevel requirementLevel, boolean onlyOneCertificate,
+        HashAlgorithm minimumStrength) {
+        super(name, requirementLevel, onlyOneCertificate);
+        this.minimumStrength = minimumStrength;
+    }
+
+    public HashAlgorithmStrengthCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition,
+        boolean onlyOneCertificate, HashAlgorithm minimumStrength) {
+        super(name, requirementLevel, condition, onlyOneCertificate);
+        this.minimumStrength = minimumStrength;
+    }
 
     @Override
-    public GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result) {
-        Comparator<HashAlgorithm> comparator = Comparator.comparing(STRENGTH::get);
+    public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+        Comparator<HashAlgorithm> comparator = Comparator.comparing(HashAlgorithm::getSecurityStrength);
         for (CertificateReport report : chain.getCertificateReportList()) {
-            int comparison = comparator.compare(report.getSignatureAndHashAlgorithm().getHashAlgorithm(), this.min);
+            if (report.isTrustAnchor()) {
+                continue;
+            }
+            HashAlgorithm hashAlgorithm = report.getSignatureAndHashAlgorithm().getHashAlgorithm();
+            int comparison = comparator.compare(hashAlgorithm, this.minimumStrength);
             if (comparison < 0) {
-                result.append(report.getSignatureAndHashAlgorithm().getHashAlgorithm() + " is too weak.");
-                return GuidelineCheckStatus.FAILED;
+                return new HashAlgorithmStrengthCheckResult(TestResult.FALSE, hashAlgorithm);
             }
         }
-        result.append("Used Hash Algorithms are strong enough.");
-        return GuidelineCheckStatus.PASSED;
+        return new HashAlgorithmStrengthCheckResult(TestResult.TRUE, null);
     }
 
-    public HashAlgorithm getMin() {
-        return min;
+    @Override
+    public String getId() {
+        return "HashAlgorithmStrength_" + getRequirementLevel() + "_" + minimumStrength;
     }
 
-    public void setMin(HashAlgorithm min) {
-        this.min = min;
+    public HashAlgorithm getMinimumStrength() {
+        return minimumStrength;
+    }
+
+    public void setMinimumStrength(HashAlgorithm minimumStrength) {
+        this.minimumStrength = minimumStrength;
+    }
+
+    public static class HashAlgorithmStrengthCheckResult extends GuidelineCheckResult {
+
+        private final HashAlgorithm hashAlgorithm;
+
+        public HashAlgorithmStrengthCheckResult(TestResult result, HashAlgorithm hashAlgorithm) {
+            super(result);
+            this.hashAlgorithm = hashAlgorithm;
+        }
+
+        @Override
+        public String display() {
+            if (TestResult.TRUE.equals(getResult())) {
+                return "Used Hash Algorithms are strong enough.";
+            }
+            return hashAlgorithm + " is too weak";
+        }
     }
 }

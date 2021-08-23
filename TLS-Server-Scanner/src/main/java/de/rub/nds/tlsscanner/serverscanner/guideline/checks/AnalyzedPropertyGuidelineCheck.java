@@ -9,25 +9,39 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.tlsscanner.serverscanner.guideline.ConditionalGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
+import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.AnalyzedPropertyGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-public class AnalyzedPropertyGuidelineCheck extends ConditionalGuidelineCheck {
+public class AnalyzedPropertyGuidelineCheck extends GuidelineCheck {
 
     private AnalyzedProperty property;
     private TestResult result;
 
+    private AnalyzedPropertyGuidelineCheck() {
+        super(null, null);
+    }
+
+    public AnalyzedPropertyGuidelineCheck(String name, RequirementLevel requirementLevel, AnalyzedProperty property,
+        TestResult result) {
+        this(name, requirementLevel, null, property, result);
+    }
+
+    public AnalyzedPropertyGuidelineCheck(String name, RequirementLevel requirementLevel,
+        GuidelineCheckCondition condition, AnalyzedProperty property, TestResult result) {
+        super(name, requirementLevel, condition);
+        this.property = property;
+        this.result = result;
+    }
+
     @Override
-    public void evaluate(SiteReport report, GuidelineCheckResult result) {
+    public GuidelineCheckResult evaluate(SiteReport report) {
         TestResult reportResult = report.getResult(this.property);
-        if (reportResult == null) {
-            result.update(GuidelineCheckStatus.UNCERTAIN, "No Test Result available.");
-            return;
-        }
         switch (reportResult) {
             case UNCERTAIN:
             case COULD_NOT_TEST:
@@ -35,29 +49,23 @@ public class AnalyzedPropertyGuidelineCheck extends ConditionalGuidelineCheck {
             case ERROR_DURING_TEST:
             case NOT_TESTED_YET:
             case TIMEOUT:
-                result.update(GuidelineCheckStatus.UNCERTAIN, "Test Result: " + reportResult);
-                return;
+                return new AnalyzedPropertyGuidelineCheckResult(reportResult, property, result, reportResult);
         }
-        if (reportResult.equals(this.result)) {
-            result.update(GuidelineCheckStatus.PASSED, this.property + "=" + reportResult);
-        } else {
-            result.update(GuidelineCheckStatus.FAILED, this.property + "=" + reportResult);
-        }
+        return new AnalyzedPropertyGuidelineCheckResult(TestResult.of(reportResult.equals(this.result)), property,
+            result, reportResult);
+    }
+
+    @Override
+    public String getId() {
+        return "AnalyzedProperty_" + getRequirementLevel() + "_" + property + "_" + result;
     }
 
     public AnalyzedProperty getProperty() {
         return property;
     }
 
-    public void setProperty(AnalyzedProperty property) {
-        this.property = property;
-    }
-
     public TestResult getResult() {
         return result;
     }
 
-    public void setResult(TestResult result) {
-        this.result = result;
-    }
 }

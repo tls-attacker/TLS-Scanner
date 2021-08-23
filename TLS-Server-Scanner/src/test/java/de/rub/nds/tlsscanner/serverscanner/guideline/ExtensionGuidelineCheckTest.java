@@ -9,17 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class ExtensionGuidelineCheckTest {
@@ -29,11 +25,9 @@ public class ExtensionGuidelineCheckTest {
         SiteReport report = new SiteReport("test");
         report.setSupportedExtensions(Collections.singletonList(ExtensionType.COOKIE));
 
-        ExtensionGuidelineCheck check = new ExtensionGuidelineCheck();
-        check.setExtension(ExtensionType.COOKIE);
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
-        check.evaluate(report, result);
-        Assert.assertEquals(GuidelineCheckStatus.PASSED, result.getStatus());
+        ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+        GuidelineCheckResult result = check.evaluate(report);
+        Assert.assertEquals(TestResult.TRUE, result.getResult());
     }
 
     @Test
@@ -41,10 +35,8 @@ public class ExtensionGuidelineCheckTest {
         SiteReport report = new SiteReport("test");
         report.setSupportedExtensions(Collections.emptyList());
 
-        ExtensionGuidelineCheck check = new ExtensionGuidelineCheck();
-        check.setExtension(ExtensionType.COOKIE);
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
-        check.evaluate(report, result);
-        Assert.assertEquals(GuidelineCheckStatus.FAILED, result.getStatus());
+        ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+        GuidelineCheckResult result = check.evaluate(report);
+        Assert.assertEquals(TestResult.FALSE, result.getResult());
     }
 }

@@ -12,8 +12,11 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 import com.google.common.base.Joiner;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckStatus;
+import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.NamedGroupsGuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 import java.util.HashSet;
@@ -25,79 +28,99 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck {
     /**
      * Only these are allowed.
      */
-    private List<NamedGroup> groups;
+    private List<NamedGroup> recommendedGroups;
     /**
      * At least one of these has to be present.
      */
-    private List<NamedGroup> required;
+    private List<NamedGroup> requiredGroups;
     private boolean tls13;
-    private int minGroups = 0;
+    private int minGroupCount = 0;
+
+    private NamedGroupsGuidelineCheck() {
+        super(null, null);
+    }
+
+    public NamedGroupsGuidelineCheck(String name, RequirementLevel requirementLevel, List<NamedGroup> recommendedGroups,
+        List<NamedGroup> requiredGroups, boolean tls13, int minGroupCount) {
+        super(name, requirementLevel);
+        this.recommendedGroups = recommendedGroups;
+        this.requiredGroups = requiredGroups;
+        this.tls13 = tls13;
+        this.minGroupCount = minGroupCount;
+    }
+
+    public NamedGroupsGuidelineCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition,
+        List<NamedGroup> recommendedGroups, List<NamedGroup> requiredGroups, boolean tls13, int minGroupCount) {
+        super(name, requirementLevel, condition);
+        this.recommendedGroups = recommendedGroups;
+        this.requiredGroups = requiredGroups;
+        this.tls13 = tls13;
+        this.minGroupCount = minGroupCount;
+    }
 
     @Override
-    public void evaluate(SiteReport report, GuidelineCheckResult result) {
+    public GuidelineCheckResult evaluate(SiteReport report) {
         List<NamedGroup> supportedGroups =
             this.tls13 ? report.getSupportedTls13Groups() : report.getSupportedNamedGroups();
         if (supportedGroups == null) {
-            result.update(GuidelineCheckStatus.UNCERTAIN, "Site Report is missing supported groups.");
-            return;
+            return new NamedGroupsGuidelineCheckResult(TestResult.UNCERTAIN);
         }
-        if (required != null && !required.isEmpty()) {
+        if (requiredGroups != null && !requiredGroups.isEmpty()) {
             boolean found = false;
             for (NamedGroup group : supportedGroups) {
-                if (this.required.contains(group)) {
+                if (this.requiredGroups.contains(group)) {
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                result.append("Server is missing one of required groups:\n");
-                result.append(Joiner.on('\n').join(required));
-                result.updateStatus(GuidelineCheckStatus.FAILED);
-                return;
+                return new NamedGroupsGuidelineCheckResult(TestResult.FALSE, requiredGroups);
             }
         }
-        if (supportedGroups.size() < minGroups) {
-            result.update(GuidelineCheckStatus.FAILED,
-                String.format("Server Supports less than %d groups.", this.minGroups));
-            return;
+        if (supportedGroups.size() < minGroupCount) {
+            return new NamedGroupsGuidelineCheckResult(TestResult.FALSE, supportedGroups.size());
         }
         Set<NamedGroup> nonRecommended = new HashSet<>();
         for (NamedGroup group : supportedGroups) {
-            if (this.groups != null && !this.groups.contains(group)) {
+            if (this.recommendedGroups != null && !this.recommendedGroups.contains(group)) {
                 nonRecommended.add(group);
             }
         }
         if (nonRecommended.isEmpty()) {
-            result.update(GuidelineCheckStatus.PASSED, "Only listed groups are supported.");
+            return new NamedGroupsGuidelineCheckResult(TestResult.TRUE);
         } else {
-            result.append("The following groups were supported but not recommended:\n");
-            result.append(Joiner.on('\n').join(nonRecommended));
-            result.updateStatus(GuidelineCheckStatus.FAILED);
+            return new NamedGroupsGuidelineCheckResult(TestResult.FALSE, nonRecommended);
         }
     }
 
-    public List<NamedGroup> getRequired() {
-        return required;
+    @Override
+    public String getId() {
+        return "NamedGroups_" + getRequirementLevel() + "_" + recommendedGroups + "_" + requiredGroups + "_" + tls13
+            + "_" + minGroupCount;
     }
 
-    public void setRequired(List<NamedGroup> required) {
-        this.required = required;
+    public List<NamedGroup> getRequiredGroups() {
+        return requiredGroups;
     }
 
-    public int getMinGroups() {
-        return minGroups;
+    public void setRequiredGroups(List<NamedGroup> requiredGroups) {
+        this.requiredGroups = requiredGroups;
     }
 
-    public void setMinGroups(int minGroups) {
-        this.minGroups = minGroups;
+    public int getMinGroupCount() {
+        return minGroupCount;
     }
 
-    public List<NamedGroup> getGroups() {
-        return groups;
+    public void setMinGroupCount(int minGroupCount) {
+        this.minGroupCount = minGroupCount;
     }
 
-    public void setGroups(List<NamedGroup> groups) {
-        this.groups = groups;
+    public List<NamedGroup> getRecommendedGroups() {
+        return recommendedGroups;
+    }
+
+    public void setRecommendedGroups(List<NamedGroup> recommendedGroups) {
+        this.recommendedGroups = recommendedGroups;
     }
 
     public boolean isTls13() {
@@ -107,4 +130,5 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck {
     public void setTls13(boolean tls13) {
         this.tls13 = tls13;
     }
+
 }

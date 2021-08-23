@@ -10,6 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,12 +21,10 @@ public class CertificateAgilityGuidelineCheckTest {
     public void testNegative() {
         SiteReport report = new SiteReport("test");
 
-        CertificateAgilityGuidelineCheck check = new CertificateAgilityGuidelineCheck();
+        CertificateAgilityGuidelineCheck check = new CertificateAgilityGuidelineCheck(null, null);
 
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
+        GuidelineCheckResult result = check.evaluate(report);
 
-        check.evaluate(report, result);
-
-        Assert.assertEquals(GuidelineCheckStatus.FAILED, result.getStatus());
+        Assert.assertEquals(TestResult.FALSE, result.getResult());
     }
 }

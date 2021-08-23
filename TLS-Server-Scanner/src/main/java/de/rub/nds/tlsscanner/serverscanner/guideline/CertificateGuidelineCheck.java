@@ -10,52 +10,99 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CertificateGuidelineCheck extends ConditionalGuidelineCheck {
+public abstract class CertificateGuidelineCheck extends GuidelineCheck {
 
-    private Integer count;
+    /**
+     * <code>true</code> if only one certificate has to pass the check. Otherwise all certificates have to pass.
+     */
+    private boolean onlyOneCertificate;
+
+    public CertificateGuidelineCheck(String name, RequirementLevel requirementLevel) {
+        this(name, requirementLevel, false);
+    }
+
+    public CertificateGuidelineCheck(String name, RequirementLevel requirementLevel, boolean onlyOneCertificate) {
+        super(name, requirementLevel);
+        this.onlyOneCertificate = onlyOneCertificate;
+    }
+
+    public CertificateGuidelineCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition,
+        boolean onlyOneCertificate) {
+        super(name, requirementLevel, condition);
+        this.onlyOneCertificate = onlyOneCertificate;
+    }
 
     @Override
-    public void evaluate(SiteReport report, GuidelineCheckResult result) {
-        int passCount = 0;
-        int uncertainCount = 0;
+    public GuidelineCheckResult evaluate(SiteReport report) {
+        boolean passFlag = false;
+        boolean failFlag = false;
+        boolean uncertainFlag = false;
+        CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult();
         for (int i = 0; i < report.getCertificateChainList().size(); i++) {
             CertificateChain chain = report.getCertificateChainList().get(i);
-            result.append("Certificate Check #").append(i + 1).append('\n');
-            GuidelineCheckStatus status = this.evaluateChain(chain, result);
-            result.append("\nStatus: ").append(status).append('\n');
-            if (GuidelineCheckStatus.PASSED.equals(status)) {
-                passCount++;
-            } else if (GuidelineCheckStatus.UNCERTAIN.equals(status)) {
-                uncertainCount++;
+            GuidelineCheckResult currentResult = this.evaluateChain(chain);
+            result.addResult(currentResult);
+            if (TestResult.TRUE.equals(currentResult.getResult())) {
+                passFlag = true;
+            } else if (TestResult.FALSE.equals(currentResult.getResult())) {
+                failFlag = true;
+            } else {
+                uncertainFlag = true;
             }
         }
-        int required = this.requiredPassCount(report.getCertificateChainList());
-        if (passCount >= required) {
-            result.setStatus(GuidelineCheckStatus.PASSED);
-            return;
+        if (this.onlyOneCertificate && passFlag) {
+            result.setResult(TestResult.TRUE);
+        } else if (passFlag && !uncertainFlag && !failFlag) {
+            result.setResult(TestResult.TRUE);
+        } else if (failFlag) {
+            result.setResult(TestResult.FALSE);
+        } else {
+            result.setResult(TestResult.UNCERTAIN);
         }
-        if (passCount + uncertainCount >= required) {
-            result.setStatus(GuidelineCheckStatus.UNCERTAIN);
-            return;
+        return result;
+    }
+
+    public abstract GuidelineCheckResult evaluateChain(CertificateChain chain);
+
+    public boolean isOnlyOneCertificate() {
+        return onlyOneCertificate;
+    }
+
+    public void setOnlyOneCertificate(boolean onlyOneCertificate) {
+        this.onlyOneCertificate = onlyOneCertificate;
+    }
+
+    public static class CertificateGuidelineCheckResult extends GuidelineCheckResult {
+
+        private final List<GuidelineCheckResult> results = new ArrayList<>();
+
+        public CertificateGuidelineCheckResult() {
+            super(TestResult.UNCERTAIN);
         }
-        result.setStatus(GuidelineCheckStatus.FAILED);
-    }
 
-    public abstract GuidelineCheckStatus evaluateChain(CertificateChain chain, GuidelineCheckResult result);
+        @Override
+        public String display() {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < results.size(); i++) {
+                GuidelineCheckResult result = this.results.get(i);
+                stringBuilder.append("Certificate Check #").append(i + 1).append('\n');
+                stringBuilder.append(result.display()).append('\n');
+            }
+            return stringBuilder.toString();
+        }
 
-    public int requiredPassCount(List<CertificateChain> chains) {
-        return this.count == null ? chains.size() : this.count;
-    }
+        public void addResult(GuidelineCheckResult result) {
+            this.results.add(result);
+        }
 
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
+        public List<GuidelineCheckResult> getResults() {
+            return results;
+        }
     }
 }

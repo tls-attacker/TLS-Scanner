@@ -157,12 +157,7 @@ public class TlsScanner {
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
                         config.getClientDelegate().getHost());
-                    SiteReport report = executor.execute();
-                    for (Guideline guideline : GuidelineIO.readGuidelines(GuidelineIO.GUIDELINES)) {
-                        GuidelineChecker checker = new GuidelineChecker(guideline);
-                        checker.fillReport(report);
-                    }
-                    return report;
+                    return executor.execute();
                 } else {
                     isConnectable = true;
                 }

@@ -52,6 +52,7 @@ public class CertificateReport {
     private Boolean trustAnchor;
     private Boolean selfSigned;
     private Boolean leafCertificate;
+    private Boolean extendedKeyUsageServerAuth;
     private String sha256Pin;
 
     public CertificateReport() {
@@ -72,6 +73,14 @@ public class CertificateReport {
             LOGGER.error("Certificate Parsing Error", ex);
             return null;
         }
+    }
+
+    public Boolean getExtendedKeyUsageServerAuth() {
+        return extendedKeyUsageServerAuth;
+    }
+
+    public void setExtendedKeyUsageServerAuth(Boolean extendedKeyUsageServerAuth) {
+        this.extendedKeyUsageServerAuth = extendedKeyUsageServerAuth;
     }
 
     public String getSHA256Fingerprint() {

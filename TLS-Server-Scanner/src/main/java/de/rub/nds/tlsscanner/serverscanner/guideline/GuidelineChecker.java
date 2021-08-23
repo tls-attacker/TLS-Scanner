@@ -9,9 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,43 +36,48 @@ public class GuidelineChecker {
         List<GuidelineCheckResult> results = new ArrayList<>();
         List<GuidelineCheckResult> skipped = new ArrayList<>();
         for (GuidelineCheck check : this.guideline.getChecks()) {
-            GuidelineCheckResult result = new GuidelineCheckResult(check.getId(), check.getName());
-            if (check instanceof ConditionalGuidelineCheck) {
-                if (((ConditionalGuidelineCheck) check).passesCondition(report)) {
-                    try {
-                        check.evaluate(report, result);
-                    } catch (Throwable throwable) {
-                        LOGGER.debug("Failed evaluating check: ", throwable);
-                        result.setStatus(GuidelineCheckStatus.UNCERTAIN);
-                        result.append(throwable.getMessage());
+            GuidelineCheckResult result;
+            if (!check.passesCondition(report)) {
+                result = new GuidelineCheckResult(null) {
+                    @Override
+                    public String display() {
+                        return "Condition was not met => Check is skipped.";
                     }
-                } else {
-                    result.append("Condition was not met => Check is skipped.");
-                }
-            } else {
-                try {
-                    check.evaluate(report, result);
-                } catch (Throwable throwable) {
-                    LOGGER.debug("Failed evaluating check: ", throwable);
-                    result.setStatus(GuidelineCheckStatus.UNCERTAIN);
-                    result.append(throwable.getMessage());
-                }
-            }
-            if (result.getStatus() != null) {
-                if (check.getRequirementLevel().equals(RequirementLevel.MAY)) {
-                    result.setStatus(GuidelineCheckStatus.PASSED);
-                }
-                if (check.getRequirementLevel().name().contains("NOT")) {
-                    if (result.getStatus().equals(GuidelineCheckStatus.PASSED)) {
-                        result.setStatus(GuidelineCheckStatus.FAILED);
-                    } else if (result.getStatus().equals(GuidelineCheckStatus.FAILED)) {
-                        result.setStatus(GuidelineCheckStatus.PASSED);
-                    }
-                }
-                results.add(result);
-            } else {
+                };
+                result.setName(check.getName());
+                result.setId(check.getId());
+                result.setCondition(check.getCondition());
                 skipped.add(result);
+                continue;
             }
+            try {
+                result = check.evaluate(report);
+            } catch (Throwable throwable) {
+                LOGGER.debug("Failed evaluating check: ", throwable);
+                result = new GuidelineCheckResult(TestResult.ERROR_DURING_TEST) {
+                    @Override
+                    public String display() {
+                        return throwable.getLocalizedMessage();
+                    }
+                };
+            }
+
+            if (result.getResult() == null) {
+                LOGGER.error("Null result from check {}", check.getId());
+                continue;
+            }
+            if (check.getRequirementLevel().equals(RequirementLevel.MAY)) {
+                result.setResult(TestResult.TRUE);
+            } else if (check.getRequirementLevel().name().contains("NOT")) {
+                if (result.getResult().equals(TestResult.TRUE)) {
+                    result.setResult(TestResult.FALSE);
+                } else if (result.getResult().equals(TestResult.FALSE)) {
+                    result.setResult(TestResult.TRUE);
+                }
+            }
+            result.setName(check.getName());
+            result.setId(check.getId());
+            results.add(result);
         }
         guidelineReports.add(new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results, skipped));
     }

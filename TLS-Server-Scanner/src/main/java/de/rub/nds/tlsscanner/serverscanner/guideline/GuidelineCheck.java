@@ -9,22 +9,68 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.tlsscanner.serverscanner.ConsoleLogger;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import org.reflections.ReflectionUtils;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class GuidelineCheck {
 
     private String name;
-    private String description;
     private RequirementLevel requirementLevel;
+    private GuidelineCheckCondition condition;
 
-    public abstract void evaluate(SiteReport report, GuidelineCheckResult result);
+    private GuidelineCheck() {
+    }
+
+    public GuidelineCheck(String name, RequirementLevel requirementLevel) {
+        this(name, requirementLevel, null);
+    }
+
+    public GuidelineCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition) {
+        this.name = name;
+        this.requirementLevel = requirementLevel;
+        this.condition = condition;
+    }
+
+    public abstract GuidelineCheckResult evaluate(SiteReport report);
+
+    public boolean passesCondition(SiteReport report) {
+        return this.passesCondition(report, this.condition);
+    }
+
+    private boolean passesCondition(SiteReport report, GuidelineCheckCondition condition) {
+        if (condition == null) {
+            return true;
+        }
+        if (condition.getAnd() != null) {
+            for (GuidelineCheckCondition andCondition : condition.getAnd()) {
+                if (!this.passesCondition(report, andCondition)) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (condition.getOr() != null) {
+            for (GuidelineCheckCondition orCondition : condition.getOr()) {
+                if (this.passesCondition(report, orCondition)) {
+                    return true;
+                }
+            }
+            return false;
+        } else if (condition.getAnalyzedProperty() != null && condition.getResult() != null) {
+            return condition.getResult().equals(report.getResult(condition.getAnalyzedProperty()));
+        }
+        ConsoleLogger.CONSOLE.warn("Invalid condition object.");
+        return false;
+    }
 
     public String getName() {
         return name;
@@ -32,14 +78,6 @@ public abstract class GuidelineCheck {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public RequirementLevel getRequirementLevel() {
@@ -50,25 +88,13 @@ public abstract class GuidelineCheck {
         this.requirementLevel = requirementLevel;
     }
 
-    @SuppressWarnings("unchecked")
-    public String getId() {
-        Set<Field> fields = ReflectionUtils.getAllFields(this.getClass());
-        fields.removeAll(ReflectionUtils.getFields(GuidelineCheck.class));
-        StringJoiner joiner = new StringJoiner("_");
-        joiner.add(this.getClass().getSimpleName()).add(String.valueOf(requirementLevel));
-        for (Field field : fields) {
-            if (Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-            field.setAccessible(true);
-            try {
-                Object result = field.get(this);
-                if (result != null) {
-                    joiner.add(String.valueOf(field.get(this)));
-                }
-            } catch (IllegalAccessException ignored) {
-            }
-        }
-        return joiner.toString();
+    public abstract String getId();
+
+    public GuidelineCheckCondition getCondition() {
+        return condition;
+    }
+
+    public void setCondition(GuidelineCheckCondition condition) {
+        this.condition = condition;
     }
 }

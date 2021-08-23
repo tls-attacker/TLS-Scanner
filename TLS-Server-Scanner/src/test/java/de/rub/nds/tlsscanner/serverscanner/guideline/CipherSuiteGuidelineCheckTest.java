@@ -11,10 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import org.junit.Assert;
@@ -34,18 +32,16 @@ public class CipherSuiteGuidelineCheckTest {
             new VersionSuiteListPair(ProtocolVersion.TLS13,
                 Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256))));
 
-        CipherSuiteGuidelineCheck check = new CipherSuiteGuidelineCheck();
-        check.setVersions(Collections.singletonList(ProtocolVersion.TLS12));
-        check.setCipherSuites(Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
-        check.evaluate(report, result);
-        Assert.assertEquals(GuidelineCheckStatus.PASSED, result.getStatus());
+        CipherSuiteGuidelineCheck check =
+            new CipherSuiteGuidelineCheck(null, null, Collections.singletonList(ProtocolVersion.TLS12),
+                Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
+        GuidelineCheckResult result = check.evaluate(report);
+        Assert.assertEquals(TestResult.TRUE, result.getResult());
 
         check.setVersions(Collections.singletonList(ProtocolVersion.TLS13));
-        check.setCipherSuites(Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256));
-        result = new GuidelineCheckResult("test");
-        check.evaluate(report, result);
-        Assert.assertEquals(GuidelineCheckStatus.PASSED, result.getStatus());
+        check.setRecommendedCipherSuites(Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256));
+        result = check.evaluate(report);
+        Assert.assertEquals(TestResult.TRUE, result.getResult());
     }
 
     @Test
@@ -54,11 +50,10 @@ public class CipherSuiteGuidelineCheckTest {
         report.setVersionSuitePairs(Collections.singletonList(new VersionSuiteListPair(ProtocolVersion.TLS12,
             Arrays.asList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256, CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384))));
 
-        CipherSuiteGuidelineCheck check = new CipherSuiteGuidelineCheck();
-        check.setVersions(Collections.singletonList(ProtocolVersion.TLS12));
-        check.setCipherSuites(Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
-        GuidelineCheckResult result = new GuidelineCheckResult("test");
-        check.evaluate(report, result);
-        Assert.assertEquals(GuidelineCheckStatus.FAILED, result.getStatus());
+        CipherSuiteGuidelineCheck check =
+            new CipherSuiteGuidelineCheck(null, null, Collections.singletonList(ProtocolVersion.TLS12),
+                Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256));
+        GuidelineCheckResult result = check.evaluate(report);
+        Assert.assertEquals(TestResult.FALSE, result.getResult());
     }
 }

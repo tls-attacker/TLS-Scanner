@@ -73,7 +73,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
         try {
             result = executeTest();
         } catch (Throwable throwable) {
-            LOGGER.warn("Executing " + getProbeName() + " Probe Failed: ", throwable);
+            LOGGER.error("Executing " + getProbeName() + " Probe Failed: ", throwable);
             result = this.getCouldNotExecuteResult();
         } finally {
             long stopTime = System.currentTimeMillis();
