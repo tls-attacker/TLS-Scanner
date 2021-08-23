@@ -10,13 +10,20 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlertDescription;
+import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -61,11 +68,9 @@ public class TlsFallbackScsvProbe extends TlsProbe {
         List<NamedGroup> namedGroups = Arrays.asList(NamedGroup.values());
 
         tlsConfig.setDefaultClientNamedGroups(namedGroups);
-        State state = new State(tlsConfig);
+        State state = new State(tlsConfig, getWorkflowTrace());
         executeState(state);
-        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            LOGGER.debug("Did not receive ServerHello Message");
-            LOGGER.debug(state.getWorkflowTrace().toString());
+        if (state.getWorkflowTrace().executedAsPlanned()) {
             return new TlsFallbackScsvResult(TestResult.TRUE);
         } else {
             LOGGER.debug("Received ServerHelloMessage");
@@ -73,6 +78,16 @@ public class TlsFallbackScsvProbe extends TlsProbe {
             LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
             return new TlsFallbackScsvResult(TestResult.FALSE);
         }
+    }
+
+    private WorkflowTrace getWorkflowTrace() {
+        WorkflowTrace trace = new WorkflowTrace();
+        trace.addTlsAction(new SendAction(new ClientHelloMessage()));
+        AlertMessage alertMessage = new AlertMessage();
+        alertMessage.setDescription(AlertDescription.INAPPROPRIATE_FALLBACK.getValue());
+        alertMessage.setLevel(AlertLevel.FATAL.getValue());
+        trace.addTlsAction(new ReceiveAction(alertMessage));
+        return trace;
     }
 
     @Override
