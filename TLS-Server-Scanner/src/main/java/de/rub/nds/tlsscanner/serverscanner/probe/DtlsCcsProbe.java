@@ -9,27 +9,23 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.modifiablevariable.biginteger.BigIntegerModificationFactory;
-import de.rub.nds.modifiablevariable.biginteger.ModifiableBigInteger;
 import de.rub.nds.modifiablevariable.integer.IntegerModificationFactory;
 import de.rub.nds.modifiablevariable.integer.ModifiableInteger;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.ChangeContextValueAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
@@ -41,7 +37,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsCcsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -71,20 +66,28 @@ public class DtlsCcsProbe extends TlsProbe {
         Config config = getConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        trace.addTlsAction(new SendAction(new ApplicationMessage(config)));
+        trace.addTlsAction(new GenericReceiveAction());
+        State state = new State(config, trace);
+        executeState(state);
+        ProtocolMessage receivedMessage = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+
+        trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
+            RunningModeType.CLIENT);
         SendAction sendAction = new SendAction(new ApplicationMessage(config));
         Record record = new Record(config);
         ModifiableInteger integer = new ModifiableInteger();
         integer.setModification(IntegerModificationFactory.explicitValue(0));
         record.setEpoch(integer);
-        ModifiableBigInteger bigInteger = new ModifiableBigInteger();
-        bigInteger.setModification(BigIntegerModificationFactory.explicitValue(BigInteger.valueOf(4)));
-        record.setSequenceNumber(bigInteger);
         sendAction.setRecords(record);
         trace.addTlsAction(sendAction);
-        trace.addTlsAction(new ReceiveAction(new ApplicationMessage(config)));
-        State state = new State(config, trace);
+        trace.addTlsAction(new GenericReceiveAction());
+        state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.APPLICATION_DATA, state.getWorkflowTrace())) {
+        ProtocolMessage receivedMessageModified = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+
+        if (!receivedMessage.getCompleteResultingMessage()
+            .equals(receivedMessageModified.getCompleteResultingMessage())) {
             return TestResult.TRUE;
         } else {
             return TestResult.FALSE;
