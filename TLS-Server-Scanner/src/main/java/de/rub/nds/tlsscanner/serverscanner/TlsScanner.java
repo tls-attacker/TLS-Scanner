@@ -86,6 +86,8 @@ public class TlsScanner {
         if (config.getAdditionalRandomnessHandshakes() > 0) {
             addProbeToProbeList(new RandomnessProbe(config, parallelExecutor));
         }
+        probeList.add(new AlpnProbe(config, parallelExecutor));
+        probeList.add(new AlpacaProbe(config, parallelExecutor));
         probeList.add(new CommonBugProbe(config, parallelExecutor));
         probeList.add(new SniProbe(config, parallelExecutor));
         probeList.add(new CompressionsProbe(config, parallelExecutor));
@@ -122,8 +124,6 @@ public class TlsScanner {
             probeList.add(new DtlsOverwritingContentProbe(config, parallelExecutor));
             afterList.add(new EvaluateCookieAfterProbe());
         } else {
-            probeList.add(new AlpnProbe(config, parallelExecutor));
-            probeList.add(new AlpacaProbe(config, parallelExecutor));
             probeList.add(new HelloRetryProbe(config, parallelExecutor));
             probeList.add(new RecordFragmentationProbe(config, parallelExecutor));
             probeList.add(new TlsPoodleProbe(config, parallelExecutor));
