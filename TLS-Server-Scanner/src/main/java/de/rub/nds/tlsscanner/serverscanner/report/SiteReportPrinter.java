@@ -1626,16 +1626,6 @@ public class SiteReportPrinter {
             for (GuidelineReport report : this.report.getGuidelineReports()) {
                 appendGuideline(builder, report);
             }
-            System.out.println("JSON: ");
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-            String s = null;
-            try {
-                s = mapper.writeValueAsString(this.report.getGuidelineReports());
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            System.out.println(s);
         }
     }
 
