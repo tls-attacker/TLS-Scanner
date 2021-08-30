@@ -85,24 +85,4 @@ public class GuidelineCheckCondition {
     public void setOr(List<GuidelineCheckCondition> or) {
         this.or = or;
     }
-
-    @Override
-    public String toString() {
-        if (and != null) {
-            StringJoiner joiner = new StringJoiner("\u2227");
-            for (GuidelineCheckCondition condition : and) {
-                joiner.add(condition.toString());
-            }
-            return "{" + joiner + "}";
-        } else if (or != null) {
-            StringJoiner joiner = new StringJoiner("\u2228");
-            for (GuidelineCheckCondition condition : or) {
-                joiner.add(condition.toString());
-            }
-            return "{" + joiner + "}";
-        } else if (analyzedProperty != null && result != null) {
-            return "{" + analyzedProperty + "=" + result + "}";
-        }
-        return "{}";
-    }
 }

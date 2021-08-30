@@ -330,7 +330,7 @@
                     </condition>
                 </and>
             </condition>
-            <property>RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION</property>
+            <property>SUPPORTS_TLS_FALLBACK_SCSV</property>
             <result>TRUE</result>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="namedGroupsGuidelineCheck">

@@ -23,6 +23,10 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 import java.util.List;
 
+/**
+ * Checks if the server support the use of multiple server certificates with their associated private keys to support
+ * algorithm and key size agility.
+ */
 public class CertificateAgilityGuidelineCheck extends GuidelineCheck {
 
     private CertificateAgilityGuidelineCheck() {

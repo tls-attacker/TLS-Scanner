@@ -21,6 +21,9 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
 import java.util.Locale;
 
+/**
+ * Checks if the certificate is signed with an algorithm consistent with the public key.
+ */
 public class CertificateSignatureCheck extends CertificateGuidelineCheck {
 
     private CertificateSignatureCheck() {

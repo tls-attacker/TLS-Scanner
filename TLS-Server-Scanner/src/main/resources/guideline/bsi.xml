@@ -179,7 +179,7 @@
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>Es wird empfohlen die TLS-Datenkompression nicht zu verwenden.</name>
-            <requirementLevel>SHOULD_NOT</requirementLevel>
+            <requirementLevel>SHOULD</requirementLevel>
             <condition>
                 <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
                 <result>TRUE</result>
