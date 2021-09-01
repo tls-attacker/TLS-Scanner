@@ -74,8 +74,7 @@ public class TlsFallbackScsvProbe extends TlsProbe {
             return new TlsFallbackScsvResult(TestResult.TRUE);
         } else {
             LOGGER.debug("Received ServerHelloMessage");
-            LOGGER.debug(state.getWorkflowTrace().toString());
-            LOGGER.debug("Selected Version:" + state.getTlsContext().getSelectedProtocolVersion().name());
+            LOGGER.debug("{}", state.getWorkflowTrace());
             return new TlsFallbackScsvResult(TestResult.FALSE);
         }
     }

@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 import java.util.ArrayList;
@@ -22,8 +21,18 @@ public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe {
     @Override
     public void analyze(SiteReport report) {
         Set<SignatureAndHashAlgorithm> algorithms = new HashSet<>();
+        if (report.getCertificateChainList() == null) {
+            return;
+        }
         for (CertificateChain chain : report.getCertificateChainList()) {
-            algorithms.add(chain.getCertificateReportList().get(0).getSignatureAndHashAlgorithm());
+            if (chain.getCertificateReportList() == null || chain.getCertificateReportList().isEmpty()) {
+                continue;
+            }
+            SignatureAndHashAlgorithm algorithm =
+                chain.getCertificateReportList().get(0).getSignatureAndHashAlgorithm();
+            if (algorithm != null) {
+                algorithms.add(algorithm);
+            }
         }
         report.setSupportedSignatureAndHashAlgorithmsCert(new ArrayList<>(algorithms));
     }
