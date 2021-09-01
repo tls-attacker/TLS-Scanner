@@ -9,27 +9,26 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
+import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
 import java.util.Objects;
 
-public class KeyUsageCertificateCheckResult extends GuidelineCheckResult {
+public class HashAlgorithmStrengthCheckResult extends GuidelineCheckResult {
 
-    private final String keyUsage;
+    private final HashAlgorithm hashAlgorithm;
 
-    public KeyUsageCertificateCheckResult(TestResult result, String keyUsage) {
+    public HashAlgorithmStrengthCheckResult(TestResult result, HashAlgorithm hashAlgorithm) {
         super(result);
-        this.keyUsage = keyUsage;
+        this.hashAlgorithm = hashAlgorithm;
     }
 
     @Override
     public String display() {
-        return Objects.equals(TestResult.TRUE, getResult()) ? "Certificate has correct key usage " + getKeyUsage()
-            : "Certificate is missing key usage " + getKeyUsage();
-    }
-
-    public String getKeyUsage() {
-        return keyUsage == null ? "" : keyUsage;
+        if (Objects.equals(TestResult.TRUE, getResult())) {
+            return "Used Hash Algorithms are strong enough.";
+        }
+        return hashAlgorithm + " is too weak";
     }
 }

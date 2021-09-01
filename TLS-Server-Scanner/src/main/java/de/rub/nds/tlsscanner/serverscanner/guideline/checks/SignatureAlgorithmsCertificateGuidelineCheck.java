@@ -70,8 +70,4 @@ public class SignatureAlgorithmsCertificateGuidelineCheck extends CertificateGui
     public List<SignatureAlgorithm> getRecommendedAlgorithms() {
         return recommendedAlgorithms;
     }
-
-    public void setRecommendedAlgorithms(List<SignatureAlgorithm> recommendedAlgorithms) {
-        this.recommendedAlgorithms = recommendedAlgorithms;
-    }
 }

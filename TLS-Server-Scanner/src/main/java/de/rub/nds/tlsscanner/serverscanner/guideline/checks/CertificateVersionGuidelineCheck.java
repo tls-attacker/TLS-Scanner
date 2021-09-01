@@ -60,8 +60,4 @@ public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck 
         return version;
     }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
 }

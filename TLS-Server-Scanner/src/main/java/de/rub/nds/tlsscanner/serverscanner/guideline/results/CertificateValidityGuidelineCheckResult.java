@@ -12,6 +12,8 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
+import java.util.Objects;
+
 public class CertificateValidityGuidelineCheckResult extends GuidelineCheckResult {
 
     private final int maximumValidity;
@@ -26,7 +28,7 @@ public class CertificateValidityGuidelineCheckResult extends GuidelineCheckResul
     @Override
     public String display() {
         return String.format("Certificate Validity %d days is %s. (Max %d days.)", actualValidity,
-            TestResult.TRUE.equals(getResult()) ? "okay" : "too long", maximumValidity);
+            Objects.equals(TestResult.TRUE, getResult()) ? "okay" : "too long", maximumValidity);
     }
 
     public int getMaximumValidity() {

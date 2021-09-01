@@ -74,8 +74,4 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
         return recommendedGroups;
     }
 
-    public void setRecommendedGroups(List<NamedGroup> recommendedGroups) {
-        this.recommendedGroups = recommendedGroups;
-    }
-
 }

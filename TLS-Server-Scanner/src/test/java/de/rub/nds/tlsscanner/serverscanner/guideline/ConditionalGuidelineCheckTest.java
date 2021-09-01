@@ -24,12 +24,10 @@ public class ConditionalGuidelineCheckTest {
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, false);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, true);
 
-        AnalyzedPropertyGuidelineCheck check =
-            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
-
         GuidelineCheckCondition condition =
             new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
-        check.setCondition(condition);
+        AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
+            AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
 
         GuidelineCheckResult result = null;
 
@@ -47,12 +45,10 @@ public class ConditionalGuidelineCheckTest {
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, false);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, false);
 
-        AnalyzedPropertyGuidelineCheck check =
-            new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
-
         GuidelineCheckCondition condition =
             new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE);
-        check.setCondition(condition);
+        AnalyzedPropertyGuidelineCheck check = new AnalyzedPropertyGuidelineCheck(null, null, condition,
+            AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.TRUE);
 
         GuidelineCheckResult result = null;
 

@@ -62,8 +62,4 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck extends Guideli
     public List<SignatureAndHashAlgorithm> getRecommendedAlgorithms() {
         return recommendedAlgorithms;
     }
-
-    public void setRecommendedAlgorithms(List<SignatureAndHashAlgorithm> recommendedAlgorithms) {
-        this.recommendedAlgorithms = recommendedAlgorithms;
-    }
 }

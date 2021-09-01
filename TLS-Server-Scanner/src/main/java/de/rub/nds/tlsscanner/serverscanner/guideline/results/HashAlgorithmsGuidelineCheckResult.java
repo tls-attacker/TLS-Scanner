@@ -14,31 +14,32 @@ import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final Set<HashAlgorithm> nonRecommendedAlgorithms;
+    private final Set<HashAlgorithm> notRecommendedAlgorithms;
 
-    public HashAlgorithmsGuidelineCheckResult(TestResult result, Set<HashAlgorithm> nonRecommendedAlgorithms) {
+    public HashAlgorithmsGuidelineCheckResult(TestResult result, Set<HashAlgorithm> notRecommendedAlgorithms) {
         super(result);
-        this.nonRecommendedAlgorithms = nonRecommendedAlgorithms;
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 
     @Override
     public String display() {
-        if (TestResult.UNCERTAIN.equals(getResult())) {
+        if (Objects.equals(TestResult.UNCERTAIN, getResult())) {
             return "Missing Information";
         }
-        if (TestResult.TRUE.equals(getResult())) {
+        if (Objects.equals(TestResult.TRUE, getResult())) {
             return "Only listed Hash Algorithms are supported.";
         } else {
             return "The following Hash Algorithms were supported but not recommended:\n"
-                + Joiner.on('\n').join(nonRecommendedAlgorithms);
+                + Joiner.on('\n').join(notRecommendedAlgorithms);
         }
     }
 
-    public Set<HashAlgorithm> getNonRecommendedAlgorithms() {
-        return nonRecommendedAlgorithms;
+    public Set<HashAlgorithm> getNotRecommendedAlgorithms() {
+        return notRecommendedAlgorithms;
     }
 }

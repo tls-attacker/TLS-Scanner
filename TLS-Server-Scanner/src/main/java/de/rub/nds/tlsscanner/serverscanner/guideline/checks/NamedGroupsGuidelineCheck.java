@@ -102,32 +102,16 @@ public class NamedGroupsGuidelineCheck extends GuidelineCheck {
         return requiredGroups;
     }
 
-    public void setRequiredGroups(List<NamedGroup> requiredGroups) {
-        this.requiredGroups = requiredGroups;
-    }
-
     public int getMinGroupCount() {
         return minGroupCount;
-    }
-
-    public void setMinGroupCount(int minGroupCount) {
-        this.minGroupCount = minGroupCount;
     }
 
     public List<NamedGroup> getRecommendedGroups() {
         return recommendedGroups;
     }
 
-    public void setRecommendedGroups(List<NamedGroup> recommendedGroups) {
-        this.recommendedGroups = recommendedGroups;
-    }
-
     public boolean isTls13() {
         return tls13;
-    }
-
-    public void setTls13(boolean tls13) {
-        this.tls13 = tls13;
     }
 
 }

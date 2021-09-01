@@ -66,8 +66,4 @@ public class HashAlgorithmsGuidelineCheck extends GuidelineCheck {
     public List<HashAlgorithm> getRecommendedAlgorithms() {
         return recommendedAlgorithms;
     }
-
-    public void setRecommendedAlgorithms(List<HashAlgorithm> recommendedAlgorithms) {
-        this.recommendedAlgorithms = recommendedAlgorithms;
-    }
 }

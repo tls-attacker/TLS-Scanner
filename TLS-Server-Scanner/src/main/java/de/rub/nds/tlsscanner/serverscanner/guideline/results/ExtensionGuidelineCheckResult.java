@@ -13,6 +13,8 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
+import java.util.Objects;
+
 public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
 
     private final ExtensionType requiredExtension;
@@ -24,7 +26,7 @@ public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
 
     @Override
     public String display() {
-        return TestResult.TRUE.equals(getResult()) ? "The server supports " + this.requiredExtension
+        return Objects.equals(TestResult.TRUE, getResult()) ? "The server supports " + this.requiredExtension
             : "The server does not support " + this.requiredExtension;
     }
 

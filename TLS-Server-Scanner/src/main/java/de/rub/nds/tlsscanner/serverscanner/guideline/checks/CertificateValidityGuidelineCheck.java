@@ -64,8 +64,4 @@ public class CertificateValidityGuidelineCheck extends CertificateGuidelineCheck
         return days;
     }
 
-    public void setDays(int days) {
-        this.days = days;
-    }
-
 }

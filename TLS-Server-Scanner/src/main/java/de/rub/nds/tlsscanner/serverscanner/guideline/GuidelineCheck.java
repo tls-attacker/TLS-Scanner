@@ -70,25 +70,13 @@ public abstract class GuidelineCheck {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public RequirementLevel getRequirementLevel() {
         return requirementLevel;
-    }
-
-    public void setRequirementLevel(RequirementLevel requirementLevel) {
-        this.requirementLevel = requirementLevel;
     }
 
     public abstract String getId();
 
     public GuidelineCheckCondition getCondition() {
         return condition;
-    }
-
-    public void setCondition(GuidelineCheckCondition condition) {
-        this.condition = condition;
     }
 }

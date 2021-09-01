@@ -77,15 +77,7 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck {
         return versions;
     }
 
-    public void setVersions(List<ProtocolVersion> versions) {
-        this.versions = versions;
-    }
-
     public List<CipherSuite> getRecommendedCipherSuites() {
         return recommendedCipherSuites;
-    }
-
-    public void setRecommendedCipherSuites(List<CipherSuite> recommendedCipherSuites) {
-        this.recommendedCipherSuites = recommendedCipherSuites;
     }
 }

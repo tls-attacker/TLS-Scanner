@@ -14,32 +14,33 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final Set<SignatureAndHashAlgorithm> nonRecommendedAlgorithms;
+    private final Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms;
 
     public SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult result,
-        Set<SignatureAndHashAlgorithm> nonRecommendedAlgorithms) {
+        Set<SignatureAndHashAlgorithm> notRecommendedAlgorithms) {
         super(result);
-        this.nonRecommendedAlgorithms = nonRecommendedAlgorithms;
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 
     @Override
     public String display() {
-        if (TestResult.UNCERTAIN.equals(getResult())) {
+        if (Objects.equals(TestResult.UNCERTAIN, getResult())) {
             return "Missing Information";
         }
-        if (TestResult.TRUE.equals(getResult())) {
+        if (Objects.equals(TestResult.TRUE, getResult())) {
             return "Only listed Signature and Hash Algorithms are supported.";
         } else {
             return "The following Signature and Hash Algorithms were supported but not recommended:\n"
-                + Joiner.on('\n').join(nonRecommendedAlgorithms);
+                + Joiner.on('\n').join(notRecommendedAlgorithms);
         }
     }
 
-    public Set<SignatureAndHashAlgorithm> getNonRecommendedAlgorithms() {
-        return nonRecommendedAlgorithms;
+    public Set<SignatureAndHashAlgorithm> getNotRecommendedAlgorithms() {
+        return notRecommendedAlgorithms;
     }
 }

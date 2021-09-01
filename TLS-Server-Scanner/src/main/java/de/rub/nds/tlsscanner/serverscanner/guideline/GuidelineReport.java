@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GuidelineReport {
@@ -23,17 +24,19 @@ public class GuidelineReport {
     private List<GuidelineCheckResult> uncertain;
     private List<GuidelineCheckResult> skipped;
 
-    public GuidelineReport(String name, String link, List<GuidelineCheckResult> results,
-        List<GuidelineCheckResult> skipped) {
+    public GuidelineReport(String name, String link, List<GuidelineCheckResult> results) {
         this.name = name;
         this.link = link;
-        this.passed =
-            results.stream().filter(result -> TestResult.TRUE.equals(result.getResult())).collect(Collectors.toList());
-        this.failed =
-            results.stream().filter(result -> TestResult.FALSE.equals(result.getResult())).collect(Collectors.toList());
-        this.uncertain = results.stream().filter(result -> !TestResult.TRUE.equals(result.getResult()))
-            .filter(result -> !TestResult.FALSE.equals(result.getResult())).collect(Collectors.toList());
-        this.skipped = skipped;
+        this.passed = results.stream().filter(result -> Objects.equals(TestResult.TRUE, result.getResult()))
+            .collect(Collectors.toList());
+        this.failed = results.stream().filter(result -> Objects.equals(TestResult.FALSE, result.getResult()))
+            .collect(Collectors.toList());
+        this.skipped = results.stream().filter(result -> Objects.equals(TestResult.COULD_NOT_TEST, result.getResult()))
+            .collect(Collectors.toList());
+        this.uncertain = results.stream().filter(result -> !Objects.equals(TestResult.TRUE, result.getResult()))
+            .filter(result -> !Objects.equals(TestResult.FALSE, result.getResult()))
+            .filter(result -> !Objects.equals(TestResult.COULD_NOT_TEST, result.getResult()))
+            .collect(Collectors.toList());
     }
 
     public String getName() {

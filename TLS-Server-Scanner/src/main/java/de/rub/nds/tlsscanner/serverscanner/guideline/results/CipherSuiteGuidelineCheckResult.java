@@ -15,27 +15,28 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final List<CipherSuite> nonRecommendedSuites;
+    private final List<CipherSuite> notRecommendedSuites;
 
-    public CipherSuiteGuidelineCheckResult(TestResult result, List<CipherSuite> nonRecommendedSuites) {
+    public CipherSuiteGuidelineCheckResult(TestResult result, List<CipherSuite> notRecommendedSuites) {
         super(result);
-        this.nonRecommendedSuites = nonRecommendedSuites;
+        this.notRecommendedSuites = notRecommendedSuites;
     }
 
     @Override
     public String display() {
-        if (TestResult.TRUE.equals(getResult())) {
+        if (Objects.equals(TestResult.TRUE, getResult())) {
             return "Only listed Cipher Suites are supported.";
         } else {
             return "The following Cipher Suites were supported but not recommended:\n"
-                + Joiner.on('\n').join(nonRecommendedSuites);
+                + Joiner.on('\n').join(notRecommendedSuites);
         }
     }
 
-    public List<CipherSuite> getNonRecommendedSuites() {
-        return nonRecommendedSuites;
+    public List<CipherSuite> getNotRecommendedSuites() {
+        return notRecommendedSuites;
     }
 }

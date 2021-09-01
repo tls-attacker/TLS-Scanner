@@ -25,6 +25,14 @@ import org.bouncycastle.asn1.x509.KeyUsage;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Checks the key usage extension in the certificate.
+ * <p>
+ * RSA signature certificates, ECDSA signature certificates, or DSA signature certificates should have the
+ * digitalSignature key usage.
+ * <p>
+ * ECDH certificates, DH certificates should have the keyAgreement key usage.
+ */
 public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
 
     private final static List<SignatureAlgorithm> DIGITAL_SIGNATURE =

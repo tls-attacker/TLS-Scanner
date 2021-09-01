@@ -13,6 +13,8 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
+import java.util.Objects;
+
 public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     private NamedGroup namedGroup;
@@ -28,7 +30,7 @@ public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     @Override
     public String display() {
-        return TestResult.TRUE.equals(getResult()) ? namedGroup + " is recommended."
+        return Objects.equals(TestResult.TRUE, getResult()) ? namedGroup + " is recommended."
             : namedGroup + " is not recommended.";
     }
 

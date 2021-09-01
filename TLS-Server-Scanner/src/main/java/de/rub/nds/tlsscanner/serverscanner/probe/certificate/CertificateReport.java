@@ -53,6 +53,7 @@ public class CertificateReport {
     private Boolean selfSigned;
     private Boolean leafCertificate;
     private Boolean extendedKeyUsageServerAuth;
+    private Boolean anyExtendedKeyUsage;
     private String sha256Pin;
 
     public CertificateReport() {
@@ -73,6 +74,14 @@ public class CertificateReport {
             LOGGER.error("Certificate Parsing Error", ex);
             return null;
         }
+    }
+
+    public Boolean getAnyExtendedKeyUsage() {
+        return anyExtendedKeyUsage;
+    }
+
+    public void setAnyExtendedKeyUsage(Boolean anyExtendedKeyUsage) {
+        this.anyExtendedKeyUsage = anyExtendedKeyUsage;
     }
 
     public Boolean getExtendedKeyUsageServerAuth() {

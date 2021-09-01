@@ -12,6 +12,8 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
+import java.util.Objects;
+
 public class CertificateAgilityGuidelineCheckResult extends GuidelineCheckResult {
 
     public CertificateAgilityGuidelineCheckResult(TestResult result) {
@@ -20,7 +22,7 @@ public class CertificateAgilityGuidelineCheckResult extends GuidelineCheckResult
 
     @Override
     public String display() {
-        return TestResult.TRUE.equals(getResult()) ? "Server supports multiple Certificate types."
+        return Objects.equals(TestResult.TRUE, getResult()) ? "Server supports multiple Certificate types."
             : "Server does not support multiple Certificate types.";
     }
 }

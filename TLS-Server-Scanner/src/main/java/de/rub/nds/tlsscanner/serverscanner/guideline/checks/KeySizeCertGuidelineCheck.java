@@ -159,31 +159,15 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         return minimumDsaKeyLength;
     }
 
-    public void setMinimumDsaKeyLength(Integer minimumDsaKeyLength) {
-        this.minimumDsaKeyLength = minimumDsaKeyLength;
-    }
-
     public Integer getMinimumRsaKeyLength() {
         return minimumRsaKeyLength;
-    }
-
-    public void setMinimumRsaKeyLength(Integer minimumRsaKeyLength) {
-        this.minimumRsaKeyLength = minimumRsaKeyLength;
     }
 
     public Integer getMinimumEcKeyLength() {
         return minimumEcKeyLength;
     }
 
-    public void setMinimumEcKeyLength(Integer minimumEcKeyLength) {
-        this.minimumEcKeyLength = minimumEcKeyLength;
-    }
-
     public Integer getMinimumDhKeyLength() {
         return minimumDhKeyLength;
-    }
-
-    public void setMinimumDhKeyLength(Integer minimumDhKeyLength) {
-        this.minimumDhKeyLength = minimumDhKeyLength;
     }
 }

@@ -15,11 +15,12 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
 
-    private Set<NamedGroup> nonRecommendedGroups;
+    private Set<NamedGroup> notRecommendedGroups;
     private List<NamedGroup> missingRequired;
     private Integer groupCount;
 
@@ -27,9 +28,9 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
         super(result);
     }
 
-    public NamedGroupsGuidelineCheckResult(TestResult result, Set<NamedGroup> nonRecommendedGroups) {
+    public NamedGroupsGuidelineCheckResult(TestResult result, Set<NamedGroup> notRecommendedGroups) {
         super(result);
-        this.nonRecommendedGroups = nonRecommendedGroups;
+        this.notRecommendedGroups = notRecommendedGroups;
     }
 
     public NamedGroupsGuidelineCheckResult(TestResult result, List<NamedGroup> missingRequired) {
@@ -44,15 +45,15 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
 
     @Override
     public String display() {
-        if (TestResult.UNCERTAIN.equals(getResult())) {
+        if (Objects.equals(TestResult.UNCERTAIN, getResult())) {
             return "Missing information.";
         }
-        if (TestResult.TRUE.equals(getResult())) {
+        if (Objects.equals(TestResult.TRUE, getResult())) {
             return "Only listed groups are supported.";
         }
-        if (nonRecommendedGroups != null && !nonRecommendedGroups.isEmpty()) {
+        if (notRecommendedGroups != null && !notRecommendedGroups.isEmpty()) {
             return "The following groups were supported but not recommended:\n"
-                + Joiner.on('\n').join(nonRecommendedGroups);
+                + Joiner.on('\n').join(notRecommendedGroups);
         }
         if (missingRequired != null && !missingRequired.isEmpty()) {
             return "Server is missing one of required groups::\n" + Joiner.on('\n').join(missingRequired);
@@ -63,8 +64,8 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
         return null;
     }
 
-    public Set<NamedGroup> getNonRecommendedGroups() {
-        return nonRecommendedGroups;
+    public Set<NamedGroup> getNotRecommendedGroups() {
+        return notRecommendedGroups;
     }
 
     public List<NamedGroup> getMissingRequired() {

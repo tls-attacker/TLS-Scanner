@@ -18,7 +18,6 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.util.CertificateUtils;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,7 +83,7 @@ public class CertificateReportGenerator {
         setRevoked(report, cert);
         setDnsCCA(report, cert);
         setSha256Hash(report, cert);
-        setExtendedKeyUsageServerAuth(report, cert);
+        setExtendedKeyUsage(report, cert);
         report.setCertificate(cert);
         setVulnerableRoca(report, cert);
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
@@ -110,8 +109,7 @@ public class CertificateReportGenerator {
         }
     }
 
-    private static void setExtendedKeyUsageServerAuth(CertificateReport report,
-        org.bouncycastle.asn1.x509.Certificate cert) {
+    private static void setExtendedKeyUsage(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         Extensions extensions = new X509CertificateHolder(cert).getExtensions();
         if (extensions == null) {
             return;
@@ -120,8 +118,8 @@ public class CertificateReportGenerator {
         if (extension == null) {
             return;
         }
-        KeyPurposeId id = KeyPurposeId.getInstance(new ASN1ObjectIdentifier("1.3.6.1.5.5.7.3.1"));
-        report.setExtendedKeyUsageServerAuth(extension.hasKeyPurposeId(id));
+        report.setExtendedKeyUsageServerAuth(extension.hasKeyPurposeId(KeyPurposeId.id_kp_serverAuth));
+        report.setAnyExtendedKeyUsage(extension.hasKeyPurposeId(KeyPurposeId.anyExtendedKeyUsage));
     }
 
     private static void setCommonNames(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {

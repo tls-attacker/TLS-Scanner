@@ -38,8 +38,9 @@ public class CipherSuiteGuidelineCheckTest {
         GuidelineCheckResult result = check.evaluate(report);
         Assert.assertEquals(TestResult.TRUE, result.getResult());
 
-        check.setVersions(Collections.singletonList(ProtocolVersion.TLS13));
-        check.setRecommendedCipherSuites(Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256));
+        check = new CipherSuiteGuidelineCheck(null, null, Collections.singletonList(ProtocolVersion.TLS13),
+            Collections.singletonList(CipherSuite.TLS_AES_128_GCM_SHA256));
+
         result = check.evaluate(report);
         Assert.assertEquals(TestResult.TRUE, result.getResult());
     }

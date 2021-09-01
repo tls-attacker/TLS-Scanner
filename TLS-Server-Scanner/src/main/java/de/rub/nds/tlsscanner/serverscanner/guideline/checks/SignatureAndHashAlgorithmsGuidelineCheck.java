@@ -47,14 +47,14 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck {
         if (report.getSupportedSignatureAndHashAlgorithms() == null) {
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.UNCERTAIN, null);
         }
-        Set<SignatureAndHashAlgorithm> nonRecommended = new HashSet<>();
+        Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
             if (!this.recommendedAlgorithms.contains(alg)) {
-                nonRecommended.add(alg);
+                notRecommended.add(alg);
             }
         }
-        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.of(nonRecommended.isEmpty()),
-            nonRecommended);
+        return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.of(notRecommended.isEmpty()),
+            notRecommended);
     }
 
     @Override
@@ -64,9 +64,5 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck {
 
     public List<SignatureAndHashAlgorithm> getRecommendedAlgorithms() {
         return recommendedAlgorithms;
-    }
-
-    public void setRecommendedAlgorithms(List<SignatureAndHashAlgorithm> recommendedAlgorithms) {
-        this.recommendedAlgorithms = recommendedAlgorithms;
     }
 }

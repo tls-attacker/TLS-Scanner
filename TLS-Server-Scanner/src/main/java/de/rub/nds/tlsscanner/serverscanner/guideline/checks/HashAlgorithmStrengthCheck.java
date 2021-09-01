@@ -14,6 +14,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmStrengthCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
@@ -73,27 +74,5 @@ public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
 
     public HashAlgorithm getMinimumStrength() {
         return minimumStrength;
-    }
-
-    public void setMinimumStrength(HashAlgorithm minimumStrength) {
-        this.minimumStrength = minimumStrength;
-    }
-
-    public static class HashAlgorithmStrengthCheckResult extends GuidelineCheckResult {
-
-        private final HashAlgorithm hashAlgorithm;
-
-        public HashAlgorithmStrengthCheckResult(TestResult result, HashAlgorithm hashAlgorithm) {
-            super(result);
-            this.hashAlgorithm = hashAlgorithm;
-        }
-
-        @Override
-        public String display() {
-            if (TestResult.TRUE.equals(getResult())) {
-                return "Used Hash Algorithms are strong enough.";
-            }
-            return hashAlgorithm + " is too weak";
-        }
     }
 }

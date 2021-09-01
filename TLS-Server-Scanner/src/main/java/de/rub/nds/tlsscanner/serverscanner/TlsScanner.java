@@ -22,6 +22,7 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.CertificateSignatureAndHashAlgorithmAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EvaluateRandomnessAfterProbe;
@@ -133,6 +134,7 @@ public class TlsScanner {
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
         afterList.add(new RaccoonAttackAfterProbe());
+        afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
     }
 
     private void addProbeToProbeList(TlsProbe probe) {

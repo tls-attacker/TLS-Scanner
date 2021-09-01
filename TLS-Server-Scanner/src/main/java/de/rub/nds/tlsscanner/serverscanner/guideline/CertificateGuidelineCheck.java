@@ -9,12 +9,12 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline;
 
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public abstract class CertificateGuidelineCheck extends GuidelineCheck {
 
@@ -48,9 +48,9 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck {
             CertificateChain chain = report.getCertificateChainList().get(i);
             GuidelineCheckResult currentResult = this.evaluateChain(chain);
             result.addResult(currentResult);
-            if (TestResult.TRUE.equals(currentResult.getResult())) {
+            if (Objects.equals(TestResult.TRUE, currentResult.getResult())) {
                 passFlag = true;
-            } else if (TestResult.FALSE.equals(currentResult.getResult())) {
+            } else if (Objects.equals(TestResult.FALSE, currentResult.getResult())) {
                 failFlag = true;
             } else {
                 uncertainFlag = true;
@@ -76,33 +76,5 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck {
 
     public void setOnlyOneCertificate(boolean onlyOneCertificate) {
         this.onlyOneCertificate = onlyOneCertificate;
-    }
-
-    public static class CertificateGuidelineCheckResult extends GuidelineCheckResult {
-
-        private final List<GuidelineCheckResult> results = new ArrayList<>();
-
-        public CertificateGuidelineCheckResult() {
-            super(TestResult.UNCERTAIN);
-        }
-
-        @Override
-        public String display() {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < results.size(); i++) {
-                GuidelineCheckResult result = this.results.get(i);
-                stringBuilder.append("Certificate Check #").append(i + 1).append('\n');
-                stringBuilder.append(result.display()).append('\n');
-            }
-            return stringBuilder.toString();
-        }
-
-        public void addResult(GuidelineCheckResult result) {
-            this.results.add(result);
-        }
-
-        public List<GuidelineCheckResult> getResults() {
-            return results;
-        }
     }
 }

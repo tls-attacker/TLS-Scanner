@@ -14,32 +14,33 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class SignatureAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final Set<SignatureAlgorithm> nonRecommendedAlgorithms;
+    private final Set<SignatureAlgorithm> notRecommendedAlgorithms;
 
     public SignatureAlgorithmsGuidelineCheckResult(TestResult result,
-        Set<SignatureAlgorithm> nonRecommendedAlgorithms) {
+        Set<SignatureAlgorithm> notRecommendedAlgorithms) {
         super(result);
-        this.nonRecommendedAlgorithms = nonRecommendedAlgorithms;
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 
     @Override
     public String display() {
-        if (TestResult.UNCERTAIN.equals(getResult())) {
+        if (Objects.equals(TestResult.UNCERTAIN, getResult())) {
             return "Missing Information";
         }
-        if (TestResult.TRUE.equals(getResult())) {
+        if (Objects.equals(TestResult.TRUE, getResult())) {
             return "Only listed Signature Algorithms are supported.";
         } else {
             return "The following Signature Algorithms were supported but not recommended:\n"
-                + Joiner.on('\n').join(nonRecommendedAlgorithms);
+                + Joiner.on('\n').join(notRecommendedAlgorithms);
         }
     }
 
-    public Set<SignatureAlgorithm> getNonRecommendedAlgorithms() {
-        return nonRecommendedAlgorithms;
+    public Set<SignatureAlgorithm> getNotRecommendedAlgorithms() {
+        return notRecommendedAlgorithms;
     }
 }

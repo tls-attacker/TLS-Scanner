@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GuidelineChecker {
 
@@ -29,16 +30,11 @@ public class GuidelineChecker {
 
     public void fillReport(SiteReport report) {
         List<GuidelineReport> guidelineReports = report.getGuidelineReports();
-        if (guidelineReports == null) {
-            guidelineReports = new ArrayList<>();
-            report.setGuidelineReports(guidelineReports);
-        }
         List<GuidelineCheckResult> results = new ArrayList<>();
-        List<GuidelineCheckResult> skipped = new ArrayList<>();
         for (GuidelineCheck check : this.guideline.getChecks()) {
             GuidelineCheckResult result;
             if (!check.passesCondition(report)) {
-                result = new GuidelineCheckResult(null) {
+                result = new GuidelineCheckResult(TestResult.COULD_NOT_TEST) {
                     @Override
                     public String display() {
                         return "Condition was not met => Check is skipped.";
@@ -47,7 +43,7 @@ public class GuidelineChecker {
                 result.setName(check.getName());
                 result.setId(check.getId());
                 result.setCondition(check.getCondition());
-                skipped.add(result);
+                results.add(result);
                 continue;
             }
             try {
@@ -66,9 +62,10 @@ public class GuidelineChecker {
                 LOGGER.error("Null result from check {}", check.getId());
                 continue;
             }
-            if (check.getRequirementLevel().equals(RequirementLevel.MAY)) {
+            if (Objects.equals(check.getRequirementLevel(), RequirementLevel.MAY)) {
                 result.setResult(TestResult.TRUE);
-            } else if (check.getRequirementLevel().name().contains("NOT")) {
+            } else if (Objects.equals(check.getRequirementLevel(), RequirementLevel.MUST_NOT)
+                || Objects.equals(check.getRequirementLevel(), RequirementLevel.SHOULD_NOT)) {
                 if (result.getResult().equals(TestResult.TRUE)) {
                     result.setResult(TestResult.FALSE);
                 } else if (result.getResult().equals(TestResult.FALSE)) {
@@ -79,6 +76,6 @@ public class GuidelineChecker {
             result.setId(check.getId());
             results.add(result);
         }
-        guidelineReports.add(new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results, skipped));
+        guidelineReports.add(new GuidelineReport(this.guideline.getName(), this.guideline.getLink(), results));
     }
 }

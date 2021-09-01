@@ -162,7 +162,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<CcaTestResult> ccaTestResultList;
 
     // Guidelines
-    private List<GuidelineReport> guidelineReports;
+    private List<GuidelineReport> guidelineReports = new ArrayList<>();
 
     private List<ProbeType> probeTypeList;
 

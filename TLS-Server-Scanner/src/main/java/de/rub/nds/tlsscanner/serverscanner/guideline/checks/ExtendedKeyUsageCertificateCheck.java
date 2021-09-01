@@ -14,7 +14,10 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+
+import java.util.Objects;
 
 public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck {
 
@@ -38,11 +41,13 @@ public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck 
 
     @Override
     public GuidelineCheckResult evaluateChain(CertificateChain chain) {
+        CertificateReport report = chain.getCertificateReportList().get(0);
         return new GuidelineCheckResult(
-            TestResult.of(chain.getCertificateReportList().get(0).getExtendedKeyUsageServerAuth())) {
+            TestResult.of(report.getExtendedKeyUsageServerAuth() && !report.getAnyExtendedKeyUsage())) {
             @Override
             public String display() {
-                return TestResult.TRUE.equals(getResult()) ? "Certificate has extended key usage for server auth."
+                return Objects.equals(TestResult.TRUE, getResult())
+                    ? "Certificate has extended key usage for server auth."
                     : "Certificate is missing extended key usage for server auth.";
             }
         };

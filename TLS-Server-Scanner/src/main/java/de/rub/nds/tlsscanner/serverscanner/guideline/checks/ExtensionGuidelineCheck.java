@@ -51,9 +51,4 @@ public class ExtensionGuidelineCheck extends GuidelineCheck {
     public ExtensionType getRequiredExtension() {
         return requiredExtension;
     }
-
-    public void setRequiredExtension(ExtensionType requiredExtension) {
-        this.requiredExtension = requiredExtension;
-    }
-
 }
