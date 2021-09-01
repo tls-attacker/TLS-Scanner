@@ -1753,11 +1753,11 @@ public class SiteReportPrinter {
 
     private String getGreenString(String value, String format) {
         String greenString = new String();
-        if(printColorful) {
+        if (printColorful) {
             greenString += AnsiColor.GREEN.getCode();
         }
         greenString += String.format(format, value == null ? "Unknown" : value);
-        if(printColorful) {
+        if (printColorful) {
             greenString += AnsiColor.RESET.getCode();
         }
         return greenString;
@@ -1765,11 +1765,11 @@ public class SiteReportPrinter {
 
     private String getYellowString(String value, String format) {
         String yellowString = new String();
-        if(printColorful) {
+        if (printColorful) {
             yellowString += AnsiColor.YELLOW.getCode();
         }
         yellowString += String.format(format, value == null ? "Unknown" : value);
-        if(printColorful) {
+        if (printColorful) {
             yellowString += AnsiColor.RESET.getCode();
         }
         return yellowString;
@@ -1777,11 +1777,11 @@ public class SiteReportPrinter {
 
     private String getRedString(String value, String format) {
         String redString = new String();
-        if(printColorful) {
+        if (printColorful) {
             redString += AnsiColor.RED.getCode();
         }
         redString += String.format(format, value == null ? "Unknown" : value);
-        if(printColorful) {
+        if (printColorful) {
             redString += AnsiColor.RESET.getCode();
         }
         return redString;
@@ -1848,11 +1848,11 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         depth = 0;
-        if(printColorful) {
+        if (printColorful) {
             builder.append(AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode());
         }
         builder.append("\n------------------------------------------------------------\n").append(value).append("\n\n");
-        if(printColorful) {
+        if (printColorful) {
             builder.append(AnsiColor.RESET.getCode());
         }
         return builder;
