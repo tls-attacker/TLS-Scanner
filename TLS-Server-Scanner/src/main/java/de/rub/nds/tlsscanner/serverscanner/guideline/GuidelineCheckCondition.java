@@ -16,7 +16,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.List;
-import java.util.StringJoiner;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GuidelineCheckCondition {

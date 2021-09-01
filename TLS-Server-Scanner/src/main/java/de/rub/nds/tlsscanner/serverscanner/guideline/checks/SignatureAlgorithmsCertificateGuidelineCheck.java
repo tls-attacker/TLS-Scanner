@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import com.google.common.base.Joiner;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.CertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckCondition;

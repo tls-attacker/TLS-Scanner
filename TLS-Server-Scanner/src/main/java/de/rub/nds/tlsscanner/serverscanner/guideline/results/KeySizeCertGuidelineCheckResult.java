@@ -10,7 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.results;
 
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
 import java.util.ArrayList;

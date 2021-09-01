@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <guideline>
     <name>BSI TR-02102-2</name>
-    <link>
-        https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html
-    </link>
+    <link>https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html</link>
     <checks>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>Grundsätzlich werden TLS 1.2 und TLS 1.3 empfohlen.</name>
@@ -42,9 +40,7 @@
             <result>FALSE</result>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cipherSuiteGuidelineCheck">
-            <name>Grundsätzlich wird empfohlen, nur Cipher-Suiten einzusetzen, die die Anforderungen an die Algorithmen
-                und Schlüssellängen der [TR-02102-1] erfüllen.
-            </name>
+            <name>Grundsätzlich wird empfohlen, nur Cipher-Suiten einzusetzen, die die Anforderungen an die Algorithmen und Schlüssellängen der [TR-02102-1] erfüllen.</name>
             <requirementLevel>SHOULD</requirementLevel>
             <versions>TLS12</versions>
             <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
@@ -133,9 +129,7 @@
             <recommendedAlgorithms>SHA512</recommendedAlgorithms>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client
-                initiierte Renegotiation sollte vom Server abgelehnt werden.
-            </name>
+            <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
             <requirementLevel>SHOULD</requirementLevel>
             <condition>
                 <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
@@ -145,9 +139,7 @@
             <result>TRUE</result>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client
-                initiierte Renegotiation sollte vom Server abgelehnt werden.
-            </name>
+            <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
             <requirementLevel>SHOULD</requirementLevel>
             <condition>
                 <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
@@ -157,9 +149,7 @@
             <result>FALSE</result>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
-            <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client
-                initiierte Renegotiation sollte vom Server abgelehnt werden.
-            </name>
+            <name>Es wird empfohlen Session Renegotiation nur auf Basis von [RFC5746] zu verwenden. Durch den Client initiierte Renegotiation sollte vom Server abgelehnt werden.</name>
             <requirementLevel>SHOULD</requirementLevel>
             <condition>
                 <analyzedProperty>SUPPORTS_TLS_1_2</analyzedProperty>
@@ -237,8 +227,7 @@
             <tls13>true</tls13>
             <minGroupCount>2</minGroupCount>
         </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-               xsi:type="signatureAndHashAlgorithmsGuidelineCheck">
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="signatureAndHashAlgorithmsGuidelineCheck">
             <name>Die folgenden Signaturverfahren werden empfohlen.</name>
             <requirementLevel>SHOULD</requirementLevel>
             <condition>
@@ -254,8 +243,7 @@
             <recommendedAlgorithms>ECDSA_SHA256</recommendedAlgorithms>
             <recommendedAlgorithms>ECDSA_SHA384</recommendedAlgorithms>
         </check>
-        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-               xsi:type="signatureAndHashAlgorithmsCertificateGuidelineCheck">
+        <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="signatureAndHashAlgorithmsCertificateGuidelineCheck">
             <name>Die folgenden Signaturverfahren werden empfohlen.</name>
             <requirementLevel>SHOULD</requirementLevel>
             <condition>

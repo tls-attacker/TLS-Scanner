@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateAgilityGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateSignatureCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateValidityGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateVersionGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CipherSuiteGuidelineCheck;
@@ -26,7 +27,6 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsC
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateSignatureCheck;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -82,6 +82,7 @@ public class GuidelineIO {
         classes.add(Guideline.class);
         JAXBContext jc = JAXBContext.newInstance(classes.toArray(new Class[0]));
         Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(guideline, path.toFile());
     }
 
