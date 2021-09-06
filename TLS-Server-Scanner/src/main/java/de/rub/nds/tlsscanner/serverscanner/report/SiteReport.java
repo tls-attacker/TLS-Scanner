@@ -34,6 +34,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
+import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
@@ -42,17 +43,9 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Observable;
-import java.util.Set;
+import java.util.*;
 
 public class SiteReport extends Observable implements Serializable {
 
@@ -67,7 +60,6 @@ public class SiteReport extends Observable implements Serializable {
 
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
-    private Boolean supportsRecordFragmentation = null;
 
     // Attacks
     private List<BleichenbacherTestResult> bleichenbacherTestResultList;
@@ -136,9 +128,9 @@ public class SiteReport extends Observable implements Serializable {
     private List<HpkpPin> normalHpkpPins;
     private List<HpkpPin> reportOnlyHpkpPins;
 
-    // Randomness
     private Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap;
-    private RandomEvaluationResult randomEvaluationResult = RandomEvaluationResult.NOT_ANALYZED;
+
+    private List<EntropyReport> entropyReportList;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -159,6 +151,14 @@ public class SiteReport extends Observable implements Serializable {
     private List<ProbeType> probeTypeList;
 
     private int performedTcpConnections = 0;
+
+    // Rating
+    private int score;
+    private ScoreReport scoreReport;
+
+    // Scan Timestamps
+    private long scanStartTime;
+    private long scanEndTime;
 
     public SiteReport() {
         resultMap = new HashMap<>();
@@ -551,14 +551,6 @@ public class SiteReport extends Observable implements Serializable {
         this.extractedValueContainerMap = extractedValueContainerMap;
     }
 
-    public synchronized RandomEvaluationResult getRandomEvaluationResult() {
-        return randomEvaluationResult;
-    }
-
-    public synchronized void setRandomEvaluationResult(RandomEvaluationResult randomEvaluationResult) {
-        this.randomEvaluationResult = randomEvaluationResult;
-    }
-
     public synchronized Set<CommonDhValues> getUsedCommonDhValueList() {
         return usedCommonDhValueList;
     }
@@ -723,12 +715,36 @@ public class SiteReport extends Observable implements Serializable {
         this.ocspSctList = ocspSctList;
     }
 
-    public Boolean getSupportsRecordFragmentation() {
-        return supportsRecordFragmentation;
+    public synchronized int getScore() {
+        return score;
     }
 
-    public void setSupportsRecordFragmentation(Boolean supportsRecordFragmentation) {
-        this.supportsRecordFragmentation = supportsRecordFragmentation;
+    public synchronized void setScore(int score) {
+        this.score = score;
+    }
+
+    public synchronized long getScanStartTime() {
+        return scanStartTime;
+    }
+
+    public synchronized void setScanStartTime(long scanStartTime) {
+        this.scanStartTime = scanStartTime;
+    }
+
+    public synchronized long getScanEndTime() {
+        return scanEndTime;
+    }
+
+    public synchronized void setScanEndTime(long scanEndTime) {
+        this.scanEndTime = scanEndTime;
+    }
+
+    public synchronized ScoreReport getScoreReport() {
+        return scoreReport;
+    }
+
+    public synchronized void setScoreReport(ScoreReport scoreReport) {
+        this.scoreReport = scoreReport;
     }
 
     public int getMinimumRsaCertKeySize() {
@@ -745,5 +761,13 @@ public class SiteReport extends Observable implements Serializable {
 
     public void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
         this.minimumDssCertKeySize = minimumDssCertKeySize;
+    }
+
+    public List<EntropyReport> getEntropyReportList() {
+        return entropyReportList;
+    }
+
+    public void setEntropyReportList(List<EntropyReport> entropyReportList) {
+        this.entropyReportList = entropyReportList;
     }
 }

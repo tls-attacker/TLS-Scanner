@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
+import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import org.bouncycastle.util.IPAddress;
@@ -46,6 +47,10 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
     private ScannerDetail reportDetail = ScannerDetail.NORMAL;
 
+    @Parameter(names = "-applicationProtocol", required = false,
+        description = "Which application data protocol the server is running.")
+    private ApplicationProtocol applicationProtocol = ApplicationProtocol.HTTP;
+
     @Parameter(names = "-threads", required = false,
         description = "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed server.")
     private int overallThreads = 1;
@@ -53,6 +58,10 @@ public class ScannerConfig extends TLSDelegateConfig {
     @Parameter(names = "-timeout", required = false,
         description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
+
+    @Parameter(names = "-additionalRandomCollection", required = false,
+        description = "Number of connections that should be additionally performed to collect more randomness data to get more accurate analysis")
+    private int additionalRandomnessHandshakes = 0;
 
     @Parameter(names = "-probeTimeout", required = false,
         description = "The timeout for each probe in ms (default 1800000)")
@@ -86,6 +95,14 @@ public class ScannerConfig extends TLSDelegateConfig {
         addDelegate(clientDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
+    }
+
+    public ApplicationProtocol getApplicationProtocol() {
+        return applicationProtocol;
+    }
+
+    public void setApplicationProtocol(ApplicationProtocol applicationProtocol) {
+        this.applicationProtocol = applicationProtocol;
     }
 
     public int getOverallThreads() {
@@ -134,6 +151,14 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public void setReportDetail(ScannerDetail reportDetail) {
         this.reportDetail = reportDetail;
+    }
+
+    public int getAdditionalRandomnessHandshakes() {
+        return additionalRandomnessHandshakes;
+    }
+
+    public void setAdditionalRandomnessHandshakes(int additionalRandomnessHandshakes) {
+        this.additionalRandomnessHandshakes = additionalRandomnessHandshakes;
     }
 
     @Override

@@ -22,7 +22,7 @@ public class Sweet32AfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        TestResult vulnerable = TestResult.NOT_TESTED_YET;
+        TestResult vulnerable = TestResult.FALSE;
         try {
             if (report.getCipherSuites() != null) {
                 for (CipherSuite suite : report.getCipherSuites()) {
@@ -30,7 +30,6 @@ public class Sweet32AfterProbe extends AfterProbe {
                         vulnerable = TestResult.TRUE;
                     }
                 }
-                vulnerable = TestResult.FALSE;
             } else {
                 vulnerable = TestResult.UNCERTAIN;
             }

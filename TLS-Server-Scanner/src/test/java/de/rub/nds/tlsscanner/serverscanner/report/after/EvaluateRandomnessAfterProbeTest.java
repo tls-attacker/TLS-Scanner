@@ -31,7 +31,7 @@ import org.junit.Test;
  */
 public class EvaluateRandomnessAfterProbeTest {
 
-    private EvaluateRandomnessAfterProbe evaluator;
+    private RandomnessAfterProbe evaluator;
 
     @SuppressWarnings("SpellCheckingInspection")
     private final static byte[] STATIC_RANDOM1 =
@@ -81,99 +81,6 @@ public class EvaluateRandomnessAfterProbeTest {
 
     @Before
     public void setUp() {
-        evaluator = new EvaluateRandomnessAfterProbe();
+        evaluator = new RandomnessAfterProbe();
     }
-
-    /**
-     * Testing if EvaluateRandomnessAfterProbe correctly detects unique value-entries
-     */
-    @Test
-    public void testNoDuplicatesAnalyze() {
-        SiteReport report = generateSiteReport(STATIC_RANDOM1, STATIC_RANDOM2, STATIC_RANDOM3);
-
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
-
-        evaluator.analyze(report);
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
-    }
-
-    /**
-     * Testing if EvaluateRandomnessAfterProbe correctly detects duplicate value-entries
-     */
-    @Test
-    public void testDuplicatesAnalyze() {
-        SiteReport report = generateSiteReport(STATIC_RANDOM1, STATIC_RANDOM1.clone(), STATIC_RANDOM2);
-
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
-
-        evaluator.analyze(report);
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.DUPLICATES);
-    }
-
-    /**
-     * Testing if EvaluateRandomnessAfterProbe can correctly handle empty ValueContainers
-     */
-    @Test
-    public void testEmptyValueContainerAnalyze() {
-        SiteReport report = generateSiteReport();
-
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
-        assertTrue(
-            report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM).getExtractedValueList().isEmpty());
-
-        evaluator.analyze(report);
-
-        // If there are no extracted values, there are consecutively no
-        // duplicates
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
-    }
-
-    /**
-     * Testing if EvaluateRandomnessAfterProbe correctly handles empty ValueContainerMaps
-     */
-    @Test
-    public void testEmptyValueContainerMap() {
-        SiteReport report = new SiteReport("test");
-        Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap = new HashMap<>();
-        report.setExtractedValueContainerList(extractedValueContainerMap);
-
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
-        assertTrue(report.getExtractedValueContainerMap().isEmpty());
-
-        evaluator.analyze(report);
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
-    }
-
-    /**
-     * Testing if EvaluateRandomnessAfterProbe correctly handles empty SiteReports
-     */
-    @Test
-    public void testEmptySiteReportAnalyze() {
-        SiteReport report = new SiteReport("test");
-
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
-        assertTrue(report.getExtractedValueContainerMap().isEmpty());
-
-        evaluator.analyze(report);
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
-    }
-
-    /**
-     * Testing if EvaluateRandomnessAfterProbe correctly filters out HelloRetryRequests
-     */
-    @Test
-    public void testHelloRetryRequestAnalyze() {
-        SiteReport report = generateSiteReport(HELLO_RETRY_REQUEST_CONST, HELLO_RETRY_REQUEST_CONST, STATIC_RANDOM1);
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
-
-        evaluator.analyze(report);
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NO_DUPLICATES);
-
-        report = generateSiteReport(HELLO_RETRY_REQUEST_CONST, STATIC_RANDOM1, STATIC_RANDOM1.clone());
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
-        evaluator.analyze(report);
-
-        assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.DUPLICATES);
-    }
-
 }

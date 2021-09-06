@@ -49,6 +49,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.serverscanner.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsscanner.serverscanner.rating.PropertyResultRecommendation;
 import de.rub.nds.tlsscanner.serverscanner.rating.Recommendation;
+import de.rub.nds.tlsscanner.serverscanner.rating.Recommendations;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
@@ -69,18 +70,21 @@ import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.Rando
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
 import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
 import java.security.PublicKey;
+import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomMinimalLengthResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.xml.bind.JAXBException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
@@ -122,11 +126,11 @@ public class SiteReportPrinter {
         builder.append("Report for ");
         builder.append(report.getHost());
         builder.append("\n");
-        if (report.getServerIsAlive() == Boolean.FALSE) {
+        if (Objects.equals(report.getServerIsAlive(), Boolean.FALSE)) {
             builder.append("Cannot reach the Server. Is it online?");
             return builder.toString();
         }
-        if (report.getSupportsSslTls() == Boolean.FALSE) {
+        if (Objects.equals(report.getSupportsSslTls(), Boolean.FALSE)) {
             builder.append("Server does not seem to support SSL / TLS on the scanned port");
             return builder.toString();
         }
@@ -155,9 +159,8 @@ public class SiteReportPrinter {
         appendCertificateTransparency(builder);
         appendSession(builder);
         appendRenegotiation(builder);
-        appendHandshakeSimulation(builder);
         appendHttps(builder);
-        appendRandom(builder);
+        appendRandomness(builder);
         appendPublicKeyIssues(builder);
         appendClientAuthentication(builder);
         appendScoringResults(builder);
@@ -175,19 +178,6 @@ public class SiteReportPrinter {
         }
         informationLeakTestList.addAll(report.getDirectRaccoonResultList());
         appendInformationLeakTestList(builder, informationLeakTestList, "Direct Raccoon Results");
-    }
-
-    public StringBuilder appendHandshakeSimulation(StringBuilder builder) {
-        if (report.getSimulatedClientList() != null) {
-            appendHsNormal(builder);
-            if (detail == ScannerDetail.DETAILED) {
-                appendHandshakeSimulationTable(builder);
-            } else if (detail == ScannerDetail.ALL) {
-                appendHandshakeSimulationTable(builder);
-                appendHandshakeSimulationDetails(builder);
-            }
-        }
-        return builder;
     }
 
     public StringBuilder appendHsNormal(StringBuilder builder) {
@@ -209,31 +199,6 @@ public class SiteReportPrinter {
             prettyAppend(builder, identifier, Integer.toString(report.getHandshakeFailedCounter()), AnsiColor.RED);
         }
         builder.append("\n");
-        return builder;
-    }
-
-    public StringBuilder appendHandshakeSimulationTable(StringBuilder builder) {
-        prettyAppendHeading(builder, "Handshake Simulation");
-        int counter = 0;
-        appendHandshakeSimulationTableRowHeading(builder, "Client", "Version", "CipherSuite", "Forward Secrecy",
-            "Server Public Key");
-        builder.append("\n");
-        for (SimulatedClientResult simulatedClient : report.getSimulatedClientList()) {
-            if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
-                || simulatedClient.getTlsClientConfig().isDefaultVersion()) {
-                if (simulatedClient.getHandshakeSuccessful()) {
-                    appendHandshakeTableRowSuccessful(builder, simulatedClient);
-                    counter++;
-                } else {
-                    appendHandshakeTableRowFailed(builder, simulatedClient);
-                    counter++;
-                }
-            }
-        }
-
-        if (counter == 0) {
-            prettyAppend(builder, "-");
-        }
         return builder;
     }
 
@@ -259,37 +224,6 @@ public class SiteReportPrinter {
         builder.append("| ").append(getCipherSuiteColor(simulatedClient.getSelectedCipherSuite(), hsCipherSuiteFormat));
         builder.append("| ").append(getForwardSecrecyColor(simulatedClient.getForwardSecrecy()));
         builder.append("| ").append(getServerPublicKeyParameterColor(simulatedClient));
-        builder.append("\n");
-        return builder;
-    }
-
-    public StringBuilder appendHandshakeTableRowFailed(StringBuilder builder, SimulatedClientResult simulatedClient) {
-        // String clientName = simulatedClient.getTlsClientConfig().getType() +
-        // ":"
-        // + simulatedClient.getTlsClientConfig().getVersion();
-        // builder.append(String.format("%s", getRedString(clientName,
-        // hsClientFormat)));
-        // if (!simulatedClient.getFailReasons().isEmpty()) {
-        // for (HandshakeFailureReasons reason :
-        // simulatedClient.getFailReasons()) {
-        // builder.append(String.format("| %s", getRedString(reason.getReason(),
-        // hsVersionFormat)));
-        // }
-        // } else {
-        // ReceivingAction action =
-        // simulatedClient.getState().getWorkflowTrace().getLastReceivingAction();
-        // if (action.getReceivedMessages().isEmpty()) {
-        // builder.append(String.format("| %s",
-        // getRedString("Failed - No answer from server", "%s")));
-        // } else {
-        // StringBuilder messages = new StringBuilder();
-        // for (ProtocolMessage message : action.getReceivedMessages()) {
-        // messages.append(message.toCompactString()).append(", ");
-        // }
-        // builder.append(String.format("| %s", getRedString("Failed - " +
-        // messages, "%s")));
-        // }
-        // }
         builder.append("\n");
         return builder;
     }
@@ -1542,9 +1476,36 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    public void appendRandom(StringBuilder builder) {
-        prettyAppendHeading(builder, "Nonce");
-        prettyAppendRandom(builder, "Random", report.getRandomEvaluationResult());
+    public void appendRandomness(StringBuilder builder) {
+        if (report.getEntropyReportList() != null) {
+            prettyAppendHeading(builder, "Entropy");
+            prettyAppend(builder, "Uses Unixtime", AnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM);
+
+            for (EntropyReport entropyReport : report.getEntropyReportList()) {
+                prettyAppendSubheading(builder, entropyReport.getType().getHumanReadableName());
+                prettyAppend(builder, "Datapoints", "" + entropyReport.getNumberOfValues());
+                int bytesTotal = entropyReport.getNumberOfBytes();
+                if (bytesTotal > 32000) {
+                    prettyAppend(builder, "Bytes total", "" + bytesTotal + " (good)", AnsiColor.GREEN);
+                } else if (bytesTotal < 16000) {
+                    prettyAppend(builder, "Bytes total", "" + bytesTotal + " (not enough data collected)",
+                        AnsiColor.RED);
+                } else {
+                    prettyAppend(builder, "Bytes total", "" + bytesTotal + " (not siginificant)", AnsiColor.YELLOW);
+
+                }
+
+                prettyAppend(builder, "Duplicates", entropyReport.isDuplicates());
+                prettyAppend(builder, "Failed Entropy Test", entropyReport.isFailedEntropyTest());
+                prettyAppend(builder, "Failed Fourier Test", entropyReport.isFailedFourierTest());
+                prettyAppend(builder, "Failed Frequency Test", entropyReport.isFailedFrequencyTest());
+                prettyAppend(builder, "Failed Runs Test", entropyReport.isFailedRunsTest());
+                prettyAppend(builder, "Failed Longest Run Test", entropyReport.isFailedLongestRunTest());
+                prettyAppend(builder, "Failed Monobit Test", entropyReport.isFailedMonoBitTest());
+                prettyAppend(builder, "Failed TemplateTests",
+                    "" + (Math.round(entropyReport.getFailedTemplateTestPercentage() * 100.0) / 100.0) + " %");
+            }
+        }
     }
 
     public void appendPublicKeyIssues(StringBuilder builder) {
@@ -1573,20 +1534,22 @@ public class SiteReportPrinter {
     }
 
     public void appendScoringResults(StringBuilder builder) {
-        prettyAppendHeading(builder, "Scoring results");
+        if (report.getScoreReport() == null) {
+            return;
+        }
 
-        SiteReportRater rater;
+        prettyAppendHeading(builder, "Scoring results");
         try {
-            rater = SiteReportRater.getSiteReportRater("en");
-            ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
-            prettyAppend(builder, "Score: " + scoreReport.getScore());
+
+            prettyAppend(builder, "Score: " + report.getScoreReport().getScore());
             if (!detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                 return;
             }
             prettyAppend(builder, "");
-            scoreReport.getInfluencers().entrySet().forEach((entry) -> {
+            Recommendations recommendations = SiteReportRater.getRecommendations("en");
+            report.getScoreReport().getInfluencers().entrySet().forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
-                Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
+                Recommendation recommendation = recommendations.getRecommendation(entry.getKey());
                 int scoreInfluence = 0;
                 StringBuilder additionalInfo = new StringBuilder();
                 if (influencer.getReferencedProperty() != null) {
@@ -1616,23 +1579,25 @@ public class SiteReportPrinter {
     }
 
     public void appendRecommendations(StringBuilder builder) {
+        if (report.getScoreReport() == null) {
+            return;
+        }
         prettyAppendHeading(builder, "Recommendations");
 
-        SiteReportRater rater;
         try {
-            rater = SiteReportRater.getSiteReportRater("en");
-            ScoreReport scoreReport = rater.getScoreReport(report.getResultMap());
+            ScoreReport scoreReport = report.getScoreReport();
+            Recommendations recommendations = SiteReportRater.getRecommendations("en");
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
             influencers.entrySet().stream().sorted((o1, o2) -> {
                 return o1.getValue().compareTo(o2.getValue());
             }).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
-                    Recommendation recommendation = rater.getRecommendations().getRecommendation(entry.getKey());
+                    Recommendation recommendation = recommendations.getRecommendation(entry.getKey());
                     PropertyResultRecommendation resultRecommendation =
                         recommendation.getPropertyResultRecommendation(influencer.getResult());
                     if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        printFullRecommendation(builder, rater, recommendation, influencer, resultRecommendation);
+                        printFullRecommendation(builder, recommendation, influencer, resultRecommendation);
                     } else {
                         printShortRecommendation(builder, influencer, resultRecommendation);
                     }
@@ -1644,28 +1609,37 @@ public class SiteReportPrinter {
         }
     }
 
-    private void printFullRecommendation(StringBuilder builder, SiteReportRater rater, Recommendation recommendation,
+    private void printFullRecommendation(StringBuilder builder, Recommendation recommendation,
         PropertyResultRatingInfluencer influencer, PropertyResultRecommendation resultRecommendation) {
+        if (report.getScoreReport() == null) {
+            return;
+        }
         AnsiColor color = getRecommendationColor(influencer);
         prettyAppend(builder, "", color);
         prettyAppend(builder, recommendation.getShortName() + ": " + influencer.getResult(), color);
         int scoreInfluence = 0;
         String additionalInfo = "";
-        if (influencer.getReferencedProperty() != null) {
-            scoreInfluence =
-                rater.getRatingInfluencers().getPropertyRatingInfluencer(influencer.getReferencedProperty(),
-                    influencer.getReferencedPropertyResult()).getInfluence();
-            Recommendation r = rater.getRecommendations().getRecommendation(influencer.getReferencedProperty());
-            additionalInfo = " -> This score comes from \"" + r.getShortName() + "\"";
-        } else {
-            scoreInfluence = influencer.getInfluence();
+        try {
+            if (influencer.getReferencedProperty() != null) {
+                scoreInfluence = SiteReportRater.getRatingInfluencers().getPropertyRatingInfluencer(
+                    influencer.getReferencedProperty(), influencer.getReferencedPropertyResult()).getInfluence();
+                Recommendation r =
+                    SiteReportRater.getRecommendations("en").getRecommendation(influencer.getReferencedProperty());
+                additionalInfo = " -> This score comes from \"" + r.getShortName() + "\"";
+            } else {
+                scoreInfluence = influencer.getInfluence();
+            }
+            prettyAppend(builder, "  Score: " + scoreInfluence + additionalInfo, color);
+            if (influencer.hasScoreCap()) {
+                prettyAppend(builder, "  Score cap: " + influencer.getScoreCap(), color);
+            }
+            prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription(), color);
+            prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
+        } catch (Exception ex) {
+            prettyAppend(builder, "Could not append recommendations - recommendations or ratingInfluencers not found: "
+                + recommendation.getShortName(), AnsiColor.RED);
+            LOGGER.error("Could not append recommendations for: " + recommendation.getShortName(), ex);
         }
-        prettyAppend(builder, "  Score: " + scoreInfluence + additionalInfo, color);
-        if (influencer.hasScoreCap()) {
-            prettyAppend(builder, "  Score cap: " + influencer.getScoreCap(), color);
-        }
-        prettyAppend(builder, "  Information: " + resultRecommendation.getShortDescription(), color);
-        prettyAppend(builder, "  Recommendation: " + resultRecommendation.getHandlingRecommendation(), color);
     }
 
     private void printShortRecommendation(StringBuilder builder, PropertyResultRatingInfluencer influencer,
@@ -1778,22 +1752,47 @@ public class SiteReportPrinter {
     }
 
     private String getGreenString(String value, String format) {
-        return (printColorful ? AnsiColor.GREEN.getCode() : AnsiColor.RESET.getCode())
-            + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        String greenString = new String();
+        if (printColorful) {
+            greenString += AnsiColor.GREEN.getCode();
+        }
+        greenString += String.format(format, value == null ? "Unknown" : value);
+        if (printColorful) {
+            greenString += AnsiColor.RESET.getCode();
+        }
+        return greenString;
     }
 
     private String getYellowString(String value, String format) {
-        return (printColorful ? AnsiColor.YELLOW.getCode() : AnsiColor.RESET.getCode())
-            + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        String yellowString = new String();
+        if (printColorful) {
+            yellowString += AnsiColor.YELLOW.getCode();
+        }
+        yellowString += String.format(format, value == null ? "Unknown" : value);
+        if (printColorful) {
+            yellowString += AnsiColor.RESET.getCode();
+        }
+        return yellowString;
     }
 
     private String getRedString(String value, String format) {
-        return (printColorful ? AnsiColor.RED.getCode() : AnsiColor.RESET.getCode())
-            + String.format(format, value == null ? "Unknown" : value) + AnsiColor.RESET.getCode();
+        String redString = new String();
+        if (printColorful) {
+            redString += AnsiColor.RED.getCode();
+        }
+        redString += String.format(format, value == null ? "Unknown" : value);
+        if (printColorful) {
+            redString += AnsiColor.RESET.getCode();
+        }
+        return redString;
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String value) {
         return builder.append(value == null ? "Unknown" : value).append("\n");
+    }
+
+    private StringBuilder prettyAppend(StringBuilder builder, String name, double value) {
+        return prettyAppend(builder, name, "" + value);
     }
 
     private StringBuilder prettyAppend(StringBuilder builder, String value, AnsiColor color) {
@@ -1849,11 +1848,14 @@ public class SiteReportPrinter {
 
     private StringBuilder prettyAppendHeading(StringBuilder builder, String value) {
         depth = 0;
-
-        return builder
-            .append(printColorful ? AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode() : AnsiColor.RESET.getCode())
-            .append("\n------------------------------------------------------------\n").append(value).append("\n\n")
-            .append(AnsiColor.RESET.getCode());
+        if (printColorful) {
+            builder.append(AnsiColor.BOLD.getCode() + AnsiColor.BLUE.getCode());
+        }
+        builder.append("\n------------------------------------------------------------\n").append(value).append("\n\n");
+        if (printColorful) {
+            builder.append(AnsiColor.RESET.getCode());
+        }
+        return builder;
     }
 
     private StringBuilder prettyAppendUnderlined(StringBuilder builder, String name, String value) {

@@ -15,31 +15,31 @@ import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
+import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.LogjamAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.RandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.scan.ScanJob;
 import de.rub.nds.tlsscanner.serverscanner.scan.ThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
 import java.util.List;
+import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class TlsScanner {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -84,7 +84,9 @@ public class TlsScanner {
     }
 
     private void fillDefaultProbeLists() {
-
+        if (config.getAdditionalRandomnessHandshakes() > 0) {
+            addProbeToProbeList(new RandomnessProbe(config, parallelExecutor));
+        }
         addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
         addProbeToProbeList(new SniProbe(config, parallelExecutor));
         addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
@@ -99,7 +101,10 @@ public class TlsScanner {
         addProbeToProbeList(new CipherSuiteOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new ExtensionProbe(config, parallelExecutor));
         addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
-        addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
+        if (config.getApplicationProtocol() == ApplicationProtocol.HTTP
+            || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
+            addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
+        }
         addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
         addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
         addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
@@ -124,7 +129,7 @@ public class TlsScanner {
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterProbe());
-        afterList.add(new EvaluateRandomnessAfterProbe());
+        afterList.add(new RandomnessAfterProbe());
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
@@ -153,8 +158,23 @@ public class TlsScanner {
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
                         config.getClientDelegate().getHost());
-                    SiteReport report = executor.execute();
-                    return report;
+
+                    long scanStartTime = System.currentTimeMillis();
+                    SiteReport siteReport = executor.execute();
+                    SiteReportRater rater;
+                    try {
+                        rater = SiteReportRater.getSiteReportRater();
+                        ScoreReport scoreReport = rater.getScoreReport(siteReport.getResultMap());
+                        siteReport.setScore(scoreReport.getScore());
+                        siteReport.setScoreReport(scoreReport);
+
+                    } catch (JAXBException ex) {
+                        LOGGER.error("Could not retrieve scoring results");
+                    }
+                    long scanEndTime = System.currentTimeMillis();
+                    siteReport.setScanStartTime(scanStartTime);
+                    siteReport.setScanEndTime(scanEndTime);
+                    return siteReport;
                 } else {
                     isConnectable = true;
                 }
