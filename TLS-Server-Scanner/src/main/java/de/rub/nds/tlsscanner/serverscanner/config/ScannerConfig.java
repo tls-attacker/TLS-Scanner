@@ -35,7 +35,7 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-parallelProbes", required = false,
         description = "Defines the number of threads responsible for different TLS probes. If set to 1, only one specific TLS probe (e.g., TLS version scan) can be run in time.")
-    private int parallelProbes = 8;
+    private int parallelProbes = 1;
 
     @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
     private boolean noColor = false;
