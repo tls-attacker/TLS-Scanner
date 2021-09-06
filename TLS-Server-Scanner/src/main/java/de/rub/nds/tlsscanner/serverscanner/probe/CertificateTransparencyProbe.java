@@ -57,34 +57,25 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            Config tlsConfig = initTlsConfig();
+        Config tlsConfig = initTlsConfig();
 
-            if (serverCertChain == null) {
-                LOGGER.warn("Couldn't fetch certificate chain from server!");
-                return getCouldNotExecuteResult();
-            }
-
-            getPrecertificateSCTs();
-            getTlsHandshakeSCTs(tlsConfig);
-            evaluateChromeCtPolicy();
-
-            TestResult supportsPrecertificateSCTsResult =
-                (supportsPrecertificateSCTs ? TestResult.TRUE : TestResult.FALSE);
-            TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResult.TRUE : TestResult.FALSE);
-            TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResult.TRUE : TestResult.FALSE);
-            TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResult.TRUE : TestResult.FALSE);
-            return new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult,
-                supportsOcspSCTsResult, meetsChromeCTPolicyResult, precertificateSctList, handshakeSctList,
-                ocspSctList);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
+        if (serverCertChain == null) {
+            LOGGER.warn("Couldn't fetch certificate chain from server!");
             return getCouldNotExecuteResult();
         }
+
+        getPrecertificateSCTs();
+        getTlsHandshakeSCTs(tlsConfig);
+        evaluateChromeCtPolicy();
+
+        TestResult supportsPrecertificateSCTsResult =
+            (supportsPrecertificateSCTs ? TestResult.TRUE : TestResult.FALSE);
+        TestResult supportsHandshakeSCTsResult = (supportsHandshakeSCTs ? TestResult.TRUE : TestResult.FALSE);
+        TestResult supportsOcspSCTsResult = (supportsOcspSCTs ? TestResult.TRUE : TestResult.FALSE);
+        TestResult meetsChromeCTPolicyResult = (meetsChromeCTPolicy ? TestResult.TRUE : TestResult.FALSE);
+        return new CertificateTransparencyResult(supportsPrecertificateSCTsResult, supportsHandshakeSCTsResult,
+            supportsOcspSCTsResult, meetsChromeCTPolicyResult, precertificateSctList, handshakeSctList,
+            ocspSctList);
     }
 
     private Config initTlsConfig() {

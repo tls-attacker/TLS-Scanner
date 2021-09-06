@@ -47,49 +47,40 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
-            List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
-            for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
-                for (VersionSuiteListPair pair : serverSupportedSuites) {
-                    if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
-                        || pair.getVersion() == ProtocolVersion.TLS12) {
-                        for (CipherSuite suite : pair.getCipherSuiteList()) {
-                            if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
-                                PaddingOracleCommandConfig paddingOracleConfig =
-                                    createPaddingOracleCommandConfig(pair.getVersion(), suite);
-                                paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
-                                testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
-                            }
+        List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
+        List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
+        for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
+            for (VersionSuiteListPair pair : serverSupportedSuites) {
+                if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
+                    || pair.getVersion() == ProtocolVersion.TLS12) {
+                    for (CipherSuite suite : pair.getCipherSuiteList()) {
+                        if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
+                            PaddingOracleCommandConfig paddingOracleConfig =
+                                createPaddingOracleCommandConfig(pair.getVersion(), suite);
+                            paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
+                            testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
                         }
                     }
                 }
             }
-            // If we found some difference in the server behavior we need to
-            if (isPotentiallyVulnerable(testResultList)
-                || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
-                LOGGER.debug("We found non-determinism during the padding oracle scan");
-                LOGGER.debug("Starting non-determinism evaluation");
-                for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : testResultList) {
-                    if (fingerprint.isDistinctAnswers()
-                        || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        LOGGER.debug("Found a candidate for the non-determinism eval:"
-                            + fingerprint.getTestInfo().getCipherSuite() + " - "
-                            + fingerprint.getTestInfo().getCipherSuite());
-                        extendFingerPrint(fingerprint, 7);
-                    }
-                }
-                LOGGER.debug("Finished non-determinism evaluation");
-            }
-            return new PaddingOracleResult(testResultList);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new PaddingOracleResult(null);
         }
+        // If we found some difference in the server behavior we need to
+        if (isPotentiallyVulnerable(testResultList)
+            || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            LOGGER.debug("We found non-determinism during the padding oracle scan");
+            LOGGER.debug("Starting non-determinism evaluation");
+            for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : testResultList) {
+                if (fingerprint.isDistinctAnswers()
+                    || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    LOGGER.debug("Found a candidate for the non-determinism eval:"
+                        + fingerprint.getTestInfo().getCipherSuite() + " - "
+                        + fingerprint.getTestInfo().getCipherSuite());
+                    extendFingerPrint(fingerprint, 7);
+                }
+            }
+            LOGGER.debug("Finished non-determinism evaluation");
+        }
+        return new PaddingOracleResult(testResultList);
     }
 
     private List<PaddingVectorGeneratorType> createVectorTypeList() {

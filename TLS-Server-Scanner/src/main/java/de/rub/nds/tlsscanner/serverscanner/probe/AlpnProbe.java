@@ -38,17 +38,9 @@ public class AlpnProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
-            return new AlpnProbeResult(supportedAlpnProtocols);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new AlpnProbeResult(null);
-        }
+        List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
+        return new AlpnProbeResult(supportedAlpnProtocols);
+
     }
 
     private List<String> getSupportedAlpnProtocols() {

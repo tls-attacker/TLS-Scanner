@@ -49,19 +49,9 @@ public class ResumptionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(),
-                getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE), getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
-                getSupports0rtt());
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
-        }
+        return new ResumptionResult(getSessionResumption(), getIssuesSessionTicket(),
+            getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE), getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE),
+            getSupports0rtt());
     }
 
     private TestResult getSessionResumption() {

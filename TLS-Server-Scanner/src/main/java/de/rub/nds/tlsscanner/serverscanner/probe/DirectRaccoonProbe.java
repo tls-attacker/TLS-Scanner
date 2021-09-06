@@ -59,31 +59,22 @@ public class DirectRaccoonProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
-            loop: for (VersionSuiteListPair pair : serverSupportedSuites) {
-                if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
-                    || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
-                    for (CipherSuite suite : pair.getCipherSuiteList()) {
-                        if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
-                            InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
-                                createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
-                                    DirectRaccoonWorkflowType.CKE_CCS_FIN);
-                            testResultList.add(informationLeakTest);
+        List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
+        for (VersionSuiteListPair pair : serverSupportedSuites) {
+            if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
+                || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12) {
+                for (CipherSuite suite : pair.getCipherSuiteList()) {
+                    if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
+                        InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
+                            createDirectRaccoonInformationLeakTest(pair.getVersion(), suite,
+                                DirectRaccoonWorkflowType.CKE_CCS_FIN);
+                        testResultList.add(informationLeakTest);
 
-                        }
                     }
                 }
             }
-            return new DirectRaccoonResult(testResultList);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new DirectRaccoonResult(TestResult.ERROR_DURING_TEST);
         }
+        return new DirectRaccoonResult(testResultList);
     }
 
     private InformationLeakTest<DirectRaccoonOracleTestInfo> createDirectRaccoonInformationLeakTest(

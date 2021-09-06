@@ -43,18 +43,8 @@ public class ExtensionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
-            return new ExtensionResult(allSupportedExtensions);
-
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-        }
-        return new ExtensionResult(null);
+        List<ExtensionType> allSupportedExtensions = getSupportedExtensions();
+        return new ExtensionResult(allSupportedExtensions);
     }
 
     public List<ExtensionType> getSupportedExtensions() {

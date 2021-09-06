@@ -47,43 +47,34 @@ public class BleichenbacherProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            BleichenbacherCommandConfig bleichenbacherConfig =
-                new BleichenbacherCommandConfig(getScannerConfig().getGeneralDelegate());
-            ClientDelegate delegate = (ClientDelegate) bleichenbacherConfig.getDelegate(ClientDelegate.class);
-            StarttlsDelegate starttlsDelegate =
-                (StarttlsDelegate) bleichenbacherConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            ((CipherSuiteDelegate) (bleichenbacherConfig.getDelegate(CipherSuiteDelegate.class)))
-                .setCipherSuites(suiteList);
-            if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FULL);
-            } else {
-                bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FAST);
-            }
-            List<BleichenbacherTestResult> resultList = new LinkedList<>();
-            boolean vulnerable = false;
-            for (BleichenbacherWorkflowType bbWorkflowType : BleichenbacherWorkflowType.values()) {
-                bleichenbacherConfig.setWorkflowType(bbWorkflowType);
-                LOGGER.debug("Testing: " + bbWorkflowType);
-                BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig,
-                    scannerConfig.createConfig(), getParallelExecutor());
-                EqualityError errorType = attacker.getEqualityError();
-                vulnerable |= (errorType != EqualityError.NONE);
-                resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE,
-                    bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
-            }
-            return new BleichenbacherResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE, resultList);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new BleichenbacherResult(TestResult.ERROR_DURING_TEST, new LinkedList<BleichenbacherTestResult>());
+        BleichenbacherCommandConfig bleichenbacherConfig =
+            new BleichenbacherCommandConfig(getScannerConfig().getGeneralDelegate());
+        ClientDelegate delegate = (ClientDelegate) bleichenbacherConfig.getDelegate(ClientDelegate.class);
+        StarttlsDelegate starttlsDelegate =
+            (StarttlsDelegate) bleichenbacherConfig.getDelegate(StarttlsDelegate.class);
+        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+        ((CipherSuiteDelegate) (bleichenbacherConfig.getDelegate(CipherSuiteDelegate.class)))
+            .setCipherSuites(suiteList);
+        if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FULL);
+        } else {
+            bleichenbacherConfig.setType(BleichenbacherCommandConfig.Type.FAST);
         }
+        List<BleichenbacherTestResult> resultList = new LinkedList<>();
+        boolean vulnerable = false;
+        for (BleichenbacherWorkflowType bbWorkflowType : BleichenbacherWorkflowType.values()) {
+            bleichenbacherConfig.setWorkflowType(bbWorkflowType);
+            LOGGER.debug("Testing: " + bbWorkflowType);
+            BleichenbacherAttacker attacker = new BleichenbacherAttacker(bleichenbacherConfig,
+                scannerConfig.createConfig(), getParallelExecutor());
+            EqualityError errorType = attacker.getEqualityError();
+            vulnerable |= (errorType != EqualityError.NONE);
+            resultList.add(new BleichenbacherTestResult(errorType != EqualityError.NONE,
+                bleichenbacherConfig.getType(), bbWorkflowType, attacker.getFingerprintPairList(), errorType));
+        }
+        return new BleichenbacherResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE, resultList);
     }
 
     @Override

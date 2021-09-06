@@ -75,37 +75,28 @@ public class OcspProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            Config tlsConfig = initTlsConfig();
-            List<OcspCertificateResult> ocspCertResults = new LinkedList<>();
+        Config tlsConfig = initTlsConfig();
+        List<OcspCertificateResult> ocspCertResults = new LinkedList<>();
 
-            if (serverCertChains == null) {
-                LOGGER.warn("Couldn't fetch certificate chains from server!");
-                return getCouldNotExecuteResult();
-            }
-
-            for (CertificateChain serverCertChain : serverCertChains) {
-                OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
-
-                getMustStaple(serverCertChain.getCertificate(), certResult);
-                getStapledResponse(tlsConfig, certResult);
-                performRequest(serverCertChain.getCertificate(), certResult);
-
-                ocspCertResults.add(certResult);
-            }
-            List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
-            if (tls13NamedGroups != null) {
-                tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
-            }
-            return new OcspResult(ocspCertResults, tls13CertStatus);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new OcspResult(new LinkedList<>(), new LinkedList<>());
+        if (serverCertChains == null) {
+            LOGGER.warn("Couldn't fetch certificate chains from server!");
+            return getCouldNotExecuteResult();
         }
+
+        for (CertificateChain serverCertChain : serverCertChains) {
+            OcspCertificateResult certResult = new OcspCertificateResult(serverCertChain);
+
+            getMustStaple(serverCertChain.getCertificate(), certResult);
+            getStapledResponse(tlsConfig, certResult);
+            performRequest(serverCertChain.getCertificate(), certResult);
+
+            ocspCertResults.add(certResult);
+        }
+        List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
+        if (tls13NamedGroups != null) {
+            tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
+        }
+        return new OcspResult(ocspCertResults, tls13CertStatus);
     }
 
     private void getMustStaple(Certificate certChain, OcspCertificateResult certResult) {

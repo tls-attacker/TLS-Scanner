@@ -48,51 +48,42 @@ public class HttpFalseStartProbe extends HttpsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            Config tlsConfig = getConfig();
+        Config tlsConfig = getConfig();
 
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
-            trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
-            trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-            trace.addTlsAction(
-                new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), this.getHttpsRequest()));
-            trace.addTlsAction(
-                new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsResponseMessage()));
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(tlsConfig);
+        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+        trace.addTlsAction(
+            new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage(), this.getHttpsRequest()));
+        trace.addTlsAction(
+            new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(), new HttpsResponseMessage()));
 
-            State state = new State(tlsConfig, trace);
-            executeState(state);
+        State state = new State(tlsConfig, trace);
+        executeState(state);
 
-            boolean receivedServerFinishedMessage = false;
-            ReceivingAction action = trace.getLastReceivingAction();
-            if (action.getReceivedMessages() != null) {
-                for (ProtocolMessage message : action.getReceivedMessages()) {
-                    if (message instanceof HttpsResponseMessage) {
-                        // if http response was received the server handled the
-                        // false start
-                        return new HttpFalseStartResult(TestResult.TRUE);
-                    } else if (message instanceof FinishedMessage) {
-                        receivedServerFinishedMessage = true;
-                    }
+        boolean receivedServerFinishedMessage = false;
+        ReceivingAction action = trace.getLastReceivingAction();
+        if (action.getReceivedMessages() != null) {
+            for (ProtocolMessage message : action.getReceivedMessages()) {
+                if (message instanceof HttpsResponseMessage) {
+                    // if http response was received the server handled the
+                    // false start
+                    return new HttpFalseStartResult(TestResult.TRUE);
+                } else if (message instanceof FinishedMessage) {
+                    receivedServerFinishedMessage = true;
                 }
             }
-            if (!receivedServerFinishedMessage) {
-                // server sent no finished message, false start messed up the
-                // handshake
-                return new HttpFalseStartResult(TestResult.FALSE);
-            }
-            // received no http response -> maybe server did not understand
-            // request
-            return new HttpFalseStartResult(TestResult.UNCERTAIN);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new HttpFalseStartResult(TestResult.ERROR_DURING_TEST);
         }
+        if (!receivedServerFinishedMessage) {
+            // server sent no finished message, false start messed up the
+            // handshake
+            return new HttpFalseStartResult(TestResult.FALSE);
+        }
+        // received no http response -> maybe server did not understand
+        // request
+        return new HttpFalseStartResult(TestResult.UNCERTAIN);
     }
 
     private Config getConfig() {

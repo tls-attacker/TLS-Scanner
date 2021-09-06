@@ -43,31 +43,22 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<ECPointFormat> pointFormats = null;
-            if (shouldTestPointFormats) {
-                pointFormats = getSupportedPointFormats();
-            }
-            TestResult tls13SecpCompressionSupported;
-            if (shouldTestTls13) {
-                tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
-            } else {
-                tls13SecpCompressionSupported = TestResult.COULD_NOT_TEST;
-            }
-            if (pointFormats != null) {
-                return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
+        List<ECPointFormat> pointFormats = null;
+        if (shouldTestPointFormats) {
+            pointFormats = getSupportedPointFormats();
+        }
+        TestResult tls13SecpCompressionSupported;
+        if (shouldTestTls13) {
+            tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
+        } else {
+            tls13SecpCompressionSupported = TestResult.COULD_NOT_TEST;
+        }
+        if (pointFormats != null) {
+            return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
 
-            } else {
-                LOGGER.debug("Unable to determine supported point formats");
-                return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
-            }
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new ECPointFormatResult(null, TestResult.ERROR_DURING_TEST);
+        } else {
+            LOGGER.debug("Unable to determine supported point formats");
+            return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
         }
     }
 

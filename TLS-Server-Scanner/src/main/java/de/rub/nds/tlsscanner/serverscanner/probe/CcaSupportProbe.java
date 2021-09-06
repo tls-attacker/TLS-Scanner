@@ -44,15 +44,7 @@ public class CcaSupportProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(tlsConfig, trace);
-        try {
-            executeState(state);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.warn("Could not test for client authentication support.");
-            }
-        }
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
             return new CcaSupportResult(TestResult.TRUE);
         } else {

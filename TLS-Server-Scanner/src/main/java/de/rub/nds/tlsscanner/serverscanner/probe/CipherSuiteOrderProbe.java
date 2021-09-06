@@ -39,24 +39,15 @@ public class CipherSuiteOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<CipherSuite> toTestList = new LinkedList<>();
-            toTestList.addAll(Arrays.asList(CipherSuite.values()));
-            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-            Collections.reverse(toTestList);
-            CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
-            return new CipherSuiteOrderResult(
-                firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new CipherSuiteOrderResult(TestResult.ERROR_DURING_TEST);
-        }
+        List<CipherSuite> toTestList = new LinkedList<>();
+        toTestList.addAll(Arrays.asList(CipherSuite.values()));
+        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        CipherSuite firstSelectedCipherSuite = getSelectedCipherSuite(toTestList);
+        Collections.reverse(toTestList);
+        CipherSuite secondSelectedCipherSuite = getSelectedCipherSuite(toTestList);
+        return new CipherSuiteOrderResult(
+            firstSelectedCipherSuite == secondSelectedCipherSuite ? TestResult.TRUE : TestResult.FALSE);
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {

@@ -68,46 +68,37 @@ public class NamedCurvesProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            Map<NamedGroup, NamedCurveWitness> groupsRsa = new HashMap<>();
-            Map<NamedGroup, NamedCurveWitness> groupsEcdsaStatic = new HashMap<>();
-            Map<NamedGroup, NamedCurveWitness> groupsEcdsaEphemeral = new HashMap<>();
-            Map<NamedGroup, NamedCurveWitness> groupsTls13 = new HashMap<>();
+        Map<NamedGroup, NamedCurveWitness> groupsRsa = new HashMap<>();
+        Map<NamedGroup, NamedCurveWitness> groupsEcdsaStatic = new HashMap<>();
+        Map<NamedGroup, NamedCurveWitness> groupsEcdsaEphemeral = new HashMap<>();
+        Map<NamedGroup, NamedCurveWitness> groupsTls13 = new HashMap<>();
 
-            TestResult supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
-            TestResult supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
+        TestResult supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
+        TestResult supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
 
-            if (testUsingRsa) {
-                groupsRsa = getSupportedNamedGroupsRsa();
-            }
-            if (testUsingEcdsaStatic) {
-                groupsEcdsaStatic =
-                    getSupportedNamedGroupsEcdsa(getEcdsaStaticCipherSuites(), null, ecdsaCertSigGroupsStatic);
-            }
-            if (testUsingEcdsaEphemeral) {
-                groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCipherSuites(),
-                    ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
-            }
-            if (testUsingTls13) {
-                groupsTls13 = getTls13SupportedGroups();
-            }
-
-            Map<NamedGroup, NamedCurveWitness> overallSupported =
-                composeFullMap(groupsRsa, groupsEcdsaStatic, groupsEcdsaEphemeral);
-
-            TestResult groupsDependOnCipherSuite =
-                getGroupsDependOnCipherSuite(overallSupported, groupsRsa, groupsEcdsaStatic, groupsEcdsaEphemeral);
-
-            return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
-                groupsDependOnCipherSuite, ignoresEcdsaGroupDisparity);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return getCouldNotExecuteResult();
+        if (testUsingRsa) {
+            groupsRsa = getSupportedNamedGroupsRsa();
         }
+        if (testUsingEcdsaStatic) {
+            groupsEcdsaStatic =
+                getSupportedNamedGroupsEcdsa(getEcdsaStaticCipherSuites(), null, ecdsaCertSigGroupsStatic);
+        }
+        if (testUsingEcdsaEphemeral) {
+            groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCipherSuites(),
+                ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
+        }
+        if (testUsingTls13) {
+            groupsTls13 = getTls13SupportedGroups();
+        }
+
+        Map<NamedGroup, NamedCurveWitness> overallSupported =
+            composeFullMap(groupsRsa, groupsEcdsaStatic, groupsEcdsaEphemeral);
+
+        TestResult groupsDependOnCipherSuite =
+            getGroupsDependOnCipherSuite(overallSupported, groupsRsa, groupsEcdsaStatic, groupsEcdsaEphemeral);
+
+        return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
+            groupsDependOnCipherSuite, ignoresEcdsaGroupDisparity);
     }
 
     private Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsRsa() {

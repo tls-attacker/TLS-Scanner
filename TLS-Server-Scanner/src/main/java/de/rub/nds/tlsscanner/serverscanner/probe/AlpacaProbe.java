@@ -40,23 +40,14 @@ public class AlpacaProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            TestResult strictSni = isSupportingStrictSni();
-            TestResult strictAlpn;
-            if (!alpnSupported) {
-                strictAlpn = TestResult.FALSE;
-            } else {
-                strictAlpn = isSupportingStrictAlpn();
-            }
-            return new AlpacaResult(strictAlpn, strictSni);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new AlpacaResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+        TestResult strictSni = isSupportingStrictSni();
+        TestResult strictAlpn;
+        if (!alpnSupported) {
+            strictAlpn = TestResult.FALSE;
+        } else {
+            strictAlpn = isSupportingStrictAlpn();
         }
+        return new AlpacaResult(strictAlpn, strictSni);
     }
 
     private Config getBaseConfig() {

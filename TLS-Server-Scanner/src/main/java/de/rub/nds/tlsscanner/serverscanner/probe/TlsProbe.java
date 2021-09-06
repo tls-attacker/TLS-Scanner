@@ -14,7 +14,9 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.StatsWriter;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.result.AlpacaResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +66,18 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     public ProbeResult call() {
         LOGGER.debug("Executing:" + getProbeName());
         long startTime = System.currentTimeMillis();
-        ProbeResult result = executeTest();
+        ProbeResult result;
+        try {
+            result = executeTest();
+        } catch (Exception e) {
+            // InterruptedException are wrapped in the ParallelExceutor of Tls-Attacker so we unwrap them here
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.error("Could not scan for " + getProbeName(), e);
+            }
+            result = getCouldNotExecuteResult();
+        }
         long stopTime = System.currentTimeMillis();
         if (result != null) {
             result.setStartTime(startTime);
@@ -114,4 +127,5 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     public AtomicBoolean getReadyForExecution() {
         return readyForExecution;
     }
+
 }

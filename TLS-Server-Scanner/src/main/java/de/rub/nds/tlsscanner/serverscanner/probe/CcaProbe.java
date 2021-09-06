@@ -40,15 +40,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class CcaProbe extends TlsProbe {
-    private List<VersionSuiteListPair> versionSuiteListPairsList;
+    private final List<VersionSuiteListPair> versionSuiteListPairsList;
 
-    private boolean increasingTimeout = false;
+    private final boolean increasingTimeout = false;
 
-    private long additionalTimeout = 10000;
+    private final long additionalTimeout = 10000;
 
-    private long additionalTcpTimeout = 1000;
+    private final long additionalTcpTimeout = 1000;
 
-    private int reexecutions = 3;
+    private final int reexecutions = 3;
 
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config);
@@ -57,104 +57,90 @@ public class CcaProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
+        ParallelExecutor parallelExecutor = getParallelExecutor();
 
-        try {
-            ParallelExecutor parallelExecutor = getParallelExecutor();
+        CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
 
-            CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
+        CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(ccaDelegate);
 
-            CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(ccaDelegate);
+        List<ProtocolVersion> desiredVersions = new LinkedList<>();
+        desiredVersions.add(ProtocolVersion.TLS11);
+        desiredVersions.add(ProtocolVersion.TLS10);
+        desiredVersions.add(ProtocolVersion.TLS12);
 
-            List<ProtocolVersion> desiredVersions = new LinkedList<>();
-            desiredVersions.add(ProtocolVersion.TLS11);
-            desiredVersions.add(ProtocolVersion.TLS10);
-            desiredVersions.add(ProtocolVersion.TLS12);
+        List<VersionSuiteListPair> versionSuiteListPairs = getVersionSuitePairList(desiredVersions);
 
-            List<VersionSuiteListPair> versionSuiteListPairs = getVersionSuitePairList(desiredVersions);
-
-            if (versionSuiteListPairs.isEmpty()) {
-                LOGGER.warn("No common cipher suites found. Can't continue scan.");
-                return new CcaResult(TestResult.COULD_NOT_TEST, null);
-            }
-
-            Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
-            Boolean gotDirectoryParameters = ccaDelegate.directoriesSupplied();
-
-            List<TlsTask> taskList = new LinkedList<>();
-            List<CcaTaskVectorPair> taskVectorPairList = new LinkedList<>();
-
-            for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
-                for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
-                    /**
-                     * Skip certificate types for which we are lacking the corresponding CLI parameters Additionally
-                     * skip certificate types that aren't required. I.e. a flow not sending a certificate message can
-                     * simply run once with the CcaCertificateType EMPTY
-                     */
-                    if ((ccaCertificateType.getRequiresCertificate() && !haveClientCertificate)
-                        || (ccaCertificateType.getRequiresCaCertAndKeys() && !gotDirectoryParameters)
-                        || (!ccaWorkflowType.getRequiresCertificate()
-                            && ccaCertificateType != CcaCertificateType.EMPTY)) {
-                        continue;
-                    }
-                    for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
-                        for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
-
-                            CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite,
-                                ccaWorkflowType, ccaCertificateType);
-                            Config tlsConfig = generateConfig();
-                            tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
-                            tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
-
-                            CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager,
-                                additionalTimeout, increasingTimeout, reexecutions, additionalTcpTimeout);
-                            taskList.add(ccaTask);
-                            taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
-                        }
-                    }
-                }
-            }
-
-            List<CcaTestResult> resultList = new LinkedList<>();
-            Boolean handshakeSucceeded = false;
-            parallelExecutor.bulkExecuteTasks(taskList);
-            for (CcaTaskVectorPair ccaTaskVectorPair : taskVectorPairList) {
-                if (ccaTaskVectorPair.getCcaTask().isHasError()) {
-                    LOGGER.warn("Failed to scan " + ccaTaskVectorPair);
-                } else {
-                    Boolean vectorVulnerable = false;
-                    if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED,
-                        ccaTaskVectorPair.getCcaTask().getState().getWorkflowTrace())) {
-                        handshakeSucceeded = true;
-                        vectorVulnerable = true;
-                    } else {
-                        vectorVulnerable = false;
-                    }
-                    resultList
-                        .add(new CcaTestResult(vectorVulnerable, ccaTaskVectorPair.getVector().getCcaWorkflowType(),
-                            ccaTaskVectorPair.getVector().getCcaCertificateType(),
-                            ccaTaskVectorPair.getVector().getProtocolVersion(),
-                            ccaTaskVectorPair.getVector().getCipherSuite()));
-                }
-            }
-            return new CcaResult(handshakeSucceeded ? TestResult.TRUE : TestResult.FALSE, resultList);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new CcaResult(TestResult.FALSE, new LinkedList<>());
+        if (versionSuiteListPairs.isEmpty()) {
+            LOGGER.warn("No common cipher suites found. Can't continue scan.");
+            return new CcaResult(TestResult.COULD_NOT_TEST, null);
         }
 
+        Boolean haveClientCertificate = ccaDelegate.clientCertificateSupplied();
+        Boolean gotDirectoryParameters = ccaDelegate.directoriesSupplied();
+
+        List<TlsTask> taskList = new LinkedList<>();
+        List<CcaTaskVectorPair> taskVectorPairList = new LinkedList<>();
+
+        for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
+            for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
+                /*
+                 * Skip certificate types for which we are lacking the corresponding CLI parameters Additionally
+                 * skip certificate types that aren't required. I.e. a flow not sending a certificate message can
+                 * simply run once with the CcaCertificateType EMPTY
+                 */
+                if ((ccaCertificateType.getRequiresCertificate() && !haveClientCertificate)
+                    || (ccaCertificateType.getRequiresCaCertAndKeys() && !gotDirectoryParameters)
+                    || (!ccaWorkflowType.getRequiresCertificate()
+                        && ccaCertificateType != CcaCertificateType.EMPTY)) {
+                    continue;
+                }
+                for (VersionSuiteListPair versionSuiteListPair : versionSuiteListPairs) {
+                    for (CipherSuite cipherSuite : versionSuiteListPair.getCipherSuiteList()) {
+
+                        CcaVector ccaVector = new CcaVector(versionSuiteListPair.getVersion(), cipherSuite,
+                            ccaWorkflowType, ccaCertificateType);
+                        Config tlsConfig = generateConfig();
+                        tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuite);
+                        tlsConfig.setHighestProtocolVersion(versionSuiteListPair.getVersion());
+
+                        CcaTask ccaTask = new CcaTask(ccaVector, tlsConfig, ccaCertificateManager,
+                            additionalTimeout, increasingTimeout, reexecutions, additionalTcpTimeout);
+                        taskList.add(ccaTask);
+                        taskVectorPairList.add(new CcaTaskVectorPair(ccaTask, ccaVector));
+                    }
+                }
+            }
+        }
+
+        List<CcaTestResult> resultList = new LinkedList<>();
+        boolean handshakeSucceeded = false;
+        parallelExecutor.bulkExecuteTasks(taskList);
+        for (CcaTaskVectorPair ccaTaskVectorPair : taskVectorPairList) {
+            if (ccaTaskVectorPair.getCcaTask().isHasError()) {
+                LOGGER.warn("Failed to scan " + ccaTaskVectorPair);
+            } else {
+                boolean vectorVulnerable;
+                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED,
+                    ccaTaskVectorPair.getCcaTask().getState().getWorkflowTrace())) {
+                    handshakeSucceeded = true;
+                    vectorVulnerable = true;
+                } else {
+                    vectorVulnerable = false;
+                }
+                resultList
+                    .add(new CcaTestResult(vectorVulnerable, ccaTaskVectorPair.getVector().getCcaWorkflowType(),
+                        ccaTaskVectorPair.getVector().getCcaCertificateType(),
+                        ccaTaskVectorPair.getVector().getProtocolVersion(),
+                        ccaTaskVectorPair.getVector().getCipherSuite()));
+            }
+        }
+        return new CcaResult(handshakeSucceeded ? TestResult.TRUE : TestResult.FALSE, resultList);
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if ((report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
-            && (report.getVersionSuitePairs() != null)) {
-            return true;
-        }
-        return false;
+        return (report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
+                && (report.getVersionSuitePairs() != null);
     }
 
     @Override

@@ -36,30 +36,21 @@ public class DrownProbe extends TlsProbe {
     }
 
     private TestResult testForGeneralDrown() {
-        try {
-            GeneralDrownCommandConfig drownCommandConfig =
-                new GeneralDrownCommandConfig(getScannerConfig().getGeneralDelegate());
-            ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
-            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            StarttlsDelegate starttlsDelegate =
-                (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            GeneralDrownAttacker attacker =
-                new GeneralDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
-            Boolean generalDrown = attacker.isVulnerable();
-            if (Objects.equals(generalDrown, Boolean.TRUE)) {
-                return TestResult.TRUE;
-            } else {
-                return TestResult.FALSE;
-            }
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return TestResult.ERROR_DURING_TEST;
+        GeneralDrownCommandConfig drownCommandConfig =
+            new GeneralDrownCommandConfig(getScannerConfig().getGeneralDelegate());
+        ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
+        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+        StarttlsDelegate starttlsDelegate =
+            (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
+        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+        GeneralDrownAttacker attacker =
+            new GeneralDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
+        Boolean generalDrown = attacker.isVulnerable();
+        if (Objects.equals(generalDrown, Boolean.TRUE)) {
+            return TestResult.TRUE;
+        } else {
+            return TestResult.FALSE;
         }
     }
 

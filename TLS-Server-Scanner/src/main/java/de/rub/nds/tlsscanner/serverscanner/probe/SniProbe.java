@@ -37,47 +37,38 @@ public class SniProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            Config config = scannerConfig.createConfig();
-            config.setAddRenegotiationInfoExtension(true);
-            config.setAddServerNameIndicationExtension(false);
-            config.setQuickReceive(true);
-            config.setEarlyStop(true);
-            config.setStopReceivingAfterFatal(true);
-            config.setStopActionsAfterIOException(true);
-            config.setStopActionsAfterFatal(true);
-            List<CipherSuite> toTestList = new LinkedList<>();
-            toTestList.addAll(Arrays.asList(CipherSuite.values()));
-            toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-            toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-            config.setDefaultClientSupportedCipherSuites(toTestList);
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
-            State state = new State(config, trace);
-            executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-                return new SniResult(TestResult.FALSE);
-            }
-            // Test if we can get a hello with SNI
-            config.setAddServerNameIndicationExtension(true);
-            trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
-                RunningModeType.CLIENT);
-            state = new State(config, trace);
-            executeState(state);
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-                return new SniResult(TestResult.TRUE);
-            }
-            // We cannot get a ServerHello from this Server...
-            LOGGER.debug("SNI Test could not get a ServerHello message from the Server!");
-            return new SniResult(TestResult.UNCERTAIN);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new SniResult(TestResult.ERROR_DURING_TEST);
+        Config config = scannerConfig.createConfig();
+        config.setAddRenegotiationInfoExtension(true);
+        config.setAddServerNameIndicationExtension(false);
+        config.setQuickReceive(true);
+        config.setEarlyStop(true);
+        config.setStopReceivingAfterFatal(true);
+        config.setStopActionsAfterIOException(true);
+        config.setStopActionsAfterFatal(true);
+        List<CipherSuite> toTestList = new LinkedList<>();
+        toTestList.addAll(Arrays.asList(CipherSuite.values()));
+        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+        config.setDefaultClientSupportedCipherSuites(toTestList);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
+        State state = new State(config, trace);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+            return new SniResult(TestResult.FALSE);
         }
+        // Test if we can get a hello with SNI
+        config.setAddServerNameIndicationExtension(true);
+        trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
+            RunningModeType.CLIENT);
+        state = new State(config, trace);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+            return new SniResult(TestResult.TRUE);
+        }
+        // We cannot get a ServerHello from this Server...
+        LOGGER.debug("SNI Test could not get a ServerHello message from the Server!");
+        return new SniResult(TestResult.UNCERTAIN);
     }
 
     @Override

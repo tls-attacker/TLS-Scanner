@@ -56,29 +56,19 @@ public class RenegotiationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            TestResult supportsSecureRenegotiationExtension;
-            if (supportsRenegotiationExtension == TestResult.TRUE) {
-                supportsSecureRenegotiationExtension = supportsSecureClientRenegotiationExtension();
-            } else {
-                supportsSecureRenegotiationExtension = TestResult.FALSE;
-            }
-            TestResult supportsSecureRenegotiationCipherSuite = supportsSecureClientRenegotiationCipherSuite();
-            TestResult supportsInsecureRenegotiation = supportsInsecureClientRenegotiation();
-            TestResult vulnerableToRenegotiationAttackExtension = vulnerableToRenegotiationAttackExtension();
-            TestResult vulnerableToRenegotiationAttackCipherSuite = vulnerableToRenegotiationAttackCipherSuite();
-            return new RenegotiationResult(supportsSecureRenegotiationExtension, supportsSecureRenegotiationCipherSuite,
-                supportsInsecureRenegotiation, vulnerableToRenegotiationAttackExtension,
-                vulnerableToRenegotiationAttackCipherSuite);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new RenegotiationResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+        TestResult supportsSecureRenegotiationExtension;
+        if (supportsRenegotiationExtension == TestResult.TRUE) {
+            supportsSecureRenegotiationExtension = supportsSecureClientRenegotiationExtension();
+        } else {
+            supportsSecureRenegotiationExtension = TestResult.FALSE;
         }
+        TestResult supportsSecureRenegotiationCipherSuite = supportsSecureClientRenegotiationCipherSuite();
+        TestResult supportsInsecureRenegotiation = supportsInsecureClientRenegotiation();
+        TestResult vulnerableToRenegotiationAttackExtension = vulnerableToRenegotiationAttackExtension();
+        TestResult vulnerableToRenegotiationAttackCipherSuite = vulnerableToRenegotiationAttackCipherSuite();
+        return new RenegotiationResult(supportsSecureRenegotiationExtension, supportsSecureRenegotiationCipherSuite,
+            supportsInsecureRenegotiation, vulnerableToRenegotiationAttackExtension,
+            vulnerableToRenegotiationAttackCipherSuite);
     }
 
     private TestResult vulnerableToRenegotiationAttackExtension() {

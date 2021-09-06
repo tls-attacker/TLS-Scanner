@@ -44,26 +44,14 @@ public class HelloRetryProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
             testHelloRetry();
             return new HelloRetryResult(sendsHelloRetryRequest, issuesCookie);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new HelloRetryResult(null, null);
-        }
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (!report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
-            return false;
-        }
-        return true;
+        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
+                && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
     }
 
     @Override

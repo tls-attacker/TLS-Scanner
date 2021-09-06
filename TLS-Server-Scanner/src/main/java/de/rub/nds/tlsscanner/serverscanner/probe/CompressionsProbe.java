@@ -41,17 +41,8 @@ public class CompressionsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<CompressionMethod> compressions = getSupportedCompressionMethods();
-            return new CompressionsResult(compressions);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return new CompressionsResult(null);
-        }
+        List<CompressionMethod> compressions = getSupportedCompressionMethods();
+        return new CompressionsResult(compressions);
     }
 
     private List<CompressionMethod> getSupportedCompressionMethods() {

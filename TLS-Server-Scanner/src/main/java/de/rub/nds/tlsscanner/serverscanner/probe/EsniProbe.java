@@ -45,59 +45,49 @@ public class EsniProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            Config tlsConfig = getScannerConfig().createConfig();
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
-            tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
-            tlsConfig.setUseFreshRandom(true);
-            tlsConfig.setQuickReceive(true);
-            tlsConfig.setDefaultClientSupportedCipherSuites(this.getClientSupportedCipherSuites());
-            tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-                SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
-            tlsConfig.setEnforceSettings(false);
-            tlsConfig.setEarlyStop(true);
-            tlsConfig.setStopReceivingAfterFatal(true);
-            tlsConfig.setStopActionsAfterFatal(true);
+        Config tlsConfig = getScannerConfig().createConfig();
+        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS13);
+        tlsConfig.setSupportedVersions(ProtocolVersion.TLS13);
+        tlsConfig.setUseFreshRandom(true);
+        tlsConfig.setQuickReceive(true);
+        tlsConfig.setDefaultClientSupportedCipherSuites(this.getClientSupportedCipherSuites());
+        tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
+            SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
+        tlsConfig.setEnforceSettings(false);
+        tlsConfig.setEarlyStop(true);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setStopActionsAfterFatal(true);
 
-            tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
-            tlsConfig.setDefaultSelectedNamedGroup(NamedGroup.ECDH_X25519);
-            List<NamedGroup> keyShareGroupList = new LinkedList<>();
-            keyShareGroupList.add(NamedGroup.ECDH_X25519);
-            tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroupList);
-            tlsConfig.setAddECPointFormatExtension(false);
-            tlsConfig.setAddEllipticCurveExtension(true);
-            tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-            tlsConfig.setAddSupportedVersionsExtension(true);
-            tlsConfig.setAddKeyShareExtension(true);
-            tlsConfig.setClientSupportedEsniCipherSuites(this.getClientSupportedCipherSuites());
-            tlsConfig.getClientSupportedEsniNamedGroups().addAll(this.getImplementedGroups());
-            tlsConfig.setAddServerNameIndicationExtension(false);
-            tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
+        tlsConfig.setDefaultClientNamedGroups(NamedGroup.ECDH_X25519);
+        tlsConfig.setDefaultSelectedNamedGroup(NamedGroup.ECDH_X25519);
+        List<NamedGroup> keyShareGroupList = new LinkedList<>();
+        keyShareGroupList.add(NamedGroup.ECDH_X25519);
+        tlsConfig.setDefaultClientKeyShareNamedGroups(keyShareGroupList);
+        tlsConfig.setAddECPointFormatExtension(false);
+        tlsConfig.setAddEllipticCurveExtension(true);
+        tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
+        tlsConfig.setAddSupportedVersionsExtension(true);
+        tlsConfig.setAddKeyShareExtension(true);
+        tlsConfig.setClientSupportedEsniCipherSuites(this.getClientSupportedCipherSuites());
+        tlsConfig.getClientSupportedEsniNamedGroups().addAll(this.getImplementedGroups());
+        tlsConfig.setAddServerNameIndicationExtension(false);
+        tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
 
-            WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-                .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
-            State state = new State(tlsConfig, trace);
-            executeState(state);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
+        State state = new State(tlsConfig, trace);
+        executeState(state);
 
-            TlsContext context = state.getTlsContext();
-            boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
-            boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
-                && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
-            if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
-                return new SniResult(TestResult.ERROR_DURING_TEST);
-            } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
-                return (new EsniResult(TestResult.TRUE));
-            } else {
-                return (new EsniResult(TestResult.FALSE));
-            }
-        } catch (Exception e) {
-
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.error("Could not scan for " + getProbeName(), e);
-            }
-            return (new EsniResult(TestResult.ERROR_DURING_TEST));
+        TlsContext context = state.getTlsContext();
+        boolean isDnsKeyRecordAvailable = context.getEsniRecordBytes() != null;
+        boolean isReceivedCorrectNonce = context.getEsniServerNonce() != null
+            && Arrays.equals(context.getEsniServerNonce(), context.getEsniClientNonce());
+        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
+            return new SniResult(TestResult.ERROR_DURING_TEST);
+        } else if (isDnsKeyRecordAvailable && isReceivedCorrectNonce) {
+            return (new EsniResult(TestResult.TRUE));
+        } else {
+            return (new EsniResult(TestResult.FALSE));
         }
     }
 

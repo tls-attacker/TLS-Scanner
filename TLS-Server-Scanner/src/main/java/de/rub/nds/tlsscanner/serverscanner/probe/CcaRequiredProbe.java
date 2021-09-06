@@ -48,15 +48,7 @@ public class CcaRequiredProbe extends TlsProbe {
         WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager, ccaWorkflowType,
             ccaCertificateType);
         State state = new State(tlsConfig, trace);
-        try {
-            executeState(state);
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.warn("Could not test if client authentication is required.");
-            }
-        }
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return new CcaRequiredResult(TestResult.FALSE);
         } else {
