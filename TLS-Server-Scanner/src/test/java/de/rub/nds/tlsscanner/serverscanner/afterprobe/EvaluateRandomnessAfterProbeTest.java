@@ -7,9 +7,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.after;
+package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
-import de.rub.nds.tlsscanner.serverscanner.afterprobe.EvaluateRandomnessAfterProbe;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;

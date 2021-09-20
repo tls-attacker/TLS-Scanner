@@ -7,11 +7,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.rating;
+package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.rating.PropertyResultRecommendation;
-import de.rub.nds.tlsscanner.serverscanner.report.rating.Recommendations;
-import de.rub.nds.tlsscanner.serverscanner.report.rating.Recommendation;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.StringReader;

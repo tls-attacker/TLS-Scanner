@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.util;
+package de.rub.nds.scanner.core.vectorstatistics;
 
 import org.junit.After;
 import org.junit.AfterClass;
