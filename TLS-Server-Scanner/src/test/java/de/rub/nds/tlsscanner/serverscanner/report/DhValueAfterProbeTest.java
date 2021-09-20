@@ -14,7 +14,7 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.DhValueAfterProbe;
 
 import java.math.BigInteger;
 import java.util.HashMap;

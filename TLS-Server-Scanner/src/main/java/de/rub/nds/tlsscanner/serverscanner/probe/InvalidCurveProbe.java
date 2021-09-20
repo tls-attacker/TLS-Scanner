@@ -35,7 +35,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.InvalidCurveTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.leak.InvalidCurveTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveVector;

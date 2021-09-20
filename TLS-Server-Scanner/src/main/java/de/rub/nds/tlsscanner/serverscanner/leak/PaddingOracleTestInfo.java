@@ -12,7 +12,7 @@
  * and open the template in the editor.
  */
 
-package de.rub.nds.tlsscanner.serverscanner.leak.info;
+package de.rub.nds.tlsscanner.serverscanner.leak;
 
 import de.rub.nds.scanner.core.vectorstatistics.TestInfo;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;

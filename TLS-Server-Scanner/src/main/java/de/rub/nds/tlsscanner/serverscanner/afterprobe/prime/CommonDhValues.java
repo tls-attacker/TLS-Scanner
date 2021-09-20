@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.after.prime;
+package de.rub.nds.tlsscanner.serverscanner.afterprobe.prime;
 
 import java.io.Serializable;
 import java.math.BigInteger;

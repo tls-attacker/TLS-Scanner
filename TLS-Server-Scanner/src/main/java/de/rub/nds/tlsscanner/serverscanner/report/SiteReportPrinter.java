@@ -81,6 +81,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAt
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.ResponseCounter;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.VectorContainer;
+import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.bleichenbacher.BleichenbacherTestResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;

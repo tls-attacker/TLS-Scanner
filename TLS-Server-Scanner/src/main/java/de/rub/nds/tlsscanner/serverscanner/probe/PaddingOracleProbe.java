@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.leak.PaddingOracleTestInfo;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;

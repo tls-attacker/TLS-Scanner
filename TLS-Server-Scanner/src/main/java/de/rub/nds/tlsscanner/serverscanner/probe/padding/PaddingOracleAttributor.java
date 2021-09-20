@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.leak.PaddingOracleTestInfo;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import de.rub.nds.scanner.core.vectorstatistics.VectorContainer;
 import java.util.LinkedList;
