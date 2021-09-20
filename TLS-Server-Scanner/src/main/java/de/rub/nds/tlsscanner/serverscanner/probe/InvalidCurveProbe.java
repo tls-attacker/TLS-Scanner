@@ -50,7 +50,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.InvalidCurveResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.DistributionTest;
+import de.rub.nds.scanner.core.vectorstatistics.DistributionTest;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;

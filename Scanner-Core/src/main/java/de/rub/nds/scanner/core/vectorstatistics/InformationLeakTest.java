@@ -7,12 +7,10 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
+package de.rub.nds.scanner.core.vectorstatistics;
 
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
-import de.rub.nds.tlsscanner.serverscanner.leak.info.TestInfo;
-import de.rub.nds.tlsscanner.serverscanner.util.FisherExactTest;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
+import de.rub.nds.tlsscanner.serverscanner.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.constants.TestResult;
 import static org.junit.Assert.*;
 import org.junit.Test;

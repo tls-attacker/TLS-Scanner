@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.rating;
+package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -24,7 +24,7 @@ public class RatingInfluencers implements Serializable {
     /**
      * The default Config file to load.
      */
-    static final String DEFAULT_RATING_FILE = "rating/influencers.xml";
+    public static final String DEFAULT_RATING_FILE = "rating/influencers.xml";
 
     private LinkedList<RatingInfluencer> ratingInfluencers;
 

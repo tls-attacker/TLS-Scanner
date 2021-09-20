@@ -14,6 +14,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.leak.info;
 
+import de.rub.nds.scanner.core.vectorstatistics.TestInfo;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;

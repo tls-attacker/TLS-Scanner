@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
+import de.rub.nds.tlsscanner.serverscanner.report.rating.RatingInfluencers;
+import de.rub.nds.tlsscanner.serverscanner.report.rating.RatingInfluencer;
+import de.rub.nds.tlsscanner.serverscanner.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.StringReader;

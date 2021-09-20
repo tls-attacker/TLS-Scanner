@@ -31,6 +31,7 @@ import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;

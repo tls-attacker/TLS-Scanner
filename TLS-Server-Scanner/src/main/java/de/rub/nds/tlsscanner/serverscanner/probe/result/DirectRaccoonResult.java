@@ -15,7 +15,7 @@ import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
 

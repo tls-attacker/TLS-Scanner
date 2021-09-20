@@ -30,7 +30,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DirectRaccoonResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;

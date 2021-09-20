@@ -61,7 +61,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.statistics.RandomEvaluationResult;
-import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;

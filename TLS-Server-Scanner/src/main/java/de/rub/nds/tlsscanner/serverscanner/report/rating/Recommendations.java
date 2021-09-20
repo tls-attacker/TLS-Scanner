@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.rating;
+package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -24,7 +24,7 @@ public class Recommendations implements Serializable {
     /**
      * The default Config file to load.
      */
-    static final String DEFAULT_RECOMMENDATIONS_FILE = "rating/recommendations.xml";
+    public static final String DEFAULT_RECOMMENDATIONS_FILE = "rating/recommendations.xml";
 
     private List<Recommendation> recommendations;
 

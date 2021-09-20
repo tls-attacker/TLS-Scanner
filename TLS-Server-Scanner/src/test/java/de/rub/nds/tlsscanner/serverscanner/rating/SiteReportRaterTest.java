@@ -9,6 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
+import de.rub.nds.tlsscanner.serverscanner.report.rating.ScoreReport;
+import de.rub.nds.tlsscanner.serverscanner.report.rating.SiteReportRater;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.HashMap;
