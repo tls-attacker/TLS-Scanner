@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -71,7 +72,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * https://www.gnutls.org/security-new.html
  *
  */
-public class SessionTicketZeroKeyProbe extends TlsProbe {
+public class SessionTicketZeroKeyProbe extends TlsProbe<SiteReport, SessionTicketZeroKeyResult> {
 
     /**
      * Magic Bytes the plaintext state in GnuTls starts with
@@ -106,11 +107,11 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     private List<CipherSuite> supportedSuites;
 
     public SessionTicketZeroKeyProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig);
+        super(parallelExecutor, TlsProbeType.SESSION_TICKET_ZERO_KEY, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public SessionTicketZeroKeyResult executeTest() {
         State state;
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
@@ -214,7 +215,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public SessionTicketZeroKeyResult getCouldNotExecuteResult() {
         return new SessionTicketZeroKeyResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 

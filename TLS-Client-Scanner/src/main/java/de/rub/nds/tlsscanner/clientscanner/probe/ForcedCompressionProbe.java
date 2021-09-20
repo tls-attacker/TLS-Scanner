@@ -9,57 +9,60 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import javax.print.attribute.standard.Compression;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
-import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.probe.result.ForcedCompressionResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
-public class ForcedCompressionProbe extends BaseProbe {
-    public ForcedCompressionProbe(Orchestrator orchestrator) {
-        super(orchestrator);
+public class ForcedCompressionProbe extends TlsProbe<ClientReport, ForcedCompressionResult> {
+
+    public ForcedCompressionProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+        super(executor, TlsProbeType.FORCED_COMPRESSION, scannerConfig);
     }
 
     @Override
-    protected ProbeRequirements getRequirements() {
-        return null;
-    }
-
-    @Override
-    public ClientProbeResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
-        Config config = state.getConfig();
-        // need to set contexts compression method correctly for hello
-        state.getTlsContext().setSelectedCompressionMethod(CompressionMethod.NULL);
+    public ForcedCompressionResult executeTest() {
+        Config config = getScannerConfig().createConfig();
+        config.setEnforceSettings(true);
         config.setDefaultServerSupportedCompressionMethods(CompressionMethod.DEFLATE, CompressionMethod.LZS);
         config.setDefaultSelectedCompressionMethod(CompressionMethod.DEFLATE);
-        extendWorkflowTraceToApplication(state.getWorkflowTrace(), config, true);
-        executeState(state, dispatchInformation);
-        if (state.getTlsContext().getSelectedCompressionMethod() == CompressionMethod.NULL) {
-            throw new DispatchException("Failed to set compression method; NULL got set...");
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
+        WorkflowTrace workflowTrace = factory.createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
+        workflowTrace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        State state = new State(config, workflowTrace);
+        executeState(state);
+        TestResult result;
+        if (state.getWorkflowTrace().executedAsPlanned()) {
+            result = TestResult.TRUE;
+        } else {
+            result = TestResult.FALSE;
         }
-        return new ForcedCompressionResult(state);
+        return new ForcedCompressionResult(result);
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class ForcedCompressionResult extends ClientProbeResult {
-        public final boolean vulnerable;
-
-        public ForcedCompressionResult(State state) {
-            vulnerable = state.getWorkflowTrace().executedAsPlanned();
-        }
-
-        @Override
-        public void merge(ClientReport report) {
-            report.putResult(ForcedCompressionProbe.class, this);
-        }
+    @Override
+    public boolean canBeExecuted(ClientReport report) {
+        return true;
     }
 
+    @Override
+    public ForcedCompressionResult getCouldNotExecuteResult() {
+        return new ForcedCompressionResult(TestResult.COULD_NOT_TEST);
+    }
+
+    @Override
+    public void adjustConfig(ClientReport report) {
+    }
 }

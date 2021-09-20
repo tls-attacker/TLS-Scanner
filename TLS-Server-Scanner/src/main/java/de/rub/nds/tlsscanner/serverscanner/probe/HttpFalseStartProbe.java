@@ -13,7 +13,10 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.https.HttpsRequestMessage;
 import de.rub.nds.tlsattacker.core.https.HttpsResponseMessage;
+import de.rub.nds.tlsattacker.core.https.header.GenericHttpsHeader;
+import de.rub.nds.tlsattacker.core.https.header.HostHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -29,21 +32,21 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HttpFalseStartResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HttpFalseStartResult;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HttpFalseStartProbe extends HttpsProbe {
+public class HttpFalseStartProbe extends TlsProbe<SiteReport, HttpFalseStartResult> {
 
     public HttpFalseStartProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HTTP_FALSE_START, scannerConfig);
+        super(parallelExecutor, TlsProbeType.HTTP_FALSE_START, scannerConfig);
     }
 
     @Override
@@ -115,7 +118,7 @@ public class HttpFalseStartProbe extends HttpsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getResult(AnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE;
+        return report.getResult(TlsAnalyzedProperty.SUPPORTS_HTTPS) == TestResult.TRUE;
     }
 
     @Override
@@ -123,7 +126,26 @@ public class HttpFalseStartProbe extends HttpsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public HttpFalseStartResult getCouldNotExecuteResult() {
         return new HttpFalseStartResult(TestResult.COULD_NOT_TEST);
+    }
+
+    // TODO OUTSOURCE
+    protected HttpsRequestMessage getHttpsRequest() {
+        HttpsRequestMessage httpsRequestMessage = new HttpsRequestMessage();
+        httpsRequestMessage.setRequestPath("/");
+
+        httpsRequestMessage.getHeader().add(new HostHeader());
+        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Connection", "keep-alive"));
+        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Accept",
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
+        httpsRequestMessage.getHeader()
+            .add(new GenericHttpsHeader("Accept-Encoding", "compress, deflate, exi, gzip, br, bzip2, lzma, xz"));
+        httpsRequestMessage.getHeader()
+            .add(new GenericHttpsHeader("Accept-Language", "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"));
+        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("Upgrade-Insecure-Requests", "1"));
+        httpsRequestMessage.getHeader().add(new GenericHttpsHeader("User-Agent",
+            "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3449.0 Safari/537.36"));
+        return httpsRequestMessage;
     }
 }

@@ -9,89 +9,141 @@
 
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Random;
-import java.util.Set;
-
+import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
+import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
+import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.CompositeModulusResult;
+import de.rub.nds.tlsscanner.clientscanner.probe.result.dhe.SmallSubgroupResult;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.rub.nds.tlsscanner.clientscanner.client.ClientInfo;
-import de.rub.nds.tlsscanner.clientscanner.probe.Probe;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
-import de.rub.nds.tlsscanner.clientscanner.util.RandString;
+import de.rub.nds.scanner.core.report.ScanReport;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import java.util.List;
+import java.util.Set;
 
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientReport extends Observable implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final char[] UID_ALPH = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static final int UID_LEN = 10; // 36^10 > 2^50; that should be large
-                                           // enough
-    private static final Set<String> usedUIDs = new HashSet<>();
+public class ClientReport extends ScanReport {
 
-    private final Map<Class<? extends Probe>, ClientProbeResult> resultMap;
-    private final ClientInfo clientInfo;
-    public final transient String uid;
+    private List<VersionSuiteListPair> versionSuitPairs;
+    private List<ProtocolVersion> supportedVersions;
+    private List<CipherSuite> advertisedCipherSuites;
 
-    private static String generateUID() {
-        String uid;
-        do {
-            uid = RandString.getRandomString(UID_LEN, UID_ALPH);
-        } while (!usedUIDs.add(uid));
-        return uid;
+    private List<SmallSubgroupResult> smallDheSubgroupResults;
+    private List<CompositeModulusResult> compositeDheModulusResultList;
+
+    private List<CompressionMethod> clientSupportedCompressions;
+    private List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms;
+    private Set<ExtensionType> clientSupportedExtensions;
+    private List<NamedGroup> clientSupportedNamedGroupsList;
+    private List<ECPointFormat> clientSupportedPointFormatsList;
+
+    private Integer lowestPossibleDheModulusSize;
+
+    public ClientReport() {
+        super();
     }
 
-    private ClientReport() {
-        // for serialization
-        clientInfo = null;
-        resultMap = null;
-        uid = null;
+    public synchronized List<CompressionMethod> getClientSupportedCompressions() {
+        return clientSupportedCompressions;
     }
 
-    public ClientReport(ClientInfo clientInfo) {
-        this.resultMap = new HashMap<>();
-        this.clientInfo = clientInfo;
-        uid = generateUID();
+    public synchronized void setClientSupportedCompressions(List<CompressionMethod> clientSupportedCompressions) {
+        this.clientSupportedCompressions = clientSupportedCompressions;
     }
 
-    public void finalizeReport() {
-        usedUIDs.remove(uid);
+    public synchronized List<SignatureAndHashAlgorithm> getClientSupportedSignatureAndHashAlgorithms() {
+        return clientSupportedSignatureAndHashAlgorithms;
     }
 
-    public boolean hasResult(Class<? extends Probe> clazz) {
-        return resultMap.containsKey(clazz);
+    public synchronized void setClientSupportedSignatureAndHashAlgorithms(
+        List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms) {
+        this.clientSupportedSignatureAndHashAlgorithms = clientSupportedSignatureAndHashAlgorithms;
     }
 
-    public ClientProbeResult getResult(Class<? extends Probe> clazz) {
-        return resultMap.get(clazz);
+    public synchronized Set<ExtensionType> getClientSupportedExtensions() {
+        return clientSupportedExtensions;
     }
 
-    public <T extends ClientProbeResult> T getResult(Class<? extends Probe> clazz, Class<T> expectedReturnType) {
-        // convenience function
-        try {
-            return expectedReturnType.cast(getResult(clazz));
-        } catch (ClassCastException e) {
-            return null;
-        }
+    public synchronized void setClientSupportedExtensions(Set<ExtensionType> clientSupportedExtensions) {
+        this.clientSupportedExtensions = clientSupportedExtensions;
     }
 
-    public ClientProbeResult putResult(Class<? extends Probe> clazz, ClientProbeResult result) {
-        ClientProbeResult ret = resultMap.put(clazz, result);
-        markAsChangedAndNotify();
-        return ret;
+    public synchronized List<NamedGroup> getClientSupportedNamedGroupsList() {
+        return clientSupportedNamedGroupsList;
     }
 
-    public synchronized void markAsChangedAndNotify() {
-        this.setChanged();
-        this.notifyObservers();
+    public synchronized void setClientSupportedNamedGroupsList(List<NamedGroup> clientSupportedNamedGroupsList) {
+        this.clientSupportedNamedGroupsList = clientSupportedNamedGroupsList;
     }
 
+    public synchronized List<ECPointFormat> getClientSupportedPointFormatsList() {
+        return clientSupportedPointFormatsList;
+    }
+
+    public synchronized void setClientSupportedPointFormatsList(List<ECPointFormat> clientSupportedPointFormatsList) {
+        this.clientSupportedPointFormatsList = clientSupportedPointFormatsList;
+    }
+
+    public synchronized Integer getLowestPossibleDheModulusSize() {
+        return lowestPossibleDheModulusSize;
+    }
+
+    public synchronized void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
+        this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
+    }
+
+    public synchronized List<SmallSubgroupResult> getSmallDheSubgroupResults() {
+        return smallDheSubgroupResults;
+    }
+
+    public synchronized void setSmallDheSubgroupResults(List<SmallSubgroupResult> smallDheSubgroupResults) {
+        this.smallDheSubgroupResults = smallDheSubgroupResults;
+    }
+
+    public synchronized List<CompositeModulusResult> getCompositeDheModulusResultList() {
+        return compositeDheModulusResultList;
+    }
+
+    public synchronized void
+        setCompositeDheModulusResultList(List<CompositeModulusResult> compositeDheModulusResultList) {
+        this.compositeDheModulusResultList = compositeDheModulusResultList;
+    }
+
+    public synchronized List<ProtocolVersion> getSupportedVersions() {
+        return supportedVersions;
+    }
+
+    public synchronized void setSupportedVersions(List<ProtocolVersion> supportedVersions) {
+        this.supportedVersions = supportedVersions;
+    }
+
+    public synchronized List<VersionSuiteListPair> getVersionSuitPairs() {
+        return versionSuitPairs;
+    }
+
+    public synchronized void setVersionSuitPairs(List<VersionSuiteListPair> versionSuitPairs) {
+        this.versionSuitPairs = versionSuitPairs;
+    }
+
+    public synchronized List<CipherSuite> getAdvertisedCipherSuites() {
+        return advertisedCipherSuites;
+    }
+
+    public synchronized void setAdvertisedCipherSuites(List<CipherSuite> advertisedCipherSuites) {
+        this.advertisedCipherSuites = advertisedCipherSuites;
+    }
+
+    @Override
+    public String getFullReport(ScannerDetail detail, boolean printColorful) {
+        return new ClientReportPrinter(detail, DefaultPrintingScheme.getDefaultPrintingScheme(printColorful),
+            printColorful, this).getFullReport();
+    }
 }

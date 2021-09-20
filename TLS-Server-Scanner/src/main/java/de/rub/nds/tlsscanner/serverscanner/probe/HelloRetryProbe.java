@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -21,25 +22,24 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HelloRetryResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HelloRetryResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.LinkedList;
 
 /**
  * Test the servers Hello Retry Request
  */
-public class HelloRetryProbe extends TlsProbe {
+public class HelloRetryProbe extends TlsProbe<SiteReport, HelloRetryResult> {
 
     private TestResult sendsHelloRetryRequest = TestResult.FALSE;
     private TestResult issuesCookie = TestResult.FALSE;
 
     public HelloRetryProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HELLO_RETRY, scannerConfig);
+        super(parallelExecutor, TlsProbeType.HELLO_RETRY, scannerConfig);
     }
 
     @Override

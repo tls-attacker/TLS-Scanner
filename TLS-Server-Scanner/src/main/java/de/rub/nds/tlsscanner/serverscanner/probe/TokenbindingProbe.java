@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -20,11 +21,10 @@ import de.rub.nds.tlsattacker.core.exceptions.WorkflowExecutionException;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.TokenbindingResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.TokenbindingResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,10 +32,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class TokenbindingProbe extends TlsProbe {
+public class TokenbindingProbe extends TlsProbe<SiteReport, TokenbindingResult> {
 
     public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.TOKENBINDING, config);
+        super(parallelExecutor, TlsProbeType.TOKENBINDING, config);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class TokenbindingProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public TokenbindingResult getCouldNotExecuteResult() {
         return new TokenbindingResult(null, null);
     }
 }

@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -21,14 +22,14 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,7 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class CertificateProbe extends TlsProbe {
+public class CertificateProbe extends TlsProbe<SiteReport, CertificateResult> {
 
     private boolean scanForRsaCert = true;
     private boolean scanForDssCert = true;
@@ -55,7 +56,7 @@ public class CertificateProbe extends TlsProbe {
     private List<NamedGroup> ecdsaCertSigGroupsTls13;
 
     public CertificateProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CERTIFICATE, config);
+        super(parallelExecutor, TlsProbeType.CERTIFICATE, config);
     }
 
     @Override
@@ -94,8 +95,8 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
+        if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
+            && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
             return true;
         }
         return false;
@@ -103,16 +104,16 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        if (report.getResult(AnalyzedProperty.SUPPORTS_RSA_CERT) == TestResult.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA_CERT) == TestResult.FALSE) {
             scanForRsaCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_ECDSA) == TestResult.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDSA) == TestResult.FALSE) {
             scanForEcdsaCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_DSS) == TestResult.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DSS) == TestResult.FALSE) {
             scanForDssCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_GOST) == TestResult.FALSE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_GOST) == TestResult.FALSE) {
             scanForGostCert = false;
         }
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
@@ -121,7 +122,7 @@ public class CertificateProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public CertificateResult getCouldNotExecuteResult() {
         return new CertificateResult(null, null, null, null, null, null, null);
     }
 

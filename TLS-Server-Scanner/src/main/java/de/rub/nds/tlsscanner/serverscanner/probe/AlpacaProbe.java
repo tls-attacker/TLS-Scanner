@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -18,22 +19,26 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.AlpacaResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.AlpacaResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class AlpacaProbe extends TlsProbe {
+public class AlpacaProbe extends TlsProbe<SiteReport, AlpacaResult> {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private boolean alpnSupported;
 
     public AlpacaProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
+        super(parallelExecutor, TlsProbeType.CROSS_PROTOCOL_ALPACA, scannerConfig);
     }
 
     @Override
@@ -104,11 +109,11 @@ public class AlpacaProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.EXTENSIONS);
+        return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public AlpacaResult getCouldNotExecuteResult() {
         return new AlpacaResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 
@@ -116,5 +121,4 @@ public class AlpacaProbe extends TlsProbe {
     public void adjustConfig(SiteReport report) {
         alpnSupported = report.getSupportedExtensions().contains(ExtensionType.ALPN);
     }
-
 }

@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
+import de.rub.nds.scanner.core.constants.TestResult;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder = { "result", "shortDescription", "handlingRecommendation", "detailedDescription" })

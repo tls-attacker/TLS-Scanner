@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.attacks.config.GeneralDrownCommandConfig;
 import de.rub.nds.tlsattacker.attacks.config.SpecialDrownCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.drown.GeneralDrownAttacker;
@@ -16,22 +17,22 @@ import de.rub.nds.tlsattacker.attacks.impl.drown.SpecialDrownAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DrownResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.DrownResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.Objects;
 
-public class DrownProbe extends TlsProbe {
+public class DrownProbe extends TlsProbe<SiteReport, DrownResult> {
 
     public DrownProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DROWN, scannerConfig);
+        super(parallelExecutor, TlsProbeType.DROWN, scannerConfig);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public DrownResult executeTest() {
         return new DrownResult(testForGeneralDrown(), testForExtraClearDrown());
     }
 
@@ -58,11 +59,12 @@ public class DrownProbe extends TlsProbe {
                 new SpecialDrownCommandConfig(getScannerConfig().getGeneralDelegate());
 
             ClientDelegate delegate = (ClientDelegate) drownCommandConfig.getDelegate(ClientDelegate.class);
-            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+            delegate.setHost(((ServerScannerConfig) scannerConfig).getClientDelegate().getHost());
+            delegate.setSniHostname(((ServerScannerConfig) scannerConfig).getClientDelegate().getSniHostname());
             StarttlsDelegate starttlsDelegate =
                 (StarttlsDelegate) drownCommandConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+            starttlsDelegate
+                .setStarttlsType(((ServerScannerConfig) scannerConfig).getStarttlsDelegate().getStarttlsType());
             SpecialDrownAttacker attacker =
                 new SpecialDrownAttacker(drownCommandConfig, drownCommandConfig.createConfig());
             Boolean generalDrown = attacker.isVulnerable();
@@ -92,7 +94,7 @@ public class DrownProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public DrownResult getCouldNotExecuteResult() {
         return new DrownResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 }

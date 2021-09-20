@@ -9,13 +9,14 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-public class EcPublicKeyAfterProbe extends AfterProbe {
+public class EcPublicKeyAfterProbe extends AfterProbe<SiteReport> {
 
     @Override
     public void analyze(SiteReport report) {
@@ -36,7 +37,7 @@ public class EcPublicKeyAfterProbe extends AfterProbe {
             reuse = TestResult.ERROR_DURING_TEST;
         }
 
-        report.putResult(AnalyzedProperty.REUSES_EC_PUBLICKEY, reuse);
+        report.putResult(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY, reuse);
     }
 
 }

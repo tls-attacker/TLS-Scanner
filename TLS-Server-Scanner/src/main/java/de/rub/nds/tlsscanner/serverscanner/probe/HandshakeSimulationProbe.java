@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -19,35 +20,33 @@ import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConfigFileList;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationRequest;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientConfig;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HandshakeSimulationResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HandshakeSimulationResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
-public class HandshakeSimulationProbe extends TlsProbe {
+public class HandshakeSimulationProbe extends TlsProbe<SiteReport, HandshakeSimulationResult> {
 
     private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
     private final List<SimulationRequest> simulationRequestList;
 
     public HandshakeSimulationProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HANDSHAKE_SIMULATION, config);
+        super(parallelExecutor, TlsProbeType.HANDSHAKE_SIMULATION, config);
         simulationRequestList = new LinkedList<>();
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {
@@ -228,7 +227,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public HandshakeSimulationResult getCouldNotExecuteResult() {
         return new HandshakeSimulationResult(null);
     }
 }

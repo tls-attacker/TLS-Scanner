@@ -318,7 +318,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_DH</analyzedProperty>
+        <analyzedProperty>SUPPORTS_DHE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-100</influence>
@@ -329,7 +329,18 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_ECDH</analyzedProperty>
+        <analyzedProperty>SUPPORTS_STATIC_DH</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>-300</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>SUPPORTS_ECDHE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>100</influence>
@@ -1086,18 +1097,6 @@
             <result>TRUE</result>
             <influence>-500</influence>
             <scoreCap>1000</scoreCap>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_TLS_POODLE</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-800</influence>
-            <scoreCap>500</scoreCap>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>

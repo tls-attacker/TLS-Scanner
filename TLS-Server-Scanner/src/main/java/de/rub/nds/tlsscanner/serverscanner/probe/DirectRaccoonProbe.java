@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.attacks.padding.VectorResponse;
 import de.rub.nds.tlsattacker.attacks.task.FingerPrintTask;
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -18,18 +19,17 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonVector;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowGenerator;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DirectRaccoonResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.DirectRaccoonResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -40,7 +40,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DirectRaccoonProbe extends TlsProbe {
+public class DirectRaccoonProbe extends TlsProbe<SiteReport, DirectRaccoonResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -50,7 +50,7 @@ public class DirectRaccoonProbe extends TlsProbe {
     private List<VersionSuiteListPair> serverSupportedSuites;
 
     public DirectRaccoonProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DIRECT_RACCOON, config);
+        super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, config);
     }
 
     @Override
@@ -151,8 +151,8 @@ public class DirectRaccoonProbe extends TlsProbe {
         DirectRaccoonWorkflowType workflowType, boolean withNullByte, FingerPrintTask fingerPrintTask) {
         DirectRaccoonVector raccoonVector = new DirectRaccoonVector(workflowType, version, suite, withNullByte);
         if (fingerPrintTask.isHasError()) {
-            LOGGER.warn("Could not extract fingerprint for WorkflowType=" + type + ", version=" + version + ", suite="
-                + suite + ", pmsWithNullByte=" + withNullByte + ";");
+            LOGGER.warn("Could not extract fingerprint for WorkflowType=" + workflowType + ", version=" + version
+                + ", suite=" + suite + ", pmsWithNullByte=" + withNullByte + ";");
             return null;
         } else {
             return new VectorResponse(raccoonVector, fingerPrintTask.getFingerprint());
@@ -172,7 +172,7 @@ public class DirectRaccoonProbe extends TlsProbe {
         if (report.getCipherSuites() == null) {
             return false;
         }
-        return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_DH), TestResult.TRUE);
+        return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_DHE), TestResult.TRUE);
     }
 
     @Override
@@ -181,7 +181,7 @@ public class DirectRaccoonProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public DirectRaccoonResult getCouldNotExecuteResult() {
         return new DirectRaccoonResult(TestResult.COULD_NOT_TEST);
     }
 }

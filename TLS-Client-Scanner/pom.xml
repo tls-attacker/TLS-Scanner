@@ -49,13 +49,8 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>TLS-Server-Scanner</artifactId>
+            <artifactId>TLS-Scanner-Core</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.rub.nds.tlsdockerlib</groupId>
-            <artifactId>TLS-Docker-Library</artifactId>
-            <version>2.0</version>
         </dependency>
     </dependencies>
     <properties>

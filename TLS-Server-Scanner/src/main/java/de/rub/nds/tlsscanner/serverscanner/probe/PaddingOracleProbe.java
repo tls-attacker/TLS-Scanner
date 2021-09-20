@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.attacks.config.PaddingOracleCommandConfig;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingRecordGeneratorType;
 import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
@@ -18,23 +19,23 @@ import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.result.PaddingOracleResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.PaddingOracleResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class PaddingOracleProbe extends TlsProbe {
+public class PaddingOracleProbe extends TlsProbe<SiteReport, PaddingOracleResult> {
 
     private static int numberOfIterations;
     private static int numberOfAddtionalIterations;
@@ -97,8 +98,8 @@ public class PaddingOracleProbe extends TlsProbe {
         PaddingOracleCommandConfig paddingOracleConfig =
             new PaddingOracleCommandConfig(getScannerConfig().getGeneralDelegate());
         ClientDelegate delegate = (ClientDelegate) paddingOracleConfig.getDelegate(ClientDelegate.class);
-        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+        delegate.setHost(((ServerScannerConfig) scannerConfig).getClientDelegate().getHost());
+        delegate.setSniHostname(((ServerScannerConfig) scannerConfig).getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) paddingOracleConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
         paddingOracleConfig.setNumberOfIterations(numberOfIterations);
@@ -135,9 +136,9 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if (report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
-            return Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
+        if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
+            && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
+            return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
         } else {
             return false;
         }

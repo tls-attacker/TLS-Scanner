@@ -9,16 +9,16 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.LinkedHashMap;
 
 public class ScoreReport {
 
     private final int score;
 
-    private final LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers;
+    private final LinkedHashMap<TlsAnalyzedProperty, PropertyResultRatingInfluencer> influencers;
 
-    public ScoreReport(int score, LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
+    public ScoreReport(int score, LinkedHashMap<TlsAnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
         this.score = score;
         this.influencers = influencers;
     }
@@ -27,7 +27,7 @@ public class ScoreReport {
         return score;
     }
 
-    public LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> getInfluencers() {
+    public LinkedHashMap<TlsAnalyzedProperty, PropertyResultRatingInfluencer> getInfluencers() {
         return influencers;
     }
 }

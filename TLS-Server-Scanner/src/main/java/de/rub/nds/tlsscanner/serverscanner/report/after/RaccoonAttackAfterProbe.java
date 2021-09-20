@@ -9,16 +9,17 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.tlsattacker.core.crypto.keys.CustomDhPublicKey;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
-import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackVulnerabilityPosition;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackPskProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackVulnerabilityPosition;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -31,7 +32,7 @@ import java.util.Map;
 /**
  * This class analyzes all previously seen DH public keys and moduli.
  */
-public class RaccoonAttackAfterProbe extends AfterProbe {
+public class RaccoonAttackAfterProbe extends AfterProbe<SiteReport> {
 
     private static final int MAX_CONSIDERED_PSK_LENGTH_BYTES = 128;
 
@@ -53,10 +54,10 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        supportsLegacyPrf = report.getResult(AnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResult.TRUE;
-        supportsSha256 = report.getResult(AnalyzedProperty.SUPPORTS_SHA256_PRF) == TestResult.TRUE;
-        supportsSha384 = report.getResult(AnalyzedProperty.SUPPORTS_SHA384_PRF) == TestResult.TRUE;
-        supportsSSLv3 = report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE;
+        supportsLegacyPrf = report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF) == TestResult.TRUE;
+        supportsSha256 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF) == TestResult.TRUE;
+        supportsSha384 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF) == TestResult.TRUE;
+        supportsSSLv3 = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE;
         ExtractedValueContainer publicKeyContainer =
             report.getExtractedValueContainerMap().get(TrackableValueType.DHE_PUBLICKEY);
         List extractedValueList = publicKeyContainer.getExtractedValueList();
@@ -67,11 +68,11 @@ public class RaccoonAttackAfterProbe extends AfterProbe {
         }
         report.setRaccoonAttackProbabilities(attackProbabilityList);
 
-        TestResult reusesDhPublicKey = report.getResult(AnalyzedProperty.REUSES_DH_PUBLICKEY);
+        TestResult reusesDhPublicKey = report.getResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY);
         if (reusesDhPublicKey == TestResult.TRUE) {
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.TRUE);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.TRUE);
         } else {
-            report.putResult(AnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.FALSE);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_RACCOON_ATTACK, TestResult.FALSE);
 
         }
     }

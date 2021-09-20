@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.asn1.model.*;
 import de.rub.nds.tlsattacker.core.certificate.ocsp.CertificateInformationExtractor;
 
@@ -30,15 +31,16 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CertificateTransparencyResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateTransparencyResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import org.bouncycastle.crypto.tls.Certificate;
 
 import java.time.Duration;
 import java.util.*;
 
-public class CertificateTransparencyProbe extends TlsProbe {
+public class CertificateTransparencyProbe extends TlsProbe<SiteReport, CertificateTransparencyResult> {
 
     private Certificate serverCertChain;
     private OCSPResponse stapledOcspResponse;
@@ -52,11 +54,11 @@ public class CertificateTransparencyProbe extends TlsProbe {
     private SignedCertificateTimestampList ocspSctList;
 
     public CertificateTransparencyProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CERTIFICATE_TRANSPARENCY, config);
+        super(parallelExecutor, TlsProbeType.CERTIFICATE_TRANSPARENCY, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CertificateTransparencyResult executeTest() {
         Config tlsConfig = initTlsConfig();
 
         if (serverCertChain == null) {
@@ -221,7 +223,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getCertificateChainList() != null && report.isProbeAlreadyExecuted(ProbeType.OCSP);
+        return report.getCertificateChainList() != null && report.isProbeAlreadyExecuted(TlsProbeType.OCSP);
     }
 
     @Override

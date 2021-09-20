@@ -13,182 +13,137 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientKeyExchangeMessage;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.RSAClientKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.RSAServerKeyExchangeMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeRsaParametersAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
-import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
-import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.recon.SupportedCipherSuitesProbe.SupportedCipherSuitesResult;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.clientscanner.probe.result.FreakResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import java.util.LinkedList;
 
 // see https://www.smacktls.com/smack.pdf section V-D
-public class FreakProbe extends BaseProbe {
+public class FreakProbe extends TlsProbe<ClientReport, FreakResult> {
+
     private static final Logger LOGGER = LogManager.getLogger();
+
     private static final int P_LEN = 256;
     private static final int Q_LEN = 256;
-    private static final int N_LEN = P_LEN + Q_LEN;
-    protected static final List<CipherSuite> RSA_SUITES;
-    static {
-        RSA_SUITES = CipherSuite.getImplemented();
-        RSA_SUITES.removeIf(suite -> !suite.name().startsWith("TLS_RSA_"));
-    }
+    private static final int MODULUS_LENGTH = P_LEN + Q_LEN;
 
-    private Random rnd = new Random();
+    private List<CipherSuite> rsaCipherSuites;
 
-    public FreakProbe(Orchestrator orchestrator) {
-        super(orchestrator);
+    private Random random = new Random(0); // Fixed random to be deterministic
+
+    public FreakProbe(ParallelExecutor executor, ScannerConfig scannerConfig) {
+        super(executor, TlsProbeType.FREAK, scannerConfig);
     }
 
     @Override
-    protected ProbeRequirements getRequirements() {
-        return ProbeRequirements.TRUE().needResultOfTypeMatching(SupportedCipherSuitesProbe.class,
-            SupportedCipherSuitesResult.class, SupportedCipherSuitesResult::supportsKeyExchangeRSA,
-            "Client does not support RSA key exchange");
-    }
-
-    @SuppressWarnings("squid:S3776")
-    // sonarlint says this function is too complex...
-    private void patchTrace(WorkflowTrace trace, ServerKeyExchangeMessage ske, TlsAction fixKeysAction)
-        throws DispatchException {
-        // patch send action (which sends SH, CERT, SHD) to include SKE after
-        // CERT
-        boolean done = false;
-        for (TlsAction a : trace.getTlsActions()) {
-            if (a instanceof SendAction) {
-                boolean foundSH = false;
-                List<ProtocolMessage> msgs = ((SendAction) a).getMessages();
-                for (ProtocolMessage msg : msgs) {
-                    if (!foundSH) {
-                        if (msg instanceof ServerHelloMessage) {
-                            foundSH = true;
-                        }
-                    } else {
-                        if (msg instanceof CertificateMessage) {
-                            // append SKE
-                            msgs.add(msgs.indexOf(msg) + 1, ske);
-                            done = true;
-                            break;
-                        }
-                    }
-                }
-                if (done) {
-                    // add fixKeysAction
-                    trace.addTlsAction(trace.getTlsActions().indexOf(a) + 1, fixKeysAction);
-                    break;
-                }
-            }
-        }
-        if (!done) {
-            throw new DispatchException("Did not find SH, CERT");
-        }
-    }
-
-    @Override
-    public FreakResult execute(State state, DispatchInformation dispatchInformation) throws DispatchException {
-        Config config = state.getConfig();
-        WorkflowTrace trace = state.getWorkflowTrace();
+    public FreakResult executeTest() {
+        Config config = scannerConfig.createConfig();
         config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS12);
-        config.setSupportedVersions(ProtocolVersion.SSL2, ProtocolVersion.SSL3, ProtocolVersion.TLS10,
-            ProtocolVersion.TLS11, ProtocolVersion.TLS12);
-        config.setDefaultSelectedCipherSuite(RSA_SUITES.get(0));
-        config.setDefaultServerSupportedCipherSuites(RSA_SUITES);
-        extendWorkflowTraceToApplication(trace, config, false);
+        config.setSupportedVersions(ProtocolVersion.SSL3, ProtocolVersion.TLS10, ProtocolVersion.TLS11,
+            ProtocolVersion.TLS12);
+        config.setDefaultSelectedCipherSuite(CipherSuite.TLS_RSA_EXPORT_WITH_DES40_CBC_SHA);
+        // Set value in config for workflow trace generation - we will set it later back
+        config.setDefaultServerSupportedCipherSuites(rsaCipherSuites);
 
-        BigInteger p, q, N, e, d, phi;
-        e = BigInteger.valueOf(65537);
+        BigInteger p, q, modulus, publicExponent, privateKey, phi;
+        publicExponent = BigInteger.valueOf(65537);
         do {
-            p = BigInteger.probablePrime(P_LEN, rnd);
-            q = BigInteger.probablePrime(Q_LEN, rnd);
-            N = p.multiply(q);
-            assert N.bitLength() <= N_LEN;
+            p = BigInteger.probablePrime(P_LEN, random);
+            q = BigInteger.probablePrime(Q_LEN, random);
+            modulus = p.multiply(q);
             phi = p.subtract(BigInteger.ONE);
             BigInteger q1 = q.subtract(BigInteger.ONE);
             phi = phi.multiply(q1);
-        } while (!e.gcd(phi).equals(BigInteger.ONE));
-        d = e.modInverse(phi);
-        assert d.multiply(e).mod(phi).equals(BigInteger.ONE);
+        } while (!publicExponent.gcd(phi).equals(BigInteger.ONE));
+        privateKey = publicExponent.modInverse(phi);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("p: {}", p);
             LOGGER.debug("q: {}", q);
-            LOGGER.debug("N: {}", N);
+            LOGGER.debug("Modulus(N): {}", modulus);
             LOGGER.debug("phi(N): {}", phi);
-            LOGGER.debug("e: {}", e);
-            LOGGER.debug("d: {}", d);
+            LOGGER.debug("e: {}", publicExponent);
+            LOGGER.debug("d: {}", privateKey);
         }
-        config.setDefaultServerRSAModulus(N);
-        config.setDefaultServerRSAPublicKey(e);
-        config.setDefaultServerRSAPrivateKey(d);
+        config.setDefaultServerRSAModulus(modulus);
+        config.setDefaultServerRSAPublicKey(publicExponent);
+        config.setDefaultServerRSAPrivateKey(privateKey);
         RSAServerKeyExchangeMessage ske = new RSAServerKeyExchangeMessage();
-        // set mod, pubKey so they are not null
-        ske.setModulus(N.toByteArray());
-        ske.setPublicKey(e.toByteArray());
-        // then use ModifiableVariable to set the export pubKey
-        ske.getModulus().setModification(new ByteArrayExplicitValueModification(N.toByteArray()));
-        ske.getPublicKey().setModification(new ByteArrayExplicitValueModification(e.toByteArray()));
+        ske.setModulus(Modifiable.explicit(modulus.toByteArray()));
+        ske.setPublicKey(Modifiable.explicit(publicExponent.toByteArray()));
+        TlsAction fixKeysAction = new ChangeRsaParametersAction(modulus, publicExponent, privateKey);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
+            RunningModeType.SERVER);
+        trace.addTlsAction(fixKeysAction);
+        trace.addTlsAction(
+            new ReceiveAction(new RSAClientKeyExchangeMessage(), new ChangeCipherSpecMessage(), new FinishedMessage()));
+        config.setDefaultSelectedCipherSuite(rsaCipherSuites.get(0));
+        executeState(new State(config, trace));
 
-        // for SKE we need the cert keys to do the signing
-        // after that we need the export keys to do the decryption
-        TlsAction fixKeysAction = new ChangeRsaParametersAction(N, e, d);
-        patchTrace(trace, ske, fixKeysAction);
-        executeState(state, dispatchInformation);
-        return new FreakResult(state);
+        HandshakeMessage ckeMessage =
+            WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
+        if (ckeMessage != null && ckeMessage instanceof RSAClientKeyExchangeMessage) {
+            RSAClientKeyExchangeMessage rsaCke = (RSAClientKeyExchangeMessage) ckeMessage;
+            BigInteger c = new BigInteger(1, rsaCke.getPublicKey().getValue());
+            if (c.bitLength() <= MODULUS_LENGTH) {
+                return new FreakResult(TestResult.TRUE);
+            } else {
+                return new FreakResult(TestResult.FALSE);
+            }
+        } else {
+            return new FreakResult(TestResult.FALSE);
+        }
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class FreakResult extends ClientProbeResult {
-        public final boolean vulnerable;
+    @Override
+    public boolean canBeExecuted(ClientReport report) {
+        return report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA) == TestResult.TRUE;
+    }
 
-        public FreakResult(State state) {
-            // we say the client is vulnerable if the sent a small CKE
-            boolean found = false;
-            boolean vuln = false;
-            for (TlsAction a : state.getWorkflowTrace().getTlsActions()) {
-                if (a instanceof ReceiveAction) {
-                    for (ProtocolMessage msg : ((ReceiveAction) a).getMessages()) {
-                        if (msg instanceof ClientKeyExchangeMessage) {
-                            ClientKeyExchangeMessage cke = (ClientKeyExchangeMessage) msg;
-                            BigInteger c = new BigInteger(1, cke.getPublicKey().getValue());
-                            vuln = c.bitLength() <= N_LEN;
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        break;
-                    }
+    @Override
+    public FreakResult getCouldNotExecuteResult() {
+        return new FreakResult(TestResult.CANNOT_BE_TESTED);
+    }
+
+    @Override
+    public void adjustConfig(ClientReport report) {
+        rsaCipherSuites = new LinkedList<>();
+        List<VersionSuiteListPair> versionSuitPairs = report.getVersionSuitPairs();
+        for (VersionSuiteListPair suitePair : versionSuitPairs) {
+            for (CipherSuite suite : suitePair.getCipherSuiteList()) {
+                if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA) {
+                    rsaCipherSuites.add(suite);
                 }
             }
-            vulnerable = vuln;
         }
-
-        @Override
-        public void merge(ClientReport report) {
-            report.putResult(FreakProbe.class, this);
-        }
-
     }
-
 }

@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -59,7 +60,7 @@ public class RatingInfluencers implements Serializable {
         this.ratingInfluencers = ratingInfluencers;
     }
 
-    public PropertyResultRatingInfluencer getPropertyRatingInfluencer(AnalyzedProperty property, TestResult result) {
+    public PropertyResultRatingInfluencer getPropertyRatingInfluencer(TlsAnalyzedProperty property, TestResult result) {
         for (RatingInfluencer ri : ratingInfluencers) {
             if (ri.getAnalyzedProperty() == property) {
                 return ri.getPropertyRatingInfluencer(result);

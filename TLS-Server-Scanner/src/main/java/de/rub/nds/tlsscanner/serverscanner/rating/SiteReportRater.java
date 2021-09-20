@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.io.InputStream;
 import java.net.URL;
@@ -102,7 +103,7 @@ public class SiteReportRater {
     }
 
     public ScoreReport getScoreReport(HashMap<String, TestResult> resultMap) {
-        LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> ratingInfluencers = new LinkedHashMap<>();
+        LinkedHashMap<TlsAnalyzedProperty, PropertyResultRatingInfluencer> ratingInfluencers = new LinkedHashMap<>();
 
         for (RatingInfluencer ratingInfluencer : influencers.getRatingInfluencers()) {
             TestResult result = resultMap.get(ratingInfluencer.getAnalyzedProperty().toString());
@@ -118,7 +119,7 @@ public class SiteReportRater {
 
     }
 
-    private int computeScore(HashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
+    private int computeScore(HashMap<TlsAnalyzedProperty, PropertyResultRatingInfluencer> influencers) {
         int score = 0;
         for (PropertyResultRatingInfluencer influencer : influencers.values()) {
             if (influencer.getInfluence() != null) {

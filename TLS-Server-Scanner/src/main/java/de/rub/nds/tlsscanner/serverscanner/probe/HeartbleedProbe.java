@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.attacks.config.HeartbleedCommandConfig;
 import de.rub.nds.tlsattacker.attacks.impl.HeartbleedAttacker;
 import de.rub.nds.tlsattacker.core.config.delegate.CipherSuiteDelegate;
@@ -19,22 +20,22 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.HeartbleedResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.HeartbleedResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class HeartbleedProbe extends TlsProbe {
+public class HeartbleedProbe extends TlsProbe<SiteReport, HeartbleedResult> {
 
     private List<CipherSuite> supportedCiphers;
 
     public HeartbleedProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.HEARTBLEED, config);
+        super(parallelExecutor, TlsProbeType.HEARTBLEED, config);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class HeartbleedProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public HeartbleedResult getCouldNotExecuteResult() {
         return new HeartbleedResult(TestResult.COULD_NOT_TEST);
     }
 }

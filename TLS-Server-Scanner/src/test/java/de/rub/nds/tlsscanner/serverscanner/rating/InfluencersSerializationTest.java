@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.LinkedList;
@@ -45,13 +46,13 @@ public class InfluencersSerializationTest {
 
         original = new RatingInfluencers(influencers);
         RatingInfluencer i = new RatingInfluencer();
-        i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_SSL_2);
+        i.setAnalyzedProperty(TlsAnalyzedProperty.SUPPORTS_SSL_2);
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, -200, 500));
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.FALSE, 50));
         influencers.add(i);
 
         i = new RatingInfluencer();
-        i.setAnalyzedProperty(AnalyzedProperty.SUPPORTS_TLS_1_2);
+        i.setAnalyzedProperty(TlsAnalyzedProperty.SUPPORTS_TLS_1_2);
         i.addPropertyRatingInfluencer(new PropertyResultRatingInfluencer(TestResult.TRUE, 100));
         influencers.add(i);
 

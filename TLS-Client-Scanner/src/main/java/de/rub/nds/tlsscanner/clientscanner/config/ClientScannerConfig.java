@@ -9,46 +9,44 @@
 
 package de.rub.nds.tlsscanner.clientscanner.config;
 
-import java.util.List;
-
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.ParametersDelegate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.connection.InboundConnection;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsscanner.clientscanner.config.modes.ScanClientCommandConfig;
-import de.rub.nds.tlsscanner.clientscanner.config.modes.StandaloneCommandConfig;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 
-public class ClientScannerConfig extends TLSDelegateConfig {
+public class ClientScannerConfig extends ScannerConfig {
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     @ParametersDelegate
-    protected CACertDelegate certificateDelegate;
-    @ParametersDelegate
     protected StarttlsDelegate startTlsDelegate;
-    @ParametersDelegate
-    protected OrchestratorDelegate orchestratorDelegate;
 
-    // #region Variables to be applied in Config
     @Parameter(names = "-timeout", required = false,
         description = "The timeout used for the scans in ms (default 1000)")
     protected int timeout = 1000;
 
     @Parameter(names = "-bindaddr", required = false, description = "Hostname/IP to listen on. Defaults to any")
     protected String bindaddr = null;
-    // #endregion
 
-    protected final JCommander jCommander;
-    protected ExecutableSubcommand selectedSubcommand;
+    @Parameter(names = "-run", required = true,
+        description = "The shell command the scanner should run to start the client. The port number the client should connect to should be marked with [port]")
+    protected String runCommand = null;
+
+    @Parameter(names = "-parallelProbes", required = false,
+        description = "Defines the number of threads responsible for different TLS probes. If set to 1, only one specific TLS probe (e.g., TLS version scan) can be run in time.")
+    private int parallelProbes = 1;
+
+    @Parameter(names = "-threads", required = false,
+        description = "The maximum number of threads used to execute TLS probes located in the scanning queue. This is also the maximum number of threads communicating with the analyzed server.")
+    private int overallThreads = 1;
 
     public ClientScannerConfig() {
         this(new GeneralDelegate());
@@ -56,76 +54,14 @@ public class ClientScannerConfig extends TLSDelegateConfig {
 
     public ClientScannerConfig(GeneralDelegate delegate) {
         super(delegate);
-        jCommander = new JCommander();
-        jCommander.addObject(this);
-        registerSubcommands();
-
-        this.certificateDelegate = new CACertDelegate();
-        addDelegate(certificateDelegate);
-
         this.startTlsDelegate = new StarttlsDelegate();
         addDelegate(startTlsDelegate);
-
-        this.orchestratorDelegate = new OrchestratorDelegate();
-        addDelegate(orchestratorDelegate);
-    }
-
-    protected void registerSubcommands() {
-        new StandaloneCommandConfig().addToJCommander(jCommander);
-        new ScanClientCommandConfig().addToJCommander(jCommander);
-    }
-
-    public void parse(String[] args) {
-        jCommander.parse(args);
-        if (getGeneralDelegate().isHelp()) {
-            return;
-        }
-        String commandName = jCommander.getParsedCommand();
-        if (commandName == null) {
-            throw new ParameterException("No subcommand specified command (name is null)");
-        }
-        JCommander commandJc = jCommander.getCommands().get(commandName);
-        List<Object> cmdObjs = commandJc.getObjects();
-        ExecutableSubcommand cmd = (ExecutableSubcommand) cmdObjs.get(0);
-        selectedSubcommand = cmd;
-        selectedSubcommand.setParsed(commandJc);
-
-        // final error handling
-        if (selectedSubcommand == null) {
-            throw new ParameterException("Could not parse command (is still null)");
-        }
-        // ensure generalDelegate is applied
-        // it adds the BouncyCastle SecurityProvider
-        getGeneralDelegate().applyDelegate(Config.createConfig());
-    }
-
-    public void usage() {
-        jCommander.usage();
-    }
-
-    public void execute() {
-        if (getGeneralDelegate().isHelp()) {
-            usage();
-            return;
-        }
-        selectedSubcommand.execute(this);
-    }
-
-    public void parseAndExecute(String[] args) {
-        try {
-            parse(args);
-            execute();
-        } catch (ParameterException E) {
-            LOGGER.error("Could not parse provided parameters", E);
-            usage();
-        }
     }
 
     @Override
     public Config createConfig() {
         Config config = super.createConfig(Config.createConfig());
         config.getDefaultClientConnection().setTimeout(timeout);
-        selectedSubcommand.applyDelegate(config);
 
         config.setDefaultRunningMode(RunningModeType.SERVER);
         InboundConnection inboundConnection = config.getDefaultServerConnection();
@@ -134,17 +70,28 @@ public class ClientScannerConfig extends TLSDelegateConfig {
         } else {
             inboundConnection.setHostname(bindaddr);
         }
+        inboundConnection.setPort(4433);
         return config;
     }
 
-    public ExecutableSubcommand getSelectedSubcommand() {
-        return selectedSubcommand;
+    public int getTimeout() {
+        return timeout;
     }
 
-    @SuppressWarnings({ "unchecked", "squid:S1172" })
-    // unused parameter
-    public <T> T getSelectedSubcommand(Class<T> expectedType) {
-        return (T) selectedSubcommand;
+    public String getBindaddr() {
+        return bindaddr;
+    }
+
+    public String getRunCommand() {
+        return runCommand;
+    }
+
+    public int getParallelProbes() {
+        return parallelProbes;
+    }
+
+    public int getOverallThreads() {
+        return overallThreads;
     }
 
 }

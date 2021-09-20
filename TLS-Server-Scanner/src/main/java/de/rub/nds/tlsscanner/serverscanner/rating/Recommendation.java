@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Recommendation {
 
     static final String NO_RECOMMENDATION_FOUND = "No recommendation available";
 
-    private AnalyzedProperty analyzedProperty;
+    private TlsAnalyzedProperty analyzedProperty;
 
     private String shortName;
 
@@ -44,18 +45,18 @@ public class Recommendation {
         links = new LinkedList<>();
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty,
+    public Recommendation(TlsAnalyzedProperty analyzedProperty,
         List<PropertyResultRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
         this.propertyRecommendations = propertyRecommendations;
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty, String shortName) {
+    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName) {
         this();
         this.shortName = shortName;
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName, String shortDescription,
         String detailedDescription, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
@@ -65,7 +66,7 @@ public class Recommendation {
         this.links.addAll(Arrays.asList(links));
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName, String shortDescription,
         PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
@@ -75,7 +76,7 @@ public class Recommendation {
         this.links.addAll(Arrays.asList(links));
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName, String shortDescription,
         String detailedDescription, PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
@@ -86,7 +87,7 @@ public class Recommendation {
         this.links.addAll(Arrays.asList(links));
     }
 
-    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName, String shortDescription,
         String detailedDescription, String testDocumentation, List<String> links,
         List<PropertyResultRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
@@ -98,11 +99,11 @@ public class Recommendation {
         this.propertyRecommendations = propertyRecommendations;
     }
 
-    public AnalyzedProperty getAnalyzedProperty() {
+    public TlsAnalyzedProperty getAnalyzedProperty() {
         return analyzedProperty;
     }
 
-    public void setAnalyzedProperty(AnalyzedProperty analyzedProperty) {
+    public void setAnalyzedProperty(TlsAnalyzedProperty analyzedProperty) {
         this.analyzedProperty = analyzedProperty;
     }
 

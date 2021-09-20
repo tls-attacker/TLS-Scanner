@@ -13,7 +13,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;

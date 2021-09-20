@@ -9,23 +9,24 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
+import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConnectionInsecure;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFailureReasons;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.CipherSuiteRater;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class HandshakeSimulationAfterProbe extends AfterProbe {
+public class HandshakeSimulationAfterProbe extends AfterProbe<SiteReport> {
 
     @Override
     public void analyze(SiteReport report) {
@@ -187,21 +188,21 @@ public class HandshakeSimulationAfterProbe extends AfterProbe {
 
     private void checkVulnerabilities(SiteReport report, SimulatedClientResult simulatedClient) {
         CipherSuite cipherSuite = simulatedClient.getSelectedCipherSuite();
-        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) != null
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) == TestResult.TRUE
+        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) != null
+            && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) == TestResult.TRUE
             && cipherSuite.isCBC()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.PADDING_ORACLE.getReason());
         }
-        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) != null
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) == TestResult.TRUE
+        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) != null
+            && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER) == TestResult.TRUE
             && simulatedClient.getKeyExchangeAlgorithm().isKeyExchangeRsa()) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.BLEICHENBACHER.getReason());
         }
         if (simulatedClient.getSelectedCompressionMethod() != CompressionMethod.NULL) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.CRIME.getReason());
         }
-        if (report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) != null
-            && report.getResult(AnalyzedProperty.VULNERABLE_TO_SWEET_32) == TestResult.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32) != null
+            && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32) == TestResult.TRUE) {
             if (cipherSuite.name().contains("3DES") || cipherSuite.name().contains("IDEA")
                 || cipherSuite.name().contains("GOST")) {
                 simulatedClient.addToInsecureReasons(ConnectionInsecure.SWEET32.getReason());

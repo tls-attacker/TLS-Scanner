@@ -447,15 +447,23 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_DH</analyzedProperty>
-        <shortName>Diffie-Hellman (DH) key exchange support</shortName>
-        <shortDescription>Evaluates whether the server supports Diffie-Hellman (DH) key exchange</shortDescription>
+        <analyzedProperty>SUPPORTS_STATIC_DH</analyzedProperty>
+        <shortName>Static Diffie-Hellman (DH) key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports static Diffie-Hellman (DH) key exchange</shortDescription>
         <detailedDescription></detailedDescription>
         <links/>
         <resultingRecommendations/>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_ECDH</analyzedProperty>
+        <analyzedProperty>SUPPORTS_DHE</analyzedProperty>
+        <shortName>Ephemeral Diffie-Hellman (DH) key exchange support</shortName>
+        <shortDescription>Evaluates whether the TLS server supports ephemeral Diffie-Hellman (DHE) key exchange</shortDescription>
+        <detailedDescription></detailedDescription>
+        <links/>
+        <resultingRecommendations/>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_ECDHE</analyzedProperty>
         <shortName>Elliptic Curve Diffie-Hellman (ECDH) key exchange support</shortName>
         <shortDescription>Evaluates whether the server supports Elliptic Curve Diffie-Hellman (ECDH) key exchange</shortDescription>
         <links>
@@ -1218,21 +1226,6 @@
             <resultingRecommendation>
                 <result>TRUE</result>
                 <shortDescription>The server is vulnerable to POODLE</shortDescription>
-                <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
-    </recommendation>
-    <recommendation>
-        <analyzedProperty>VULNERABLE_TO_TLS_POODLE</analyzedProperty>
-        <shortName>Vulnerable to TLS POODLE</shortName>
-        <shortDescription>Evaluates whether the server is vulnerable to TLS POODLE (Padding Oracle On Downgraded Legacy Encryption)</shortDescription>
-        <links>
-            <link></link>
-        </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription>The server is vulnerable to POODLE with TLS</shortDescription>
                 <handlingRecommendation>There is a critical vulnerability in your implementation. Update your software or contact the developers.</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>

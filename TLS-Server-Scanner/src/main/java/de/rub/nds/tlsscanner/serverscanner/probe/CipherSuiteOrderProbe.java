@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
@@ -16,21 +17,24 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CipherSuiteOrderResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CipherSuiteOrderResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CipherSuiteOrderProbe extends TlsProbe {
+/**
+ *
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
+ */
+public class CipherSuiteOrderProbe extends TlsProbe<SiteReport, CipherSuiteOrderResult> {
 
     public CipherSuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CIPHER_SUITE_ORDER, config);
+        super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, config);
     }
 
     @Override
@@ -76,7 +80,7 @@ public class CipherSuiteOrderProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public CipherSuiteOrderResult getCouldNotExecuteResult() {
         return new CipherSuiteOrderResult(TestResult.COULD_NOT_TEST);
     }
 }

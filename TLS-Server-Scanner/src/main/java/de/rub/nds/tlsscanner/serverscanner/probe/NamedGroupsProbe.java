@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
@@ -27,6 +28,7 @@ import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupsProbe.java
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
@@ -34,6 +36,17 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.NamedGroupResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+========
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.NamedGroupResult;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+>>>>>>>> dae7150d1 (reworked client scanner):TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupProbe.java
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,7 +57,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupsProbe.java
 public class NamedGroupsProbe extends TlsProbe {
+========
+public class NamedGroupProbe extends TlsProbe<SiteReport, NamedGroupResult> {
+>>>>>>>> dae7150d1 (reworked client scanner):TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupProbe.java
 
     Set<CipherSuite> supportedCipherSuites;
 
@@ -59,6 +76,7 @@ public class NamedGroupsProbe extends TlsProbe {
 
     private TestResult ignoresEcdsaGroupDisparity = TestResult.FALSE;
 
+<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupsProbe.java
     public NamedGroupsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.NAMED_GROUPS, config);
     }
@@ -66,6 +84,19 @@ public class NamedGroupsProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         Map<NamedGroup, NamedGroupWitness> overallSupported = new HashMap<>();
+========
+    public NamedGroupProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, TlsProbeType.NAMED_GROUPS, config);
+    }
+
+    @Override
+    public NamedGroupResult executeTest() {
+        try {
+            Map<NamedGroup, NamedCurveWitness> groupsRsa = new HashMap<>();
+            Map<NamedGroup, NamedCurveWitness> groupsEcdsaStatic = new HashMap<>();
+            Map<NamedGroup, NamedCurveWitness> groupsEcdsaEphemeral = new HashMap<>();
+            Map<NamedGroup, NamedCurveWitness> groupsTls13 = new HashMap<>();
+>>>>>>>> dae7150d1 (reworked client scanner):TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupProbe.java
 
         addGroupsFound(overallSupported,
             getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
@@ -246,7 +277,8 @@ public class NamedGroupsProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         if (report.getVersionSuitePairs() == null || report.getVersionSuitePairs().isEmpty()
-            || report.getCertificateChainList() == null || !report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
+            || report.getCertificateChainList() == null
+            || !report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
             return false;
         }
         return true;
@@ -254,6 +286,30 @@ public class NamedGroupsProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
+<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupsProbe.java
+========
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA_CERT) == TestResult.FALSE) {
+            testUsingRsa = false;
+        }
+
+        testUsingEcdsaEphemeral = false;
+        testUsingEcdsaStatic = false;
+        for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
+            if (pair.getVersion() != ProtocolVersion.TLS13) {
+                for (CipherSuite cipherSuite : pair.getCipherSuiteList()) {
+                    if (cipherSuite.isECDSA() && cipherSuite.isEphemeral()) {
+                        testUsingEcdsaEphemeral = true;
+                    } else if (cipherSuite.isECDSA() && !cipherSuite.isEphemeral()) {
+                        testUsingEcdsaStatic = true;
+                    }
+                }
+            }
+
+        }
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
+            testUsingTls13 = false;
+        }
+>>>>>>>> dae7150d1 (reworked client scanner):TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupProbe.java
         ecdsaPkGroupsEphemeral = report.getEcdsaPkGroupsEphemeral();
         ecdsaPkGroupsTls13 = report.getEcdsaPkGroupsTls13();
         ecdsaCertSigGroupsStatic = report.getEcdsaSigGroupsStatic();
@@ -264,7 +320,7 @@ public class NamedGroupsProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public NamedGroupResult getCouldNotExecuteResult() {
         return new NamedGroupResult(new HashMap<>(), new HashMap<>(), TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }

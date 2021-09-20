@@ -54,6 +54,7 @@
         <module>TLS-Scanner-Core</module>
         <module>TLS-Server-Scanner</module>
         <module>TLS-Client-Scanner</module>
+        <module>Scanner-Core</module>
     </modules>
     <dependencies>
         <dependency>

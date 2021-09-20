@@ -14,7 +14,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -49,7 +49,8 @@ public class SiteReportPrinterTest {
     public void testPrintEmptyReport() {
         SiteReport report = new SiteReport("somehost", 443);
         for (ScannerDetail detail : ScannerDetail.values()) {
-            SiteReportPrinter printer = new SiteReportPrinter(report, detail, true);
+            SiteReportPrinter printer =
+                new SiteReportPrinter(report, detail, DefaultPrintingScheme.getDefaultPrintingScheme(true), true);
             printer.getFullReport();
         }
     }

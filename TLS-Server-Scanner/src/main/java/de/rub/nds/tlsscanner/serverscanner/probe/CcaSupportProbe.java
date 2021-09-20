@@ -9,27 +9,27 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CcaSupportResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaSupportResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 
-public class CcaSupportProbe extends TlsProbe {
+public class CcaSupportProbe extends TlsProbe<SiteReport, CcaSupportResult> {
 
     public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.CCA_SUPPORT, config);
+        super(parallelExecutor, TlsProbeType.CCA_SUPPORT, config);
     }
 
     @Override
-    public ProbeResult executeTest() {
+    public CcaSupportResult executeTest() {
         Config tlsConfig = generateConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(tlsConfig);
@@ -51,7 +51,7 @@ public class CcaSupportProbe extends TlsProbe {
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public CcaSupportResult getCouldNotExecuteResult() {
         return new CcaSupportResult(TestResult.COULD_NOT_TEST);
     }
 

@@ -9,8 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
-import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
+import de.rub.nds.scanner.core.report.PrintingScheme;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -28,6 +29,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
@@ -50,15 +52,23 @@ import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 
 import java.io.Serializable;
 import java.util.*;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
+import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.bleichenbacher.BleichenbacherTestResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.cca.CcaTestResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.statistics.RandomEvaluationResult;
+import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class SiteReport extends Observable implements Serializable {
-
-    private final HashMap<String, TestResult> resultMap;
-
-    private Set<ProbeType> executedProbes;
-
-    // General
-    private List<PerformanceData> performanceList;
+public class SiteReport extends ScanReport {
 
     private final String host;
     private final Integer port;
@@ -177,7 +187,6 @@ public class SiteReport extends Observable implements Serializable {
     private long scanEndTime;
 
     public SiteReport() {
-        resultMap = new HashMap<>();
         host = null;
         port = null;
     }
@@ -209,6 +218,12 @@ public class SiteReport extends Observable implements Serializable {
         this.supportedAlpns = supportedAlpns;
     }
 
+    public List<String> getSupportedAlpnProtocols() {
+        return supportedAlpns;
+    }
+
+    public void setSupportedAlpnProtocols(List<String> supportedAlpns) {
+        this.supportedAlpns = supportedAlpns;
     public synchronized boolean isProbeAlreadyExecuted(ProbeType type) {
         return (executedProbes.contains(type));
     }
@@ -223,80 +238,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setSessionTicketLengthHint(Long sessionTicketLengthHint) {
         this.sessionTicketLengthHint = sessionTicketLengthHint;
-    }
-
-    public synchronized int getPerformedTcpConnections() {
-        return performedTcpConnections;
-    }
-
-    public synchronized void setPerformedTcpConnections(int performedTcpConnections) {
-        this.performedTcpConnections = performedTcpConnections;
-    }
-
-    public synchronized HashMap<String, TestResult> getResultMap() {
-        return resultMap;
-    }
-
-    public synchronized TestResult getResult(AnalyzedProperty property) {
-        return getResult(property.toString());
-    }
-
-    public synchronized TestResult getResult(String property) {
-        TestResult result = resultMap.get(property);
-        return (result == null) ? TestResult.NOT_TESTED_YET : result;
-    }
-
-    public synchronized void removeResult(AnalyzedProperty property) {
-        resultMap.remove(property.toString());
-    }
-
-    public synchronized void putResult(AnalyzedProperty property, TestResult result) {
-        resultMap.put(property.toString(), result);
-    }
-
-    public synchronized void putResult(AnalyzedProperty property, Boolean result) {
-        this.putResult(property, Objects.equals(result, Boolean.TRUE) ? TestResult.TRUE
-            : Objects.equals(result, Boolean.FALSE) ? TestResult.FALSE : TestResult.UNCERTAIN);
-    }
-
-    public synchronized void putResult(DrownVulnerabilityType result) {
-        // todo: divide DROWN to several vulnerabilities ???
-        if (result != null) {
-            switch (result) {
-                case NONE:
-                    putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, false);
-                    break;
-                case UNKNOWN:
-                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN.toString(), TestResult.UNCERTAIN);
-                    break;
-                default:
-                    putResult(AnalyzedProperty.VULNERABLE_TO_GENERAL_DROWN, TestResult.TRUE);
-            }
-        }
-    }
-
-    public synchronized void putResult(EarlyCcsVulnerabilityType result) {
-        // todo: divide EARLY CCS to several vulnerabilities ???
-        // also: EarlyFinishedVulnerabilityType
-        if (result != null) {
-            switch (result) {
-                case NOT_VULNERABLE:
-                    putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, false);
-                    break;
-                case UNKNOWN:
-                    resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.UNCERTAIN);
-                    break;
-                default:
-                    putResult(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS, true);
-            }
-        } else {
-            resultMap.put(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS.toString(), TestResult.COULD_NOT_TEST);
-        }
-    }
-
-    public synchronized void markAsChangedAndNotify() {
-        this.hasChanged();
-        this.notifyObservers();
     }
 
     public synchronized String getHost() {
@@ -534,8 +475,10 @@ public class SiteReport extends Observable implements Serializable {
         this.simulatedClientList = simulatedClientList;
     }
 
+    @Override
     public synchronized String getFullReport(ScannerDetail detail, boolean printColorful) {
-        return new SiteReportPrinter(this, detail, printColorful).getFullReport();
+        return new SiteReportPrinter(this, detail, DefaultPrintingScheme.getDefaultPrintingScheme(printColorful),
+            printColorful).getFullReport();
     }
 
     @Override
@@ -549,14 +492,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setMacCheckPatternFinished(CheckPattern macCheckPatternFinished) {
         this.macCheckPatternFinished = macCheckPatternFinished;
-    }
-
-    public synchronized List<PerformanceData> getPerformanceList() {
-        return performanceList;
-    }
-
-    public synchronized void setPerformanceList(List<PerformanceData> performanceList) {
-        this.performanceList = performanceList;
     }
 
     public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
@@ -660,11 +595,11 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized Boolean getCcaSupported() {
-        return this.getResult(AnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE;
+        return this.getResult(TlsAnalyzedProperty.SUPPORTS_CCA) == TestResult.TRUE;
     }
 
     public synchronized Boolean getCcaRequired() {
-        return this.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE;
+        return this.getResult(TlsAnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE;
     }
 
     public synchronized List<CcaTestResult> getCcaTestResultList() {

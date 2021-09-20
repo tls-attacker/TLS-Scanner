@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -57,7 +58,7 @@ public class Recommendations implements Serializable {
         this.recommendations = recommendations;
     }
 
-    public PropertyResultRecommendation getPropertyRecommendation(AnalyzedProperty property, TestResult result) {
+    public PropertyResultRecommendation getPropertyRecommendation(TlsAnalyzedProperty property, TestResult result) {
         for (Recommendation r : recommendations) {
             if (r.getAnalyzedProperty() == property) {
                 return r.getPropertyResultRecommendation(result);
@@ -67,7 +68,7 @@ public class Recommendations implements Serializable {
             Recommendation.NO_RECOMMENDATION_FOUND);
     }
 
-    public Recommendation getRecommendation(AnalyzedProperty property) {
+    public Recommendation getRecommendation(TlsAnalyzedProperty property) {
         for (Recommendation r : recommendations) {
             if (r.getAnalyzedProperty() == property) {
                 return r;

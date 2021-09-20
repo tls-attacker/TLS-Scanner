@@ -22,7 +22,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.List;
 
 public class SimulationRequest {
@@ -35,7 +35,6 @@ public class SimulationRequest {
 
     public State getExecutableState(ScannerConfig scannerConfig) {
         Config config = tlsClientConfig.getConfig();
-        scannerConfig.getClientDelegate().applyDelegate(config);
         config.setQuickReceive(true);
         config.setEarlyStop(true);
         config.setStopActionsAfterFatal(true);

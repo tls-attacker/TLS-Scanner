@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.LinkedList;
@@ -50,7 +51,7 @@ public class RecommendationsSerializationTest {
             new PropertyResultRecommendation(TestResult.TRUE, "SSLv2 is enabled", "Disable SSLv2");
         recommendations.add(r);
 
-        propertyRecommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_2, recommendations));
+        propertyRecommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SSL_2, recommendations));
         original.setRecommendations(propertyRecommendations);
 
         writer = new StringWriter();

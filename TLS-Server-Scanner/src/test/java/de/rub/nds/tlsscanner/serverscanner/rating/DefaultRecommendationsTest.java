@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,31 +22,32 @@ public class DefaultRecommendationsTest {
     public void createDefaultRatingInfluencers() {
         List<Recommendation> recommendations = new LinkedList<>();
 
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_2, "SSL 2.0 support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SSL_2, "SSL 2.0 support",
             "Evaluates whether the SSL 2.0 protocol is supported",
             new PropertyResultRecommendation(TestResult.TRUE, "SSL 2.0 is enabled", "Disable SSL 2.0", ""),
             "https://www-archive.mozilla.org/projects/security/pki/nss/ssl/draft02.html", "https://drownattack.com"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SSL_3, "SSL 3.0 support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SSL_3, "SSL 3.0 support",
             "Evaluates whether the SSL 3.0 protocol is supported",
             new PropertyResultRecommendation(TestResult.TRUE, "SSL 3.0 is enabled", "Disable SSL 3.0"),
             "https://tools.ietf.org/html/rfc6101", "https://www.openssl.org/~bodo/ssl-poodle.pdf"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_1_0, "TLS 1.0 support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, "TLS 1.0 support",
             "Evaluates whether the TLS 1.0 protocol is supported",
             new PropertyResultRecommendation(TestResult.TRUE, "TLS 1.0 is enabled", "Consider disabling TLS 1.0", ""),
             "https://www.ietf.org/rfc/rfc2246"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_1_1, "TLS 1.1 support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, "TLS 1.1 support",
             "Evaluates whether the TLS 1.1 protocol is supported",
             new PropertyResultRecommendation(TestResult.TRUE, "TLS 1.1 is enabled", "Consider disabling TLS 1.1", ""),
             "https://www.ietf.org/rfc/rfc4346"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_1_2, "TLS 1.2 support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, "TLS 1.2 support",
             "Evaluates whether the TLS 1.2 protocol is supported",
             new PropertyResultRecommendation(TestResult.FALSE, "TLS 1.2 is disabled", "Enable TLS 1.2"),
             "https://www.ietf.org/rfc/rfc5246.txt"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_1_3, "TLS 1.3 support",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, "TLS 1.3 support",
             "Evaluates whether the TLS 1.3 protocol is supported",
             new PropertyResultRecommendation(TestResult.FALSE, "TLS 1.3 is disabled", "Enable TLS 1.3"),
             "https://tools.ietf.org/html/rfc8446"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, "TLS 1.3 draft version support",
+        recommendations.add(new Recommendation(
+            TlsAnalyzedProperty.SUPPORTS_TLS_1_3_DRAFT, "TLS 1.3 draft version support",
             "Evaluates whether a TLS 1.3 version draft is supported", new PropertyResultRecommendation(TestResult.TRUE,
                 "TLS 1.3 draft version is enabled", "Update your server and enable the TLS 1.3 final version"),
             "https://tools.ietf.org/html/rfc8446"));
@@ -158,7 +160,7 @@ public class DefaultRecommendationsTest {
                 "Elliptic Curve Diffie-Hellman (ECDH) key exchange is disabled",
                 "Enable Elliptic Curve Diffie-Hellman (ECDH)"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_STATIC_ECDH,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_STATIC_ECDH,
             "Static Elliptic Curve Diffie-Hellman (ECDH) key exchange support",
             "Evaluates whether the server supports static Elliptic Curve Diffie-Hellman (ECDH) key exchange", "",
             new PropertyResultRecommendation(TestResult.TRUE,
@@ -176,13 +178,13 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the server supports Kerberos cipher suites", "https://tools.ietf.org/html/rfc2712"));
 
         // todo for now we do not consider in the
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_PLAIN, "Supports plain PSK",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_PSK_PLAIN, "Supports plain PSK",
             "For now we do not consider in our scoring", ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_RSA, "Supports RSA PSK",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_PSK_RSA, "Supports RSA PSK",
             "For now we do not consider in our scoring", ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_DHE, "Supports DHE PSK",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_PSK_DHE, "Supports DHE PSK",
             "For now we do not consider in our scoring", ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_PSK_ECDHE, "Supports ECDHE PSK",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_PSK_ECDHE, "Supports ECDHE PSK",
             "For now we do not consider in our scoring", ""));
 
         // post quantum
@@ -212,8 +214,8 @@ public class DefaultRecommendationsTest {
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TOKENBINDING, "Token binding support",
             "Evaluates whether the server supports token binding", ""));
 
-        recommendations
-            .add(new Recommendation(AnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES, "Montgomery curve support", "", ""));
+        recommendations.add(
+            new Recommendation(TlsAnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES, "Montgomery curve support", "", ""));
 
         // session resumption
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
@@ -241,18 +243,19 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.FALSE, "Secure renegotiation extension is disabled",
                 "Consider to enable secure renegotiation extension."),
             "https://tools.ietf.org/html/rfc5746"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
+        recommendations.add(new Recommendation(
+            TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
             "Support for client-side secure renegotiation",
             "Evaluates whether the server supports client-side secure renegotiation.",
             "Secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.",
             "https://tools.ietf.org/html/rfc5746"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
             "Support for client-side secure renegotiation",
             "Evaluates whether the server supports client-side secure renegotiation.",
             "Secure renegotiation can be started by the client as well as by the server. In its configuration the server can restrict the support for the server-side secure renegotiation. In that case, only the server can start the renegotiation process.",
             "https://tools.ietf.org/html/rfc5746"));
 
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
             "TLS Fallback Signaling Cipher Suite Value (SCSV) support",
             "Evaluates whether the server supports TLS Fallback Signaling Cipher Suite Value (SCSV)",
             "In order to establish the highest possible TLS version, TLS clients attempt to perform several TLS "
@@ -268,17 +271,17 @@ public class DefaultRecommendationsTest {
 
         // safe prime -> custom prime (-50) -> common prime (-100) -> non prime
         // (-500)
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ONLY_PRIME_MODULI,
             "Moduli provided in FFDHE ServerKeyExchange messages are prime",
             "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are prime",
             new PropertyResultRecommendation(TestResult.FALSE, "DH group moduli are not prime",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             "https://eprint.iacr.org/2016/995.pdf"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES,
             "Moduli provided in FFDHE ServerKeyExchange messages are from common groups",
             "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are from common groups defined by standardization bodies or RFCs",
             "https://github.com/cryptosense/diffie-hellman-groups", "https://eprint.iacr.org/2016/995.pdf"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI,
             "Moduli provided in FFDHE ServerKeyExchange messages are safe primes",
             "Evaluates whether the group moduli provided in FFDHE (finite field Diffie-Hellman ephemeral) ServerKeyExchange messages are safe primes",
             new PropertyResultRecommendation(TestResult.FALSE, "DH group moduli are not safe primes",
@@ -292,7 +295,7 @@ public class DefaultRecommendationsTest {
                 "Evaluates whether the server supports HTTP Strict Transport Security (HSTS)",
                 new PropertyResultRecommendation(TestResult.FALSE, "HSTS is disabled", "Enable HSTS"),
                 "https://tools.ietf.org/html/rfc6797"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HSTS_PRELOADING,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_HSTS_PRELOADING,
             "Support for HTTP Strict Transport Security (HSTS) preloading", "",
             new PropertyResultRecommendation(TestResult.FALSE, "HSTS is disabled", "Enable HSTS"), ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_HPKP, "HTTP Public Key Pinning (HPKP) support",
@@ -364,7 +367,7 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.TRUE, "The server has ClientHello last extension intolerance",
                 "There is a bug in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_SIG_HASH_ALGORITHM_INTOLERANCE,
             "Signature and hash algorithm intolerance",
             "Evaluates whether the server has TLS signature and hash algorithm intolerance",
             new PropertyResultRecommendation(TestResult.TRUE,
@@ -414,32 +417,32 @@ public class DefaultRecommendationsTest {
             ""));
 
         // Attacks
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER,
             "Vulnerable to a Bleichenbacher attack",
             "Evaluates whether the server is vulnerable to a Bleichenbacher attack",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to a Bleichenbacher attack",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             "https://robotattack.org/"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
             "Vulnerable to a CBC padding oracle attack vulnerability",
             "Evaluates whether the server is vulnerable to a CBC padding oracle attack",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to a CBC padding oracle attack",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE,
             "Vulnerable to an invalid curve attack",
             "Evaluates whether the server is vulnerable to an invalid curve attack",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to an invalid curve attack",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL,
             "Vulnerable to an invalid curve attack on ephemeral cipher suites",
             "Evaluates whether the server is vulnerable to an invalid curve attack on ephemeral cipher suites",
             new PropertyResultRecommendation(TestResult.TRUE,
                 "The server is vulnerable to an invalid curve attack on ephemeral cipher suites",
                 "There is a vulnerability in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL_EXPLOITABLE,
             "Vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse",
             "Evaluates whether the server is vulnerable to an invalid curve attack on ephemeral cipher suites with key reuse",
             new PropertyResultRecommendation(TestResult.TRUE,
@@ -475,7 +478,7 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to Ticketbleed",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             "https://filippo.io/ticketbleed"));
-        recommendations.add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_EARLY_CCS,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS,
             "Vulnerable to CCS injection / Early CCS",
             "Evaluates whether the server is vulnerable to CCS injection / Early CCS",
             new PropertyResultRecommendation(TestResult.TRUE, "The server is vulnerable to CCS injection / Early CCS",
@@ -528,26 +531,26 @@ public class DefaultRecommendationsTest {
                 new PropertyResultRecommendation(TestResult.TRUE,
                     "The server is vulnerable to the renegotiation attack (ext)", "Disable insecure renegotiation."),
                 ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.MISSES_MAC_APPDATA_CHECKS,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.MISSES_MAC_APPDATA_CHECKS,
             "Misses Application message MAC check",
             "Evaluates whether the server correctly validates the Application message MACs",
             new PropertyResultRecommendation(TestResult.TRUE, "The server does not verify MACs in Application messages",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.MISSES_MAC_FINISHED_CHECKS,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.MISSES_MAC_FINISHED_CHECKS,
             "Misses Finished message MAC check",
             "Evaluates whether the server correctly validates the Finished message MAC",
             new PropertyResultRecommendation(TestResult.TRUE, "The server does not verify the Finished message MAC",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.MISSES_VERIFY_DATA_CHECKS,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.MISSES_VERIFY_DATA_CHECKS,
             "Misses verify data verification in the Finished messages",
             "Evaluates whether the server correctly validates the verify data in the Finished messages",
             new PropertyResultRecommendation(TestResult.TRUE,
                 "The server does not correctly process verify data in the Finished messages",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.MISSES_GCM_CHECKS,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.MISSES_GCM_CHECKS,
             "Misses GCM authentication tag check",
             "Evaluates whether the server correctly validates the AES-GCM authentication tags",
             new PropertyResultRecommendation(TestResult.TRUE,
@@ -560,13 +563,13 @@ public class DefaultRecommendationsTest {
             new PropertyResultRecommendation(TestResult.TRUE, "The server uses weak random values",
                 "There is a critical vulnerability in your implementation. Update your software or contact the developers."),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.REUSES_EC_PUBLICKEY,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.REUSES_EC_PUBLICKEY,
             "Reuses ephemeral elliptic curve Diffie-Hellman keys",
             "Evaluates whether the server reuses ephemeral elliptic curve keys transported in the ServerKeyExchange message",
             new PropertyResultRecommendation(TestResult.TRUE, "The server reuses ephemeral elliptic curve keys",
                 "Configure your server to always use fresh elliptic curve keys"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.REUSES_DH_PUBLICKEY,
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY,
             "Reuses ephemeral Diffie-Hellman keys",
             "Evaluates whether the server reuses ephemeral Diffie-Hellman keys transported in the ServerKeyExchange message",
             new PropertyResultRecommendation(TestResult.TRUE, "The server reuses ephemeral Diffie-Hellman keys",
@@ -584,19 +587,19 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the server requires the client to send a Server Name Indication (SNI) extension", ""));
 
         // certificate issues
-        recommendations.add(new Recommendation(AnalyzedProperty.HAS_CERTIFICATE_ISSUES, "Certificate issues", "",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.HAS_CERTIFICATE_ISSUES, "Certificate issues", "",
             new PropertyResultRecommendation(TestResult.TRUE, "", ""), ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.STRICT_ALPN, "Strict ALPN",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.STRICT_ALPN, "Strict ALPN",
             "Evaluated whether the server rejects unsupported ALPN Strings. This is important to mitigate the ALPACA attacks",
             new PropertyResultRecommendation(TestResult.FALSE, "The server does not reject unsupported ALPN Strings",
                 "If possible configure your server to use strict ALPN verification"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.STRICT_SNI, "Strict SNI",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.STRICT_SNI, "Strict SNI",
             "Evaluated whether the server rejects invalid SNI names. This is important to mitigate the ALPACA attacks",
             new PropertyResultRecommendation(TestResult.FALSE, "The server does not reject invalid SNI names.",
                 "If possible configure your server to use strict SNI verification"),
             ""));
-        recommendations.add(new Recommendation(AnalyzedProperty.ALPACA_MITIGATED, "ALPACA Mitigation",
+        recommendations.add(new Recommendation(TlsAnalyzedProperty.ALPACA_MITIGATED, "ALPACA Mitigation",
             "Evaluated whether the server is vulnerable to ALPACA",
             new PropertyResultRecommendation(TestResult.FALSE, "The server does not reject invalid SNI names.",
                 "If possible configure your server to use strict SNI and strict ALPN verification"),

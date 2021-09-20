@@ -1,0 +1,55 @@
+/**
+ * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
+package de.rub.nds.scanner.core.config;
+
+import com.beust.jcommander.Parameter;
+import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
+import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+
+public abstract class ScannerConfig extends TLSDelegateConfig {
+
+    @Parameter(names = "-noColor", required = false, description = "If you use Windows or don't want colored text.")
+    private boolean noColor = false;
+
+    @Parameter(names = "-scanDetail", required = false, description = "How detailed do you want to scan?")
+    private ScannerDetail scanDetail = ScannerDetail.NORMAL;
+
+    @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
+    private ScannerDetail reportDetail = ScannerDetail.NORMAL;
+
+    public ScannerConfig(GeneralDelegate delegate) {
+        super(delegate);
+    }
+
+    public ScannerDetail getScanDetail() {
+        return scanDetail;
+    }
+
+    public void setScanDetail(ScannerDetail scanDetail) {
+        this.scanDetail = scanDetail;
+    }
+
+    public ScannerDetail getReportDetail() {
+        return reportDetail;
+    }
+
+    public void setReportDetail(ScannerDetail reportDetail) {
+        this.reportDetail = reportDetail;
+    }
+
+    public boolean isNoColor() {
+        return noColor;
+    }
+
+    public void setNoColor(boolean noColor) {
+        this.noColor = noColor;
+    }
+}

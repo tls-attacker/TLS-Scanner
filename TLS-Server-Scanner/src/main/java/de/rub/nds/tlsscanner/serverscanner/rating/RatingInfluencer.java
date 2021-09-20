@@ -9,7 +9,8 @@
 
 package de.rub.nds.tlsscanner.serverscanner.rating;
 
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +18,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class RatingInfluencer {
 
-    private AnalyzedProperty analyzedProperty;
+    private TlsAnalyzedProperty analyzedProperty;
 
     private List<PropertyResultRatingInfluencer> propertyRatingInfluencers;
 
@@ -25,23 +26,23 @@ public class RatingInfluencer {
         this.propertyRatingInfluencers = new LinkedList<>();
     }
 
-    public RatingInfluencer(AnalyzedProperty influencerConstant,
+    public RatingInfluencer(TlsAnalyzedProperty influencerConstant,
         List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
 
-    public RatingInfluencer(AnalyzedProperty influencerConstant,
+    public RatingInfluencer(TlsAnalyzedProperty influencerConstant,
         PropertyResultRatingInfluencer... propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = Arrays.asList(propertyRatingInfluencers);
     }
 
-    public AnalyzedProperty getAnalyzedProperty() {
+    public TlsAnalyzedProperty getAnalyzedProperty() {
         return analyzedProperty;
     }
 
-    public void setAnalyzedProperty(AnalyzedProperty analyzedProperty) {
+    public void setAnalyzedProperty(TlsAnalyzedProperty analyzedProperty) {
         this.analyzedProperty = analyzedProperty;
     }
 

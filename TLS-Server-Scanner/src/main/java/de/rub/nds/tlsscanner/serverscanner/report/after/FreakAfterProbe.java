@@ -9,12 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-public class FreakAfterProbe extends AfterProbe {
+public class FreakAfterProbe extends AfterProbe<SiteReport> {
 
     @Override
     public void analyze(SiteReport report) {
@@ -35,6 +36,6 @@ public class FreakAfterProbe extends AfterProbe {
         } catch (Exception e) {
             vulnerable = TestResult.ERROR_DURING_TEST;
         }
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_FREAK, vulnerable);
+        report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, vulnerable);
     }
 }

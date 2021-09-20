@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -20,24 +21,23 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ECPointFormatResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ECPointFormatResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ECPointFormatProbe extends TlsProbe {
+public class ECPointFormatProbe extends TlsProbe<SiteReport, ECPointFormatResult> {
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
 
     public ECPointFormatProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.EC_POINT_FORMAT, scannerConfig);
+        super(parallelExecutor, TlsProbeType.EC_POINT_FORMAT, scannerConfig);
     }
 
     @Override
@@ -166,13 +166,13 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE
-                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
+        return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
+            && (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDHE) == TestResult.TRUE
+                || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
     }
 
     @Override
-    public ProbeResult getCouldNotExecuteResult() {
+    public ECPointFormatResult getCouldNotExecuteResult() {
         return new ECPointFormatResult(null, TestResult.COULD_NOT_TEST);
     }
 

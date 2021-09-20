@@ -9,13 +9,8 @@
 
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
+import de.rub.nds.scanner.core.constants.TestResult;
 import java.util.Random;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,70 +18,51 @@ import org.apache.logging.log4j.Logger;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
+import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsscanner.clientscanner.client.Orchestrator;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.DispatchInformation;
-import de.rub.nds.tlsscanner.clientscanner.dispatcher.exception.DispatchException;
-import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe.VersionProbeResult;
-import de.rub.nds.tlsscanner.clientscanner.report.requirements.ProbeRequirements;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ClientAdapterResult;
-import de.rub.nds.tlsscanner.clientscanner.report.result.ParametrizedClientProbeResult;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
+import de.rub.nds.tlsscanner.clientscanner.probe.result.Version13RandomResult;
+import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 
-public class Version13RandomProbe extends BaseProbe {
+public class Version13RandomProbe extends TlsProbe<ClientReport, Version13RandomResult> {
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final byte[] SERVER_RANDOM_12_POSTFIX = { 0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x01 };
     private static final byte[] SERVER_RANDOM_PRE_12_POSTFIX = { 0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x00 };
 
-    public static Collection<Version13RandomProbe> getDefaultProbes(Orchestrator orchestrator) {
-        return Arrays.asList(new Version13RandomProbe(orchestrator, ProtocolVersion.SSL2),
-            new Version13RandomProbe(orchestrator, ProtocolVersion.SSL3),
-            new Version13RandomProbe(orchestrator, ProtocolVersion.TLS10),
-            new Version13RandomProbe(orchestrator, ProtocolVersion.TLS11),
-            new Version13RandomProbe(orchestrator, ProtocolVersion.TLS12));
-    }
-
     private final Random random = new Random();
-    private final ProtocolVersion versionToTest;
 
-    public Version13RandomProbe(Orchestrator orchestrator, ProtocolVersion versionToTest) {
-        super(orchestrator);
-        this.versionToTest = versionToTest;
+    public Version13RandomProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
+        super(executor, TlsProbeType.VERSION_1_3_RANDOM_DOWNGRADE, scannerConfig);
     }
 
     @Override
-    protected String getHostnamePrefix() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.versionToTest.name());
-        sb.append('.');
-        sb.append(super.getHostnamePrefix());
-        return sb.toString();
+    public Version13RandomResult executeTest() {
+        boolean tls10Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS10);
+        boolean tls11Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS11);
+        boolean tls12Rejected = testIfDownGradeEnforcedProtocolVersion(ProtocolVersion.TLS12);
+        if (tls10Rejected && tls11Rejected && tls12Rejected) {
+            return new Version13RandomResult(TestResult.TRUE);
+        } else {
+            return new Version13RandomResult(TestResult.FALSE);
+        }
     }
 
-    @Override
-    protected ProbeRequirements getRequirements() {
-        return ProbeRequirements.TRUE()
-            .needResultOfTypeMatching(VersionProbe.class, VersionProbeResult.class,
-                res -> res.supportsVersion(ProtocolVersion.TLS13), "Client does not support TLS 1.3")
-            .needResultOfTypeMatching(VersionProbe.class, VersionProbeResult.class,
-                res -> res.supportsVersion(versionToTest),
-                "Client does not support " + versionToTest + " - will not test downgrade protection against it");
-    }
-
-    @Override
-    public ParametrizedClientProbeResult<ProtocolVersion, VersionProbe13RandomResult> execute(State state,
-        DispatchInformation dispatchInformation) throws DispatchException {
-        LOGGER.debug("Testing version {}", versionToTest);
-        Config config = state.getConfig();
-        WorkflowTrace trace = state.getWorkflowTrace();
-        config.setHighestProtocolVersion(versionToTest);
-        config.setDefaultSelectedProtocolVersion(versionToTest);
-        config.setDefaultApplicationMessageData("TLS Version: " + versionToTest + "\n");
+    private boolean testIfDownGradeEnforcedProtocolVersion(ProtocolVersion version) {
+        Config config = getScannerConfig().createConfig();
+        config.setHighestProtocolVersion(version);
+        config.setDefaultSelectedProtocolVersion(version);
 
         // patch randomness
         byte[] serverRandomPostfix;
-        if (versionToTest == ProtocolVersion.TLS12) {
+        if (version == ProtocolVersion.TLS12) {
             serverRandomPostfix = SERVER_RANDOM_12_POSTFIX;
         } else {
             serverRandomPostfix = SERVER_RANDOM_PRE_12_POSTFIX;
@@ -98,28 +74,26 @@ public class Version13RandomProbe extends BaseProbe {
         System.arraycopy(serverRandomPostfix, 0, serverRandom, serverRandomPrefix.length, serverRandomPostfix.length);
         config.setDefaultServerRandom(serverRandom);
         config.setUseFreshRandom(false);
-
-        extendWorkflowTraceToApplication(trace, config, true);
-        ClientAdapterResult cres = executeState(state, dispatchInformation);
-        if (state.getTlsContext().getSelectedProtocolVersion() != versionToTest) {
-            throw new DispatchException("Could not select correct version");
-        }
-        // trace should be rejected
-        boolean res = !state.getWorkflowTrace().executedAsPlanned();
-        if (cres != null) {
-            res = res && !cres.contentShown.wasShown();
-        }
-        return new ParametrizedClientProbeResult<>(getClass(), versionToTest, new VersionProbe13RandomResult(res));
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HANDSHAKE,
+            RunningModeType.SERVER);
+        State state = new State(config, trace);
+        executeState(state);
+        return !state.getWorkflowTrace().executedAsPlanned();
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class VersionProbe13RandomResult implements Serializable {
-        public final boolean downgradeProtectionImplemented;
+    @Override
+    public boolean canBeExecuted(ClientReport report) {
+        // TODO Check if atleast one non tls 1.3 version is supported
+        return true;
+    }
 
-        public VersionProbe13RandomResult(boolean downgradeProtectionImplemented) {
-            this.downgradeProtectionImplemented = downgradeProtectionImplemented;
-        }
+    @Override
+    public Version13RandomResult getCouldNotExecuteResult() {
+        return new Version13RandomResult(TestResult.CANNOT_BE_TESTED);
+    }
 
+    @Override
+    public void adjustConfig(ClientReport report) {
     }
 
 }
