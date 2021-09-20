@@ -1716,6 +1716,8 @@ public class SiteReportPrinter {
                 if (report.getResult(AnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY) == TestResult.TRUE) {
                     prettyAppend(builder, "Groups required for ECDSA validation are not enforced", AnsiColor.YELLOW);
                 }
+                prettyAppendHeading(builder, "NamedGroups General");
+                prettyAppend(builder, "Enforces client's named group ordering", AnalyzedProperty.ENFORCES_NG_ORDERING);
             } else {
                 builder.append("none\n");
             }

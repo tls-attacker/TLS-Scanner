@@ -903,6 +903,21 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
+        <analyzedProperty>ENFORCES_NG_ORDERING</analyzedProperty>
+        <shortName>Named group order</shortName>
+        <shortDescription>Evaluates whether the TLS server enforces the client's named group ordering</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Server does not enforce client's group order</shortDescription>
+                <handlingRecommendation>Enforce client's group order</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
         <analyzedProperty>HAS_VERSION_INTOLERANCE</analyzedProperty>
         <shortName>TLS version intolerance</shortName>
         <shortDescription>Evaluates whether the TLS server is TLS version intolerant</shortDescription>

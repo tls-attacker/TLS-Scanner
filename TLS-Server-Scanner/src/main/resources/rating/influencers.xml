@@ -796,6 +796,17 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
+        <analyzedProperty>ENFORCES_NG_ORDERING</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <analyzedProperty>HAS_VERSION_INTOLERANCE</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>

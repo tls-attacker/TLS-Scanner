@@ -244,6 +244,9 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.ENFORCES_CS_ORDERING,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 50),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.ENFORCES_NG_ORDERING,
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 50),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
 
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_VERSION_INTOLERANCE,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -200),

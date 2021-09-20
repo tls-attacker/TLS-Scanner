@@ -89,6 +89,7 @@ public class TlsScanner {
         addProbeToProbeList(new SniProbe(config, parallelExecutor));
         addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
         addProbeToProbeList(new NamedCurvesProbe(config, parallelExecutor));
+        addProbeToProbeList(new NamedCurvesOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
         addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
         addProbeToProbeList(new CertificateProbe(config, parallelExecutor));

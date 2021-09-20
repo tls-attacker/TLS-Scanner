@@ -259,6 +259,7 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.PREFERS_PFS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.ENFORCES_PFS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.ENFORCES_CS_ORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(AnalyzedProperty.ENFORCES_NG_ORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.HAS_VERSION_INTOLERANCE, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
