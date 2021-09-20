@@ -16,9 +16,9 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class CertificateTransparencyResult extends ProbeResult<SiteReport> {
+public class CertificateTransparencyResult extends ProbeResult<ServerReport> {
 
     private TestResult supportsPrecertificateSCTs;
     private TestResult supportsHandshakeSCTs;
@@ -44,7 +44,7 @@ public class CertificateTransparencyResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
+    protected void mergeData(ServerReport report) {
         report.setPrecertificateSctList(precertificateSctList);
         report.setHandshakeSctList(handshakeSctList);
         report.setOcspSctList(ocspSctList);

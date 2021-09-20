@@ -13,9 +13,9 @@ import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class CcaSupportResult extends ProbeResult<SiteReport> {
+public class CcaSupportResult extends ProbeResult<ServerReport> {
 
     private final TestResult supportsCca;
 
@@ -25,7 +25,7 @@ public class CcaSupportResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_CCA, supportsCca);
     }
 }

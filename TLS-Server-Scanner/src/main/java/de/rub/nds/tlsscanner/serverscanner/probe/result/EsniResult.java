@@ -12,10 +12,10 @@ package de.rub.nds.tlsscanner.serverscanner.probe.result;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 
-public class EsniResult extends ProbeResult<SiteReport> {
+public class EsniResult extends ProbeResult<ServerReport> {
     private TestResult receivedCorrectNonce;
 
     public EsniResult(TestResult receivedCorrectNonce) {
@@ -24,7 +24,7 @@ public class EsniResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ESNI, receivedCorrectNonce);
     }
 }

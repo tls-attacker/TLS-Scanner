@@ -13,9 +13,9 @@ import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class HttpFalseStartResult extends ProbeResult<SiteReport> {
+public class HttpFalseStartResult extends ProbeResult<ServerReport> {
 
     private final TestResult supportsFalseStart;
 
@@ -25,7 +25,7 @@ public class HttpFalseStartResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
+    protected void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_HTTP_FALSE_START, this.supportsFalseStart);
     }
 }

@@ -13,9 +13,9 @@ import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class AlpacaResult extends ProbeResult<SiteReport> {
+public class AlpacaResult extends ProbeResult<ServerReport> {
 
     private final TestResult strictAlpn;
     private final TestResult strictSni;
@@ -27,7 +27,7 @@ public class AlpacaResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
+    protected void mergeData(ServerReport report) {
         if ((strictSni == TestResult.TRUE || strictSni == TestResult.FALSE)
             && (strictAlpn == TestResult.TRUE || strictAlpn == TestResult.FALSE)) {
 

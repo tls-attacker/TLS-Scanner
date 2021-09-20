@@ -18,11 +18,11 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaSupportResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 
-public class CcaSupportProbe extends TlsProbe<SiteReport, CcaSupportResult> {
+public class CcaSupportProbe extends TlsProbe<ServerReport, CcaSupportResult> {
 
     public CcaSupportProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CCA_SUPPORT, config);
@@ -42,12 +42,12 @@ public class CcaSupportProbe extends TlsProbe<SiteReport, CcaSupportResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override

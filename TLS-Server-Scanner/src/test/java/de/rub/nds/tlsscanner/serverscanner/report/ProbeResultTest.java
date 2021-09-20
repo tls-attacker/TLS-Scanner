@@ -62,7 +62,7 @@ public class ProbeResultTest {
                         probe.getCouldNotExecuteResult().merge(report);
                         LOGGER.info("--Success");
                         LOGGER.info("Testing printability:");
-                        SiteReportPrinter printer = new SiteReportPrinter(report, ScannerDetail.ALL,
+                        ServerReportPrinter printer = new ServerReportPrinter(report, ScannerDetail.ALL,
                             DefaultPrintingScheme.getDefaultPrintingScheme(true), true);
                         printer.getFullReport();
                         LOGGER.info("--Success");

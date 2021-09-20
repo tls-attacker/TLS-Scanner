@@ -26,7 +26,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWork
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.DirectRaccoonResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
@@ -40,7 +40,7 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DirectRaccoonProbe extends TlsProbe<SiteReport, DirectRaccoonResult> {
+public class DirectRaccoonProbe extends TlsProbe<ServerReport, DirectRaccoonResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -176,7 +176,7 @@ public class DirectRaccoonProbe extends TlsProbe<SiteReport, DirectRaccoonResult
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverSupportedSuites = report.getVersionSuitePairs();
     }
 

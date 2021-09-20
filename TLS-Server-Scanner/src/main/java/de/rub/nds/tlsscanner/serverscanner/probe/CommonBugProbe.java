@@ -38,7 +38,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CommonBugProbeResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
@@ -52,7 +52,7 @@ import java.util.List;
  *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
-public class CommonBugProbe extends TlsProbe<SiteReport, CommonBugProbeResult> {
+public class CommonBugProbe extends TlsProbe<ServerReport, CommonBugProbeResult> {
 
     // does it handle unknown extensions correctly?
     private TestResult extensionIntolerance;
@@ -134,12 +134,12 @@ public class CommonBugProbe extends TlsProbe<SiteReport, CommonBugProbeResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     private int getClientHelloLength(ClientHelloMessage message, Config config) {

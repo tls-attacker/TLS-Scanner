@@ -24,7 +24,7 @@ import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.PaddingOracleTestInfo;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.PaddingOracleResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class PaddingOracleProbe extends TlsProbe<SiteReport, PaddingOracleResult> {
+public class PaddingOracleProbe extends TlsProbe<ServerReport, PaddingOracleResult> {
 
     private static int numberOfIterations;
     private static int numberOfAddtionalIterations;
@@ -136,7 +136,7 @@ public class PaddingOracleProbe extends TlsProbe<SiteReport, PaddingOracleResult
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
             && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
             return Objects.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_BLOCK_CIPHERS), TestResult.TRUE);
@@ -146,7 +146,7 @@ public class PaddingOracleProbe extends TlsProbe<SiteReport, PaddingOracleResult
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverSupportedSuites = report.getVersionSuitePairs();
     }
 

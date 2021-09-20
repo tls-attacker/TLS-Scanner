@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;

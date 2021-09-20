@@ -68,7 +68,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SiteReport extends ScanReport {
+public class ServerReport extends ScanReport {
 
     private final String host;
     private final Integer port;
@@ -187,11 +187,13 @@ public class SiteReport extends ScanReport {
     private long scanEndTime;
 
     public SiteReport() {
+    public ServerReport() {
         host = null;
         port = null;
     }
 
-    public SiteReport(String host, int port) {
+    public ServerReport(String host) {
+        super();
         this.host = host;
         this.port = port;
         performanceList = new LinkedList<>();
@@ -477,7 +479,7 @@ public class SiteReport extends ScanReport {
 
     @Override
     public synchronized String getFullReport(ScannerDetail detail, boolean printColorful) {
-        return new SiteReportPrinter(this, detail, DefaultPrintingScheme.getDefaultPrintingScheme(printColorful),
+        return new ServerReportPrinter(this, detail, DefaultPrintingScheme.getDefaultPrintingScheme(printColorful),
             printColorful).getFullReport();
     }
 

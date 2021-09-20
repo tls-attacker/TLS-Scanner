@@ -29,6 +29,7 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CipherSuiteResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CipherSuiteProbeResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
@@ -39,7 +40,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CipherSuiteProbe extends TlsProbe<SiteReport, CipherSuiteProbeResult> {
+public class CipherSuiteProbe extends TlsProbe<ServerReport, CipherSuiteProbeResult> {
 
     private final List<ProtocolVersion> protocolVersions;
 
@@ -210,7 +211,7 @@ public class CipherSuiteProbe extends TlsProbe<SiteReport, CipherSuiteProbeResul
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         if (report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
             return true;
         } else {

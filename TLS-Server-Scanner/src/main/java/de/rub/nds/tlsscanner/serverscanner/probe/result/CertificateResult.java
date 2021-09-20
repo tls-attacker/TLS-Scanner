@@ -13,7 +13,7 @@ import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +22,7 @@ import java.util.Set;
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class CertificateResult extends ProbeResult<SiteReport> {
+public class CertificateResult extends ProbeResult<ServerReport> {
 
     private final Set<CertificateChain> certificates;
     private final List<NamedGroup> ecdsaPkGroupsStatic;
@@ -47,7 +47,7 @@ public class CertificateResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         if (certificates != null) {
             report.setCertificateChainList(new LinkedList<>(certificates));
         }

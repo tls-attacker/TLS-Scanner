@@ -48,14 +48,14 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.ByteCheckStatus;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.StateIndexPair;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.MacResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MacProbe extends TlsProbe<SiteReport, MacResult> {
+public class MacProbe extends TlsProbe<ServerReport, MacResult> {
 
     private List<CipherSuite> suiteList;
 
@@ -357,7 +357,7 @@ public class MacProbe extends TlsProbe<SiteReport, MacResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
         if (report.getCipherSuites() == null) {
             return false;
@@ -372,7 +372,7 @@ public class MacProbe extends TlsProbe<SiteReport, MacResult> {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         List<CipherSuite> allSuiteList = new LinkedList<>();
         if (report.getCipherSuites() != null) {
 

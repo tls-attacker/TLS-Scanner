@@ -17,13 +17,14 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
 /**
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class SignatureAndHashAlgorithmResult extends ProbeResult<SiteReport> {
+public class SignatureAndHashAlgorithmResult extends ProbeResult<ServerReport> {
 
     private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke;
     private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13;

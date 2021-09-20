@@ -26,7 +26,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateResult;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
@@ -37,7 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class CertificateProbe extends TlsProbe<SiteReport, CertificateResult> {
+public class CertificateProbe extends TlsProbe<ServerReport, CertificateResult> {
 
     private boolean scanForRsaCert = true;
     private boolean scanForDssCert = true;
@@ -94,7 +94,7 @@ public class CertificateProbe extends TlsProbe<SiteReport, CertificateResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         if (report.isProbeAlreadyExecuted(TlsProbeType.CIPHER_SUITE)
             && report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
             return true;
@@ -103,7 +103,7 @@ public class CertificateProbe extends TlsProbe<SiteReport, CertificateResult> {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA_CERT) == TestResult.FALSE) {
             scanForRsaCert = false;
         }

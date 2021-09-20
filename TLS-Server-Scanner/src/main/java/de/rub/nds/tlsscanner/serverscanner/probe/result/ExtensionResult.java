@@ -14,14 +14,14 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
 /**
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class ExtensionResult extends ProbeResult<SiteReport> {
+public class ExtensionResult extends ProbeResult<ServerReport> {
 
     private final List<ExtensionType> allSupportedExtensions;
     private TestResult extendedMasterSecret = TestResult.FALSE;
@@ -37,7 +37,7 @@ public class ExtensionResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         if (report.getSupportedExtensions() == null) {
             report.setSupportedExtensions(allSupportedExtensions);
         } else {

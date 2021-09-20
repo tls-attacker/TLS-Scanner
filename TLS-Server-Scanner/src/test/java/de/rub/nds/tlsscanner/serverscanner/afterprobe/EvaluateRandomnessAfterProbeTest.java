@@ -14,7 +14,7 @@ import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.statistics.RandomEvaluationResult;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
@@ -86,7 +86,7 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testNoDuplicatesAnalyze() {
-        SiteReport report = generateSiteReport(STATIC_RANDOM1, STATIC_RANDOM2, STATIC_RANDOM3);
+        ServerReport report = generateSiteReport(STATIC_RANDOM1, STATIC_RANDOM2, STATIC_RANDOM3);
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
 
@@ -99,7 +99,7 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testDuplicatesAnalyze() {
-        SiteReport report = generateSiteReport(STATIC_RANDOM1, STATIC_RANDOM1.clone(), STATIC_RANDOM2);
+        ServerReport report = generateSiteReport(STATIC_RANDOM1, STATIC_RANDOM1.clone(), STATIC_RANDOM2);
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
 
@@ -112,7 +112,7 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testEmptyValueContainerAnalyze() {
-        SiteReport report = generateSiteReport();
+        ServerReport report = generateSiteReport();
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
         assertTrue(
@@ -130,7 +130,7 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testEmptyValueContainerMap() {
-        SiteReport report = new SiteReport("test");
+        ServerReport report = new ServerReport("test");
         Map<TrackableValue, ExtractedValueContainer> extractedValueContainerMap = new HashMap<>();
         report.setExtractedValueContainerList(extractedValueContainerMap);
 
@@ -146,7 +146,7 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testEmptySiteReportAnalyze() {
-        SiteReport report = new SiteReport("test");
+        ServerReport report = new ServerReport("test");
 
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
         assertTrue(report.getExtractedValueContainerMap().isEmpty());
@@ -160,7 +160,7 @@ public class EvaluateRandomnessAfterProbeTest {
      */
     @Test
     public void testHelloRetryRequestAnalyze() {
-        SiteReport report = generateSiteReport(HELLO_RETRY_REQUEST_CONST, HELLO_RETRY_REQUEST_CONST, STATIC_RANDOM1);
+        ServerReport report = generateSiteReport(HELLO_RETRY_REQUEST_CONST, HELLO_RETRY_REQUEST_CONST, STATIC_RANDOM1);
         assertEquals(report.getRandomEvaluationResult(), RandomEvaluationResult.NOT_ANALYZED);
 
         evaluator.analyze(report);

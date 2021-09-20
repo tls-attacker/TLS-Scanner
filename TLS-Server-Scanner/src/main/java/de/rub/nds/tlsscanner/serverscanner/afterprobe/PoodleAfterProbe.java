@@ -14,17 +14,17 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 
 /**
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class PoodleAfterProbe extends AfterProbe<SiteReport> {
+public class PoodleAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
         TestResult vulnerable = TestResult.NOT_TESTED_YET;
         try {
             TestResult ssl3Result = report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3);

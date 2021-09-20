@@ -14,14 +14,14 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
 /**
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class InvalidCurveResult extends ProbeResult<SiteReport> {
+public class InvalidCurveResult extends ProbeResult<ServerReport> {
 
     private final TestResult vulnerableClassic;
     private final TestResult vulnerableEphemeral;
@@ -38,7 +38,7 @@ public class InvalidCurveResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE, vulnerableClassic);
         report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_EPHEMERAL, vulnerableEphemeral);
         report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_INVALID_CURVE_TWIST, vulnerableTwist);

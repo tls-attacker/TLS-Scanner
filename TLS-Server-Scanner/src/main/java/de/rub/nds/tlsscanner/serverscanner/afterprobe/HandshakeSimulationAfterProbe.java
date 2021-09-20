@@ -20,16 +20,16 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedCl
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class HandshakeSimulationAfterProbe extends AfterProbe<SiteReport> {
+public class HandshakeSimulationAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
         int isSuccessfulCounter = 0;
         int isInsecureCounter = 0;
         if (report.getSimulatedClientList() != null) {
@@ -65,13 +65,13 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<SiteReport> {
         }
     }
 
-    private void checkWhyAlert(SiteReport report, SimulatedClientResult simulatedClient) {
+    private void checkWhyAlert(ServerReport report, SimulatedClientResult simulatedClient) {
         if (isCipherSuiteMismatch(report, simulatedClient)) {
             simulatedClient.addToFailReasons(HandshakeFailureReasons.CIPHER_SUITE_MISMATCH);
         }
     }
 
-    private boolean isCipherSuiteMismatch(SiteReport report, SimulatedClientResult simulatedClient) {
+    private boolean isCipherSuiteMismatch(ServerReport report, SimulatedClientResult simulatedClient) {
         if (report.getCipherSuites() != null) {
             for (CipherSuite serverCipherSuite : report.getCipherSuites()) {
                 for (CipherSuite clientCipherSuite : simulatedClient.getClientSupportedCipherSuites()) {
@@ -84,7 +84,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<SiteReport> {
         return true;
     }
 
-    private void checkSelectedProtocolVersion(SiteReport report, SimulatedClientResult simulatedClient) {
+    private void checkSelectedProtocolVersion(ServerReport report, SimulatedClientResult simulatedClient) {
         if (report.getVersions() != null && simulatedClient.getSupportedVersionList() != null) {
             List<ProtocolVersion> commonProtocolVersions = new LinkedList<>();
             Collections.sort(report.getVersions());
@@ -174,7 +174,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<SiteReport> {
         return simulatedClient.getReceivedUnknown();
     }
 
-    private void checkIfConnectionIsInsecure(SiteReport report, SimulatedClientResult simulatedClient) {
+    private void checkIfConnectionIsInsecure(ServerReport report, SimulatedClientResult simulatedClient) {
         if (simulatedClient.getSelectedCipherSuite() != null && isCipherSuiteGradeLow(simulatedClient)) {
             simulatedClient.addToInsecureReasons(ConnectionInsecure.CIPHER_SUITE_GRADE_LOW.getReason());
         }
@@ -186,7 +186,7 @@ public class HandshakeSimulationAfterProbe extends AfterProbe<SiteReport> {
         return CipherSuiteRater.getGrade(simulatedClient.getSelectedCipherSuite()).equals(CipherSuiteGrade.LOW);
     }
 
-    private void checkVulnerabilities(SiteReport report, SimulatedClientResult simulatedClient) {
+    private void checkVulnerabilities(ServerReport report, SimulatedClientResult simulatedClient) {
         CipherSuite cipherSuite = simulatedClient.getSelectedCipherSuite();
         if (report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) != null
             && report.getResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE) == TestResult.TRUE

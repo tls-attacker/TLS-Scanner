@@ -12,10 +12,10 @@ package de.rub.nds.tlsscanner.serverscanner.probe.result;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
-public class HandshakeSimulationResult extends ProbeResult<SiteReport> {
+public class HandshakeSimulationResult extends ProbeResult<ServerReport> {
 
     private final List<SimulatedClientResult> simulatedClientList;
 
@@ -25,7 +25,7 @@ public class HandshakeSimulationResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.setSimulatedClientList(simulatedClientList);
     }
 }

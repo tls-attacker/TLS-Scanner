@@ -42,6 +42,12 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketZeroKeyRes
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.SessionTicketZeroKeyResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,7 +78,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * https://www.gnutls.org/security-new.html
  *
  */
-public class SessionTicketZeroKeyProbe extends TlsProbe<SiteReport, SessionTicketZeroKeyResult> {
+public class SessionTicketZeroKeyProbe extends TlsProbe<ServerReport, SessionTicketZeroKeyResult> {
 
     /**
      * Magic Bytes the plaintext state in GnuTls starts with
@@ -220,7 +226,7 @@ public class SessionTicketZeroKeyProbe extends TlsProbe<SiteReport, SessionTicke
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         supportedSuites = new ArrayList<>(report.getCipherSuites());
     }
 

@@ -33,7 +33,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.RenegotiationResult;
 import java.io.ByteArrayOutputStream;
@@ -43,7 +43,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.RenegotiationResult;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class RenegotiationProbe extends TlsProbe<SiteReport, RenegotiationResult> {
+public class RenegotiationProbe extends TlsProbe<ServerReport, RenegotiationResult> {
 
     private Set<CipherSuite> supportedSuites;
     private TestResult supportsDtlsCookieExchangeInRenegotiation;
@@ -205,7 +205,7 @@ public class RenegotiationProbe extends TlsProbe<SiteReport, RenegotiationResult
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return (report.getCipherSuites() != null && (report.getCipherSuites().size() > 0 || supportsOnlyTls13(report)));
     }
 

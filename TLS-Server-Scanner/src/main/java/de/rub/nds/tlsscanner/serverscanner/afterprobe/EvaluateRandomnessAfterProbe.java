@@ -14,13 +14,13 @@ import de.rub.nds.modifiablevariable.util.ArrayConverter;
 import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.statistics.RandomEvaluationResult;
 import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class EvaluateRandomnessAfterProbe extends AfterProbe<SiteReport> {
+public class EvaluateRandomnessAfterProbe extends AfterProbe<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -28,7 +28,7 @@ public class EvaluateRandomnessAfterProbe extends AfterProbe<SiteReport> {
         ArrayConverter.hexStringToByteArray("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
 
         if (report.getExtractedValueContainerMap().isEmpty()) {
             report.setRandomEvaluationResult(RandomEvaluationResult.NO_DUPLICATES);

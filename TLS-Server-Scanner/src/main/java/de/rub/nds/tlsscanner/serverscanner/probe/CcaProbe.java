@@ -30,6 +30,8 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CcaResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
@@ -39,7 +41,7 @@ import static de.rub.nds.tlsscanner.serverscanner.scan.ScanJobExecutorType.Compo
 import java.util.LinkedList;
 import java.util.List;
 
-public class CcaProbe extends TlsProbe<SiteReport, CcaResult> {
+public class CcaProbe extends TlsProbe<ServerReport, CcaResult> {
     private List<VersionSuiteListPair> versionSuiteListPairsList;
 
     private final boolean increasingTimeout = false;
@@ -143,7 +145,7 @@ public class CcaProbe extends TlsProbe<SiteReport, CcaResult> {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         this.versionSuiteListPairsList.addAll(report.getVersionSuitePairs());
     }
 

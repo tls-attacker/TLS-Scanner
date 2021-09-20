@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
 <<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/result/AlpnResult.java
@@ -21,8 +21,7 @@ public class AlpnResult extends ProbeResult {
  *
  * @author ic0ns
  */
-public class AlpnProbeResult extends ProbeResult<SiteReport> {
->>>>>>>> dae7150d1 (reworked client scanner):TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/result/AlpnProbeResult.java
+public class AlpnProbeResult extends ProbeResult<ServerReport> {
 
     private final List<String> supportedAlpns;
 
@@ -37,7 +36,7 @@ public class AlpnProbeResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
+    protected void mergeData(ServerReport report) {
         report.setSupportedAlpns(supportedAlpns);
     }
 }

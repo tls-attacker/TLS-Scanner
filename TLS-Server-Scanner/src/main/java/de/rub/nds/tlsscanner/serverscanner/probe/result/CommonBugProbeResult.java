@@ -13,13 +13,13 @@ import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 /**
  *
  * @author robert
  */
-public class CommonBugProbeResult extends ProbeResult<SiteReport> {
+public class CommonBugProbeResult extends ProbeResult<ServerReport> {
 
     // does it handle unknown extensions correctly?
     private final TestResult extensionIntolerance;
@@ -92,7 +92,7 @@ public class CommonBugProbeResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
+    protected void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.HAS_EXTENSION_INTOLERANCE, extensionIntolerance);
         report.putResult(TlsAnalyzedProperty.HAS_CIPHER_SUITE_INTOLERANCE, cipherSuiteIntolerance);
         report.putResult(TlsAnalyzedProperty.HAS_CIPHER_SUITE_LENGTH_INTOLERANCE, cipherSuiteLengthIntolerance512);

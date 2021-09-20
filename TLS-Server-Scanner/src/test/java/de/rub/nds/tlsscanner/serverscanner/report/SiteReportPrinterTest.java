@@ -49,8 +49,8 @@ public class SiteReportPrinterTest {
     public void testPrintEmptyReport() {
         SiteReport report = new SiteReport("somehost", 443);
         for (ScannerDetail detail : ScannerDetail.values()) {
-            SiteReportPrinter printer =
-                new SiteReportPrinter(report, detail, DefaultPrintingScheme.getDefaultPrintingScheme(true), true);
+            ServerReportPrinter printer =
+                new ServerReportPrinter(report, detail, DefaultPrintingScheme.getDefaultPrintingScheme(true), true);
             printer.getFullReport();
         }
     }

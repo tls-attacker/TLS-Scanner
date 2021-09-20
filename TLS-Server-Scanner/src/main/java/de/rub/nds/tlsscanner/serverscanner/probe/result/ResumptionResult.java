@@ -13,13 +13,13 @@ import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 /**
  *
  * @author robert
  */
-public class ResumptionResult extends ProbeResult<SiteReport> {
+public class ResumptionResult extends ProbeResult<ServerReport> {
 
     private final TestResult supportsResumption;
     private final TestResult supportsSessionTicketResumption;

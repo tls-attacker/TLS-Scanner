@@ -15,7 +15,7 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhLoader;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import java.math.BigInteger;
@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class DhValueAfterProbe extends AfterProbe<SiteReport> {
+public class DhValueAfterProbe extends AfterProbe<ServerReport> {
 
     private TestResult onlyPrime;
     private TestResult onlySafePrime;
@@ -31,7 +31,7 @@ public class DhValueAfterProbe extends AfterProbe<SiteReport> {
     private TestResult reuse;
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
         ExtractedValueContainer publicKeyContainer =
             report.getExtractedValueContainerMap().get(TrackableValueType.DHE_PUBLICKEY);
 

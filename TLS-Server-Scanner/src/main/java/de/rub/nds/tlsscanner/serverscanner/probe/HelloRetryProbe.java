@@ -25,7 +25,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HelloRetryResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.LinkedList;
@@ -33,7 +33,7 @@ import java.util.LinkedList;
 /**
  * Test the servers Hello Retry Request
  */
-public class HelloRetryProbe extends TlsProbe<SiteReport, HelloRetryResult> {
+public class HelloRetryProbe extends TlsProbe<ServerReport, HelloRetryResult> {
 
     private TestResult sendsHelloRetryRequest = TestResult.FALSE;
     private TestResult issuesCookie = TestResult.FALSE;
@@ -60,7 +60,7 @@ public class HelloRetryProbe extends TlsProbe<SiteReport, HelloRetryResult> {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     private void testHelloRetry() {

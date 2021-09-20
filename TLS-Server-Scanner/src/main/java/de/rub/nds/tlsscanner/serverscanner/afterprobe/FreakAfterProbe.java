@@ -13,12 +13,12 @@ import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class FreakAfterProbe extends AfterProbe<SiteReport> {
+public class FreakAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
         TestResult vulnerable = TestResult.NOT_TESTED_YET;
         try {
             if (report.getCipherSuites() != null) {

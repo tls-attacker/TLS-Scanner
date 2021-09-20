@@ -19,7 +19,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class NamedGroupResult extends ProbeResult<SiteReport> {
+public class NamedGroupResult extends ProbeResult<ServerReport> {
 
     private final Map<NamedGroup, NamedGroupWitness> namedGroupsMap;
     private final Map<NamedGroup, NamedGroupWitness> namedGroupsMapTls13;
@@ -50,7 +50,7 @@ public class NamedGroupResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         LinkedList<NamedGroup> allGroups = new LinkedList<>();
         if (namedGroupsMap != null) {
             allGroups.addAll(namedGroupsMap.keySet());

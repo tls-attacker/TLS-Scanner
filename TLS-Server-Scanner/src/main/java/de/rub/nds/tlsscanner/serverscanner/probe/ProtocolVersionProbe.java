@@ -28,7 +28,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ProtocolVersionResult;
@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ProtocolVersionProbe extends TlsProbe<SiteReport, ProtocolVersionResult> {
+public class ProtocolVersionProbe extends TlsProbe<ServerReport, ProtocolVersionResult> {
 
     private List<ProtocolVersion> toTestList;
 
@@ -148,12 +148,12 @@ public class ProtocolVersionProbe extends TlsProbe<SiteReport, ProtocolVersionRe
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override

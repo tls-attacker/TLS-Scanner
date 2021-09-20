@@ -13,9 +13,9 @@ import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class HelloRetryResult extends ProbeResult<SiteReport> {
+public class HelloRetryResult extends ProbeResult<ServerReport> {
 
     private final TestResult sendsHelloRetryRequest;
     private final TestResult issuesCookie;
@@ -27,7 +27,7 @@ public class HelloRetryResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
+    protected void mergeData(ServerReport report) {
         if (issuesCookie != null) {
             report.putResult(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, issuesCookie);
         } else {

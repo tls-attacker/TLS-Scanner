@@ -33,7 +33,7 @@ public class DhValueAfterProbeTest {
 
     private static final Logger LOGGER = (Logger) LogManager.getLogger();
 
-    private SiteReport report;
+    private ServerReport report;
     private HashMap<TrackableValue, ExtractedValueContainer> cipherMap;
     private ExtractedValueContainer<CustomDhPublicKey> pubkeyContainer;
     private DhValueAfterProbe test;

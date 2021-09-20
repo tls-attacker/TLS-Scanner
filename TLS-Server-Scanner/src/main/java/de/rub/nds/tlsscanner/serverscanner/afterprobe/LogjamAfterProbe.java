@@ -13,16 +13,16 @@ import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 /**
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class LogjamAfterProbe extends AfterProbe<SiteReport> {
+public class LogjamAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
         TestResult vulnerable = TestResult.FALSE;
         try {
             if (report.getCipherSuites() != null) {

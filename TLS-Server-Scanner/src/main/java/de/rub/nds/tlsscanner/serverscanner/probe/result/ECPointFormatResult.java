@@ -14,10 +14,10 @@ import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
-public class ECPointFormatResult extends ProbeResult<SiteReport> {
+public class ECPointFormatResult extends ProbeResult<ServerReport> {
 
     private TestResult supportsUncompressedPoint = TestResult.FALSE;
     private TestResult supportsANSIX962CompressedPrime = TestResult.FALSE;
@@ -33,7 +33,7 @@ public class ECPointFormatResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
+    protected void mergeData(ServerReport report) {
         if (supportedFormats != null) {
             for (ECPointFormat format : supportedFormats) {
                 switch (format) {

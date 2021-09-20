@@ -14,10 +14,10 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.List;
 
-public class ProtocolVersionResult extends ProbeResult<SiteReport> {
+public class ProtocolVersionResult extends ProbeResult<ServerReport> {
 
     private final List<ProtocolVersion> supportedProtocolVersions;
 

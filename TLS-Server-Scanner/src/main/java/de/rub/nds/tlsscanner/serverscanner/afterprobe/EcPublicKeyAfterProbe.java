@@ -14,12 +14,12 @@ import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class EcPublicKeyAfterProbe extends AfterProbe<SiteReport> {
+public class EcPublicKeyAfterProbe extends AfterProbe<ServerReport> {
 
     @Override
-    public void analyze(SiteReport report) {
+    public void analyze(ServerReport report) {
         TestResult reuse;
         try {
             ExtractedValueContainer valueContainer =

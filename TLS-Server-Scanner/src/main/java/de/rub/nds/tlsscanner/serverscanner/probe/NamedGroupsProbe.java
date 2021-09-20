@@ -41,7 +41,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.NamedGroupResult;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
@@ -57,11 +57,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupsProbe.java
-public class NamedGroupsProbe extends TlsProbe {
-========
-public class NamedGroupProbe extends TlsProbe<SiteReport, NamedGroupResult> {
->>>>>>>> dae7150d1 (reworked client scanner):TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupProbe.java
+public class NamedGroupProbe extends TlsProbe<ServerReport, NamedGroupResult> {
 
     Set<CipherSuite> supportedCipherSuites;
 
@@ -275,7 +271,7 @@ public class NamedGroupProbe extends TlsProbe<SiteReport, NamedGroupResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         if (report.getVersionSuitePairs() == null || report.getVersionSuitePairs().isEmpty()
             || report.getCertificateChainList() == null
             || !report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)) {
@@ -285,9 +281,7 @@ public class NamedGroupProbe extends TlsProbe<SiteReport, NamedGroupResult> {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
-<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/NamedGroupsProbe.java
-========
+    public void adjustConfig(ServerReport report) {
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_RSA_CERT) == TestResult.FALSE) {
             testUsingRsa = false;
         }

@@ -30,13 +30,14 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.EsniResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class EsniProbe extends TlsProbe<SiteReport, EsniResult> {
+public class EsniProbe extends TlsProbe<ServerReport, EsniResult> {
 
     public EsniProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ESNI, scannerConfig);
@@ -91,12 +92,12 @@ public class EsniProbe extends TlsProbe<SiteReport, EsniResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override

@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CompressionsResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
-public class CompressionsProbe extends TlsProbe<SiteReport, CompressionsResult> {
+public class CompressionsProbe extends TlsProbe<ServerReport, CompressionsResult> {
 
     public CompressionsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.COMPRESSIONS, config);
@@ -94,12 +94,12 @@ public class CompressionsProbe extends TlsProbe<SiteReport, CompressionsResult> 
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override

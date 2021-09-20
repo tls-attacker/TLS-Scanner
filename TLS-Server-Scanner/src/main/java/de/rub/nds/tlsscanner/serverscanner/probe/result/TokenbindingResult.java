@@ -16,11 +16,15 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.LinkedList;
 import java.util.List;
 
-public class TokenbindingResult extends ProbeResult {
+/**
+ *
+ * @author robert
+ */
+public class TokenbindingResult extends ProbeResult<ServerReport> {
 
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
@@ -33,7 +37,7 @@ public class TokenbindingResult extends ProbeResult {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.setSupportedTokenBindingKeyParameters(supportedTokenBindingKeyParameters);
         report.setSupportedTokenBindingVersion(supportedTokenBindingVersion);
         if (supportedTokenBindingVersion != null && !supportedTokenBindingVersion.isEmpty()) {

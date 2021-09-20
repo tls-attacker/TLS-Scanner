@@ -12,9 +12,9 @@ package de.rub.nds.tlsscanner.serverscanner.probe.result;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class MacResult extends ProbeResult<SiteReport> {
+public class MacResult extends ProbeResult<ServerReport> {
 
     private final CheckPattern appDataPattern;
     private final CheckPattern finishedPattern;
@@ -28,7 +28,7 @@ public class MacResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.setMacCheckPatternAppData(appDataPattern);
         report.setMacCheckPatternFinished(finishedPattern);
         report.setVerifyCheckPattern(verifyPattern);

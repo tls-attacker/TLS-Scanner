@@ -22,7 +22,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HeartbleedResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class HeartbleedProbe extends TlsProbe<SiteReport, HeartbleedResult> {
+public class HeartbleedProbe extends TlsProbe<ServerReport, HeartbleedResult> {
 
     private List<CipherSuite> supportedCiphers;
 
@@ -62,7 +62,7 @@ public class HeartbleedProbe extends TlsProbe<SiteReport, HeartbleedResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         if (report.getSupportedExtensions() != null) {
             for (ExtensionType type : report.getSupportedExtensions()) {
                 if (type == ExtensionType.HEARTBEAT) {
@@ -76,7 +76,7 @@ public class HeartbleedProbe extends TlsProbe<SiteReport, HeartbleedResult> {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         if (report.getCipherSuites() != null && !report.getCipherSuites().isEmpty()) {
             supportedCiphers = new ArrayList<>(report.getCipherSuites());
         } else {

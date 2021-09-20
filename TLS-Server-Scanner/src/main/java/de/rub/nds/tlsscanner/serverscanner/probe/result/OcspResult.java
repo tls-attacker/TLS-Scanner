@@ -14,7 +14,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.CertificateStatusR
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ocsp.OcspCertificateResult;
 import java.util.List;
 
@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author Nils Hanke {@literal <nils.hanke@rub.de>}
  */
-public class OcspResult extends ProbeResult<SiteReport> {
+public class OcspResult extends ProbeResult<ServerReport> {
 
     private final List<OcspCertificateResult> certResults;
 
@@ -36,7 +36,7 @@ public class OcspResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.setOcspResults(certResults);
 
         report.putResult(TlsAnalyzedProperty.SUPPORTS_OCSP, getConclusiveSupportsOcsp());

@@ -24,14 +24,14 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.AlpnProbeResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AlpnProbe extends TlsProbe<SiteReport, AlpnProbeResult> {
+public class AlpnProbe extends TlsProbe<ServerReport, AlpnProbeResult> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -108,7 +108,7 @@ public class AlpnProbe extends TlsProbe<SiteReport, AlpnProbeResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return report.isProbeAlreadyExecuted(TlsProbeType.EXTENSIONS)
             && report.getSupportedExtensions().contains(ExtensionType.ALPN);
 
@@ -120,6 +120,6 @@ public class AlpnProbe extends TlsProbe<SiteReport, AlpnProbeResult> {
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 }

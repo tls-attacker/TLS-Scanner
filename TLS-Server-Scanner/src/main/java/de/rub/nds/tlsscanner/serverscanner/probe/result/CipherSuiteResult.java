@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.constants.PRFAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,8 +31,7 @@ public class CipherSuiteResult extends ProbeResult {
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class CipherSuiteProbeResult extends ProbeResult<SiteReport> {
->>>>>>>> dae7150d1 (reworked client scanner):TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/probe/result/CipherSuiteProbeResult.java
+public class CipherSuiteProbeResult extends ProbeResult<ServerReport> {
 
     private List<VersionSuiteListPair> pairLists;
 
@@ -89,7 +88,7 @@ public class CipherSuiteProbeResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         if (pairLists != null) {
             Set<CipherSuite> allSupported = new HashSet<>();
             supportsOnlyPfsCiphers = TestResult.TRUE;
@@ -307,7 +306,7 @@ public class CipherSuiteProbeResult extends ProbeResult<SiteReport> {
         }
     }
 
-    private void writeToReport(SiteReport report) {
+    private void writeToReport(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_NULL_CIPHERS, supportsNullCiphers);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_ANON, supportsAnonCiphers);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_EXPORT, supportsExportCiphers);

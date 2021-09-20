@@ -26,7 +26,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.ConfigFileL
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulationRequest;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.TlsClientConfig;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HandshakeSimulationResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 
@@ -39,7 +39,7 @@ import java.util.List;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
-public class HandshakeSimulationProbe extends TlsProbe<SiteReport, HandshakeSimulationResult> {
+public class HandshakeSimulationProbe extends TlsProbe<ServerReport, HandshakeSimulationResult> {
 
     private static final String RESOURCE_FOLDER = "/extracted_client_configs";
 
@@ -218,12 +218,12 @@ public class HandshakeSimulationProbe extends TlsProbe<SiteReport, HandshakeSimu
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override

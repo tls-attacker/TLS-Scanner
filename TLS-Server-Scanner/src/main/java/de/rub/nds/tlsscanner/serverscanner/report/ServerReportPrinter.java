@@ -118,7 +118,7 @@ import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
-public class SiteReportPrinter extends ReportPrinter<SiteReport> {
+public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -128,7 +128,7 @@ public class SiteReportPrinter extends ReportPrinter<SiteReport> {
     private final String hsForwardSecrecyFormat = "%-19s";
     private final String hsKeyLengthFormat = "%-17s";
 
-    public SiteReportPrinter(SiteReport report, ScannerDetail detail, PrintingScheme scheme, boolean printColorful) {
+    public ServerReportPrinter(ServerReport report, ScannerDetail detail, PrintingScheme scheme, boolean printColorful) {
         super(detail, scheme, printColorful, report);
     }
 

@@ -48,13 +48,17 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ResumptionResult;
 
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.probe.result.ResumptionResult;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ResumptionProbe extends TlsProbe<SiteReport, ResumptionResult> {
+public class ResumptionProbe extends TlsProbe<ServerReport, ResumptionResult> {
 
     private Set<CipherSuite> supportedSuites;
     private TestResult supportsDtlsCookieExchangeInResumption;
@@ -352,7 +356,7 @@ public class ResumptionProbe extends TlsProbe<SiteReport, ResumptionResult> {
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return report.getCipherSuites() != null && (report.getCipherSuites().size() > 0);
     }
 

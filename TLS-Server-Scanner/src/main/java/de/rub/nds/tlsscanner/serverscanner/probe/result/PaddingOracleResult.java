@@ -17,6 +17,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.scanner.core.vectorstatistics.InformationLeakTest;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +27,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class PaddingOracleResult extends ProbeResult<SiteReport> {
+public class PaddingOracleResult extends ProbeResult<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -56,7 +57,7 @@ public class PaddingOracleResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.setPaddingOracleTestResultList(resultList);
         report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE, vulnerable);
     }

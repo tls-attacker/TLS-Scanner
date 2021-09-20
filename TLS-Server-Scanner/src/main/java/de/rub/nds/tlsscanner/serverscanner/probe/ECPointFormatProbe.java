@@ -24,14 +24,14 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.ECPointFormatResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ECPointFormatProbe extends TlsProbe<SiteReport, ECPointFormatResult> {
+public class ECPointFormatProbe extends TlsProbe<ServerReport, ECPointFormatResult> {
 
     private Boolean shouldTestTls13;
     private Boolean shouldTestPointFormats;
@@ -165,7 +165,7 @@ public class ECPointFormatProbe extends TlsProbe<SiteReport, ECPointFormatResult
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return report.isProbeAlreadyExecuted(TlsProbeType.PROTOCOL_VERSION)
             && (report.getResult(TlsAnalyzedProperty.SUPPORTS_ECDHE) == TestResult.TRUE
                 || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);

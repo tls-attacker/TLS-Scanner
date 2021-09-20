@@ -29,6 +29,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DestinationPortAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.CertificateSignatureAndHashAlgorithmAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.passive.StatsWriter;
 import de.rub.nds.tlsscanner.core.constants.ProbeType.TlsProbeType;
@@ -231,7 +233,7 @@ public class TlsServerScanner {
         }
     }
 
-    public SiteReport scan() {
+    public ServerReport scan() {
         LOGGER.debug("Initializing TrustAnchorManager");
         TrustAnchorManager.getInstance();
         LOGGER.debug("Finished TrustAnchorManager initialization");

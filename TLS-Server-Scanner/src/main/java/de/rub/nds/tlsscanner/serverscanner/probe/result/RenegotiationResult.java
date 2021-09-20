@@ -13,13 +13,13 @@ import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 /**
  *
  * @author robert
  */
-public class RenegotiationResult extends ProbeResult<SiteReport> {
+public class RenegotiationResult extends ProbeResult<ServerReport> {
 
     private final TestResult secureRenegotiationExtension;
     private final TestResult secureRenegotiationCipherSuite;
@@ -46,7 +46,7 @@ public class RenegotiationResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
             secureRenegotiationExtension);
         report.putResult(TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,

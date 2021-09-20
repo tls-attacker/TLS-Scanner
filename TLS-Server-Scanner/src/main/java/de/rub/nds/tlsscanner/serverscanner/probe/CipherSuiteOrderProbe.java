@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CipherSuiteOrderResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
-public class CipherSuiteOrderProbe extends TlsProbe<SiteReport, CipherSuiteOrderResult> {
+public class CipherSuiteOrderProbe extends TlsProbe<ServerReport, CipherSuiteOrderResult> {
 
     public CipherSuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, config);
@@ -71,12 +71,12 @@ public class CipherSuiteOrderProbe extends TlsProbe<SiteReport, CipherSuiteOrder
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return true;
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
     }
 
     @Override

@@ -14,7 +14,7 @@ import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import java.util.Base64;
 import java.util.LinkedList;
@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class HttpHeaderResult extends ProbeResult<SiteReport> {
+public class HttpHeaderResult extends ProbeResult<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -47,7 +47,7 @@ public class HttpHeaderResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    protected void mergeData(SiteReport report) {
+    protected void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.SUPPORTS_HTTPS, speaksHttps);
         report.setHeaderList(headerList);
         List<HpkpPin> pinList = new LinkedList<>();

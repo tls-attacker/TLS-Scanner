@@ -23,6 +23,8 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.BleichenbacherResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.scanner.core.constants.ProbeType;
@@ -40,7 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class BleichenbacherProbe extends TlsProbe<SiteReport, BleichenbacherResult> {
+public class BleichenbacherProbe extends TlsProbe<ServerReport, BleichenbacherResult> {
 
     private static int numberOfIterations;
     private static int numberOfAddtionalIterations;

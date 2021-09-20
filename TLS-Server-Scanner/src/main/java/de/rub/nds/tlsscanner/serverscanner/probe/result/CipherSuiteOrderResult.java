@@ -13,13 +13,13 @@ import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 /**
  *
  * @author Robert Merget {@literal <robert.merget@rub.de>}
  */
-public class CipherSuiteOrderResult extends ProbeResult<SiteReport> {
+public class CipherSuiteOrderResult extends ProbeResult<ServerReport> {
 
     private TestResult enforced;
 
@@ -29,7 +29,7 @@ public class CipherSuiteOrderResult extends ProbeResult<SiteReport> {
     }
 
     @Override
-    public void mergeData(SiteReport report) {
+    public void mergeData(ServerReport report) {
         report.putResult(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, enforced);
     }
 }

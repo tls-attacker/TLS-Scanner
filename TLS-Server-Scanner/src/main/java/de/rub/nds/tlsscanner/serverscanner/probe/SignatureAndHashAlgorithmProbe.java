@@ -12,11 +12,11 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.SignatureAndHashAlgorithmResult;
 
-public class SignatureAndHashAlgorithmProbe extends TlsProbe<SiteReport, SignatureAndHashAlgorithmResult> {
+public class SignatureAndHashAlgorithmProbe extends TlsProbe<ServerReport, SignatureAndHashAlgorithmResult> {
 
     private List<ProtocolVersion> versions;
     private TestResult respectsExtension;

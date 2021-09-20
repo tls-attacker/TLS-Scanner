@@ -32,7 +32,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.CertificateTransparencyResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import org.bouncycastle.crypto.tls.Certificate;
@@ -40,7 +40,7 @@ import org.bouncycastle.crypto.tls.Certificate;
 import java.time.Duration;
 import java.util.*;
 
-public class CertificateTransparencyProbe extends TlsProbe<SiteReport, CertificateTransparencyResult> {
+public class CertificateTransparencyProbe extends TlsProbe<ServerReport, CertificateTransparencyResult> {
 
     private Certificate serverCertChain;
     private OCSPResponse stapledOcspResponse;
@@ -222,7 +222,7 @@ public class CertificateTransparencyProbe extends TlsProbe<SiteReport, Certifica
     }
 
     @Override
-    public boolean canBeExecuted(SiteReport report) {
+    public boolean canBeExecuted(ServerReport report) {
         return report.getCertificateChainList() != null && report.isProbeAlreadyExecuted(TlsProbeType.OCSP);
     }
 
@@ -234,7 +234,7 @@ public class CertificateTransparencyProbe extends TlsProbe<SiteReport, Certifica
     }
 
     @Override
-    public void adjustConfig(SiteReport report) {
+    public void adjustConfig(ServerReport report) {
         serverCertChain = report.getCertificateChainList().get(0).getCertificate();
     }
 }

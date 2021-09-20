@@ -9,13 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
-import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+import de.rub.nds.scanner.core.probe.result.ProbeResult;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
-public class RecordFragmentationResult extends ProbeResult {
-    private Boolean supported;
+public class RecordFragmentationResult extends ProbeResult<ServerReport> {
+    private Boolean supported = null;
 
     public RecordFragmentationResult(Boolean supported) {
         super(TlsProbeType.RECORD_FRAGMENTATION);
