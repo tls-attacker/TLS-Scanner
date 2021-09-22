@@ -34,6 +34,8 @@ public class Main {
             if (config.getGeneralDelegate().isHelp()) {
                 commander.usage();
                 return;
+            } else if (config.getRunCommand() == null) {
+                throw new ParameterException("No run command given. Use -run parameter to specify shell command.");
             }
             // Cmd was parsable
             try {

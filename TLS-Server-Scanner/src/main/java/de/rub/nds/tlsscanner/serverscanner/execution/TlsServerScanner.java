@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.execution;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
 import de.rub.nds.tlsattacker.attacks.connectivity.ConnectivityChecker;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
@@ -34,6 +35,7 @@ import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.scanner.core.passive.StatsWriter;
 import de.rub.nds.tlsscanner.core.constants.ProbeType.TlsProbeType;
+import de.rub.nds.tlsscanner.core.execution.TlsScanner;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.DhPublicKeyExtractor;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.EcPublicKeyExtractor;
@@ -61,25 +63,21 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
-import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TlsServerScanner {
+public final class TlsServerScanner extends TlsScanner {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final ParallelExecutor parallelExecutor;
     private final ServerScannerConfig config;
     private boolean closeAfterFinishParallel;
-    private final List<ScannerProbe> probeList;
-    private final List<AfterProbe> afterList;
-    private final List<TlsProbeType> probesToExecute;
 
     public TlsServerScanner(ServerScannerConfig config) {
-
+        super(config.getProbes());
         this.config = config;
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3,
@@ -92,6 +90,7 @@ public class TlsServerScanner {
     }
 
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
+        super(config.getProbes());
         this.config = config;
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = true;
@@ -106,9 +105,6 @@ public class TlsServerScanner {
             List<AfterProbe> afterList) {
         this.parallelExecutor = parallelExecutor;
         this.config = config;
-        this.probeList = probeList;
-        this.afterList = afterList;
-        this.probesToExecute = config.getProbes();
         closeAfterFinishParallel = true;
         setCallbacks();
     }
@@ -225,12 +221,6 @@ public class TlsServerScanner {
             afterList.add(new PoodleAfterProbe());
         }
 
-    }
-
-    private void addProbeToProbeList(TlsProbe probe) {
-        if (probesToExecute == null || probesToExecute.contains(probe.getType())) {
-            probeList.add(probe);
-        }
     }
 
     public ServerReport scan() {

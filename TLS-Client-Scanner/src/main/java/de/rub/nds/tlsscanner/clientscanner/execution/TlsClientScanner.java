@@ -12,8 +12,6 @@ package de.rub.nds.tlsscanner.clientscanner.execution;
 import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.probe.ScannerProbe;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.BasicProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.DheParameterProbe;
@@ -22,38 +20,33 @@ import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.Version13RandomProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
-import java.util.LinkedList;
-import java.util.List;
+import de.rub.nds.tlsscanner.core.execution.TlsScanner;
 import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TlsClientScanner {
+public final class TlsClientScanner extends TlsScanner {
 
     private static final Logger LOGGER = LogManager.getLogger();
-
     private final ParallelExecutor parallelExecutor;
     private final ClientScannerConfig config;
-    private final List<ScannerProbe> probeList;
-    private final List<AfterProbe> afterList;
 
     public TlsClientScanner(ClientScannerConfig config, Callable<Integer> clientAfterPreInitCallback) {
-
+        super(config.getProbes());
         this.config = config;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3);
         parallelExecutor.setDefaultBeforeTransportInitCallback(clientAfterPreInitCallback);
-        this.probeList = new LinkedList<>();
-        this.afterList = new LinkedList<>();
         fillDefaultProbeLists();
     }
 
-    private void fillDefaultProbeLists() {
-        probeList.add(new BasicProbe(parallelExecutor, config));
-        probeList.add(new DheParameterProbe(parallelExecutor, config));
-        probeList.add(new ForcedCompressionProbe(parallelExecutor, config));
-        probeList.add(new FreakProbe(parallelExecutor, config));
-        probeList.add(new Version13RandomProbe(parallelExecutor, config));
-        probeList.add(new VersionProbe(parallelExecutor, config));
+    @Override
+    protected void fillDefaultProbeLists() {
+        addProbeToProbeList(new BasicProbe(parallelExecutor, config));
+        addProbeToProbeList(new DheParameterProbe(parallelExecutor, config));
+        addProbeToProbeList(new ForcedCompressionProbe(parallelExecutor, config));
+        addProbeToProbeList(new FreakProbe(parallelExecutor, config));
+        addProbeToProbeList(new Version13RandomProbe(parallelExecutor, config));
+        addProbeToProbeList(new VersionProbe(parallelExecutor, config));
     }
 
     public ClientReport scan() {

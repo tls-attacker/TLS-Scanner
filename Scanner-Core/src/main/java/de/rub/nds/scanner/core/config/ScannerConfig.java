@@ -10,9 +10,12 @@
 package de.rub.nds.scanner.core.config;
 
 import com.beust.jcommander.Parameter;
+import de.rub.nds.scanner.core.constants.ProbeType;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class ScannerConfig extends TLSDelegateConfig {
 
@@ -24,6 +27,8 @@ public abstract class ScannerConfig extends TLSDelegateConfig {
 
     @Parameter(names = "-reportDetail", required = false, description = "How detailed do you want the report to be?")
     private ScannerDetail reportDetail = ScannerDetail.NORMAL;
+
+    protected List<ProbeType> probes = null;
 
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
@@ -51,5 +56,17 @@ public abstract class ScannerConfig extends TLSDelegateConfig {
 
     public void setNoColor(boolean noColor) {
         this.noColor = noColor;
+    }
+
+    public List<ProbeType> getProbes() {
+        return probes;
+    }
+
+    public void setProbes(List<ProbeType> probes) {
+        this.probes = probes;
+    }
+
+    public void setProbes(ProbeType... probes) {
+        this.probes = Arrays.asList(probes);
     }
 }

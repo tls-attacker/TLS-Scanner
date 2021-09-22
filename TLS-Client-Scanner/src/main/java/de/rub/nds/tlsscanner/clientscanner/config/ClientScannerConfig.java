@@ -36,7 +36,7 @@ public class ClientScannerConfig extends ScannerConfig {
     @Parameter(names = "-bindaddr", required = false, description = "Hostname/IP to listen on. Defaults to any")
     protected String bindaddr = null;
 
-    @Parameter(names = "-run", required = true,
+    @Parameter(names = "-run", required = false,
         description = "The shell command the scanner should run to start the client. The port number the client should connect to should be marked with [port]")
     protected String runCommand = null;
 
