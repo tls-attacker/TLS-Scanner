@@ -1,5 +1,5 @@
 /**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *

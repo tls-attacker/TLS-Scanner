@@ -9,6 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.report.PrintingScheme;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
@@ -70,6 +71,11 @@ import de.rub.nds.tlsscanner.serverscanner.rating.Recommendation;
 import de.rub.nds.tlsscanner.serverscanner.rating.Recommendations;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
+import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
+import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
+import de.rub.nds.scanner.core.report.rating.Recommendation;
+import de.rub.nds.scanner.core.report.rating.ScoreReport;
+import de.rub.nds.scanner.core.report.rating.SiteReportRater;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.after.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
@@ -97,6 +103,7 @@ import static de.rub.nds.tlsscanner.serverscanner.probe.result.statistics.Random
 import static de.rub.nds.tlsscanner.serverscanner.probe.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
 import static de.rub.nds.tlsscanner.serverscanner.probe.result.statistics.RandomEvaluationResult.NOT_RANDOM;
 import static de.rub.nds.tlsscanner.serverscanner.probe.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
+import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import java.security.PublicKey;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -128,7 +135,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     private final String hsForwardSecrecyFormat = "%-19s";
     private final String hsKeyLengthFormat = "%-17s";
 
-    public ServerReportPrinter(ServerReport report, ScannerDetail detail, PrintingScheme scheme, boolean printColorful) {
+    public ServerReportPrinter(ServerReport report, ScannerDetail detail, PrintingScheme scheme,
+        boolean printColorful) {
         super(detail, scheme, printColorful, report);
     }
 
@@ -1652,9 +1660,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(builder, result, AnsiColor.YELLOW);
                 }
             });
-        } catch (JAXBException ex) {
+        } catch (Exception ex) {
+            LOGGER.error(ex);
             prettyAppend(builder, "Could not append scoring results", AnsiColor.RED);
-            prettyAppend(builder, ex.getLocalizedMessage(), AnsiColor.RED);
         }
     }
 

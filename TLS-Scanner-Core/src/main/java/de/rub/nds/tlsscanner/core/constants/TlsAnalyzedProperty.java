@@ -11,7 +11,12 @@ package de.rub.nds.tlsscanner.core.constants;
 
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
 
     SUPPORTS_ESNI(TlsAnalyzedPropertyCategory.ESNI),
@@ -259,7 +264,6 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_CCA(TlsAnalyzedPropertyCategory.CERTIFICATE),
     REQUIRES_CCA(TlsAnalyzedPropertyCategory.CERTIFICATE),
     VULNERABLE_TO_CCA_BYPASS(TlsAnalyzedPropertyCategory.ATTACKS),
-
     // CLIENT SPECIFIC PROPERTIES
     TLS_1_3_DOWNGRADE_PROTECTION(TlsAnalyzedPropertyCategory.QUIRKS),
     FORCED_COMPRESSION(TlsAnalyzedPropertyCategory.QUIRKS);

@@ -1,5 +1,5 @@
 /**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
@@ -7,12 +7,15 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.rating;
+package de.rub.nds.scanner.core.report.rating;
 
 import de.rub.nds.scanner.core.constants.TestResult;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder = { "result", "shortDescription", "handlingRecommendation", "detailedDescription" })
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyResultRecommendation {
 
     private TestResult result;
@@ -23,7 +26,7 @@ public class PropertyResultRecommendation {
 
     private String detailedDescription;
 
-    public PropertyResultRecommendation() {
+    private PropertyResultRecommendation() {
 
     }
 

@@ -9,15 +9,15 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
+import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
+import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
+import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import static org.junit.Assert.assertEquals;
@@ -31,14 +31,6 @@ public class InfluencersSerializationTest {
     private RatingInfluencers original;
 
     private RatingInfluencers result;
-
-    private StringWriter writer;
-
-    private JAXBContext context;
-
-    private Marshaller m;
-
-    private Unmarshaller um;
 
     @Before
     public void setUp() throws JAXBException {
@@ -57,23 +49,14 @@ public class InfluencersSerializationTest {
         influencers.add(i);
 
         original.setRatingInfluencers(influencers);
-
-        writer = new StringWriter();
-        context = JAXBContext.newInstance(RatingInfluencers.class);
-        m = context.createMarshaller();
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        um = context.createUnmarshaller();
     }
 
     @Test
     public void testSerializeDeserializeSimple() throws Exception {
-        m.marshal(original, writer);
-
-        String xmlString = writer.toString();
-        LOGGER.info(xmlString);
-
-        um = context.createUnmarshaller();
-        result = (RatingInfluencers) um.unmarshal(new StringReader(xmlString));
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        RatingInfluencersIO.write(stream, original);
+        System.out.println(new String(stream.toByteArray()));
+        result = RatingInfluencersIO.read(new ByteArrayInputStream(stream.toByteArray()));
 
         assertEquals("Influencer length check.", original.getRatingInfluencers().size(),
             result.getRatingInfluencers().size());

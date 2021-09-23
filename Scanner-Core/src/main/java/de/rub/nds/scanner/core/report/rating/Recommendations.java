@@ -1,5 +1,5 @@
 /**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
@@ -7,25 +7,22 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.rating;
+package de.rub.nds.scanner.core.report.rating;
 
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import java.io.File;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "recommendations")
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Recommendations implements Serializable {
 
-    /**
-     * The default Config file to load.
-     */
-    public static final String DEFAULT_RECOMMENDATIONS_FILE = "rating/recommendations.xml";
-
+    @XmlElement(name = "recommendation")
     private List<Recommendation> recommendations;
 
     private Recommendations() {
@@ -36,20 +33,6 @@ public class Recommendations implements Serializable {
         this.recommendations = recommendations;
     }
 
-    public static Recommendations createRecommendations() {
-        InputStream stream = Recommendations.class.getResourceAsStream(DEFAULT_RECOMMENDATIONS_FILE);
-        return RatingIO.readRecommendations(stream);
-    }
-
-    public static Recommendations createRecommendations(File f) {
-        return RatingIO.readRecommendations(f);
-    }
-
-    public static Recommendations createRecommendations(InputStream stream) {
-        return RatingIO.readRecommendations(stream);
-    }
-
-    @XmlElement(name = "recommendation")
     public List<Recommendation> getRecommendations() {
         return recommendations;
     }
@@ -58,7 +41,7 @@ public class Recommendations implements Serializable {
         this.recommendations = recommendations;
     }
 
-    public PropertyResultRecommendation getPropertyRecommendation(TlsAnalyzedProperty property, TestResult result) {
+    public PropertyResultRecommendation getPropertyRecommendation(AnalyzedProperty property, TestResult result) {
         for (Recommendation r : recommendations) {
             if (r.getAnalyzedProperty() == property) {
                 return r.getPropertyResultRecommendation(result);
@@ -68,7 +51,7 @@ public class Recommendations implements Serializable {
             Recommendation.NO_RECOMMENDATION_FOUND);
     }
 
-    public Recommendation getRecommendation(TlsAnalyzedProperty property) {
+    public Recommendation getRecommendation(AnalyzedProperty property) {
         for (Recommendation r : recommendations) {
             if (r.getAnalyzedProperty() == property) {
                 return r;

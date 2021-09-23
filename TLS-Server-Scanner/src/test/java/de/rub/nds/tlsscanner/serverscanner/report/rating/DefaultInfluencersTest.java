@@ -9,16 +9,21 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
+import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
+import de.rub.nds.scanner.core.report.rating.RatingInfluencer;
+import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
+import javax.xml.bind.JAXBException;
 import org.junit.Test;
 
 public class DefaultInfluencersTest {
 
     @Test
-    public void createDefaultRatingInfluencers() {
+    public void createDefaultRatingInfluencers() throws IOException, JAXBException {
         LinkedList<RatingInfluencer> influencers = new LinkedList<>();
 
         // versions

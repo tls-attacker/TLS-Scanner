@@ -1,5 +1,5 @@
 /**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
@@ -7,26 +7,29 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.rating;
+package de.rub.nds.scanner.core.report.rating;
 
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder = { "analyzedProperty", "shortName", "shortDescription", "detailedDescription", "testDocumentation",
     "links", "propertyRecommendations" })
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Recommendation {
 
     static final String NO_INFORMATION_FOUND = "No detailed information available";
 
     static final String NO_RECOMMENDATION_FOUND = "No recommendation available";
 
-    private TlsAnalyzedProperty analyzedProperty;
+    @XmlAnyElement(lax = true)
+    private AnalyzedProperty analyzedProperty;
 
     private String shortName;
 
@@ -45,18 +48,18 @@ public class Recommendation {
         links = new LinkedList<>();
     }
 
-    public Recommendation(TlsAnalyzedProperty analyzedProperty,
+    public Recommendation(AnalyzedProperty analyzedProperty,
         List<PropertyResultRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
         this.propertyRecommendations = propertyRecommendations;
     }
 
-    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName) {
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName) {
         this();
         this.shortName = shortName;
     }
 
-    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
         String detailedDescription, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
@@ -66,7 +69,7 @@ public class Recommendation {
         this.links.addAll(Arrays.asList(links));
     }
 
-    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
         PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
@@ -76,7 +79,7 @@ public class Recommendation {
         this.links.addAll(Arrays.asList(links));
     }
 
-    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
         String detailedDescription, PropertyResultRecommendation propertyRecommendation, String... links) {
         this();
         this.analyzedProperty = analyzedProperty;
@@ -87,7 +90,7 @@ public class Recommendation {
         this.links.addAll(Arrays.asList(links));
     }
 
-    public Recommendation(TlsAnalyzedProperty analyzedProperty, String shortName, String shortDescription,
+    public Recommendation(AnalyzedProperty analyzedProperty, String shortName, String shortDescription,
         String detailedDescription, String testDocumentation, List<String> links,
         List<PropertyResultRecommendation> propertyRecommendations) {
         this.analyzedProperty = analyzedProperty;
@@ -99,11 +102,11 @@ public class Recommendation {
         this.propertyRecommendations = propertyRecommendations;
     }
 
-    public TlsAnalyzedProperty getAnalyzedProperty() {
+    public AnalyzedProperty getAnalyzedProperty() {
         return analyzedProperty;
     }
 
-    public void setAnalyzedProperty(TlsAnalyzedProperty analyzedProperty) {
+    public void setAnalyzedProperty(AnalyzedProperty analyzedProperty) {
         this.analyzedProperty = analyzedProperty;
     }
 
@@ -143,8 +146,6 @@ public class Recommendation {
         this.testDocumentation = testDocumentation;
     }
 
-    @XmlElement(name = "resultingRecommendation")
-    @XmlElementWrapper(name = "resultingRecommendations")
     public List<PropertyResultRecommendation> getPropertyRecommendations() {
         return propertyRecommendations;
     }
@@ -162,8 +163,6 @@ public class Recommendation {
         return new PropertyResultRecommendation(result, NO_INFORMATION_FOUND, NO_RECOMMENDATION_FOUND);
     }
 
-    @XmlElement(name = "link")
-    @XmlElementWrapper(name = "links")
     public List<String> getLinks() {
         return links;
     }

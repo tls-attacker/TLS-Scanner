@@ -1,5 +1,5 @@
 /**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
@@ -7,18 +7,24 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.rating;
+package de.rub.nds.scanner.core.report.rating;
 
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RatingInfluencer {
 
-    private TlsAnalyzedProperty analyzedProperty;
+    @XmlAnyElement(lax = true)
+    private AnalyzedProperty analyzedProperty;
 
     private List<PropertyResultRatingInfluencer> propertyRatingInfluencers;
 
@@ -26,27 +32,26 @@ public class RatingInfluencer {
         this.propertyRatingInfluencers = new LinkedList<>();
     }
 
-    public RatingInfluencer(TlsAnalyzedProperty influencerConstant,
+    public RatingInfluencer(AnalyzedProperty influencerConstant,
         List<PropertyResultRatingInfluencer> propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = propertyRatingInfluencers;
     }
 
-    public RatingInfluencer(TlsAnalyzedProperty influencerConstant,
+    public RatingInfluencer(AnalyzedProperty influencerConstant,
         PropertyResultRatingInfluencer... propertyRatingInfluencers) {
         this.analyzedProperty = influencerConstant;
         this.propertyRatingInfluencers = Arrays.asList(propertyRatingInfluencers);
     }
 
-    public TlsAnalyzedProperty getAnalyzedProperty() {
+    public AnalyzedProperty getAnalyzedProperty() {
         return analyzedProperty;
     }
 
-    public void setAnalyzedProperty(TlsAnalyzedProperty analyzedProperty) {
+    public void setAnalyzedProperty(AnalyzedProperty analyzedProperty) {
         this.analyzedProperty = analyzedProperty;
     }
 
-    @XmlElement(name = "propertyResultRatingInfluencer")
     public List<PropertyResultRatingInfluencer> getPropertyRatingInfluencers() {
         return propertyRatingInfluencers;
     }

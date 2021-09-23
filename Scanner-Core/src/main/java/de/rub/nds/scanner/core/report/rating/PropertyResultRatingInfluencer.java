@@ -1,5 +1,5 @@
 /**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
@@ -7,13 +7,18 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.rating;
+package de.rub.nds.scanner.core.report.rating;
 
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "result", "influence", "scoreCap", "referencedProperty", "referencedPropertyResult" })
 public class PropertyResultRatingInfluencer implements Comparable<PropertyResultRatingInfluencer> {
 
@@ -23,7 +28,8 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
 
     private Integer scoreCap;
 
-    private TlsAnalyzedProperty referencedProperty;
+    @XmlAnyElement(lax = true)
+    private AnalyzedProperty referencedProperty;
 
     private TestResult referencedPropertyResult;
 
@@ -36,7 +42,7 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         this.influence = influence;
     }
 
-    public PropertyResultRatingInfluencer(TestResult result, TlsAnalyzedProperty referencedProperty,
+    public PropertyResultRatingInfluencer(TestResult result, AnalyzedProperty referencedProperty,
         TestResult referencedPropertyResult) {
         this.result = result;
         this.referencedProperty = referencedProperty;
@@ -77,16 +83,14 @@ public class PropertyResultRatingInfluencer implements Comparable<PropertyResult
         this.scoreCap = scoreCap;
     }
 
-    @XmlElement(required = false)
-    public TlsAnalyzedProperty getReferencedProperty() {
+    public AnalyzedProperty getReferencedProperty() {
         return referencedProperty;
     }
 
-    public void setReferencedProperty(TlsAnalyzedProperty referencedProperty) {
+    public void setReferencedProperty(AnalyzedProperty referencedProperty) {
         this.referencedProperty = referencedProperty;
     }
 
-    @XmlElement(required = false)
     public TestResult getReferencedPropertyResult() {
         return referencedPropertyResult;
     }

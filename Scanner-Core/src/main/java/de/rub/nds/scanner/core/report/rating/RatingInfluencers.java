@@ -1,5 +1,5 @@
 /**
- * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ * Scanner-Core - A TLS configuration and analysis tool based on TLS-Attacker
  *
  * Copyright 2017-2022 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
  *
@@ -7,25 +7,22 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner.report.rating;
+package de.rub.nds.scanner.core.report.rating;
 
+import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import java.io.File;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "ratingInfluencers")
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RatingInfluencers implements Serializable {
 
-    /**
-     * The default Config file to load.
-     */
-    public static final String DEFAULT_RATING_FILE = "rating/influencers.xml";
-
+    @XmlElement(name = "ratingInfluencer")
     private LinkedList<RatingInfluencer> ratingInfluencers;
 
     private RatingInfluencers() {
@@ -36,22 +33,6 @@ public class RatingInfluencers implements Serializable {
         this.ratingInfluencers = ratingInfluencers;
     }
 
-    public static RatingInfluencers createRatingInfluencers() {
-        InputStream stream = RatingInfluencers.class.getResourceAsStream(DEFAULT_RATING_FILE);
-        return RatingIO.readRatingInfluencers(stream);
-    }
-
-    public static RatingInfluencers createRatingInfluencers(File f) {
-        return RatingIO.readRatingInfluencers(f);
-    }
-
-    public static RatingInfluencers createRatingInfluencers(InputStream stream) {
-        return RatingIO.readRatingInfluencers(stream);
-        // todo: close stream?
-        // https://www.tutorialspoint.com/java/xml/javax_xml_bind_jaxb_unmarshal_inputstream
-    }
-
-    @XmlElement(name = "ratingInfluencer")
     public LinkedList<RatingInfluencer> getRatingInfluencers() {
         return ratingInfluencers;
     }
@@ -60,7 +41,7 @@ public class RatingInfluencers implements Serializable {
         this.ratingInfluencers = ratingInfluencers;
     }
 
-    public PropertyResultRatingInfluencer getPropertyRatingInfluencer(TlsAnalyzedProperty property, TestResult result) {
+    public PropertyResultRatingInfluencer getPropertyRatingInfluencer(AnalyzedProperty property, TestResult result) {
         for (RatingInfluencer ri : ratingInfluencers) {
             if (ri.getAnalyzedProperty() == property) {
                 return ri.getPropertyRatingInfluencer(result);

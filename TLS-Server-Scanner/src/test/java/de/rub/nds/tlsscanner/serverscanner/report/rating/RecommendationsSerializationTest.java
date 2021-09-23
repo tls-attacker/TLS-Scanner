@@ -9,6 +9,9 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
+import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
+import de.rub.nds.scanner.core.report.rating.Recommendations;
+import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.StringReader;
@@ -27,7 +30,7 @@ import org.junit.Test;
 
 public class RecommendationsSerializationTest {
 
-    private static final Logger LOGGER = LogManager.getLogger(RecommendationsSerializationTest.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private Recommendations original;
 
@@ -55,7 +58,8 @@ public class RecommendationsSerializationTest {
         original.setRecommendations(propertyRecommendations);
 
         writer = new StringWriter();
-        context = JAXBContext.newInstance(Recommendations.class);
+        context = JAXBContext.newInstance(Recommendations.class, Recommendation.class, TlsAnalyzedProperty.class,
+            PropertyResultRecommendation.class);
         m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         um = context.createUnmarshaller();

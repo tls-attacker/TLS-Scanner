@@ -9,7 +9,9 @@
 package de.rub.nds.tlsscanner.core.constants;
 
 import de.rub.nds.scanner.core.constants.ProbeType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 public enum TlsProbeType implements ProbeType {
     // SERVER PROBES
     ALPN("ALPN"),

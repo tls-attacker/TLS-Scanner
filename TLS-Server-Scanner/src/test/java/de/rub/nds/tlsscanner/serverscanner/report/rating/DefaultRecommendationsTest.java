@@ -9,17 +9,22 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
+import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
+import de.rub.nds.scanner.core.report.rating.Recommendations;
+import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import javax.xml.bind.JAXBException;
 import org.junit.Test;
 
 public class DefaultRecommendationsTest {
 
     @Test
-    public void createDefaultRatingInfluencers() {
+    public void createDefaultRatingInfluencers() throws IOException, JAXBException {
         List<Recommendation> recommendations = new LinkedList<>();
 
         recommendations.add(new Recommendation(TlsAnalyzedProperty.SUPPORTS_SSL_2, "SSL 2.0 support",
