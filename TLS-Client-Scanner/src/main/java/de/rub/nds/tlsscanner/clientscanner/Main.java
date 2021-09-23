@@ -16,6 +16,7 @@ import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.util.ConsoleLogger;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class Main {
             // Cmd was parsable
             try {
 
-                TlsClientScanner scanner = new TlsClientScanner(config, () -> {
+                TlsClientScanner scanner = new TlsClientScanner(config, (State state) -> {
                     try {
                         LOGGER.debug("Running start command: " + config.getRunCommand());
                         Runtime.getRuntime().exec(config.getRunCommand().split(" "));

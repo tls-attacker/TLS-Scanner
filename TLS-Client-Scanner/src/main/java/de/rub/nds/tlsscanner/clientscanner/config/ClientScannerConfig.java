@@ -18,13 +18,15 @@ import org.apache.logging.log4j.Logger;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
-import de.rub.nds.tlsattacker.core.connection.InboundConnection;
-import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsattacker.core.config.delegate.ServerDelegate;
 
 public class ClientScannerConfig extends ScannerConfig {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    @ParametersDelegate
+    protected ServerDelegate serverDelegate;
 
     @ParametersDelegate
     protected StarttlsDelegate startTlsDelegate;
@@ -32,9 +34,6 @@ public class ClientScannerConfig extends ScannerConfig {
     @Parameter(names = "-timeout", required = false,
         description = "The timeout used for the scans in ms (default 1000)")
     protected int timeout = 1000;
-
-    @Parameter(names = "-bindaddr", required = false, description = "Hostname/IP to listen on. Defaults to any")
-    protected String bindaddr = null;
 
     @Parameter(names = "-run", required = false,
         description = "The shell command the scanner should run to start the client. The port number the client should connect to should be marked with [port]")
@@ -56,30 +55,20 @@ public class ClientScannerConfig extends ScannerConfig {
         super(delegate);
         this.startTlsDelegate = new StarttlsDelegate();
         addDelegate(startTlsDelegate);
+        this.serverDelegate = new ServerDelegate();
+        addDelegate(serverDelegate);
+
     }
 
     @Override
     public Config createConfig() {
         Config config = super.createConfig(Config.createConfig());
         config.getDefaultClientConnection().setTimeout(timeout);
-
-        config.setDefaultRunningMode(RunningModeType.SERVER);
-        InboundConnection inboundConnection = config.getDefaultServerConnection();
-        if (inboundConnection == null) {
-            config.setDefaultServerConnection(new InboundConnection(0, bindaddr));
-        } else {
-            inboundConnection.setHostname(bindaddr);
-        }
-        inboundConnection.setPort(4433);
         return config;
     }
 
     public int getTimeout() {
         return timeout;
-    }
-
-    public String getBindaddr() {
-        return bindaddr;
     }
 
     public String getRunCommand() {
@@ -94,4 +83,7 @@ public class ClientScannerConfig extends ScannerConfig {
         return overallThreads;
     }
 
+    public ServerDelegate getServerDelegate() {
+        return serverDelegate;
+    }
 }

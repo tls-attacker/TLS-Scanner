@@ -11,7 +11,9 @@ package de.rub.nds.tlsscanner.clientscanner.execution;
 
 import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.scanner.core.execution.ThreadedScanJobExecutor;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.transport.tcp.ServerTcpTransportHandler;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.probe.BasicProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.DheParameterProbe;
@@ -21,7 +23,9 @@ import de.rub.nds.tlsscanner.clientscanner.probe.Version13RandomProbe;
 import de.rub.nds.tlsscanner.clientscanner.probe.VersionProbe;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.execution.TlsScanner;
-import java.util.concurrent.Callable;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,12 +34,14 @@ public final class TlsClientScanner extends TlsScanner {
     private static final Logger LOGGER = LogManager.getLogger();
     private final ParallelExecutor parallelExecutor;
     private final ClientScannerConfig config;
+    private ServerSocket socket = null;
 
-    public TlsClientScanner(ClientScannerConfig config, Callable<Integer> clientAfterPreInitCallback) {
+    public TlsClientScanner(ClientScannerConfig config, Function<State, Integer> clientAfterPreInitCallback) {
         super(config.getProbes());
         this.config = config;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3);
         parallelExecutor.setDefaultBeforeTransportInitCallback(clientAfterPreInitCallback);
+        parallelExecutor.setDefaultBeforeTransportPreInitCallback(createConnectionMagicHook());
         fillDefaultProbeLists();
     }
 
@@ -53,15 +59,38 @@ public final class TlsClientScanner extends TlsScanner {
 
         ThreadedScanJobExecutor executor = null;
         try {
+            socket = new ServerSocket(config.getServerDelegate().getPort());
             ScanJob job = new ScanJob(probeList, afterList);
             executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(), "");
             ClientReport report = (ClientReport) executor.execute(new ClientReport());
             return report;
+        } catch (IOException ex) {
+            LOGGER.error("Could not open socket for the scanner to use: " + config.getServerDelegate().getPort());
+            return new ClientReport();
         } finally {
             if (executor != null) {
                 executor.shutdown();
             }
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+                    LOGGER.error("Could not close server socket", ex);
+                }
+            }
         }
     }
 
+    private Function<State, Integer> createConnectionMagicHook() {
+        return (State state) -> {
+            try {
+                state.getTlsContext().setTransportHandler(
+                    new ServerTcpTransportHandler(state.getTlsContext().getConnection().getFirstTimeout(),
+                        state.getTlsContext().getConnection().getTimeout(), socket));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            return 0;
+        };
+    }
 }
