@@ -92,7 +92,8 @@ public class RandomnessProbe extends TlsProbe {
                 if (!pair.getVersion().isTLS13()) {
                     score += 64; // random + session id
                     if (suite.isCBC()
-                        && (pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.TLS11)) {
+                        && (pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.TLS11)
+                        || pair.getVersion() == ProtocolVersion.DTLS12 || pair.getVersion() == ProtocolVersion.DTLS10) {
                         score += AlgorithmResolver.getCipher(suite).getBlocksize();
                     }
                 } else {
@@ -145,7 +146,7 @@ public class RandomnessProbe extends TlsProbe {
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setAddRenegotiationInfoExtension(false);
         config.setUseFreshRandom(true);
-        config.setStopActionsAfterFatal(true);
+        config.setStopReceivingAfterFatal(true);
         config.setAddServerNameIndicationExtension(true);
         config.setDefaultClientSessionId(new byte[0]);
         config.setStopActionsAfterFatal(true);
