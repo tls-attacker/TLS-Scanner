@@ -41,7 +41,7 @@ public final class TlsClientScanner extends TlsScanner {
         this.config = config;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3);
         parallelExecutor.setDefaultBeforeTransportInitCallback(clientAfterPreInitCallback);
-        parallelExecutor.setDefaultBeforeTransportPreInitCallback(createConnectionMagicHook());
+        parallelExecutor.setDefaultBeforeTransportPreInitCallback(createConnectionHook());
         fillDefaultProbeLists();
     }
 
@@ -81,7 +81,7 @@ public final class TlsClientScanner extends TlsScanner {
         }
     }
 
-    private Function<State, Integer> createConnectionMagicHook() {
+    private Function<State, Integer> createConnectionHook() {
         return (State state) -> {
             try {
                 state.getTlsContext().setTransportHandler(

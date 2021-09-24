@@ -20,3 +20,4 @@ nbactions.xml
 .factorypath
 .idea
 *.iml
+/TLS-Server-Scanner/nbproject/
