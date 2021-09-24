@@ -151,7 +151,7 @@ public class NistGuidelineSerialization {
             RequirementLevel.MUST, AnalyzedProperty.VULNERABLE_TO_TLS_POODLE, TestResult.FALSE));
         checks.add(new AnalyzedPropertyGuidelineCheck(
             "The random number generator should be used to generate the 4-byte timestamp of the server random value.",
-            RequirementLevel.SHOULD, AnalyzedProperty.USES_UNIX_TIME_IN_SERVER_RANDOM, TestResult.FALSE));
+            RequirementLevel.SHOULD, AnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, TestResult.FALSE));
         checks.add(new HashAlgorithmStrengthCheck(
             "All server and client certificates and certificates in their certification paths shall be signed using SHA-224 or a stronger hashing algorithm.",
             RequirementLevel.MUST, HashAlgorithm.SHA224));

@@ -10,21 +10,16 @@
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
-import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-public class UnixTimeRngTestResult extends ProbeResult {
+public class RandomnessResult extends ProbeResult {
 
-    private final TestResult usesUnixTime;
-
-    public UnixTimeRngTestResult(TestResult usesUnixTime) {
-        super(ProbeType.RNG);
-        this.usesUnixTime = usesUnixTime;
+    public RandomnessResult() {
+        super(ProbeType.RANDOMNESS);
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.USES_UNIX_TIME_IN_SERVER_RANDOM, usesUnixTime);
+        // Nothing to do here - all data analysis is done in the after probe
     }
 }

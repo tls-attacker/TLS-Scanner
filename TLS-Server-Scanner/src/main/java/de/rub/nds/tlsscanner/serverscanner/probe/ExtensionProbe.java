@@ -110,6 +110,7 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setAddExtendedMasterSecretExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSessionTicketTLSExtension(true);
+        tlsConfig.setAddExtendedRandomExtension(true);
         tlsConfig.setAddTruncatedHmacExtension(true);
         tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setAddCertificateStatusRequestExtension(true);

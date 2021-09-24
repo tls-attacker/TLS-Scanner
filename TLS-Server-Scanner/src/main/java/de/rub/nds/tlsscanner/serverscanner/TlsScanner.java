@@ -15,67 +15,30 @@ import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.AlpacaProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.AlpnProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.BleichenbacherProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CcaProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CcaRequiredProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CcaSupportProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CertificateTransparencyProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.ECPointFormatProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.ExtensionProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.HeartbleedProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.HelloRetryProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.HttpFalseStartProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.HttpHeaderProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.InvalidCurveProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.NamedCurvesProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.PaddingOracleProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.RecordFragmentationProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.RenegotiationProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.ResumptionProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketZeroKeyProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.SignatureAndHashAlgorithmProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsFallbackScsvProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsPoodleProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
-import de.rub.nds.tlsscanner.serverscanner.probe.UnixTimeRngProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.*;
+import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
+import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.CertificateSignatureAndHashAlgorithmAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.EvaluateRandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.LogjamAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.PaddingOracleIdentificationAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.Sweet32AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.RandomnessAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
+import java.util.LinkedList;
+import java.util.List;
+import javax.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.LinkedList;
-import java.util.List;
-
-/**
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class TlsScanner {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -120,7 +83,9 @@ public class TlsScanner {
     }
 
     private void fillDefaultProbeLists() {
-
+        if (config.getAdditionalRandomnessHandshakes() > 0) {
+            addProbeToProbeList(new RandomnessProbe(config, parallelExecutor));
+        }
         addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
         addProbeToProbeList(new SniProbe(config, parallelExecutor));
         addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
@@ -135,7 +100,10 @@ public class TlsScanner {
         addProbeToProbeList(new CipherSuiteOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new ExtensionProbe(config, parallelExecutor));
         addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
-        addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
+        if (config.getApplicationProtocol() == ApplicationProtocol.HTTP
+            || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
+            addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
+        }
         addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
         addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
         addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
@@ -157,14 +125,13 @@ public class TlsScanner {
         addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
         addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(config, parallelExecutor));
-        addProbeToProbeList(new UnixTimeRngProbe(config, parallelExecutor));
         addProbeToProbeList(new TlsFallbackScsvProbe(parallelExecutor, config));
 
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterProbe());
-        afterList.add(new EvaluateRandomnessAfterProbe());
+        afterList.add(new RandomnessAfterProbe());
         afterList.add(new EcPublicKeyAfterProbe());
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
@@ -195,7 +162,22 @@ public class TlsScanner {
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
                         config.getClientDelegate().getHost());
-                    return executor.execute();
+                    long scanStartTime = System.currentTimeMillis();
+                    SiteReport siteReport = executor.execute();
+                    SiteReportRater rater;
+                    try {
+                        rater = SiteReportRater.getSiteReportRater();
+                        ScoreReport scoreReport = rater.getScoreReport(siteReport.getResultMap());
+                        siteReport.setScore(scoreReport.getScore());
+                        siteReport.setScoreReport(scoreReport);
+
+                    } catch (JAXBException ex) {
+                        LOGGER.error("Could not retrieve scoring results");
+                    }
+                    long scanEndTime = System.currentTimeMillis();
+                    siteReport.setScanStartTime(scanStartTime);
+                    siteReport.setScanEndTime(scanEndTime);
+                    return siteReport;
                 } else {
                     isConnectable = true;
                 }

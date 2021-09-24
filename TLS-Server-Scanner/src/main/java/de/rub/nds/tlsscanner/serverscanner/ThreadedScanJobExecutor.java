@@ -104,7 +104,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                     lastMerge = System.currentTimeMillis();
                     try {
                         ProbeResult probeResult = result.get();
-                        ConsoleLogger.CONSOLE.info("+++" + probeResult.getProbeName() + " executed");
+                        ConsoleLogger.CONSOLE
+                            .info("+++" + probeResult.getType().getHumanReadableName() + " probe executed");
                         finishedFutures.add(result);
                         report.markProbeAsExecuted(result.get().getType());
                         if (probeResult != null) {
