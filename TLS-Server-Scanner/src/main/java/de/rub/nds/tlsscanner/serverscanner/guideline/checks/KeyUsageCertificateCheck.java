@@ -60,24 +60,23 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         CertificateReport report = chain.getCertificateReportList().get(0);
         Extensions extensions = report.convertToCertificateHolder().getExtensions();
         if (extensions == null) {
-            return new KeyUsageCertificateCheckResult(TestResult.FALSE, null);
+            return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, null);
         }
         KeyUsage extension = KeyUsage.fromExtensions(extensions);
         if (extension == null) {
-            return new KeyUsageCertificateCheckResult(TestResult.FALSE, null);
+            return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, null);
         }
         if (DIGITAL_SIGNATURE.contains(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
             if (!extension.hasUsages(KeyUsage.digitalSignature)) {
-                return new KeyUsageCertificateCheckResult(TestResult.FALSE, "digitalSignature");
+                return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, "digitalSignature");
             }
         }
         if (report.getPublicKey() instanceof CustomDhPublicKey) {
-            // TODO only for ECDH certificate, DH certificate
             if (!extension.hasUsages(KeyUsage.keyAgreement)) {
-                return new KeyUsageCertificateCheckResult(TestResult.FALSE, "keyAgreement");
+                return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, "keyAgreement");
             }
         }
-        return new KeyUsageCertificateCheckResult(TestResult.TRUE, null);
+        return new KeyUsageCertificateCheckResult(TestResult.TRUE, true, null);
     }
 
     @Override

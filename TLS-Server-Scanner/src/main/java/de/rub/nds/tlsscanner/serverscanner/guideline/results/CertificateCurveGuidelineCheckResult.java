@@ -13,14 +13,14 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 
-import java.util.Objects;
-
 public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
+    private boolean supported;
     private NamedGroup namedGroup;
 
-    public CertificateCurveGuidelineCheckResult(TestResult result, NamedGroup namedGroup) {
+    public CertificateCurveGuidelineCheckResult(TestResult result, boolean supported, NamedGroup namedGroup) {
         super(result);
+        this.supported = supported;
         this.namedGroup = namedGroup;
     }
 
@@ -30,11 +30,14 @@ public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
 
     @Override
     public String display() {
-        return Objects.equals(TestResult.TRUE, getResult()) ? namedGroup + " is recommended."
-            : namedGroup + " is not recommended.";
+        return supported ? namedGroup + " is recommended." : namedGroup + " is not recommended.";
     }
 
     public NamedGroup getNamedGroup() {
         return namedGroup;
+    }
+
+    public boolean isSupported() {
+        return supported;
     }
 }

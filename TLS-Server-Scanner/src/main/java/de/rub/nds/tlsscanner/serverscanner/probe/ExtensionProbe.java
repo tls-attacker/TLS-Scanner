@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
@@ -61,12 +62,16 @@ public class ExtensionProbe extends TlsProbe {
 
     public List<ExtensionType> getSupportedExtensions() {
         Set<ExtensionType> allSupportedExtensions = new HashSet<>();
-        List<ExtensionType> commonExtensions = getCommonExtension(ProtocolVersion.TLS12);
+        List<ExtensionType> commonExtensions = getCommonExtension(ProtocolVersion.TLS12, suite -> true);
+        if (commonExtensions != null) {
+            allSupportedExtensions.addAll(commonExtensions);
+        }
+        commonExtensions = getCommonExtension(ProtocolVersion.TLS12, CipherSuite::isCBC);
         if (commonExtensions != null) {
             allSupportedExtensions.addAll(commonExtensions);
         }
         if (this.supportsTls13) {
-            commonExtensions = getCommonExtension(ProtocolVersion.TLS13);
+            commonExtensions = getCommonExtension(ProtocolVersion.TLS13, CipherSuite::isTLS13);
             if (commonExtensions != null) {
                 allSupportedExtensions.addAll(commonExtensions);
             }
@@ -74,10 +79,11 @@ public class ExtensionProbe extends TlsProbe {
         return new ArrayList<>(allSupportedExtensions);
     }
 
-    private List<ExtensionType> getCommonExtension(ProtocolVersion highestVersion) {
+    private List<ExtensionType> getCommonExtension(ProtocolVersion highestVersion,
+        Predicate<CipherSuite> cipherSuitePredicate) {
         Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+        List<CipherSuite> cipherSuites = new LinkedList<>(Arrays.asList(CipherSuite.values()));
+        cipherSuites.removeIf(cipherSuitePredicate.negate());
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);

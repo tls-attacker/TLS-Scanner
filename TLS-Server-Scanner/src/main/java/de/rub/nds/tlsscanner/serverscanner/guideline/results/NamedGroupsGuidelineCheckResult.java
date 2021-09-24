@@ -49,7 +49,7 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
             return "Missing information.";
         }
         if (Objects.equals(TestResult.TRUE, getResult())) {
-            return "Only listed groups are supported.";
+            return "Server passed the named groups check.";
         }
         if (notRecommendedGroups != null && !notRecommendedGroups.isEmpty()) {
             return "The following groups were supported but not recommended:\n"

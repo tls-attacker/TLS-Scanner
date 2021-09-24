@@ -29,12 +29,12 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.PaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class PaddingOracleProbe extends TlsProbe {
@@ -50,28 +50,23 @@ public class PaddingOracleProbe extends TlsProbe {
         try {
             List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
             List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
-            ProtocolVersion version = null;
-            CipherSuite cipherSuite = null;
-            versions: for (VersionSuiteListPair pair : serverSupportedSuites) {
+
+            for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
                     || pair.getVersion() == ProtocolVersion.TLS12) {
                     for (CipherSuite suite : pair.getCipherSuiteList()) {
                         if (suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
-                            version = pair.getVersion();
-                            cipherSuite = suite;
-                            break versions;
+                            for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
+                                PaddingOracleCommandConfig paddingOracleConfig =
+                                    createPaddingOracleCommandConfig(pair.getVersion(), suite);
+                                paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
+                                testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
+                            }
                         }
                     }
                 }
             }
-            if (cipherSuite != null) {
-                for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
-                    PaddingOracleCommandConfig paddingOracleConfig =
-                        createPaddingOracleCommandConfig(version, cipherSuite);
-                    paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
-                    testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
-                }
-            }
+
             // If we found some difference in the server behavior we need to
             if (isPotentiallyVulnerable(testResultList)
                 || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {

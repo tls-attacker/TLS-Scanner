@@ -40,7 +40,8 @@ public class ExtensionGuidelineCheck extends GuidelineCheck {
     @Override
     public GuidelineCheckResult evaluate(SiteReport report) {
         return new ExtensionGuidelineCheckResult(
-            TestResult.of(report.getSupportedExtensions().contains(requiredExtension)), requiredExtension);
+            TestResult.of(report.getSupportedExtensions().contains(requiredExtension)),
+            report.getSupportedExtensions().contains(requiredExtension), requiredExtension);
     }
 
     @Override

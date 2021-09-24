@@ -27,7 +27,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheckTest {
             .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
 
         SignatureAndHashAlgorithmsGuidelineCheck check = new SignatureAndHashAlgorithmsGuidelineCheck(null, null,
-            Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+            Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1), false);
         GuidelineCheckResult result = check.evaluate(report);
         Assert.assertEquals(TestResult.TRUE, result.getResult());
     }
@@ -39,7 +39,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheckTest {
             .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
 
         SignatureAndHashAlgorithmsGuidelineCheck check = new SignatureAndHashAlgorithmsGuidelineCheck(null, null,
-            Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
+            Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1), false);
         GuidelineCheckResult result = check.evaluate(report);
         Assert.assertEquals(TestResult.FALSE, result.getResult());
     }

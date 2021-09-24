@@ -1805,6 +1805,16 @@ public class SiteReportPrinter {
                 builder.append("none\n");
             }
         }
+        if (report.getSupportedSignatureAndHashAlgorithmsTls13() != null) {
+            prettyAppendHeading(builder, "Supported Signature and Hash Algorithms TLS 1.3");
+            if (report.getSupportedSignatureAndHashAlgorithmsTls13().size() > 0) {
+                for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithmsTls13()) {
+                    prettyAppend(builder, algorithm.toString());
+                }
+            } else {
+                builder.append("none\n");
+            }
+        }
         return builder;
     }
 

@@ -17,20 +17,26 @@ import java.util.Objects;
 
 public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
 
+    private final boolean supported;
     private final ExtensionType requiredExtension;
 
-    public ExtensionGuidelineCheckResult(TestResult result, ExtensionType requiredExtension) {
+    public ExtensionGuidelineCheckResult(TestResult result, boolean supported, ExtensionType requiredExtension) {
         super(result);
+        this.supported = supported;
         this.requiredExtension = requiredExtension;
     }
 
     @Override
     public String display() {
-        return Objects.equals(TestResult.TRUE, getResult()) ? "The server supports " + this.requiredExtension
+        return supported ? "The server supports " + this.requiredExtension
             : "The server does not support " + this.requiredExtension;
     }
 
     public ExtensionType getRequiredExtension() {
         return requiredExtension;
+    }
+
+    public boolean isSupported() {
+        return supported;
     }
 }

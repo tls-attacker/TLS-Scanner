@@ -25,30 +25,35 @@ import java.util.Set;
 public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck {
 
     private List<SignatureAndHashAlgorithm> recommendedAlgorithms;
+    private boolean tls13;
 
     private SignatureAndHashAlgorithmsGuidelineCheck() {
         super(null, null);
     }
 
     public SignatureAndHashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        List<SignatureAndHashAlgorithm> recommendedAlgorithms) {
+        List<SignatureAndHashAlgorithm> recommendedAlgorithms, boolean tls13) {
         super(name, requirementLevel);
         this.recommendedAlgorithms = recommendedAlgorithms;
+        this.tls13 = tls13;
     }
 
     public SignatureAndHashAlgorithmsGuidelineCheck(String name, RequirementLevel requirementLevel,
-        GuidelineCheckCondition condition, List<SignatureAndHashAlgorithm> recommendedAlgorithms) {
+        GuidelineCheckCondition condition, List<SignatureAndHashAlgorithm> recommendedAlgorithms, boolean tls13) {
         super(name, requirementLevel, condition);
         this.recommendedAlgorithms = recommendedAlgorithms;
+        this.tls13 = tls13;
     }
 
     @Override
     public GuidelineCheckResult evaluate(SiteReport report) {
-        if (report.getSupportedSignatureAndHashAlgorithms() == null) {
+        List<SignatureAndHashAlgorithm> algorithms = tls13 ? report.getSupportedSignatureAndHashAlgorithmsTls13()
+            : report.getSupportedSignatureAndHashAlgorithms();
+        if (algorithms == null) {
             return new SignatureAndHashAlgorithmsCertificateGuidelineCheckResult(TestResult.UNCERTAIN, null);
         }
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
-        for (SignatureAndHashAlgorithm alg : report.getSupportedSignatureAndHashAlgorithms()) {
+        for (SignatureAndHashAlgorithm alg : algorithms) {
             if (!this.recommendedAlgorithms.contains(alg)) {
                 notRecommended.add(alg);
             }
@@ -64,5 +69,9 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends GuidelineCheck {
 
     public List<SignatureAndHashAlgorithm> getRecommendedAlgorithms() {
         return recommendedAlgorithms;
+    }
+
+    public boolean isTls13() {
+        return tls13;
     }
 }

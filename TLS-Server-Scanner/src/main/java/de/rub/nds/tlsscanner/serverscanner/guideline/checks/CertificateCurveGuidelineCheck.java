@@ -60,9 +60,9 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
         }
         NamedGroup group = ((CustomEcPublicKey) report.getPublicKey()).getGroup();
         if (!this.recommendedGroups.contains(group)) {
-            return new CertificateCurveGuidelineCheckResult(TestResult.FALSE, group);
+            return new CertificateCurveGuidelineCheckResult(TestResult.FALSE, false, group);
         }
-        return new CertificateCurveGuidelineCheckResult(TestResult.TRUE, group);
+        return new CertificateCurveGuidelineCheckResult(TestResult.TRUE, true, group);
     }
 
     @Override

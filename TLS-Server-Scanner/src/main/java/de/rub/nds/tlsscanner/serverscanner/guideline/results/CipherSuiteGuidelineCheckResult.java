@@ -28,7 +28,7 @@ public class CipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
     @Override
     public String display() {
-        if (Objects.equals(TestResult.TRUE, getResult())) {
+        if (notRecommendedSuites.isEmpty()) {
             return "Only listed Cipher Suites are supported.";
         } else {
             return "The following Cipher Suites were supported but not recommended:\n"

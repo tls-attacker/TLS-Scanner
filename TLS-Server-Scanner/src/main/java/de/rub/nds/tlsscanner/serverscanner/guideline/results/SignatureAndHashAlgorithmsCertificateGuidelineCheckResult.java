@@ -32,7 +32,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheckResult extends G
         if (Objects.equals(TestResult.UNCERTAIN, getResult())) {
             return "Missing Information";
         }
-        if (Objects.equals(TestResult.TRUE, getResult())) {
+        if (notRecommendedAlgorithms.isEmpty()) {
             return "Only listed Signature and Hash Algorithms are supported.";
         } else {
             return "The following Signature and Hash Algorithms were supported but not recommended:\n"

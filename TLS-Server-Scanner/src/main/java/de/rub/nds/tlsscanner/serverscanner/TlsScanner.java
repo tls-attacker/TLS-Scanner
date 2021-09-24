@@ -16,10 +16,44 @@ import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
-import de.rub.nds.tlsscanner.serverscanner.probe.*;
+import de.rub.nds.tlsscanner.serverscanner.probe.AlpacaProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.AlpnProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.BleichenbacherProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaRequiredProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CcaSupportProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CertificateTransparencyProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CommonBugProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.CompressionsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DirectRaccoonProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.DrownProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ECPointFormatProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EarlyCcsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.EsniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ExtensionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HeartbleedProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HelloRetryProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpFalseStartProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.HttpHeaderProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.InvalidCurveProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.NamedCurvesProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.OcspProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.PaddingOracleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ProtocolVersionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RecordFragmentationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.RenegotiationProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.ResumptionProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SessionTicketZeroKeyProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SignatureAndHashAlgorithmProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.SniProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsFallbackScsvProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsPoodleProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.TokenbindingProbe;
+import de.rub.nds.tlsscanner.serverscanner.probe.UnixTimeRngProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.CertificateSignatureAndHashAlgorithmAfterProbe;
@@ -33,13 +67,13 @@ import de.rub.nds.tlsscanner.serverscanner.report.after.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
-import java.util.LinkedList;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- *
  * @author Robert Merget - {@literal <robert.merget@rub.de>}
  */
 public class TlsScanner {
@@ -87,44 +121,45 @@ public class TlsScanner {
 
     private void fillDefaultProbeLists() {
 
-        // addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
-        // addProbeToProbeList(new SniProbe(config, parallelExecutor));
+        addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
+        addProbeToProbeList(new SniProbe(config, parallelExecutor));
         addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
         addProbeToProbeList(new NamedCurvesProbe(config, parallelExecutor));
-        // addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
-        // addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
+        addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
+        addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
         addProbeToProbeList(new CertificateProbe(config, parallelExecutor));
         addProbeToProbeList(new OcspProbe(config, parallelExecutor));
         addProbeToProbeList(new ProtocolVersionProbe(config, parallelExecutor));
         addProbeToProbeList(new CipherSuiteProbe(config, parallelExecutor));
-        // addProbeToProbeList(new DirectRaccoonProbe(config, parallelExecutor));
-        // addProbeToProbeList(new CipherSuiteOrderProbe(config, parallelExecutor));
+        addProbeToProbeList(new DirectRaccoonProbe(config, parallelExecutor));
+        addProbeToProbeList(new CipherSuiteOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new ExtensionProbe(config, parallelExecutor));
-        // addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
-        // addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
-        // addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
+        addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
+        addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
+        addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
         addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
         addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
         addProbeToProbeList(new RenegotiationProbe(config, parallelExecutor));
-        // addProbeToProbeList(new SessionTicketZeroKeyProbe(config, parallelExecutor));
+        addProbeToProbeList(new SessionTicketZeroKeyProbe(config, parallelExecutor));
         addProbeToProbeList(new HeartbleedProbe(config, parallelExecutor));
         addProbeToProbeList(new PaddingOracleProbe(config, parallelExecutor));
-        // addProbeToProbeList(new BleichenbacherProbe(config, parallelExecutor));
+        addProbeToProbeList(new BleichenbacherProbe(config, parallelExecutor));
         addProbeToProbeList(new TlsPoodleProbe(config, parallelExecutor));
-        // addProbeToProbeList(new InvalidCurveProbe(config, parallelExecutor));
-        // addProbeToProbeList(new DrownProbe(config, parallelExecutor));
-        // addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
+        addProbeToProbeList(new InvalidCurveProbe(config, parallelExecutor));
+        addProbeToProbeList(new DrownProbe(config, parallelExecutor));
+        addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
         // addProbeToProbeList(new MacProbe(config, parallelExecutor));
-        // addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
-        // addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
-        // addProbeToProbeList(new CcaProbe(config, parallelExecutor));
-        // addProbeToProbeList(new EsniProbe(config, parallelExecutor));
+        addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
+        addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
+        addProbeToProbeList(new CcaProbe(config, parallelExecutor));
+        addProbeToProbeList(new EsniProbe(config, parallelExecutor));
         addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
-        // addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
+        addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
         addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(config, parallelExecutor));
         addProbeToProbeList(new UnixTimeRngProbe(config, parallelExecutor));
         addProbeToProbeList(new TlsFallbackScsvProbe(parallelExecutor, config));
+
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());
@@ -135,6 +170,7 @@ public class TlsScanner {
         afterList.add(new PaddingOracleIdentificationAfterProbe());
         afterList.add(new RaccoonAttackAfterProbe());
         afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
+
     }
 
     private void addProbeToProbeList(TlsProbe probe) {

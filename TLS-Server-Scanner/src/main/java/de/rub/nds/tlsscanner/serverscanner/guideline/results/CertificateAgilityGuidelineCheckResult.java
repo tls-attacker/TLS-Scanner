@@ -22,7 +22,7 @@ public class CertificateAgilityGuidelineCheckResult extends GuidelineCheckResult
 
     @Override
     public String display() {
-        return Objects.equals(TestResult.TRUE, getResult()) ? "Server supports multiple Certificate types."
-            : "Server does not support multiple Certificate types.";
+        return Objects.equals(TestResult.TRUE, getResult()) ? "Server passed the certificate agility check."
+            : "Server did not pass the certificate agility check.";
     }
 }

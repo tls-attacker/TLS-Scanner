@@ -92,6 +92,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<NamedGroup> supportedTls13Groups = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsCert = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsSke = null;
+    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsTls13 = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
     private List<String> supportedAlpns = null;
@@ -371,6 +372,15 @@ public class SiteReport extends Observable implements Serializable {
             combined.addAll(supportedSignatureAndHashAlgorithmsSke);
         }
         return new ArrayList<>(combined);
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsTls13() {
+        return supportedSignatureAndHashAlgorithmsTls13;
+    }
+
+    public void setSupportedSignatureAndHashAlgorithmsTls13(
+        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsTls13) {
+        this.supportedSignatureAndHashAlgorithmsTls13 = supportedSignatureAndHashAlgorithmsTls13;
     }
 
     public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsCert() {

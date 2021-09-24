@@ -31,7 +31,7 @@ public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
         if (Objects.equals(TestResult.UNCERTAIN, getResult())) {
             return "Missing Information";
         }
-        if (Objects.equals(TestResult.TRUE, getResult())) {
+        if (notRecommendedAlgorithms.isEmpty()) {
             return "Only listed Hash Algorithms are supported.";
         } else {
             return "The following Hash Algorithms were supported but not recommended:\n"

@@ -153,7 +153,7 @@ public class BsiGuidelineSerialization {
             // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP256R1TLS13_SHA256,
             // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP384R1TLS13_SHA384,
             // SignatureAndHashAlgorithm.ECDSA_BRAINPOOLP512R1TLS13_SHA512
-            )));
+            ), true));
         checks.add(new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
             "Die folgenden Signaturverfahren werden empfohlen.", RequirementLevel.SHOULD,
             new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_3, TestResult.TRUE),

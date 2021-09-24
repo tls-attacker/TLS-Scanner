@@ -16,6 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.protocol.message.CertificateVerifyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -53,16 +54,18 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
+        Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
         this.respectsExtension = TestResult.TRUE;
         for (ProtocolVersion version : this.versions) {
             if (version.isTLS13()) {
-                supportedSke.addAll(testForVersion(version, CipherSuite::isTLS13));
+                supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
             } else {
                 supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13()));
                 supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
             }
         }
-        return new SignatureAndHashAlgorithmResult(new ArrayList<>(supportedSke), respectsExtension);
+        return new SignatureAndHashAlgorithmResult(new ArrayList<>(supportedSke), new ArrayList<>(supportedTls13),
+            respectsExtension);
     }
 
     private Set<SignatureAndHashAlgorithm> testForVersion(ProtocolVersion version, Predicate<CipherSuite> predicate) {
@@ -88,7 +91,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
             state = testAlgorithms(testSet, tlsConfig);
             if (state != null) {
-                SignatureAndHashAlgorithm selected = getSelectedSignatureAndHashAlgorithmSke(state);
+                SignatureAndHashAlgorithm selected = version.isTLS13() ? getSelectedSignatureAndHashAlgorithmCV(state)
+                    : getSelectedSignatureAndHashAlgorithmSke(state);
                 if (selected == null) {
                     continue;
                 }
@@ -115,6 +119,21 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
             }
         }
         return found;
+    }
+
+    private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithmCV(State state) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_VERIFY, state.getWorkflowTrace())) {
+            HandshakeMessage message = WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.CERTIFICATE_VERIFY,
+                state.getWorkflowTrace());
+            if (message instanceof CertificateVerifyMessage) {
+                CertificateVerifyMessage msg = (CertificateVerifyMessage) message;
+                ModifiableByteArray algByte = msg.getSignatureHashAlgorithm();
+                if (algByte != null) {
+                    return SignatureAndHashAlgorithm.getSignatureAndHashAlgorithm(algByte.getValue());
+                }
+            }
+        }
+        return null;
     }
 
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithmSke(State state) {
@@ -200,6 +219,6 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new SignatureAndHashAlgorithmResult(null, TestResult.COULD_NOT_TEST);
+        return new SignatureAndHashAlgorithmResult(null, null, TestResult.COULD_NOT_TEST);
     }
 }

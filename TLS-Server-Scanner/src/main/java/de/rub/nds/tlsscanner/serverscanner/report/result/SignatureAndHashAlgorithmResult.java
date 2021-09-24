@@ -23,18 +23,21 @@ import java.util.List;
 public class SignatureAndHashAlgorithmResult extends ProbeResult {
 
     private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke;
+    private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13;
     private final TestResult respectsExtension;
 
     public SignatureAndHashAlgorithmResult(List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke,
-        TestResult respectsExtension) {
+        List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13, TestResult respectsExtension) {
         super(ProbeType.SIGNATURE_AND_HASH);
         this.signatureAndHashAlgorithmListSke = signatureAndHashAlgorithmListSke;
         this.respectsExtension = respectsExtension;
+        this.signatureAndHashAlgorithmListTls13 = signatureAndHashAlgorithmListTls13;
     }
 
     @Override
     public void mergeData(SiteReport report) {
         report.setSupportedSignatureAndHashAlgorithmsSke(signatureAndHashAlgorithmListSke);
+        report.setSupportedSignatureAndHashAlgorithmsTls13(signatureAndHashAlgorithmListTls13);
         report.putResult(AnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION, respectsExtension);
     }
 

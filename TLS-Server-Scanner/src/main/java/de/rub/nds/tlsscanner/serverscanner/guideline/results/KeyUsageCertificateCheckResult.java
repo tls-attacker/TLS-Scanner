@@ -16,10 +16,12 @@ import java.util.Objects;
 
 public class KeyUsageCertificateCheckResult extends GuidelineCheckResult {
 
+    private final boolean supported;
     private final String keyUsage;
 
-    public KeyUsageCertificateCheckResult(TestResult result, String keyUsage) {
+    public KeyUsageCertificateCheckResult(TestResult result, boolean supported, String keyUsage) {
         super(result);
+        this.supported = supported;
         this.keyUsage = keyUsage;
     }
 
@@ -31,5 +33,9 @@ public class KeyUsageCertificateCheckResult extends GuidelineCheckResult {
 
     public String getKeyUsage() {
         return keyUsage == null ? "" : keyUsage;
+    }
+
+    public boolean isSupported() {
+        return supported;
     }
 }
