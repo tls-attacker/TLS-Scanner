@@ -71,6 +71,7 @@ public final class TlsClientScanner extends TlsScanner {
             if (executor != null) {
                 executor.shutdown();
             }
+            parallelExecutor.shutdown();
             if (socket != null) {
                 try {
                     socket.close();
