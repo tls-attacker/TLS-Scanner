@@ -31,7 +31,7 @@ public abstract class TlsProbe<Report extends ScanReport, Result extends ProbeRe
 
     private final ParallelExecutor parallelExecutor;
 
-    public TlsProbe(ParallelExecutor parallelExecutor, TlsProbeType type, ScannerConfig scannerConfig) {
+    protected TlsProbe(ParallelExecutor parallelExecutor, TlsProbeType type, ScannerConfig scannerConfig) {
         super(type);
         this.scannerConfig = scannerConfig;
         this.parallelExecutor = parallelExecutor;
