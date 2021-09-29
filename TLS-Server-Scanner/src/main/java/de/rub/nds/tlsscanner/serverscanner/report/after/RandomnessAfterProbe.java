@@ -128,7 +128,7 @@ public class RandomnessAfterProbe extends AfterProbe {
     public EntropyReport createEntropyReport(List<ComparableByteArray> byteArrayList, RandomType type) {
         byte[] bytesToAnalyze = convertToSingleByteArray(byteArrayList);
         StatisticalTests.approximateEntropyTest(HELLO_RETRY_REQUEST_CONST, LONGEST_RUN_BLOCK_SIZE);
-        int totalDuplicates = countDuplicates(byteArrayList);
+        int totalDuplicates = getNumberOfDuplicates(byteArrayList);
         boolean duplicates = totalDuplicates > 0;
         String bitString = StatisticalTests.byteArrayToBitString(bytesToAnalyze);
         boolean entropyTestPassed =
@@ -196,7 +196,7 @@ public class RandomnessAfterProbe extends AfterProbe {
         return filteredList;
     }
 
-    private int countDuplicates(List<ComparableByteArray> byteArrayList) {
+    private int getNumberOfDuplicates(List<ComparableByteArray> byteArrayList) {
         Set<ComparableByteArray> set = new HashSet<>();
         set.addAll(byteArrayList);
         return byteArrayList.size() - set.size();
