@@ -40,7 +40,7 @@
                                     <directory>${main.basedir}/trust_stores_observatory/certificates/</directory>
                                 </resource>
                             </resources>
-                        </configuration>            
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
