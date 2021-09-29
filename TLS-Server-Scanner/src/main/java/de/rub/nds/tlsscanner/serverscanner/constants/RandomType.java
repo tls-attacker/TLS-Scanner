@@ -19,7 +19,9 @@ public enum RandomType {
     SESSION_ID("Session ID"),
     // Random byte string to ensure unique TLS Handshakes used in the
     // ServerHello Message
-    RANDOM("Nonce (Random)");
+    RANDOM("Nonce (Random)"),
+    // Stateless cookie to prevent DoS attacks in DTLS
+    COOKIE("Cookie");
 
     private String humanReadableName;
 
