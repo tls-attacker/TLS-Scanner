@@ -51,7 +51,7 @@ public class SiteReportPrinterTest {
      */
     @Test
     public void testPrintEmptyReport() {
-        SiteReport report = new SiteReport("somehost");
+        SiteReport report = new SiteReport("somehost", 443);
         for (ScannerDetail detail : ScannerDetail.values()) {
             SiteReportPrinter printer = new SiteReportPrinter(report, detail, true);
             printer.getFullReport();

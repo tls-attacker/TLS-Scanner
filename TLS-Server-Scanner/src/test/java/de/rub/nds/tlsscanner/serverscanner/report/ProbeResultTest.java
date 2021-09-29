@@ -62,7 +62,7 @@ public class ProbeResultTest {
                         LOGGER.info("Testing mergeability:" + testName);
                         TlsProbe probe = (TlsProbe) c.newInstance(new ScannerConfig(new GeneralDelegate()),
                             new ParallelExecutor(1, 1));
-                        SiteReport report = new SiteReport("somehost");
+                        SiteReport report = new SiteReport("somehost", 443);
                         probe.getCouldNotExecuteResult().merge(report);
                         LOGGER.info("--Success");
                         LOGGER.info("Testing printability:");

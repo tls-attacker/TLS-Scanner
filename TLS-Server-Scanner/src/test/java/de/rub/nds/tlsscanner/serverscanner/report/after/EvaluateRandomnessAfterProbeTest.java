@@ -53,7 +53,7 @@ public class EvaluateRandomnessAfterProbeTest {
      * @return             a SiteReport filled with the provided random-bytes
      */
     private SiteReport generateSiteReport(byte[]... randomBytes) {
-        SiteReport generatedReport = new SiteReport("test");
+        SiteReport generatedReport = new SiteReport("test", 443);
 
         ExtractedValueContainer extractedValueContainer = new ExtractedValueContainer(TrackableValueType.RANDOM);
         Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap = new HashMap<>();

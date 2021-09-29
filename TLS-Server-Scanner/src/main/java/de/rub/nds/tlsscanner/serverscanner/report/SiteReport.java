@@ -58,6 +58,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<PerformanceData> performanceList;
 
     private final String host;
+    private final int port;
 
     private Boolean serverIsAlive = null;
     private Boolean supportsSslTls = null;
@@ -170,10 +171,12 @@ public class SiteReport extends Observable implements Serializable {
     public SiteReport() {
         resultMap = new HashMap<>();
         host = null;
+        port = -1;
     }
 
-    public SiteReport(String host) {
+    public SiteReport(String host, int port) {
         this.host = host;
+        this.port = port;
         performanceList = new LinkedList<>();
         extractedValueContainerMap = new HashMap<>();
         resultMap = new HashMap<>();
@@ -290,6 +293,10 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized String getHost() {
         return host;
+    }
+
+    public synchronized int getPort() {
+        return port;
     }
 
     public synchronized Boolean getServerIsAlive() {

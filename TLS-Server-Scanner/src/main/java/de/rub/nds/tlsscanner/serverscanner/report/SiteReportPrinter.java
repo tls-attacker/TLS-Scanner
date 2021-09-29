@@ -116,7 +116,7 @@ public class SiteReportPrinter {
     public String getFullReport() {
         StringBuilder builder = new StringBuilder();
         builder.append("Report for ");
-        builder.append(report.getHost());
+        builder.append(report.getHost() + ":" + report.getPort());
         builder.append("\n");
         if (Objects.equals(report.getServerIsAlive(), Boolean.FALSE)) {
             builder.append("Cannot reach the Server. Is it online?");
@@ -199,7 +199,7 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Sends retransmissions", AnalyzedProperty.SENDS_RETRANMISSIONS);
         prettyAppend(builder, "Accepts retransmissions", AnalyzedProperty.ACCEPTS_RETRANMISSIONS);
         prettyAppend(builder, "Total retransmissions received", report.getTotalReceivedRetransmissions());
-        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) && report.getRetransmissionCounters() != null) {
             for (HandshakeMessageType type : report.getRetransmissionCounters().keySet())
                 prettyAppend(builder, "-" + type.getName(), report.getRetransmissionCounters().get(type));
         }

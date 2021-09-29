@@ -193,7 +193,8 @@ public class TlsScanner {
                     isConnectable = true;
                 }
             }
-            SiteReport report = new SiteReport(config.getClientDelegate().getHost());
+            SiteReport report = new SiteReport(config.getClientDelegate().getExtractedHost(),
+                config.getClientDelegate().getExtractedPort());
             report.setServerIsAlive(isConnectable);
             if (config.getDtlsDelegate().isDTLS()) {
                 report.setSupportsDtls(false);
