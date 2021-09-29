@@ -279,7 +279,8 @@ public enum AnalyzedProperty {
     SENDS_RETRANMISSIONS(AnalyzedPropertyCategory.QUIRKS),
     ACCEPTS_RETRANMISSIONS(AnalyzedPropertyCategory.QUIRKS),
     OVERWRITES_CONTENT(AnalyzedPropertyCategory.QUIRKS),
-    CHANGES_PORT(AnalyzedPropertyCategory.QUIRKS);
+    CHANGES_PORT(AnalyzedPropertyCategory.QUIRKS),
+    CHANGES_PORT_TO_RANDOM_PORTS(AnalyzedPropertyCategory.QUIRKS);
 
     private final AnalyzedPropertyCategory category;
 

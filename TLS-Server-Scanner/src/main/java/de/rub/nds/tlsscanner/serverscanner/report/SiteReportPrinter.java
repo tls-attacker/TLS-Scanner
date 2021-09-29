@@ -172,6 +172,9 @@ public class SiteReportPrinter {
     private void appendDtlsSpecificResults(StringBuilder builder) {
         prettyAppendHeading(builder, "DTLS Features");
         prettyAppend(builder, "Server changes port", AnalyzedProperty.CHANGES_PORT);
+        if (report.getResult(AnalyzedProperty.CHANGES_PORT) == TestResult.TRUE) {
+            prettyAppend(builder, "-To random ports", AnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS);
+        }
         prettyAppend(builder, "Supports fragmentation", AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
         prettyAppend(builder, "Supports reordering", AnalyzedProperty.SUPPORTS_REORDERING);
 

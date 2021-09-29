@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report.after;
 
-import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
@@ -24,25 +23,43 @@ public class DestinationPortAfterProbe extends AfterProbe {
 
     @Override
     public void analyze(SiteReport report) {
-        TestResult changesPortTestResult;
+        int intialPort = report.getPort();
+        ExtractedValueContainer<Integer> container =
+            report.getExtractedValueContainerMap().get(TrackableValueType.DESTINATION_PORT);
 
+        TestResult changesPort;
         try {
-            ExtractedValueContainer<HandshakeMessageType> container =
-                report.getExtractedValueContainerMap().get(TrackableValueType.DESTINATION_PORT);
-            if (container.getNumberOfExtractedValues() >= 2) {
-                if (container.areAllValuesDifferent()) {
-                    changesPortTestResult = TestResult.TRUE;
+            if (container.getNumberOfExtractedValues() >= 1) {
+                if (container.getExtractedValueList().get(0) == intialPort) {
+                    changesPort = TestResult.FALSE;
                 } else {
-                    changesPortTestResult = TestResult.FALSE;
+                    changesPort = TestResult.TRUE;
                 }
             } else {
-                changesPortTestResult = TestResult.COULD_NOT_TEST;
+                changesPort = TestResult.COULD_NOT_TEST;
             }
         } catch (Exception e) {
             LOGGER.error(e.toString());
-            changesPortTestResult = TestResult.ERROR_DURING_TEST;
+            changesPort = TestResult.ERROR_DURING_TEST;
         }
-        report.putResult(AnalyzedProperty.CHANGES_PORT, changesPortTestResult);
+        report.putResult(AnalyzedProperty.CHANGES_PORT, changesPort);
+
+        TestResult changesPortToRandomPorts;
+        try {
+            if (container.getNumberOfExtractedValues() >= 2) {
+                if (container.areAllValuesIdentical()) {
+                    changesPortToRandomPorts = TestResult.FALSE;
+                } else {
+                    changesPortToRandomPorts = TestResult.TRUE;
+                }
+            } else {
+                changesPortToRandomPorts = TestResult.COULD_NOT_TEST;
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.toString());
+            changesPortToRandomPorts = TestResult.ERROR_DURING_TEST;
+        }
+        report.putResult(AnalyzedProperty.CHANGES_PORT_TO_RANDOM_PORTS, changesPortToRandomPorts);
     }
 
 }
