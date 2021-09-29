@@ -31,6 +31,8 @@ public class StatsWriter {
         extractorList.add(new EcPublicKeyExtractor());
         extractorList.add(new CbcIvExtractor());
         extractorList.add(new SessionIdExtractor());
+        extractorList.add(new DtlsRetransmissionsExtractor());
+        extractorList.add(new DestinationPortExtractor());
     }
 
     public void extract(State state) {

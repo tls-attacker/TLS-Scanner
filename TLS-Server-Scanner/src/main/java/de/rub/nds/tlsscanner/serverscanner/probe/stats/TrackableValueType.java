@@ -21,4 +21,6 @@ public enum TrackableValueType {
     ECDHE_PUBKEY,
     GCM_NONCE_EXPLICIT,
     CBC_IV,
+    DTLS_RETRANSMISSIONS,
+    DESTINATION_PORT,
 }
