@@ -18,21 +18,21 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class DtlsCcsResult extends ProbeResult {
+public class DtlsFeaturesResult extends ProbeResult {
 
-    private TestResult isEarlyFinished;
-    private TestResult isAcceptUnencryptedAppData;
+    private TestResult supportsFragmentation;
+    private TestResult supportsReordering;
 
-    public DtlsCcsResult(TestResult isAcceptUnencryptedAppData, TestResult isEarlyFinished) {
-        super(ProbeType.DTLS_CCS);
-        this.isAcceptUnencryptedAppData = isAcceptUnencryptedAppData;
-        this.isEarlyFinished = isEarlyFinished;
+    public DtlsFeaturesResult(TestResult supportsFragmentation, TestResult supportsReordering) {
+        super(ProbeType.DTLS_FEATURES);
+        this.supportsFragmentation = supportsFragmentation;
+        this.supportsReordering = supportsReordering;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.ACCEPT_UNENCRYPTED_APP_DATA, isAcceptUnencryptedAppData);
-        report.putResult(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
+        report.putResult(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION, supportsFragmentation);
+        report.putResult(AnalyzedProperty.SUPPORTS_REORDERING, supportsReordering);
     }
 
 }

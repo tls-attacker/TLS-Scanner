@@ -22,9 +22,10 @@ import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.DestinationPortAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.DtlsRetransmissionAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
-import de.rub.nds.tlsscanner.serverscanner.report.after.EvaluateCookieAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.LogjamAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.PaddingOracleIdentificationAfterProbe;
@@ -117,12 +118,14 @@ public class TlsScanner {
         afterList.add(new PaddingOracleIdentificationAfterProbe());
         afterList.add(new RaccoonAttackAfterProbe());
         if (config.getDtlsDelegate().isDTLS()) {
-            probeList.add(new DtlsCookieProbe(config, parallelExecutor));
-            probeList.add(new DtlsCcsProbe(config, parallelExecutor));
+            probeList.add(new DtlsFeaturesProbe(config, parallelExecutor));
+            probeList.add(new DtlsHelloVerifyRequestProbe(config, parallelExecutor));
+            probeList.add(new DtlsBugsProbe(config, parallelExecutor));
             probeList.add(new DtlsMessageSequenceProbe(config, parallelExecutor));
-            probeList.add(new DtlsSequenceNumberProbe(config, parallelExecutor));
+            probeList.add(new DtlsRetransmissionsProbe(config, parallelExecutor));
             probeList.add(new DtlsOverwritingContentProbe(config, parallelExecutor));
-            afterList.add(new EvaluateCookieAfterProbe());
+            afterList.add(new DtlsRetransmissionAfterProbe());
+            afterList.add(new DestinationPortAfterProbe());
         } else {
             probeList.add(new HelloRetryProbe(config, parallelExecutor));
             probeList.add(new RecordFragmentationProbe(config, parallelExecutor));

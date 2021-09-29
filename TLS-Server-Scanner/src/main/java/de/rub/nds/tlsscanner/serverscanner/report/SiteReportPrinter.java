@@ -20,6 +20,7 @@ import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -59,23 +60,15 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackPskProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.CookieEvaluationResult;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.ResponseCounter;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.VectorContainer;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.DUPLICATES;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_ANALYZED;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NOT_RANDOM;
-import static de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult.NO_DUPLICATES;
 import java.security.PublicKey;
-import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomMinimalLengthResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.LinkedList;
@@ -177,21 +170,44 @@ public class SiteReportPrinter {
     }
 
     private void appendDtlsSpecificResults(StringBuilder builder) {
+        prettyAppendHeading(builder, "DTLS Features");
+        prettyAppend(builder, "Server changes port", AnalyzedProperty.CHANGES_PORT);
+        prettyAppend(builder, "Supports fragmentation", AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION);
+        prettyAppend(builder, "Supports reordering", AnalyzedProperty.SUPPORTS_REORDERING);
+
+        prettyAppendHeading(builder, "DTLS Hello Verify Request");
+        prettyAppend(builder, "HVR Retransmissions", AnalyzedProperty.HAS_HVR_RETRANSMISSIONS);
+        prettyAppend(builder, "Cookie length", report.getCookieLength());
+        prettyAppend(builder, "Checks cookie", AnalyzedProperty.HAS_COOKIE_CHECKS);
+        builder.append("Cookie is influenced by\n");
+        prettyAppend(builder, "-version", AnalyzedProperty.USES_VERSION_FOR_COOKIE);
+        prettyAppend(builder, "-random", AnalyzedProperty.USES_RANDOM_FOR_COOKIE);
+        prettyAppend(builder, "-session id", AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE);
+        prettyAppend(builder, "-cipher suites", AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE);
+        prettyAppend(builder, "-compressions", AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
+
+        prettyAppendHeading(builder, "DTLS Message Sequence Number");
+        prettyAppend(builder, "Starts with invalid msg seq", AnalyzedProperty.STARTS_WITH_INVALID_MESSAGE_SEQUENCE);
+        prettyAppend(builder, "Misses msg seq checks", AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
+        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            prettyAppend(builder, "-Accepts: 0,4,5,6", AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_ONCE);
+            prettyAppend(builder, "-Accepts: 0,4,8,9", AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_MULTIPLE);
+            prettyAppend(builder, "-Accepts: 0,8,4,5", AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_NUMBERS);
+        }
+
+        prettyAppendHeading(builder, "DTLS Retransmissions");
+        prettyAppend(builder, "Sends retransmissions", AnalyzedProperty.SENDS_RETRANMISSIONS);
+        prettyAppend(builder, "Accepts retransmissions", AnalyzedProperty.ACCEPTS_RETRANMISSIONS);
+        prettyAppend(builder, "Total retransmissions received", report.getTotalReceivedRetransmissions());
+        if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            for (HandshakeMessageType type : report.getRetransmissionCounters().keySet())
+                prettyAppend(builder, "-" + type.getName(), report.getRetransmissionCounters().get(type));
+        }
+
         prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
-        prettyAppend(builder, "Accept unencrypted App Data with Epoch 0", AnalyzedProperty.ACCEPT_UNENCRYPTED_APP_DATA);
+        prettyAppend(builder, "Accepts App Data with Epoch 0", AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
         prettyAppend(builder, "Overwrites Content", AnalyzedProperty.OVERWRITES_CONTENT);
-        prettyAppendHeading(builder, "DTLS Hello Verify Request");
-        prettyAppendCookie(builder, "Cookie", report.getCookieEvaluationResult());
-        prettyAppend(builder, "Checks complete", AnalyzedProperty.HAS_COOKIE_CHECKS);
-        prettyAppend(builder, "Checks with client parameters",
-            AnalyzedProperty.USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS);
-        prettyAppendHeading(builder, "DTLS Message Sequences");
-        prettyAppend(builder, "Starts handshake with invalid msg seq",
-            AnalyzedProperty.STARTS_WITH_INVALID_MESSAGE_SEQUENCE);
-        prettyAppend(builder, "Misses msg seq checks", AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
-        prettyAppendHeading(builder, "DTLS Sequence Numbers");
-        prettyAppend(builder, "Has retransmission bug", AnalyzedProperty.HAS_RETRANSMISSION_BUG);
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {
@@ -1501,6 +1517,9 @@ public class SiteReportPrinter {
                 }
 
                 prettyAppend(builder, "Duplicates", entropyReport.isDuplicates());
+                if (entropyReport.isDuplicates()) {
+                    prettyAppend(builder, "Total duplicates", entropyReport.getNumberOfDuplicates());
+                }
                 prettyAppend(builder, "Failed Entropy Test", entropyReport.isFailedEntropyTest());
                 prettyAppend(builder, "Failed Fourier Test", entropyReport.isFailedFourierTest());
                 prettyAppend(builder, "Failed Frequency Test", entropyReport.isFailedFrequencyTest());
@@ -1796,6 +1815,10 @@ public class SiteReportPrinter {
         return builder.append(value == null ? "Unknown" : value).append("\n");
     }
 
+    private StringBuilder prettyAppend(StringBuilder builder, String name, int value) {
+        return prettyAppend(builder, name, "" + value);
+    }
+
     private StringBuilder prettyAppend(StringBuilder builder, String name, double value) {
         return prettyAppend(builder, name, "" + value);
     }
@@ -1986,52 +2009,6 @@ public class SiteReportPrinter {
         return builder;
     }
 
-    private void prettyAppendRandom(StringBuilder builder, String testName,
-        RandomEvaluationResult randomEvaluationResult) {
-        if (randomEvaluationResult == null) {
-            prettyAppend(builder, testName, "unknown", AnsiColor.DEFAULT_COLOR);
-            return;
-        }
-        switch (randomEvaluationResult) {
-            case DUPLICATES:
-                prettyAppend(builder, testName, "true - exploitable", AnsiColor.RED);
-                break;
-            case NOT_ANALYZED:
-                prettyAppend(builder, testName, "not analyzed", AnsiColor.DEFAULT_COLOR);
-                break;
-            case NOT_RANDOM:
-                prettyAppend(builder, testName, "does not seem to be random", AnsiColor.DEFAULT_COLOR);
-                break;
-            case UNIX_TIME:
-                prettyAppend(builder, testName, "contains unix time", AnsiColor.DEFAULT_COLOR);
-                break;
-            case NO_DUPLICATES:
-                prettyAppend(builder, testName, "no duplicates (wip)", AnsiColor.GREEN);
-                break;
-            default:
-                ;
-        }
-    }
-
-    private void prettyAppendCookie(StringBuilder builder, String testName,
-        CookieEvaluationResult cookieEvaluationResult) {
-        if (cookieEvaluationResult == null) {
-            prettyAppend(builder, testName, "unknown", AnsiColor.DEFAULT_COLOR);
-            return;
-        }
-        switch (cookieEvaluationResult) {
-            case DUPLICATES:
-                prettyAppend(builder, testName, "duplicates", AnsiColor.RED);
-                break;
-            case NOT_ANALYZED:
-                prettyAppend(builder, testName, "not analyzed", AnsiColor.DEFAULT_COLOR);
-                break;
-            case NO_DUPLICATES:
-                prettyAppend(builder, testName, "no duplicates", AnsiColor.GREEN);
-                break;
-        }
-    }
-
     public void setDepth(int depth) {
         this.depth = depth;
     }
@@ -2040,7 +2017,9 @@ public class SiteReportPrinter {
         if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
             prettyAppendHeading(builder, "Scanner Performance");
             try {
-                prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
+                if (report.getSupportsSslTls() == Boolean.TRUE) {
+                    prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
+                }
                 prettyAppendSubheading(builder, "Probe execution performance");
                 for (PerformanceData data : report.getPerformanceList()) {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");

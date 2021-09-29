@@ -18,19 +18,22 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class DtlsSequenceNumberResult extends ProbeResult {
+public class DtlsRetransmissionsResult extends ProbeResult {
 
-    private TestResult hasRetransmissionBug;
+    private TestResult doesRetransmissions;
+    private TestResult acceptsRetransmissions;
 
-    public DtlsSequenceNumberResult(TestResult hasRetransmissionBug) {
-        super(ProbeType.DTLS_SEQUENCE_NUMBER);
-        this.hasRetransmissionBug = hasRetransmissionBug;
+    public DtlsRetransmissionsResult(TestResult doesRetransmissions, TestResult acceptsRetransmissions) {
+        super(ProbeType.DTLS_RETRANSMISSIONS);
+        this.doesRetransmissions = doesRetransmissions;
+        this.acceptsRetransmissions = acceptsRetransmissions;
 
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.HAS_RETRANSMISSION_BUG, hasRetransmissionBug);
+        report.putResult(AnalyzedProperty.SENDS_RETRANMISSIONS, doesRetransmissions);
+        report.putResult(AnalyzedProperty.ACCEPTS_RETRANMISSIONS, acceptsRetransmissions);
     }
 
 }

@@ -9,29 +9,33 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.modifiablevariable.integer.IntegerModificationFactory;
+import de.rub.nds.modifiablevariable.integer.ModifiableInteger;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
+import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.ChangeContextValueAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsSequenceNumberResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsBugsResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,64 +46,67 @@ import java.util.List;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class DtlsSequenceNumberProbe extends TlsProbe {
+public class DtlsBugsProbe extends TlsProbe {
 
-    public DtlsSequenceNumberProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DTLS_MESSAGE_SEQUENCE, scannerConfig);
+    public DtlsBugsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.DTLS_COMMON_BUGS, scannerConfig);
     }
 
     @Override
     public ProbeResult executeTest() {
         try {
-            TestResult has_retransmission_bug = TestResult.FALSE;
-            if (acceptsRetransmissions() == TestResult.FALSE || doesRetransmissions() == TestResult.FALSE) {
-                has_retransmission_bug = TestResult.TRUE;
-            }
-            return new DtlsSequenceNumberResult(has_retransmission_bug);
+            return new DtlsBugsResult(isAcceptUnencryptedAppData(), isEarlyFinished());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsSequenceNumberResult(TestResult.ERROR_DURING_TEST);
+            return new DtlsBugsResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }
 
-    private TestResult doesRetransmissions() {
+    private TestResult isAcceptUnencryptedAppData() {
         Config config = getConfig();
-        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
-        config.setAcceptContentRewritingDtlsFragments(true);
-        WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-        trace.addTlsAction(new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 1));
-        trace.addTlsAction(new ChangeContextValueAction("serverSessionId", new byte[0]));
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage(config));
-        trace.addTlsAction(receiveTillAction);
-
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
+        trace.addTlsAction(new SendAction(new ApplicationMessage(config)));
+        trace.addTlsAction(new GenericReceiveAction());
         State state = new State(config, trace);
         executeState(state);
-        if (receiveTillAction.executedAsPlanned()) {
+        ProtocolMessage receivedMessage = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+
+        trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE,
+            RunningModeType.CLIENT);
+        SendAction sendAction = new SendAction(new ApplicationMessage(config));
+        Record record = new Record(config);
+        ModifiableInteger integer = new ModifiableInteger();
+        integer.setModification(IntegerModificationFactory.explicitValue(0));
+        record.setEpoch(integer);
+        sendAction.setRecords(record);
+        trace.addTlsAction(sendAction);
+        trace.addTlsAction(new GenericReceiveAction());
+        state = new State(config, trace);
+        executeState(state);
+        ProtocolMessage receivedMessageModified = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
+
+        if (receivedMessage.getCompleteResultingMessage()
+            .equals(receivedMessageModified.getCompleteResultingMessage())) {
             return TestResult.TRUE;
         } else {
             return TestResult.FALSE;
         }
     }
 
-    private TestResult acceptsRetransmissions() {
+    // is this a useful test?
+    private TestResult isEarlyFinished() {
         Config config = getConfig();
-        WorkflowTrace trace =
-            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
-        trace.addTlsAction(new ChangeContextValueAction("writeSequenceNumber", 5));
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+        // plain or encrypted finished?
+        // trace.addTlsAction(new ActivateEncryptionAction());
+        trace.addTlsAction(new SendAction(new FinishedMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResult.TRUE;
         } else {
             return TestResult.FALSE;
@@ -126,7 +133,6 @@ public class DtlsSequenceNumberProbe extends TlsProbe {
         config.setAddEllipticCurveExtension(true);
         config.setAddServerNameIndicationExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
-        config.setDtlsMaximumFragmentLength(2000);
         return config;
     }
 
@@ -137,7 +143,7 @@ public class DtlsSequenceNumberProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsSequenceNumberResult(TestResult.COULD_NOT_TEST);
+        return new DtlsBugsResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 
     @Override

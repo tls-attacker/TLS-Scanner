@@ -260,14 +260,26 @@ public enum AnalyzedProperty {
     /**
      * DTLS
      */
-    HAS_COOKIE_CHECKS(AnalyzedPropertyCategory.COOKIE),
-    USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS(AnalyzedPropertyCategory.COOKIE),
-    ACCEPT_UNENCRYPTED_APP_DATA(AnalyzedPropertyCategory.QUIRKS),
+    SUPPORTS_DTLS_FRAGMENTATION(AnalyzedPropertyCategory.QUIRKS),
+    SUPPORTS_REORDERING(AnalyzedPropertyCategory.QUIRKS),
+    HAS_HVR_RETRANSMISSIONS(AnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    HAS_COOKIE_CHECKS(AnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    USES_VERSION_FOR_COOKIE(AnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    USES_RANDOM_FOR_COOKIE(AnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    USES_SESSION_ID_FOR_COOKIE(AnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    USES_CIPHERSUITES_FOR_COOKIE(AnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    USES_COMPRESSIONS_FOR_COOKIE(AnalyzedPropertyCategory.HELLO_VERIFY_REQUEST),
+    ACCEPTS_UNENCRYPTED_APP_DATA(AnalyzedPropertyCategory.QUIRKS),
     HAS_EARLY_FINISHED_BUG(AnalyzedPropertyCategory.QUIRKS),
     STARTS_WITH_INVALID_MESSAGE_SEQUENCE(AnalyzedPropertyCategory.QUIRKS),
+    SKIPPS_MESSAGE_SEQUENCE_ONCE(AnalyzedPropertyCategory.QUIRKS),
+    SKIPPS_MESSAGE_SEQUENCE_MULTIPLE(AnalyzedPropertyCategory.QUIRKS),
+    ACCEPTS_RANDOM_MESSAGE_NUMBERS(AnalyzedPropertyCategory.QUIRKS),
     MISSES_MESSAGE_SEQUENCE_CHECKS(AnalyzedPropertyCategory.QUIRKS),
-    HAS_RETRANSMISSION_BUG(AnalyzedPropertyCategory.QUIRKS),
-    OVERWRITES_CONTENT(AnalyzedPropertyCategory.QUIRKS);
+    SENDS_RETRANMISSIONS(AnalyzedPropertyCategory.QUIRKS),
+    ACCEPTS_RETRANMISSIONS(AnalyzedPropertyCategory.QUIRKS),
+    OVERWRITES_CONTENT(AnalyzedPropertyCategory.QUIRKS),
+    CHANGES_PORT(AnalyzedPropertyCategory.QUIRKS);
 
     private final AnalyzedPropertyCategory category;
 

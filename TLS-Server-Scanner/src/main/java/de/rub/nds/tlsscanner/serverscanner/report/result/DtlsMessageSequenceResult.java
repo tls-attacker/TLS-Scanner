@@ -21,19 +21,31 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 public class DtlsMessageSequenceResult extends ProbeResult {
 
     private TestResult startsWithInvalidMessageNumber;
-    private TestResult missesMessageSequenceChecks;
+    private TestResult skippsMessageNumbersOnce;
+    private TestResult skippsMessageNumbersMultiple;
+    private TestResult acceptsRandomMessageNumbers;
 
-    public DtlsMessageSequenceResult(TestResult startsWithInvalidMessageNumber,
-        TestResult missesMessageSequenceChecks) {
-        super(ProbeType.DTLS_MESSAGE_SEQUENCE);
+    public DtlsMessageSequenceResult(TestResult startsWithInvalidMessageNumber, TestResult skippsMessageNumbersOnce,
+        TestResult skippsMessageNumbersMultiple, TestResult acceptsRandomMessageNumbers) {
+        super(ProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER);
         this.startsWithInvalidMessageNumber = startsWithInvalidMessageNumber;
-        this.missesMessageSequenceChecks = missesMessageSequenceChecks;
+        this.skippsMessageNumbersOnce = skippsMessageNumbersOnce;
+        this.skippsMessageNumbersMultiple = skippsMessageNumbersMultiple;
+        this.acceptsRandomMessageNumbers = acceptsRandomMessageNumbers;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
         report.putResult(AnalyzedProperty.STARTS_WITH_INVALID_MESSAGE_SEQUENCE, startsWithInvalidMessageNumber);
-        report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, missesMessageSequenceChecks);
+        report.putResult(AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_ONCE, skippsMessageNumbersOnce);
+        report.putResult(AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_MULTIPLE, skippsMessageNumbersMultiple);
+        report.putResult(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_NUMBERS, acceptsRandomMessageNumbers);
+        if (skippsMessageNumbersOnce == TestResult.FALSE || skippsMessageNumbersMultiple == TestResult.FALSE
+            || acceptsRandomMessageNumbers == TestResult.FALSE) {
+            report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.FALSE);
+        } else {
+            report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.TRUE);
+        }
     }
 
 }

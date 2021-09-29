@@ -24,6 +24,8 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ChangeConnectionTimeoutAction;
+import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
@@ -34,7 +36,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsCoookieResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsHelloVerifyRequestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,36 +47,61 @@ import java.util.List;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class DtlsCookieProbe extends TlsProbe {
+public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
-    public DtlsCookieProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DTLS_COOKIE, scannerConfig);
+    // not a good choise
+    private int cookieLength = -1;
+
+    public DtlsHelloVerifyRequestProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        super(parallelExecutor, ProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
     }
 
     @Override
     public ProbeResult executeTest() {
         try {
-            TestResult checksCookie = isCookieChecked();
-            TestResult checksCookieWithClientParameters = TestResult.TRUE;
-            if (isVersionUsed() == TestResult.FALSE || isRandomUsed() == TestResult.FALSE
-                || isCiphersuitesUsed() == TestResult.FALSE || isCompressionMethodsUsed() == TestResult.FALSE) {
-                checksCookieWithClientParameters = TestResult.FALSE;
-            }
-            return new DtlsCoookieResult(checksCookie, checksCookieWithClientParameters);
+            return new DtlsHelloVerifyRequestResult(hasHvrRetransmissions(), checksCookie(), cookieLength,
+                usesVersion(), usesRandom(), usesSessionId(), usesCiphersuites(), usesCompressions());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsCoookieResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+            return new DtlsHelloVerifyRequestResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, -1,
+                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }
 
-    private TestResult isCookieChecked() {
+    // maybe just one generic receive action instead of a combination of receive + generice receive
+    private TestResult hasHvrRetransmissions() {
+        Config config = getConfig();
+        config.setAddRetransmissionsToWorkflowTraceInDtls(true);
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new ChangeConnectionTimeoutAction(3000));
+        trace.addTlsAction(new GenericReceiveAction());
+        State state = new State(config, trace);
+        executeState(state);
+        if (WorkflowTraceUtil
+            .getLastReceivedMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())
+            .isRetransmission()) {
+            return TestResult.TRUE;
+        } else {
+            return TestResult.FALSE;
+        }
+    }
+
+    private TestResult checksCookie() {
         Config config = getConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(config);
         executeState(state);
-        int cookieLength = 0;
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            cookieLength = state.getTlsContext().getDtlsCookie().length;
+            if (state.getTlsContext().getDtlsCookie() != null) {
+                cookieLength = state.getTlsContext().getDtlsCookie().length;
+                if (cookieLength == 0) {
+                    return TestResult.CANNOT_BE_TESTED;
+                }
+            }
         } else {
             return TestResult.ERROR_DURING_TEST;
         }
@@ -99,7 +126,8 @@ public class DtlsCookieProbe extends TlsProbe {
         return TestResult.TRUE;
     }
 
-    private TestResult isVersionUsed() {
+    // problematic case: if server supports one version
+    private TestResult usesVersion() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -115,7 +143,7 @@ public class DtlsCookieProbe extends TlsProbe {
         return getResult(state);
     }
 
-    private TestResult isRandomUsed() {
+    private TestResult usesRandom() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -131,7 +159,25 @@ public class DtlsCookieProbe extends TlsProbe {
         return getResult(state);
     }
 
-    private TestResult isCiphersuitesUsed() {
+    // can we check this field like this
+    private TestResult usesSessionId() {
+        Config config = getConfig();
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+        ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
+        ModifiableByteArray sessionId = new ModifiableByteArray();
+        sessionId
+            .setModification(ByteArrayModificationFactory.explicitValue(ArrayConverter.hexStringToByteArray("FFFF")));
+        clientHelloMessage.setSessionId(sessionId);
+        trace.addTlsAction(new SendAction(clientHelloMessage));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        State state = new State(config, trace);
+        return getResult(state);
+    }
+
+    private TestResult usesCiphersuites() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -147,7 +193,7 @@ public class DtlsCookieProbe extends TlsProbe {
         return getResult(state);
     }
 
-    private TestResult isCompressionMethodsUsed() {
+    private TestResult usesCompressions() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -202,7 +248,9 @@ public class DtlsCookieProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsCoookieResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new DtlsHelloVerifyRequestResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, -1,
+            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+            TestResult.COULD_NOT_TEST);
     }
 
     @Override

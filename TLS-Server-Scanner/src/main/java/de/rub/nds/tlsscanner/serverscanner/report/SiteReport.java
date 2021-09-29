@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTim
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
@@ -43,7 +44,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.CookieEvaluationResult;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.io.Serializable;
 import java.util.*;
@@ -134,8 +134,10 @@ public class SiteReport extends Observable implements Serializable {
 
     private List<EntropyReport> entropyReportList;
 
-    // DTLS Cookie
-    private CookieEvaluationResult cookieEvaluationResult = CookieEvaluationResult.NOT_ANALYZED;
+    // DTLS
+    private Integer totalReceivedRetransmissions = 0;
+    private Map<HandshakeMessageType, Integer> retransmissionCounters;
+    private Integer cookieLength = -1;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -416,6 +418,30 @@ public class SiteReport extends Observable implements Serializable {
         this.supportsDtls = supportsDtls;
     }
 
+    public synchronized Integer getCookieLength() {
+        return cookieLength;
+    }
+
+    public synchronized void setCookieLength(Integer cookieLength) {
+        this.cookieLength = cookieLength;
+    }
+
+    public synchronized Integer getTotalReceivedRetransmissions() {
+        return totalReceivedRetransmissions;
+    }
+
+    public synchronized void setTotalReceivedRetransmissions(Integer totalReceivedRetransmissions) {
+        this.totalReceivedRetransmissions = totalReceivedRetransmissions;
+    }
+
+    public Map<HandshakeMessageType, Integer> getRetransmissionCounters() {
+        return retransmissionCounters;
+    }
+
+    public void setRetransmissionCounters(Map<HandshakeMessageType, Integer> retransmissionCounters) {
+        this.retransmissionCounters = retransmissionCounters;
+    }
+
     public synchronized GcmPattern getGcmPattern() {
         return gcmPattern;
     }
@@ -562,14 +588,6 @@ public class SiteReport extends Observable implements Serializable {
     public synchronized void
         setExtractedValueContainerList(Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap) {
         this.extractedValueContainerMap = extractedValueContainerMap;
-    }
-
-    public synchronized CookieEvaluationResult getCookieEvaluationResult() {
-        return cookieEvaluationResult;
-    }
-
-    public synchronized void setCookieEvaluationResult(CookieEvaluationResult cookieEvaluationResult) {
-        this.cookieEvaluationResult = cookieEvaluationResult;
     }
 
     public synchronized Set<CommonDhValues> getUsedCommonDhValueList() {

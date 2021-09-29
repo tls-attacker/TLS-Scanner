@@ -48,22 +48,18 @@ import java.util.List;
 public class DtlsMessageSequenceProbe extends TlsProbe {
 
     public DtlsMessageSequenceProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
-        super(parallelExecutor, ProbeType.DTLS_MESSAGE_SEQUENCE, scannerConfig);
+        super(parallelExecutor, ProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER, scannerConfig);
     }
 
     @Override
     public ProbeResult executeTest() {
         try {
-            TestResult startsWithInvalidMessageNumber = startsWithInvalidMessageNumber();
-            TestResult skippsMessageNumber = TestResult.FALSE;
-            if (skippsMessageNumbersOnce() == TestResult.TRUE || skippsMessageNumbersMultiple() == TestResult.TRUE
-                || acceptsRandomMessageNumbers() == TestResult.TRUE) {
-                skippsMessageNumber = TestResult.TRUE;
-            }
-            return new DtlsMessageSequenceResult(startsWithInvalidMessageNumber, skippsMessageNumber);
+            return new DtlsMessageSequenceResult(startsWithInvalidMessageNumber(), skippsMessageNumbersOnce(),
+                skippsMessageNumbersMultiple(), acceptsRandomMessageNumbers());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsMessageSequenceResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+            return new DtlsMessageSequenceResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -182,7 +178,8 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsMessageSequenceResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new DtlsMessageSequenceResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 
     @Override

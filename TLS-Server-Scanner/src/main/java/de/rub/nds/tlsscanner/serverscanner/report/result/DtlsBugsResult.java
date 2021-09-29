@@ -18,21 +18,21 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
  *
  * @author Nurullah Erinola - nurullah.erinola@rub.de
  */
-public class DtlsCoookieResult extends ProbeResult {
+public class DtlsBugsResult extends ProbeResult {
 
-    private TestResult checksCookie;
-    private TestResult checksCookieWithClientParameters;
+    private TestResult isEarlyFinished;
+    private TestResult isAcceptUnencryptedAppData;
 
-    public DtlsCoookieResult(TestResult checksCookie, TestResult checksCookieWithClientParameters) {
-        super(ProbeType.DTLS_COOKIE);
-        this.checksCookie = checksCookie;
-        this.checksCookieWithClientParameters = checksCookieWithClientParameters;
+    public DtlsBugsResult(TestResult isAcceptUnencryptedAppData, TestResult isEarlyFinished) {
+        super(ProbeType.DTLS_COMMON_BUGS);
+        this.isAcceptUnencryptedAppData = isAcceptUnencryptedAppData;
+        this.isEarlyFinished = isEarlyFinished;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
-        report.putResult(AnalyzedProperty.USES_CLIENT_PARAMERTS_FOR_COOKIE_CHECKS, checksCookieWithClientParameters);
+        report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptUnencryptedAppData);
+        report.putResult(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
     }
 
 }
