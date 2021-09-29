@@ -165,10 +165,10 @@ public class DheParameterProbe extends TlsProbe<ClientReport, DheParameterResult
                     config.setDefaultServerDhGenerator(BigInteger.ZERO);
                     break;
                 case MODULUS_ONE:
-                    config.setDefaultServerDhGenerator(BigInteger.ONE);
+                    config.setDefaultServerDhModulus(BigInteger.ONE);
                     break;
                 case MODULUS_ZERO:
-                    config.setDefaultServerDhGenerator(BigInteger.ZERO);
+                    config.setDefaultServerDhModulus(BigInteger.ZERO);
                     break;
                 default:
                     throw new RuntimeException("Failed to generate generator; unknown type " + smallSubgroupType);
