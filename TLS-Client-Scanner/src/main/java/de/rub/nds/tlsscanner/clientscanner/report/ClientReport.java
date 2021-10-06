@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import java.util.List;
 import java.util.Set;
@@ -143,7 +144,10 @@ public class ClientReport extends ScanReport {
 
     @Override
     public String getFullReport(ScannerDetail detail, boolean printColorful) {
-        return new ClientReportPrinter(detail, DefaultPrintingScheme.getDefaultPrintingScheme(printColorful),
-            printColorful, this).getFullReport();
+        ClientContainerReportCreator creator = new ClientContainerReportCreator();
+        ReportContainer createReport = creator.createReport(this);
+        StringBuilder builder = new StringBuilder();
+        createReport.print(builder, 0, printColorful);
+        return builder.toString();
     }
 }
