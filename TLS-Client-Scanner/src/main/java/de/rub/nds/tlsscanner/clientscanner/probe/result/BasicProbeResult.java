@@ -35,8 +35,7 @@ public class BasicProbeResult extends ProbeResult<ClientReport> {
         List<CompressionMethod> clientSupportedCompressions,
         List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms,
         Set<ExtensionType> clientAdvertisedExtensions, List<NamedGroup> clientAdvertisedNamedGroupsList,
-        List<NamedGroup> clientKeyShareNamedGroupsList,
-        List<ECPointFormat> clientAdvertisedPointFormatsList) {
+        List<NamedGroup> clientKeyShareNamedGroupsList, List<ECPointFormat> clientAdvertisedPointFormatsList) {
         super(TlsProbeType.BASIC);
         this.clientAdvertisedCipherSuites = clientSupportedCipherSuites;
         this.clientAdvertisedCompressions = clientSupportedCompressions;

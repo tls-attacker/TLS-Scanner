@@ -61,8 +61,7 @@ public class BasicProbe extends TlsProbe<ClientReport, BasicProbeResult> {
             List<ECPointFormat> clientPointFormatsList = state.getTlsContext().getClientPointFormatsList();
             return new BasicProbeResult(clientSupportedCipherSuites, clientSupportedCompressions,
                 clientSupportedSignatureAndHashAlgorithms, clientProposedExtensions, clientNamedGroupsList,
-                getKeyShareGroups(trace),
-                clientPointFormatsList);
+                getKeyShareGroups(trace), clientPointFormatsList);
         } else {
             return getCouldNotExecuteResult();
         }
@@ -81,12 +80,14 @@ public class BasicProbe extends TlsProbe<ClientReport, BasicProbeResult> {
     @Override
     public void adjustConfig(ClientReport report) {
     }
-    
+
     private List<NamedGroup> getKeyShareGroups(WorkflowTrace executedTrace) {
-        ClientHelloMessage receivedClientHello = (ClientHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.CLIENT_HELLO, executedTrace);
+        ClientHelloMessage receivedClientHello = (ClientHelloMessage) WorkflowTraceUtil
+            .getFirstReceivedMessage(HandshakeMessageType.CLIENT_HELLO, executedTrace);
         List keyShareGroups = new LinkedList<>();
-        if(receivedClientHello.containsExtension(ExtensionType.KEY_SHARE)) {
-            KeyShareExtensionMessage keyShareExtension = receivedClientHello.getExtension(KeyShareExtensionMessage.class);
+        if (receivedClientHello.containsExtension(ExtensionType.KEY_SHARE)) {
+            KeyShareExtensionMessage keyShareExtension =
+                receivedClientHello.getExtension(KeyShareExtensionMessage.class);
             keyShareExtension.getKeyShareList().stream().forEach(keyShareGroups::add);
         }
         return keyShareGroups;

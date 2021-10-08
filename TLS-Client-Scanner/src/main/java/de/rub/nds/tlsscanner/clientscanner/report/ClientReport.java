@@ -156,7 +156,8 @@ public class ClientReport extends ScanReport {
         return clientAdvertisedKeyShareNamedGroupsList;
     }
 
-    public synchronized void setClientAdvertisedKeyShareNamedGroupsList(List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList) {
+    public synchronized void
+        setClientAdvertisedKeyShareNamedGroupsList(List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList) {
         this.clientAdvertisedKeyShareNamedGroupsList = clientAdvertisedKeyShareNamedGroupsList;
     }
 }
