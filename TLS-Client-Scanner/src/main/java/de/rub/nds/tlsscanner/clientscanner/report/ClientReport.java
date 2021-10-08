@@ -40,11 +40,12 @@ public class ClientReport extends ScanReport {
     private List<SmallSubgroupResult> smallDheSubgroupResults;
     private List<CompositeModulusResult> compositeDheModulusResultList;
 
-    private List<CompressionMethod> clientSupportedCompressions;
-    private List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms;
-    private Set<ExtensionType> clientSupportedExtensions;
-    private List<NamedGroup> clientSupportedNamedGroupsList;
-    private List<ECPointFormat> clientSupportedPointFormatsList;
+    private List<CompressionMethod> clientAdvertisedCompressions;
+    private List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms;
+    private Set<ExtensionType> clientAdvertisedExtensions;
+    private List<NamedGroup> clientAdvertisedNamedGroupsList;
+    private List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList;
+    private List<ECPointFormat> clientAdvertisedPointFormatsList;
 
     private Integer lowestPossibleDheModulusSize;
 
@@ -52,45 +53,45 @@ public class ClientReport extends ScanReport {
         super();
     }
 
-    public synchronized List<CompressionMethod> getClientSupportedCompressions() {
-        return clientSupportedCompressions;
+    public synchronized List<CompressionMethod> getClientAdvertisedCompressions() {
+        return clientAdvertisedCompressions;
     }
 
-    public synchronized void setClientSupportedCompressions(List<CompressionMethod> clientSupportedCompressions) {
-        this.clientSupportedCompressions = clientSupportedCompressions;
+    public synchronized void setClientAdvertisedCompressions(List<CompressionMethod> clientAdvertisedCompressions) {
+        this.clientAdvertisedCompressions = clientAdvertisedCompressions;
     }
 
-    public synchronized List<SignatureAndHashAlgorithm> getClientSupportedSignatureAndHashAlgorithms() {
-        return clientSupportedSignatureAndHashAlgorithms;
+    public synchronized List<SignatureAndHashAlgorithm> getClientAdvertisedSignatureAndHashAlgorithms() {
+        return clientAdvertisedSignatureAndHashAlgorithms;
     }
 
-    public synchronized void setClientSupportedSignatureAndHashAlgorithms(
-        List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms) {
-        this.clientSupportedSignatureAndHashAlgorithms = clientSupportedSignatureAndHashAlgorithms;
+    public synchronized void setClientAdvertisedSignatureAndHashAlgorithms(
+        List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms) {
+        this.clientAdvertisedSignatureAndHashAlgorithms = clientAdvertisedSignatureAndHashAlgorithms;
     }
 
-    public synchronized Set<ExtensionType> getClientSupportedExtensions() {
-        return clientSupportedExtensions;
+    public synchronized Set<ExtensionType> getClientAdvertisedExtensions() {
+        return clientAdvertisedExtensions;
     }
 
-    public synchronized void setClientSupportedExtensions(Set<ExtensionType> clientSupportedExtensions) {
-        this.clientSupportedExtensions = clientSupportedExtensions;
+    public synchronized void setClientAdvertisedExtensions(Set<ExtensionType> clientAdvertisedExtensions) {
+        this.clientAdvertisedExtensions = clientAdvertisedExtensions;
     }
 
-    public synchronized List<NamedGroup> getClientSupportedNamedGroupsList() {
-        return clientSupportedNamedGroupsList;
+    public synchronized List<NamedGroup> getClientAdvertisedNamedGroupsList() {
+        return clientAdvertisedNamedGroupsList;
     }
 
-    public synchronized void setClientSupportedNamedGroupsList(List<NamedGroup> clientSupportedNamedGroupsList) {
-        this.clientSupportedNamedGroupsList = clientSupportedNamedGroupsList;
+    public synchronized void setClientAdvertisedNamedGroupsList(List<NamedGroup> clientAdvertisedNamedGroupsList) {
+        this.clientAdvertisedNamedGroupsList = clientAdvertisedNamedGroupsList;
     }
 
-    public synchronized List<ECPointFormat> getClientSupportedPointFormatsList() {
-        return clientSupportedPointFormatsList;
+    public synchronized List<ECPointFormat> getClientAdvertisedPointFormatsList() {
+        return clientAdvertisedPointFormatsList;
     }
 
-    public synchronized void setClientSupportedPointFormatsList(List<ECPointFormat> clientSupportedPointFormatsList) {
-        this.clientSupportedPointFormatsList = clientSupportedPointFormatsList;
+    public synchronized void setClientAdvertisedPointFormatsList(List<ECPointFormat> clientAdvertisedPointFormatsList) {
+        this.clientAdvertisedPointFormatsList = clientAdvertisedPointFormatsList;
     }
 
     public synchronized Integer getLowestPossibleDheModulusSize() {
@@ -149,5 +150,13 @@ public class ClientReport extends ScanReport {
         StringBuilder builder = new StringBuilder();
         createReport.print(builder, 0, printColorful);
         return builder.toString();
+    }
+
+    public synchronized List<NamedGroup> getClientAdvertisedKeyShareNamedGroupsList() {
+        return clientAdvertisedKeyShareNamedGroupsList;
+    }
+
+    public synchronized void setClientAdvertisedKeyShareNamedGroupsList(List<NamedGroup> clientAdvertisedKeyShareNamedGroupsList) {
+        this.clientAdvertisedKeyShareNamedGroupsList = clientAdvertisedKeyShareNamedGroupsList;
     }
 }

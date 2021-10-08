@@ -24,30 +24,38 @@ import java.util.Set;
 public class BasicProbeResult extends ProbeResult<ClientReport> {
 
     private final List<CipherSuite> clientAdvertisedCipherSuites;
-    private final List<CompressionMethod> clientSupportedCompressions;
+    private final List<CompressionMethod> clientAdvertisedCompressions;
     private final List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms;
-    private final Set<ExtensionType> clientSupportedExtensions;
-    private final List<NamedGroup> clientNamedGroupsList;
-    private final List<ECPointFormat> clientPointFormatsList;
+    private final Set<ExtensionType> clientAdvertisedExtensions;
+    private final List<NamedGroup> clientAdvertisedNamedGroupsList;
+    private final List<NamedGroup> clientKeyShareNamedGroupsList;
+    private final List<ECPointFormat> clientAdvertisedPointFormatsList;
 
     public BasicProbeResult(List<CipherSuite> clientSupportedCipherSuites,
         List<CompressionMethod> clientSupportedCompressions,
         List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms,
-        Set<ExtensionType> clientSupportedExtensions, List<NamedGroup> clientNamedGroupsList,
-        List<ECPointFormat> clientPointFormatsList) {
+        Set<ExtensionType> clientAdvertisedExtensions, List<NamedGroup> clientAdvertisedNamedGroupsList,
+        List<NamedGroup> clientKeyShareNamedGroupsList,
+        List<ECPointFormat> clientAdvertisedPointFormatsList) {
         super(TlsProbeType.BASIC);
         this.clientAdvertisedCipherSuites = clientSupportedCipherSuites;
-        this.clientSupportedCompressions = clientSupportedCompressions;
+        this.clientAdvertisedCompressions = clientSupportedCompressions;
         this.clientSupportedSignatureAndHashAlgorithms = clientSupportedSignatureAndHashAlgorithms;
-        this.clientSupportedExtensions = clientSupportedExtensions;
-        this.clientNamedGroupsList = clientNamedGroupsList;
-        this.clientPointFormatsList = clientPointFormatsList;
+        this.clientAdvertisedExtensions = clientAdvertisedExtensions;
+        this.clientAdvertisedNamedGroupsList = clientAdvertisedNamedGroupsList;
+        this.clientAdvertisedPointFormatsList = clientAdvertisedPointFormatsList;
+        this.clientKeyShareNamedGroupsList = clientKeyShareNamedGroupsList;
     }
 
     @Override
     protected void mergeData(ClientReport report) {
         report.setAdvertisedCipherSuites(clientAdvertisedCipherSuites);
-
+        report.setClientAdvertisedCompressions(clientAdvertisedCompressions);
+        report.setClientAdvertisedSignatureAndHashAlgorithms(clientSupportedSignatureAndHashAlgorithms);
+        report.setClientAdvertisedExtensions(clientAdvertisedExtensions);
+        report.setClientAdvertisedNamedGroupsList(clientAdvertisedNamedGroupsList);
+        report.setClientAdvertisedKeyShareNamedGroupsList(clientKeyShareNamedGroupsList);
+        report.setClientAdvertisedPointFormatsList(clientAdvertisedPointFormatsList);
     }
 
 }

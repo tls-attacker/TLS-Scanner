@@ -26,7 +26,13 @@ import de.rub.nds.tlsscanner.clientscanner.probe.result.BasicProbeResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareEntry;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -50,11 +56,12 @@ public class BasicProbe extends TlsProbe<ClientReport, BasicProbeResult> {
                 state.getTlsContext().getClientSupportedCompressions();
             List<SignatureAndHashAlgorithm> clientSupportedSignatureAndHashAlgorithms =
                 state.getTlsContext().getClientSupportedSignatureAndHashAlgorithms();
-            Set<ExtensionType> clientSupportedExtensions = state.getTlsContext().getProposedExtensions();
+            Set<ExtensionType> clientProposedExtensions = state.getTlsContext().getProposedExtensions();
             List<NamedGroup> clientNamedGroupsList = state.getTlsContext().getClientNamedGroupsList();
             List<ECPointFormat> clientPointFormatsList = state.getTlsContext().getClientPointFormatsList();
             return new BasicProbeResult(clientSupportedCipherSuites, clientSupportedCompressions,
-                clientSupportedSignatureAndHashAlgorithms, clientSupportedExtensions, clientNamedGroupsList,
+                clientSupportedSignatureAndHashAlgorithms, clientProposedExtensions, clientNamedGroupsList,
+                getKeyShareGroups(trace),
                 clientPointFormatsList);
         } else {
             return getCouldNotExecuteResult();
@@ -68,11 +75,21 @@ public class BasicProbe extends TlsProbe<ClientReport, BasicProbeResult> {
 
     @Override
     public BasicProbeResult getCouldNotExecuteResult() {
-        return new BasicProbeResult(null, null, null, null, null, null);
+        return new BasicProbeResult(null, null, null, null, null, null, null);
     }
 
     @Override
     public void adjustConfig(ClientReport report) {
+    }
+    
+    private List<NamedGroup> getKeyShareGroups(WorkflowTrace executedTrace) {
+        ClientHelloMessage receivedClientHello = (ClientHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.CLIENT_HELLO, executedTrace);
+        List keyShareGroups = new LinkedList<>();
+        if(receivedClientHello.containsExtension(ExtensionType.KEY_SHARE)) {
+            KeyShareExtensionMessage keyShareExtension = receivedClientHello.getExtension(KeyShareExtensionMessage.class);
+            keyShareExtension.getKeyShareList().stream().forEach(keyShareGroups::add);
+        }
+        return keyShareGroups;
     }
 
 }
