@@ -276,8 +276,8 @@ public enum AnalyzedProperty {
     SKIPPS_MESSAGE_SEQUENCE_MULTIPLE(AnalyzedPropertyCategory.QUIRKS),
     ACCEPTS_RANDOM_MESSAGE_NUMBERS(AnalyzedPropertyCategory.QUIRKS),
     MISSES_MESSAGE_SEQUENCE_CHECKS(AnalyzedPropertyCategory.QUIRKS),
-    SENDS_RETRANMISSIONS(AnalyzedPropertyCategory.QUIRKS),
-    ACCEPTS_RETRANMISSIONS(AnalyzedPropertyCategory.QUIRKS),
+    SENDS_RETRANSMISSIONS(AnalyzedPropertyCategory.QUIRKS),
+    PROCESSES_RETRANSMISSIONS(AnalyzedPropertyCategory.QUIRKS),
     OVERWRITES_CONTENT(AnalyzedPropertyCategory.QUIRKS),
     CHANGES_PORT(AnalyzedPropertyCategory.QUIRKS),
     CHANGES_PORT_TO_RANDOM_PORTS(AnalyzedPropertyCategory.QUIRKS);

@@ -342,8 +342,8 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.SUPPORTS_REORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.SENDS_RETRANMISSIONS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
-        colorMap.put(AnalyzedProperty.ACCEPTS_RETRANMISSIONS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.SENDS_RETRANSMISSIONS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.PROCESSES_RETRANSMISSIONS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.OVERWRITES_CONTENT, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));

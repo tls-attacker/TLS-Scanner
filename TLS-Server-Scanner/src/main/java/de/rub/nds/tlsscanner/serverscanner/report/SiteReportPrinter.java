@@ -199,8 +199,8 @@ public class SiteReportPrinter {
         }
 
         prettyAppendHeading(builder, "DTLS Retransmissions");
-        prettyAppend(builder, "Sends retransmissions", AnalyzedProperty.SENDS_RETRANMISSIONS);
-        prettyAppend(builder, "Accepts retransmissions", AnalyzedProperty.ACCEPTS_RETRANMISSIONS);
+        prettyAppend(builder, "Sends retransmissions", AnalyzedProperty.SENDS_RETRANSMISSIONS);
+        prettyAppend(builder, "Processes retransmissions", AnalyzedProperty.PROCESSES_RETRANSMISSIONS);
         prettyAppend(builder, "Total retransmissions received", report.getTotalReceivedRetransmissions());
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) && report.getRetransmissionCounters() != null) {
             for (HandshakeMessageType type : report.getRetransmissionCounters().keySet())

@@ -20,20 +20,20 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
  */
 public class DtlsRetransmissionsResult extends ProbeResult {
 
-    private TestResult doesRetransmissions;
-    private TestResult acceptsRetransmissions;
+    private TestResult sendsRetransmissions;
+    private TestResult processesRetransmissions;
 
-    public DtlsRetransmissionsResult(TestResult doesRetransmissions, TestResult acceptsRetransmissions) {
+    public DtlsRetransmissionsResult(TestResult sendsRetransmissions, TestResult processesRetransmissions) {
         super(ProbeType.DTLS_RETRANSMISSIONS);
-        this.doesRetransmissions = doesRetransmissions;
-        this.acceptsRetransmissions = acceptsRetransmissions;
+        this.sendsRetransmissions = sendsRetransmissions;
+        this.processesRetransmissions = processesRetransmissions;
 
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.SENDS_RETRANMISSIONS, doesRetransmissions);
-        report.putResult(AnalyzedProperty.ACCEPTS_RETRANMISSIONS, acceptsRetransmissions);
+        report.putResult(AnalyzedProperty.SENDS_RETRANSMISSIONS, sendsRetransmissions);
+        report.putResult(AnalyzedProperty.PROCESSES_RETRANSMISSIONS, processesRetransmissions);
     }
 
 }
