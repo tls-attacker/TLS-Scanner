@@ -54,7 +54,6 @@ public enum ProbeType {
     DTLS_FEATURES("DTLS features"),
     DTLS_MESSAGE_SEQUENCE_NUMBER("DTLS message sequence number"),
     DTLS_RETRANSMISSIONS("DTLS retransmissions"),
-    DTLS_OVERWRITING_CONTENT("DTLS content overwriting"),
     HTTP_FALSE_START("HTTP false start"),
     HELLO_RETRY("Hello retry"),
     CROSS_PROTOCOL_ALPACA("Alpaca attack"),

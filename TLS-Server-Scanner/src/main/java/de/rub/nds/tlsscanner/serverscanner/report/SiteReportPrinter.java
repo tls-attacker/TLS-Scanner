@@ -210,7 +210,6 @@ public class SiteReportPrinter {
         prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
         prettyAppend(builder, "Accepts App Data with Epoch 0", AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
-        prettyAppend(builder, "Overwrites Content", AnalyzedProperty.OVERWRITES_CONTENT);
     }
 
     private void appendDirectRaccoonResults(StringBuilder builder) {
