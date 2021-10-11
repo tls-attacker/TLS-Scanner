@@ -123,7 +123,6 @@ public class TlsScanner {
             probeList.add(new DtlsBugsProbe(config, parallelExecutor));
             probeList.add(new DtlsMessageSequenceProbe(config, parallelExecutor));
             probeList.add(new DtlsRetransmissionsProbe(config, parallelExecutor));
-            probeList.add(new DtlsOverwritingContentProbe(config, parallelExecutor));
             afterList.add(new DtlsRetransmissionAfterProbe());
             afterList.add(new DestinationPortAfterProbe());
         } else {
