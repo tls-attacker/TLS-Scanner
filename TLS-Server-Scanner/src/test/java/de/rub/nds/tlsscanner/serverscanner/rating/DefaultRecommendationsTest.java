@@ -50,17 +50,16 @@ public class DefaultRecommendationsTest {
                 "TLS 1.3 draft version is enabled", "Update your server and enable the TLS 1.3 final version"),
             "https://tools.ietf.org/html/rfc8446"));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DTLS_1_0, "DTLS 1.0 support",
-            "Evaluates whether the DTLS 1.0 protocol is supported", new PropertyResultRecommendation(TestResult.TRUE,
-                "DTLS 1.0 is enabled", "Disable DTLS 1.0, it is a UDP protocol"),
+            "Evaluates whether the DTLS 1.0 protocol is supported",
+            new PropertyResultRecommendation(TestResult.TRUE, "DTLS 1.0 is enabled", "Consider disabling DTLS 1.0"),
             "https://tools.ietf.org/html/rfc4347"));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DTLS_1_2, "DTLS 1.2 support",
-            "Evaluates whether the DTLS 1.2 protocol is supported", new PropertyResultRecommendation(TestResult.TRUE,
-                "DTLS 1.2 is enabled", "Disable DTLS 1.2, it is a UDP protocol"),
+            "Evaluates whether the DTLS 1.2 protocol is supported",
+            new PropertyResultRecommendation(TestResult.FALSE, "DTLS 1.2 is disabled", "Enable DTLS 1.2"),
             "https://tools.ietf.org/html/rfc6347"));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DTLS_1_3, "DTLS 1.3 support",
-            "Evaluates whether the DTLS 1.3 protocol is supported", new PropertyResultRecommendation(TestResult.TRUE,
-                "DTLS 1.3 is enabled", "Disable DTLS 1.3, it is a UDP protocol"),
-            ""));
+            "Evaluates whether the DTLS 1.3 protocol is supported",
+            new PropertyResultRecommendation(TestResult.FALSE, "DTLS 1.3 is disabled", "Enable DTLS 1.3"), ""));
 
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_NULL_CIPHERS, "Null cipher support",
             "Evaluates whether the server supports null ciphers", new PropertyResultRecommendation(TestResult.TRUE,
@@ -591,6 +590,22 @@ public class DefaultRecommendationsTest {
             "Evaluated whether the server is vulnerable to ALPACA",
             new PropertyResultRecommendation(TestResult.FALSE, "The server does not reject invalid SNI names.",
                 "If possible configure your server to use strict SNI and strict ALPN verification"),
+            ""));
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
+            "Supports DTLS fragmentation", "Evaluates whether the server support the handshake message fragmentation",
+            new PropertyResultRecommendation(TestResult.FALSE,
+                "The server does not process fragmented handshake messages",
+                "Configure your server to always process fragmented handshake messages"),
+            ""));
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_REORDERING, "Supports DTLS Reordering",
+            "Evaluates whether the server support message reordering",
+            new PropertyResultRecommendation(TestResult.FALSE, "The server does not process message reordering",
+                "Configure your server to always process message reordering"),
+            ""));
+        recommendations.add(new Recommendation(AnalyzedProperty.PROCESSES_RETRANSMISSIONS,
+            "Processes DTLS retransmissions", "Evaluates whether the server processes retransmissions",
+            new PropertyResultRecommendation(TestResult.FALSE, "The server does not process retransmissions",
+                "Configure your server to always process retransmissions"),
             ""));
         recommendations.add(new Recommendation(AnalyzedProperty.HAS_COOKIE_CHECKS, "Has cookie checks",
             "Evaluates whether the server verify the cookie values",

@@ -73,7 +73,7 @@
         <analyzedProperty>SUPPORTS_DTLS_1_0</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-300</influence>
+            <influence>0</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -84,7 +84,7 @@
         <analyzedProperty>SUPPORTS_DTLS_1_2</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-300</influence>
+            <influence>100</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -95,7 +95,7 @@
         <analyzedProperty>SUPPORTS_DTLS_1_3</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-300</influence>
+            <influence>500</influence>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
@@ -1994,6 +1994,39 @@
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
             <influence>-200</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>SUPPORTS_DTLS_FRAGMENTATION</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>SUPPORTS_REORDERING</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>-100</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>PROCESSES_RETRANSMISSIONS</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>-100</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>

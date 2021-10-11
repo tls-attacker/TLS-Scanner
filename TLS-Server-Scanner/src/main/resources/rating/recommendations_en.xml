@@ -121,7 +121,7 @@
             <resultingRecommendation>
                 <result>TRUE</result>
                 <shortDescription>DTLS 1.0 is enabled</shortDescription>
-                <handlingRecommendation>Disable DTLS 1.0, it is a UDP protocol</handlingRecommendation>
+                <handlingRecommendation>Consider disabling DTLS 1.0</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
@@ -134,9 +134,9 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription>DTLS 1.2 is enabled</shortDescription>
-                <handlingRecommendation>Disable DTLS 1.2, it is a UDP protocol</handlingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>DTLS 1.2 is disabled</shortDescription>
+                <handlingRecommendation>Enable DTLS 1.2</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
@@ -149,9 +149,9 @@
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription>DTLS 1.3 is enabled</shortDescription>
-                <handlingRecommendation>Disable DTLS 1.3, it is a UDP protocol</handlingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>DTLS 1.3 is disabled</shortDescription>
+                <handlingRecommendation>Enable DTLS 1.3</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
@@ -1598,6 +1598,51 @@
                 <result>FALSE</result>
                 <shortDescription>The server does not reject invalid SNI names.</shortDescription>
                 <handlingRecommendation>If possible configure your server to use strict SNI and strict ALPN verification</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_DTLS_FRAGMENTATION</analyzedProperty>
+        <shortName>Supports DTLS fragmentation</shortName>
+        <shortDescription>Evaluates whether the server support the handshake message fragmentation</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The server does not process fragmented handshake messages</shortDescription>
+                <handlingRecommendation>Configure your server to always process fragmented handshake messages</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>SUPPORTS_REORDERING</analyzedProperty>
+        <shortName>Supports DTLS Reordering</shortName>
+        <shortDescription>Evaluates whether the server support message reordering</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The server does not process message reordering</shortDescription>
+                <handlingRecommendation>Configure your server to always process message reordering</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>PROCESSES_RETRANSMISSIONS</analyzedProperty>
+        <shortName>Processes DTLS retransmissions</shortName>
+        <shortDescription>Evaluates whether the server processes retransmissions</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>The server does not process retransmissions</shortDescription>
+                <handlingRecommendation>Configure your server to always process retransmissions</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>

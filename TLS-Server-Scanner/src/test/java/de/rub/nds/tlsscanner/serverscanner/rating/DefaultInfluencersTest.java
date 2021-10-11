@@ -40,13 +40,13 @@ public class DefaultInfluencersTest {
             new PropertyResultRatingInfluencer(TestResult.TRUE, 500),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DTLS_1_0,
-            new PropertyResultRatingInfluencer(TestResult.TRUE, -300),
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DTLS_1_2,
-            new PropertyResultRatingInfluencer(TestResult.TRUE, -300),
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 100),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DTLS_1_3,
-            new PropertyResultRatingInfluencer(TestResult.TRUE, -300),
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 500),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 0)));
 
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_PFS,
@@ -586,6 +586,15 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.ALPACA_MITIGATED,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 200),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -200)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_REORDERING,
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
+        influencers.add(new RatingInfluencer(AnalyzedProperty.PROCESSES_RETRANSMISSIONS,
+            new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
+            new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.HAS_COOKIE_CHECKS,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 0),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));
