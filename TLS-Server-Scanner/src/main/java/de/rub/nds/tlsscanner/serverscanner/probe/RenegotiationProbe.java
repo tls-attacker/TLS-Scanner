@@ -26,8 +26,10 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.FlushSessionCacheAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
+import de.rub.nds.tlsattacker.core.workflow.action.RenegotiationAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -82,17 +84,11 @@ public class RenegotiationProbe extends TlsProbe {
         Config tlsConfig = getBaseConfig();
         tlsConfig.setAddRenegotiationInfoExtension(false);
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = configFactory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
+        WorkflowTrace trace =
+            configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
+        trace.addTlsAction(new RenegotiationAction());
+        trace.addTlsAction(new FlushSessionCacheAction());
 
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(tlsConfig)));
-            trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        }
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         tlsConfig.setAddRenegotiationInfoExtension(true);
         trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
         if (getScannerConfig().getDtlsDelegate().isDTLS()) {
@@ -115,25 +111,17 @@ public class RenegotiationProbe extends TlsProbe {
         Config tlsConfig = getBaseConfig();
         tlsConfig.setAddRenegotiationInfoExtension(false);
         WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = configFactory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
+        WorkflowTrace trace =
+            configFactory.createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
+        trace.addTlsAction(new RenegotiationAction());
+        trace.addTlsAction(new FlushSessionCacheAction());
 
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(tlsConfig)));
-            trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        }
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
         tlsConfig.setAddRenegotiationInfoExtension(true);
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(tlsConfig);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             for (CipherSuite suite : tlsConfig.getDefaultClientSupportedCipherSuites()) {
-
                 outputStream.write(suite.getByteValue());
-
             }
             outputStream.write(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV.getByteValue());
         } catch (IOException ex) {
