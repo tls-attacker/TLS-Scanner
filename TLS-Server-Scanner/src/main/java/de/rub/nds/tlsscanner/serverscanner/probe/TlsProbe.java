@@ -83,7 +83,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     public final void executeState(List<State> states) {
-        parallelExecutor.bulkExecuteClientStateTasks(states);
+        parallelExecutor.bulkExecuteStateTasks(states);
         for (State state : states) {
             writer.extract(state);
         }
