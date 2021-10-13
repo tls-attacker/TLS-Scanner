@@ -9,6 +9,7 @@
 
 package de.rub.nds.scanner.core.report.container;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.report.AnsiColor;
 
 public class HeadlineContainer extends ReportContainer {
@@ -18,6 +19,12 @@ public class HeadlineContainer extends ReportContainer {
     private final String headline;
 
     public HeadlineContainer(String headline) {
+        super(ScannerDetail.NORMAL);
+        this.headline = headline;
+    }
+
+    public HeadlineContainer(String headline, ScannerDetail detail) {
+        super(detail);
         this.headline = headline;
     }
 
@@ -36,6 +43,7 @@ public class HeadlineContainer extends ReportContainer {
         if (useColor) {
             builder.append(AnsiColor.RESET.getCode());
         }
+        builder.append("\n");
         builder.append("\n");
     }
 

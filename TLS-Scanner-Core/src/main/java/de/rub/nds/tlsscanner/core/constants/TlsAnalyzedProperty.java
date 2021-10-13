@@ -278,4 +278,9 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     public AnalyzedPropertyCategory getCategory() {
         return category;
     }
+
+    @Override
+    public String getName() {
+        return name();
+    }
 }

@@ -9,6 +9,7 @@
 
 package de.rub.nds.scanner.core.report.container;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,21 +20,25 @@ public class ListContainer extends ReportContainer {
     private int depthIncrease;
 
     public ListContainer() {
+        super(ScannerDetail.NORMAL);
         this.reportContainerList = new LinkedList<>();
         this.depthIncrease = 0;
     }
 
     public ListContainer(int depthIncrease) {
+        super(ScannerDetail.NORMAL);
         this.reportContainerList = new LinkedList<>();
         this.depthIncrease = depthIncrease;
     }
 
     public ListContainer(List<ReportContainer> reportContainerList, int depthIncrease) {
+        super(ScannerDetail.NORMAL);
         this.reportContainerList = reportContainerList;
         this.depthIncrease = depthIncrease;
     }
 
     public ListContainer(List<ReportContainer> reportContainerList) {
+        super(ScannerDetail.NORMAL);
         this.reportContainerList = reportContainerList;
         this.depthIncrease = 0;
     }

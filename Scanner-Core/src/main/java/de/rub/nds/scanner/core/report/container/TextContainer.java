@@ -9,6 +9,7 @@
 
 package de.rub.nds.scanner.core.report.container;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.report.AnsiColor;
 
 public class TextContainer extends ReportContainer {
@@ -17,13 +18,20 @@ public class TextContainer extends ReportContainer {
     private AnsiColor color;
 
     public TextContainer(String text, AnsiColor color) {
+        super(ScannerDetail.NORMAL);
+        this.text = text;
+        this.color = color;
+    }
+
+    public TextContainer(String text, AnsiColor color, ScannerDetail detail) {
+        super(detail);
         this.text = text;
         this.color = color;
     }
 
     @Override
     public void print(StringBuilder builder, int depth, boolean useColor) {
-        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
-                                                                       // Tools | Templates.
+        addColor(builder, color, text, useColor);
+        builder.append("\n");
     }
 }

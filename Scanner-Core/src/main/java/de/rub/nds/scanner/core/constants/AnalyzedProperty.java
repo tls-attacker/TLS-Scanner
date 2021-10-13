@@ -18,4 +18,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public interface AnalyzedProperty {
 
     public AnalyzedPropertyCategory getCategory();
+
+    public String getName();
 }

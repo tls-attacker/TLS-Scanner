@@ -9,6 +9,7 @@
 
 package de.rub.nds.scanner.core.report.container;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import java.util.List;
 
 public class TableContainer extends ReportContainer {
@@ -17,9 +18,17 @@ public class TableContainer extends ReportContainer {
 
     private List<List<TextContainer>> containerTable;
 
+    public TableContainer(ScannerDetail detail) {
+        super(detail);
+    }
+
+    public TableContainer() {
+        super(ScannerDetail.NORMAL);
+    }
+
     @Override
     public void print(StringBuilder builder, int depth, boolean useColor) {
         throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
-                                                                       // Tools | Templates.
+        // Tools | Templates.
     }
 }

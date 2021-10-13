@@ -12,14 +12,14 @@ package de.rub.nds.scanner.core.report;
 import de.rub.nds.scanner.core.constants.TestResult;
 import java.util.HashMap;
 
-public class TextEncoding {
+public class TestResultTextEncoder extends Encoder<TestResult> {
 
     private HashMap<TestResult, String> textEncodingMap = null;
 
-    public TextEncoding() {
+    public TestResultTextEncoder() {
     }
 
-    public TextEncoding(HashMap<TestResult, String> textEncodingMap) {
+    public TestResultTextEncoder(HashMap<TestResult, String> textEncodingMap) {
         this.textEncodingMap = textEncodingMap;
     }
 
@@ -27,7 +27,11 @@ public class TextEncoding {
         return textEncodingMap;
     }
 
+    @Override
     public String encode(TestResult result) {
+        if (textEncodingMap == null) {
+            return result.name();
+        }
         String string = textEncodingMap.get(result);
         if (string == null) {
             return result.name();

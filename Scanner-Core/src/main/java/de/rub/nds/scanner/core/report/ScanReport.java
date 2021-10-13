@@ -13,7 +13,6 @@ import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.constants.TestResult;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.constants.ProbeType;
-import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import java.io.Serializable;

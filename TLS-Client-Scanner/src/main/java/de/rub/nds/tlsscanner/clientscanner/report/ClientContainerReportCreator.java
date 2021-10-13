@@ -9,21 +9,27 @@
 
 package de.rub.nds.tlsscanner.clientscanner.report;
 
+import de.rub.nds.scanner.core.report.ReportCreator;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.container.HeadlineContainer;
 import de.rub.nds.scanner.core.report.container.ListContainer;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.scanner.core.report.container.TextContainer;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 
-public class ClientContainerReportCreator {
+public class ClientContainerReportCreator extends ReportCreator {
+
+    public ClientContainerReportCreator() {
+        super(DefaultPrintingScheme.getDefaultPrintingScheme());
+    }
 
     public ReportContainer createReport(ClientReport report) {
         ListContainer rootContainer = new ListContainer();
         addCipherSuiteContainer(rootContainer, report);
-
+        addProtocolVersionContainer(rootContainer, report);
         return rootContainer;
     }
 
@@ -33,6 +39,7 @@ public class ClientContainerReportCreator {
         for (CipherSuite suite : report.getAdvertisedCipherSuites()) {
             listContainer.add(new TextContainer(suite.name(), getColorForCipherSuite(suite)));
         }
+        rootContainer.add(listContainer);
     }
 
     private AnsiColor getColorForCipherSuite(CipherSuite suite) {
@@ -47,5 +54,15 @@ public class ClientContainerReportCreator {
             default:
                 return AnsiColor.DEFAULT_COLOR;
         }
+    }
+
+    private void addProtocolVersionContainer(ListContainer rootContainer, ClientReport report) {
+        rootContainer.add(new HeadlineContainer("Supported Versions"));
+        rootContainer.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SSL_2, report));
+        rootContainer.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SSL_3, report));
+        rootContainer.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, report));
+        rootContainer.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_TLS_1_1, report));
+        rootContainer.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, report));
+        rootContainer.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, report));
     }
 }

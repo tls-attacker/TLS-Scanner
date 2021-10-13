@@ -9,6 +9,7 @@
 
 package de.rub.nds.scanner.core.report.container;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +18,7 @@ public class KeyValueContainer extends ReportContainer {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final int PADDED_KEY_LENGTH = 40;
+    private static final int PADDED_KEY_LENGTH = 30;
 
     private String key;
     private AnsiColor keyColor;
@@ -26,6 +27,7 @@ public class KeyValueContainer extends ReportContainer {
     private AnsiColor valueColor;
 
     public KeyValueContainer(String key, AnsiColor keyColor, String value, AnsiColor valueColor) {
+        super(ScannerDetail.NORMAL);
         this.key = key;
         this.keyColor = keyColor;
         this.value = value;
@@ -35,7 +37,7 @@ public class KeyValueContainer extends ReportContainer {
     @Override
     public void print(StringBuilder builder, int depth, boolean useColor) {
         addDepth(builder, depth);
-        addColor(builder, keyColor, key, useColor);
+        addColor(builder, keyColor, pad(key, PADDED_KEY_LENGTH), useColor);
         builder.append(":    ");
         addColor(builder, valueColor, value, useColor);
         builder.append("\n");

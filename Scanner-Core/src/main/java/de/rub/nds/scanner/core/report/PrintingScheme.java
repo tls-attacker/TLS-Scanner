@@ -10,7 +10,6 @@
 package de.rub.nds.scanner.core.report;
 
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.report.ColorEncoding;
 import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 import java.util.HashMap;
@@ -21,52 +20,79 @@ public class PrintingScheme {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private HashMap<AnalyzedProperty, ColorEncoding> colorEncodings;
+    private HashMap<AnalyzedProperty, ColorEncoding> valueColorEncodings;
 
-    private HashMap<AnalyzedPropertyCategory, TextEncoding> textEncodings;
+    private HashMap<AnalyzedPropertyCategory, TestResultTextEncoder> valueTextEncodings;
 
-    private HashMap<AnalyzedProperty, TextEncoding> specialTextEncoding;
+    private HashMap<AnalyzedProperty, TestResultTextEncoder> specialValueTextEncoding;
 
-    private TextEncoding defaultTextEncoding;
+    private HashMap<AnalyzedProperty, Encoder> keyTextEncoding;
+
+    private TestResultTextEncoder defaultTextEncoding;
     private ColorEncoding defaultColorEncoding;
-    private boolean useColors;
 
     public PrintingScheme() {
     }
 
     public PrintingScheme(HashMap<AnalyzedProperty, ColorEncoding> colorEncodings,
-        HashMap<AnalyzedPropertyCategory, TextEncoding> textEncodings, TextEncoding defaultTextEncoding,
-        ColorEncoding defaultColorEncoding, HashMap<AnalyzedProperty, TextEncoding> specialTextEncoding,
-        boolean useColors) {
-        this.colorEncodings = colorEncodings;
-        this.textEncodings = textEncodings;
+        HashMap<AnalyzedPropertyCategory, TestResultTextEncoder> textEncodings,
+        TestResultTextEncoder defaultTextEncoding, ColorEncoding defaultColorEncoding,
+        HashMap<AnalyzedProperty, TestResultTextEncoder> specialTextEncoding,
+        HashMap<AnalyzedProperty, Encoder> keyTextEncoding) {
+        this.valueColorEncodings = colorEncodings;
+        this.valueTextEncodings = textEncodings;
         this.defaultTextEncoding = defaultTextEncoding;
         this.defaultColorEncoding = defaultColorEncoding;
-        this.useColors = useColors;
-        this.specialTextEncoding = specialTextEncoding;
+        this.specialValueTextEncoding = specialTextEncoding;
+        this.keyTextEncoding = keyTextEncoding;
     }
 
-    public HashMap<AnalyzedProperty, ColorEncoding> getColorEncodings() {
-        return colorEncodings;
+    public HashMap<AnalyzedProperty, ColorEncoding> getValueColorEncodings() {
+        return valueColorEncodings;
     }
 
-    public HashMap<AnalyzedPropertyCategory, TextEncoding> getTextEncodings() {
-        return textEncodings;
+    public HashMap<AnalyzedPropertyCategory, TestResultTextEncoder> getValueTextEncodings() {
+        return valueTextEncodings;
     }
 
-    public String getEncodedString(ScanReport report, AnalyzedProperty property) {
+    public String getEncodedString(ScanReport report, AnalyzedProperty property, boolean useColors) {
         TestResult result = report.getResult(property);
-        TextEncoding textEncoding = specialTextEncoding.get(property);
+        TestResultTextEncoder textEncoding = specialValueTextEncoding.get(property);
         if (textEncoding == null) {
-            textEncoding = textEncodings.getOrDefault(property.getCategory(), defaultTextEncoding);
+            textEncoding = valueTextEncodings.getOrDefault(property.getCategory(), defaultTextEncoding);
         }
-        ColorEncoding colorEncoding = colorEncodings.getOrDefault(property, defaultColorEncoding);
+        ColorEncoding colorEncoding = valueColorEncodings.getOrDefault(property, defaultColorEncoding);
         String encodedText = textEncoding.encode(result);
         if (useColors) {
             return colorEncoding.encode(result, encodedText);
         } else {
             return encodedText;
         }
+    }
+
+    public String getEncodedValueText(ScanReport report, AnalyzedProperty property) {
+        TestResult result = report.getResult(property);
+        TestResultTextEncoder textEncoding = specialValueTextEncoding.get(property);
+        if (textEncoding == null) {
+            textEncoding = valueTextEncodings.getOrDefault(property.getCategory(), defaultTextEncoding);
+        }
+        return textEncoding.encode(result);
+    }
+
+    public String getEncodedKeyText(ScanReport report, AnalyzedProperty property) {
+        Encoder textEncoding = keyTextEncoding.getOrDefault(property, new AnalyzedPropertyTextEncoder(null));
+
+        return textEncoding.encode(property);
+    }
+
+    public AnsiColor getValueColor(ScanReport report, AnalyzedProperty property) {
+        TestResult result = report.getResult(property);
+        ColorEncoding colorEncoding = valueColorEncodings.getOrDefault(property, defaultColorEncoding);
+        return colorEncoding.getColor(result);
+    }
+
+    public AnsiColor getKeyColor(ScanReport report, AnalyzedProperty property) {
+        return AnsiColor.DEFAULT_COLOR;
     }
 
 }

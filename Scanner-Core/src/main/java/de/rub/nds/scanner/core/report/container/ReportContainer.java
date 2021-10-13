@@ -9,9 +9,16 @@
 
 package de.rub.nds.scanner.core.report.container;
 
+import de.rub.nds.scanner.core.constants.ScannerDetail;
 import de.rub.nds.scanner.core.report.AnsiColor;
 
 public abstract class ReportContainer {
+
+    private ScannerDetail detail;
+
+    public ReportContainer(ScannerDetail detail) {
+        this.detail = detail;
+    }
 
     public abstract void print(StringBuilder builder, int depth, boolean useColor);
 
@@ -34,10 +41,15 @@ public abstract class ReportContainer {
 
     protected StringBuilder addColor(StringBuilder builder, AnsiColor color, String text, boolean useColor) {
         if (useColor) {
-            builder.append(color.getCode()).append(text).append(AnsiColor.RESET);
+            builder.append(color.getCode()).append(text).append(AnsiColor.RESET.getCode());
         } else {
             builder.append(text);
         }
         return builder;
     }
+
+    public ScannerDetail getDetail() {
+        return detail;
+    }
+
 }

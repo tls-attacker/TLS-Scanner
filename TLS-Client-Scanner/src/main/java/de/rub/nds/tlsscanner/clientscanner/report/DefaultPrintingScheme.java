@@ -15,14 +15,14 @@ import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.ColorEncoding;
 import de.rub.nds.scanner.core.report.PrintingScheme;
 import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.report.TextEncoding;
+import de.rub.nds.scanner.core.report.TestResultTextEncoder;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedPropertyCategory;
 import java.util.HashMap;
 
 public class DefaultPrintingScheme {
 
-    public static PrintingScheme getDefaultPrintingScheme(boolean useColors) {
+    public static PrintingScheme getDefaultPrintingScheme() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
         textEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test");
         textEncodingMap.put(TestResult.ERROR_DURING_TEST, "error");
@@ -290,23 +290,23 @@ public class DefaultPrintingScheme {
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        HashMap<AnalyzedPropertyCategory, TextEncoding> textMap = new HashMap<>();
-        textMap.put(TlsAnalyzedPropertyCategory.ATTACKS, new TextEncoding(attackEncodingMap));
-        textMap.put(TlsAnalyzedPropertyCategory.FRESHNESS, new TextEncoding(freshnessMap));
-        textMap.put(TlsAnalyzedPropertyCategory.FFDHE, new TextEncoding(freshnessMap));
-        TextEncoding defaultTextEncoding = new TextEncoding(textEncodingMap);
+        HashMap<AnalyzedPropertyCategory, TestResultTextEncoder> textMap = new HashMap<>();
+        textMap.put(TlsAnalyzedPropertyCategory.ATTACKS, new TestResultTextEncoder(attackEncodingMap));
+        textMap.put(TlsAnalyzedPropertyCategory.FRESHNESS, new TestResultTextEncoder(freshnessMap));
+        textMap.put(TlsAnalyzedPropertyCategory.FFDHE, new TestResultTextEncoder(freshnessMap));
+        TestResultTextEncoder defaultTextEncoding = new TestResultTextEncoder(textEncodingMap);
         ColorEncoding defaultColorEncoding = new ColorEncoding(ansiColorMap);
 
-        HashMap<AnalyzedProperty, TextEncoding> specialTextMap = new HashMap<>();
+        HashMap<AnalyzedProperty, TestResultTextEncoder> specialTextMap = new HashMap<>();
 
         specialTextMap.put(TlsAnalyzedProperty.ALPACA_MITIGATED, getAlpacaTextEncoding());
 
-        PrintingScheme scheme =
-            new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding, specialTextMap, useColors);
+        PrintingScheme scheme = new PrintingScheme(colorMap, textMap, defaultTextEncoding, defaultColorEncoding,
+            specialTextMap, new HashMap<>());
         return scheme;
     }
 
-    private static TextEncoding getAlpacaTextEncoding() {
+    private static TestResultTextEncoder getAlpacaTextEncoding() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
         textEncodingMap.put(TestResult.CANNOT_BE_TESTED, "cannot be tested");
         textEncodingMap.put(TestResult.COULD_NOT_TEST, "could not test");
@@ -318,7 +318,7 @@ public class DefaultPrintingScheme {
         textEncodingMap.put(TestResult.UNCERTAIN, "uncertain");
         textEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by tls-scanner");
         textEncodingMap.put(TestResult.PARTIALLY, "partially");
-        return new TextEncoding(textEncodingMap);
+        return new TestResultTextEncoder(textEncodingMap);
     }
 
     private static ColorEncoding getDefaultColorEncoding(AnsiColor trueColor, AnsiColor falseColor) {

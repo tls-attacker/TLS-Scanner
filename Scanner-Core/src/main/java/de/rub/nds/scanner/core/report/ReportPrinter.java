@@ -10,8 +10,6 @@
 package de.rub.nds.scanner.core.report;
 
 import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.report.PrintingScheme;
-import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.constants.AnalyzedProperty;
 
 public abstract class ReportPrinter<Report extends ScanReport> {
@@ -85,7 +83,7 @@ public abstract class ReportPrinter<Report extends ScanReport> {
 
     protected StringBuilder prettyAppend(StringBuilder builder, String name, AnalyzedProperty property) {
         builder.append(addIndentations(name)).append(": ");
-        builder.append(scheme.getEncodedString(report, property));
+        builder.append(scheme.getEncodedString(report, property, printColorful));
         builder.append("\n");
         return builder;
     }
