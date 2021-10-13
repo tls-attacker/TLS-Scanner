@@ -20,9 +20,9 @@ import org.apache.logging.log4j.Logger;
 public abstract class ScannerProbe<Report extends ScanReport, Result extends ProbeResult<Report>>
     implements Callable<ProbeResult> {
 
-    private Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    private ProbeType type;
+    private final ProbeType type;
 
     private StatsWriter writer;
 
@@ -48,7 +48,7 @@ public abstract class ScannerProbe<Report extends ScanReport, Result extends Pro
 
     @Override
     public Result call() {
-        LOGGER.debug("Executing:" + getProbeName());
+        LOGGER.debug("Executing: {}", getProbeName());
         long startTime = System.currentTimeMillis();
         Result result = executeTest();
         long stopTime = System.currentTimeMillis();
@@ -56,10 +56,10 @@ public abstract class ScannerProbe<Report extends ScanReport, Result extends Pro
             result.setStartTime(startTime);
             result.setStopTime(stopTime);
         } else {
-            LOGGER.warn("" + getProbeName() + " - is null result");
+            LOGGER.warn("{} - is null result", getProbeName());
         }
 
-        LOGGER.debug("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
+        LOGGER.debug("Finished {} -  Took {}s", getProbeName(), (stopTime - startTime) / 1000);
         return result;
     }
 

@@ -268,7 +268,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     TLS_1_3_DOWNGRADE_PROTECTION(TlsAnalyzedPropertyCategory.QUIRKS),
     FORCED_COMPRESSION(TlsAnalyzedPropertyCategory.QUIRKS);
 
-    private TlsAnalyzedPropertyCategory category;
+    private final TlsAnalyzedPropertyCategory category;
 
     TlsAnalyzedProperty(TlsAnalyzedPropertyCategory category) {
         this.category = category;

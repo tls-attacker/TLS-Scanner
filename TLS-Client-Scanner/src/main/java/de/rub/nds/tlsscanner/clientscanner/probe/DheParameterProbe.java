@@ -71,13 +71,7 @@ public class DheParameterProbe extends TlsProbe<ClientReport, DheParameterResult
         int lowerBound = BITLENGTH_CUTOFF_LOWER_BOUND;
         int upperBound = BITLENGTH_CUTOFF_UPPER_BOUND;
         do {
-            int testValue;
-
-            if ((upperBound - lowerBound / 2) == 0) {
-                testValue = lowerBound;
-            } else {
-                testValue = lowerBound + (upperBound - lowerBound / 2);
-            }
+            int testValue = lowerBound + ((upperBound - lowerBound) / 2);
             if (testModLength(testValue)) {
                 upperBound = testValue;
             } else {
@@ -146,7 +140,10 @@ public class DheParameterProbe extends TlsProbe<ClientReport, DheParameterResult
 
     protected BigInteger createEvenModulus(int bitLength) {
         BigInteger modulus = BigInteger.probablePrime(bitLength, random);
-        modulus = modulus.add(BigInteger.ONE);
+        // We xor here to ensure the modulus will be even (was odd) but keeps the same bitlength
+        // When adding one, the bitlength could (unlikely, but possible) increase
+        // sub would work too
+        modulus = modulus.xor(BigInteger.ONE);
         return modulus;
     }
 
