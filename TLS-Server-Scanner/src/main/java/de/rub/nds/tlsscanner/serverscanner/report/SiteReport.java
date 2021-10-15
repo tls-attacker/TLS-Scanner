@@ -24,6 +24,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.GcmPattern;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
@@ -61,8 +62,8 @@ public class SiteReport extends Observable implements Serializable {
     private final int port;
 
     private Boolean serverIsAlive = null;
-    private Boolean supportsSslTls = null;
-    private Boolean supportsDtls = null;
+    private Boolean speaksProtocol = null;
+    private ProtocolType protocolType = null;
 
     // Attacks
     private List<InformationLeakTest<BleichenbacherOracleTestInfo>> bleichenbacherTestResultList;
@@ -183,6 +184,14 @@ public class SiteReport extends Observable implements Serializable {
         cipherSuites = new HashSet<>();
         versionSuitePairs = new LinkedList<>();
         executedProbes = new HashSet<>();
+    }
+
+    public synchronized ProtocolType getProtocolType() {
+        return protocolType;
+    }
+
+    public synchronized void setProtocolType(ProtocolType protocolType) {
+        this.protocolType = protocolType;
     }
 
     public synchronized List<String> getSupportedAlpns() {
@@ -409,20 +418,12 @@ public class SiteReport extends Observable implements Serializable {
         this.verifyCheckPattern = verifyCheckPattern;
     }
 
-    public synchronized Boolean getSupportsSslTls() {
-        return supportsSslTls;
+    public synchronized Boolean getSpeaksProtocol() {
+        return speaksProtocol;
     }
 
-    public synchronized void setSupportsSslTls(Boolean supportsSslTls) {
-        this.supportsSslTls = supportsSslTls;
-    }
-
-    public synchronized Boolean getSupportsDtls() {
-        return supportsDtls;
-    }
-
-    public synchronized void setSupportsDtls(Boolean supportsDtls) {
-        this.supportsDtls = supportsDtls;
+    public synchronized void setSpeaksProtocol(Boolean speaksProtocol) {
+        this.speaksProtocol = speaksProtocol;
     }
 
     public synchronized Integer getCookieLength() {

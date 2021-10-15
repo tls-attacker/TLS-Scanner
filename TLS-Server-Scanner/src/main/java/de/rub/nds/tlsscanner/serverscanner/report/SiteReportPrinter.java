@@ -34,6 +34,8 @@ import de.rub.nds.tlsattacker.core.crypto.keys.CustomRsaPublicKey;
 import de.rub.nds.tlsattacker.core.https.header.HttpsHeader;
 import de.rub.nds.tlsscanner.serverscanner.constants.AnsiColor;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
+import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateIssue;
@@ -122,15 +124,11 @@ public class SiteReportPrinter {
             builder.append("Cannot reach the Server. Is it online?");
             return builder.toString();
         }
-        if (Objects.equals(report.getSupportsSslTls(), Boolean.FALSE)) {
-            builder.append("Server does not seem to support SSL / TLS on the scanned port");
+        if (Objects.equals(report.getSpeaksProtocol(), Boolean.FALSE)) {
+            builder.append(
+                "Server does not seem to support " + report.getProtocolType().getName() + " on the scanned port");
             return builder.toString();
         }
-        if (report.getSupportsDtls() == Boolean.FALSE) {
-            builder.append("Server does not seem to support DTLS on the scanned port");
-            return builder.toString();
-        }
-        //
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
         appendExtensions(builder);
@@ -159,7 +157,7 @@ public class SiteReportPrinter {
         appendRandomness(builder);
         appendPublicKeyIssues(builder);
         appendClientAuthentication(builder);
-        if (report.getSupportsDtls() == Boolean.TRUE) {
+        if (report.getProtocolType() == ProtocolType.DTLS) {
             appendDtlsSpecificResults(builder);
         }
         appendScoringResults(builder);
@@ -1505,6 +1503,9 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Uses Unixtime", AnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM);
 
             for (EntropyReport entropyReport : report.getEntropyReportList()) {
+                if (report.getProtocolType() == ProtocolType.TLS && entropyReport.getType() == RandomType.COOKIE) {
+                    continue;
+                }
                 prettyAppendSubheading(builder, entropyReport.getType().getHumanReadableName());
                 prettyAppend(builder, "Datapoints", "" + entropyReport.getNumberOfValues());
                 int bytesTotal = entropyReport.getNumberOfBytes();
@@ -2019,7 +2020,7 @@ public class SiteReportPrinter {
         if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {
             prettyAppendHeading(builder, "Scanner Performance");
             try {
-                if (report.getSupportsSslTls() == Boolean.TRUE) {
+                if (report.getProtocolType() == ProtocolType.TLS) {
                     prettyAppend(builder, "TCP connections", "" + report.getPerformedTcpConnections());
                 }
                 prettyAppendSubheading(builder, "Probe execution performance");

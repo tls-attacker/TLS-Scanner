@@ -117,9 +117,7 @@ public class RandomnessAfterProbe extends AfterProbe {
         List<EntropyReport> entropyReport = new LinkedList<>();
         entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
         entropyReport.add(createEntropyReport(extractedSessionIdList, RandomType.SESSION_ID));
-        if (report.getSupportsDtls() == Boolean.TRUE) {
-            entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
-        }
+        entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
         report.putResult(AnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
         report.setEntropyReportList(entropyReport);

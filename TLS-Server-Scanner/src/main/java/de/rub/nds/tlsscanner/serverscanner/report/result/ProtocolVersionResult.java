@@ -31,13 +31,6 @@ public class ProtocolVersionResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        if (supportedProtocolVersions != null && supportedProtocolVersions.size() > 0) {
-            if (supportedProtocolVersions.get(0).isDTLS()) {
-                report.setSupportsDtls(true);
-            } else {
-                report.setSupportsSslTls(true);
-            }
-        }
         if (supportedProtocolVersions != null) {
             report.setVersions(supportedProtocolVersions);
 

@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
@@ -158,16 +159,21 @@ public class TlsScanner {
         LOGGER.debug("Finished TrustAnchorManager initialization");
 
         boolean isConnectable = false;
+        boolean speacksProtocol = false;
+        ProtocolType protocolType = config.getDtlsDelegate().isDTLS() ? ProtocolType.DTLS : ProtocolType.TLS;
         ThreadedScanJobExecutor executor = null;
         try {
             if (isConnectable()) {
+                isConnectable = true;
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
                 if ((!config.getDtlsDelegate().isDTLS()
                     && config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls())
                     || (!config.getDtlsDelegate().isDTLS()
                         && config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())
                     || config.getDtlsDelegate().isDTLS() && speaksDtls()) {
-                    LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
+                    speacksProtocol = true;
+                    LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
+
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
                         config.getClientDelegate().getHost());
@@ -187,19 +193,18 @@ public class TlsScanner {
                     long scanEndTime = System.currentTimeMillis();
                     siteReport.setScanStartTime(scanStartTime);
                     siteReport.setScanEndTime(scanEndTime);
+                    
+                    siteReport.setServerIsAlive(isConnectable);
+                    siteReport.setSpeaksProtocol(speacksProtocol);
+                    siteReport.setProtocolType(protocolType);
                     return siteReport;
-                } else {
-                    isConnectable = true;
                 }
             }
             SiteReport report = new SiteReport(config.getClientDelegate().getExtractedHost(),
                 config.getClientDelegate().getExtractedPort());
             report.setServerIsAlive(isConnectable);
-            if (config.getDtlsDelegate().isDTLS()) {
-                report.setSupportsDtls(false);
-            } else {
-                report.setSupportsSslTls(false);
-            }
+            report.setSpeaksProtocol(speacksProtocol);
+            report.setProtocolType(protocolType);
             return report;
         } finally {
             if (executor != null) {
