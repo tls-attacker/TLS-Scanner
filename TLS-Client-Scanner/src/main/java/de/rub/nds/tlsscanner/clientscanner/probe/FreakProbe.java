@@ -33,7 +33,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.ChangeRsaParametersAction;
+import de.rub.nds.tlsattacker.core.workflow.action.ChangeServerRsaParametersAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -100,7 +100,7 @@ public class FreakProbe extends TlsProbe<ClientReport, FreakResult> {
         RSAServerKeyExchangeMessage ske = new RSAServerKeyExchangeMessage();
         ske.setModulus(Modifiable.explicit(modulus.toByteArray()));
         ske.setPublicKey(Modifiable.explicit(publicExponent.toByteArray()));
-        TlsAction fixKeysAction = new ChangeRsaParametersAction(modulus, publicExponent, privateKey);
+        TlsAction fixKeysAction = new ChangeServerRsaParametersAction(modulus, publicExponent, privateKey);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
             RunningModeType.SERVER);
         trace.addTlsAction(fixKeysAction);
