@@ -23,7 +23,7 @@ import de.rub.nds.tlsattacker.core.workflow.action.ChangeConnectionTimeoutAction
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlysAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendMessagesFromLastFlightAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -90,7 +90,7 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-        trace.addTlsAction(new SendMessagesFromLastFlysAction(1));
+        trace.addTlsAction(new SendMessagesFromLastFlightAction(1));
         ReceiveTillAction receiveTillAction = new ReceiveTillAction(new ServerHelloDoneMessage(config));
         trace.addTlsAction(receiveTillAction);
 

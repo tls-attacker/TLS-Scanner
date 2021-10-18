@@ -193,7 +193,7 @@ public class TlsScanner {
                     long scanEndTime = System.currentTimeMillis();
                     siteReport.setScanStartTime(scanStartTime);
                     siteReport.setScanEndTime(scanEndTime);
-                    
+
                     siteReport.setServerIsAlive(isConnectable);
                     siteReport.setSpeaksProtocol(speacksProtocol);
                     siteReport.setProtocolType(protocolType);
