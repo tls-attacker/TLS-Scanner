@@ -21,7 +21,10 @@ public class DestinationPortExtractor extends StatExtractor<Integer> {
     @Override
     public void extract(State state) {
         if (state.getTlsContext().getTransportHandler() instanceof UdpTransportHandler) {
-            put(((UdpTransportHandler) state.getTlsContext().getTransportHandler()).getDstPort());
+            int port = ((UdpTransportHandler) state.getTlsContext().getTransportHandler()).getDstPort();
+            if (port != -1) {
+                put(port);
+            }
         }
     }
 
