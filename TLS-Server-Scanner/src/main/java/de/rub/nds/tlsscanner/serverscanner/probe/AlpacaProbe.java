@@ -73,7 +73,6 @@ public class AlpacaProbe extends TlsProbe {
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        // Dont send extensions if we are in sslv2
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddServerNameIndicationExtension(true);
