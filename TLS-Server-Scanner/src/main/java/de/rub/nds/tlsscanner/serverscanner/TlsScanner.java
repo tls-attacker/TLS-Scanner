@@ -159,7 +159,7 @@ public class TlsScanner {
         LOGGER.debug("Finished TrustAnchorManager initialization");
 
         boolean isConnectable = false;
-        boolean speacksProtocol = false;
+        boolean speaksProtocol = false;
         ProtocolType protocolType = config.getDtlsDelegate().isDTLS() ? ProtocolType.DTLS : ProtocolType.TLS;
         ThreadedScanJobExecutor executor = null;
         try {
@@ -171,7 +171,7 @@ public class TlsScanner {
                     || (!config.getDtlsDelegate().isDTLS()
                         && config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())
                     || config.getDtlsDelegate().isDTLS() && speaksDtls()) {
-                    speacksProtocol = true;
+                    speaksProtocol = true;
                     LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
 
                     ScanJob job = new ScanJob(probeList, afterList);
@@ -195,7 +195,7 @@ public class TlsScanner {
                     siteReport.setScanEndTime(scanEndTime);
 
                     siteReport.setServerIsAlive(isConnectable);
-                    siteReport.setSpeaksProtocol(speacksProtocol);
+                    siteReport.setSpeaksProtocol(speaksProtocol);
                     siteReport.setProtocolType(protocolType);
                     return siteReport;
                 }
@@ -203,7 +203,7 @@ public class TlsScanner {
             SiteReport report = new SiteReport(config.getClientDelegate().getExtractedHost(),
                 config.getClientDelegate().getExtractedPort());
             report.setServerIsAlive(isConnectable);
-            report.setSpeaksProtocol(speacksProtocol);
+            report.setSpeaksProtocol(speaksProtocol);
             report.setProtocolType(protocolType);
             return report;
         } finally {
