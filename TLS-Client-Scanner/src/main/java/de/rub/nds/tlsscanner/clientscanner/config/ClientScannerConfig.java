@@ -12,8 +12,10 @@ package de.rub.nds.tlsscanner.clientscanner.config;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
@@ -62,6 +64,12 @@ public class ClientScannerConfig extends ScannerConfig {
 
     @Override
     public Config createConfig() {
+        if (getGeneralDelegate().isDebug()) {
+            Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.DEBUG);
+        } else if (getGeneralDelegate().isQuiet()) {
+            Configurator.setAllLevels("de.rub.nds.tlsscanner", Level.OFF);
+        }
+
         Config config = super.createConfig(Config.createConfig());
         config.getDefaultClientConnection().setTimeout(timeout);
         return config;
