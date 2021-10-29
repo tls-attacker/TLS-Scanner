@@ -19,14 +19,14 @@ import java.util.List;
 public abstract class TlsScanner {
     protected final List<ScannerProbe> probeList;
     protected final List<AfterProbe> afterList;
-    protected final List<ProbeType> probesToExecute;
+    protected final List<ProbeType> probeTypesToExecute;
 
     public TlsScanner(List<ProbeType> probesToExecute) {
         this(new LinkedList<>(), new LinkedList<>(), probesToExecute);
     }
 
-    public TlsScanner(List<ScannerProbe> probeList, List<AfterProbe> afterList, List<ProbeType> probesToExecute) {
-        this.probesToExecute = probesToExecute;
+    public TlsScanner(List<ScannerProbe> probeList, List<AfterProbe> afterList, List<ProbeType> probeTypesToExecute) {
+        this.probeTypesToExecute = probeTypesToExecute;
         this.afterList = afterList;
         this.probeList = probeList;
     }
@@ -34,7 +34,7 @@ public abstract class TlsScanner {
     protected abstract void fillDefaultProbeLists();
 
     protected void addProbeToProbeList(TlsProbe probe) {
-        if (probesToExecute == null || probesToExecute.contains(probe.getType())) {
+        if (probeTypesToExecute == null || probeTypesToExecute.contains(probe.getType())) {
             probeList.add(probe);
         }
     }
