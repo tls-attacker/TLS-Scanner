@@ -43,8 +43,10 @@ public class Main {
 
                 TlsClientScanner scanner = new TlsClientScanner(config, (State state) -> {
                     try {
-                        LOGGER.debug("Running start command: " + config.getRunCommand());
-                        Runtime.getRuntime().exec(config.getRunCommand().split(" "));
+                        String command = config.getRunCommand();
+                        command = command.replace("[port]", config.getServerDelegate().getPort().toString());
+                        LOGGER.debug("Running start command: {}", command);
+                        Runtime.getRuntime().exec(command.split(" "));
                     } catch (Exception E) {
                         LOGGER.error("Error during command execution", E);
                     }
@@ -55,10 +57,10 @@ public class Main {
                 LOGGER.info("Performing Scan, this may take some time...");
                 ClientReport report = scanner.scan();
 
-                LOGGER.info("Scanned in: " + ((System.currentTimeMillis() - time) / 1000) + "s\n");
-                ConsoleLogger.CONSOLE
-                    .info(AnsiColor.RESET.getCode() + "Scanned in: " + ((System.currentTimeMillis() - time) / 1000)
-                        + "s\n" + report.getFullReport(config.getReportDetail(), !config.isNoColor()));
+                LOGGER.info("Scanned in: {}s\n", (System.currentTimeMillis() - time) / 1000);
+                ConsoleLogger.CONSOLE.info("{}Scanned in: {}s\n{}", AnsiColor.RESET.getCode(),
+                    ((System.currentTimeMillis() - time) / 1000),
+                    report.getFullReport(config.getReportDetail(), !config.isNoColor()));
             } catch (ConfigurationException e) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", e);
             }

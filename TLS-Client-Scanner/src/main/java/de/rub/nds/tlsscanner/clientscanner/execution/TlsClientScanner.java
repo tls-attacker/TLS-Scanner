@@ -59,13 +59,20 @@ public final class TlsClientScanner extends TlsScanner {
 
         ThreadedScanJobExecutor executor = null;
         try {
-            socket = new ServerSocket(config.getServerDelegate().getPort());
+            int port = config.getServerDelegate().getPort();
+            socket = new ServerSocket(port);
+            if (port == 0) {
+                port = socket.getLocalPort();
+                LOGGER.info("Got assigned port {}", port);
+                config.getServerDelegate().setPort(port);
+            }
             ScanJob job = new ScanJob(probeList, afterList);
             executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(), "");
             ClientReport report = (ClientReport) executor.execute(new ClientReport());
             return report;
         } catch (IOException ex) {
-            LOGGER.error("Could not open socket for the scanner to use: " + config.getServerDelegate().getPort());
+            LOGGER.error("Could not open socket for the scanner to use (port {})",
+                config.getServerDelegate().getPort());
             return new ClientReport();
         } finally {
             if (executor != null) {
