@@ -26,8 +26,10 @@ import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.config.ScannerConfig;
 import de.rub.nds.tlsscanner.core.probe.TlsProbe;
+
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VersionProbe extends TlsProbe<ClientReport, VersionResult> {
 
@@ -39,16 +41,9 @@ public class VersionProbe extends TlsProbe<ClientReport, VersionResult> {
         super(executor, TlsProbeType.PROTOCOL_VERSION, scannerConfig);
     }
 
-    public Config getTls13Config() {
+    protected Config getTls13Config() {
         Config config = getScannerConfig().createConfig();
-        List<CipherSuite> tls13CipherSuites = new LinkedList<>();
-        for (CipherSuite suite : clientAdvertisedCipherSuites) {
-            if (suite.isTLS13()) {
-                tls13CipherSuites.add(suite);
-            }
-        }
-        config.setDefaultServerSupportedCipherSuites(tls13CipherSuites);
-        config.setDefaultSelectedCipherSuite(tls13CipherSuites.get(0));
+        // no need to set CipherSuites; this is done in executeTest
         config.setAddECPointFormatExtension(false);
         config.setAddEllipticCurveExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
@@ -56,16 +51,6 @@ public class VersionProbe extends TlsProbe<ClientReport, VersionResult> {
         config.setAddKeyShareExtension(true);
         config.setAddRenegotiationInfoExtension(false);
         return config;
-    }
-
-    public CipherSuite getSuiteableCipherSuite(ProtocolVersion version, List<CipherSuite> suiteList) {
-        for (CipherSuite suite : suiteList) {
-            if (suite.isSupportedInProtocol(version)) {
-                return suite;
-            }
-        }
-        LOGGER.warn("No suiteable cipher suite found for " + version + ". Using " + suiteList.get(0) + " instead.");
-        return suiteList.get(0);
     }
 
     @Override
@@ -82,8 +67,16 @@ public class VersionProbe extends TlsProbe<ClientReport, VersionResult> {
             } else {
                 config = getScannerConfig().createConfig();
             }
-            config.setDefaultServerSupportedCipherSuites(clientAdvertisedCipherSuites);
-            config.setDefaultSelectedCipherSuite(getSuiteableCipherSuite(version, clientAdvertisedCipherSuites));
+            List<CipherSuite> suitableCiphersuites = clientAdvertisedCipherSuites.stream()
+                .filter(suite -> suite.isSupportedInProtocol(version)).collect(Collectors.toList());
+            if (suitableCiphersuites.size() == 0) {
+                CipherSuite fallback = clientAdvertisedCipherSuites.get(0);
+                LOGGER.warn("No suitable cipher suite found for {}. Using {} instead.", version, fallback);
+                suitableCiphersuites.add(fallback);
+            }
+
+            config.setDefaultServerSupportedCipherSuites(suitableCiphersuites);
+            config.setDefaultSelectedCipherSuite(suitableCiphersuites.get(0));
             config.setHighestProtocolVersion(version);
             config.setDefaultSelectedProtocolVersion(version);
             WorkflowTrace trace = new WorkflowConfigurationFactory(config)
@@ -91,6 +84,7 @@ public class VersionProbe extends TlsProbe<ClientReport, VersionResult> {
             trace.removeTlsAction(trace.getTlsActions().size() - 1); // remove last action as it is not needed to
                                                                      // confirm success
             State state = new State(config, trace);
+            executeState(state);
             if (state.getWorkflowTrace().executedAsPlanned()) {
                 supportedVersions.add(version);
             } else {
