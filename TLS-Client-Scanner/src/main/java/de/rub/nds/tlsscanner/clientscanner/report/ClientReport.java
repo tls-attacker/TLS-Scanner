@@ -33,7 +33,7 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientReport extends ScanReport {
 
-    private List<VersionSuiteListPair> versionSuitPairs;
+    private List<VersionSuiteListPair> versionSuitePairs;
     private List<ProtocolVersion> supportedVersions;
     private List<CipherSuite> advertisedCipherSuites;
 
@@ -127,12 +127,12 @@ public class ClientReport extends ScanReport {
         this.supportedVersions = supportedVersions;
     }
 
-    public synchronized List<VersionSuiteListPair> getVersionSuitPairs() {
-        return versionSuitPairs;
+    public synchronized List<VersionSuiteListPair> getVersionSuitePairs() {
+        return versionSuitePairs;
     }
 
-    public synchronized void setVersionSuitPairs(List<VersionSuiteListPair> versionSuitPairs) {
-        this.versionSuitPairs = versionSuitPairs;
+    public synchronized void setVersionSuitePairs(List<VersionSuiteListPair> versionSuitePairs) {
+        this.versionSuitePairs = versionSuitePairs;
     }
 
     public synchronized List<CipherSuite> getAdvertisedCipherSuites() {

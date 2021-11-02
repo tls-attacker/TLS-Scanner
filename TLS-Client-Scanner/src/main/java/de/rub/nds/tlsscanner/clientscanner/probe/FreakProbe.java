@@ -137,7 +137,7 @@ public class FreakProbe extends TlsProbe<ClientReport, FreakResult> {
     @Override
     public void adjustConfig(ClientReport report) {
         rsaCipherSuites = new LinkedList<>();
-        List<VersionSuiteListPair> versionSuitPairs = report.getVersionSuitPairs();
+        List<VersionSuiteListPair> versionSuitPairs = report.getVersionSuitePairs();
         for (VersionSuiteListPair suitePair : versionSuitPairs) {
             for (CipherSuite suite : suitePair.getCipherSuiteList()) {
                 if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA) {
