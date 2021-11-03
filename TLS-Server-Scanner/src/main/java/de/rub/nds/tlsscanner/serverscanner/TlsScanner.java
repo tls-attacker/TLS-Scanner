@@ -163,6 +163,8 @@ public class TlsScanner {
         ProtocolType protocolType = config.getDtlsDelegate().isDTLS() ? ProtocolType.DTLS : ProtocolType.TLS;
         ThreadedScanJobExecutor executor = null;
         try {
+            SiteReport siteReport = new SiteReport(config.getClientDelegate().getExtractedHost(),
+                config.getClientDelegate().getExtractedPort());
             if (isConnectable()) {
                 isConnectable = true;
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
@@ -179,7 +181,7 @@ public class TlsScanner {
                         config.getClientDelegate().getHost());
 
                     long scanStartTime = System.currentTimeMillis();
-                    SiteReport siteReport = executor.execute();
+                    siteReport = executor.execute();
                     SiteReportRater rater;
                     try {
                         rater = SiteReportRater.getSiteReportRater();
@@ -193,19 +195,12 @@ public class TlsScanner {
                     long scanEndTime = System.currentTimeMillis();
                     siteReport.setScanStartTime(scanStartTime);
                     siteReport.setScanEndTime(scanEndTime);
-
-                    siteReport.setServerIsAlive(isConnectable);
-                    siteReport.setSpeaksProtocol(speaksProtocol);
-                    siteReport.setProtocolType(protocolType);
-                    return siteReport;
                 }
             }
-            SiteReport report = new SiteReport(config.getClientDelegate().getExtractedHost(),
-                config.getClientDelegate().getExtractedPort());
-            report.setServerIsAlive(isConnectable);
-            report.setSpeaksProtocol(speaksProtocol);
-            report.setProtocolType(protocolType);
-            return report;
+            siteReport.setServerIsAlive(isConnectable);
+            siteReport.setSpeaksProtocol(speaksProtocol);
+            siteReport.setProtocolType(protocolType);
+            return siteReport;
         } finally {
             if (executor != null) {
                 executor.shutdown();
