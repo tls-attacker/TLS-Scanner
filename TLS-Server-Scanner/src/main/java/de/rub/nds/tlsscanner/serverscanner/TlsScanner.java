@@ -88,28 +88,28 @@ public class TlsScanner {
         if (config.getAdditionalRandomnessHandshakes() > 0) {
             addProbeToProbeList(new RandomnessProbe(config, parallelExecutor));
         }
-        probeList.add(new AlpnProbe(config, parallelExecutor));
-        probeList.add(new AlpacaProbe(config, parallelExecutor));
-        probeList.add(new CommonBugProbe(config, parallelExecutor));
-        probeList.add(new SniProbe(config, parallelExecutor));
-        probeList.add(new CompressionsProbe(config, parallelExecutor));
-        probeList.add(new NamedCurvesProbe(config, parallelExecutor));
-        probeList.add(new CertificateProbe(config, parallelExecutor));
-        probeList.add(new OcspProbe(config, parallelExecutor));
-        probeList.add(new ProtocolVersionProbe(config, parallelExecutor));
-        probeList.add(new CipherSuiteProbe(config, parallelExecutor));
-        probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
-        probeList.add(new CipherSuiteOrderProbe(config, parallelExecutor));
-        probeList.add(new ExtensionProbe(config, parallelExecutor));
-        probeList.add(new ECPointFormatProbe(config, parallelExecutor));
-        probeList.add(new ResumptionProbe(config, parallelExecutor));
-        probeList.add(new RenegotiationProbe(config, parallelExecutor));
-        probeList.add(new SessionTicketZeroKeyProbe(config, parallelExecutor));
-        probeList.add(new HeartbleedProbe(config, parallelExecutor));
-        probeList.add(new PaddingOracleProbe(config, parallelExecutor));
-        probeList.add(new BleichenbacherProbe(config, parallelExecutor));
-        probeList.add(new InvalidCurveProbe(config, parallelExecutor));
-        probeList.add(new CertificateTransparencyProbe(config, parallelExecutor));
+        addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
+        addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
+        addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
+        addProbeToProbeList(new SniProbe(config, parallelExecutor));
+        addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
+        addProbeToProbeList(new NamedCurvesProbe(config, parallelExecutor));
+        addProbeToProbeList(new CertificateProbe(config, parallelExecutor));
+        addProbeToProbeList(new OcspProbe(config, parallelExecutor));
+        addProbeToProbeList(new ProtocolVersionProbe(config, parallelExecutor));
+        addProbeToProbeList(new CipherSuiteProbe(config, parallelExecutor));
+        addProbeToProbeList(new DirectRaccoonProbe(config, parallelExecutor));
+        addProbeToProbeList(new CipherSuiteOrderProbe(config, parallelExecutor));
+        addProbeToProbeList(new ExtensionProbe(config, parallelExecutor));
+        addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
+        addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
+        addProbeToProbeList(new RenegotiationProbe(config, parallelExecutor));
+        addProbeToProbeList(new SessionTicketZeroKeyProbe(config, parallelExecutor));
+        addProbeToProbeList(new HeartbleedProbe(config, parallelExecutor));
+        addProbeToProbeList(new PaddingOracleProbe(config, parallelExecutor));
+        addProbeToProbeList(new BleichenbacherProbe(config, parallelExecutor));
+        addProbeToProbeList(new InvalidCurveProbe(config, parallelExecutor));
+        addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterProbe());
@@ -119,30 +119,30 @@ public class TlsScanner {
         afterList.add(new PaddingOracleIdentificationAfterProbe());
         afterList.add(new RaccoonAttackAfterProbe());
         if (config.getDtlsDelegate().isDTLS()) {
-            probeList.add(new DtlsFeaturesProbe(config, parallelExecutor));
-            probeList.add(new DtlsHelloVerifyRequestProbe(config, parallelExecutor));
-            probeList.add(new DtlsBugsProbe(config, parallelExecutor));
-            probeList.add(new DtlsMessageSequenceProbe(config, parallelExecutor));
-            probeList.add(new DtlsRetransmissionsProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsFeaturesProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsHelloVerifyRequestProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsBugsProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsMessageSequenceProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsRetransmissionsProbe(config, parallelExecutor));
             afterList.add(new DtlsRetransmissionAfterProbe());
             afterList.add(new DestinationPortAfterProbe());
         } else {
-            probeList.add(new HelloRetryProbe(config, parallelExecutor));
-            probeList.add(new RecordFragmentationProbe(config, parallelExecutor));
-            probeList.add(new TlsPoodleProbe(config, parallelExecutor));
-            probeList.add(new EarlyCcsProbe(config, parallelExecutor));
-            // probeList.add(new MacProbe(config, parallelExecutor));
-            probeList.add(new CcaSupportProbe(config, parallelExecutor));
-            probeList.add(new CcaRequiredProbe(config, parallelExecutor));
-            probeList.add(new CcaProbe(config, parallelExecutor));
-            probeList.add(new EsniProbe(config, parallelExecutor));
-            probeList.add(new TokenbindingProbe(config, parallelExecutor));
+            addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
+            addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
+            addProbeToProbeList(new TlsPoodleProbe(config, parallelExecutor));
+            addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
+            // addProbeToProbeList(new MacProbe(config, parallelExecutor));
+            addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
+            addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
+            addProbeToProbeList(new CcaProbe(config, parallelExecutor));
+            addProbeToProbeList(new EsniProbe(config, parallelExecutor));
+            addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
             if (config.getApplicationProtocol() == ApplicationProtocol.HTTP
                 || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
                 addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
             }
-            probeList.add(new HttpFalseStartProbe(config, parallelExecutor));
-            probeList.add(new DrownProbe(config, parallelExecutor));
+            addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
+            addProbeToProbeList(new DrownProbe(config, parallelExecutor));
             afterList.add(new PoodleAfterProbe());
         }
     }
