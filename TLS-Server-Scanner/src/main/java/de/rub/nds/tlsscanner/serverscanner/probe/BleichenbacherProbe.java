@@ -55,12 +55,9 @@ public class BleichenbacherProbe extends TlsProbe {
             List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList = new LinkedList<>();
             for (BleichenbacherWorkflowType workflowType : workflowTypeList) {
                 for (VersionSuiteListPair pair : serverSupportedSuites) {
-                    if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
-                        || pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.DTLS10
-                        || pair.getVersion() == ProtocolVersion.DTLS12) {
+                    if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
                         for (CipherSuite suite : pair.getCipherSuiteList()) {
-                            if (!suite.isPsk()
-                                && AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
+                            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
                                 && CipherSuite.getImplemented().contains(suite)) {
                                 BleichenbacherCommandConfig bleichenbacherConfig =
                                     createBleichenbacherCommandConfig(pair.getVersion(), suite);

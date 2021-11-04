@@ -52,9 +52,7 @@ public class PaddingOracleProbe extends TlsProbe {
             List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
             for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
                 for (VersionSuiteListPair pair : serverSupportedSuites) {
-                    if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
-                        || pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.TLS12
-                        || pair.getVersion() == ProtocolVersion.DTLS10 || pair.getVersion() == ProtocolVersion.DTLS12) {
+                    if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
                         for (CipherSuite suite : pair.getCipherSuiteList()) {
                             if (!suite.isPsk() && suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
                                 PaddingOracleCommandConfig paddingOracleConfig =
