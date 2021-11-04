@@ -178,7 +178,11 @@ public class SiteReportPrinter {
 
         prettyAppendHeading(builder, "DTLS Hello Verify Request");
         prettyAppend(builder, "HVR Retransmissions", AnalyzedProperty.HAS_HVR_RETRANSMISSIONS);
-        prettyAppend(builder, "Cookie length", report.getCookieLength());
+        if (report.getCookieLength() != null) {
+            prettyAppend(builder, "Cookie length", report.getCookieLength());
+        } else {
+            prettyAppend(builder, "Cookie length", AnalyzedProperty.HAS_COOKIE_CHECKS);
+        }
         prettyAppend(builder, "Checks cookie", AnalyzedProperty.HAS_COOKIE_CHECKS);
         builder.append("Cookie is influenced by\n");
         prettyAppend(builder, "-version", AnalyzedProperty.USES_VERSION_FOR_COOKIE);

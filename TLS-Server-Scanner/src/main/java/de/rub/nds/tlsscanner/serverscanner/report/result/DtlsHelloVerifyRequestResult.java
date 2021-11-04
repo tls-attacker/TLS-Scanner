@@ -22,14 +22,14 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult {
 
     private TestResult hasHvrRetransmissions;
     private TestResult checksCookie;
-    private int cookieLength;
+    private Integer cookieLength;
     private TestResult usesVersion;
     private TestResult usesRandom;
     private TestResult usesSessionId;
     private TestResult usesCiphersuites;
     private TestResult usesCompressions;
 
-    public DtlsHelloVerifyRequestResult(TestResult hasHvrRetransmissions, TestResult checksCookie, int cookieLength,
+    public DtlsHelloVerifyRequestResult(TestResult hasHvrRetransmissions, TestResult checksCookie, Integer cookieLength,
         TestResult usesVersion, TestResult usesRandom, TestResult usesSessionId, TestResult usesCiphersuites,
         TestResult usesCompressions) {
         super(ProbeType.DTLS_HELLO_VERIFY_REQUEST);

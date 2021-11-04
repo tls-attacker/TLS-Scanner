@@ -49,8 +49,7 @@ import java.util.List;
  */
 public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
-    // not a good choise
-    private int cookieLength = -1;
+    private Integer cookieLength;
 
     public DtlsHelloVerifyRequestProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
