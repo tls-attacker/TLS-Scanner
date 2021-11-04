@@ -139,7 +139,7 @@ public class SiteReport extends Observable implements Serializable {
     // DTLS
     private Integer totalReceivedRetransmissions = 0;
     private Map<HandshakeMessageType, Integer> retransmissionCounters;
-    private Integer cookieLength = -1;
+    private Integer cookieLength = null;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -208,14 +208,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void markProbeAsExecuted(ProbeType type) {
         executedProbes.add(type);
-    }
-
-    public List<String> getSupportedAlpnProtocols() {
-        return supportedAlpns;
-    }
-
-    public void setSupportedAlpnProtocols(List<String> supportedAlpns) {
-        this.supportedAlpns = supportedAlpns;
     }
 
     public synchronized Long getSessionTicketLengthHint() {
@@ -442,11 +434,11 @@ public class SiteReport extends Observable implements Serializable {
         this.totalReceivedRetransmissions = totalReceivedRetransmissions;
     }
 
-    public Map<HandshakeMessageType, Integer> getRetransmissionCounters() {
+    public synchronized Map<HandshakeMessageType, Integer> getRetransmissionCounters() {
         return retransmissionCounters;
     }
 
-    public void setRetransmissionCounters(Map<HandshakeMessageType, Integer> retransmissionCounters) {
+    public synchronized void setRetransmissionCounters(Map<HandshakeMessageType, Integer> retransmissionCounters) {
         this.retransmissionCounters = retransmissionCounters;
     }
 
@@ -794,27 +786,27 @@ public class SiteReport extends Observable implements Serializable {
         this.scoreReport = scoreReport;
     }
 
-    public int getMinimumRsaCertKeySize() {
+    public synchronized int getMinimumRsaCertKeySize() {
         return minimumRsaCertKeySize;
     }
 
-    public void setMinimumRsaCertKeySize(int minimumRsaCertKeySize) {
+    public synchronized void setMinimumRsaCertKeySize(int minimumRsaCertKeySize) {
         this.minimumRsaCertKeySize = minimumRsaCertKeySize;
     }
 
-    public int getMinimumDssCertKeySize() {
+    public synchronized int getMinimumDssCertKeySize() {
         return minimumDssCertKeySize;
     }
 
-    public void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
+    public synchronized void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
         this.minimumDssCertKeySize = minimumDssCertKeySize;
     }
 
-    public List<EntropyReport> getEntropyReportList() {
+    public synchronized List<EntropyReport> getEntropyReportList() {
         return entropyReportList;
     }
 
-    public void setEntropyReportList(List<EntropyReport> entropyReportList) {
+    public synchronized void setEntropyReportList(List<EntropyReport> entropyReportList) {
         this.entropyReportList = entropyReportList;
     }
 }
