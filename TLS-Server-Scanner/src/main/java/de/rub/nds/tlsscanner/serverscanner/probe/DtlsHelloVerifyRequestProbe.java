@@ -68,7 +68,6 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         }
     }
 
-    // maybe just one generic receive action instead of a combination of receive + generice receive
     private TestResult hasHvrRetransmissions() {
         Config config = getConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
@@ -158,7 +157,6 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         return getResult(state);
     }
 
-    // can we check this field like this
     private TestResult usesSessionId() {
         Config config = getConfig();
         WorkflowTrace trace =
