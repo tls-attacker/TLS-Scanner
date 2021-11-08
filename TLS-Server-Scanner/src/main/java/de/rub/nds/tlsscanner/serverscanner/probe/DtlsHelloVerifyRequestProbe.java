@@ -49,6 +49,8 @@ import java.util.List;
  */
 public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
+    private List<ProtocolVersion> supportedVersions;
+
     private Integer cookieLength;
 
     public DtlsHelloVerifyRequestProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
@@ -124,8 +126,10 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         return TestResult.TRUE;
     }
 
-    // problematic case: if server supports one version
     private TestResult usesVersion() {
+        if (supportedVersions.size() <= 1) {
+            return TestResult.CANNOT_BE_TESTED;
+        }
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -244,7 +248,11 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
+        if (report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -256,6 +264,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
+        supportedVersions = report.getVersions();
     }
 
 }
