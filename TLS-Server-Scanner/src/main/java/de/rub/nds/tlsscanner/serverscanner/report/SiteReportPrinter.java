@@ -192,12 +192,13 @@ public class SiteReportPrinter {
         prettyAppend(builder, "-compressions", AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE);
 
         prettyAppendHeading(builder, "DTLS Message Sequence Number");
-        prettyAppend(builder, "Starts with invalid msg seq", AnalyzedProperty.STARTS_WITH_INVALID_MESSAGE_SEQUENCE);
+        prettyAppend(builder, "Accepts start with invalid msg seq",
+            AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE);
         prettyAppend(builder, "Misses msg seq checks", AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS);
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
-            prettyAppend(builder, "-Accepts: 0,4,5,6", AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_ONCE);
-            prettyAppend(builder, "-Accepts: 0,4,8,9", AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_MULTIPLE);
-            prettyAppend(builder, "-Accepts: 0,8,4,5", AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_NUMBERS);
+            prettyAppend(builder, "-Accepts: 0,4,5,6", AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE);
+            prettyAppend(builder, "-Accepts: 0,4,8,9", AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE);
+            prettyAppend(builder, "-Accepts: 0,8,4,5", AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES);
         }
 
         prettyAppendHeading(builder, "DTLS Retransmissions");

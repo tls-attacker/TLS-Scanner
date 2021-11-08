@@ -329,13 +329,13 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.STARTS_WITH_INVALID_MESSAGE_SEQUENCE,
+        colorMap.put(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_ONCE,
+        colorMap.put(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_MULTIPLE,
+        colorMap.put(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_NUMBERS,
+        colorMap.put(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));

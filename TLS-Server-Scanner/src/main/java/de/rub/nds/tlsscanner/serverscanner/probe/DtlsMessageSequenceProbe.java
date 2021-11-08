@@ -54,8 +54,9 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            return new DtlsMessageSequenceResult(startsWithInvalidMessageNumber(), skipsMessageNumbersOnce(),
-                skipsMessageNumbersMultiple(), acceptsRandomMessageNumbers());
+            return new DtlsMessageSequenceResult(acceptsStartedWithInvalidMessageNumber(),
+                acceptsSkippedMessageNumbersOnce(), acceptsSkippedMessageNumbersMultiple(),
+                acceptsRandomMessageNumbers());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new DtlsMessageSequenceResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
@@ -86,7 +87,7 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
         }
     }
 
-    private TestResult skipsMessageNumbersMultiple() {
+    private TestResult acceptsSkippedMessageNumbersMultiple() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -109,7 +110,7 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
         }
     }
 
-    private TestResult skipsMessageNumbersOnce() {
+    private TestResult acceptsSkippedMessageNumbersOnce() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -131,7 +132,7 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
         }
     }
 
-    private TestResult startsWithInvalidMessageNumber() {
+    private TestResult acceptsStartedWithInvalidMessageNumber() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
