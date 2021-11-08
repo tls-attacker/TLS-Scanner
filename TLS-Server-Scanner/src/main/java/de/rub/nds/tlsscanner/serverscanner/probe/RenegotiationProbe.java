@@ -216,12 +216,6 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setDefaultClientSupportedCipherSuites(new ArrayList<>(supportedSuites));
         tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
         boolean containsEc = false;
         for (CipherSuite suite : tlsConfig.getDefaultClientSupportedCipherSuites()) {
@@ -236,7 +230,6 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
