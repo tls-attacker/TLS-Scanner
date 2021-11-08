@@ -208,10 +208,14 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
     private TestResult getResult(State state) {
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.FALSE;
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+                return TestResult.FALSE;
+            } else {
+                return TestResult.TRUE;
+            }
         } else {
-            return TestResult.TRUE;
+            return TestResult.CANNOT_BE_TESTED;
         }
     }
 
