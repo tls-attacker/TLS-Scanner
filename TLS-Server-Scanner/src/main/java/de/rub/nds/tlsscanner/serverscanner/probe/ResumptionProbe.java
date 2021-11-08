@@ -82,11 +82,6 @@ public class ResumptionProbe extends TlsProbe {
             // TODO this can fail in some rare occasions
             tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites.get(0));
             tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-            } else {
-                tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-            }
             tlsConfig.setEnforceSettings(false);
             tlsConfig.setEarlyStop(true);
             tlsConfig.setStopActionsAfterIOException(true);

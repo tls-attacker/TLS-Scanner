@@ -60,11 +60,6 @@ public class CipherSuiteOrderProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
         tlsConfig.setStopActionsAfterIOException(true);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         tlsConfig.setEnforceSettings(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);

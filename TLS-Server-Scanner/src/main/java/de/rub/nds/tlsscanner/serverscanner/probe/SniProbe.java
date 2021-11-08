@@ -40,11 +40,6 @@ public class SniProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             Config config = scannerConfig.createConfig();
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-            } else {
-                config.setHighestProtocolVersion(ProtocolVersion.TLS12);
-            }
             config.setAddRenegotiationInfoExtension(true);
             config.setAddServerNameIndicationExtension(false);
             config.setQuickReceive(true);

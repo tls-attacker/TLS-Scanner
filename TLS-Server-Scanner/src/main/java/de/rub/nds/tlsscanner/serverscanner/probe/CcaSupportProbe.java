@@ -69,11 +69,6 @@ public class CcaSupportProbe extends TlsProbe {
     private Config generateConfig() {
         Config config = getScannerConfig().createConfig();
         config.setAutoSelectCertificate(false);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            config.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         List<CipherSuite> ciphersuites = new LinkedList<>();
         ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
         ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
