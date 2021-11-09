@@ -77,6 +77,8 @@ public class PrintingScheme {
         textEncodingMap.put(TestResult.TRUE, "true");
         textEncodingMap.put(TestResult.UNCERTAIN, "uncertain");
         textEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by tls-scanner");
+        textEncodingMap.put(TestResult.PARTIALLY, "partially");
+
         HashMap<TestResult, AnsiColor> ansiColorMap = new HashMap<>();
         ansiColorMap.put(TestResult.COULD_NOT_TEST, AnsiColor.BLUE);
         ansiColorMap.put(TestResult.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
