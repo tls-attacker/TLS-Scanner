@@ -100,7 +100,7 @@ public class DtlsFeaturesProbe extends TlsProbe {
 
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResult.TRUE;
         } else {
             return TestResult.FALSE;
