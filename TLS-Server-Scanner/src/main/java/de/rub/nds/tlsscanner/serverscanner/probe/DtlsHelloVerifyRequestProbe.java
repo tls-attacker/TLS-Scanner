@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -81,12 +82,16 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         trace.addTlsAction(new GenericReceiveAction());
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil
-            .getLastReceivedMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())
-            .isRetransmission()) {
-            return TestResult.TRUE;
+        HandshakeMessage message = WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST,
+            state.getWorkflowTrace());
+        if (message != null) {
+            if (message.isRetransmission()) {
+                return TestResult.TRUE;
+            } else {
+                return TestResult.FALSE;
+            }
         } else {
-            return TestResult.FALSE;
+            return TestResult.CANNOT_BE_TESTED;
         }
     }
 

@@ -85,8 +85,7 @@ public class DtlsBugsProbe extends TlsProbe {
         state = new State(config, trace);
         executeState(state);
         ProtocolMessage receivedMessageModified = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
-
-        if (receivedMessage.getCompleteResultingMessage()
+        if (receivedMessage != null && receivedMessageModified != null && receivedMessage.getCompleteResultingMessage()
             .equals(receivedMessageModified.getCompleteResultingMessage())) {
             return TestResult.TRUE;
         } else {
