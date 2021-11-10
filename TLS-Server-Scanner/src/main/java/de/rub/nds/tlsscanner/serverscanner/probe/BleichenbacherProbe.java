@@ -90,9 +90,9 @@ public class BleichenbacherProbe extends TlsProbe {
     private List<BleichenbacherWorkflowType> createWorkflowTypeList() {
         List<BleichenbacherWorkflowType> vectorTypeList = new LinkedList<>();
         vectorTypeList.add(BleichenbacherWorkflowType.CKE_CCS_FIN);
+        vectorTypeList.add(BleichenbacherWorkflowType.CKE);
+        vectorTypeList.add(BleichenbacherWorkflowType.CKE_CCS);
         if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
-            vectorTypeList.add(BleichenbacherWorkflowType.CKE);
-            vectorTypeList.add(BleichenbacherWorkflowType.CKE_CCS);
             vectorTypeList.add(BleichenbacherWorkflowType.CKE_FIN);
         }
         return vectorTypeList;
