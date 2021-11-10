@@ -33,10 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class PaddingOracleProbe extends TlsProbe {
 
     private List<VersionSuiteListPair> serverSupportedSuites;

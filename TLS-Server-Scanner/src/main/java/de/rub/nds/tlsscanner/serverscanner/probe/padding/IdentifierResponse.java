@@ -11,10 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe.padding;
 
 import de.rub.nds.tlsattacker.attacks.util.response.ResponseFingerprint;
 
-/**
- *
- * @author ic0ns
- */
 public class IdentifierResponse {
 
     private final String identifier;

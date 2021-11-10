@@ -43,10 +43,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author robert
- */
 public class ResumptionProbe extends TlsProbe {
 
     private List<CipherSuite> supportedSuites;

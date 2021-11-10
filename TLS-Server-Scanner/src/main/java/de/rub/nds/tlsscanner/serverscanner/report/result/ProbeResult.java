@@ -13,10 +13,6 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.PerformanceData;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public abstract class ProbeResult {
 
     private final ProbeType type;

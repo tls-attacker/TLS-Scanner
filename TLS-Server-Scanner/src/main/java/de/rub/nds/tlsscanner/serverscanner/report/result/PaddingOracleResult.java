@@ -20,10 +20,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class PaddingOracleResult extends ProbeResult {
 
     private static final Logger LOGGER = LogManager.getLogger();

@@ -44,10 +44,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
     private List<ProtocolVersion> supportedVersions;

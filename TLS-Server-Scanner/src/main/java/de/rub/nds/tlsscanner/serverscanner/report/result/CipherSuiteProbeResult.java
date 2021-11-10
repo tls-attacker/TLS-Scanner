@@ -22,10 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class CipherSuiteProbeResult extends ProbeResult {
 
     private List<VersionSuiteListPair> pairLists;

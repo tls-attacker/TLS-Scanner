@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.flaw;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public enum FlawLevel {
     FATAL,
     SEVERE,

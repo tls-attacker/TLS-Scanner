@@ -38,8 +38,6 @@ import sun.security.util.HostnameChecker;
  * Note: Please do not copy from this code - (or any other certificate related code (or any TLS code)). This code is not
  * meant for productive usage and is very very likely doing things which are terribly bad in any real system. This code
  * is only built for security analysis purposes. Do not use it for anything but this!
- *
- * @author ic0ns
  */
 public class CertificateChain {
 

@@ -11,10 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner;
 
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-/**
- *
- * @author robert
- */
 public abstract class ScanJobExecutor {
 
     public abstract SiteReport execute();

@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.constants;
 
-/**
- *
- * @author robert
- */
 public enum ScannerDetail implements Comparable<ScannerDetail> {
     ALL(100),
     DETAILED(75),

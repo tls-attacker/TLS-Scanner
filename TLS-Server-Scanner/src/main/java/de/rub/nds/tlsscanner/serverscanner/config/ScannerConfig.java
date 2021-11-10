@@ -26,10 +26,6 @@ import org.bouncycastle.util.IPAddress;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class ScannerConfig extends TLSDelegateConfig {
 
     @ParametersDelegate

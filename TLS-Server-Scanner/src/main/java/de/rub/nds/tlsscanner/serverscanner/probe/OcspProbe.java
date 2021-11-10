@@ -55,10 +55,6 @@ import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-/**
- *
- * @author Nils Hanke - {@literal nils.hanke@rub.de}
- */
 public class OcspProbe extends TlsProbe {
 
     private List<CertificateChain> serverCertChains;

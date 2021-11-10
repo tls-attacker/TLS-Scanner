@@ -40,10 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class NamedCurvesProbe extends TlsProbe {
 
     private boolean testUsingRsa = true;

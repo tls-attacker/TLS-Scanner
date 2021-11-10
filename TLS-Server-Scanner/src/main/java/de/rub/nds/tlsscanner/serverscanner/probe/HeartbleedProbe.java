@@ -29,10 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class HeartbleedProbe extends TlsProbe {
 
     private List<CipherSuite> supportedCiphers;

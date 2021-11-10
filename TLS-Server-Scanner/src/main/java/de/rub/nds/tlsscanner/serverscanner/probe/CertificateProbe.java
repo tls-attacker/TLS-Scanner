@@ -36,10 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CertificateProbe extends TlsProbe {
 
     private boolean scanForRsaCert = true;

@@ -14,10 +14,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-/**
- *
- * @author robert
- */
 public class RenegotiationResult extends ProbeResult {
 
     private final TestResult secureRenegotiationExtension;

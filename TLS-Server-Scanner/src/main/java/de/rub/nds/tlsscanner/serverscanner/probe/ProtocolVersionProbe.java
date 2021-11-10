@@ -35,10 +35,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class ProtocolVersionProbe extends TlsProbe {
 
     private List<ProtocolVersion> toTestList;

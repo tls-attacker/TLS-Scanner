@@ -13,10 +13,6 @@ import de.rub.nds.tlsattacker.core.state.State;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author robert
- */
 public class StatsWriter {
 
     private final List<StatExtractor> extractorList;

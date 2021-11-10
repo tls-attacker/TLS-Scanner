@@ -21,10 +21,6 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import java.math.BigInteger;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DirectRaccoonWorkflowGenerator {
 
     public static WorkflowTrace generateWorkflow(Config tlsConfig, DirectRaccoonWorkflowType type,

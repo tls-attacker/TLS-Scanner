@@ -13,10 +13,6 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.List;
 
-/**
- *
- * @author ic0ns
- */
 public class AlpnProbeResult extends ProbeResult {
 
     private List<String> supportedAlpns;
