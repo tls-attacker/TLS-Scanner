@@ -58,7 +58,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             return new DtlsHelloVerifyRequestResult(hasHvrRetransmissions(), checksCookie(), cookieLength,
-                usesVersion(), usesRandom(), usesSessionId(), usesCiphersuites(), usesCompressions());
+                usesVersionInCookie(), usesRandomInCookie(), usesSessionIdInCookie(), usesCiphersuitesInCookie(),
+                usesCompressionsInCookie());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new DtlsHelloVerifyRequestResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, -1,
@@ -127,7 +128,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         return TestResult.TRUE;
     }
 
-    private TestResult usesVersion() {
+    private TestResult usesVersionInCookie() {
         if (supportedVersions.size() <= 1) {
             return TestResult.CANNOT_BE_TESTED;
         }
@@ -146,7 +147,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         return getResult(state);
     }
 
-    private TestResult usesRandom() {
+    private TestResult usesRandomInCookie() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -162,7 +163,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         return getResult(state);
     }
 
-    private TestResult usesSessionId() {
+    private TestResult usesSessionIdInCookie() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -179,7 +180,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         return getResult(state);
     }
 
-    private TestResult usesCiphersuites() {
+    private TestResult usesCiphersuitesInCookie() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -195,7 +196,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         return getResult(state);
     }
 
-    private TestResult usesCompressions() {
+    private TestResult usesCompressionsInCookie() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());

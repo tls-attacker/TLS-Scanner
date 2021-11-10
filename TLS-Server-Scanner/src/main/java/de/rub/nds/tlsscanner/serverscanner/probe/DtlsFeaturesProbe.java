@@ -61,7 +61,7 @@ public class DtlsFeaturesProbe extends TlsProbe {
     private TestResult supportsFragmentation() {
         if (supportsFragmentationDirectly() == TestResult.TRUE) {
             return TestResult.TRUE;
-        } else if (supportsFragmentationOverExtension() == TestResult.TRUE) {
+        } else if (supportsFragmentationWithExtension() == TestResult.TRUE) {
             return TestResult.PARTIALLY;
         } else {
             return TestResult.FALSE;
@@ -82,7 +82,7 @@ public class DtlsFeaturesProbe extends TlsProbe {
         }
     }
 
-    private TestResult supportsFragmentationOverExtension() {
+    private TestResult supportsFragmentationWithExtension() {
         Config config = getConfig();
         config.setAddMaxFragmentLengthExtension(Boolean.TRUE);
         config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);

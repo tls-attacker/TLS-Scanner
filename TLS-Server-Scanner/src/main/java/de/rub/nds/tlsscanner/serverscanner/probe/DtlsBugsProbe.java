@@ -51,14 +51,14 @@ public class DtlsBugsProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            return new DtlsBugsResult(isAcceptUnencryptedAppData(), isEarlyFinished());
+            return new DtlsBugsResult(isAcceptingUnencryptedAppData(), isEarlyFinished());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new DtlsBugsResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }
 
-    private TestResult isAcceptUnencryptedAppData() {
+    private TestResult isAcceptingUnencryptedAppData() {
         Config config = getConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
@@ -89,14 +89,11 @@ public class DtlsBugsProbe extends TlsProbe {
         }
     }
 
-    // is this a useful test?
     private TestResult isEarlyFinished() {
         Config config = getConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        // plain or encrypted finished?
-        // trace.addTlsAction(new ActivateEncryptionAction());
         trace.addTlsAction(new SendAction(new FinishedMessage(config)));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
         State state = new State(config, trace);

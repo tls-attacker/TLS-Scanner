@@ -17,17 +17,17 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 public class DtlsBugsResult extends ProbeResult {
 
     private TestResult isEarlyFinished;
-    private TestResult isAcceptUnencryptedAppData;
+    private TestResult isAcceptingUnencryptedAppData;
 
-    public DtlsBugsResult(TestResult isAcceptUnencryptedAppData, TestResult isEarlyFinished) {
+    public DtlsBugsResult(TestResult isAcceptingUnencryptedAppData, TestResult isEarlyFinished) {
         super(ProbeType.DTLS_COMMON_BUGS);
-        this.isAcceptUnencryptedAppData = isAcceptUnencryptedAppData;
+        this.isAcceptingUnencryptedAppData = isAcceptingUnencryptedAppData;
         this.isEarlyFinished = isEarlyFinished;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptUnencryptedAppData);
+        report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
         report.putResult(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
     }
 

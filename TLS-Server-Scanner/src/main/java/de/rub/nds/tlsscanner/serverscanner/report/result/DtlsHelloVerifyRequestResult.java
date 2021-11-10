@@ -19,24 +19,24 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult {
     private TestResult hasHvrRetransmissions;
     private TestResult checksCookie;
     private Integer cookieLength;
-    private TestResult usesVersion;
-    private TestResult usesRandom;
-    private TestResult usesSessionId;
-    private TestResult usesCiphersuites;
-    private TestResult usesCompressions;
+    private TestResult usesVersionInCookie;
+    private TestResult usesRandomInCookie;
+    private TestResult usesSessionIdInCookie;
+    private TestResult usesCiphersuitesInCookie;
+    private TestResult usesCompressionsInCookie;
 
     public DtlsHelloVerifyRequestResult(TestResult hasHvrRetransmissions, TestResult checksCookie, Integer cookieLength,
-        TestResult usesVersion, TestResult usesRandom, TestResult usesSessionId, TestResult usesCiphersuites,
-        TestResult usesCompressions) {
+        TestResult usesVersionInCookie, TestResult usesRandomInCookie, TestResult usesSessionIdInCookie,
+        TestResult usesCiphersuitesInCookie, TestResult usesCompressionsInCookie) {
         super(ProbeType.DTLS_HELLO_VERIFY_REQUEST);
         this.hasHvrRetransmissions = hasHvrRetransmissions;
         this.checksCookie = checksCookie;
         this.cookieLength = cookieLength;
-        this.usesVersion = usesVersion;
-        this.usesRandom = usesRandom;
-        this.usesSessionId = usesSessionId;
-        this.usesCiphersuites = usesCiphersuites;
-        this.usesCompressions = usesCompressions;
+        this.usesVersionInCookie = usesVersionInCookie;
+        this.usesRandomInCookie = usesRandomInCookie;
+        this.usesSessionIdInCookie = usesSessionIdInCookie;
+        this.usesCiphersuitesInCookie = usesCiphersuitesInCookie;
+        this.usesCompressionsInCookie = usesCompressionsInCookie;
     }
 
     @Override
@@ -44,11 +44,11 @@ public class DtlsHelloVerifyRequestResult extends ProbeResult {
         report.putResult(AnalyzedProperty.HAS_HVR_RETRANSMISSIONS, hasHvrRetransmissions);
         report.putResult(AnalyzedProperty.HAS_COOKIE_CHECKS, checksCookie);
         report.setCookieLength(cookieLength);
-        report.putResult(AnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersion);
-        report.putResult(AnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandom);
-        report.putResult(AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionId);
-        report.putResult(AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuites);
-        report.putResult(AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressions);
+        report.putResult(AnalyzedProperty.USES_VERSION_FOR_COOKIE, usesVersionInCookie);
+        report.putResult(AnalyzedProperty.USES_RANDOM_FOR_COOKIE, usesRandomInCookie);
+        report.putResult(AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE, usesSessionIdInCookie);
+        report.putResult(AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE, usesCiphersuitesInCookie);
+        report.putResult(AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE, usesCompressionsInCookie);
     }
 
 }
