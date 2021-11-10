@@ -903,6 +903,21 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
+        <analyzedProperty>ENFORCES_SHA_ORDERING</analyzedProperty>
+        <shortName>Signature has algorithm ordering support</shortName>
+        <shortDescription>Evaluates whether the server supports signature hash algorithm ordering</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>FALSE</result>
+                <shortDescription>Signature hash ordering is disabled</shortDescription>
+                <handlingRecommendation>Enable signature hash algorithm ordering</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
         <analyzedProperty>HAS_VERSION_INTOLERANCE</analyzedProperty>
         <shortName>TLS version intolerance</shortName>
         <shortDescription>Evaluates whether the server is TLS version intolerant</shortDescription>

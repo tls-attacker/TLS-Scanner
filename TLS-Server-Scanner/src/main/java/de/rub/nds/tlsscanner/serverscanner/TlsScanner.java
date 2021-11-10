@@ -100,6 +100,7 @@ public class TlsScanner {
         probeList.add(new CipherSuiteProbe(config, parallelExecutor));
         probeList.add(new DirectRaccoonProbe(config, parallelExecutor));
         probeList.add(new CipherSuiteOrderProbe(config, parallelExecutor));
+        probeList.add(new SignatureHashAlgorithmOrderProbe(config, parallelExecutor));
         probeList.add(new ExtensionProbe(config, parallelExecutor));
         probeList.add(new ECPointFormatProbe(config, parallelExecutor));
         probeList.add(new ResumptionProbe(config, parallelExecutor));

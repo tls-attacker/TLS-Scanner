@@ -1757,6 +1757,9 @@ public class SiteReportPrinter {
                 for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithms()) {
                     prettyAppend(builder, algorithm.toString());
                 }
+                prettyAppendHeading(builder, "Signature and Hash Algorithms General");
+                prettyAppend(builder, "Enforces client's signature has algorithm ordering",
+                    AnalyzedProperty.ENFORCES_SHA_ORDERING);
             } else {
                 builder.append("none\n");
             }

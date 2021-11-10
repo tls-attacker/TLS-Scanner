@@ -322,6 +322,12 @@ public class DefaultRecommendationsTest {
             "Evaluates whether the server supports cipher suite ordering", new PropertyResultRecommendation(
                 TestResult.FALSE, "Cipher suite ordering is disabled", "Enable cipher suite ordering"),
             ""));
+        recommendations
+            .add(new Recommendation(AnalyzedProperty.ENFORCES_SHA_ORDERING, "Signature has algorithm ordering support",
+                "Evaluates whether the server supports signature hash algorithm ordering",
+                new PropertyResultRecommendation(TestResult.FALSE, "Signature hash ordering is disabled",
+                    "Enable signature hash algorithm ordering"),
+                ""));
 
         // intolerances
         recommendations.add(new Recommendation(AnalyzedProperty.HAS_VERSION_INTOLERANCE, "TLS version intolerance",
