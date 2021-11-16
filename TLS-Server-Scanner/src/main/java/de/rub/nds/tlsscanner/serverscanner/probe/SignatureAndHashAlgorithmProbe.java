@@ -60,7 +60,6 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
             if (version.isTLS13()) {
                 supportedTls13.addAll(testForVersion(version, CipherSuite::isTLS13));
             } else {
-                supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13()));
                 supportedSke.addAll(testForVersion(version, suite -> !suite.isTLS13() && suite.isEphemeral()));
             }
         }
