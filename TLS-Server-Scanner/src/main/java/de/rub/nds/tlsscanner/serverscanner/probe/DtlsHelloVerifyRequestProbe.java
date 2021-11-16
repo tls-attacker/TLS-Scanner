@@ -9,12 +9,13 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
+import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -107,25 +108,19 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         } else {
             return TestResult.ERROR_DURING_TEST;
         }
-        int[] testPositions = new int[] { 0, cookieLength / 2, cookieLength - 1 };
-        for (int totest : testPositions) {
-            config = getConfig();
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
-            ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-            ModifiableByteArray cookie = new ModifiableByteArray();
-            cookie.setModification(ByteArrayModificationFactory.xor(ArrayConverter.hexStringToByteArray("FF"), totest));
-            clientHelloMessage.setCookie(cookie);
-            trace.addTlsAction(new SendAction(clientHelloMessage));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            state = new State(config, trace);
-            if (getResult(state) == TestResult.FALSE) {
-                return TestResult.FALSE;
-            }
-        }
-        return TestResult.TRUE;
+        config = getConfig();
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
+        ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
+        byte[] cookie = new byte[cookieLength];
+        Arrays.fill(cookie, (byte) 255);
+        clientHelloMessage.setCookie(Modifiable.xor(cookie, 0));
+        trace.addTlsAction(new SendAction(clientHelloMessage));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        state = new State(config, trace);
+        return getResult(state);
     }
 
     private TestResult usesVersionInCookie() {
@@ -133,14 +128,13 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
             return TestResult.CANNOT_BE_TESTED;
         }
         Config config = getConfig();
+        config.setHighestProtocolVersion(ProtocolVersion.DTLS10);
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray protocolVersion = new ModifiableByteArray();
-        protocolVersion.setModification(ByteArrayModificationFactory.explicitValue(ProtocolVersion.DTLS10.getValue()));
-        clientHelloMessage.setProtocolVersion(protocolVersion);
+        clientHelloMessage.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS12.getValue()));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
@@ -154,9 +148,9 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray random = new ModifiableByteArray();
-        random.setModification(ByteArrayModificationFactory.xor(ArrayConverter.hexStringToByteArray("FFFF"), -2));
-        clientHelloMessage.setRandom(random);
+        byte[] random = new byte[HandshakeByteLength.RANDOM];
+        Arrays.fill(random, (byte) 255);
+        clientHelloMessage.setRandom(Modifiable.xor(random, 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
@@ -170,10 +164,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray sessionId = new ModifiableByteArray();
-        sessionId
-            .setModification(ByteArrayModificationFactory.explicitValue(ArrayConverter.hexStringToByteArray("FFFF")));
-        clientHelloMessage.setSessionId(sessionId);
+        clientHelloMessage.setSessionId(Modifiable.explicit(ArrayConverter.hexStringToByteArray("FFFF")));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
@@ -187,9 +178,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray ciphersuites = new ModifiableByteArray();
-        ciphersuites.setModification(ByteArrayModificationFactory.delete(1, 2));
-        clientHelloMessage.setCipherSuites(ciphersuites);
+        clientHelloMessage.setCipherSuites(Modifiable.insert(ArrayConverter.hexStringToByteArray("FFFF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
@@ -203,9 +192,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray compressions = new ModifiableByteArray();
-        compressions.setModification(ByteArrayModificationFactory.delete(-1, 1));
-        clientHelloMessage.setCompressions(compressions);
+        clientHelloMessage.setCompressions(Modifiable.insert(ArrayConverter.hexStringToByteArray("FF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
