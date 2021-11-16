@@ -307,21 +307,6 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_CBC</analyzedProperty>
-        <shortName>CBC cipher suite support</shortName>
-        <shortDescription>Evaluates whether the server supports CBC cipher suites</shortDescription>
-        <links>
-            <link></link>
-        </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription>CBC cipher suites are enabled</shortDescription>
-                <handlingRecommendation>Disable CBC cipher suites</handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
-    </recommendation>
-    <recommendation>
         <analyzedProperty>SUPPORTS_AEAD</analyzedProperty>
         <shortName>AEAD cipher suites support</shortName>
         <shortDescription>Evaluates whether the server supports AEAD (Authenticated Encryption with Associated Data) cipher suites, e.g., AES-GCM</shortDescription>

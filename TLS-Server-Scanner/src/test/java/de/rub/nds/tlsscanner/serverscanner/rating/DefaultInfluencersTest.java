@@ -82,9 +82,6 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_RC4,
             new PropertyResultRatingInfluencer(TestResult.TRUE, -100),
             new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_CBC,
-            new PropertyResultRatingInfluencer(TestResult.TRUE, -50),
-            new PropertyResultRatingInfluencer(TestResult.FALSE, 50)));
         influencers.add(new RatingInfluencer(AnalyzedProperty.SUPPORTS_AEAD,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 200),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -100)));

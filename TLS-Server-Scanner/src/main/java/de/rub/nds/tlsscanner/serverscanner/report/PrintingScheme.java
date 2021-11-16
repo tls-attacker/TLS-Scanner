@@ -168,7 +168,6 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.SUPPORTS_IDEA, getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_RC2, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_RC4, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.SUPPORTS_CBC, getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_AEAD, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.SUPPORTS_POST_QUANTUM,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));

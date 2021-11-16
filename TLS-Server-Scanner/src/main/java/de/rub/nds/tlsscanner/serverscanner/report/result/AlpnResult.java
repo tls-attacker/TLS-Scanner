@@ -13,11 +13,11 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.List;
 
-public class AlpnProbeResult extends ProbeResult {
+public class AlpnResult extends ProbeResult {
 
     private List<String> supportedAlpns;
 
-    public AlpnProbeResult(List<String> supportedAlpns) {
+    public AlpnResult(List<String> supportedAlpns) {
         super(ProbeType.ALPN);
         this.supportedAlpns = supportedAlpns;
     }

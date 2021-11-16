@@ -103,10 +103,6 @@ public class DefaultRecommendationsTest {
             "RC4 is a stream cipher designed by Ron Rivest in 1987",
             new PropertyResultRecommendation(TestResult.TRUE, "RC4 ciphers are enabled", "Disable RC4 ciphers"),
             "https://tools.ietf.org/html/rfc7465", "https://www.rc4nomore.com/"));
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_CBC, "CBC cipher suite support",
-            "Evaluates whether the server supports CBC cipher suites", new PropertyResultRecommendation(TestResult.TRUE,
-                "CBC cipher suites are enabled", "Disable CBC cipher suites"),
-            ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_AEAD, "AEAD cipher suites support",
             "Evaluates whether the server supports AEAD (Authenticated Encryption with Associated Data) cipher suites, e.g., AES-GCM",
             new PropertyResultRecommendation(TestResult.FALSE, "AEAD cipher suites are disabled",

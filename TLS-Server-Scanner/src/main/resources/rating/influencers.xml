@@ -230,17 +230,6 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_CBC</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>-50</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
         <analyzedProperty>SUPPORTS_AEAD</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
