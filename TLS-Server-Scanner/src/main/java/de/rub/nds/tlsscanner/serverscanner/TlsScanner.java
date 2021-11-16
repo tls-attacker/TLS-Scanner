@@ -110,6 +110,8 @@ public class TlsScanner {
         addProbeToProbeList(new BleichenbacherProbe(config, parallelExecutor));
         addProbeToProbeList(new InvalidCurveProbe(config, parallelExecutor));
         addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
+        addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
+        addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterProbe());
@@ -132,8 +134,6 @@ public class TlsScanner {
             addProbeToProbeList(new TlsPoodleProbe(config, parallelExecutor));
             addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
             // addProbeToProbeList(new MacProbe(config, parallelExecutor));
-            addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
-            addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
             addProbeToProbeList(new CcaProbe(config, parallelExecutor));
             addProbeToProbeList(new EsniProbe(config, parallelExecutor));
             addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));

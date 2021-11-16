@@ -135,6 +135,10 @@ public class ScannerConfig extends TLSDelegateConfig {
         return dtlsDelegate;
     }
 
+    public CcaDelegate getCcaDelegate() {
+        return ccaDelegate;
+    }
+
     public boolean isNoColor() {
         return noColor;
     }
