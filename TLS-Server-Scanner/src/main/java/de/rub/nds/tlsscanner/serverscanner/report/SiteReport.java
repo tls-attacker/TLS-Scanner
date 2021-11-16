@@ -59,7 +59,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<PerformanceData> performanceList;
 
     private final String host;
-    private final int port;
+    private final Integer port;
 
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
@@ -172,7 +172,7 @@ public class SiteReport extends Observable implements Serializable {
     public SiteReport() {
         resultMap = new HashMap<>();
         host = null;
-        port = -1;
+        port = null;
     }
 
     public SiteReport(String host, int port) {
