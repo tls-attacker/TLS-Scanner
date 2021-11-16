@@ -18,15 +18,19 @@ public class DtlsBugsResult extends ProbeResult {
 
     private TestResult isEarlyFinished;
     private TestResult isAcceptingUnencryptedAppData;
+    private TestResult isAcceptingUnencryptedFinished;
 
-    public DtlsBugsResult(TestResult isAcceptingUnencryptedAppData, TestResult isEarlyFinished) {
+    public DtlsBugsResult(TestResult isAcceptingUnencryptedFinished, TestResult isAcceptingUnencryptedAppData,
+        TestResult isEarlyFinished) {
         super(ProbeType.DTLS_COMMON_BUGS);
+        this.isAcceptingUnencryptedFinished = isAcceptingUnencryptedFinished;
         this.isAcceptingUnencryptedAppData = isAcceptingUnencryptedAppData;
         this.isEarlyFinished = isEarlyFinished;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
+        report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
         report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
         report.putResult(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
     }

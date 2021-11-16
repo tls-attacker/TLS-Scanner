@@ -211,6 +211,7 @@ public class SiteReportPrinter {
         }
 
         prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
+        prettyAppend(builder, "Accepts Finished with Epoch 0", AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED);
         prettyAppend(builder, "Accepts App Data with Epoch 0", AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA);
         prettyAppend(builder, "Early Finished", AnalyzedProperty.HAS_EARLY_FINISHED_BUG);
     }
