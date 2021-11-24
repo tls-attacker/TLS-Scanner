@@ -31,8 +31,7 @@ import de.rub.nds.scanner.core.execution.ScanJob;
 import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
-import de.rub.nds.scanner.core.passive.TrackableValue;
->>>>>>>> dae7150d1 (reworked client scanner):Scanner-Core/src/main/java/de/rub/nds/scanner/core/execution/ThreadedScanJobExecutor.java
+import de.rub.nds.scanner.core.passive.TrackableValue;>>>>>>>>dae7150d1(reworked client scanner):Scanner-Core/src/main/java/de/rub/nds/scanner/core/execution/ThreadedScanJobExecutor.java
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -120,11 +119,13 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
         update(report, null);
     }
 
-<<<<<<<< HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/scan/ThreadedScanJobExecutor.java
+    <<<<<<<<HEAD:TLS-Server-Scanner/src/main/java/de/rub/nds/tlsscanner/serverscanner/scan/ThreadedScanJobExecutor.java
+
     private void executeProbesTillNoneCanBeExecuted(SiteReport report) {
         while (true) {
             // handle all Finished Results
 ========
+
     private void executeProbesTillNoneCanBeExecuted(ScanReport report) {
         do {
 >>>>>>>> dae7150d1 (reworked client scanner):Scanner-Core/src/main/java/de/rub/nds/scanner/core/execution/ThreadedScanJobExecutor.java

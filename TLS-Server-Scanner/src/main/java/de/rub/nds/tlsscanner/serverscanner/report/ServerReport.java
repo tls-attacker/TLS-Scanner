@@ -101,6 +101,8 @@ public class ServerReport extends ScanReport {
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
     private List<String> supportedAlpns = null;
 
+    private NamedGroup helloRetryRequestSelectedNamedGroup = null;
+
     // Compression
     private List<CompressionMethod> supportedCompressionMethods = null;
 
@@ -759,6 +761,14 @@ public class ServerReport extends ScanReport {
         this.scoreReport = scoreReport;
     }
 
+    public synchronized Boolean getSupportsRecordFragmentation() {
+        return supportsRecordFragmentation;
+    }
+
+    public synchronized void setSupportsRecordFragmentation(Boolean supportsRecordFragmentation) {
+        this.supportsRecordFragmentation = supportsRecordFragmentation;
+    }
+
     public synchronized int getMinimumRsaCertKeySize() {
         return minimumRsaCertKeySize;
     }
@@ -789,5 +799,11 @@ public class ServerReport extends ScanReport {
 
     public synchronized void setEntropyReportList(List<EntropyReport> entropyReportList) {
         this.entropyReportList = entropyReportList;
+    public synchronized NamedGroup getHelloRetryRequestSelectedNamedGroup() {
+        return helloRetryRequestSelectedNamedGroup;
+    }
+
+    public synchronized void setHelloRetryRequestSelectedNamedGroup(NamedGroup helloRetryRequestSelectedNamedGroup) {
+        this.helloRetryRequestSelectedNamedGroup = helloRetryRequestSelectedNamedGroup;
     }
 }

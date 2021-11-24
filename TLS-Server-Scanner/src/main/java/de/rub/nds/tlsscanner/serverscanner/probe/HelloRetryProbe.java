@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.HelloRetryResult;
 import de.rub.nds.scanner.core.config.ScannerConfig;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import java.util.LinkedList;
 
 /**
@@ -37,6 +38,7 @@ public class HelloRetryProbe extends TlsProbe<ServerReport, HelloRetryResult> {
 
     private TestResult sendsHelloRetryRequest = TestResult.FALSE;
     private TestResult issuesCookie = TestResult.FALSE;
+    private NamedGroup serversChosenGroup;
 
     public HelloRetryProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.HELLO_RETRY, scannerConfig);
@@ -91,6 +93,7 @@ public class HelloRetryProbe extends TlsProbe<ServerReport, HelloRetryResult> {
             && ((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).isTls13HelloRetryRequest()) {
             sendsHelloRetryRequest = TestResult.TRUE;
+            serversChosenGroup = state.getTlsContext().getSelectedGroup();
             if (((ServerHelloMessage) WorkflowTraceUtil.getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO,
                 state.getWorkflowTrace())).containsExtension(ExtensionType.COOKIE)) {
                 issuesCookie = TestResult.TRUE;

@@ -12,32 +12,37 @@ package de.rub.nds.tlsscanner.serverscanner.probe.result;
 import de.rub.nds.scanner.core.probe.result.ProbeResult;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.scanner.core.constants.TestResult;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 
 public class HelloRetryResult extends ProbeResult<ServerReport> {
 
-    private final TestResult sendsHelloRetryRequest;
-    private final TestResult issuesCookie;
+    private final TestResult sentHelloRetryRequest;
+    private final TestResult sentCookie;
+    private final NamedGroup serversChosenGroup;
 
-    public HelloRetryResult(TestResult sentHelloRetryRequest, TestResult sentCookie) {
+    public HelloRetryResult(TestResult sentHelloRetryRequest, TestResult sentCookie, NamedGroup serversChosenGroup) {
         super(TlsProbeType.HELLO_RETRY);
-        issuesCookie = sentCookie;
-        sendsHelloRetryRequest = sentHelloRetryRequest;
+        this.sentCookie = sentCookie;
+        this.sentHelloRetryRequest = sentHelloRetryRequest;
+        this.serversChosenGroup = serversChosenGroup;
     }
 
     @Override
     protected void mergeData(ServerReport report) {
-        if (issuesCookie != null) {
-            report.putResult(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, issuesCookie);
+        if (sentCookie != null) {
+            report.putResult(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, sentCookie);
         } else {
             report.putResult(TlsAnalyzedProperty.ISSUES_COOKIE_IN_HELLO_RETRY, TestResult.ERROR_DURING_TEST);
         }
 
-        if (sendsHelloRetryRequest != null) {
-            report.putResult(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, sendsHelloRetryRequest);
+        if (sentHelloRetryRequest != null) {
+            report.putResult(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, sentHelloRetryRequest);
         } else {
             report.putResult(TlsAnalyzedProperty.SENDS_HELLO_RETRY_REQUEST, TestResult.ERROR_DURING_TEST);
         }
+
+        report.setHelloRetryRequestSelectedNamedGroup(serversChosenGroup);
     }
 }
