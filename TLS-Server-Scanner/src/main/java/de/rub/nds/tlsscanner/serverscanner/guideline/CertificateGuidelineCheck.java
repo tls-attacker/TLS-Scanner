@@ -19,23 +19,27 @@ import java.util.Objects;
 public abstract class CertificateGuidelineCheck extends GuidelineCheck {
 
     /**
-     * <code>true</code> if only one certificate has to pass the check. Otherwise all certificates have to pass.
+     * <code>true</code> if only at least one certificate has to pass the check. Otherwise, all certificates have to
+     * pass. <br>
+     * Used for the NIST requirement: At a minimum, TLS servers conforming to this specification shall be configured
+     * with an RSA signature certificate or an ECDSA signature certificate.
      */
-    private boolean onlyOneCertificate;
+    private boolean atLeastOneCertificateShallPass;
 
     public CertificateGuidelineCheck(String name, RequirementLevel requirementLevel) {
         this(name, requirementLevel, false);
     }
 
-    public CertificateGuidelineCheck(String name, RequirementLevel requirementLevel, boolean onlyOneCertificate) {
+    public CertificateGuidelineCheck(String name, RequirementLevel requirementLevel,
+        boolean atLeastOneCertificateShallPass) {
         super(name, requirementLevel);
-        this.onlyOneCertificate = onlyOneCertificate;
+        this.atLeastOneCertificateShallPass = atLeastOneCertificateShallPass;
     }
 
     public CertificateGuidelineCheck(String name, RequirementLevel requirementLevel, GuidelineCheckCondition condition,
-        boolean onlyOneCertificate) {
+        boolean atLeastOneCertificateShallPass) {
         super(name, requirementLevel, condition);
-        this.onlyOneCertificate = onlyOneCertificate;
+        this.atLeastOneCertificateShallPass = atLeastOneCertificateShallPass;
     }
 
     @Override
@@ -56,7 +60,7 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck {
                 uncertainFlag = true;
             }
         }
-        if (this.onlyOneCertificate && passFlag) {
+        if (this.atLeastOneCertificateShallPass && passFlag) {
             result.setResult(TestResult.TRUE);
         } else if (passFlag && !uncertainFlag && !failFlag) {
             result.setResult(TestResult.TRUE);
@@ -70,11 +74,11 @@ public abstract class CertificateGuidelineCheck extends GuidelineCheck {
 
     public abstract GuidelineCheckResult evaluateChain(CertificateChain chain);
 
-    public boolean isOnlyOneCertificate() {
-        return onlyOneCertificate;
+    public boolean isAtLeastOneCertificateShallPass() {
+        return atLeastOneCertificateShallPass;
     }
 
-    public void setOnlyOneCertificate(boolean onlyOneCertificate) {
-        this.onlyOneCertificate = onlyOneCertificate;
+    public void setAtLeastOneCertificateShallPass(boolean atLeastOneCertificateShallPass) {
+        this.atLeastOneCertificateShallPass = atLeastOneCertificateShallPass;
     }
 }

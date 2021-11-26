@@ -46,14 +46,14 @@
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="signatureAlgorithmsCertificateGuidelineCheck">
             <name>Shall be configured with an RSA signature certificate or an ECDSA signature certificate</name>
             <requirementLevel>MUST</requirementLevel>
-            <onlyOneCertificate>true</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>true</atLeastOneCertificateShallPass>
             <recommendedAlgorithms>RSA</recommendedAlgorithms>
             <recommendedAlgorithms>ECDSA</recommendedAlgorithms>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateCurveGuidelineCheck">
             <name>For ECDSA: Curve P-256 or curve P-384 should be used in the public key</name>
             <requirementLevel>SHOULD</requirementLevel>
-            <onlyOneCertificate>false</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
             <recommendedGroups>SECP256R1</recommendedGroups>
             <recommendedGroups>SECP384R1</recommendedGroups>
         </check>
@@ -66,13 +66,13 @@
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateVersionGuidelineCheck">
             <name>Server certificate shall be an X.509 version 3 certificate</name>
             <requirementLevel>MUST</requirementLevel>
-            <onlyOneCertificate>false</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
             <version>3</version>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="keySizeCertGuidelineCheck">
             <name>All server and client certificates shall contain public keys that offer at least 112 bits of security.</name>
             <requirementLevel>MUST</requirementLevel>
-            <onlyOneCertificate>false</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
             <minimumDsaKeyLength>2048</minimumDsaKeyLength>
             <minimumRsaKeyLength>2048</minimumRsaKeyLength>
             <minimumEcKeyLength>224</minimumEcKeyLength>
@@ -93,23 +93,23 @@
                     </condition>
                 </or>
             </condition>
-            <onlyOneCertificate>false</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certificateValidityGuidelineCheck">
             <name>Certificate Validity Period should be 3 years or less.</name>
             <requirementLevel>SHOULD</requirementLevel>
-            <onlyOneCertificate>false</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
             <days>1095</days>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="keyUsageCertificateCheck">
             <name>Key Usage Extension should be used with digitalSignature and keyAgreement values.</name>
             <requirementLevel>SHOULD</requirementLevel>
-            <onlyOneCertificate>false</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="extendedKeyUsageCertificateCheck">
             <name>Server should be configured to allow use of extended key usage extension with key purpose specifically for server authentication</name>
             <requirementLevel>SHOULD</requirementLevel>
-            <onlyOneCertificate>false</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="cipherSuiteGuidelineCheck">
             <name>Only listed Cipher Suites shall be used</name>
@@ -208,13 +208,13 @@
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">
             <name>The random number generator should be used to generate the 4-byte timestamp of the server random value.</name>
             <requirementLevel>SHOULD</requirementLevel>
-            <property>USES_UNIX_TIME_IN_SERVER_RANDOM</property>
+            <property>USES_UNIX_TIMESTAMPS_IN_RANDOM</property>
             <result>FALSE</result>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="hashAlgorithmStrengthCheck">
             <name>All server and client certificates and certificates in their certification paths shall be signed using SHA-224 or a stronger hashing algorithm.</name>
             <requirementLevel>MUST</requirementLevel>
-            <onlyOneCertificate>false</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
             <minimumStrength>SHA224</minimumStrength>
         </check>
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="analyzedPropertyGuidelineCheck">

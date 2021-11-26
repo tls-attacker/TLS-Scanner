@@ -274,7 +274,7 @@
         <check xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="keySizeCertGuidelineCheck">
             <name>Schlüssellängen</name>
             <requirementLevel>SHOULD</requirementLevel>
-            <onlyOneCertificate>false</onlyOneCertificate>
+            <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
             <minimumDsaKeyLength>2000</minimumDsaKeyLength>
             <minimumRsaKeyLength>2000</minimumRsaKeyLength>
             <minimumEcKeyLength>250</minimumEcKeyLength>
