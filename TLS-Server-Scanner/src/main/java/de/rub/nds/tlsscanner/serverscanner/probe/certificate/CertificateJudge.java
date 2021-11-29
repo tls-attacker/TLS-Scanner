@@ -113,8 +113,8 @@ public class CertificateJudge {
     public Boolean isSelfSigned() {
         try {
             // Try to verify certificate signature with its own public key
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            X509Certificate cert = (X509Certificate) cf
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            X509Certificate cert = (X509Certificate) certFactory
                     .generateCertificate(new ByteArrayInputStream(certificate.getEncoded()));
             PublicKey publicKey = cert.getPublicKey();
             cert.verify(publicKey);
