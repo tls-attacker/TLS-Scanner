@@ -636,7 +636,7 @@
         <resultingRecommendations/>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_SESSION_TICKETS</analyzedProperty>
+        <analyzedProperty>SUPPORTS_SESSION_TICKET_RESUMPTION</analyzedProperty>
         <shortName>Support for session resumption with session tickets</shortName>
         <shortDescription>Evaluates whether the server supports session resumption with session tickets</shortDescription>
         <links>
@@ -651,7 +651,7 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>SUPPORTS_SESSION_IDS</analyzedProperty>
+        <analyzedProperty>SUPPORTS_SESSION_ID_RESUMPTION</analyzedProperty>
         <shortName>Support for session resumption with session IDs</shortName>
         <shortDescription>Evaluates whether the server supports session resumption with session IDs</shortDescription>
         <detailedDescription></detailedDescription>
@@ -671,29 +671,6 @@
                 <result>FALSE</result>
                 <shortDescription>Session resumption with rotating session tickets is disabled</shortDescription>
                 <handlingRecommendation>Frequently changing session ticket keys improves the security, enable rotated session tickets.</handlingRecommendation>
-            </resultingRecommendation>
-        </resultingRecommendations>
-    </recommendation>
-    <recommendation>
-        <analyzedProperty>SUPPORTS_RENEGOTIATION</analyzedProperty>
-        <shortName>Renegotiation support</shortName>
-        <shortDescription>Evaluates whether the server supports renegotiation.</shortDescription>
-        <detailedDescription></detailedDescription>
-        <links/>
-        <resultingRecommendations/>
-    </recommendation>
-    <recommendation>
-        <analyzedProperty>SUPPORTS_INSECURE_RENEGOTIATION</analyzedProperty>
-        <shortName>Insecure renegotiation support</shortName>
-        <shortDescription>Evaluates whether the server supports renegotiation.</shortDescription>
-        <links>
-            <link></link>
-        </links>
-        <resultingRecommendations>
-            <resultingRecommendation>
-                <result>TRUE</result>
-                <shortDescription>Insecure renegotiation is enabled</shortDescription>
-                <handlingRecommendation>Disable renegotiation or enable only secure renegotiation.</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
@@ -1369,31 +1346,61 @@
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE</analyzedProperty>
-        <shortName>Vulnerable to the renegotiation attack</shortName>
-        <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack</shortDescription>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1</analyzedProperty>
+        <shortName>Vulnerable to the renegotiation attack (cs)</shortName>
+        <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack (cs)</shortDescription>
         <links>
             <link></link>
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
                 <result>TRUE</result>
-                <shortDescription>The server is vulnerable to the renegotiation attack</shortDescription>
+                <shortDescription>The server is vulnerable to the renegotiation attack (cs)</shortDescription>
                 <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>
     </recommendation>
     <recommendation>
-        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION</analyzedProperty>
-        <shortName>Vulnerable to the renegotiation attack</shortName>
-        <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack</shortDescription>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2</analyzedProperty>
+        <shortName>Vulnerable to the renegotiation attack (cs)</shortName>
+        <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack (cs)</shortDescription>
         <links>
             <link></link>
         </links>
         <resultingRecommendations>
             <resultingRecommendation>
                 <result>TRUE</result>
-                <shortDescription>The server is vulnerable to the renegotiation attack</shortDescription>
+                <shortDescription>The server is vulnerable to the renegotiation attack (cs)</shortDescription>
+                <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1</analyzedProperty>
+        <shortName>Vulnerable to the renegotiation attack (ext)</shortName>
+        <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack (ext)</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server is vulnerable to the renegotiation attack (ext)</shortDescription>
+                <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
+            </resultingRecommendation>
+        </resultingRecommendations>
+    </recommendation>
+    <recommendation>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2</analyzedProperty>
+        <shortName>Vulnerable to the renegotiation attack (ext)</shortName>
+        <shortDescription>Evaluates whether the server is vulnerable to the renegotiation attack (ext)</shortDescription>
+        <links>
+            <link></link>
+        </links>
+        <resultingRecommendations>
+            <resultingRecommendation>
+                <result>TRUE</result>
+                <shortDescription>The server is vulnerable to the renegotiation attack (ext)</shortDescription>
                 <handlingRecommendation>Disable insecure renegotiation.</handlingRecommendation>
             </resultingRecommendation>
         </resultingRecommendations>

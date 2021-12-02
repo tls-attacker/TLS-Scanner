@@ -184,7 +184,7 @@ public class SiteReportPrinter {
             prettyAppend(builder, "Cookie length", AnalyzedProperty.HAS_COOKIE_CHECKS);
         }
         prettyAppend(builder, "Checks cookie", AnalyzedProperty.HAS_COOKIE_CHECKS);
-        builder.append("Cookie is influenced by\n");
+        prettyAppend(builder, "Cookie is influenced by");
         prettyAppend(builder, "-version", AnalyzedProperty.USES_VERSION_FOR_COOKIE);
         prettyAppend(builder, "-random", AnalyzedProperty.USES_RANDOM_FOR_COOKIE);
         prettyAppend(builder, "-session id", AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE);
@@ -434,6 +434,10 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Secure (CipherSuite)",
             AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE);
         prettyAppend(builder, "Insecure", AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION);
+        if (report.getProtocolType() == ProtocolType.DTLS) {
+            prettyAppend(builder, "DTLS cookie exchange in renegotiation",
+                AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION);
+        }
         return builder;
     }
 
@@ -797,8 +801,18 @@ public class SiteReportPrinter {
 
     public StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
-        prettyAppend(builder, "Supports Session Resumption", AnalyzedProperty.SUPPORTS_SESSION_IDS);
-        prettyAppend(builder, "Supports Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+        prettyAppend(builder, "Supports Session ID Resumption", AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION);
+        if (report.getProtocolType() == ProtocolType.DTLS) {
+            prettyAppend(builder, "DTLS cookie exchange in Session ID Resumption",
+                AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION);
+        }
+        prettyAppend(builder, "Issues Session Tickets", AnalyzedProperty.SUPPORTS_SESSION_TICKETS);
+        prettyAppend(builder, "Supports Session Ticket Resumption",
+            AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION);
+        if (report.getProtocolType() == ProtocolType.DTLS) {
+            prettyAppend(builder, "DTLS cookie exchange in Session Ticket Resumption",
+                AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION);
+        }
         prettyAppend(builder, "Issues TLS 1.3 Session Tickets", AnalyzedProperty.SUPPORTS_TLS13_SESSION_TICKETS);
         prettyAppend(builder, "Supports TLS 1.3 PSK", AnalyzedProperty.SUPPORTS_TLS13_PSK);
         prettyAppend(builder, "Supports TLS 1.3 PSK-DHE", AnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
@@ -902,11 +916,16 @@ public class SiteReportPrinter {
         prettyAppend(builder, "EarlyCcs", AnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
         prettyAppend(builder, "CVE-2020-13777 (Zero key)", AnalyzedProperty.VULNERABLE_TO_SESSION_TICKET_ZERO_KEY);
         prettyAppend(builder, "ALPACA", AnalyzedProperty.ALPACA_MITIGATED);
-        prettyAppend(builder, "Renegotiation Attack (ext)",
-            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION);
-        prettyAppend(builder, "Renegotiation Attack (cs)",
-            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE);
-
+        prettyAppend(builder, "Renegotiation Attack (ext)");
+        prettyAppend(builder, "-1.hs without ext, 2.hs with ext",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1);
+        prettyAppend(builder, "-1.hs with ext, 2.hs without ext",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2);
+        prettyAppend(builder, "Renegotiation Attack (cs)");
+        prettyAppend(builder, "-1.hs without cs, 2.hs with cs",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1);
+        prettyAppend(builder, "-1.hs with cs, 2.hs without cs",
+            AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2);
         return builder;
     }
 

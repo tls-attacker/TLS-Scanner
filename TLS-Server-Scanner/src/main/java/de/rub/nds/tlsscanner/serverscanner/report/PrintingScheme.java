@@ -221,8 +221,14 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_TICKETS,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_IDS,
+        colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
@@ -233,6 +239,8 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
@@ -243,10 +251,6 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,
-            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.SUPPORTS_RENEGOTIATION,
-            getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_HTTPS,
             getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_HSTS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));

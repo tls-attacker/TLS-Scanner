@@ -19,18 +19,25 @@ public class RenegotiationResult extends ProbeResult {
     private final TestResult secureRenegotiationExtension;
     private final TestResult secureRenegotiationCipherSuite;
     private final TestResult insecureRenegotiation;
-    private final TestResult vulnerableRenegotiationAttack;
-    private final TestResult vulnerableRenegotiationAttackCipherSuite;
+    private final TestResult vulnerableRenegotiationAttackExtensionV1;
+    private final TestResult vulnerableRenegotiationAttackExtensionV2;
+    private final TestResult vulnerableRenegotiationAttackCipherSuiteV1;
+    private final TestResult vulnerableRenegotiationAttackCipherSuiteV2;
+    private final TestResult supportsDtlsCookieExchangeInRenegotiation;
 
     public RenegotiationResult(TestResult secureRenegotiationExtension, TestResult secureRenegotiationCipherSuite,
-        TestResult insecureRenegotiation, TestResult vulnerableRenegotiationAttack,
-        TestResult vulnerableRenegotiationAttackCipherSuite) {
+        TestResult insecureRenegotiation, TestResult vulnerableRenegotiationAttackExtensionV1,
+        TestResult vulnerableRenegotiationAttackExtensionV2, TestResult vulnerableRenegotiationAttackCipherSuiteV1,
+        TestResult vulnerableRenegotiationAttackCipherSuiteV2, TestResult supportsDtlsCookieExchangeInRenegotiation) {
         super(ProbeType.RENEGOTIATION);
         this.secureRenegotiationExtension = secureRenegotiationExtension;
         this.secureRenegotiationCipherSuite = secureRenegotiationCipherSuite;
         this.insecureRenegotiation = insecureRenegotiation;
-        this.vulnerableRenegotiationAttack = vulnerableRenegotiationAttack;
-        this.vulnerableRenegotiationAttackCipherSuite = vulnerableRenegotiationAttackCipherSuite;
+        this.vulnerableRenegotiationAttackExtensionV1 = vulnerableRenegotiationAttackExtensionV1;
+        this.vulnerableRenegotiationAttackExtensionV2 = vulnerableRenegotiationAttackExtensionV2;
+        this.vulnerableRenegotiationAttackCipherSuiteV1 = vulnerableRenegotiationAttackCipherSuiteV1;
+        this.vulnerableRenegotiationAttackCipherSuiteV2 = vulnerableRenegotiationAttackCipherSuiteV2;
+        this.supportsDtlsCookieExchangeInRenegotiation = supportsDtlsCookieExchangeInRenegotiation;
     }
 
     @Override
@@ -40,9 +47,16 @@ public class RenegotiationResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_CIPHERSUITE,
             secureRenegotiationCipherSuite);
         report.putResult(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION, insecureRenegotiation);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION, vulnerableRenegotiationAttack);
-        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE,
-            vulnerableRenegotiationAttackCipherSuite);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
+            vulnerableRenegotiationAttackExtensionV1);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
+            vulnerableRenegotiationAttackExtensionV2);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
+            vulnerableRenegotiationAttackCipherSuiteV1);
+        report.putResult(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
+            vulnerableRenegotiationAttackCipherSuiteV2);
+        report.putResult(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
+            supportsDtlsCookieExchangeInRenegotiation);
     }
 
 }

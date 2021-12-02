@@ -516,7 +516,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SESSION_TICKETS</analyzedProperty>
+        <analyzedProperty>SUPPORTS_SESSION_TICKET_RESUMPTION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>100</influence>
@@ -527,7 +527,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_SESSION_IDS</analyzedProperty>
+        <analyzedProperty>SUPPORTS_SESSION_ID_RESUMPTION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>50</influence>
@@ -574,7 +574,19 @@
         <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION</referencedProperty>
+            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1</referencedProperty>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>50</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2</referencedProperty>
             <referencedPropertyResult>TRUE</referencedPropertyResult>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
@@ -597,7 +609,7 @@
         <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE</referencedProperty>
+            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1</referencedProperty>
             <referencedPropertyResult>TRUE</referencedPropertyResult>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
@@ -606,25 +618,15 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_INSECURE_RENEGOTIATION</analyzedProperty>
+        <analyzedProperty>SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
-            <influence>-200</influence>
+            <referencedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2</referencedProperty>
+            <referencedPropertyResult>TRUE</referencedPropertyResult>
         </propertyResultRatingInfluencer>
         <propertyResultRatingInfluencer>
             <result>FALSE</result>
             <influence>50</influence>
-        </propertyResultRatingInfluencer>
-    </ratingInfluencer>
-    <ratingInfluencer>
-        <analyzedProperty>SUPPORTS_RENEGOTIATION</analyzedProperty>
-        <propertyResultRatingInfluencer>
-            <result>TRUE</result>
-            <influence>0</influence>
-        </propertyResultRatingInfluencer>
-        <propertyResultRatingInfluencer>
-            <result>FALSE</result>
-            <influence>0</influence>
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -1152,7 +1154,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION</analyzedProperty>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>
@@ -1164,7 +1166,31 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE</analyzedProperty>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>-500</influence>

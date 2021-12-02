@@ -216,15 +216,15 @@ public class DefaultRecommendationsTest {
             .add(new Recommendation(AnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES, "Montgomery curve support", "", ""));
 
         // session resumption
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_TICKETS,
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
             "Support for session resumption with session tickets",
             "Evaluates whether the server supports session resumption with session tickets",
             new PropertyResultRecommendation(TestResult.FALSE, "Session tickets are disabled",
                 "Enable session resumption with session tickets"),
             ""));
-        recommendations.add(
-            new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_IDS, "Support for session resumption with session IDs",
-                "Evaluates whether the server supports session resumption with session IDs", ""));
+        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
+            "Support for session resumption with session IDs",
+            "Evaluates whether the server supports session resumption with session IDs", ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT,
             "Support for rotated session tickets",
             "Evaluates whether the server supports session resumption with session tickets whose keys are being rotated",
@@ -235,13 +235,6 @@ public class DefaultRecommendationsTest {
             ""));
 
         // Renegotiation
-        recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_RENEGOTIATION, "Renegotiation support",
-            "Evaluates whether the server supports renegotiation.", ""));
-        recommendations.add(new Recommendation(
-            AnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION, "Insecure renegotiation support",
-            "Evaluates whether the server supports renegotiation.", new PropertyResultRecommendation(TestResult.TRUE,
-                "Insecure renegotiation is enabled", "Disable renegotiation or enable only secure renegotiation."),
-            ""));
         recommendations.add(new Recommendation(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
             "Support for secure renegotiation extension",
             "Evaluates whether the server supports secure renegotiation extension.",
@@ -499,21 +492,33 @@ public class DefaultRecommendationsTest {
                 "The server is vulnerable to FREAK", "Disable export cipher suites."),
             "https://www.smacktls.com/smack.pdf"));
         recommendations
-            .add(
-                new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE,
-                    "Vulnerable to the renegotiation attack",
-                    "Evaluates whether the server is vulnerable to the renegotiation attack",
-                    new PropertyResultRecommendation(TestResult.TRUE,
-                        "The server is vulnerable to the renegotiation attack", "Disable insecure renegotiation."),
-                    ""));
+            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1,
+                "Vulnerable to the renegotiation attack (cs)",
+                "Evaluates whether the server is vulnerable to the renegotiation attack (cs)",
+                new PropertyResultRecommendation(TestResult.TRUE,
+                    "The server is vulnerable to the renegotiation attack (cs)", "Disable insecure renegotiation."),
+                ""));
         recommendations
-            .add(
-                new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION,
-                    "Vulnerable to the renegotiation attack",
-                    "Evaluates whether the server is vulnerable to the renegotiation attack",
-                    new PropertyResultRecommendation(TestResult.TRUE,
-                        "The server is vulnerable to the renegotiation attack", "Disable insecure renegotiation."),
-                    ""));
+            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2,
+                "Vulnerable to the renegotiation attack (cs)",
+                "Evaluates whether the server is vulnerable to the renegotiation attack (cs)",
+                new PropertyResultRecommendation(TestResult.TRUE,
+                    "The server is vulnerable to the renegotiation attack (cs)", "Disable insecure renegotiation."),
+                ""));
+        recommendations
+            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
+                "Vulnerable to the renegotiation attack (ext)",
+                "Evaluates whether the server is vulnerable to the renegotiation attack (ext)",
+                new PropertyResultRecommendation(TestResult.TRUE,
+                    "The server is vulnerable to the renegotiation attack (ext)", "Disable insecure renegotiation."),
+                ""));
+        recommendations
+            .add(new Recommendation(AnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V2,
+                "Vulnerable to the renegotiation attack (ext)",
+                "Evaluates whether the server is vulnerable to the renegotiation attack (ext)",
+                new PropertyResultRecommendation(TestResult.TRUE,
+                    "The server is vulnerable to the renegotiation attack (ext)", "Disable insecure renegotiation."),
+                ""));
         recommendations.add(new Recommendation(AnalyzedProperty.MISSES_MAC_APPDATA_CHECKS,
             "Misses Application message MAC check",
             "Evaluates whether the server correctly validates the Application message MACs",
