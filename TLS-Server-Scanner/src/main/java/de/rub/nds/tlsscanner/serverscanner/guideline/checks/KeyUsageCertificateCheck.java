@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
 
-    private final static List<SignatureAlgorithm> DIGITAL_SIGNATURE =
+    private final static List<SignatureAlgorithm> SIGNATURE_ALGORITHM_LIST =
         Arrays.asList(SignatureAlgorithm.RSA, SignatureAlgorithm.ECDSA, SignatureAlgorithm.DSA);
 
     private KeyUsageCertificateCheck() {
@@ -66,7 +66,7 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         if (extension == null) {
             return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, null);
         }
-        if (DIGITAL_SIGNATURE.contains(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
+        if (SIGNATURE_ALGORITHM_LIST.contains(report.getSignatureAndHashAlgorithm().getSignatureAlgorithm())) {
             if (!extension.hasUsages(KeyUsage.digitalSignature)) {
                 return new KeyUsageCertificateCheckResult(TestResult.FALSE, false, "digitalSignature");
             }
