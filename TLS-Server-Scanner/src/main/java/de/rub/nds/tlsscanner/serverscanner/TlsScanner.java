@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner;
 
 import de.rub.nds.tlsattacker.attacks.connectivity.ConnectivityChecker;
@@ -57,7 +58,7 @@ public class TlsScanner {
         this.config = config;
         closeAfterFinishParallel = true;
         parallelExecutor = new ParallelExecutor(config.getOverallThreads(), 3,
-                new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
+            new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
         this.probeList = new LinkedList<>();
         this.afterList = new LinkedList<>();
         this.probesToExecute = config.getProbes();
@@ -75,7 +76,7 @@ public class TlsScanner {
     }
 
     public TlsScanner(ScannerConfig config, ParallelExecutor parallelExecutor, List<TlsProbe> probeList,
-            List<AfterProbe> afterList) {
+        List<AfterProbe> afterList) {
         this.parallelExecutor = parallelExecutor;
         this.config = config;
         this.probeList = probeList;
@@ -141,7 +142,7 @@ public class TlsScanner {
             addProbeToProbeList(new EsniProbe(config, parallelExecutor));
             addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
             if (config.getApplicationProtocol() == ApplicationProtocol.HTTP
-                    || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
+                || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
                 addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
             }
             addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
@@ -168,7 +169,7 @@ public class TlsScanner {
         ThreadedScanJobExecutor executor = null;
         try {
             SiteReport siteReport = new SiteReport(config.getClientDelegate().getExtractedHost(),
-                    config.getClientDelegate().getExtractedPort());
+                config.getClientDelegate().getExtractedPort());
             if (isConnectable()) {
                 isConnectable = true;
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
@@ -178,7 +179,7 @@ public class TlsScanner {
 
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
-                            config.getClientDelegate().getHost());
+                        config.getClientDelegate().getHost());
                     long scanStartTime = System.currentTimeMillis();
                     siteReport = executor.execute();
                     SiteReportRater rater;
