@@ -93,7 +93,7 @@ public class TlsScanner {
         addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
         addProbeToProbeList(new SniProbe(config, parallelExecutor));
         addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
-        addProbeToProbeList(new NamedCurvesProbe(config, parallelExecutor));
+        addProbeToProbeList(new NamedGroupsProbe(config, parallelExecutor));
         addProbeToProbeList(new CertificateProbe(config, parallelExecutor));
         addProbeToProbeList(new OcspProbe(config, parallelExecutor));
         addProbeToProbeList(new ProtocolVersionProbe(config, parallelExecutor));

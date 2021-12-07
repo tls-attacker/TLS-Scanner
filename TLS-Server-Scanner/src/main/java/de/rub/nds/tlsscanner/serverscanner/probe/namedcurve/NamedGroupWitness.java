@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class NamedCurveWitness implements Serializable {
+public class NamedGroupWitness implements Serializable {
 
     private Set<CipherSuite> cipherSuites;
 
@@ -29,11 +29,11 @@ public class NamedCurveWitness implements Serializable {
     private NamedGroup ecdsaSigGroupStatic;
     private NamedGroup ecdsaSigGroupEphemeral;
 
-    public NamedCurveWitness() {
+    public NamedGroupWitness() {
         cipherSuites = new HashSet<>();
     }
 
-    public NamedCurveWitness(NamedGroup ecdsaPkGroupEphemeral, NamedGroup ecdsaSigGroupStatic,
+    public NamedGroupWitness(NamedGroup ecdsaPkGroupEphemeral, NamedGroup ecdsaSigGroupStatic,
         NamedGroup ecdsaSigGroupEphemeral, CipherSuite cipherSuite) {
         this.ecdsaPkGroupEphemeral = ecdsaPkGroupEphemeral;
         this.ecdsaSigGroupStatic = ecdsaSigGroupStatic;
@@ -42,7 +42,7 @@ public class NamedCurveWitness implements Serializable {
         cipherSuites.add(cipherSuite);
     }
 
-    public NamedCurveWitness(CipherSuite cipherSuite) {
+    public NamedGroupWitness(CipherSuite cipherSuite) {
         cipherSuites = new HashSet<>();
         cipherSuites.add(cipherSuite);
     }
