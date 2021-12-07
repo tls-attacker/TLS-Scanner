@@ -33,7 +33,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;

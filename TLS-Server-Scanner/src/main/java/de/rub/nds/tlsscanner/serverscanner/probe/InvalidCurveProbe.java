@@ -39,7 +39,7 @@ import de.rub.nds.tlsscanner.serverscanner.leak.info.InvalidCurveTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveVector;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedGroupWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
