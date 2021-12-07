@@ -11,6 +11,9 @@ package de.rub.nds.tlsscanner.serverscanner;
 
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
@@ -73,6 +76,7 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
         reportAboutNotExecutedProbes();
         collectStatistics(report);
         executeAfterProbes(report);
+        executeGuidelineEvaluation(report);
 
         LOGGER.info("Finished scan for: " + config.getClientDelegate().getHost());
         return report;
@@ -167,6 +171,16 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
             afterProbe.analyze(report);
         }
         LOGGER.debug("Finished analysis");
+    }
+
+    private void executeGuidelineEvaluation(SiteReport report) {
+        LOGGER.debug("Evaluating guidelines...");
+        for (Guideline guideline : GuidelineIO.readGuidelines(GuidelineIO.GUIDELINES)) {
+            LOGGER.debug("Evaluating guideline {} ...", guideline.getName());
+            GuidelineChecker checker = new GuidelineChecker(guideline);
+            checker.fillReport(report);
+        }
+        LOGGER.debug("Finished evaluating guidelines");
     }
 
     @Override

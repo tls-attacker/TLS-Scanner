@@ -181,11 +181,13 @@ public class CertificateChain {
             if (report.getValidTo().before(new Date())) {
                 containsExpired = true;
             }
-            if (Objects.equals(report.isTrustAnchor(), Boolean.FALSE)
-                && Objects.equals(report.getSelfSigned(), Boolean.FALSE)
-                && report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5
-                || report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1) {
-                containsWeakSignedNonTrustStoresCertificates = true;
+            if (report.getSignatureAndHashAlgorithm() != null) {
+                if (Objects.equals(report.isTrustAnchor(), Boolean.FALSE)
+                    && Objects.equals(report.getSelfSigned(), Boolean.FALSE)
+                    && report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.MD5
+                    || report.getSignatureAndHashAlgorithm().getHashAlgorithm() == HashAlgorithm.SHA1) {
+                    containsWeakSignedNonTrustStoresCertificates = true;
+                }
             }
         }
         for (CertificateReport report : certificateReportList) {
@@ -222,7 +224,9 @@ public class CertificateChain {
                 CertPathValidationException[] causes = certPathValidationResult.getCauses();
                 if (causes != null) {
                     for (CertPathValidationException exception : causes) {
-                        if (exception.getCause().getMessage().contains("Unhandled Critical Extensions")) {
+                        if (exception.getMessage().contains("Unhandled Critical Extensions")
+                            || (exception.getCause() != null && exception.getCause().getMessage() != null
+                                && exception.getCause().getMessage().contains("Unhandled Critical Extensions"))) {
                             certificateIssues.add(CertificateIssue.UNHANDLED_CRITICAL_EXTENSIONS);
                         } else {
                             LOGGER.error("Unknown path validation issue", exception);

@@ -37,6 +37,8 @@ import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.RandomType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateReport;
@@ -75,9 +77,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
 import javax.xml.bind.JAXBException;
+import org.apache.commons.lang3.StringUtils;
 
 import org.joda.time.Duration;
 import org.joda.time.Period;
@@ -162,6 +167,7 @@ public class SiteReportPrinter {
         }
         appendScoringResults(builder);
         appendRecommendations(builder);
+        appendGuidelines(builder);
         appendPerformanceData(builder);
 
         return builder.toString();
@@ -206,8 +212,9 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Processes retransmissions", AnalyzedProperty.PROCESSES_RETRANSMISSIONS);
         prettyAppend(builder, "Total retransmissions received", report.getTotalReceivedRetransmissions());
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) && report.getRetransmissionCounters() != null) {
-            for (HandshakeMessageType type : report.getRetransmissionCounters().keySet())
+            for (HandshakeMessageType type : report.getRetransmissionCounters().keySet()) {
                 prettyAppend(builder, "-" + type.getName(), report.getRetransmissionCounters().get(type));
+            }
         }
 
         prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
@@ -1630,6 +1637,52 @@ public class SiteReportPrinter {
         }
     }
 
+    public void appendGuidelines(StringBuilder builder) {
+        if (this.report.getGuidelineReports() != null && this.report.getGuidelineReports().size() > 0) {
+            prettyAppendHeading(builder, "Guidelines");
+            for (GuidelineReport report : this.report.getGuidelineReports()) {
+                appendGuideline(builder, report);
+            }
+        }
+    }
+
+    private void appendGuideline(StringBuilder builder, GuidelineReport guidelineReport) {
+        prettyAppendSubheading(builder, "Guideline " + StringUtils.trim(guidelineReport.getName()));
+        prettyAppend(builder, "Passed: " + guidelineReport.getPassed().size(), AnsiColor.GREEN);
+        prettyAppend(builder, "Skipped: " + guidelineReport.getSkipped().size());
+        prettyAppend(builder, "Failed: " + guidelineReport.getFailed().size(), AnsiColor.RED);
+        prettyAppend(builder, "Uncertain: " + guidelineReport.getUncertain().size(), AnsiColor.YELLOW);
+        if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            prettyAppend(builder, StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE);
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                prettyAppendSubSubheading(builder, "Passed Checks:");
+                for (GuidelineCheckResult result : guidelineReport.getPassed()) {
+                    prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.GREEN);
+                    prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                }
+            }
+            prettyAppendSubSubheading(builder, "Failed Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getFailed()) {
+                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.RED);
+                prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+            }
+            prettyAppendSubSubheading(builder, "Uncertain Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getUncertain()) {
+                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.YELLOW);
+                prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+            }
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                prettyAppendSubSubheading(builder, "Skipped Checks:");
+                for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
+                    prettyAppend(builder, StringUtils.trim(result.getName()));
+                    prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                }
+            }
+        }
+    }
+
     public void appendRecommendations(StringBuilder builder) {
         if (report.getScoreReport() == null) {
             return;
@@ -1640,9 +1693,7 @@ public class SiteReportPrinter {
             ScoreReport scoreReport = report.getScoreReport();
             Recommendations recommendations = SiteReportRater.getRecommendations("en");
             LinkedHashMap<AnalyzedProperty, PropertyResultRatingInfluencer> influencers = scoreReport.getInfluencers();
-            influencers.entrySet().stream().sorted((o1, o2) -> {
-                return o1.getValue().compareTo(o2.getValue());
-            }).forEach((entry) -> {
+            influencers.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach((entry) -> {
                 PropertyResultRatingInfluencer influencer = entry.getValue();
                 if (influencer.isBadInfluence() || influencer.getReferencedProperty() != null) {
                     Recommendation recommendation = recommendations.getRecommendation(entry.getKey());
@@ -1780,6 +1831,16 @@ public class SiteReportPrinter {
             prettyAppendHeading(builder, "Supported Signature and Hash Algorithms");
             if (report.getSupportedSignatureAndHashAlgorithms().size() > 0) {
                 for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithms()) {
+                    prettyAppend(builder, algorithm.toString());
+                }
+            } else {
+                builder.append("none\n");
+            }
+        }
+        if (report.getSupportedSignatureAndHashAlgorithmsTls13() != null) {
+            prettyAppendHeading(builder, "Supported Signature and Hash Algorithms TLS 1.3");
+            if (report.getSupportedSignatureAndHashAlgorithmsTls13().size() > 0) {
+                for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithmsTls13()) {
                     prettyAppend(builder, algorithm.toString());
                 }
             } else {
