@@ -59,7 +59,7 @@ public class CcaProbe extends TlsProbe {
 
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
-        CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
+        CcaDelegate ccaDelegate = getScannerConfig().getCcaDelegate();
 
         CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(ccaDelegate);
 

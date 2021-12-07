@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.constants;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public enum ProbeType {
     ALPN("ALPN"),
     ESNI("ESNI"),
@@ -50,10 +46,16 @@ public enum ProbeType {
     DIRECT_RACCOON("Direct RACCOON"),
     EC_POINT_FORMAT("EC point formats"),
     RACCOON_ATTACK("RACCOON attack"),
+    DTLS_HELLO_VERIFY_REQUEST("DTLS hello verify request"),
+    DTLS_COMMON_BUGS("DTLS common bugs"),
+    DTLS_FEATURES("DTLS features"),
+    DTLS_MESSAGE_SEQUENCE_NUMBER("DTLS message sequence number"),
+    DTLS_RETRANSMISSIONS("DTLS retransmissions"),
     HTTP_FALSE_START("HTTP false start"),
     HELLO_RETRY("Hello retry"),
     CROSS_PROTOCOL_ALPACA("Alpaca attack"),
-    RANDOMNESS("Randomness");
+    RANDOMNESS("Randomness"),
+    TLS_FALLBACK_SCSV("TLS Fallback SCSV");
 
     private String humanReadableName;
 

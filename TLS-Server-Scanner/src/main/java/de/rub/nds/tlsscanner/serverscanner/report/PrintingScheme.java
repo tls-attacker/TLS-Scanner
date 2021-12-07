@@ -77,6 +77,8 @@ public class PrintingScheme {
         textEncodingMap.put(TestResult.TRUE, "true");
         textEncodingMap.put(TestResult.UNCERTAIN, "uncertain");
         textEncodingMap.put(TestResult.UNSUPPORTED, "unsupported by tls-scanner");
+        textEncodingMap.put(TestResult.PARTIALLY, "partially");
+
         HashMap<TestResult, AnsiColor> ansiColorMap = new HashMap<>();
         ansiColorMap.put(TestResult.COULD_NOT_TEST, AnsiColor.BLUE);
         ansiColorMap.put(TestResult.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
@@ -166,7 +168,6 @@ public class PrintingScheme {
         colorMap.put(AnalyzedProperty.SUPPORTS_IDEA, getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_RC2, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_RC4, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.SUPPORTS_CBC, getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_AEAD, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
         colorMap.put(AnalyzedProperty.SUPPORTS_POST_QUANTUM,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
@@ -220,8 +221,14 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_TICKETS,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
-        colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_IDS,
+        colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_ID_RESUMPTION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_ID_RESUMPTION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.SUPPORTS_SESSION_TICKET_ROTATION_HINT,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
@@ -232,6 +239,8 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_CLIENT_SIDE_INSECURE_RENEGOTIATION,
             getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
@@ -242,10 +251,6 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.SUPPORTS_ONLY_SAFEPRIME_MODULI,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
-        colorMap.put(AnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,
-            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
-        colorMap.put(AnalyzedProperty.SUPPORTS_RENEGOTIATION,
-            getDefaultColorEncoding(AnsiColor.YELLOW, AnsiColor.GREEN));
         colorMap.put(AnalyzedProperty.SUPPORTS_HTTPS,
             getDefaultColorEncoding(AnsiColor.DEFAULT_COLOR, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.SUPPORTS_HSTS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
@@ -317,6 +322,41 @@ public class PrintingScheme {
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(AnalyzedProperty.STAPLING_TLS13_MULTIPLE_CERTIFICATES,
             getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+
+        colorMap.put(AnalyzedProperty.HAS_COOKIE_CHECKS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.HAS_HVR_RETRANSMISSIONS, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.USES_VERSION_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(AnalyzedProperty.USES_RANDOM_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(AnalyzedProperty.USES_SESSION_ID_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(AnalyzedProperty.USES_CIPHERSUITES_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(AnalyzedProperty.USES_COMPRESSIONS_FOR_COOKIE,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.YELLOW));
+        colorMap.put(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.SUPPORTS_DTLS_FRAGMENTATION,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.SUPPORTS_REORDERING, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.SENDS_RETRANSMISSIONS, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.PROCESSES_RETRANSMISSIONS,
+            getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+        colorMap.put(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED,
+            getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+        colorMap.put(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+
         colorMap.put(AnalyzedProperty.STRICT_ALPN, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.STRICT_SNI, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(AnalyzedProperty.ALPACA_MITIGATED, getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));

@@ -10,24 +10,21 @@
 package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import java.util.List;
 
-/**
- *
- * @author ic0ns
- */
-public class AlpnProbeResult extends ProbeResult {
+public class TlsFallbackScsvResult extends ProbeResult {
 
-    private List<String> supportedAlpns;
+    private final TestResult result;
 
-    public AlpnProbeResult(List<String> supportedAlpns) {
-        super(ProbeType.ALPN);
-        this.supportedAlpns = supportedAlpns;
+    public TlsFallbackScsvResult(TestResult result) {
+        super(ProbeType.TLS_FALLBACK_SCSV);
+        this.result = result;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.setSupportedAlpns(supportedAlpns);
+        report.putResult(AnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, result);
     }
 }

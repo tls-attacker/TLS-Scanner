@@ -23,6 +23,6 @@ public class TlsRngAfterProbeTest {
     @Before
     public void setUp() {
         randomnessTester = new RandomnessAfterProbe();
-        testReport = new SiteReport("test");
+        testReport = new SiteReport("test", 443);
     }
 }

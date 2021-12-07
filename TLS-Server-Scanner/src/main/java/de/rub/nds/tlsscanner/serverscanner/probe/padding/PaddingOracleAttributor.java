@@ -29,9 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * This class tries to attribute discovered padding oracles
- *
- * @author ic0ns
+ * This class tries to attribute discovered padding oracles.
  */
 public class PaddingOracleAttributor {
 

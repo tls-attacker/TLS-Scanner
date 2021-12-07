@@ -24,9 +24,7 @@ import org.junit.Test;
 
 /**
  * Test-Class for RandomExtractor.java, which currently looks for the serverHello-message of the TLS-Handshake and
- * extracts the random-bytes transmitted
- *
- * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
+ * extracts the random-bytes transmitted.
  */
 public class RandomExtractorTest {
 

@@ -11,10 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.report.after;
 
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public abstract class AfterProbe {
 
     public abstract void analyze(SiteReport report);

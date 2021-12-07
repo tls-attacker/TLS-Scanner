@@ -21,6 +21,8 @@ public class EntropyReport {
 
     private boolean duplicates;
 
+    private int numberOfDuplicates;
+
     private boolean failedFrequencyTest;
 
     private boolean failedMonoBitTest;
@@ -36,12 +38,14 @@ public class EntropyReport {
     private double failedTemplateTestPercentage;
 
     public EntropyReport(RandomType type, int numberOfValues, int numberOfBytes, boolean duplicates,
-        boolean failedFrequencyTest, boolean failedMonoBitTest, boolean failedRunsTest, boolean failedLongestRunTest,
-        boolean failedFourierTest, boolean failedEntropyTest, double failedTemplateTestPercentage) {
+        int numberOfDuplicates, boolean failedFrequencyTest, boolean failedMonoBitTest, boolean failedRunsTest,
+        boolean failedLongestRunTest, boolean failedFourierTest, boolean failedEntropyTest,
+        double failedTemplateTestPercentage) {
         this.type = type;
         this.numberOfValues = numberOfValues;
         this.numberOfBytes = numberOfBytes;
         this.duplicates = duplicates;
+        this.numberOfDuplicates = numberOfDuplicates;
         this.failedFrequencyTest = failedFrequencyTest;
         this.failedMonoBitTest = failedMonoBitTest;
         this.failedRunsTest = failedRunsTest;
@@ -65,6 +69,10 @@ public class EntropyReport {
 
     public boolean isDuplicates() {
         return duplicates;
+    }
+
+    public int getNumberOfDuplicates() {
+        return numberOfDuplicates;
     }
 
     public boolean isFailedFrequencyTest() {
