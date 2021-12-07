@@ -212,8 +212,9 @@ public class SiteReportPrinter {
         prettyAppend(builder, "Processes retransmissions", AnalyzedProperty.PROCESSES_RETRANSMISSIONS);
         prettyAppend(builder, "Total retransmissions received", report.getTotalReceivedRetransmissions());
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED) && report.getRetransmissionCounters() != null) {
-            for (HandshakeMessageType type : report.getRetransmissionCounters().keySet())
+            for (HandshakeMessageType type : report.getRetransmissionCounters().keySet()) {
                 prettyAppend(builder, "-" + type.getName(), report.getRetransmissionCounters().get(type));
+            }
         }
 
         prettyAppendHeading(builder, "DTLS [EXPERIMENTAL]");
@@ -1647,33 +1648,37 @@ public class SiteReportPrinter {
 
     private void appendGuideline(StringBuilder builder, GuidelineReport guidelineReport) {
         prettyAppendSubheading(builder, "Guideline " + StringUtils.trim(guidelineReport.getName()));
+        prettyAppend(builder, "Passed: " + guidelineReport.getPassed().size(), AnsiColor.GREEN);
+        prettyAppend(builder, "Skipped: " + guidelineReport.getSkipped().size());
+        prettyAppend(builder, "Failed: " + guidelineReport.getFailed().size(), AnsiColor.RED);
+        prettyAppend(builder, "Uncertain: " + guidelineReport.getUncertain().size(), AnsiColor.YELLOW);
         if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppend(builder, StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE);
-        }
-        if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-            prettyAppendSubSubheading(builder, "Passed Checks:");
-            for (GuidelineCheckResult result : guidelineReport.getPassed()) {
-                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.GREEN);
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                prettyAppendSubSubheading(builder, "Passed Checks:");
+                for (GuidelineCheckResult result : guidelineReport.getPassed()) {
+                    prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.GREEN);
+                    prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                }
+            }
+            prettyAppendSubSubheading(builder, "Failed Checks:");
+            for (GuidelineCheckResult result : guidelineReport.getFailed()) {
+                prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.RED);
                 prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
             }
-        }
-        prettyAppendSubSubheading(builder, "Failed Checks:");
-        for (GuidelineCheckResult result : guidelineReport.getFailed()) {
-            prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.RED);
-            prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
-        }
-        if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppendSubSubheading(builder, "Uncertain Checks:");
             for (GuidelineCheckResult result : guidelineReport.getUncertain()) {
                 prettyAppend(builder, StringUtils.trim(result.getName()), AnsiColor.YELLOW);
                 prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
             }
-        }
-        if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
-            prettyAppendSubSubheading(builder, "Skipped Checks:");
-            for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
-                prettyAppend(builder, StringUtils.trim(result.getName()));
-                prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                prettyAppendSubSubheading(builder, "Skipped Checks:");
+                for (GuidelineCheckResult result : guidelineReport.getSkipped()) {
+                    prettyAppend(builder, StringUtils.trim(result.getName()));
+                    prettyAppend(builder, "\t" + StringUtils.trim(result.display()).replace("\n", "\n\t"));
+                }
             }
         }
     }
