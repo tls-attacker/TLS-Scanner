@@ -43,7 +43,7 @@ public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck 
     public GuidelineCheckResult evaluateChain(CertificateChain chain) {
         CertificateReport report = chain.getCertificateReportList().get(0);
         return new GuidelineCheckResult(
-            TestResult.of(report.getExtendedKeyUsageServerAuth() && !report.getAnyExtendedKeyUsage())) {
+            TestResult.of(report.getExtendedKeyUsageServerAuth() && !report.getExtendedKeyUsagePresent())) {
             @Override
             public String display() {
                 return Objects.equals(TestResult.TRUE, getResult())

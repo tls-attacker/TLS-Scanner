@@ -53,7 +53,7 @@ public class CertificateReport {
     private Boolean selfSigned;
     private Boolean leafCertificate;
     private Boolean extendedKeyUsageServerAuth;
-    private Boolean anyExtendedKeyUsage;
+    private Boolean extendedKeyUsagePresent;
     private String sha256Pin;
 
     public CertificateReport() {
@@ -76,12 +76,12 @@ public class CertificateReport {
         }
     }
 
-    public Boolean getAnyExtendedKeyUsage() {
-        return anyExtendedKeyUsage;
+    public Boolean getExtendedKeyUsagePresent() {
+        return extendedKeyUsagePresent;
     }
 
-    public void setAnyExtendedKeyUsage(Boolean anyExtendedKeyUsage) {
-        this.anyExtendedKeyUsage = anyExtendedKeyUsage;
+    public void setExtendedKeyUsagePresent(Boolean extendedKeyUsagePresent) {
+        this.extendedKeyUsagePresent = extendedKeyUsagePresent;
     }
 
     public Boolean getExtendedKeyUsageServerAuth() {

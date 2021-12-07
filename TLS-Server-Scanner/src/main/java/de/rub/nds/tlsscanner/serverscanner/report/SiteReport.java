@@ -9,7 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.rub.nds.tlsattacker.attacks.constants.DrownVulnerabilityType;
 import de.rub.nds.tlsattacker.attacks.constants.EarlyCcsVulnerabilityType;
 import de.rub.nds.tlsattacker.core.certificate.transparency.SignedCertificateTimestampList;
@@ -560,7 +559,6 @@ public class SiteReport extends Observable implements Serializable {
         this.performanceList = performanceList;
     }
 
-    @JsonIgnore
     public synchronized List<InformationLeakTest<PaddingOracleTestInfo>> getPaddingOracleTestResultList() {
         return paddingOracleTestResultList;
     }
