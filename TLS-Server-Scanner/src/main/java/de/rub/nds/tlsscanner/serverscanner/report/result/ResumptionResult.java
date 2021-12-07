@@ -24,11 +24,12 @@ public class ResumptionResult extends ProbeResult {
     private final TestResult supportsTls13_0rtt;
     private final TestResult supportsDtlsCookieExchangeInResumption;
     private final TestResult supportsDtlsCookieExchangeInSessionTicketResumption;
+    private final TestResult respectsPskModes;
 
     public ResumptionResult(TestResult supportsResumption, TestResult supportsTicketResumption,
         TestResult supportsTls13SessionTicket, TestResult supportsTls13PskDhe, TestResult supportsTls13Psk,
         TestResult supportsTls13_0rtt, TestResult supportsDtlsCookieExchangeInResumption,
-        TestResult supportsDtlsCookieExchangeInTicketResumption) {
+        TestResult supportsDtlsCookieExchangeInTicketResumption, TestResult respectsPskModes) {
         super(ProbeType.RESUMPTION);
         this.supportsResumption = supportsResumption;
         this.supportsSessionTicketResumption = supportsTicketResumption;
@@ -38,6 +39,7 @@ public class ResumptionResult extends ProbeResult {
         this.supportsTls13Psk = supportsTls13Psk;
         this.supportsDtlsCookieExchangeInResumption = supportsDtlsCookieExchangeInResumption;
         this.supportsDtlsCookieExchangeInSessionTicketResumption = supportsDtlsCookieExchangeInTicketResumption;
+        this.respectsPskModes = respectsPskModes;
     }
 
     @Override
@@ -52,6 +54,7 @@ public class ResumptionResult extends ProbeResult {
             supportsDtlsCookieExchangeInResumption);
         report.putResult(AnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_SESSION_TICKET_RESUMPTION,
             supportsDtlsCookieExchangeInSessionTicketResumption);
+        report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES, respectsPskModes);
     }
 
 }

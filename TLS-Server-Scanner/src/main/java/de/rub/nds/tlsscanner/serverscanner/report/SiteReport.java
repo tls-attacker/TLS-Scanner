@@ -27,6 +27,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
@@ -46,6 +47,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -82,7 +84,9 @@ public class SiteReport extends Observable implements Serializable {
     private Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnesses;
     private Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnessesTls13;
     private List<NamedGroup> supportedTls13Groups = null;
-    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
+    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsCert = null;
+    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsSke = null;
+    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsTls13 = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
     private List<String> supportedAlpns = null;
@@ -156,6 +160,9 @@ public class SiteReport extends Observable implements Serializable {
     private Boolean ccaSupported = null;
     private Boolean ccaRequired = null;
     private List<CcaTestResult> ccaTestResultList;
+
+    // Guidelines
+    private List<GuidelineReport> guidelineReports = new ArrayList<>();
 
     private List<ProbeType> probeTypeList;
 
@@ -370,12 +377,41 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
-        return supportedSignatureAndHashAlgorithms;
+        HashSet<SignatureAndHashAlgorithm> combined = new HashSet<>();
+        if (supportedSignatureAndHashAlgorithmsCert != null) {
+            combined.addAll(supportedSignatureAndHashAlgorithmsCert);
+        }
+        if (supportedSignatureAndHashAlgorithmsSke != null) {
+            combined.addAll(supportedSignatureAndHashAlgorithmsSke);
+        }
+        return new ArrayList<>(combined);
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsTls13() {
+        return supportedSignatureAndHashAlgorithmsTls13;
+    }
+
+    public void setSupportedSignatureAndHashAlgorithmsTls13(
+        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsTls13) {
+        this.supportedSignatureAndHashAlgorithmsTls13 = supportedSignatureAndHashAlgorithmsTls13;
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsCert() {
+        return supportedSignatureAndHashAlgorithmsCert;
+    }
+
+    public synchronized void setSupportedSignatureAndHashAlgorithmsCert(
+        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+        this.supportedSignatureAndHashAlgorithmsCert = supportedSignatureAndHashAlgorithms;
     }
 
     public synchronized void
-        setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
-        this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
+        setSupportedSignatureAndHashAlgorithmsSke(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+        this.supportedSignatureAndHashAlgorithmsSke = supportedSignatureAndHashAlgorithms;
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsSke() {
+        return supportedSignatureAndHashAlgorithmsSke;
     }
 
     public synchronized List<ExtensionType> getSupportedExtensions() {
@@ -800,6 +836,14 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
         this.minimumDssCertKeySize = minimumDssCertKeySize;
+    }
+
+    public synchronized List<GuidelineReport> getGuidelineReports() {
+        return guidelineReports;
+    }
+
+    public synchronized void setGuidelineReports(List<GuidelineReport> guidelineReports) {
+        this.guidelineReports = guidelineReports;
     }
 
     public synchronized List<EntropyReport> getEntropyReportList() {

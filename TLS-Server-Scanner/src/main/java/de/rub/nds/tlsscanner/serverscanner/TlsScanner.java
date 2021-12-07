@@ -24,6 +24,7 @@ import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DestinationPortAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.CertificateSignatureAndHashAlgorithmAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DtlsRetransmissionAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
@@ -94,6 +95,7 @@ public class TlsScanner {
         addProbeToProbeList(new SniProbe(config, parallelExecutor));
         addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
         addProbeToProbeList(new NamedGroupsProbe(config, parallelExecutor));
+        addProbeToProbeList(new NamedCurvesOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new CertificateProbe(config, parallelExecutor));
         addProbeToProbeList(new OcspProbe(config, parallelExecutor));
         addProbeToProbeList(new ProtocolVersionProbe(config, parallelExecutor));
@@ -112,6 +114,7 @@ public class TlsScanner {
         addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
         addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
         addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
+        addProbeToProbeList(new SignatureAndHashAlgorithmProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterProbe());
@@ -120,6 +123,7 @@ public class TlsScanner {
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
         afterList.add(new RaccoonAttackAfterProbe());
+        afterList.add(new CertificateSignatureAndHashAlgorithmAfterProbe());
         if (config.getDtlsDelegate().isDTLS()) {
             addProbeToProbeList(new DtlsFeaturesProbe(config, parallelExecutor));
             addProbeToProbeList(new DtlsHelloVerifyRequestProbe(config, parallelExecutor));
@@ -145,6 +149,7 @@ public class TlsScanner {
             addProbeToProbeList(new DrownProbe(config, parallelExecutor));
             afterList.add(new PoodleAfterProbe());
         }
+
     }
 
     private void addProbeToProbeList(TlsProbe probe) {
@@ -175,7 +180,6 @@ public class TlsScanner {
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
                         config.getClientDelegate().getHost());
-
                     long scanStartTime = System.currentTimeMillis();
                     siteReport = executor.execute();
                     SiteReportRater rater;

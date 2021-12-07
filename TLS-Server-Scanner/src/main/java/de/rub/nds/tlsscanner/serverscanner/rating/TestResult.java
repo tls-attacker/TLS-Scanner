@@ -19,6 +19,10 @@ public enum TestResult {
     UNCERTAIN,
     UNSUPPORTED,
     NOT_TESTED_YET,
-    TIMEOUT
+    TIMEOUT;
+
+    public static TestResult of(boolean value) {
+        return value ? TRUE : FALSE;
+    }
 
 }

@@ -26,7 +26,10 @@ import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.EncryptedExtensionsMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -44,16 +47,19 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ResumptionResult;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ResumptionProbe extends TlsProbe {
 
     private Set<CipherSuite> supportedSuites;
     private TestResult supportsDtlsCookieExchangeInResumption;
     private TestResult supportsDtlsCookieExchangeInTicketResumption;
+    private TestResult respectsPskModes;
 
     public ResumptionProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RESUMPTION, scannerConfig);
@@ -61,6 +67,7 @@ public class ResumptionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
+        this.respectsPskModes = TestResult.TRUE;
         try {
             if (getScannerConfig().getDtlsDelegate().isDTLS()) {
                 supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
@@ -68,20 +75,22 @@ public class ResumptionProbe extends TlsProbe {
                 return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
                     TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET,
                     TestResult.NOT_TESTED_YET, supportsDtlsCookieExchangeInResumption,
-                    supportsDtlsCookieExchangeInTicketResumption);
+                    supportsDtlsCookieExchangeInTicketResumption, respectsPskModes);
             } else {
                 supportsDtlsCookieExchangeInResumption = TestResult.NOT_TESTED_YET;
                 supportsDtlsCookieExchangeInTicketResumption = TestResult.NOT_TESTED_YET;
                 return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
                     getIssuesSessionTicket(), getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE),
                     getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE), getSupports0rtt(),
-                    supportsDtlsCookieExchangeInResumption, supportsDtlsCookieExchangeInTicketResumption);
+                    supportsDtlsCookieExchangeInResumption, supportsDtlsCookieExchangeInTicketResumption,
+                    respectsPskModes);
             }
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);
             return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
                 TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                TestResult.ERROR_DURING_TEST);
         }
     }
 
@@ -171,15 +180,24 @@ public class ResumptionProbe extends TlsProbe {
         }
     }
 
+    private TestResult isKeyShareExtensionNegotiated(State state) {
+        List<HandshakeMessage> handshakes = WorkflowTraceUtil.getAllReceivedHandshakeMessages(state.getWorkflowTrace());
+        List<ServerHelloMessage> hellos = handshakes.stream().filter(message -> message instanceof ServerHelloMessage)
+            .map(message -> (ServerHelloMessage) message).collect(Collectors.toList());
+        if (hellos.size() < 2) {
+            return TestResult.COULD_NOT_TEST;
+        }
+        ServerHelloMessage second = hellos.get(1);
+        KeyShareExtensionMessage keyShareExtensionMessage = second.getExtension(KeyShareExtensionMessage.class);
+        return second.containsExtension(ExtensionType.KEY_SHARE) ? TestResult.TRUE : TestResult.FALSE;
+    }
+
     private TestResult getSupportsTls13Psk(PskKeyExchangeMode exchangeMode) {
         try {
             Config tlsConfig = createTls13Config();
             List<PskKeyExchangeMode> pskKex = new LinkedList<>();
             pskKex.add(exchangeMode);
             tlsConfig.setPSKKeyExchangeModes(pskKex);
-            if (exchangeMode == PskKeyExchangeMode.PSK_KE) {
-                tlsConfig.setAddKeyShareExtension(false);
-            }
             tlsConfig.setAddPSKKeyExchangeModesExtension(true);
             tlsConfig.setAddPreSharedKeyExtension(true);
             tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
@@ -188,6 +206,14 @@ public class ResumptionProbe extends TlsProbe {
 
             MessageAction lastRcv = (MessageAction) state.getWorkflowTrace().getLastReceivingAction();
             if (lastRcv.executedAsPlanned()) {
+                // Check PSK Modes
+                TestResult keyShareExtensionNegotiated = isKeyShareExtensionNegotiated(state);
+                TestResult keyShareRequired = TestResult.of(exchangeMode.equals(PskKeyExchangeMode.PSK_DHE_KE));
+                if (!keyShareExtensionNegotiated.equals(keyShareRequired)) {
+                    if (!TestResult.COULD_NOT_TEST.equals(keyShareExtensionNegotiated)) {
+                        respectsPskModes = TestResult.FALSE;
+                    }
+                }
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
@@ -315,6 +341,6 @@ public class ResumptionProbe extends TlsProbe {
     public ProbeResult getCouldNotExecuteResult() {
         return new ResumptionResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
             TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST);
+            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 }

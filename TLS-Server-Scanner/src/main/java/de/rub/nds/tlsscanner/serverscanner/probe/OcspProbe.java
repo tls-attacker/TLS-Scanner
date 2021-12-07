@@ -163,7 +163,7 @@ public class OcspProbe extends TlsProbe {
 
             // If nonce is supported used, check if server actually replies
             // with a different one immediately after
-            if (certResult.getFirstResponse().getNonce() != null) {
+            if (certResult.getFirstResponse() != null && certResult.getFirstResponse().getNonce() != null) {
                 certResult.setSupportsNonce(true);
                 OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
                 ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
@@ -174,7 +174,7 @@ public class OcspProbe extends TlsProbe {
                 certResult.setSupportsNonce(false);
             }
         } catch (Exception e) {
-            LOGGER.error("OCSP probe failed.");
+            LOGGER.error("OCSP probe failed.", e);
         }
     }
 

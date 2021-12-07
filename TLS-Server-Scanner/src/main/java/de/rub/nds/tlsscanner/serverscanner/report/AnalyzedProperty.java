@@ -61,6 +61,7 @@ public enum AnalyzedProperty {
     SUPPORTS_RSA(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_DH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_ECDHE(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_STATIC_ECDH(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ECDSA(AnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_RSA_CERT(AnalyzedPropertyCategory.CIPHER_SUITES),
@@ -91,6 +92,7 @@ public enum AnalyzedProperty {
     SUPPORTS_TLS13_SESSION_TICKETS(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK_DHE(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK(AnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SUPPORTS_TLS13_PSK_EXCHANGE_MODES(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_0_RTT(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_ID_RESUMPTION(AnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_RESUMPTION(AnalyzedPropertyCategory.SESSION_RESUMPTION),
@@ -124,8 +126,10 @@ public enum AnalyzedProperty {
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    ENFORCES_NG_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(AnalyzedPropertyCategory.SNI),
     STRICT_ALPN(AnalyzedPropertyCategory.EXTENSIONS),
+    RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION(AnalyzedPropertyCategory.EXTENSIONS),
     /**
      * does it handle unknown versions correctly?
      */

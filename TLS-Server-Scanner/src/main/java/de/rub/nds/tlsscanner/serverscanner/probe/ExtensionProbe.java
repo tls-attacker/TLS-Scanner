@@ -23,15 +23,23 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ExtensionResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public class ExtensionProbe extends TlsProbe {
+
+    private boolean supportsTls13;
 
     public ExtensionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.EXTENSIONS, config);
@@ -50,18 +58,29 @@ public class ExtensionProbe extends TlsProbe {
     }
 
     public List<ExtensionType> getSupportedExtensions() {
-        List<ExtensionType> allSupportedExtensions = new LinkedList<>();
-        List<ExtensionType> commonExtensions = getCommonExtension();
+        Set<ExtensionType> allSupportedExtensions = new HashSet<>();
+        List<ExtensionType> commonExtensions = getCommonExtension(ProtocolVersion.TLS12, suite -> true);
         if (commonExtensions != null) {
             allSupportedExtensions.addAll(commonExtensions);
         }
-        return allSupportedExtensions;
+        commonExtensions = getCommonExtension(ProtocolVersion.TLS12, CipherSuite::isCBC);
+        if (commonExtensions != null) {
+            allSupportedExtensions.addAll(commonExtensions);
+        }
+        if (this.supportsTls13) {
+            commonExtensions = getCommonExtension(ProtocolVersion.TLS13, CipherSuite::isTLS13);
+            if (commonExtensions != null) {
+                allSupportedExtensions.addAll(commonExtensions);
+            }
+        }
+        return new ArrayList<>(allSupportedExtensions);
     }
 
-    private List<ExtensionType> getCommonExtension() {
+    private List<ExtensionType> getCommonExtension(ProtocolVersion highestVersion,
+        Predicate<CipherSuite> cipherSuitePredicate) {
         Config tlsConfig = getScannerConfig().createConfig();
-        List<CipherSuite> cipherSuites = new LinkedList<>();
-        cipherSuites.addAll(Arrays.asList(CipherSuite.values()));
+        List<CipherSuite> cipherSuites = new LinkedList<>(Arrays.asList(CipherSuite.values()));
+        cipherSuites.removeIf(cipherSuitePredicate.negate());
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
@@ -99,6 +118,11 @@ public class ExtensionProbe extends TlsProbe {
         tlsConfig.setStatusRequestV2RequestList(requestV2List);
         tlsConfig.setAddCertificateStatusRequestV2Extension(true);
 
+        if (highestVersion.isTLS13()) {
+            tlsConfig.setAddSupportedVersionsExtension(true);
+            tlsConfig.setAddKeyShareExtension(true);
+        }
+
         List<NamedGroup> nameGroups = Arrays.asList(NamedGroup.values());
         tlsConfig.setDefaultClientNamedGroups(nameGroups);
         State state = new State(tlsConfig);
@@ -113,11 +137,12 @@ public class ExtensionProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return true;
+        return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION);
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
+        this.supportsTls13 = TestResult.TRUE.equals(report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3));
     }
 
     @Override

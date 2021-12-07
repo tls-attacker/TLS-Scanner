@@ -29,6 +29,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.PaddingOracleResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;

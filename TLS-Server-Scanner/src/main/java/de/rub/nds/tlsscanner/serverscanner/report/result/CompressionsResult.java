@@ -14,6 +14,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+
 import java.util.List;
 
 public class CompressionsResult extends ProbeResult {
@@ -31,11 +32,14 @@ public class CompressionsResult extends ProbeResult {
             report.setSupportedCompressionMethods(compressions);
             if (compressions.contains(CompressionMethod.LZS) || compressions.contains(CompressionMethod.DEFLATE)) {
                 report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.TRUE);
+                report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.TRUE);
             } else {
                 report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.FALSE);
+                report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.FALSE);
             }
         } else {
             report.putResult(AnalyzedProperty.VULNERABLE_TO_CRIME, TestResult.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_TLS_COMPRESSION, TestResult.COULD_NOT_TEST);
         }
     }
 
