@@ -20,7 +20,7 @@ public class ConditionalGuidelineCheckTest {
 
     @Test
     public void testPositive() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, false);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, true);
 
@@ -41,7 +41,7 @@ public class ConditionalGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, false);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_3, false);
 

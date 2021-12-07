@@ -17,9 +17,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
 import java.util.List;
 
-/**
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class SignatureAndHashAlgorithmResult extends ProbeResult {
 
     private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke;

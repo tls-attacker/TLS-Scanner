@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.constants;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public enum CipherSuiteGrade {
     GOOD,
     LOW,

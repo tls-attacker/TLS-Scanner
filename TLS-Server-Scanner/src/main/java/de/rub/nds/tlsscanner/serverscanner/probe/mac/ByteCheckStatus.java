@@ -11,10 +11,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.mac;
 
-/**
- *
- * @author robert
- */
 public enum ByteCheckStatus {
     CHECKED,
     NOT_CHECKED,

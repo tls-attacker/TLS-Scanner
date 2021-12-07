@@ -20,7 +20,7 @@ public class AnalyzedPropertyGuidelineCheckTest {
 
     @Test
     public void testPositive() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
         AnalyzedPropertyGuidelineCheck check =
@@ -33,7 +33,7 @@ public class AnalyzedPropertyGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.putResult(AnalyzedProperty.SUPPORTS_TLS13_PSK, true);
 
         AnalyzedPropertyGuidelineCheck check =
@@ -46,7 +46,7 @@ public class AnalyzedPropertyGuidelineCheckTest {
 
     @Test
     public void testUncertain() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
 
         AnalyzedPropertyGuidelineCheck check =
             new AnalyzedPropertyGuidelineCheck(null, null, AnalyzedProperty.SUPPORTS_TLS13_PSK, TestResult.FALSE);

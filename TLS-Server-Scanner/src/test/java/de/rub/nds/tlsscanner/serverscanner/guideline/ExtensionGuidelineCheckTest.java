@@ -22,7 +22,7 @@ public class ExtensionGuidelineCheckTest {
 
     @Test
     public void testPositive() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.setSupportedExtensions(Collections.singletonList(ExtensionType.COOKIE));
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
@@ -32,7 +32,7 @@ public class ExtensionGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.setSupportedExtensions(Collections.emptyList());
 
         ExtensionGuidelineCheck check = new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);

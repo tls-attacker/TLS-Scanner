@@ -25,10 +25,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public abstract class TlsProbe implements Callable<ProbeResult> {
 
     protected static final Logger LOGGER = LogManager.getLogger(TlsProbe.class.getName());
@@ -95,7 +91,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     public final void executeState(List<State> states) {
-        parallelExecutor.bulkExecuteClientStateTasks(states);
+        parallelExecutor.bulkExecuteStateTasks(states);
         for (State state : states) {
             writer.extract(state);
         }

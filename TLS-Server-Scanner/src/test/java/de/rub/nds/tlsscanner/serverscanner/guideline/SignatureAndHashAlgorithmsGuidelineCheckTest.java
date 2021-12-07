@@ -22,7 +22,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheckTest {
 
     @Test
     public void testPositive() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report
             .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.RSA_SHA1));
 
@@ -34,7 +34,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report
             .setSupportedSignatureAndHashAlgorithmsCert(Collections.singletonList(SignatureAndHashAlgorithm.DSA_SHA1));
 

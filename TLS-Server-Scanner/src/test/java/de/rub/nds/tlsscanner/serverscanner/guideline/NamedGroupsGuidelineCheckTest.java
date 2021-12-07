@@ -23,7 +23,7 @@ public class NamedGroupsGuidelineCheckTest {
 
     @Test
     public void testPositive() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.setSupportedNamedGroups(Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1));
 
         NamedGroupsGuidelineCheck check =
@@ -35,7 +35,7 @@ public class NamedGroupsGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.setSupportedNamedGroups(Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1));
 
         NamedGroupsGuidelineCheck check =

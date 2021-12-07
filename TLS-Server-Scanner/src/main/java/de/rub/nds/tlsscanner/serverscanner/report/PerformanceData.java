@@ -11,10 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 
-/**
- *
- * @author robert
- */
 public class PerformanceData {
 
     private ProbeType type;

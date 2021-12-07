@@ -35,10 +35,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class ProtocolVersionProbe extends TlsProbe {
 
     private List<ProtocolVersion> toTestList;
@@ -46,11 +42,16 @@ public class ProtocolVersionProbe extends TlsProbe {
     public ProtocolVersionProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.PROTOCOL_VERSION, config);
         toTestList = new LinkedList<>();
-        toTestList.add(ProtocolVersion.SSL2);
-        toTestList.add(ProtocolVersion.SSL3);
-        toTestList.add(ProtocolVersion.TLS10);
-        toTestList.add(ProtocolVersion.TLS11);
-        toTestList.add(ProtocolVersion.TLS12);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            toTestList.add(ProtocolVersion.DTLS10);
+            toTestList.add(ProtocolVersion.DTLS12);
+        } else {
+            toTestList.add(ProtocolVersion.SSL2);
+            toTestList.add(ProtocolVersion.SSL3);
+            toTestList.add(ProtocolVersion.TLS10);
+            toTestList.add(ProtocolVersion.TLS11);
+            toTestList.add(ProtocolVersion.TLS12);
+        }
     }
 
     @Override
@@ -75,10 +76,12 @@ public class ProtocolVersionProbe extends TlsProbe {
                     }
                 }
             }
-            if (isTls13Supported()) {
-                supportedVersionList.add(ProtocolVersion.TLS13);
-            } else {
-                unsupportedVersionList.add(ProtocolVersion.TLS13);
+            if (!getScannerConfig().getDtlsDelegate().isDTLS()) {
+                if (isTls13Supported()) {
+                    supportedVersionList.add(ProtocolVersion.TLS13);
+                } else {
+                    unsupportedVersionList.add(ProtocolVersion.TLS13);
+                }
             }
             return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
         } catch (Exception e) {
@@ -109,7 +112,7 @@ public class ProtocolVersionProbe extends TlsProbe {
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);

@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.TLSDelegateConfig;
 import de.rub.nds.tlsattacker.core.config.delegate.CcaDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
+import de.rub.nds.tlsscanner.serverscanner.config.delegate.DtlsDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
@@ -25,10 +26,6 @@ import org.bouncycastle.util.IPAddress;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class ScannerConfig extends TLSDelegateConfig {
 
     @ParametersDelegate
@@ -69,28 +66,37 @@ public class ScannerConfig extends TLSDelegateConfig {
     @ParametersDelegate
     private StarttlsDelegate starttlsDelegate;
 
+    @ParametersDelegate
+    private DtlsDelegate dtlsDelegate;
+
     private List<ProbeType> probes = null;
 
     private Config baseConfig = null;
 
     public ScannerConfig(GeneralDelegate delegate) {
         super(delegate);
+        this.dtlsDelegate = new DtlsDelegate();
         this.clientDelegate = new ClientDelegate();
         this.starttlsDelegate = new StarttlsDelegate();
         this.ccaDelegate = new CcaDelegate();
+
         addDelegate(clientDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
+        addDelegate(dtlsDelegate);
     }
 
     public ScannerConfig(GeneralDelegate delegate, ClientDelegate clientDelegate) {
         super(delegate);
         this.clientDelegate = clientDelegate;
+        this.dtlsDelegate = new DtlsDelegate();
         this.starttlsDelegate = new StarttlsDelegate();
         this.ccaDelegate = new CcaDelegate();
+
         addDelegate(clientDelegate);
         addDelegate(starttlsDelegate);
         addDelegate(ccaDelegate);
+        addDelegate(dtlsDelegate);
     }
 
     public ApplicationProtocol getApplicationProtocol() {
@@ -123,6 +129,14 @@ public class ScannerConfig extends TLSDelegateConfig {
 
     public StarttlsDelegate getStarttlsDelegate() {
         return starttlsDelegate;
+    }
+
+    public DtlsDelegate getDtlsDelegate() {
+        return dtlsDelegate;
+    }
+
+    public CcaDelegate getCcaDelegate() {
+        return ccaDelegate;
     }
 
     public boolean isNoColor() {

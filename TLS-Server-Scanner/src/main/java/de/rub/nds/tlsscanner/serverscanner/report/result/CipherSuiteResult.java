@@ -18,15 +18,11 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
-public class CipherSuiteProbeResult extends ProbeResult {
+public class CipherSuiteResult extends ProbeResult {
 
     private List<VersionSuiteListPair> pairLists;
 
@@ -50,7 +46,6 @@ public class CipherSuiteProbeResult extends ProbeResult {
     private TestResult supportsRsa = TestResult.FALSE;
     private TestResult supportsDh = TestResult.FALSE;
     private TestResult supportsEcdh = TestResult.FALSE;
-    private TestResult supportsEcdhe = TestResult.FALSE;
     private TestResult supportsStaticEcdh = TestResult.FALSE;
     private TestResult supportsEcdsa = TestResult.FALSE;
     private TestResult supportsRsaCert = TestResult.FALSE;
@@ -71,9 +66,8 @@ public class CipherSuiteProbeResult extends ProbeResult {
     private TestResult supportsLegacyPrf = TestResult.FALSE;
     private TestResult supportsSha256Prf = TestResult.FALSE;
     private TestResult supportsSha384Prf = TestResult.FALSE;
-    private TestResult supportsCbc = TestResult.FALSE;
 
-    public CipherSuiteProbeResult(List<VersionSuiteListPair> pairLists) {
+    public CipherSuiteResult(List<VersionSuiteListPair> pairLists) {
         super(ProbeType.CIPHER_SUITE);
         this.pairLists = pairLists;
     }
@@ -108,7 +102,6 @@ public class CipherSuiteProbeResult extends ProbeResult {
                 adjustKeyExchange(suite);
                 adjustCipherType(suite);
                 adjustCertificate(suite);
-                adjustCipherBlockModes(suite);
             }
             report.addCipherSuites(allSupported);
         } else {
@@ -124,7 +117,6 @@ public class CipherSuiteProbeResult extends ProbeResult {
             supportsDesCiphers = TestResult.COULD_NOT_TEST;
             supportsDh = TestResult.COULD_NOT_TEST;
             supportsEcdh = TestResult.COULD_NOT_TEST;
-            supportsEcdhe = TestResult.COULD_NOT_TEST;
             supportsEcmqv = TestResult.COULD_NOT_TEST;
             supportsExportCiphers = TestResult.COULD_NOT_TEST;
             supportsFortezza = TestResult.COULD_NOT_TEST;
@@ -154,15 +146,8 @@ public class CipherSuiteProbeResult extends ProbeResult {
             supportsLegacyPrf = TestResult.COULD_NOT_TEST;
             supportsSha256Prf = TestResult.COULD_NOT_TEST;
             supportsSha384Prf = TestResult.COULD_NOT_TEST;
-            supportsCbc = TestResult.COULD_NOT_TEST;
         }
         writeToReport(report);
-    }
-
-    private void adjustCipherBlockModes(CipherSuite suite) {
-        if (suite.isCBC()) {
-            supportsCbc = TestResult.TRUE;
-        }
     }
 
     private void adjustCipherType(CipherSuite suite) {
@@ -197,9 +182,6 @@ public class CipherSuiteProbeResult extends ProbeResult {
         }
         if (suite.name().contains("ECDH")) {
             supportsEcdh = TestResult.TRUE;
-        }
-        if (suite.name().contains("ECDHE")) {
-            supportsEcdhe = TestResult.TRUE;
         }
         if (suite.name().contains("NULL")) {
             supportsNullCiphers = TestResult.TRUE;
@@ -331,7 +313,6 @@ public class CipherSuiteProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_RSA_CERT, supportsRsaCert);
         report.putResult(AnalyzedProperty.SUPPORTS_DSS, supportsDss);
         report.putResult(AnalyzedProperty.SUPPORTS_ECDH, supportsEcdh);
-        report.putResult(AnalyzedProperty.SUPPORTS_ECDHE, supportsEcdhe);
         report.putResult(AnalyzedProperty.SUPPORTS_GOST, supportsGost);
         report.putResult(AnalyzedProperty.SUPPORTS_SRP, supportsSrp);
         report.putResult(AnalyzedProperty.SUPPORTS_KERBEROS, supportsKerberos);
@@ -348,7 +329,6 @@ public class CipherSuiteProbeResult extends ProbeResult {
         report.putResult(AnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
         report.putResult(AnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
         report.putResult(AnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
-        report.putResult(AnalyzedProperty.SUPPORTS_CBC, supportsCbc);
         report.setVersionSuitePairs(pairLists);
     }
 

@@ -29,7 +29,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SignatureAndHashAlgorithmResult;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,9 +38,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
 
-/**
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class SignatureAndHashAlgorithmProbe extends TlsProbe {
 
     private List<ProtocolVersion> versions;

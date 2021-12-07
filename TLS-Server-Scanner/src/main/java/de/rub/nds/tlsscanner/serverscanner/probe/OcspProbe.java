@@ -55,10 +55,6 @@ import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-/**
- *
- * @author Nils Hanke - {@literal nils.hanke@rub.de}
- */
 public class OcspProbe extends TlsProbe {
 
     private List<CertificateChain> serverCertChains;
@@ -93,7 +89,7 @@ public class OcspProbe extends TlsProbe {
             ocspCertResults.add(certResult);
         }
         List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
-        if (tls13NamedGroups != null) {
+        if (!tls13NamedGroups.isEmpty()) {
             tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
         }
         return new OcspResult(ocspCertResults, tls13CertStatus);
@@ -219,12 +215,12 @@ public class OcspProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setStopActionsAfterIOException(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
 
         tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());
         tlsConfig.setAddCertificateStatusRequestExtension(true);

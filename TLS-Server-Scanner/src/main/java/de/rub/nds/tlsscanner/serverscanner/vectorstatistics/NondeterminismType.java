@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.vectorstatistics;
 
-/**
- *
- * @author ic0ns
- */
 public enum NondeterminismType {
     CONNECTION,
     HETEROGENEOUS,

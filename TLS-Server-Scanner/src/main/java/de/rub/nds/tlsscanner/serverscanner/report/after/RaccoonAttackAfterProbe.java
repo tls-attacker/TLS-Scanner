@@ -29,9 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class analyzes all previously seen DH public keys and moduli
- *
- * @author robert
+ * This class analyzes all previously seen DH public keys and moduli.
  */
 public class RaccoonAttackAfterProbe extends AfterProbe {
 

@@ -240,7 +240,7 @@ public class NistGuidelineSerialization {
                     .or(Arrays.asList(new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_0, TestResult.TRUE),
                         new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_1, TestResult.TRUE),
                         new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_TLS_1_2, TestResult.TRUE))),
-                new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_CBC, TestResult.TRUE))),
+                new GuidelineCheckCondition(AnalyzedProperty.SUPPORTS_BLOCK_CIPHERS, TestResult.TRUE))),
             AnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, TestResult.TRUE));
 
         checks.add(new AnalyzedPropertyGuidelineCheck(

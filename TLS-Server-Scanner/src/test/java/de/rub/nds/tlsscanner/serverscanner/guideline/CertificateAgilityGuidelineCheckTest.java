@@ -19,7 +19,7 @@ public class CertificateAgilityGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
 
         CertificateAgilityGuidelineCheck check = new CertificateAgilityGuidelineCheck(null, null);
 

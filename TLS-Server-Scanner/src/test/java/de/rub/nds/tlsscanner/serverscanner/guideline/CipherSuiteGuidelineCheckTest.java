@@ -25,7 +25,7 @@ public class CipherSuiteGuidelineCheckTest {
 
     @Test
     public void testPositive() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.setVersionSuitePairs(Arrays.asList(
             new VersionSuiteListPair(ProtocolVersion.TLS12,
                 Collections.singletonList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256)),
@@ -47,7 +47,7 @@ public class CipherSuiteGuidelineCheckTest {
 
     @Test
     public void testNegative() {
-        SiteReport report = new SiteReport("test");
+        SiteReport report = new SiteReport("test", 443);
         report.setVersionSuitePairs(Collections.singletonList(new VersionSuiteListPair(ProtocolVersion.TLS12,
             Arrays.asList(CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256, CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384))));
 
