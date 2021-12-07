@@ -81,7 +81,9 @@ public class NamedGroupsProbe extends TlsProbe {
             addGroupsFound(overallSupported,
                 getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
                 KeyExchangeAlgorithm.ECDH_ANON);
-            addGroupsFound(overallSupported, getSupportedNamedGroups(getEcRsaCipherSuites(), true),
+            addGroupsFound(overallSupported,
+                getSupportedNamedGroups(
+                    getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
                 KeyExchangeAlgorithm.ECDHE_RSA);
             addGroupsFound(overallSupported,
                 getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
@@ -234,23 +236,11 @@ public class NamedGroupsProbe extends TlsProbe {
         return chosenCipherSuites;
     }
 
-    private List<CipherSuite> getEcCipherSuites() {
+    private List<CipherSuite> getAllEcCipherSuites() {
         List<CipherSuite> suiteList = new LinkedList<>();
         for (CipherSuite suite : supportedCipherSuites) {
             if (suite.isRealCipherSuite() && !suite.isTLS13()
                 && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh()) {
-                suiteList.add(suite);
-            }
-        }
-        return suiteList;
-    }
-
-    private List<CipherSuite> getEcRsaCipherSuites() {
-        List<CipherSuite> suiteList = new LinkedList<>();
-        for (CipherSuite suite : supportedCipherSuites) {
-            if (suite.isRealCipherSuite() && !suite.isTLS13()
-                && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh()
-                && AlgorithmResolver.getCertificateKeyType(suite) == CertificateKeyType.RSA) {
                 suiteList.add(suite);
             }
         }
@@ -290,8 +280,12 @@ public class NamedGroupsProbe extends TlsProbe {
         } else {
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.EXPLICIT_CHAR2);
         }
+        List<CipherSuite> allEcCipherSuites = getAllEcCipherSuites();
+        if (allEcCipherSuites.isEmpty()) {
+            return TestResult.COULD_NOT_TEST;
+        }
 
-        tlsConfig.setDefaultClientSupportedCipherSuites(getEcCipherSuites());
+        tlsConfig.setDefaultClientSupportedCipherSuites(allEcCipherSuites);
         State state = new State(tlsConfig);
         executeState(state);
 
