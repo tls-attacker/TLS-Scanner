@@ -126,6 +126,7 @@ public enum AnalyzedProperty {
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    ENFORCES_NG_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(AnalyzedPropertyCategory.SNI),
     STRICT_ALPN(AnalyzedPropertyCategory.EXTENSIONS),
     RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION(AnalyzedPropertyCategory.EXTENSIONS),

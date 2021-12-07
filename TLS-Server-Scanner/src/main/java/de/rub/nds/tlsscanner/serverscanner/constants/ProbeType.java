@@ -23,6 +23,7 @@ public enum ProbeType {
     DROWN("Drown"),
     EARLY_CCS("Early CCS"),
     NAMED_GROUPS("Named groups"),
+    NAMED_GROUPS_ORDER("Named groups order"),
     PADDING_ORACLE("Padding oracle"),
     TLS_POODLE("TLS-Poodle"),
     PROTOCOL_VERSION("Protocol version"),
