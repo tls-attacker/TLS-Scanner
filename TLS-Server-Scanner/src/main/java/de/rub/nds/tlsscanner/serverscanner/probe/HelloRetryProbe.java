@@ -64,7 +64,7 @@ public class HelloRetryProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new HelloRetryResult(null, null);
+        return new HelloRetryResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 
     @Override

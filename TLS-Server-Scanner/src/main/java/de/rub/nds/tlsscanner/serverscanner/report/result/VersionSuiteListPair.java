@@ -15,10 +15,6 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class VersionSuiteListPair implements Serializable {
 
     private final ProtocolVersion version;

@@ -103,17 +103,18 @@ public class ECPointFormatProbe extends TlsProbe {
         Config config = getScannerConfig().createConfig();
         config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
-        config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setEnforceSettings(true);
         config.setAddEllipticCurveExtension(true);
         config.setAddECPointFormatExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setAddRenegotiationInfoExtension(true);
-        config.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
         config.setQuickReceive(true);
         config.setDefaultSelectedPointFormat(format);
         config.setEarlyStop(true);
+        config.setStopActionsAfterIOException(true);
         config.setStopActionsAfterFatal(true);
+        config.setStopReceivingAfterFatal(true);
         config.setDefaultClientNamedGroups(groups);
         State state = new State(config);
         executeState(state);
@@ -178,7 +179,9 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
+        shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE
+            || report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE
+            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
             || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
             || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
         shouldTestTls13 = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;

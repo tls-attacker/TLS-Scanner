@@ -19,10 +19,6 @@ import de.rub.nds.tlsattacker.attacks.constants.PaddingVectorGeneratorType;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 
-/**
- *
- * @author robert
- */
 public class PaddingOracleTestInfo extends TestInfo {
 
     private final ProtocolVersion version;

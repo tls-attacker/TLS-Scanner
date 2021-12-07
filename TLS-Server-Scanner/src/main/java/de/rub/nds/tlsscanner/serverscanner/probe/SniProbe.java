@@ -12,6 +12,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -52,7 +53,7 @@ public class SniProbe extends TlsProbe {
             toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             config.setDefaultClientSupportedCipherSuites(toTestList);
             WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.SHORT_HELLO, RunningModeType.CLIENT);
+                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
             State state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
@@ -60,7 +61,7 @@ public class SniProbe extends TlsProbe {
             }
             // Test if we can get a hello with SNI
             config.setAddServerNameIndicationExtension(true);
-            trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.HELLO,
+            trace = new WorkflowConfigurationFactory(config).createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO,
                 RunningModeType.CLIENT);
             state = new State(config, trace);
             executeState(state);

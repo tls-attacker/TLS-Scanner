@@ -15,14 +15,11 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class PaddingOracleResult extends ProbeResult {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -30,6 +27,12 @@ public class PaddingOracleResult extends ProbeResult {
     private final List<InformationLeakTest<PaddingOracleTestInfo>> resultList;
 
     private TestResult vulnerable;
+
+    public PaddingOracleResult(TestResult result) {
+        super(ProbeType.PADDING_ORACLE);
+        this.vulnerable = result;
+        resultList = new LinkedList<>();
+    }
 
     public PaddingOracleResult(List<InformationLeakTest<PaddingOracleTestInfo>> resultList) {
         super(ProbeType.PADDING_ORACLE);

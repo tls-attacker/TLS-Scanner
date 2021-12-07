@@ -18,10 +18,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWorkflowType;
 
-/**
- *
- * @author robert
- */
 public class DirectRaccoonOracleTestInfo extends TestInfo {
 
     private final CipherSuite cipherSuite;

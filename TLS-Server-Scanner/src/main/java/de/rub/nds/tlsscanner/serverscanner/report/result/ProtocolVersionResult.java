@@ -31,13 +31,16 @@ public class ProtocolVersionResult extends ProbeResult {
 
     @Override
     public void mergeData(SiteReport report) {
-        if (supportedProtocolVersions != null && supportedProtocolVersions.size() > 0) {
-            report.setSupportsSslTls(true);
-        }
         if (supportedProtocolVersions != null) {
             report.setVersions(supportedProtocolVersions);
 
             for (ProtocolVersion version : supportedProtocolVersions) {
+                if (version == ProtocolVersion.DTLS10) {
+                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, TestResult.TRUE);
+                }
+                if (version == ProtocolVersion.DTLS12) {
+                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, TestResult.TRUE);
+                }
                 if (version == ProtocolVersion.SSL2) {
                     report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResult.TRUE);
                 }
@@ -59,6 +62,12 @@ public class ProtocolVersionResult extends ProbeResult {
             }
 
             for (ProtocolVersion version : unsupportedProtocolVersions) {
+                if (version == ProtocolVersion.DTLS10) {
+                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, TestResult.FALSE);
+                }
+                if (version == ProtocolVersion.DTLS12) {
+                    report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, TestResult.FALSE);
+                }
                 if (version == ProtocolVersion.SSL2) {
                     report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResult.FALSE);
                 }
@@ -79,6 +88,8 @@ public class ProtocolVersionResult extends ProbeResult {
                 }
             }
         } else {
+            report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_0, TestResult.COULD_NOT_TEST);
+            report.putResult(AnalyzedProperty.SUPPORTS_DTLS_1_2, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_SSL_2, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_SSL_3, TestResult.COULD_NOT_TEST);
             report.putResult(AnalyzedProperty.SUPPORTS_TLS_1_0, TestResult.COULD_NOT_TEST);

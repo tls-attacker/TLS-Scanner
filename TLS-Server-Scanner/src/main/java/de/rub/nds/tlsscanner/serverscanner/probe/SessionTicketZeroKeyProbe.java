@@ -15,16 +15,25 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.state.TlsContext;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SessionTicketZeroKeyResult;
@@ -33,6 +42,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -96,18 +106,26 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
         try {
             Config tlsConfig = getScannerConfig().createConfig();
             tlsConfig.setQuickReceive(true);
+            tlsConfig.setEarlyStop(true);
+            tlsConfig.setStopReceivingAfterFatal(true);
+            tlsConfig.setStopActionsAfterFatal(true);
+            tlsConfig.setStopActionsAfterIOException(true);
             List<CipherSuite> cipherSuites = new LinkedList<>();
             cipherSuites.addAll(supportedSuites);
             tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-            tlsConfig.setWorkflowTraceType(WorkflowTraceType.HANDSHAKE);
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
             tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites.get(0));
             tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
             tlsConfig.setAddECPointFormatExtension(true);
             tlsConfig.setAddEllipticCurveExtension(true);
             tlsConfig.setAddSessionTicketTLSExtension(true);
             tlsConfig.setAddRenegotiationInfoExtension(false);
-            state = new State(tlsConfig);
+            WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+            trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+            trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+            trace.addTlsAction(
+                new ReceiveAction(new NewSessionTicketMessage(), new ChangeCipherSpecMessage(), new FinishedMessage()));
+            state = new State(tlsConfig, trace);
             executeState(state);
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);
@@ -167,7 +185,8 @@ public class SessionTicketZeroKeyProbe extends TlsProbe {
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        return report.getCipherSuites() != null && (report.getCipherSuites().size() > 0);
+        return report.getCipherSuites() != null && (report.getCipherSuites().size() > 0)
+            && Objects.equals(report.getResult(AnalyzedProperty.SUPPORTS_SESSION_TICKETS), TestResult.TRUE);
     }
 
     private boolean checkForMasterSecret(byte[] decState, TlsContext context) {
