@@ -11,16 +11,9 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
@@ -38,12 +31,8 @@ public class CcaSupportProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         Config tlsConfig = generateConfig();
-
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-            .createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
-        State state = new State(tlsConfig, trace);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        State state = new State(tlsConfig);
         try {
             executeState(state);
         } catch (Exception e) {
@@ -73,14 +62,11 @@ public class CcaSupportProbe extends TlsProbe {
     private Config generateConfig() {
         Config config = getScannerConfig().createConfig();
         config.setAutoSelectCertificate(false);
-        config.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
-
         config.setQuickReceive(true);
         config.setEarlyStop(true);
-        config.setStopActionsAfterIOException(true);
+        config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
-
+        config.setStopActionsAfterIOException(true);
         return config;
     }
 }

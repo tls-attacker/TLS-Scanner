@@ -17,12 +17,15 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.DestinationPortAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.DhValueAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.report.after.DtlsRetransmissionAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.EcPublicKeyAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.FreakAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.LogjamAfterProbe;
@@ -85,12 +88,12 @@ public class TlsScanner {
         if (config.getAdditionalRandomnessHandshakes() > 0) {
             addProbeToProbeList(new RandomnessProbe(config, parallelExecutor));
         }
+        addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
+        addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
         addProbeToProbeList(new CommonBugProbe(config, parallelExecutor));
         addProbeToProbeList(new SniProbe(config, parallelExecutor));
         addProbeToProbeList(new CompressionsProbe(config, parallelExecutor));
         addProbeToProbeList(new NamedCurvesProbe(config, parallelExecutor));
-        addProbeToProbeList(new AlpnProbe(config, parallelExecutor));
-        addProbeToProbeList(new AlpacaProbe(config, parallelExecutor));
         addProbeToProbeList(new CertificateProbe(config, parallelExecutor));
         addProbeToProbeList(new OcspProbe(config, parallelExecutor));
         addProbeToProbeList(new ProtocolVersionProbe(config, parallelExecutor));
@@ -98,12 +101,6 @@ public class TlsScanner {
         addProbeToProbeList(new DirectRaccoonProbe(config, parallelExecutor));
         addProbeToProbeList(new CipherSuiteOrderProbe(config, parallelExecutor));
         addProbeToProbeList(new ExtensionProbe(config, parallelExecutor));
-        addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
-        if (config.getApplicationProtocol() == ApplicationProtocol.HTTP
-            || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
-            addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
-        }
-        addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
         addProbeToProbeList(new ECPointFormatProbe(config, parallelExecutor));
         addProbeToProbeList(new ResumptionProbe(config, parallelExecutor));
         addProbeToProbeList(new RenegotiationProbe(config, parallelExecutor));
@@ -111,20 +108,11 @@ public class TlsScanner {
         addProbeToProbeList(new HeartbleedProbe(config, parallelExecutor));
         addProbeToProbeList(new PaddingOracleProbe(config, parallelExecutor));
         addProbeToProbeList(new BleichenbacherProbe(config, parallelExecutor));
-        addProbeToProbeList(new TlsPoodleProbe(config, parallelExecutor));
         addProbeToProbeList(new InvalidCurveProbe(config, parallelExecutor));
-        addProbeToProbeList(new DrownProbe(config, parallelExecutor));
-        addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
-        // addProbeToProbeList(new MacProbe(config, parallelExecutor));
+        addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
         addProbeToProbeList(new CcaSupportProbe(config, parallelExecutor));
         addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
-        addProbeToProbeList(new CcaProbe(config, parallelExecutor));
-        addProbeToProbeList(new EsniProbe(config, parallelExecutor));
-        addProbeToProbeList(new CertificateTransparencyProbe(config, parallelExecutor));
-        addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
-        addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
         afterList.add(new Sweet32AfterProbe());
-        afterList.add(new PoodleAfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterProbe());
         afterList.add(new RandomnessAfterProbe());
@@ -132,6 +120,31 @@ public class TlsScanner {
         afterList.add(new DhValueAfterProbe());
         afterList.add(new PaddingOracleIdentificationAfterProbe());
         afterList.add(new RaccoonAttackAfterProbe());
+        if (config.getDtlsDelegate().isDTLS()) {
+            addProbeToProbeList(new DtlsFeaturesProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsHelloVerifyRequestProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsBugsProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsMessageSequenceProbe(config, parallelExecutor));
+            addProbeToProbeList(new DtlsRetransmissionsProbe(config, parallelExecutor));
+            afterList.add(new DtlsRetransmissionAfterProbe());
+            afterList.add(new DestinationPortAfterProbe());
+        } else {
+            addProbeToProbeList(new HelloRetryProbe(config, parallelExecutor));
+            addProbeToProbeList(new RecordFragmentationProbe(config, parallelExecutor));
+            addProbeToProbeList(new TlsPoodleProbe(config, parallelExecutor));
+            addProbeToProbeList(new EarlyCcsProbe(config, parallelExecutor));
+            // addProbeToProbeList(new MacProbe(config, parallelExecutor));
+            addProbeToProbeList(new CcaProbe(config, parallelExecutor));
+            addProbeToProbeList(new EsniProbe(config, parallelExecutor));
+            addProbeToProbeList(new TokenbindingProbe(config, parallelExecutor));
+            if (config.getApplicationProtocol() == ApplicationProtocol.HTTP
+                || config.getApplicationProtocol() == ApplicationProtocol.UNKNOWN) {
+                addProbeToProbeList(new HttpHeaderProbe(config, parallelExecutor));
+            }
+            addProbeToProbeList(new HttpFalseStartProbe(config, parallelExecutor));
+            addProbeToProbeList(new DrownProbe(config, parallelExecutor));
+            afterList.add(new PoodleAfterProbe());
+        }
     }
 
     private void addProbeToProbeList(TlsProbe probe) {
@@ -146,19 +159,25 @@ public class TlsScanner {
         LOGGER.debug("Finished TrustAnchorManager initialization");
 
         boolean isConnectable = false;
+        boolean speaksProtocol = false;
+        ProtocolType protocolType = getProtocolType();
         ThreadedScanJobExecutor executor = null;
         try {
+            SiteReport siteReport = new SiteReport(config.getClientDelegate().getExtractedHost(),
+                config.getClientDelegate().getExtractedPort());
             if (isConnectable()) {
+                isConnectable = true;
                 LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
-                if ((config.getStarttlsDelegate().getStarttlsType() == StarttlsType.NONE && speaksTls())
-                    || (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE && speaksStartTls())) {
-                    LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
+                if (speaksProtocol(protocolType)) {
+                    speaksProtocol = true;
+                    LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + protocolType.getName());
+
                     ScanJob job = new ScanJob(probeList, afterList);
                     executor = new ThreadedScanJobExecutor(config, job, config.getParallelProbes(),
                         config.getClientDelegate().getHost());
 
                     long scanStartTime = System.currentTimeMillis();
-                    SiteReport siteReport = executor.execute();
+                    siteReport = executor.execute();
                     SiteReportRater rater;
                     try {
                         rater = SiteReportRater.getSiteReportRater();
@@ -172,15 +191,12 @@ public class TlsScanner {
                     long scanEndTime = System.currentTimeMillis();
                     siteReport.setScanStartTime(scanStartTime);
                     siteReport.setScanEndTime(scanEndTime);
-                    return siteReport;
-                } else {
-                    isConnectable = true;
                 }
             }
-            SiteReport report = new SiteReport(config.getClientDelegate().getHost());
-            report.setServerIsAlive(isConnectable);
-            report.setSupportsSslTls(false);
-            return report;
+            siteReport.setServerIsAlive(isConnectable);
+            siteReport.setSpeaksProtocol(speaksProtocol);
+            siteReport.setProtocolType(protocolType);
+            return siteReport;
         } finally {
             if (executor != null) {
                 executor.shutdown();
@@ -196,6 +212,16 @@ public class TlsScanner {
         }
     }
 
+    private ProtocolType getProtocolType() {
+        if (config.getDtlsDelegate().isDTLS()) {
+            return ProtocolType.DTLS;
+        } else if (config.getStarttlsDelegate().getStarttlsType() != StarttlsType.NONE) {
+            return ProtocolType.STARTTLS;
+        } else {
+            return ProtocolType.TLS;
+        }
+    }
+
     public boolean isConnectable() {
         try {
             Config tlsConfig = config.createConfig();
@@ -207,22 +233,24 @@ public class TlsScanner {
         }
     }
 
-    private boolean speaksTls() {
+    private boolean speaksProtocol(ProtocolType type) {
         try {
             Config tlsConfig = config.createConfig();
             ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-            return checker.speaksTls(tlsConfig);
+            switch (type) {
+                case TLS:
+                    return checker.speaksTls(tlsConfig);
+                case DTLS:
+                    return checker.speaksDTls(tlsConfig);
+                case STARTTLS:
+                    return checker.speaksStartTls(tlsConfig);
+                default:
+                    return false;
+            }
         } catch (Exception e) {
-            LOGGER.warn("Could not test if the server speaks TLS. Probably could not connect.");
-            LOGGER.debug(e);
+            LOGGER.warn("Could not test if the server speaks " + type.getName() + ". Probably could not connect.");
             return false;
         }
-    }
-
-    private boolean speaksStartTls() {
-        Config tlsConfig = config.createConfig();
-        ConnectivityChecker checker = new ConnectivityChecker(tlsConfig.getDefaultClientConnection());
-        return checker.speaksStartTls(tlsConfig);
     }
 
     public void setCloseAfterFinishParallel(boolean closeAfterFinishParallel) {

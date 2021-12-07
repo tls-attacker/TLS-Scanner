@@ -19,10 +19,6 @@ import java.util.Date;
 import org.bouncycastle.asn1.x509.Certificate;
 import sun.security.x509.X509CertImpl;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CertificateJudge {
 
     private final Certificate certificate;

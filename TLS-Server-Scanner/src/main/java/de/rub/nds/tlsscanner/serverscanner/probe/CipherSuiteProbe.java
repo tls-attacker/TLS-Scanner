@@ -28,7 +28,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.CipherSuiteProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.CipherSuiteResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import java.util.ArrayList;
@@ -74,10 +74,10 @@ public class CipherSuiteProbe extends TlsProbe {
                     }
                 }
             }
-            return new CipherSuiteProbeResult(pairLists);
+            return new CipherSuiteResult(pairLists);
         } catch (Exception e) {
             LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new CipherSuiteProbeResult(null);
+            return new CipherSuiteResult(null);
         }
     }
 
@@ -171,9 +171,10 @@ public class CipherSuiteProbe extends TlsProbe {
             config.setAddECPointFormatExtension(containsEc);
             config.setAddSignatureAndHashAlgorithmsExtension(true);
             config.setAddRenegotiationInfoExtension(true);
-            config.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+            config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
             config.setQuickReceive(true);
             config.setEarlyStop(true);
+            config.setStopReceivingAfterFatal(true);
             config.setStopActionsAfterIOException(true);
             config.setStopActionsAfterFatal(true);
             List<NamedGroup> namedGroup = new LinkedList<>();
@@ -222,6 +223,12 @@ public class CipherSuiteProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.DTLS10);
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.DTLS12);
+        }
         if (report.getResult(AnalyzedProperty.SUPPORTS_SSL_3) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.SSL3);
         }
@@ -241,6 +248,6 @@ public class CipherSuiteProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new CipherSuiteProbeResult(null);
+        return new CipherSuiteResult(null);
     }
 }

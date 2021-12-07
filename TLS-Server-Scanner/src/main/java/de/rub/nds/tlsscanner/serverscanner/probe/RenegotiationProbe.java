@@ -16,19 +16,18 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
+import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.FlushSessionCacheAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
+import de.rub.nds.tlsattacker.core.workflow.action.RenegotiationAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendingAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
@@ -38,17 +37,13 @@ import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.RenegotiationResult;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 public class RenegotiationProbe extends TlsProbe {
 
     private Set<CipherSuite> supportedSuites;
-    private TestResult supportsRenegotiationExtension;
+    private TestResult supportsDtlsCookieExchangeInRenegotiation;
 
     public RenegotiationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RENEGOTIATION, scannerConfig);
@@ -57,43 +52,38 @@ public class RenegotiationProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            TestResult supportsSecureRenegotiationExtension;
-            if (supportsRenegotiationExtension == TestResult.TRUE) {
-                supportsSecureRenegotiationExtension = supportsSecureClientRenegotiationExtension();
+            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+                supportsDtlsCookieExchangeInRenegotiation = supportsDtlsCookieExchangeInRenegotiation();
             } else {
-                supportsSecureRenegotiationExtension = TestResult.FALSE;
+                supportsDtlsCookieExchangeInRenegotiation = TestResult.NOT_TESTED_YET;
             }
-            TestResult supportsSecureRenegotiationCipherSuite = supportsSecureClientRenegotiationCipherSuite();
-            TestResult supportsInsecureRenegotiation = supportsInsecureClientRenegotiation();
-            TestResult vulnerableToRenegotiationAttackExtension = vulnerableToRenegotiationAttackExtension();
-            TestResult vulnerableToRenegotiationAttackCipherSuite = vulnerableToRenegotiationAttackCipherSuite();
-            return new RenegotiationResult(supportsSecureRenegotiationExtension, supportsSecureRenegotiationCipherSuite,
-                supportsInsecureRenegotiation, vulnerableToRenegotiationAttackExtension,
-                vulnerableToRenegotiationAttackCipherSuite);
+            return new RenegotiationResult(supportsSecureClientRenegotiationExtension(),
+                supportsSecureClientRenegotiationCipherSuite(), supportsInsecureClientRenegotiation(),
+                vulnerableToRenegotiationAttackExtension(false, true),
+                vulnerableToRenegotiationAttackExtension(true, false),
+                vulnerableToRenegotiationAttackCipherSuite(false, true),
+                vulnerableToRenegotiationAttackCipherSuite(true, false), supportsDtlsCookieExchangeInRenegotiation);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new RenegotiationResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
                 TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
         }
     }
 
-    private TestResult vulnerableToRenegotiationAttackExtension() {
+    private TestResult vulnerableToRenegotiationAttackExtension(boolean addExtensionInFirstHandshake,
+        boolean addExtensionInSecondHandshake) {
         Config tlsConfig = getBaseConfig();
-        tlsConfig.setAddRenegotiationInfoExtension(false);
-        WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = configFactory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
-
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        tlsConfig.setAddRenegotiationInfoExtension(addExtensionInFirstHandshake);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
+        trace.addTlsAction(new RenegotiationAction(true));
+        trace.addTlsAction(new FlushSessionCacheAction());
+        tlsConfig.setAddRenegotiationInfoExtension(addExtensionInSecondHandshake);
+        tlsConfig.setDtlsCookieExchange(supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+        trace.addTlsActions(new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode())
+            .getTlsActions());
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
@@ -102,48 +92,53 @@ public class RenegotiationProbe extends TlsProbe {
         return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
     }
 
-    private TestResult vulnerableToRenegotiationAttackCipherSuite() {
+    private TestResult vulnerableToRenegotiationAttackCipherSuite(boolean addCipherSuiteInFirstHandshake,
+        boolean addCipherSuiteInSecondHandshake) {
         Config tlsConfig = getBaseConfig();
-        tlsConfig.setAddRenegotiationInfoExtension(false);
-        WorkflowConfigurationFactory configFactory = new WorkflowConfigurationFactory(tlsConfig);
-        WorkflowTrace trace = configFactory.createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
-
-        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        tlsConfig.setAddRenegotiationInfoExtension(true);
-        ClientHelloMessage clientHelloMessage = new ClientHelloMessage(tlsConfig);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            for (CipherSuite suite : tlsConfig.getDefaultClientSupportedCipherSuites()) {
-
-                outputStream.write(suite.getByteValue());
-
-            }
-            outputStream.write(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV.getByteValue());
-        } catch (IOException ex) {
-            LOGGER.error("Could not write cipher suite value to stream");
+        tlsConfig.setAddRenegotiationInfoExtension(addCipherSuiteInFirstHandshake);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
+        if (addCipherSuiteInFirstHandshake) {
+            addRenegotiationCipherSuiteToClientHello(tlsConfig, trace);
         }
-        clientHelloMessage.setCipherSuites(Modifiable.explicit(outputStream.toByteArray()));
-        trace.addTlsAction(new SendAction(clientHelloMessage));
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(tlsConfig)));
-        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
+        trace.addTlsAction(new RenegotiationAction(true));
+        trace.addTlsAction(new FlushSessionCacheAction());
+        tlsConfig.setAddRenegotiationInfoExtension(addCipherSuiteInSecondHandshake);
+        tlsConfig.setDtlsCookieExchange(supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+        WorkflowTrace secondHandshake = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
+        if (addCipherSuiteInSecondHandshake) {
+            addRenegotiationCipherSuiteToClientHello(tlsConfig, secondHandshake);
+        }
+        trace.addTlsActions(secondHandshake.getTlsActions());
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace)) {
             return TestResult.COULD_NOT_TEST;
         }
         return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
+    }
+
+    private void addRenegotiationCipherSuiteToClientHello(Config tlsConfig, WorkflowTrace trace) {
+        for (SendingAction action : WorkflowTraceUtil.getSendingActionsForMessage(HandshakeMessageType.CLIENT_HELLO,
+            trace)) {
+            action.getSendMessages().clear();
+            ClientHelloMessage clientHelloMessage = new ClientHelloMessage(tlsConfig);
+            clientHelloMessage
+                .setCipherSuites(Modifiable.insert(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV.getByteValue(), 0));
+            action.getSendMessages().add(clientHelloMessage);
+        }
     }
 
     private TestResult supportsSecureClientRenegotiationExtension() {
         Config tlsConfig = getBaseConfig();
         tlsConfig.setAddRenegotiationInfoExtension(true);
         State state = new State(tlsConfig);
+        if (tlsConfig.getHighestProtocolVersion().isDTLS()) {
+            WorkflowTrace trace =
+                getDtlsRenegotiationTrace(tlsConfig, supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+            state = new State(tlsConfig, trace);
+        }
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return TestResult.COULD_NOT_TEST;
@@ -156,6 +151,11 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddRenegotiationInfoExtension(false);
         tlsConfig.getDefaultClientSupportedCipherSuites().add(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         State state = new State(tlsConfig);
+        if (tlsConfig.getHighestProtocolVersion().isDTLS()) {
+            WorkflowTrace trace =
+                getDtlsRenegotiationTrace(tlsConfig, supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+            state = new State(tlsConfig, trace);
+        }
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return TestResult.COULD_NOT_TEST;
@@ -167,11 +167,45 @@ public class RenegotiationProbe extends TlsProbe {
         Config tlsConfig = getBaseConfig();
         tlsConfig.setAddRenegotiationInfoExtension(false);
         State state = new State(tlsConfig);
+        if (tlsConfig.getHighestProtocolVersion().isDTLS()) {
+            WorkflowTrace trace =
+                getDtlsRenegotiationTrace(tlsConfig, supportsDtlsCookieExchangeInRenegotiation == TestResult.TRUE);
+            state = new State(tlsConfig, trace);
+        }
         executeState(state);
         if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
             return TestResult.COULD_NOT_TEST;
         }
         return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
+    }
+
+    private WorkflowTrace getDtlsRenegotiationTrace(Config tlsConfig, boolean renegotiationWithCookieExchange) {
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
+        trace.addTlsAction(new RenegotiationAction());
+        trace.addTlsAction(new FlushSessionCacheAction());
+        tlsConfig.setDtlsCookieExchange(renegotiationWithCookieExchange);
+        trace.addTlsActions(new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode())
+            .getTlsActions());
+        return trace;
+    }
+
+    private TestResult supportsDtlsCookieExchangeInRenegotiation() {
+        Config tlsConfig = getBaseConfig();
+        tlsConfig.setAddRenegotiationInfoExtension(true);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, tlsConfig.getDefaultRunningMode());
+        trace.addTlsAction(new RenegotiationAction());
+        trace.addTlsAction(new FlushSessionCacheAction());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        State state = new State(tlsConfig, trace);
+        executeState(state);
+        if (!WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+            return TestResult.COULD_NOT_TEST;
+        }
+        return state.getWorkflowTrace().executedAsPlanned() ? TestResult.FALSE : TestResult.TRUE;
     }
 
     @Override
@@ -181,17 +215,16 @@ public class RenegotiationProbe extends TlsProbe {
 
     @Override
     public void adjustConfig(SiteReport report) {
-        supportedSuites = new HashSet<>();
-        supportedSuites.addAll(Arrays.asList(CipherSuite.values()));
+        supportedSuites = report.getCipherSuites();
         supportedSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         supportedSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        supportsRenegotiationExtension = TestResult.TRUE;
     }
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new RenegotiationResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+            TestResult.COULD_NOT_TEST);
     }
 
     /**
@@ -201,17 +234,16 @@ public class RenegotiationProbe extends TlsProbe {
     private boolean supportsOnlyTls13(SiteReport report) {
         return report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.FALSE
             && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.FALSE
-            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.FALSE;
+            && report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.FALSE
+            && report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.FALSE
+            && report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.FALSE;
     }
 
     private Config getBaseConfig() {
         Config tlsConfig = getScannerConfig().createConfig();
-        tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(new ArrayList<>(supportedSuites));
         tlsConfig.setDefaultSelectedCipherSuite(tlsConfig.getDefaultClientSupportedCipherSuites().get(0));
         tlsConfig.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_CLIENT_RENEGOTIATION_WITHOUT_RESUMPTION);
         boolean containsEc = false;
         for (CipherSuite suite : tlsConfig.getDefaultClientSupportedCipherSuites()) {
@@ -226,7 +258,6 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setAddServerNameIndicationExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
-
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
@@ -234,9 +265,7 @@ public class RenegotiationProbe extends TlsProbe {
         tlsConfig.setStopReceivingAfterWarning(true);
         tlsConfig.setStopActionsAfterWarning(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setStopTraceAfterUnexpected(true);
         tlsConfig.setQuickReceive(true);
-
         return tlsConfig;
     }
 }

@@ -12,10 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.serverscanner.constants.CipherSuiteGrade;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class CipherSuiteRater {
 
     private CipherSuiteRater() {

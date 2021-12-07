@@ -12,10 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class TLSScannerTest {
 
     public TLSScannerTest() {

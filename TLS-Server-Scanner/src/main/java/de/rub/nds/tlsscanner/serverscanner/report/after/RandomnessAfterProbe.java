@@ -72,23 +72,16 @@ public class RandomnessAfterProbe extends AfterProbe {
      * @return TRUE if the all timestamps are within one year of now
      */
     private boolean checkForUnixTime(ExtractedValueContainer<ComparableByteArray> randomContainer) {
-
-        Integer lastUnixTime = null;
         Integer serverUnixTime = null;
-        int matchCounter = 0;
-
         for (ComparableByteArray byteArray : randomContainer.getExtractedValueList()) {
-
             byte[] serverRandom = byteArray.getArray();
-            if (lastUnixTime != null) {
-                if (serverRandom != null) {
-                    byte[] unixTimeStamp = new byte[4];
-                    System.arraycopy(serverRandom, 0, unixTimeStamp, 0, HandshakeByteLength.UNIX_TIME);
-                    serverUnixTime = ArrayConverter.bytesToInt(unixTimeStamp);
-                    if (serverUnixTime > System.currentTimeMillis() / 1000 + UNIX_TIME_ALLOWED_DEVIATION
-                        || serverUnixTime < System.currentTimeMillis() / 1000 - UNIX_TIME_ALLOWED_DEVIATION) {
-                        return false;
-                    }
+            if (serverRandom != null) {
+                byte[] unixTimeStamp = new byte[4];
+                System.arraycopy(serverRandom, 0, unixTimeStamp, 0, HandshakeByteLength.UNIX_TIME);
+                serverUnixTime = ArrayConverter.bytesToInt(unixTimeStamp);
+                if (serverUnixTime > System.currentTimeMillis() / 1000 + UNIX_TIME_ALLOWED_DEVIATION
+                    || serverUnixTime < System.currentTimeMillis() / 1000 - UNIX_TIME_ALLOWED_DEVIATION) {
+                    return false;
                 }
             }
         }
@@ -98,6 +91,8 @@ public class RandomnessAfterProbe extends AfterProbe {
     @Override
     public void analyze(SiteReport report) {
 
+        ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
+            report.getExtractedValueContainerMap().get(TrackableValueType.COOKIE);
         ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
             report.getExtractedValueContainerMap().get(TrackableValueType.RANDOM);
         ExtractedValueContainer<ComparableByteArray> sessionIdExtractedValueContainer =
@@ -106,6 +101,7 @@ public class RandomnessAfterProbe extends AfterProbe {
             report.getExtractedValueContainerMap().get(TrackableValueType.CBC_IV);
         boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
 
+        List<ComparableByteArray> extractedCookieList = cookieExtractedValueContainer.getExtractedValueList();
         List<ComparableByteArray> extractedRandomList =
             filterRandoms(randomExtractedValueContainer.getExtractedValueList(), usesUnixTime);
         List<ComparableByteArray> extractedIvList = cbcIvExtractedValueContainer.getExtractedValueList();
@@ -114,6 +110,7 @@ public class RandomnessAfterProbe extends AfterProbe {
         List<EntropyReport> entropyReport = new LinkedList<>();
         entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
         entropyReport.add(createEntropyReport(extractedSessionIdList, RandomType.SESSION_ID));
+        entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
         entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
         report.putResult(AnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
         report.setEntropyReportList(entropyReport);
@@ -122,7 +119,8 @@ public class RandomnessAfterProbe extends AfterProbe {
     public EntropyReport createEntropyReport(List<ComparableByteArray> byteArrayList, RandomType type) {
         byte[] bytesToAnalyze = convertToSingleByteArray(byteArrayList);
         StatisticalTests.approximateEntropyTest(HELLO_RETRY_REQUEST_CONST, LONGEST_RUN_BLOCK_SIZE);
-        boolean duplicates = containsDuplicates(byteArrayList);
+        int totalDuplicates = getNumberOfDuplicates(byteArrayList);
+        boolean duplicates = totalDuplicates > 0;
         String bitString = StatisticalTests.byteArrayToBitString(bytesToAnalyze);
         boolean entropyTestPassed =
             StatisticalTests.approximateEntropyTest(bitString, ENTROPY_TEST_BLOCK_SIZE) <= MINIMUM_P_VALUE;
@@ -137,9 +135,9 @@ public class RandomnessAfterProbe extends AfterProbe {
         double templateTests =
             StatisticalTests.nonOverlappingTemplateTest(bitString, TEMPLATE_TEST_BLOCK_SIZE, MINIMUM_P_VALUE);
 
-        return new EntropyReport(type, byteArrayList.size(), bytesToAnalyze.length, duplicates, frequencyTestPassed,
-            monobitTestPassed, runsTestPassed, longestRunTestPassed, discreteFourierTestPassed, entropyTestPassed,
-            templateTests);
+        return new EntropyReport(type, byteArrayList.size(), bytesToAnalyze.length, duplicates, totalDuplicates,
+            frequencyTestPassed, monobitTestPassed, runsTestPassed, longestRunTestPassed, discreteFourierTestPassed,
+            entropyTestPassed, templateTests);
     }
 
     private byte[] convertToSingleByteArray(List<ComparableByteArray> byteArrayList) {
@@ -189,9 +187,9 @@ public class RandomnessAfterProbe extends AfterProbe {
         return filteredList;
     }
 
-    private boolean containsDuplicates(List<ComparableByteArray> byteArrayList) {
+    private int getNumberOfDuplicates(List<ComparableByteArray> byteArrayList) {
         Set<ComparableByteArray> set = new HashSet<>();
         set.addAll(byteArrayList);
-        return set.size() != byteArrayList.size();
+        return byteArrayList.size() - set.size();
     }
 }

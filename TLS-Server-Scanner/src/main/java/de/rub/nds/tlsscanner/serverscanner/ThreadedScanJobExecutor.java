@@ -32,10 +32,6 @@ import java.util.concurrent.TimeoutException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -67,7 +63,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     public SiteReport execute() {
         this.notScheduledTasks = new ArrayList<>(scanJob.getProbeList());
 
-        SiteReport report = new SiteReport(config.getClientDelegate().getHost());
+        SiteReport report = new SiteReport(config.getClientDelegate().getExtractedHost(),
+            config.getClientDelegate().getExtractedPort());
         report.addObserver(this);
 
         checkForExecutableProbes(report);

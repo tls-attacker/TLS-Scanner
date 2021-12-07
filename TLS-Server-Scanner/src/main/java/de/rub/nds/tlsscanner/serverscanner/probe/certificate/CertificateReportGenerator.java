@@ -39,10 +39,6 @@ import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CertificateReportGenerator {
 
     private static final Logger LOGGER = LogManager.getLogger(CertificateReportGenerator.class.getName());

@@ -9,15 +9,14 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.stats;
 
-/**
- *
- * @author robert
- */
 public enum TrackableValueType {
+    COOKIE,
     RANDOM,
     SESSION_ID,
     DHE_PUBLICKEY,
     ECDHE_PUBKEY,
     GCM_NONCE_EXPLICIT,
     CBC_IV,
+    DTLS_RETRANSMISSIONS,
+    DESTINATION_PORT,
 }
