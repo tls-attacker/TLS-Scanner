@@ -21,7 +21,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.certificate.roca.BrokenKey;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -235,17 +234,9 @@ public class CertificateReportGenerator {
 
     private static void setOcspSupported(CertificateReport report, org.bouncycastle.asn1.x509.Certificate cert) {
         CertificateInformationExtractor ocspCertInfoExtractor = new CertificateInformationExtractor(cert);
-        try {
-            String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
-            if (ocspUrl != null) {
-                report.setOcspSupported(true);
-            }
-        } catch (NoSuchFieldException e) {
-            report.setOcspSupported(false);
-            LOGGER.debug("OCSP is not supported for this certificate.");
-        } catch (Exception e) {
-            report.setOcspSupported(false);
-            LOGGER.error("An error happened during retrieving OCSP information for this certificate.");
+        String ocspUrl = ocspCertInfoExtractor.getOcspServerUrl();
+        if (ocspUrl != null) {
+            report.setOcspSupported(true);
         }
     }
 
@@ -291,9 +282,7 @@ public class CertificateReportGenerator {
                         report.setRevoked(true);
                     }
                 }
-            } catch (UnknownHostException exc) {
-                LOGGER.error("OCSP Server URL is unknown host: {}", exc.getMessage());
-            } catch (Exception e) {
+            } catch (IOException e) {
                 LOGGER.error("Failed to get certificate revocation status via OCSP.", e);
             }
         }

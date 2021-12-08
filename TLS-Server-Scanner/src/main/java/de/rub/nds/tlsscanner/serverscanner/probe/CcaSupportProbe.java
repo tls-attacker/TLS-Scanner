@@ -33,11 +33,7 @@ public class CcaSupportProbe extends TlsProbe {
         Config tlsConfig = generateConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         State state = new State(tlsConfig);
-        try {
-            executeState(state);
-        } catch (Exception e) {
-            LOGGER.warn("Could not test for client authentication support.");
-        }
+        executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, state.getWorkflowTrace())) {
             return new CcaSupportResult(TestResult.TRUE);
         } else {

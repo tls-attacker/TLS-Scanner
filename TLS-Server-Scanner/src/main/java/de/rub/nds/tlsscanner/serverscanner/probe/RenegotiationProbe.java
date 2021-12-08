@@ -16,7 +16,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -51,24 +50,17 @@ public class RenegotiationProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                supportsDtlsCookieExchangeInRenegotiation = supportsDtlsCookieExchangeInRenegotiation();
-            } else {
-                supportsDtlsCookieExchangeInRenegotiation = TestResult.NOT_TESTED_YET;
-            }
-            return new RenegotiationResult(supportsSecureClientRenegotiationExtension(),
-                supportsSecureClientRenegotiationCipherSuite(), supportsInsecureClientRenegotiation(),
-                vulnerableToRenegotiationAttackExtension(false, true),
-                vulnerableToRenegotiationAttackExtension(true, false),
-                vulnerableToRenegotiationAttackCipherSuite(false, true),
-                vulnerableToRenegotiationAttackCipherSuite(true, false), supportsDtlsCookieExchangeInRenegotiation);
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new RenegotiationResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            supportsDtlsCookieExchangeInRenegotiation = supportsDtlsCookieExchangeInRenegotiation();
+        } else {
+            supportsDtlsCookieExchangeInRenegotiation = TestResult.NOT_TESTED_YET;
         }
+        return new RenegotiationResult(supportsSecureClientRenegotiationExtension(),
+            supportsSecureClientRenegotiationCipherSuite(), supportsInsecureClientRenegotiation(),
+            vulnerableToRenegotiationAttackExtension(false, true),
+            vulnerableToRenegotiationAttackExtension(true, false),
+            vulnerableToRenegotiationAttackCipherSuite(false, true),
+            vulnerableToRenegotiationAttackCipherSuite(true, false), supportsDtlsCookieExchangeInRenegotiation);
     }
 
     private TestResult vulnerableToRenegotiationAttackExtension(boolean addExtensionInFirstHandshake,

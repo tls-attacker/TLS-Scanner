@@ -18,6 +18,9 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
+import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
@@ -35,6 +38,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.after.PoodleAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.RaccoonAttackAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.Sweet32AfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.RandomnessAfterProbe;
+import de.rub.nds.tlsscanner.serverscanner.scan.ScanJob;
+import de.rub.nds.tlsscanner.serverscanner.scan.ThreadedScanJobExecutor;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import java.util.LinkedList;
 import java.util.List;
@@ -116,6 +121,7 @@ public class TlsScanner {
         addProbeToProbeList(new CcaRequiredProbe(config, parallelExecutor));
         addProbeToProbeList(new SignatureAndHashAlgorithmProbe(config, parallelExecutor));
         addProbeToProbeList(new SignatureHashAlgorithmOrderProbe(config, parallelExecutor));
+        addProbeToProbeList(new TlsFallbackScsvProbe(parallelExecutor, config));
         afterList.add(new Sweet32AfterProbe());
         afterList.add(new FreakAfterProbe());
         afterList.add(new LogjamAfterProbe());
@@ -193,6 +199,7 @@ public class TlsScanner {
                     } catch (JAXBException ex) {
                         LOGGER.error("Could not retrieve scoring results");
                     }
+                    executeGuidelineEvaluation(siteReport);
                     long scanEndTime = System.currentTimeMillis();
                     siteReport.setScanStartTime(scanStartTime);
                     siteReport.setScanEndTime(scanEndTime);
@@ -208,6 +215,16 @@ public class TlsScanner {
             }
             closeParallelExecutorIfNeeded();
         }
+    }
+
+    private void executeGuidelineEvaluation(SiteReport report) {
+        LOGGER.debug("Evaluating guidelines...");
+        for (Guideline guideline : GuidelineIO.readGuidelines(GuidelineIO.GUIDELINES)) {
+            LOGGER.debug("Evaluating guideline {} ...", guideline.getName());
+            GuidelineChecker checker = new GuidelineChecker(guideline);
+            checker.fillReport(report);
+        }
+        LOGGER.debug("Finished evaluating guidelines");
     }
 
     private void closeParallelExecutorIfNeeded() {

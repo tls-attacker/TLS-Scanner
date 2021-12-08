@@ -35,19 +35,20 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.CcaResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.serverscanner.report.result.cca.CcaTestResult;
+
 import java.util.LinkedList;
 import java.util.List;
 
 public class CcaProbe extends TlsProbe {
-    private List<VersionSuiteListPair> versionSuiteListPairsList;
+    private final List<VersionSuiteListPair> versionSuiteListPairsList;
 
-    private boolean increasingTimeout = false;
+    private final boolean increasingTimeout = false;
 
-    private long additionalTimeout = 10000;
+    private final long additionalTimeout = 10000;
 
-    private long additionalTcpTimeout = 1000;
+    private final long additionalTcpTimeout = 1000;
 
-    private int reexecutions = 3;
+    private final int reexecutions = 3;
 
     public CcaProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.CCA, config);
@@ -56,7 +57,6 @@ public class CcaProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-
         ParallelExecutor parallelExecutor = getParallelExecutor();
 
         CcaDelegate ccaDelegate = getScannerConfig().getCcaDelegate();
@@ -83,7 +83,7 @@ public class CcaProbe extends TlsProbe {
 
         for (CcaWorkflowType ccaWorkflowType : CcaWorkflowType.values()) {
             for (CcaCertificateType ccaCertificateType : CcaCertificateType.values()) {
-                /**
+                /*
                  * Skip certificate types for which we are lacking the corresponding CLI parameters Additionally skip
                  * certificate types that aren't required. I.e. a flow not sending a certificate message can simply run
                  * once with the CcaCertificateType EMPTY
@@ -112,13 +112,13 @@ public class CcaProbe extends TlsProbe {
         }
 
         List<CcaTestResult> resultList = new LinkedList<>();
-        Boolean handshakeSucceeded = false;
+        boolean handshakeSucceeded = false;
         parallelExecutor.bulkExecuteTasks(taskList);
         for (CcaTaskVectorPair ccaTaskVectorPair : taskVectorPairList) {
             if (ccaTaskVectorPair.getCcaTask().isHasError()) {
                 LOGGER.warn("Failed to scan " + ccaTaskVectorPair);
             } else {
-                Boolean vectorVulnerable = false;
+                boolean vectorVulnerable;
                 if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED,
                     ccaTaskVectorPair.getCcaTask().getState().getWorkflowTrace())) {
                     handshakeSucceeded = true;
@@ -132,17 +132,13 @@ public class CcaProbe extends TlsProbe {
                     ccaTaskVectorPair.getVector().getCipherSuite()));
             }
         }
-
         return new CcaResult(handshakeSucceeded ? TestResult.TRUE : TestResult.FALSE, resultList);
     }
 
     @Override
     public boolean canBeExecuted(SiteReport report) {
-        if ((report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
-            && (report.getVersionSuitePairs() != null)) {
-            return true;
-        }
-        return false;
+        return (report.getResult(AnalyzedProperty.REQUIRES_CCA) == TestResult.TRUE)
+            && (report.getVersionSuitePairs() != null);
     }
 
     @Override

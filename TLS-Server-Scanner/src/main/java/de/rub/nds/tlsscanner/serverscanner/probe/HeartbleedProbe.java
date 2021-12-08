@@ -39,31 +39,25 @@ public class HeartbleedProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            HeartbleedCommandConfig heartbleedConfig =
-                new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
-            ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
-            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                ProtocolVersionDelegate protocolVersionDelegate =
-                    (ProtocolVersionDelegate) heartbleedConfig.getDelegate(ProtocolVersionDelegate.class);
-                protocolVersionDelegate.setProtocolVersion(ProtocolVersion.DTLS12);
-            }
-            StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
-            if (supportedCiphers != null) {
-                CipherSuiteDelegate cipherSuiteDelegate =
-                    (CipherSuiteDelegate) heartbleedConfig.getDelegate(CipherSuiteDelegate.class);
-                cipherSuiteDelegate.setCipherSuites(supportedCiphers);
-            }
-            HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
-            Boolean vulnerable = attacker.isVulnerable();
-            return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new HeartbleedResult(TestResult.ERROR_DURING_TEST);
+        HeartbleedCommandConfig heartbleedConfig = new HeartbleedCommandConfig(getScannerConfig().getGeneralDelegate());
+        ClientDelegate delegate = (ClientDelegate) heartbleedConfig.getDelegate(ClientDelegate.class);
+        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            ProtocolVersionDelegate protocolVersionDelegate =
+                (ProtocolVersionDelegate) heartbleedConfig.getDelegate(ProtocolVersionDelegate.class);
+            protocolVersionDelegate.setProtocolVersion(ProtocolVersion.DTLS12);
         }
+        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) heartbleedConfig.getDelegate(StarttlsDelegate.class);
+        starttlsDelegate.setStarttlsType(getScannerConfig().getStarttlsDelegate().getStarttlsType());
+        if (supportedCiphers != null) {
+            CipherSuiteDelegate cipherSuiteDelegate =
+                (CipherSuiteDelegate) heartbleedConfig.getDelegate(CipherSuiteDelegate.class);
+            cipherSuiteDelegate.setCipherSuites(supportedCiphers);
+        }
+        HeartbleedAttacker attacker = new HeartbleedAttacker(heartbleedConfig, heartbleedConfig.createConfig());
+        Boolean vulnerable = attacker.isVulnerable();
+        return new HeartbleedResult(Objects.equals(vulnerable, Boolean.TRUE) ? TestResult.TRUE : TestResult.FALSE);
     }
 
     @Override

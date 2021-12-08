@@ -47,6 +47,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.OcspResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +102,11 @@ public class OcspProbe extends TlsProbe {
         try {
             certResult.setMustStaple(certInformationExtractor.getMustStaple());
         } catch (Exception e) {
-            LOGGER.warn("Couldn't determine OCSP must staple flag in certificate.");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+            } else {
+                LOGGER.warn("Couldn't determine OCSP must staple flag in certificate.");
+            }
         }
     }
 
@@ -127,54 +132,48 @@ public class OcspProbe extends TlsProbe {
                 certResult.setStapledResponse(
                     OCSPResponseParser.parseResponse(certificateStatusMessage.getOcspResponseBytes().getValue()));
             } catch (Exception e) {
-                LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
+                if (e.getCause() instanceof InterruptedException) {
+                    LOGGER.error("Timeout on " + getProbeName());
+                } else {
+                    LOGGER.warn("Tried parsing stapled OCSP message, but failed. Will be empty.");
+                }
             }
         }
     }
 
     private void performRequest(Certificate serverCertificateChain, OcspCertificateResult certResult) {
+        CertificateInformationExtractor mainCertExtractor =
+            new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
+        URL ocspResponderUrl;
+
         try {
-            CertificateInformationExtractor mainCertExtractor =
-                new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
-            URL ocspResponderUrl;
-
             // Check if leaf certificate supports OCSP
-            try {
-                ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
-                certResult.setSupportsOcsp(true);
-            } catch (NoSuchFieldException ex) {
-                LOGGER.debug(
-                    "Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
-                certResult.setSupportsOcsp(false);
-                return;
-            } catch (Exception ex) {
-                LOGGER.warn("Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
-                return;
-            }
+            ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException(ex);
+        }
+        certResult.setSupportsOcsp(true);
 
-            OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
+        OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
 
-            // First Request Message with first fixed nonce test value
-            OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
-            ocspFirstRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_1)));
-            ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
-            certResult.setFirstResponse(ocspRequest.makeRequest(ocspFirstRequestMessage));
-            certResult.setHttpGetResponse(ocspRequest.makeGetRequest(ocspFirstRequestMessage));
+        // First Request Message with first fixed nonce test value
+        OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
+        ocspFirstRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_1)));
+        ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
+        certResult.setFirstResponse(ocspRequest.makeRequest(ocspFirstRequestMessage));
+        certResult.setHttpGetResponse(ocspRequest.makeGetRequest(ocspFirstRequestMessage));
 
-            // If nonce is supported used, check if server actually replies
-            // with a different one immediately after
-            if (certResult.getFirstResponse() != null && certResult.getFirstResponse().getNonce() != null) {
-                certResult.setSupportsNonce(true);
-                OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
-                ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
-                ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
-                certResult.setSecondResponse(ocspRequest.makeRequest(ocspSecondRequestMessage));
-                LOGGER.debug(certResult.getSecondResponse().toString());
-            } else {
-                certResult.setSupportsNonce(false);
-            }
-        } catch (Exception e) {
-            LOGGER.error("OCSP probe failed.", e);
+        // If nonce is supported used, check if server actually replies
+        // with a different one immediately after
+        if (certResult.getFirstResponse() != null && certResult.getFirstResponse().getNonce() != null) {
+            certResult.setSupportsNonce(true);
+            OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
+            ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
+            ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
+            certResult.setSecondResponse(ocspRequest.makeRequest(ocspSecondRequestMessage));
+            LOGGER.debug(certResult.getSecondResponse().toString());
+        } else {
+            certResult.setSupportsNonce(false);
         }
     }
 

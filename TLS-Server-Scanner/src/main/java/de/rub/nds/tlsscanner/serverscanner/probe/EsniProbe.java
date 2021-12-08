@@ -30,7 +30,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.EsniResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.SniResult;
-import java.util.stream.Collectors;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;

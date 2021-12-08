@@ -7,14 +7,11 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner;
+package de.rub.nds.tlsscanner.serverscanner.scan;
 
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
+import de.rub.nds.tlsscanner.serverscanner.ConsoleLogger;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
-import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
-import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
-import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
@@ -27,15 +24,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ *
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
+ */
 public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -50,9 +51,12 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
 
     private final ThreadPoolExecutor executor;
 
+    // Used for waiting for Threads in the ThreadPoolExecutor
+    private final Semaphore semaphore = new Semaphore(0);
+
     public ThreadedScanJobExecutor(ScannerConfig config, ScanJob scanJob, int threadCount, String prefix) {
-        executor = new ThreadPoolExecutor(threadCount, threadCount, 1, TimeUnit.DAYS, new LinkedBlockingDeque<>(),
-            new NamedThreadFactory(prefix));
+        long probeTimeout = config.getProbeTimeout();
+        executor = new ScannerThreadPoolExecutor(threadCount, new NamedThreadFactory(prefix), semaphore, probeTimeout);
         this.config = config;
         this.scanJob = scanJob;
     }
@@ -67,8 +71,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     public SiteReport execute() {
         this.notScheduledTasks = new ArrayList<>(scanJob.getProbeList());
 
-        SiteReport report = new SiteReport(config.getClientDelegate().getExtractedHost(),
-            config.getClientDelegate().getExtractedPort());
+        SiteReport report =
+            new SiteReport(config.getClientDelegate().getHost(), config.getClientDelegate().getExtractedPort());
         report.addObserver(this);
 
         checkForExecutableProbes(report);
@@ -77,9 +81,6 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
         reportAboutNotExecutedProbes();
         collectStatistics(report);
         executeAfterProbes(report);
-        if (report.getProtocolType() != ProtocolType.DTLS) {
-            executeGuidelineEvaluation(report);
-        }
 
         LOGGER.info("Finished scan for: " + config.getClientDelegate().getHost());
         return report;
@@ -96,7 +97,8 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
     }
 
     private void executeProbesTillNoneCanBeExecuted(SiteReport report) {
-        do {
+        while (true) {
+            // handle all Finished Results
             long lastMerge = System.currentTimeMillis();
             List<Future<ProbeResult>> finishedFutures = new LinkedList<>();
             for (Future<ProbeResult> result : futureResults) {
@@ -117,26 +119,29 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
                             ex);
                         result.cancel(true);
                         finishedFutures.add(result);
-                    }
-                }
-
-                if (lastMerge + 1000 * 60 * 30 < System.currentTimeMillis()) {
-                    LOGGER
-                        .error("Last result merge is more than 30 minutes ago. Starting to kill threads to unblock...");
-                    try {
-                        ProbeResult probeResult = result.get(1, TimeUnit.MINUTES);
+                    } catch (CancellationException ex) {
+                        LOGGER.info("Could not retrieve a task because it was cancelled after "
+                            + config.getProbeTimeout() + " milliseconds");
                         finishedFutures.add(result);
-                        probeResult.merge(report);
-                    } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                        result.cancel(true);
-                        finishedFutures.add(result);
-                        LOGGER.error("Killed task", ex);
                     }
                 }
             }
             futureResults.removeAll(finishedFutures);
+            int oldFutures = futureResults.size();
+            // execute possible new probes
             update(report, this);
-        } while (!futureResults.isEmpty());
+            if (futureResults.size() == 0) {
+                // nothing can be executed anymore
+                return;
+            } else {
+                try {
+                    // wait for at least one probe to finish executing before checking again
+                    semaphore.acquire();
+                } catch (Exception e) {
+                    LOGGER.info("Interrupted while waiting for probe execution");
+                }
+            }
+        }
     }
 
     private void reportAboutNotExecutedProbes() {
@@ -174,16 +179,6 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
             afterProbe.analyze(report);
         }
         LOGGER.debug("Finished analysis");
-    }
-
-    private void executeGuidelineEvaluation(SiteReport report) {
-        LOGGER.debug("Evaluating guidelines...");
-        for (Guideline guideline : GuidelineIO.readGuidelines(GuidelineIO.GUIDELINES)) {
-            LOGGER.debug("Evaluating guideline {} ...", guideline.getName());
-            GuidelineChecker checker = new GuidelineChecker(guideline);
-            checker.fillReport(report);
-        }
-        LOGGER.debug("Finished evaluating guidelines");
     }
 
     @Override

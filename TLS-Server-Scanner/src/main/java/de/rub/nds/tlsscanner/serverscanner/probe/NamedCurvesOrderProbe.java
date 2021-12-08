@@ -42,19 +42,14 @@ public class NamedCurvesOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<NamedGroup> toTestList = new LinkedList<>(supportedGroups);
-            NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
-            Collections.reverse(toTestList);
-            NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
+        List<NamedGroup> toTestList = new LinkedList<>(supportedGroups);
+        NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
+        Collections.reverse(toTestList);
+        NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
 
-            return new NamedGroupOrderResult(
-                firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResult.TRUE
-                    : TestResult.FALSE);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new NamedGroupOrderResult(TestResult.ERROR_DURING_TEST);
-        }
+        return new NamedGroupOrderResult(
+            firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResult.TRUE
+                : TestResult.FALSE);
     }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {

@@ -60,40 +60,35 @@ public class CertificateProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            ecdsaPkGroupsStatic = new LinkedList<>();
-            ecdsaPkGroupsEphemeral = new LinkedList<>();
-            ecdsaPkGroupsTls13 = new LinkedList<>();
-            ecdsaCertSigGroupsStatic = new LinkedList<>();
-            ecdsaCertSigGroupsEphemeral = new LinkedList<>();
-            ecdsaCertSigGroupsTls13 = new LinkedList<>();
+        ecdsaPkGroupsStatic = new LinkedList<>();
+        ecdsaPkGroupsEphemeral = new LinkedList<>();
+        ecdsaPkGroupsTls13 = new LinkedList<>();
+        ecdsaCertSigGroupsStatic = new LinkedList<>();
+        ecdsaCertSigGroupsEphemeral = new LinkedList<>();
+        ecdsaCertSigGroupsTls13 = new LinkedList<>();
 
-            Set<CertificateChain> certificates = new HashSet<>();
-            if (scanForRsaCert) {
-                certificates.addAll(getRsaCerts());
-            }
-            if (scanForDssCert) {
-                certificates.addAll(getDssCerts());
-            }
-            if (scanForEcdsaCert) {
-                certificates.addAll(getEcdsaCerts());
-            }
-            if (scanForGostCert) {
-                certificates.addAll(getGostCert());
-            }
-            if (scanForTls13) {
-                certificates.addAll(getTls13Certs());
-            }
+        Set<CertificateChain> certificates = new HashSet<>();
+        if (scanForRsaCert) {
+            certificates.addAll(getRsaCerts());
+        }
+        if (scanForDssCert) {
+            certificates.addAll(getDssCerts());
+        }
+        if (scanForEcdsaCert) {
+            certificates.addAll(getEcdsaCerts());
+        }
+        if (scanForGostCert) {
+            certificates.addAll(getGostCert());
+        }
+        if (scanForTls13) {
+            certificates.addAll(getTls13Certs());
+        }
 
-            if (certificates.isEmpty()) {
-                return getCouldNotExecuteResult();
-            } else {
-                return new CertificateResult(certificates, ecdsaPkGroupsStatic, ecdsaPkGroupsEphemeral,
-                    ecdsaCertSigGroupsStatic, ecdsaCertSigGroupsEphemeral, ecdsaPkGroupsTls13, ecdsaCertSigGroupsTls13);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
+        if (certificates.isEmpty()) {
             return getCouldNotExecuteResult();
+        } else {
+            return new CertificateResult(certificates, ecdsaPkGroupsStatic, ecdsaPkGroupsEphemeral,
+                ecdsaCertSigGroupsStatic, ecdsaCertSigGroupsEphemeral, ecdsaPkGroupsTls13, ecdsaCertSigGroupsTls13);
         }
     }
 

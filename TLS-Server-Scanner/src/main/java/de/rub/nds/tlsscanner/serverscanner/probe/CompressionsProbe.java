@@ -14,7 +14,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -37,13 +36,8 @@ public class CompressionsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<CompressionMethod> compressions = getSupportedCompressionMethods();
-            return new CompressionsResult(compressions);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new CompressionsResult(null);
-        }
+        List<CompressionMethod> compressions = getSupportedCompressionMethods();
+        return new CompressionsResult(compressions);
     }
 
     private List<CompressionMethod> getSupportedCompressionMethods() {

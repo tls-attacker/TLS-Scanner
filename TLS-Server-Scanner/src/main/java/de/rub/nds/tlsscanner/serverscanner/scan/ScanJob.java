@@ -7,12 +7,16 @@
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
 
-package de.rub.nds.tlsscanner.serverscanner;
+package de.rub.nds.tlsscanner.serverscanner.scan;
 
 import de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.after.AfterProbe;
 import java.util.List;
 
+/**
+ *
+ * @author Robert Merget - {@literal <robert.merget@rub.de>}
+ */
 public class ScanJob {
 
     private final List<TlsProbe> probeList;

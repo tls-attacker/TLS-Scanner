@@ -51,42 +51,38 @@ public class BleichenbacherProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            LOGGER.debug("Starting evaluation");
-            List<BleichenbacherWorkflowType> workflowTypeList = createWorkflowTypeList();
-            List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList = new LinkedList<>();
-            for (BleichenbacherWorkflowType workflowType : workflowTypeList) {
-                for (VersionSuiteListPair pair : serverSupportedSuites) {
-                    if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
-                        for (CipherSuite suite : pair.getCipherSuiteList()) {
-                            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
-                                && CipherSuite.getImplemented().contains(suite)) {
-                                BleichenbacherCommandConfig bleichenbacherConfig =
-                                    createBleichenbacherCommandConfig(pair.getVersion(), suite);
-                                bleichenbacherConfig.setWorkflowType(workflowType);
-                                testResultList.add(getBleichenbacherOracleInformationLeakTest(bleichenbacherConfig));
-                            }
+
+        LOGGER.debug("Starting evaluation");
+        List<BleichenbacherWorkflowType> workflowTypeList = createWorkflowTypeList();
+        List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList = new LinkedList<>();
+        for (BleichenbacherWorkflowType workflowType : workflowTypeList) {
+            for (VersionSuiteListPair pair : serverSupportedSuites) {
+                if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
+                    for (CipherSuite suite : pair.getCipherSuiteList()) {
+                        if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
+                            && CipherSuite.getImplemented().contains(suite)) {
+                            BleichenbacherCommandConfig bleichenbacherConfig =
+                                createBleichenbacherCommandConfig(pair.getVersion(), suite);
+                            bleichenbacherConfig.setWorkflowType(workflowType);
+                            testResultList.add(getBleichenbacherOracleInformationLeakTest(bleichenbacherConfig));
                         }
                     }
                 }
             }
-            LOGGER.debug("Finished evaluation");
-            if (isPotentiallyVulnerable(testResultList)
-                || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
-                LOGGER.debug("Starting extended evaluation");
-                for (InformationLeakTest<BleichenbacherOracleTestInfo> fingerprint : testResultList) {
-                    if (fingerprint.isDistinctAnswers()
-                        || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        extendFingerPrint(fingerprint, numberOfAddtionalIterations);
-                    }
-                }
-                LOGGER.debug("Finished extended evaluation");
-            }
-            return new BleichenbacherResult(testResultList);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new BleichenbacherResult(TestResult.ERROR_DURING_TEST);
         }
+        LOGGER.debug("Finished evaluation");
+        if (isPotentiallyVulnerable(testResultList)
+            || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            LOGGER.debug("Starting extended evaluation");
+            for (InformationLeakTest<BleichenbacherOracleTestInfo> fingerprint : testResultList) {
+                if (fingerprint.isDistinctAnswers()
+                    || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    extendFingerPrint(fingerprint, numberOfAddtionalIterations);
+                }
+            }
+            LOGGER.debug("Finished extended evaluation");
+        }
+        return new BleichenbacherResult(testResultList);
     }
 
     private List<BleichenbacherWorkflowType> createWorkflowTypeList() {
@@ -131,11 +127,7 @@ public class BleichenbacherProbe extends TlsProbe {
         } else {
             attacker.setAdditionalTimeout(50);
         }
-        try {
-            attacker.isVulnerable();
-        } catch (Exception e) {
-            LOGGER.error("Encountered an exception while testing for Bleichenbacher", e);
-        }
+        attacker.isVulnerable();
         return new InformationLeakTest<>(
             new BleichenbacherOracleTestInfo(bleichenbacherConfig.getProtocolVersionDelegate().getProtocolVersion(),
                 bleichenbacherConfig.getCipherSuiteDelegate().getCipherSuites().get(0),

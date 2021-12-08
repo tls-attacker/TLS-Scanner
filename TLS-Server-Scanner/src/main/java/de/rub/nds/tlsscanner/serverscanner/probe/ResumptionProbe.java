@@ -68,29 +68,20 @@ public class ResumptionProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         this.respectsPskModes = TestResult.TRUE;
-        try {
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
-                supportsDtlsCookieExchangeInTicketResumption = getSupportsDtlsCookieExchangeInSessionTicketResumption();
-                return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
-                    TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET,
-                    TestResult.NOT_TESTED_YET, supportsDtlsCookieExchangeInResumption,
-                    supportsDtlsCookieExchangeInTicketResumption, respectsPskModes);
-            } else {
-                supportsDtlsCookieExchangeInResumption = TestResult.NOT_TESTED_YET;
-                supportsDtlsCookieExchangeInTicketResumption = TestResult.NOT_TESTED_YET;
-                return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
-                    getIssuesSessionTicket(), getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE),
-                    getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE), getSupports0rtt(),
-                    supportsDtlsCookieExchangeInResumption, supportsDtlsCookieExchangeInTicketResumption,
-                    respectsPskModes);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new ResumptionResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST);
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
+            supportsDtlsCookieExchangeInTicketResumption = getSupportsDtlsCookieExchangeInSessionTicketResumption();
+            return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
+                TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET, TestResult.NOT_TESTED_YET,
+                TestResult.NOT_TESTED_YET, supportsDtlsCookieExchangeInResumption,
+                supportsDtlsCookieExchangeInTicketResumption, respectsPskModes);
+        } else {
+            supportsDtlsCookieExchangeInResumption = TestResult.NOT_TESTED_YET;
+            supportsDtlsCookieExchangeInTicketResumption = TestResult.NOT_TESTED_YET;
+            return new ResumptionResult(getSupportsSessionResumption(), getSupportsSessionTicketResumption(),
+                getIssuesSessionTicket(), getSupportsTls13Psk(PskKeyExchangeMode.PSK_DHE_KE),
+                getSupportsTls13Psk(PskKeyExchangeMode.PSK_KE), getSupports0rtt(),
+                supportsDtlsCookieExchangeInResumption, supportsDtlsCookieExchangeInTicketResumption, respectsPskModes);
         }
     }
 
@@ -107,7 +98,12 @@ public class ResumptionProbe extends TlsProbe {
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for support for dtls cookie exchange in SessionResumption");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not test for support for Tls13PskDhe");
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -128,7 +124,12 @@ public class ResumptionProbe extends TlsProbe {
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for support for SessionResumption");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not test for support for SessionResumption");
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -151,7 +152,12 @@ public class ResumptionProbe extends TlsProbe {
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for support for dtls cookie exchange in SessionTicketResumption");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not test for support for dtls cookie exchange in SessionTicketResumption");
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -175,7 +181,12 @@ public class ResumptionProbe extends TlsProbe {
             executeState(state);
             return state.getWorkflowTrace().executedAsPlanned() == true ? TestResult.TRUE : TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for support for SessionTicketResumption");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not test for support for SessionTicketResumption");
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -218,7 +229,12 @@ public class ResumptionProbe extends TlsProbe {
             }
             return TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for support for Tls13Psk (" + exchangeMode + ")");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not test for support for Tls13Psk (" + exchangeMode + ")");
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -240,7 +256,12 @@ public class ResumptionProbe extends TlsProbe {
             }
             return TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for support for Tls13PskDhe");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not test for support for Tls13PskDhe");
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }
@@ -265,7 +286,12 @@ public class ResumptionProbe extends TlsProbe {
             }
             return TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for support for Tls13SessionTickets");
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not test for support for Tls13SessionTickets");
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }

@@ -65,47 +65,43 @@ public class NamedGroupsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            Map<NamedGroup, NamedGroupWitness> overallSupported = new HashMap<>();
+        Map<NamedGroup, NamedGroupWitness> overallSupported = new HashMap<>();
 
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
-                KeyExchangeAlgorithm.DHE_RSA);
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
-                KeyExchangeAlgorithm.DHE_DSS);
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
-                KeyExchangeAlgorithm.DH_ANON);
+        addGroupsFound(overallSupported,
+            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_RSA), false),
+            KeyExchangeAlgorithm.DHE_RSA);
+        addGroupsFound(overallSupported,
+            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DHE_DSS), false),
+            KeyExchangeAlgorithm.DHE_DSS);
+        addGroupsFound(overallSupported,
+            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.DH_ANON), false),
+            KeyExchangeAlgorithm.DH_ANON);
 
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
-                KeyExchangeAlgorithm.ECDH_ANON);
-            addGroupsFound(overallSupported,
-                getSupportedNamedGroups(
-                    getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
-                KeyExchangeAlgorithm.ECDHE_RSA);
-            addGroupsFound(overallSupported,
-                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
-                    ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral),
-                KeyExchangeAlgorithm.ECDHE_ECDSA);
-            addGroupsFound(overallSupported,
-                getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA), null,
-                    ecdsaCertSigGroupsStatic),
-                KeyExchangeAlgorithm.ECDH_ECDSA);
-            TestResult supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
-            TestResult supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
+        addGroupsFound(overallSupported,
+            getSupportedNamedGroups(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ANON), true),
+            KeyExchangeAlgorithm.ECDH_ANON);
+        addGroupsFound(overallSupported,
+            getSupportedNamedGroups(
+                getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA, KeyExchangeAlgorithm.ECDH_RSA), true),
+            KeyExchangeAlgorithm.ECDHE_RSA);
+        addGroupsFound(overallSupported,
+            getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA),
+                ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral),
+            KeyExchangeAlgorithm.ECDHE_ECDSA);
+        addGroupsFound(overallSupported,
+            getSupportedNamedCurvesEcdsa(getCipherSuiteByKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA), null,
+                ecdsaCertSigGroupsStatic),
+            KeyExchangeAlgorithm.ECDH_ECDSA);
+        TestResult supportsExplicitPrime = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_PRIME);
+        TestResult supportsExplicitChar2 = getExplicitCurveSupport(EllipticCurveType.EXPLICIT_CHAR2);
 
-            Map<NamedGroup, NamedGroupWitness> groupsTls13 = getTls13SupportedGroups();
+        Map<NamedGroup, NamedGroupWitness> groupsTls13 = getTls13SupportedGroups();
 
-            TestResult groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(overallSupported);
+        TestResult groupsDependOnCipherSuite = getGroupsDependOnCipherSuite(overallSupported);
 
-            return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
-                groupsDependOnCipherSuite, ignoresEcdsaGroupDisparity);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return getCouldNotExecuteResult();
-        }
+        return new NamedGroupResult(overallSupported, groupsTls13, supportsExplicitPrime, supportsExplicitChar2,
+            groupsDependOnCipherSuite, ignoresEcdsaGroupDisparity);
+
     }
 
     private Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroups(List<CipherSuite> cipherSuites,

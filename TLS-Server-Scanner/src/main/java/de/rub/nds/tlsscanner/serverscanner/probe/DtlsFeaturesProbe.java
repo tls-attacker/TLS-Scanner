@@ -50,12 +50,7 @@ public class DtlsFeaturesProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            return new DtlsFeaturesResult(supportsFragmentation(), supportsReordering());
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsFeaturesResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
-        }
+        return new DtlsFeaturesResult(supportsFragmentation(), supportsReordering());
     }
 
     private TestResult supportsFragmentation() {

@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CipherSuiteProbe extends TlsProbe {
 
@@ -48,37 +47,32 @@ public class CipherSuiteProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<VersionSuiteListPair> pairLists = new LinkedList<>();
-            for (ProtocolVersion version : protocolVersions) {
-                LOGGER.debug("Testing:" + version.name());
-                if (version.isTLS13()) {
-                    pairLists.add(new VersionSuiteListPair(version, getSupportedCipherSuites()));
+        List<VersionSuiteListPair> pairLists = new LinkedList<>();
+        for (ProtocolVersion version : protocolVersions) {
+            LOGGER.debug("Testing:" + version.name());
+            if (version.isTLS13()) {
+                pairLists.add(new VersionSuiteListPair(version, getSupportedCipherSuites()));
+            } else {
+                List<CipherSuite> toTestList = new LinkedList<>();
+                List<CipherSuite> versionSupportedSuites = new LinkedList<>();
+                if (version == ProtocolVersion.SSL3) {
+                    toTestList.addAll(CipherSuite.SSL3_SUPPORTED_CIPHERSUITES);
+                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
                 } else {
-                    List<CipherSuite> toTestList = new LinkedList<>();
-                    List<CipherSuite> versionSupportedSuites = new LinkedList<>();
-                    if (version == ProtocolVersion.SSL3) {
-                        toTestList.addAll(CipherSuite.SSL3_SUPPORTED_CIPHERSUITES);
-                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-                    } else {
-                        toTestList.addAll(Arrays.asList(CipherSuite.values()));
-                        toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
-                        toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
-                        if (versionSupportedSuites.isEmpty()) {
-                            versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
-                        }
-                    }
-                    if (versionSupportedSuites.size() > 0) {
-                        pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
+                    toTestList.addAll(Arrays.asList(CipherSuite.values()));
+                    toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
+                    toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
+                    versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(toTestList, version);
+                    if (versionSupportedSuites.isEmpty()) {
+                        versionSupportedSuites = getSupportedCipherSuitesWithIntolerance(version);
                     }
                 }
+                if (versionSupportedSuites.size() > 0) {
+                    pairLists.add(new VersionSuiteListPair(version, versionSupportedSuites));
+                }
             }
-            return new CipherSuiteResult(pairLists);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new CipherSuiteResult(null);
         }
+        return new CipherSuiteResult(pairLists);
     }
 
     private List<CipherSuite> getSupportedCipherSuites() {

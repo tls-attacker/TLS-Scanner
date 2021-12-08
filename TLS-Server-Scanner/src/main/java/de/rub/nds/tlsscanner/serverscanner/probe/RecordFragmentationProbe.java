@@ -24,6 +24,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.RecordFragmentationResult;
 
 public class RecordFragmentationProbe extends TlsProbe {
+
     public RecordFragmentationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RECORD_FRAGMENTATION, scannerConfig);
     }

@@ -31,7 +31,6 @@ import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeA
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.DtlsMessageSequenceResult;
@@ -49,15 +48,8 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            return new DtlsMessageSequenceResult(acceptsStartedWithInvalidMessageNumber(),
-                acceptsSkippedMessageNumbersOnce(), acceptsSkippedMessageNumbersMultiple(),
-                acceptsRandomMessageNumbers());
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsMessageSequenceResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
-        }
+        return new DtlsMessageSequenceResult(acceptsStartedWithInvalidMessageNumber(),
+            acceptsSkippedMessageNumbersOnce(), acceptsSkippedMessageNumbersMultiple(), acceptsRandomMessageNumbers());
     }
 
     private TestResult acceptsRandomMessageNumbers() {

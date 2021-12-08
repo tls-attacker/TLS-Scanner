@@ -56,38 +56,33 @@ public class ProtocolVersionProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<ProtocolVersion> supportedVersionList = new LinkedList<>();
-            List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
+        List<ProtocolVersion> supportedVersionList = new LinkedList<>();
+        List<ProtocolVersion> unsupportedVersionList = new LinkedList<>();
+        for (ProtocolVersion version : toTestList) {
+            if (isProtocolVersionSupported(version, false)) {
+                supportedVersionList.add(version);
+            } else {
+                unsupportedVersionList.add(version);
+            }
+        }
+        if (supportedVersionList.isEmpty()) {
+            unsupportedVersionList = new LinkedList<>();
             for (ProtocolVersion version : toTestList) {
-                if (isProtocolVersionSupported(version, false)) {
+                if (isProtocolVersionSupported(version, true)) {
                     supportedVersionList.add(version);
                 } else {
                     unsupportedVersionList.add(version);
                 }
             }
-            if (supportedVersionList.isEmpty()) {
-                unsupportedVersionList = new LinkedList<>();
-                for (ProtocolVersion version : toTestList) {
-                    if (isProtocolVersionSupported(version, true)) {
-                        supportedVersionList.add(version);
-                    } else {
-                        unsupportedVersionList.add(version);
-                    }
-                }
-            }
-            if (!getScannerConfig().getDtlsDelegate().isDTLS()) {
-                if (isTls13Supported()) {
-                    supportedVersionList.add(ProtocolVersion.TLS13);
-                } else {
-                    unsupportedVersionList.add(ProtocolVersion.TLS13);
-                }
-            }
-            return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new ProtocolVersionResult(null, null);
         }
+        if (!getScannerConfig().getDtlsDelegate().isDTLS()) {
+            if (isTls13Supported()) {
+                supportedVersionList.add(ProtocolVersion.TLS13);
+            } else {
+                unsupportedVersionList.add(ProtocolVersion.TLS13);
+            }
+        }
+        return new ProtocolVersionResult(supportedVersionList, unsupportedVersionList);
     }
 
     public boolean isProtocolVersionSupported(ProtocolVersion toTest, boolean intolerance) {

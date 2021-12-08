@@ -98,31 +98,25 @@ public class InvalidCurveProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<InvalidCurveVector> vectors = prepareVectors();
-            List<InvalidCurveResponse> responses = new LinkedList<>();
-            for (InvalidCurveVector vector : vectors) {
-                if (benignHandshakeSuccessful(vector)) {
-                    InvalidCurveResponse scanResponse = executeSingleScan(vector, InvalidCurveScanType.REGULAR);
+        List<InvalidCurveVector> vectors = prepareVectors();
+        List<InvalidCurveResponse> responses = new LinkedList<>();
+        for (InvalidCurveVector vector : vectors) {
+            if (benignHandshakeSuccessful(vector)) {
+                InvalidCurveResponse scanResponse = executeSingleScan(vector, InvalidCurveScanType.REGULAR);
 
-                    if (scanResponse.getVectorResponses().size() > 0) {
-                        DistributionTest distTest =
-                            new DistributionTest(new InvalidCurveTestInfo(vector), scanResponse.getVectorResponses(),
-                                getInfinityProbability(vector, InvalidCurveScanType.REGULAR));
-                        if (distTest.isDistinctAnswers()
-                            && scanResponse.getShowsPointsAreNotValidated() != TestResult.TRUE) {
-                            testForSidechannel(distTest, vector, scanResponse);
-                        }
+                if (scanResponse.getVectorResponses().size() > 0) {
+                    DistributionTest distTest =
+                        new DistributionTest(new InvalidCurveTestInfo(vector), scanResponse.getVectorResponses(),
+                            getInfinityProbability(vector, InvalidCurveScanType.REGULAR));
+                    if (distTest.isDistinctAnswers()
+                        && scanResponse.getShowsPointsAreNotValidated() != TestResult.TRUE) {
+                        testForSidechannel(distTest, vector, scanResponse);
                     }
-                    responses.add(scanResponse);
                 }
+                responses.add(scanResponse);
             }
-            return evaluateResponses(responses);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new InvalidCurveResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
-                TestResult.ERROR_DURING_TEST, null);
         }
+        return evaluateResponses(responses);
     }
 
     @Override
@@ -440,8 +434,13 @@ public class InvalidCurveProbe extends TlsProbe {
             }
             return new InvalidCurveResponse(vector, attacker.getResponsePairs(), showsPointsAreNotValidated,
                 attacker.getReceivedEcPublicKeys(), attacker.getFinishedKeys(), dirtyKeysWarning, scanType);
-        } catch (Exception ex) {
-            LOGGER.warn("Was unable to get results for " + vector.toString() + " Message: " + ex.getMessage());
+        } catch (Exception e) {
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.warn("Was unable to get results for " + vector.toString() + " Message: " + e.getMessage());
+            }
             return new InvalidCurveResponse(vector, TestResult.ERROR_DURING_TEST);
         }
     }

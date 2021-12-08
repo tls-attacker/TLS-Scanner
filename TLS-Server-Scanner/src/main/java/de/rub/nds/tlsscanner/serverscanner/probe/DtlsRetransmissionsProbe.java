@@ -45,12 +45,7 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            return new DtlsRetransmissionsResult(doesRetransmissions(), processesRetransmissions());
-        } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsRetransmissionsResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
-        }
+        return new DtlsRetransmissionsResult(doesRetransmissions(), processesRetransmissions());
     }
 
     private TestResult doesRetransmissions() {

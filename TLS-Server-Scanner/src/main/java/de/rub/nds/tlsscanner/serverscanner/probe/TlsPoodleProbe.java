@@ -32,27 +32,21 @@ public class TlsPoodleProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            TLSPoodleCommandConfig poodleCommandConfig =
-                new TLSPoodleCommandConfig(getScannerConfig().getGeneralDelegate());
-            ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
-            delegate.setHost(getScannerConfig().getClientDelegate().getHost());
-            delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                ProtocolVersionDelegate protocolVersionDelegate =
-                    (ProtocolVersionDelegate) poodleCommandConfig.getDelegate(ProtocolVersionDelegate.class);
-                protocolVersionDelegate.setProtocolVersion(ProtocolVersion.DTLS12);
-            }
-            StarttlsDelegate starttlsDelegate =
-                (StarttlsDelegate) poodleCommandConfig.getDelegate(StarttlsDelegate.class);
-            starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-            TLSPoodleAttacker attacker = new TLSPoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
-            Boolean vulnerable = attacker.isVulnerable();
-            return new TlsPoodleResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new TlsPoodleResult(TestResult.ERROR_DURING_TEST);
+        TLSPoodleCommandConfig poodleCommandConfig =
+            new TLSPoodleCommandConfig(getScannerConfig().getGeneralDelegate());
+        ClientDelegate delegate = (ClientDelegate) poodleCommandConfig.getDelegate(ClientDelegate.class);
+        delegate.setHost(getScannerConfig().getClientDelegate().getHost());
+        delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            ProtocolVersionDelegate protocolVersionDelegate =
+                (ProtocolVersionDelegate) poodleCommandConfig.getDelegate(ProtocolVersionDelegate.class);
+            protocolVersionDelegate.setProtocolVersion(ProtocolVersion.DTLS12);
         }
+        StarttlsDelegate starttlsDelegate = (StarttlsDelegate) poodleCommandConfig.getDelegate(StarttlsDelegate.class);
+        starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+        TLSPoodleAttacker attacker = new TLSPoodleAttacker(poodleCommandConfig, poodleCommandConfig.createConfig());
+        Boolean vulnerable = attacker.isVulnerable();
+        return new TlsPoodleResult(vulnerable == true ? TestResult.TRUE : TestResult.FALSE);
     }
 
     @Override

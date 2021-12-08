@@ -30,7 +30,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ECPointFormatProbe extends TlsProbe {
 
@@ -43,27 +42,22 @@ public class ECPointFormatProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<ECPointFormat> pointFormats = null;
-            if (shouldTestPointFormats) {
-                pointFormats = getSupportedPointFormats();
-            }
-            TestResult tls13SecpCompressionSupported;
-            if (shouldTestTls13) {
-                tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
-            } else {
-                tls13SecpCompressionSupported = TestResult.COULD_NOT_TEST;
-            }
-            if (pointFormats != null) {
-                return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
+        List<ECPointFormat> pointFormats = null;
+        if (shouldTestPointFormats) {
+            pointFormats = getSupportedPointFormats();
+        }
+        TestResult tls13SecpCompressionSupported;
+        if (shouldTestTls13) {
+            tls13SecpCompressionSupported = getTls13SecpCompressionSupported();
+        } else {
+            tls13SecpCompressionSupported = TestResult.COULD_NOT_TEST;
+        }
+        if (pointFormats != null) {
+            return (new ECPointFormatResult(pointFormats, tls13SecpCompressionSupported));
 
-            } else {
-                LOGGER.debug("Unable to determine supported point formats");
-                return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
-            }
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new ECPointFormatResult(null, TestResult.ERROR_DURING_TEST);
+        } else {
+            LOGGER.debug("Unable to determine supported point formats");
+            return (new ECPointFormatResult(null, tls13SecpCompressionSupported));
         }
     }
 
@@ -160,7 +154,12 @@ public class ECPointFormatProbe extends TlsProbe {
             }
             return TestResult.FALSE;
         } catch (Exception e) {
-            LOGGER.error("Could not test for Tls13SecpCompression", e);
+            if (e.getCause() instanceof InterruptedException) {
+                LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
+            } else {
+                LOGGER.error("Could not test for Tls13SecpCompression", e);
+            }
             return TestResult.ERROR_DURING_TEST;
         }
     }

@@ -49,41 +49,36 @@ public class PaddingOracleProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            LOGGER.debug("Starting evaluation");
-            List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
-            List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
-            for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
-                for (VersionSuiteListPair pair : serverSupportedSuites) {
-                    if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
-                        for (CipherSuite suite : pair.getCipherSuiteList()) {
-                            if (!suite.isPsk() && suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
-                                PaddingOracleCommandConfig paddingOracleConfig =
-                                    createPaddingOracleCommandConfig(pair.getVersion(), suite);
-                                paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
-                                testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
-                            }
+        LOGGER.debug("Starting evaluation");
+        List<PaddingVectorGeneratorType> vectorTypeList = createVectorTypeList();
+        List<InformationLeakTest<PaddingOracleTestInfo>> testResultList = new LinkedList<>();
+        for (PaddingVectorGeneratorType vectorGeneratorType : vectorTypeList) {
+            for (VersionSuiteListPair pair : serverSupportedSuites) {
+                if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
+                    for (CipherSuite suite : pair.getCipherSuiteList()) {
+                        if (!suite.isPsk() && suite.isCBC() && CipherSuite.getImplemented().contains(suite)) {
+                            PaddingOracleCommandConfig paddingOracleConfig =
+                                createPaddingOracleCommandConfig(pair.getVersion(), suite);
+                            paddingOracleConfig.setVectorGeneratorType(vectorGeneratorType);
+                            testResultList.add(getPaddingOracleInformationLeakTest(paddingOracleConfig));
                         }
                     }
                 }
             }
-            LOGGER.debug("Finished evaluation");
-            if (isPotentiallyVulnerable(testResultList)
-                || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
-                LOGGER.debug("Starting extended evaluation");
-                for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : testResultList) {
-                    if (fingerprint.isDistinctAnswers()
-                        || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        extendFingerPrint(fingerprint, numberOfAddtionalIterations);
-                    }
-                }
-                LOGGER.debug("Finished extended evaluation");
-            }
-            return new PaddingOracleResult(testResultList);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new PaddingOracleResult(TestResult.ERROR_DURING_TEST);
         }
+        LOGGER.debug("Finished evaluation");
+        if (isPotentiallyVulnerable(testResultList)
+            || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
+            LOGGER.debug("Starting extended evaluation");
+            for (InformationLeakTest<PaddingOracleTestInfo> fingerprint : testResultList) {
+                if (fingerprint.isDistinctAnswers()
+                    || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
+                    extendFingerPrint(fingerprint, numberOfAddtionalIterations);
+                }
+            }
+            LOGGER.debug("Finished extended evaluation");
+        }
+        return new PaddingOracleResult(testResultList);
     }
 
     private List<PaddingVectorGeneratorType> createVectorTypeList() {
@@ -129,11 +124,7 @@ public class PaddingOracleProbe extends TlsProbe {
         } else {
             attacker.setAdditionalTimeout(50);
         }
-        try {
-            attacker.isVulnerable();
-        } catch (Exception e) {
-            LOGGER.error("Encountered an exception while testing for PaddingOracles", e);
-        }
+        attacker.isVulnerable();
 
         return new InformationLeakTest<>(
             new PaddingOracleTestInfo(paddingOracleConfig.getProtocolVersionDelegate().getProtocolVersion(),
