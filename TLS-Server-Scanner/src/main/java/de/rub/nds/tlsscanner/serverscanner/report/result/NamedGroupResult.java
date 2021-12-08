@@ -11,7 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -20,16 +20,16 @@ import java.util.Map;
 
 public class NamedGroupResult extends ProbeResult {
 
-    private final Map<NamedGroup, NamedCurveWitness> namedGroupsMap;
-    private final Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13;
+    private final Map<NamedGroup, NamedGroupWitness> namedGroupsMap;
+    private final Map<NamedGroup, NamedGroupWitness> namedGroupsMapTls13;
 
     private final TestResult supportsExplicitPrime;
     private final TestResult supportsExplicitChar2;
     private final TestResult groupsDependOnCipherSuite;
     private final TestResult ignoresEcdsaGroupDisparity;
 
-    public NamedGroupResult(Map<NamedGroup, NamedCurveWitness> namedGroupsMap,
-        Map<NamedGroup, NamedCurveWitness> namedGroupsMapTls13, TestResult supportsExplicitPrime,
+    public NamedGroupResult(Map<NamedGroup, NamedGroupWitness> namedGroupsMap,
+        Map<NamedGroup, NamedGroupWitness> namedGroupsMapTls13, TestResult supportsExplicitPrime,
         TestResult supportsExplicitChar2, TestResult groupsDependOnCipherSuite, TestResult ignoresEcdsaGroupDisparity) {
         super(ProbeType.NAMED_GROUPS);
         this.namedGroupsMap = namedGroupsMap;

@@ -34,7 +34,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
@@ -81,8 +81,8 @@ public class SiteReport extends Observable implements Serializable {
     // Extensions
     private List<ExtensionType> supportedExtensions = null;
     private List<NamedGroup> supportedNamedGroups = null;
-    private Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses;
-    private Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13;
+    private Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnesses;
+    private Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnessesTls13;
     private List<NamedGroup> supportedTls13Groups = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsCert = null;
     private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsSke = null;
@@ -708,12 +708,12 @@ public class SiteReport extends Observable implements Serializable {
         this.ecdsaPkGroupsEphemeral = ecdsaPkGroupsEphemeral;
     }
 
-    public synchronized Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsWitnesses() {
+    public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnesses() {
         return supportedNamedGroupsWitnesses;
     }
 
     public synchronized void
-        setSupportedNamedGroupsWitnesses(Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses) {
+        setSupportedNamedGroupsWitnesses(Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnesses) {
         this.supportedNamedGroupsWitnesses = supportedNamedGroupsWitnesses;
     }
 
@@ -749,12 +749,12 @@ public class SiteReport extends Observable implements Serializable {
         this.ecdsaSigGroupsTls13 = ecdsaSigGroupsTls13;
     }
 
-    public synchronized Map<NamedGroup, NamedCurveWitness> getSupportedNamedGroupsWitnessesTls13() {
+    public synchronized Map<NamedGroup, NamedGroupWitness> getSupportedNamedGroupsWitnessesTls13() {
         return supportedNamedGroupsWitnessesTls13;
     }
 
     public synchronized void
-        setSupportedNamedGroupsWitnessesTls13(Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13) {
+        setSupportedNamedGroupsWitnessesTls13(Map<NamedGroup, NamedGroupWitness> supportedNamedGroupsWitnessesTls13) {
         this.supportedNamedGroupsWitnessesTls13 = supportedNamedGroupsWitnessesTls13;
     }
 
