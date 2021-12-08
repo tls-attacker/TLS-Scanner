@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -24,6 +23,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.RecordFragmentationResult;
 
 public class RecordFragmentationProbe extends TlsProbe {
+
     public RecordFragmentationProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.RECORD_FRAGMENTATION, scannerConfig);
     }
@@ -34,12 +34,12 @@ public class RecordFragmentationProbe extends TlsProbe {
         config.setDefaultMaxRecordData(50);
 
         State state = new State(config, new WorkflowConfigurationFactory(config)
-            .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
+                .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT));
 
         executeState(state);
 
         return new RecordFragmentationResult(
-            (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())));
+                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace()));
     }
 
     @Override
