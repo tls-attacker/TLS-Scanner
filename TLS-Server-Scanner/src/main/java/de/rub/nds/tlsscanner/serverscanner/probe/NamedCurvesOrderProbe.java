@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -30,7 +29,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Probe that checks if server enforces the order of named groups sent by the client
+ * Probe that checks if server enforces the order of named groups sent by the
+ * client
  *
  */
 public class NamedCurvesOrderProbe extends TlsProbe {
@@ -43,26 +43,21 @@ public class NamedCurvesOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<NamedGroup> toTestList = new LinkedList<>(supportedGroups);
-            NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
-            Collections.reverse(toTestList);
-            NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
+        List<NamedGroup> toTestList = new LinkedList<>(supportedGroups);
+        NamedGroup firstSelectedNamedGroup = getSelectedNamedGroup(toTestList);
+        Collections.reverse(toTestList);
+        NamedGroup secondSelectedNamedGroup = getSelectedNamedGroup(toTestList);
 
-            return new NamedGroupOrderResult(
+        return new NamedGroupOrderResult(
                 firstSelectedNamedGroup != secondSelectedNamedGroup || supportedGroups.size() == 1 ? TestResult.TRUE
-                    : TestResult.FALSE);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new NamedGroupOrderResult(TestResult.ERROR_DURING_TEST);
-        }
+                : TestResult.FALSE);
     }
 
     public NamedGroup getSelectedNamedGroup(List<NamedGroup> toTestList) {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setEarlyStop(true);
         List<CipherSuite> cipherSuites = Arrays.stream(CipherSuite.values())
-            .filter(cipherSuite -> cipherSuite.name().contains("ECDH")).collect(Collectors.toList());
+                .filter(cipherSuite -> cipherSuite.name().contains("ECDH")).collect(Collectors.toList());
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
         tlsConfig.setStopActionsAfterIOException(true);
         tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
@@ -82,8 +77,8 @@ public class NamedCurvesOrderProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return report.isProbeAlreadyExecuted(ProbeType.NAMED_GROUPS) && !report.getSupportedNamedGroups().isEmpty()
-            && report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
-            && report.getCipherSuites().stream().anyMatch(cipherSuite -> cipherSuite.name().contains("ECDH"));
+                && report.isProbeAlreadyExecuted(ProbeType.CIPHER_SUITE)
+                && report.getCipherSuites().stream().anyMatch(cipherSuite -> cipherSuite.name().contains("ECDH"));
     }
 
     @Override

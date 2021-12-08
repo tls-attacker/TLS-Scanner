@@ -100,38 +100,31 @@ public class CertificateTransparencyProbe extends TlsProbe {
         supportsPrecertificateSCTs = false;
         org.bouncycastle.asn1.x509.Certificate singleCert = serverCertChain.getCertificateAt(0);
         CertificateInformationExtractor certInformationExtractor = new CertificateInformationExtractor(singleCert);
-        try {
-            Asn1Sequence precertificateSctExtension = certInformationExtractor.getPrecertificateSCTs();
-            if (precertificateSctExtension != null) {
-                supportsPrecertificateSCTs = true;
 
-                Asn1EncapsulatingOctetString outerContentEncapsulation =
-                    (Asn1EncapsulatingOctetString) precertificateSctExtension.getChildren().get(1);
+        Asn1Sequence precertificateSctExtension = certInformationExtractor.getPrecertificateSCTs();
+        if (precertificateSctExtension != null) {
+            supportsPrecertificateSCTs = true;
 
-                byte[] encodedSctList = null;
+            Asn1EncapsulatingOctetString outerContentEncapsulation =
+                (Asn1EncapsulatingOctetString) precertificateSctExtension.getChildren().get(1);
 
-                // Some CAs (e.g. DigiCert) embed the DER-encoded SCT in an Asn1EncapsulatingOctetString
-                // instead of an Asn1PrimitiveOctetString
-                Asn1Field innerContentEncapsulation = (Asn1Field) outerContentEncapsulation.getChildren().get(0);
-                if (innerContentEncapsulation instanceof Asn1PrimitiveOctetString) {
-                    Asn1PrimitiveOctetString innerPrimitiveOctetString =
-                        (Asn1PrimitiveOctetString) innerContentEncapsulation;
-                    encodedSctList = innerPrimitiveOctetString.getValue();
-                } else if (innerContentEncapsulation instanceof Asn1EncapsulatingOctetString) {
-                    Asn1EncapsulatingOctetString innerEncapsulatingOctetString =
-                        (Asn1EncapsulatingOctetString) innerContentEncapsulation;
-                    encodedSctList = innerEncapsulatingOctetString.getContent().getOriginalValue();
-                }
-                SignedCertificateTimestampListParser sctListParser =
-                    new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, true);
-                precertificateSctList = sctListParser.parse();
+            byte[] encodedSctList = null;
+
+            // Some CAs (e.g. DigiCert) embed the DER-encoded SCT in an Asn1EncapsulatingOctetString
+            // instead of an Asn1PrimitiveOctetString
+            Asn1Field innerContentEncapsulation = (Asn1Field) outerContentEncapsulation.getChildren().get(0);
+            if (innerContentEncapsulation instanceof Asn1PrimitiveOctetString) {
+                Asn1PrimitiveOctetString innerPrimitiveOctetString =
+                    (Asn1PrimitiveOctetString) innerContentEncapsulation;
+                encodedSctList = innerPrimitiveOctetString.getValue();
+            } else if (innerContentEncapsulation instanceof Asn1EncapsulatingOctetString) {
+                Asn1EncapsulatingOctetString innerEncapsulatingOctetString =
+                    (Asn1EncapsulatingOctetString) innerContentEncapsulation;
+                encodedSctList = innerEncapsulatingOctetString.getContent().getOriginalValue();
             }
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.warn("Couldn't determine Signed Certificate Timestamp Extension in certificate.", e);
-            }
+            SignedCertificateTimestampListParser sctListParser =
+                new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, true);
+            precertificateSctList = sctListParser.parse();
         }
     }
 
@@ -142,32 +135,23 @@ public class CertificateTransparencyProbe extends TlsProbe {
         executeState(state);
         List<ExtensionType> supportedExtensions = new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
 
-        try {
-            if (supportedExtensions.contains(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
-                if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-                    ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
-                        .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
-                    if (serverHelloMessage != null
-                        && serverHelloMessage.containsExtension(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
+        if (supportedExtensions.contains(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+                ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
+                    .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace());
+                if (serverHelloMessage != null
+                    && serverHelloMessage.containsExtension(ExtensionType.SIGNED_CERTIFICATE_TIMESTAMP)) {
 
-                        SignedCertificateTimestampExtensionMessage sctExtensionMessage =
-                            serverHelloMessage.getExtension(SignedCertificateTimestampExtensionMessage.class);
-                        byte[] encodedSctList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
+                    SignedCertificateTimestampExtensionMessage sctExtensionMessage =
+                        serverHelloMessage.getExtension(SignedCertificateTimestampExtensionMessage.class);
+                    byte[] encodedSctList = sctExtensionMessage.getSignedTimestamp().getOriginalValue();
 
-                        SignedCertificateTimestampListParser sctListParser =
-                            new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, false);
-                        handshakeSctList = sctListParser.parse();
+                    SignedCertificateTimestampListParser sctListParser =
+                        new SignedCertificateTimestampListParser(0, encodedSctList, serverCertChain, false);
+                    handshakeSctList = sctListParser.parse();
 
-                        supportsHandshakeSCTs = true;
-                    }
+                    supportsHandshakeSCTs = true;
                 }
-            }
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.warn(
-                    "Couldn't parse Signed Certificate Timestamp List from signed_certificate_timestamp extension data.");
             }
         }
     }

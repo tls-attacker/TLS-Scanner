@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
@@ -114,11 +113,11 @@ public class CommonBugProbe extends TlsProbe {
         greaseCipherSuiteIntolerance = hasGreaseCipherSuiteIntolerance();
         greaseSignatureAndHashAlgorithmIntolerance = hasGreaseSignatureAndHashAlgorithmIntolerance();
         return new CommonBugProbeResult(extensionIntolerance, cipherSuiteIntolerance, cipherSuiteLengthIntolerance512,
-            compressionIntolerance, versionIntolerance, alpnIntolerance, clientHelloLengthIntolerance,
-            emptyLastExtensionIntolerance, onlySecondCipherSuiteByteEvaluated, namedGroupIntolerant,
-            namedSignatureAndHashAlgorithmIntolerance, ignoresCipherSuiteOffering, reflectsCipherSuiteOffering,
-            ignoresOfferedNamedGroups, ignoresOfferedSignatureAndHashAlgorithms, maxLengthClientHelloIntolerant,
-            greaseNamedGroupIntolerance, greaseCipherSuiteIntolerance, greaseSignatureAndHashAlgorithmIntolerance);
+                compressionIntolerance, versionIntolerance, alpnIntolerance, clientHelloLengthIntolerance,
+                emptyLastExtensionIntolerance, onlySecondCipherSuiteByteEvaluated, namedGroupIntolerant,
+                namedSignatureAndHashAlgorithmIntolerance, ignoresCipherSuiteOffering, reflectsCipherSuiteOffering,
+                ignoresOfferedNamedGroups, ignoresOfferedSignatureAndHashAlgorithms, maxLengthClientHelloIntolerant,
+                greaseNamedGroupIntolerance, greaseCipherSuiteIntolerance, greaseSignatureAndHashAlgorithmIntolerance);
 
     }
 
@@ -142,8 +141,8 @@ public class CommonBugProbe extends TlsProbe {
         TlsContext context = new TlsContext(config);
         ClientHelloPreparator preparator = new ClientHelloPreparator(context.getChooser(), message);
         preparator.prepare();
-        ClientHelloSerializer serializer =
-            new ClientHelloSerializer(message, config.getDefaultHighestClientProtocolVersion());
+        ClientHelloSerializer serializer
+                = new ClientHelloSerializer(message, config.getDefaultHighestClientProtocolVersion());
         return serializer.serialize().length;
     }
 
@@ -164,17 +163,18 @@ public class CommonBugProbe extends TlsProbe {
             Config config = getWorkingConfig();
             ClientHelloMessage message = new ClientHelloMessage(config);
             UnknownExtensionMessage extension = new UnknownExtensionMessage();
-            extension.setTypeConfig(new byte[] { (byte) 3F, (byte) 3F });
-            extension.setDataConfig(new byte[] { 00, 11, 22, 33 });
+            extension.setTypeConfig(new byte[]{(byte) 3F, (byte) 3F});
+            extension.setDataConfig(new byte[]{00, 11, 22, 33});
             message.getExtensions().add(extension);
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -192,10 +192,11 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -218,16 +219,17 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(true);
             ClientHelloMessage message = new ClientHelloMessage(config);
             SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
+            extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[]{(byte) 0xED, (byte) 0xED}));
             message.addExtension(extension);
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.TRUE
-                : TestResult.FALSE;
+                    : TestResult.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -250,20 +252,21 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(false);
             ClientHelloMessage message = new ClientHelloMessage(config);
             EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
-            extension.setSupportedGroups(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
+            extension.setSupportedGroups(Modifiable.explicit(new byte[]{(byte) 0xED, (byte) 0xED}));
             message.addExtension(extension);
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
                 LOGGER.debug("Received a SH for invalid NamedGroup, server selected: "
-                    + state.getTlsContext().getSelectedGroup().name());
+                        + state.getTlsContext().getSelectedGroup().name());
                 return TestResult.TRUE;
             }
             return TestResult.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -275,16 +278,16 @@ public class CommonBugProbe extends TlsProbe {
         try {
             Config config = getWorkingConfig();
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCipherSuites(Modifiable.explicit(new byte[] { (byte) 0xEE, (byte) 0xCC }));
+            message.setCipherSuites(Modifiable.explicit(new byte[]{(byte) 0xEE, (byte) 0xCC}));
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
             ServerHelloMessage serverHelloMessage = (ServerHelloMessage) WorkflowTraceUtil
-                .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
+                    .getFirstReceivedMessage(HandshakeMessageType.SERVER_HELLO, trace);
             if (receivedShd) {
                 if (Arrays.equals(serverHelloMessage.getSelectedCipherSuite().getValue(),
-                    new byte[] { (byte) 0xEE, (byte) 0xCC })) {
+                        new byte[]{(byte) 0xEE, (byte) 0xCC})) {
                     reflectsCipherSuiteOffering = TestResult.TRUE;
                     ignoresCipherSuiteOffering = TestResult.FALSE;
                 } else {
@@ -298,6 +301,7 @@ public class CommonBugProbe extends TlsProbe {
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -321,16 +325,17 @@ public class CommonBugProbe extends TlsProbe {
             config.setAddEllipticCurveExtension(true);
             ClientHelloMessage message = new ClientHelloMessage(config);
             SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
-            extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
+            extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[]{(byte) 0xED, (byte) 0xED}, 0));
             message.addExtension(extension);
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -360,7 +365,7 @@ public class CommonBugProbe extends TlsProbe {
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
             if (receivedShd) {
                 trace.reset();
-                extension.setSupportedGroups(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
+                extension.setSupportedGroups(Modifiable.insert(new byte[]{(byte) 0xED, (byte) 0xED}, 0));
                 state = new State(config, trace);
                 executeState(state);
                 receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
@@ -371,6 +376,7 @@ public class CommonBugProbe extends TlsProbe {
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -386,7 +392,7 @@ public class CommonBugProbe extends TlsProbe {
             for (CipherSuite suite : CipherSuite.values()) {
                 if (suite.getByteValue()[0] == 0x00) {
                     try {
-                        stream.write(new byte[] { (byte) 0xDF, suite.getByteValue()[1] });
+                        stream.write(new byte[]{(byte) 0xDF, suite.getByteValue()[1]});
                     } catch (IOException ex) {
                         LOGGER.debug(ex);
                     }
@@ -401,6 +407,7 @@ public class CommonBugProbe extends TlsProbe {
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -418,10 +425,11 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -433,15 +441,16 @@ public class CommonBugProbe extends TlsProbe {
         try {
             Config config = getWorkingConfig();
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setProtocolVersion(Modifiable.explicit(new byte[] { 0x03, 0x05 }));
+            message.setProtocolVersion(Modifiable.explicit(new byte[]{0x03, 0x05}));
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -453,15 +462,16 @@ public class CommonBugProbe extends TlsProbe {
         try {
             Config config = getWorkingConfig();
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCompressions(new byte[] { (byte) 0xFF, (byte) 0x00 });
+            message.setCompressions(new byte[]{(byte) 0xFF, (byte) 0x00});
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -482,10 +492,11 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -497,15 +508,16 @@ public class CommonBugProbe extends TlsProbe {
         try {
             Config config = getWorkingConfig();
             ClientHelloMessage message = new ClientHelloMessage(config);
-            message.setCipherSuites(Modifiable.insert(new byte[] { (byte) 0xCF, (byte) 0xAA }, 1));
+            message.setCipherSuites(Modifiable.insert(new byte[]{(byte) 0xCF, (byte) 0xAA}, 1));
             WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -528,10 +540,11 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -556,10 +569,11 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -570,21 +584,21 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasGreaseCipherSuiteIntolerance() {
         Config config = getWorkingConfig();
         Arrays.asList(CipherSuite.values()).stream().filter(cipherSuite -> cipherSuite.isGrease())
-            .forEach(greaseCipher -> config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
+                .forEach(greaseCipher -> config.getDefaultClientSupportedCipherSuites().add(greaseCipher));
         return hasGreaseIntolerance(config);
     }
 
     private TestResult hasGreaseNamedGroupIntolerance() {
         Config config = getWorkingConfig();
         Arrays.asList(NamedGroup.values()).stream().filter(group -> group.isGrease())
-            .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
+                .forEach(greaseGroup -> config.getDefaultClientNamedGroups().add(greaseGroup));
         return hasGreaseIntolerance(config);
     }
 
     private TestResult hasGreaseSignatureAndHashAlgorithmIntolerance() {
         Config config = getWorkingConfig();
         Arrays.asList(SignatureAndHashAlgorithm.values()).stream().filter(algorithm -> algorithm.isGrease()).forEach(
-            greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
+                greaseAlgorithm -> config.getDefaultClientSupportedSignatureAndHashAlgorithms().add(greaseAlgorithm));
         return hasGreaseIntolerance(config);
     }
 
@@ -595,10 +609,11 @@ public class CommonBugProbe extends TlsProbe {
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
-                : TestResult.TRUE;
+                    : TestResult.TRUE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
@@ -609,9 +624,9 @@ public class CommonBugProbe extends TlsProbe {
     @Override
     public ProbeResult getCouldNotExecuteResult() {
         return new CommonBugProbeResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
-            TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST,
+                TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 }

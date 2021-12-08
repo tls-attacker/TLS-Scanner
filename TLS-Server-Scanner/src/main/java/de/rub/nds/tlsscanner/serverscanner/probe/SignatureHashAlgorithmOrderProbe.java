@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -34,22 +33,17 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        try {
-            List<SignatureAndHashAlgorithm> toTestList = new LinkedList<>();
-            toTestList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
-            SignatureAndHashAlgorithm firstSelectedSignatureAndHashAlgorithm =
-                getSelectedSignatureAndHashAlgorithm(toTestList);
-            Collections.reverse(toTestList);
-            SignatureAndHashAlgorithm secondSelectedSignatureAndHashAlgorithm =
-                getSelectedSignatureAndHashAlgorithm(toTestList);
+        List<SignatureAndHashAlgorithm> toTestList = new LinkedList<>();
+        toTestList.addAll(Arrays.asList(SignatureAndHashAlgorithm.values()));
+        SignatureAndHashAlgorithm firstSelectedSignatureAndHashAlgorithm
+                = getSelectedSignatureAndHashAlgorithm(toTestList);
+        Collections.reverse(toTestList);
+        SignatureAndHashAlgorithm secondSelectedSignatureAndHashAlgorithm
+                = getSelectedSignatureAndHashAlgorithm(toTestList);
 
-            return new SignatureHashAlgorithmOrderResult(
+        return new SignatureHashAlgorithmOrderResult(
                 firstSelectedSignatureAndHashAlgorithm == secondSelectedSignatureAndHashAlgorithm ? TestResult.TRUE
-                    : TestResult.FALSE);
-        } catch (Exception e) {
-            LOGGER.error("Could not scan for " + getProbeName(), e);
-            return new SignatureHashAlgorithmOrderResult(TestResult.ERROR_DURING_TEST);
-        }
+                        : TestResult.FALSE);
     }
 
     @Override

@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -52,8 +51,8 @@ public class HandshakeSimulationProbe extends TlsProbe {
         ConfigFileList configFileList = ConfigFileList.loadConfigFileList("/" + ConfigFileList.FILE_NAME);
         for (String configFileName : configFileList.getFiles()) {
             try {
-                TlsClientConfig tlsClientConfig =
-                    TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/" + configFileName);
+                TlsClientConfig tlsClientConfig
+                        = TlsClientConfig.createTlsClientConfig(RESOURCE_FOLDER + "/" + configFileName);
                 if (getScannerConfig().getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     simulationRequestList.add(new SimulationRequest(tlsClientConfig));
                 } else {
@@ -62,6 +61,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
             } catch (Exception e) {
                 if (e.getCause() instanceof InterruptedException) {
                     LOGGER.error("Timeout on " + getProbeName());
+                    throw new RuntimeException(e);
                 } else {
                     LOGGER.error("Could not load " + configFileName, e);
                 }
@@ -97,7 +97,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
         }
         simulatedClient.setSupportedVersionList(simulatedClient.getTlsClientConfig().getSupportedVersionList());
         simulatedClient.setVersionAcceptForbiddenCipherSuiteList(
-            simulatedClient.getTlsClientConfig().getVersionAcceptForbiddenCipherSuiteList());
+                simulatedClient.getTlsClientConfig().getVersionAcceptForbiddenCipherSuiteList());
         simulatedClient.setSupportedRsaKeySizeList(simulatedClient.getTlsClientConfig().getSupportedRsaKeySizeList());
         simulatedClient.setSupportedDheKeySizeList(simulatedClient.getTlsClientConfig().getSupportedDheKeySizeList());
     }
@@ -105,15 +105,15 @@ public class HandshakeSimulationProbe extends TlsProbe {
     private void evaluateReceivedMessages(SimulatedClientResult simulatedClient, State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
         simulatedClient
-            .setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
+                .setReceivedServerHello(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, trace));
         simulatedClient
-            .setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace));
+                .setReceivedCertificate(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE, trace));
         simulatedClient.setReceivedServerKeyExchange(
-            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
+                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_KEY_EXCHANGE, trace));
         simulatedClient.setReceivedCertificateRequest(
-            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, trace));
+                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.CERTIFICATE_REQUEST, trace));
         simulatedClient.setReceivedServerHelloDone(
-            WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
+                WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace));
         simulatedClient.setReceivedAlert(WorkflowTraceUtil.didReceiveMessage(ProtocolMessageType.ALERT, trace));
         simulatedClient.setReceivedUnknown(WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.UNKNOWN, trace));
         if (!simulatedClient.getReceivedAlert()) {
@@ -194,7 +194,7 @@ public class HandshakeSimulationProbe extends TlsProbe {
             if (simulatedClient.getServerPublicKeyParameter() == null) {
                 if (context.getServerEcPublicKey() != null) {
                     simulatedClient.setServerPublicKeyParameter(
-                        context.getServerEcPublicKey().getFieldX().getData().bitLength() * 8);
+                            context.getServerEcPublicKey().getFieldX().getData().bitLength() * 8);
                 }
             }
         }

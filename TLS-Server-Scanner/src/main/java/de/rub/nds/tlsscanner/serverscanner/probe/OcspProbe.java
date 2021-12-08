@@ -47,6 +47,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.OcspResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,24 +146,13 @@ public class OcspProbe extends TlsProbe {
             new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
         URL ocspResponderUrl;
 
-        // Check if leaf certificate supports OCSP
         try {
+            // Check if leaf certificate supports OCSP
             ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
-            certResult.setSupportsOcsp(true);
-        } catch (NoSuchFieldException ex) {
-            LOGGER.debug(
-                "Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
-            certResult.setSupportsOcsp(false);
-            return;
-        } catch (Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
-                LOGGER.error("Timeout on " + getProbeName());
-            } else {
-                LOGGER.warn("Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
-
-            }
-            return;
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException(ex);
         }
+        certResult.setSupportsOcsp(true);
 
         OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
 

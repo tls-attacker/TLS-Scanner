@@ -6,7 +6,6 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -30,7 +29,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ECPointFormatProbe extends TlsProbe {
 
@@ -144,7 +142,7 @@ public class ECPointFormatProbe extends TlsProbe {
             tlsConfig.setAddCertificateStatusRequestExtension(true);
             tlsConfig.setUseFreshRandom(true);
             tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(
-                SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
+                    SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
             tlsConfig.setDefaultClientSupportedPointFormats(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             tlsConfig.setDefaultSelectedPointFormat(ECPointFormat.ANSIX962_COMPRESSED_PRIME);
             State state = new State(tlsConfig);
@@ -157,6 +155,7 @@ public class ECPointFormatProbe extends TlsProbe {
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
+                throw new RuntimeException(e);
             } else {
                 LOGGER.error("Could not test for Tls13SecpCompression", e);
             }
@@ -167,7 +166,7 @@ public class ECPointFormatProbe extends TlsProbe {
     @Override
     public boolean canBeExecuted(SiteReport report) {
         return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
-            && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE
+                && (report.getResult(AnalyzedProperty.SUPPORTS_ECDH) == TestResult.TRUE
                 || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE);
     }
 
@@ -179,10 +178,10 @@ public class ECPointFormatProbe extends TlsProbe {
     @Override
     public void adjustConfig(SiteReport report) {
         shouldTestPointFormats = report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
-            || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
+                || report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_1) == TestResult.TRUE
+                || report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_0) == TestResult.TRUE;
         shouldTestTls13 = report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE;
     }
 

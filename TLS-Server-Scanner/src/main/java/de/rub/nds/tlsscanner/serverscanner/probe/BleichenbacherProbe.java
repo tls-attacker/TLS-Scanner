@@ -127,11 +127,7 @@ public class BleichenbacherProbe extends TlsProbe {
         } else {
             attacker.setAdditionalTimeout(50);
         }
-        try {
-            attacker.isVulnerable();
-        } catch (Exception e) {
-            LOGGER.error("Encountered an exception while testing for Bleichenbacher", e);
-        }
+        attacker.isVulnerable();
         return new InformationLeakTest<>(
             new BleichenbacherOracleTestInfo(bleichenbacherConfig.getProtocolVersionDelegate().getProtocolVersion(),
                 bleichenbacherConfig.getCipherSuiteDelegate().getCipherSuites().get(0),
