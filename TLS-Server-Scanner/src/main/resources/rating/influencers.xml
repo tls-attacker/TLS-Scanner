@@ -787,7 +787,18 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>ENFORCES_NG_ORDERING</analyzedProperty>
+        <analyzedProperty>ENFORCES_NAMED_GROUP_ORDERING</analyzedProperty>
+        <propertyResultRatingInfluencer>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyResultRatingInfluencer>
+        <propertyResultRatingInfluencer>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyResultRatingInfluencer>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <analyzedProperty>ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>50</influence>

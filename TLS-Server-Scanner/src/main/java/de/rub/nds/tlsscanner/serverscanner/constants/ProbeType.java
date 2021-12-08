@@ -29,6 +29,7 @@ public enum ProbeType {
     PROTOCOL_VERSION("Protocol version"),
     INVALID_CURVE("Invalid curve"),
     SIGNATURE_AND_HASH("Signature and hash algorithm"),
+    SIGNATURE_HASH_ALGORITHM_ORDER("Signature Hash Algorithm Order"),
     EXTENSIONS("Extensions"),
     TOKENBINDING("Tokenbinding"),
     COMPRESSIONS("Compression"),

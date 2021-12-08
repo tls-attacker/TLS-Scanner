@@ -1820,7 +1820,8 @@ public class SiteReportPrinter {
                     prettyAppend(builder, "Groups required for ECDSA validation are not enforced", AnsiColor.YELLOW);
                 }
                 prettyAppendHeading(builder, "NamedGroups General");
-                prettyAppend(builder, "Enforces client's named group ordering", AnalyzedProperty.ENFORCES_NG_ORDERING);
+                prettyAppend(builder, "Enforces client's named group ordering",
+                    AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING);
             } else {
                 builder.append("none\n");
             }
@@ -1835,6 +1836,9 @@ public class SiteReportPrinter {
                 for (SignatureAndHashAlgorithm algorithm : report.getSupportedSignatureAndHashAlgorithms()) {
                     prettyAppend(builder, algorithm.toString());
                 }
+                prettyAppendHeading(builder, "Signature and Hash Algorithms General");
+                prettyAppend(builder, "Enforces client's signature has algorithm ordering",
+                    AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING);
             } else {
                 builder.append("none\n");
             }

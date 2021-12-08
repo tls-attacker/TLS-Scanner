@@ -14,17 +14,18 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-public class NamedGroupOrderResult extends ProbeResult {
+public class SignatureHashAlgorithmOrderResult extends ProbeResult {
 
     private TestResult enforced;
 
-    public NamedGroupOrderResult(TestResult enforced) {
-        super(ProbeType.NAMED_GROUPS_ORDER);
+    public SignatureHashAlgorithmOrderResult(TestResult enforced) {
+        super(ProbeType.SIGNATURE_HASH_ALGORITHM_ORDER);
         this.enforced = enforced;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, enforced);
+        report.putResult(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, enforced);
     }
+
 }
