@@ -346,7 +346,7 @@ public class CertificateChain {
         try {
             boolean result = checker.verify(host, cert);
             if (!result) {
-                LOGGER.debug("Hostname of Certificate is valid for {}", host);
+                LOGGER.debug("Hostname of Certificate is not valid for {}", host);
             }
             return result;
         } catch (IOException ex) {
