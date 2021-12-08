@@ -1,3 +1,12 @@
+/**
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tlsscanner.serverscanner.converter;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -28,7 +37,8 @@ public class CertificateDeserializer extends StdDeserializer<Certificate> {
             JsonNode node = jp.getCodec().readTree(jp);
             String encodedCerts = node.get("certificates").asText();
             String[] splitedStrings = encodedCerts.split(",");
-            org.bouncycastle.asn1.x509.Certificate[] certs = new org.bouncycastle.asn1.x509.Certificate[splitedStrings.length];
+            org.bouncycastle.asn1.x509.Certificate[] certs =
+                new org.bouncycastle.asn1.x509.Certificate[splitedStrings.length];
             int i = 0;
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             for (String split : splitedStrings) {
@@ -40,7 +50,9 @@ public class CertificateDeserializer extends StdDeserializer<Certificate> {
                 stream.write(cert);
                 i++;
             }
-            Certificate cert = Certificate.parse(new ByteArrayInputStream(ArrayConverter.concatenate(ArrayConverter.intToBytes(stream.toByteArray().length, CertificateLength.THREE.getLength()), stream.toByteArray())));
+            Certificate cert = Certificate.parse(new ByteArrayInputStream(ArrayConverter.concatenate(
+                ArrayConverter.intToBytes(stream.toByteArray().length, CertificateLength.THREE.getLength()),
+                stream.toByteArray())));
             return cert;
         } catch (Exception E) {
             LOGGER.error("Could not deserialize certificate", E);

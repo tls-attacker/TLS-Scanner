@@ -1,3 +1,12 @@
+/**
+ * TLS-Server-Scanner - A TLS configuration and analysis tool based on TLS-Attacker
+ *
+ * Copyright 2017-2021 Ruhr University Bochum, Paderborn University, Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+
 package de.rub.nds.tlsscanner.serverscanner.report;
 
 import static org.junit.Assert.assertNotNull;
@@ -36,63 +45,63 @@ import de.rub.nds.tlsscanner.serverscanner.converter.ResponseFingerprintSerializ
 import de.rub.nds.tlsscanner.serverscanner.converter.VectorSerializer;
 
 public class SiteReportSerializationTest {
-	private static SiteReport report;
-	private static ScannerConfig config;
+    private static SiteReport report;
+    private static ScannerConfig config;
 
-	@BeforeClass
-	public static void setUpClass() {
-		config = new ScannerConfig(new GeneralDelegate());
-		config.getClientDelegate().setHost("tls-scanner.cs.uni-paderborn.de");
-		config.setScanDetail(ScannerDetail.NORMAL);
-		config.setReportDetail(ScannerDetail.ALL);
-		config.setOverallThreads(100);
-		config.setParallelProbes(100);
-		config.setNoColor(true);
-		TlsScanner scanner = new TlsScanner(config);
-		report = scanner.scan();
-	}
+    @BeforeClass
+    public static void setUpClass() {
+        config = new ScannerConfig(new GeneralDelegate());
+        config.getClientDelegate().setHost("tls-scanner.cs.uni-paderborn.de");
+        config.setScanDetail(ScannerDetail.NORMAL);
+        config.setReportDetail(ScannerDetail.ALL);
+        config.setOverallThreads(100);
+        config.setParallelProbes(100);
+        config.setNoColor(true);
+        TlsScanner scanner = new TlsScanner(config);
+        report = scanner.scan();
+    }
 
-	@AfterClass
-	public static void tearDownClass() {
-	}
+    @AfterClass
+    public static void tearDownClass() {
+    }
 
-	@Before
-	public void setUp() {
+    @Before
+    public void setUp() {
 
-	}
+    }
 
-	@After
-	public void tearDown() {
-	}
+    @After
+    public void tearDown() {
+    }
 
-	@SuppressWarnings("unused")
-	@Test
-	public void testCralwerSerializers() {
-		ObjectMapper mapper = new ObjectMapper();
+    @SuppressWarnings("unused")
+    @Test
+    public void testCralwerSerializers() {
+        ObjectMapper mapper = new ObjectMapper();
 
-		SimpleModule module = new SimpleModule();
-		module.addSerializer(new ByteArraySerializer());
-		module.addSerializer(new ResponseFingerprintSerializer());
-		module.addSerializer(new CertificateSerializer());
-		module.addSerializer(new Asn1CertificateSerializer());
-		module.addSerializer(new CustomDhPublicKeySerializer());
-		module.addSerializer(new CustomEcPublicKeySerializer());
-		module.addSerializer(new CustomRsaPublicKeySerializer());
-		module.addSerializer(new CustomDsaPublicKeySerializer());
-		module.addSerializer(new VectorSerializer());
-		module.addSerializer(new PointSerializer());
-		module.addSerializer(new HttpsHeaderSerializer());
-		module.addSerializer(new Asn1EncodableSerializer());
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(new ByteArraySerializer());
+        module.addSerializer(new ResponseFingerprintSerializer());
+        module.addSerializer(new CertificateSerializer());
+        module.addSerializer(new Asn1CertificateSerializer());
+        module.addSerializer(new CustomDhPublicKeySerializer());
+        module.addSerializer(new CustomEcPublicKeySerializer());
+        module.addSerializer(new CustomRsaPublicKeySerializer());
+        module.addSerializer(new CustomDsaPublicKeySerializer());
+        module.addSerializer(new VectorSerializer());
+        module.addSerializer(new PointSerializer());
+        module.addSerializer(new HttpsHeaderSerializer());
+        module.addSerializer(new Asn1EncodableSerializer());
 
-		mapper.registerModule(module);
-		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
+        mapper.registerModule(module);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.configOverride(BigDecimal.class).setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));
 
-		try {
-			String reportJson = mapper.writeValueAsString(report);
-		} catch (JsonProcessingException e) {
-			fail("Exception occured");
-		}
-	}
+        try {
+            String reportJson = mapper.writeValueAsString(report);
+        } catch (JsonProcessingException e) {
+            fail("Exception occured");
+        }
+    }
 
 }
