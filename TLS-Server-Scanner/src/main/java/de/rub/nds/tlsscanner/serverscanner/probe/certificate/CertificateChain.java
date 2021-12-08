@@ -344,11 +344,11 @@ public class CertificateChain {
     public final boolean isCertificateSuitableForHost(X509Certificate cert, String host) {
         JsseDefaultHostnameAuthorizer checker = new JsseDefaultHostnameAuthorizer(null);
         try {
-            boolean res = checker.verify(host, cert);
-            if (!res) {
-                LOGGER.debug("Cert is not valid for {}", host);
+            boolean result = checker.verify(host, cert);
+            if (!result) {
+                LOGGER.debug("Hostname of Certificate is valid for {}", host);
             }
-            return res;
+            return result;
         } catch (IOException ex) {
             LOGGER.warn("Cert for {} caused IO Exception", host);
             return false;
