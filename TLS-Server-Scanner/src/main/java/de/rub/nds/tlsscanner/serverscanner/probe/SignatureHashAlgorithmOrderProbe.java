@@ -10,7 +10,6 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -64,7 +63,6 @@ public class SignatureHashAlgorithmOrderProbe extends TlsProbe {
     private SignatureAndHashAlgorithm getSelectedSignatureAndHashAlgorithm(List<SignatureAndHashAlgorithm> list) {
         Config config = getScannerConfig().createConfig();
 
-        config.setHighestProtocolVersion(ProtocolVersion.TLS12);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(list);
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);

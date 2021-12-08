@@ -39,7 +39,7 @@ import de.rub.nds.tlsscanner.serverscanner.leak.info.InvalidCurveTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveScanType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveVector;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
@@ -88,9 +88,9 @@ public class InvalidCurveProbe extends TlsProbe {
 
     private List<ECPointFormat> tls13FpPointFormatsToTest;
 
-    private Map<NamedGroup, NamedCurveWitness> namedCurveWitnesses;
+    private Map<NamedGroup, NamedGroupWitness> namedCurveWitnesses;
 
-    private Map<NamedGroup, NamedCurveWitness> namedCurveWitnessesTls13;
+    private Map<NamedGroup, NamedGroupWitness> namedCurveWitnessesTls13;
 
     public InvalidCurveProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.INVALID_CURVE, config);

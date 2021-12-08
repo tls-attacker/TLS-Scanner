@@ -47,7 +47,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.HandshakeFa
 import de.rub.nds.tlsscanner.serverscanner.probe.handshakesimulation.SimulatedClientResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.InvalidCurveResponse;
 import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
-import de.rub.nds.tlsscanner.serverscanner.probe.namedcurve.NamedCurveWitness;
+import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.serverscanner.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.serverscanner.rating.PropertyResultRatingInfluencer;
@@ -167,7 +167,9 @@ public class SiteReportPrinter {
         }
         appendScoringResults(builder);
         appendRecommendations(builder);
-        appendGuidelines(builder);
+        if (report.getProtocolType() != ProtocolType.DTLS) {
+            appendGuidelines(builder);
+        }
         appendPerformanceData(builder);
 
         return builder.toString();
@@ -1792,7 +1794,7 @@ public class SiteReportPrinter {
                     builder.append(group.name());
                     if (detail == ScannerDetail.ALL) {
                         builder.append("\n  Found using:");
-                        NamedCurveWitness witness = report.getSupportedNamedGroupsWitnesses().get(group);
+                        NamedGroupWitness witness = report.getSupportedNamedGroupsWitnesses().get(group);
                         for (CipherSuite cipher : witness.getCipherSuites()) {
                             builder.append("\n    ").append(cipher.toString());
                         }
