@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -51,8 +52,8 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
         Config config = getConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
-        WorkflowTrace trace
-                = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
@@ -74,8 +75,8 @@ public class DtlsRetransmissionsProbe extends TlsProbe {
         Config config = getConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         config.setAcceptContentRewritingDtlsFragments(true);
-        WorkflowTrace trace
-                = new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));

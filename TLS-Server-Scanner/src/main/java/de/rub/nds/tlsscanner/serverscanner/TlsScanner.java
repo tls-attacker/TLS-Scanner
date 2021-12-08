@@ -18,6 +18,9 @@ import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
+import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.rating.ScoreReport;
 import de.rub.nds.tlsscanner.serverscanner.rating.SiteReportRater;
@@ -196,6 +199,7 @@ public class TlsScanner {
                     } catch (JAXBException ex) {
                         LOGGER.error("Could not retrieve scoring results");
                     }
+                    executeGuidelineEvaluation(siteReport);
                     long scanEndTime = System.currentTimeMillis();
                     siteReport.setScanStartTime(scanStartTime);
                     siteReport.setScanEndTime(scanEndTime);
@@ -211,6 +215,16 @@ public class TlsScanner {
             }
             closeParallelExecutorIfNeeded();
         }
+    }
+
+    private void executeGuidelineEvaluation(SiteReport report) {
+        LOGGER.debug("Evaluating guidelines...");
+        for (Guideline guideline : GuidelineIO.readGuidelines(GuidelineIO.GUIDELINES)) {
+            LOGGER.debug("Evaluating guideline {} ...", guideline.getName());
+            GuidelineChecker checker = new GuidelineChecker(guideline);
+            checker.fillReport(report);
+        }
+        LOGGER.debug("Finished evaluating guidelines");
     }
 
     private void closeParallelExecutorIfNeeded() {

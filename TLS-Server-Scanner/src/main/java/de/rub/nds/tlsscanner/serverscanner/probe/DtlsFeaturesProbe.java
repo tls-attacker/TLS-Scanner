@@ -6,6 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
+
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
@@ -81,7 +82,7 @@ public class DtlsFeaturesProbe extends TlsProbe {
         config.setAddMaxFragmentLengthExtension(Boolean.TRUE);
         config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
         action.setFragments(new DtlsHandshakeMessageFragment(config, 20), new DtlsHandshakeMessageFragment(config, 20));
         trace.addTlsAction(action);
@@ -100,7 +101,7 @@ public class DtlsFeaturesProbe extends TlsProbe {
     private TestResult supportsReordering() {
         Config config = getConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
         trace.addTlsAction(new ActivateEncryptionAction());
         trace.addTlsAction(new SendAction(new FinishedMessage(config)));
