@@ -25,7 +25,6 @@ import org.apache.logging.log4j.Logger;
  * Extends {@link ThreadPoolExecutor} with its own afterExecute function. A ScannerThreadPoolExecutor hold a semaphore
  * which is released each time a Thread finished executing.
  *
- * @author JonSnowWhite
  */
 public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
 
