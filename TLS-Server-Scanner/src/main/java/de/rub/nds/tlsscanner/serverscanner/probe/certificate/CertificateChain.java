@@ -12,7 +12,8 @@ package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.serverscanner.trust.TrustPlatform;
-import java.security.cert.CertificateException;
+
+import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.LinkedList;
@@ -31,8 +32,8 @@ import org.bouncycastle.cert.path.validations.BasicConstraintsValidation;
 import org.bouncycastle.cert.path.validations.KeyUsageValidation;
 import org.bouncycastle.cert.path.validations.ParentCertIssuedValidation;
 import org.bouncycastle.crypto.tls.Certificate;
+import org.bouncycastle.est.jcajce.JsseDefaultHostnameAuthorizer;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import sun.security.util.HostnameChecker;
 
 /**
  * Note: Please do not copy from this code - (or any other certificate related code (or any TLS code)). This code is not
@@ -341,12 +342,15 @@ public class CertificateChain {
     }
 
     public final boolean isCertificateSuitableForHost(X509Certificate cert, String host) {
-        HostnameChecker checker = HostnameChecker.getInstance(HostnameChecker.TYPE_TLS);
+        JsseDefaultHostnameAuthorizer checker = new JsseDefaultHostnameAuthorizer(null);
         try {
-            checker.match(host, cert);
-            return true;
-        } catch (CertificateException ex) {
-            LOGGER.debug("Cert is not valid for " + host + ":" + host);
+            boolean result = checker.verify(host, cert);
+            if (!result) {
+                LOGGER.debug("Hostname of Certificate is valid for {}", host);
+            }
+            return result;
+        } catch (IOException ex) {
+            LOGGER.warn("Cert for {} caused IO Exception", host);
             return false;
         }
     }
