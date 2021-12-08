@@ -203,13 +203,18 @@ public class SignatureAndHashAlgorithmProbe extends TlsProbe {
     public boolean canBeExecuted(SiteReport report) {
         return report.isProbeAlreadyExecuted(ProbeType.PROTOCOL_VERSION)
             && (report.getVersions().contains(ProtocolVersion.TLS12)
-                || report.getVersions().contains(ProtocolVersion.TLS13));
+                || report.getVersions().contains(ProtocolVersion.TLS13)
+                || report.getVersions().contains(ProtocolVersion.DTLS12));
     }
 
     @Override
     public void adjustConfig(SiteReport report) {
-        this.versions = new ArrayList<>(report.getVersions());
-        this.versions.removeIf(version -> version.compare(ProtocolVersion.TLS12) < 0);
+        this.versions = new ArrayList<>();
+        for (ProtocolVersion version : report.getVersions()) {
+            if (version.equals(ProtocolVersion.DTLS12) || version.equals(ProtocolVersion.TLS12) || version.isTLS13()) {
+                versions.add(version);
+            }
+        }
     }
 
     @Override
