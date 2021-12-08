@@ -867,7 +867,7 @@
     <recommendation>
         <analyzedProperty>ENFORCES_NAMED_GROUP_ORDERING</analyzedProperty>
         <shortName>Named group order</shortName>
-        <shortDescription>Evaluates whether the TLS server enforces the client's named group ordering</shortDescription>
+        <shortDescription>Evaluates whether the server enforces the client's named group ordering</shortDescription>
         <links/>
         <resultingRecommendations>
             <resultingRecommendation>
