@@ -312,9 +312,8 @@ public class DefaultRecommendationsTest {
                 TestResult.FALSE, "Cipher suite ordering is disabled", "Enable cipher suite ordering"),
             ""));
         recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, "Named group order",
-            "Evaluates whether the TLS server enforces the client's named group ordering",
-            new PropertyResultRecommendation(TestResult.FALSE, "Server does not enforce client's group order",
-                "Enforce client's group order")));
+            "Evaluates whether the server enforces the client's named group ordering", new PropertyResultRecommendation(
+                TestResult.FALSE, "Server does not enforce client's group order", "Enforce client's group order")));
         recommendations.add(new Recommendation(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
             "Signature has algorithm ordering enforced",
             "Evaluates whether the server enforces signature hash algorithm ordering",

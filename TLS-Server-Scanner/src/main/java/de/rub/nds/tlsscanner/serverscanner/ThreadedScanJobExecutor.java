@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner;
 
 import de.rub.nds.tlsattacker.core.workflow.NamedThreadFactory;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
+import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.guideline.Guideline;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineChecker;
 import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineIO;
@@ -76,7 +77,9 @@ public class ThreadedScanJobExecutor extends ScanJobExecutor implements Observer
         reportAboutNotExecutedProbes();
         collectStatistics(report);
         executeAfterProbes(report);
-        executeGuidelineEvaluation(report);
+        if (report.getProtocolType() != ProtocolType.DTLS) {
+            executeGuidelineEvaluation(report);
+        }
 
         LOGGER.info("Finished scan for: " + config.getClientDelegate().getHost());
         return report;

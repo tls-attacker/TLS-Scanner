@@ -167,7 +167,9 @@ public class SiteReportPrinter {
         }
         appendScoringResults(builder);
         appendRecommendations(builder);
-        appendGuidelines(builder);
+        if (report.getProtocolType() != ProtocolType.DTLS) {
+            appendGuidelines(builder);
+        }
         appendPerformanceData(builder);
 
         return builder.toString();
