@@ -796,7 +796,7 @@
         </propertyResultRatingInfluencer>
     </ratingInfluencer>
     <ratingInfluencer>
-        <analyzedProperty>ENFORCES_SHA_ORDERING</analyzedProperty>
+        <analyzedProperty>ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING</analyzedProperty>
         <propertyResultRatingInfluencer>
             <result>TRUE</result>
             <influence>50</influence>
