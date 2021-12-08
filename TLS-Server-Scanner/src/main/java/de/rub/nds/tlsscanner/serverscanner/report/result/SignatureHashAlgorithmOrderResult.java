@@ -25,7 +25,7 @@ public class SignatureHashAlgorithmOrderResult extends ProbeResult {
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.ENFORCES_SHA_ORDERING, enforced);
+        report.putResult(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING, enforced);
     }
 
 }

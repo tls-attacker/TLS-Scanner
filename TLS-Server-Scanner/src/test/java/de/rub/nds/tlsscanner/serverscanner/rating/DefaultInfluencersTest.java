@@ -244,7 +244,7 @@ public class DefaultInfluencersTest {
         influencers.add(new RatingInfluencer(AnalyzedProperty.ENFORCES_CS_ORDERING,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 50),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
-        influencers.add(new RatingInfluencer(AnalyzedProperty.ENFORCES_SHA_ORDERING,
+        influencers.add(new RatingInfluencer(AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
             new PropertyResultRatingInfluencer(TestResult.TRUE, 50),
             new PropertyResultRatingInfluencer(TestResult.FALSE, -50)));
 

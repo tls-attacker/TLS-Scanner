@@ -1759,7 +1759,7 @@ public class SiteReportPrinter {
                 }
                 prettyAppendHeading(builder, "Signature and Hash Algorithms General");
                 prettyAppend(builder, "Enforces client's signature has algorithm ordering",
-                    AnalyzedProperty.ENFORCES_SHA_ORDERING);
+                    AnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING);
             } else {
                 builder.append("none\n");
             }

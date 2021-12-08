@@ -123,7 +123,7 @@ public enum AnalyzedProperty {
     PREFERS_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(AnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
-    ENFORCES_SHA_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
+    ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING(AnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(AnalyzedPropertyCategory.SNI),
     STRICT_ALPN(AnalyzedPropertyCategory.EXTENSIONS),
     /**
