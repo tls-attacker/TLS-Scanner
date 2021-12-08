@@ -12,10 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class ResultValueTest {
 
     public ResultValueTest() {

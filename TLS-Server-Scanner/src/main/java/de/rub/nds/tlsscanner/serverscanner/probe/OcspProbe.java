@@ -55,10 +55,6 @@ import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-/**
- *
- * @author Nils Hanke - {@literal nils.hanke@rub.de}
- */
 public class OcspProbe extends TlsProbe {
 
     private List<CertificateChain> serverCertChains;
@@ -93,7 +89,7 @@ public class OcspProbe extends TlsProbe {
             ocspCertResults.add(certResult);
         }
         List<CertificateStatusRequestExtensionMessage> tls13CertStatus = null;
-        if (tls13NamedGroups != null) {
+        if (!tls13NamedGroups.isEmpty()) {
             tls13CertStatus = getCertificateStatusFromCertificateEntryExtension();
         }
         return new OcspResult(ocspCertResults, tls13CertStatus);
@@ -145,58 +141,49 @@ public class OcspProbe extends TlsProbe {
     }
 
     private void performRequest(Certificate serverCertificateChain, OcspCertificateResult certResult) {
+        CertificateInformationExtractor mainCertExtractor =
+            new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
+        URL ocspResponderUrl;
+
+        // Check if leaf certificate supports OCSP
         try {
-            CertificateInformationExtractor mainCertExtractor =
-                new CertificateInformationExtractor(serverCertificateChain.getCertificateAt(0));
-            URL ocspResponderUrl;
-
-            // Check if leaf certificate supports OCSP
-            try {
-                ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
-                certResult.setSupportsOcsp(true);
-            } catch (NoSuchFieldException ex) {
-                LOGGER.debug(
-                    "Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
-                certResult.setSupportsOcsp(false);
-                return;
-            } catch (Exception e) {
-                if (e.getCause() instanceof InterruptedException) {
-                    LOGGER.error("Timeout on " + getProbeName());
-                } else {
-                    LOGGER.warn(
-                        "Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
-
-                }
-                return;
-            }
-
-            OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
-
-            // First Request Message with first fixed nonce test value
-            OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
-            ocspFirstRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_1)));
-            ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
-            certResult.setFirstResponse(ocspRequest.makeRequest(ocspFirstRequestMessage));
-            certResult.setHttpGetResponse(ocspRequest.makeGetRequest(ocspFirstRequestMessage));
-
-            // If nonce is supported used, check if server actually replies
-            // with a different one immediately after
-            if (certResult.getFirstResponse().getNonce() != null) {
-                certResult.setSupportsNonce(true);
-                OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
-                ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
-                ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
-                certResult.setSecondResponse(ocspRequest.makeRequest(ocspSecondRequestMessage));
-                LOGGER.debug(certResult.getSecondResponse().toString());
-            } else {
-                certResult.setSupportsNonce(false);
-            }
+            ocspResponderUrl = new URL(mainCertExtractor.getOcspServerUrl());
+            certResult.setSupportsOcsp(true);
+        } catch (NoSuchFieldException ex) {
+            LOGGER.debug(
+                "Cannot extract OCSP responder URL from leaf certificate. This certificate likely does not support OCSP.");
+            certResult.setSupportsOcsp(false);
+            return;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 LOGGER.error("Timeout on " + getProbeName());
             } else {
-                LOGGER.error("OCSP probe failed.");
+                LOGGER.warn("Failed to extract OCSP responder URL from leaf certificate. Cannot make an OCSP request.");
+
             }
+            return;
+        }
+
+        OCSPRequest ocspRequest = new OCSPRequest(serverCertificateChain, ocspResponderUrl);
+
+        // First Request Message with first fixed nonce test value
+        OCSPRequestMessage ocspFirstRequestMessage = ocspRequest.createDefaultRequestMessage();
+        ocspFirstRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_1)));
+        ocspFirstRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
+        certResult.setFirstResponse(ocspRequest.makeRequest(ocspFirstRequestMessage));
+        certResult.setHttpGetResponse(ocspRequest.makeGetRequest(ocspFirstRequestMessage));
+
+        // If nonce is supported used, check if server actually replies
+        // with a different one immediately after
+        if (certResult.getFirstResponse() != null && certResult.getFirstResponse().getNonce() != null) {
+            certResult.setSupportsNonce(true);
+            OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
+            ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
+            ocspSecondRequestMessage.addExtension(OCSPResponseTypes.NONCE.getOID());
+            certResult.setSecondResponse(ocspRequest.makeRequest(ocspSecondRequestMessage));
+            LOGGER.debug(certResult.getSecondResponse().toString());
+        } else {
+            certResult.setSupportsNonce(false);
         }
     }
 
@@ -237,12 +224,12 @@ public class OcspProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
+        tlsConfig.setStopActionsAfterIOException(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
 
         tlsConfig.setCertificateStatusRequestExtensionRequestExtension(prepareNonceExtension());
         tlsConfig.setAddCertificateStatusRequestExtension(true);

@@ -14,20 +14,15 @@ import de.rub.nds.tlsscanner.serverscanner.probe.stats.ComparableByteArray;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.ExtractedValueContainer;
 import de.rub.nds.tlsscanner.serverscanner.probe.stats.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
-import de.rub.nds.tlsscanner.serverscanner.report.result.statistics.RandomEvaluationResult;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Test-Class for EvaluateRandomnessAfterProbe.java, which currently analyzes a site-report, examines all random-values
  * extracted by the RandomnessExtractor, filters the messages for messages which are not resend-requests by the Server
  * and then checks if all extracted random-values are different or equal.
- *
- * @author Dennis Ziebart - dziebart@mail.uni-paderborn.de
  */
 public class EvaluateRandomnessAfterProbeTest {
 
@@ -56,7 +51,7 @@ public class EvaluateRandomnessAfterProbeTest {
      * @return             a SiteReport filled with the provided random-bytes
      */
     private SiteReport generateSiteReport(byte[]... randomBytes) {
-        SiteReport generatedReport = new SiteReport("test");
+        SiteReport generatedReport = new SiteReport("test", 443);
 
         ExtractedValueContainer extractedValueContainer = new ExtractedValueContainer(TrackableValueType.RANDOM);
         Map<TrackableValueType, ExtractedValueContainer> extractedValueContainerMap = new HashMap<>();

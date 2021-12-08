@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe.directraccoon;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public enum DirectRaccoonWorkflowType {
 
     /**

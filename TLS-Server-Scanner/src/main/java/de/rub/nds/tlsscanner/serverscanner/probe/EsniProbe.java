@@ -73,8 +73,8 @@ public class EsniProbe extends TlsProbe {
         tlsConfig.setAddServerNameIndicationExtension(false);
         tlsConfig.setAddEncryptedServerNameIndicationExtension(true);
 
-        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig)
-            .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.CLIENT);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(tlsConfig).createWorkflowTrace(WorkflowTraceType.HELLO,
+            RunningModeType.CLIENT);
         State state = new State(tlsConfig, trace);
         executeState(state);
 

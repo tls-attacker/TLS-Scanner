@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.attacks.ec.TwistedCurvePoint;
 import de.rub.nds.tlsattacker.attacks.impl.InvalidCurveAttacker;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.ClientDelegate;
+import de.rub.nds.tlsattacker.core.config.delegate.ProtocolVersionDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CertificateKeyType;
@@ -54,10 +55,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class InvalidCurveProbe extends TlsProbe {
 
     /**
@@ -201,6 +198,12 @@ public class InvalidCurveProbe extends TlsProbe {
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_2) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS12);
         }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_0) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.DTLS10);
+        }
+        if (report.getResult(AnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResult.TRUE) {
+            protocolVersions.add(ProtocolVersion.DTLS12);
+        }
         supportedTls13FpGroups = new LinkedList();
         if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.TRUE) {
             protocolVersions.add(ProtocolVersion.TLS13);
@@ -262,6 +265,9 @@ public class InvalidCurveProbe extends TlsProbe {
         delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) attackConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
+        ProtocolVersionDelegate protocolVersionDelegate =
+            (ProtocolVersionDelegate) attackConfig.getDelegate(ProtocolVersionDelegate.class);
+        protocolVersionDelegate.setProtocolVersion(protocolVersion);
         InvalidCurveAttacker attacker =
             new InvalidCurveAttacker(attackConfig, attackConfig.createConfig(), getParallelExecutor());
 
@@ -280,8 +286,6 @@ public class InvalidCurveProbe extends TlsProbe {
                 SignatureAndHashAlgorithm.getImplementedTls13SignatureAndHashAlgorithms());
         }
 
-        attacker.getTlsConfig().setHighestProtocolVersion(protocolVersion);
-        attacker.getTlsConfig().setDefaultSelectedProtocolVersion(protocolVersion);
         attacker.getTlsConfig().setDefaultClientSupportedCipherSuites(cipherSuites);
         attacker.getTlsConfig().setDefaultClientNamedGroups(group);
         attacker.getTlsConfig().setDefaultSelectedNamedGroup(group);
@@ -542,6 +546,10 @@ public class InvalidCurveProbe extends TlsProbe {
         } else if (supportedProtocolVersions.contains(ProtocolVersion.TLS13)
             && (issuesTls13SessionTickets == TestResult.TRUE && supportsTls13PskDhe == TestResult.TRUE)) {
             return ProtocolVersion.TLS13;
+        } else if (supportedProtocolVersions.contains(ProtocolVersion.DTLS12) && supportsRenegotiation) {
+            return ProtocolVersion.DTLS12;
+        } else if (supportedProtocolVersions.contains(ProtocolVersion.DTLS10) && supportsRenegotiation) {
+            return ProtocolVersion.DTLS10;
         }
         LOGGER.info("Could not find a suitable version for Invalid Curve renegotiation scans");
         return null;
@@ -564,6 +572,11 @@ public class InvalidCurveProbe extends TlsProbe {
             picked.add(ProtocolVersion.TLS13);
         }
 
+        if (supportedProtocolVersions.contains(ProtocolVersion.DTLS12)) {
+            picked.add(ProtocolVersion.DTLS12);
+        } else if (supportedProtocolVersions.contains(ProtocolVersion.DTLS10)) {
+            picked.add(ProtocolVersion.DTLS10);
+        }
         return picked;
     }
 

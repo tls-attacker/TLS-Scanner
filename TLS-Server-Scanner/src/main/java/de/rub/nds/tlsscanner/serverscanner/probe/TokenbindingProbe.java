@@ -32,10 +32,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-/**
- *
- * @author robert
- */
 public class TokenbindingProbe extends TlsProbe {
 
     public TokenbindingProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {

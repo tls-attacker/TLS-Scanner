@@ -25,11 +25,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public abstract class TlsProbe implements Callable<ProbeResult> {
 
     protected static final Logger LOGGER = LogManager.getLogger(TlsProbe.class.getName());
@@ -64,9 +61,14 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
 
     @Override
     public ProbeResult call() {
+        ThreadContext.put("host",
+            this.scannerConfig.getClientDelegate().getSniHostname() == null
+                ? this.scannerConfig.getClientDelegate().getHost()
+                : this.scannerConfig.getClientDelegate().getSniHostname());
         LOGGER.debug("Executing:" + getProbeName());
         long startTime = System.currentTimeMillis();
-        ProbeResult result;
+
+        ProbeResult result = null;
         try {
             result = executeTest();
         } catch (Exception e) {
@@ -77,16 +79,17 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
                 LOGGER.error("Could not scan for " + getProbeName(), e);
             }
             result = getCouldNotExecuteResult();
+        } finally {
+            long stopTime = System.currentTimeMillis();
+            if (result != null) {
+                result.setStartTime(startTime);
+                result.setStopTime(stopTime);
+            } else {
+                LOGGER.warn("" + getProbeName() + " - is null result");
+            }
+            LOGGER.debug("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
+            ThreadContext.remove("host");
         }
-        long stopTime = System.currentTimeMillis();
-        if (result != null) {
-            result.setStartTime(startTime);
-            result.setStopTime(stopTime);
-        } else {
-            LOGGER.warn("" + getProbeName() + " - is null result");
-        }
-
-        LOGGER.debug("Finished " + getProbeName() + " -  Took " + (stopTime - startTime) / 1000 + "s");
         return result;
     }
 
@@ -96,7 +99,7 @@ public abstract class TlsProbe implements Callable<ProbeResult> {
     }
 
     public final void executeState(List<State> states) {
-        parallelExecutor.bulkExecuteClientStateTasks(states);
+        parallelExecutor.bulkExecuteStateTasks(states);
         for (State state : states) {
             writer.extract(state);
         }

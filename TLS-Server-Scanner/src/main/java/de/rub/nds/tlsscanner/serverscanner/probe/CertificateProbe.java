@@ -36,10 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CertificateProbe extends TlsProbe {
 
     private boolean scanForRsaCert = true;
@@ -119,7 +115,7 @@ public class CertificateProbe extends TlsProbe {
         if (report.getResult(AnalyzedProperty.SUPPORTS_GOST) == TestResult.FALSE) {
             scanForGostCert = false;
         }
-        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) == TestResult.FALSE) {
+        if (report.getResult(AnalyzedProperty.SUPPORTS_TLS_1_3) != TestResult.TRUE) {
             scanForTls13 = false;
         }
     }
@@ -334,7 +330,8 @@ public class CertificateProbe extends TlsProbe {
         tlsConfig.setQuickReceive(true);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        tlsConfig.setStopReceivingAfterFatal(true);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);

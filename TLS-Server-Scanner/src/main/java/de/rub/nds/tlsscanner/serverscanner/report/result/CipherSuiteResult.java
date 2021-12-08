@@ -22,11 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
-public class CipherSuiteProbeResult extends ProbeResult {
+public class CipherSuiteResult extends ProbeResult {
 
     private List<VersionSuiteListPair> pairLists;
 
@@ -71,7 +67,7 @@ public class CipherSuiteProbeResult extends ProbeResult {
     private TestResult supportsSha256Prf = TestResult.FALSE;
     private TestResult supportsSha384Prf = TestResult.FALSE;
 
-    public CipherSuiteProbeResult(List<VersionSuiteListPair> pairLists) {
+    public CipherSuiteResult(List<VersionSuiteListPair> pairLists) {
         super(ProbeType.CIPHER_SUITE);
         this.pairLists = pairLists;
     }

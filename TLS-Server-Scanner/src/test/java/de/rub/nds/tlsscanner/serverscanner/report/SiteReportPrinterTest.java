@@ -21,10 +21,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/**
- *
- * @author ic0ns
- */
 public class SiteReportPrinterTest {
 
     public SiteReportPrinterTest() {
@@ -51,7 +47,7 @@ public class SiteReportPrinterTest {
      */
     @Test
     public void testPrintEmptyReport() {
-        SiteReport report = new SiteReport("somehost");
+        SiteReport report = new SiteReport("somehost", 443);
         for (ScannerDetail detail : ScannerDetail.values()) {
             SiteReportPrinter printer = new SiteReportPrinter(report, detail, true);
             printer.getFullReport();

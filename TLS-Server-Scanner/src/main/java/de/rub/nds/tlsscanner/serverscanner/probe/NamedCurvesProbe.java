@@ -40,10 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class NamedCurvesProbe extends TlsProbe {
 
     private boolean testUsingRsa = true;
@@ -84,8 +80,8 @@ public class NamedCurvesProbe extends TlsProbe {
                 getSupportedNamedGroupsEcdsa(getEcdsaStaticCipherSuites(), null, ecdsaCertSigGroupsStatic);
         }
         if (testUsingEcdsaEphemeral) {
-            groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCipherSuites(),
-                ecdsaPkGroupsEphemeral, ecdsaCertSigGroupsEphemeral);
+            groupsEcdsaEphemeral = getSupportedNamedGroupsEcdsa(getEcdsaEphemeralCipherSuites(), ecdsaPkGroupsEphemeral,
+                ecdsaCertSigGroupsEphemeral);
         }
         if (testUsingTls13) {
             groupsTls13 = getTls13SupportedGroups();
@@ -318,12 +314,11 @@ public class NamedCurvesProbe extends TlsProbe {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
         tlsConfig.setStopActionsAfterFatal(true);
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.HELLO);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddRenegotiationInfoExtension(true);

@@ -38,15 +38,10 @@ public class CcaRequiredProbe extends TlsProbe {
 
     @Override
     public ProbeResult executeTest() {
-        CcaDelegate ccaDelegate = (CcaDelegate) getScannerConfig().getDelegate(CcaDelegate.class);
-        CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(ccaDelegate);
+        CcaCertificateManager ccaCertificateManager = new CcaCertificateManager(getScannerConfig().getCcaDelegate());
         Config tlsConfig = generateConfig();
-        CcaWorkflowType ccaWorkflowType = CcaWorkflowType.CRT_CKE_CCS_FIN;
-        CcaCertificateType ccaCertificateType = CcaCertificateType.EMPTY;
-        tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-
-        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager, ccaWorkflowType,
-            ccaCertificateType);
+        WorkflowTrace trace = CcaWorkflowGenerator.generateWorkflow(tlsConfig, ccaCertificateManager,
+            CcaWorkflowType.CRT_CKE_CCS_FIN, CcaCertificateType.EMPTY);
         State state = new State(tlsConfig, trace);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
@@ -73,14 +68,11 @@ public class CcaRequiredProbe extends TlsProbe {
     private Config generateConfig() {
         Config config = getScannerConfig().createConfig();
         config.setAutoSelectCertificate(false);
-        config.setWorkflowTraceType(WorkflowTraceType.HELLO);
-        config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS10);
-
         config.setQuickReceive(true);
         config.setEarlyStop(true);
-        config.setStopActionsAfterIOException(true);
+        config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
-
+        config.setStopActionsAfterIOException(true);
         return config;
     }
 }
