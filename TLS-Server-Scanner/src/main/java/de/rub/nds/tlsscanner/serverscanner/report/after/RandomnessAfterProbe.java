@@ -72,23 +72,16 @@ public class RandomnessAfterProbe extends AfterProbe {
      * @return TRUE if the all timestamps are within one year of now
      */
     private boolean checkForUnixTime(ExtractedValueContainer<ComparableByteArray> randomContainer) {
-
-        Integer lastUnixTime = null;
         Integer serverUnixTime = null;
-        int matchCounter = 0;
-
         for (ComparableByteArray byteArray : randomContainer.getExtractedValueList()) {
-
             byte[] serverRandom = byteArray.getArray();
-            if (lastUnixTime != null) {
-                if (serverRandom != null) {
-                    byte[] unixTimeStamp = new byte[4];
-                    System.arraycopy(serverRandom, 0, unixTimeStamp, 0, HandshakeByteLength.UNIX_TIME);
-                    serverUnixTime = ArrayConverter.bytesToInt(unixTimeStamp);
-                    if (serverUnixTime > System.currentTimeMillis() / 1000 + UNIX_TIME_ALLOWED_DEVIATION
-                        || serverUnixTime < System.currentTimeMillis() / 1000 - UNIX_TIME_ALLOWED_DEVIATION) {
-                        return false;
-                    }
+            if (serverRandom != null) {
+                byte[] unixTimeStamp = new byte[4];
+                System.arraycopy(serverRandom, 0, unixTimeStamp, 0, HandshakeByteLength.UNIX_TIME);
+                serverUnixTime = ArrayConverter.bytesToInt(unixTimeStamp);
+                if (serverUnixTime > System.currentTimeMillis() / 1000 + UNIX_TIME_ALLOWED_DEVIATION
+                    || serverUnixTime < System.currentTimeMillis() / 1000 - UNIX_TIME_ALLOWED_DEVIATION) {
+                    return false;
                 }
             }
         }

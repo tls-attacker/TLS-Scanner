@@ -19,10 +19,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author robert
- */
 public class TokenbindingResult extends ProbeResult {
 
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;

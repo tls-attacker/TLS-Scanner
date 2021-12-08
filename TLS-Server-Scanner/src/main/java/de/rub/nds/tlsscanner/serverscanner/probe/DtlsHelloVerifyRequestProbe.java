@@ -9,15 +9,17 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
+import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -43,14 +45,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
-    // not a good choise
-    private int cookieLength = -1;
+    private Integer cookieLength;
 
     public DtlsHelloVerifyRequestProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
@@ -60,7 +57,8 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             return new DtlsHelloVerifyRequestResult(hasHvrRetransmissions(), checksCookie(), cookieLength,
-                usesVersion(), usesRandom(), usesSessionId(), usesCiphersuites(), usesCompressions());
+                usesVersionInCookie(), usesRandomInCookie(), usesSessionIdInCookie(), usesCiphersuitesInCookie(),
+                usesCompressionsInCookie());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new DtlsHelloVerifyRequestResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST, -1,
@@ -69,7 +67,6 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         }
     }
 
-    // maybe just one generic receive action instead of a combination of receive + generice receive
     private TestResult hasHvrRetransmissions() {
         Config config = getConfig();
         config.setAddRetransmissionsToWorkflowTraceInDtls(true);
@@ -81,12 +78,16 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         trace.addTlsAction(new GenericReceiveAction());
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil
-            .getLastReceivedMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())
-            .isRetransmission()) {
-            return TestResult.TRUE;
+        HandshakeMessage message = WorkflowTraceUtil.getLastReceivedMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST,
+            state.getWorkflowTrace());
+        if (message != null) {
+            if (message.isRetransmission()) {
+                return TestResult.TRUE;
+            } else {
+                return TestResult.FALSE;
+            }
         } else {
-            return TestResult.FALSE;
+            return TestResult.CANNOT_BE_TESTED;
         }
     }
 
@@ -105,104 +106,88 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
         } else {
             return TestResult.ERROR_DURING_TEST;
         }
-        int[] testPositions = new int[] { 0, cookieLength / 2, cookieLength - 1 };
-        for (int totest : testPositions) {
-            config = getConfig();
-            WorkflowTrace trace = new WorkflowConfigurationFactory(config)
-                .createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-            trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
-            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
-            ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-            ModifiableByteArray cookie = new ModifiableByteArray();
-            cookie.setModification(ByteArrayModificationFactory.xor(ArrayConverter.hexStringToByteArray("FF"), totest));
-            clientHelloMessage.setCookie(cookie);
-            trace.addTlsAction(new SendAction(clientHelloMessage));
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
-            state = new State(config, trace);
-            if (getResult(state) == TestResult.FALSE) {
-                return TestResult.FALSE;
-            }
-        }
-        return TestResult.TRUE;
-    }
-
-    // problematic case: if server supports one version
-    private TestResult usesVersion() {
-        Config config = getConfig();
+        config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray protocolVersion = new ModifiableByteArray();
-        protocolVersion.setModification(ByteArrayModificationFactory.explicitValue(ProtocolVersion.DTLS10.getValue()));
-        clientHelloMessage.setProtocolVersion(protocolVersion);
+        byte[] cookie = new byte[cookieLength];
+        Arrays.fill(cookie, (byte) 255);
+        clientHelloMessage.setCookie(Modifiable.xor(cookie, 0));
+        trace.addTlsAction(new SendAction(clientHelloMessage));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        state = new State(config, trace);
+        return getResult(state);
+    }
+
+    private TestResult usesVersionInCookie() {
+        Config config = getConfig();
+        config.setHighestProtocolVersion(ProtocolVersion.DTLS10);
+        WorkflowTrace trace =
+            new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
+        ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
+        clientHelloMessage.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS12.getValue()));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
         return getResult(state);
     }
 
-    private TestResult usesRandom() {
+    private TestResult usesRandomInCookie() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray random = new ModifiableByteArray();
-        random.setModification(ByteArrayModificationFactory.xor(ArrayConverter.hexStringToByteArray("FFFF"), -2));
-        clientHelloMessage.setRandom(random);
+        byte[] random = new byte[HandshakeByteLength.RANDOM];
+        Arrays.fill(random, (byte) 255);
+        clientHelloMessage.setRandom(Modifiable.xor(random, 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
         return getResult(state);
     }
 
-    // can we check this field like this
-    private TestResult usesSessionId() {
+    private TestResult usesSessionIdInCookie() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray sessionId = new ModifiableByteArray();
-        sessionId
-            .setModification(ByteArrayModificationFactory.explicitValue(ArrayConverter.hexStringToByteArray("FFFF")));
-        clientHelloMessage.setSessionId(sessionId);
+        clientHelloMessage.setSessionId(Modifiable.explicit(ArrayConverter.hexStringToByteArray("FFFF")));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
         return getResult(state);
     }
 
-    private TestResult usesCiphersuites() {
+    private TestResult usesCiphersuitesInCookie() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray ciphersuites = new ModifiableByteArray();
-        ciphersuites.setModification(ByteArrayModificationFactory.delete(1, 2));
-        clientHelloMessage.setCipherSuites(ciphersuites);
+        clientHelloMessage.setCipherSuites(Modifiable.insert(ArrayConverter.hexStringToByteArray("FFFF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
         return getResult(state);
     }
 
-    private TestResult usesCompressions() {
+    private TestResult usesCompressionsInCookie() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
-        ModifiableByteArray compressions = new ModifiableByteArray();
-        compressions.setModification(ByteArrayModificationFactory.delete(-1, 1));
-        clientHelloMessage.setCompressions(compressions);
+        clientHelloMessage.setCompressions(Modifiable.insert(ArrayConverter.hexStringToByteArray("FF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
         State state = new State(config, trace);
@@ -211,10 +196,14 @@ public class DtlsHelloVerifyRequestProbe extends TlsProbe {
 
     private TestResult getResult(State state) {
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
-            return TestResult.FALSE;
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
+            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+                return TestResult.FALSE;
+            } else {
+                return TestResult.TRUE;
+            }
         } else {
-            return TestResult.TRUE;
+            return TestResult.CANNOT_BE_TESTED;
         }
     }
 

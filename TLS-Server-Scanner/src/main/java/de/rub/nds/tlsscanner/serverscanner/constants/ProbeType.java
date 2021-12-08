@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.constants;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public enum ProbeType {
     ALPN("ALPN"),
     ESNI("ESNI"),
@@ -27,6 +23,7 @@ public enum ProbeType {
     DROWN("Drown"),
     EARLY_CCS("Early CCS"),
     NAMED_GROUPS("Named groups"),
+    NAMED_GROUPS_ORDER("Named groups order"),
     PADDING_ORACLE("Padding oracle"),
     TLS_POODLE("TLS-Poodle"),
     PROTOCOL_VERSION("Protocol version"),
@@ -58,7 +55,8 @@ public enum ProbeType {
     HTTP_FALSE_START("HTTP false start"),
     HELLO_RETRY("Hello retry"),
     CROSS_PROTOCOL_ALPACA("Alpaca attack"),
-    RANDOMNESS("Randomness");
+    RANDOMNESS("Randomness"),
+    TLS_FALLBACK_SCSV("TLS Fallback SCSV");
 
     private String humanReadableName;
 

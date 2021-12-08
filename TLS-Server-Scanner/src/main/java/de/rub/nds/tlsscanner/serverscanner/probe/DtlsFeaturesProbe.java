@@ -13,9 +13,11 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.MaxFragmentLength;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.DtlsHandshakeMessageFragment;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -40,10 +42,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DtlsFeaturesProbe extends TlsProbe {
 
     public DtlsFeaturesProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
@@ -61,6 +59,16 @@ public class DtlsFeaturesProbe extends TlsProbe {
     }
 
     private TestResult supportsFragmentation() {
+        if (supportsFragmentationDirectly() == TestResult.TRUE) {
+            return TestResult.TRUE;
+        } else if (supportsFragmentationWithExtension() == TestResult.TRUE) {
+            return TestResult.PARTIALLY;
+        } else {
+            return TestResult.FALSE;
+        }
+    }
+
+    private TestResult supportsFragmentationDirectly() {
         Config config = getConfig();
         config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         config.setDtlsMaximumFragmentLength(100);
@@ -68,6 +76,27 @@ public class DtlsFeaturesProbe extends TlsProbe {
         State state = new State(config);
         executeState(state);
         if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
+            return TestResult.TRUE;
+        } else {
+            return TestResult.FALSE;
+        }
+    }
+
+    private TestResult supportsFragmentationWithExtension() {
+        Config config = getConfig();
+        config.setAddMaxFragmentLengthExtension(Boolean.TRUE);
+        config.setDefaultMaxFragmentLength(MaxFragmentLength.TWO_11);
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        SendDynamicClientKeyExchangeAction action = new SendDynamicClientKeyExchangeAction();
+        action.setFragments(new DtlsHandshakeMessageFragment(config, 20), new DtlsHandshakeMessageFragment(config, 20));
+        trace.addTlsAction(action);
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config), new FinishedMessage(config)));
+        trace.addTlsAction(new ReceiveAction(new ChangeCipherSpecMessage(), new FinishedMessage(config)));
+
+        State state = new State(config, trace);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
             return TestResult.TRUE;
         } else {
             return TestResult.FALSE;

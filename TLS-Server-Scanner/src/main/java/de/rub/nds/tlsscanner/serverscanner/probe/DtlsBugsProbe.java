@@ -9,8 +9,7 @@
 
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.modifiablevariable.integer.IntegerModificationFactory;
-import de.rub.nds.modifiablevariable.integer.ModifiableInteger;
+import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -19,6 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -42,10 +42,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DtlsBugsProbe extends TlsProbe {
 
     public DtlsBugsProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
@@ -55,14 +51,37 @@ public class DtlsBugsProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            return new DtlsBugsResult(isAcceptUnencryptedAppData(), isEarlyFinished());
+            return new DtlsBugsResult(isAcceptingUnencryptedFinished(), isAcceptingUnencryptedAppData(),
+                isEarlyFinished());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new DtlsBugsResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST);
+            return new DtlsBugsResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
+                TestResult.ERROR_DURING_TEST);
         }
     }
 
-    private TestResult isAcceptUnencryptedAppData() {
+    private TestResult isAcceptingUnencryptedFinished() {
+        Config config = getConfig();
+        WorkflowTrace trace = new WorkflowConfigurationFactory(config)
+            .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
+        trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
+        trace.addTlsAction(new SendAction(new ChangeCipherSpecMessage(config)));
+        SendAction sendAction = new SendAction(new FinishedMessage(config));
+        Record record = new Record(config);
+        record.setEpoch(Modifiable.explicit(0));
+        sendAction.setRecords(record);
+        trace.addTlsAction(sendAction);
+        trace.addTlsAction(new GenericReceiveAction());
+        State state = new State(config, trace);
+        executeState(state);
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+            return TestResult.TRUE;
+        } else {
+            return TestResult.FALSE;
+        }
+    }
+
+    private TestResult isAcceptingUnencryptedAppData() {
         Config config = getConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HANDSHAKE, RunningModeType.CLIENT);
@@ -76,17 +95,14 @@ public class DtlsBugsProbe extends TlsProbe {
             RunningModeType.CLIENT);
         SendAction sendAction = new SendAction(new ApplicationMessage(config));
         Record record = new Record(config);
-        ModifiableInteger integer = new ModifiableInteger();
-        integer.setModification(IntegerModificationFactory.explicitValue(0));
-        record.setEpoch(integer);
+        record.setEpoch(Modifiable.explicit(0));
         sendAction.setRecords(record);
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new GenericReceiveAction());
         state = new State(config, trace);
         executeState(state);
         ProtocolMessage receivedMessageModified = WorkflowTraceUtil.getLastReceivedMessage(state.getWorkflowTrace());
-
-        if (receivedMessage.getCompleteResultingMessage()
+        if (receivedMessage != null && receivedMessageModified != null && receivedMessage.getCompleteResultingMessage()
             .equals(receivedMessageModified.getCompleteResultingMessage())) {
             return TestResult.TRUE;
         } else {
@@ -94,14 +110,11 @@ public class DtlsBugsProbe extends TlsProbe {
         }
     }
 
-    // is this a useful test?
     private TestResult isEarlyFinished() {
         Config config = getConfig();
         WorkflowTrace trace = new WorkflowConfigurationFactory(config)
             .createWorkflowTrace(WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-        // plain or encrypted finished?
-        // trace.addTlsAction(new ActivateEncryptionAction());
         trace.addTlsAction(new SendAction(new FinishedMessage(config)));
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage(config)));
         State state = new State(config, trace);
@@ -143,7 +156,7 @@ public class DtlsBugsProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new DtlsBugsResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
+        return new DtlsBugsResult(TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST, TestResult.COULD_NOT_TEST);
     }
 
     @Override

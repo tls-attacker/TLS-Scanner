@@ -11,25 +11,31 @@ package de.rub.nds.tlsscanner.serverscanner.report.result;
 
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
+import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
+import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
+
 import java.util.List;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class SignatureAndHashAlgorithmResult extends ProbeResult {
 
-    private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmList;
+    private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke;
+    private final List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13;
+    private final TestResult respectsExtension;
 
-    public SignatureAndHashAlgorithmResult(List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmList) {
+    public SignatureAndHashAlgorithmResult(List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListSke,
+        List<SignatureAndHashAlgorithm> signatureAndHashAlgorithmListTls13, TestResult respectsExtension) {
         super(ProbeType.SIGNATURE_AND_HASH);
-        this.signatureAndHashAlgorithmList = signatureAndHashAlgorithmList;
+        this.signatureAndHashAlgorithmListSke = signatureAndHashAlgorithmListSke;
+        this.respectsExtension = respectsExtension;
+        this.signatureAndHashAlgorithmListTls13 = signatureAndHashAlgorithmListTls13;
     }
 
     @Override
     public void mergeData(SiteReport report) {
-        report.setSupportedSignatureAndHashAlgorithms(signatureAndHashAlgorithmList);
+        report.setSupportedSignatureAndHashAlgorithmsSke(signatureAndHashAlgorithmListSke);
+        report.setSupportedSignatureAndHashAlgorithmsTls13(signatureAndHashAlgorithmListTls13);
+        report.putResult(AnalyzedProperty.RESPECTS_SIGNATURE_ALGORITHMS_EXTENSION, respectsExtension);
     }
 
 }

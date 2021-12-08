@@ -41,10 +41,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DtlsMessageSequenceProbe extends TlsProbe {
 
     public DtlsMessageSequenceProbe(ScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
@@ -54,8 +50,9 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
     @Override
     public ProbeResult executeTest() {
         try {
-            return new DtlsMessageSequenceResult(startsWithInvalidMessageNumber(), skippsMessageNumbersOnce(),
-                skippsMessageNumbersMultiple(), acceptsRandomMessageNumbers());
+            return new DtlsMessageSequenceResult(acceptsStartedWithInvalidMessageNumber(),
+                acceptsSkippedMessageNumbersOnce(), acceptsSkippedMessageNumbersMultiple(),
+                acceptsRandomMessageNumbers());
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
             return new DtlsMessageSequenceResult(TestResult.ERROR_DURING_TEST, TestResult.ERROR_DURING_TEST,
@@ -86,7 +83,7 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
         }
     }
 
-    private TestResult skippsMessageNumbersMultiple() {
+    private TestResult acceptsSkippedMessageNumbersMultiple() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -109,7 +106,7 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
         }
     }
 
-    private TestResult skippsMessageNumbersOnce() {
+    private TestResult acceptsSkippedMessageNumbersOnce() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
@@ -131,17 +128,19 @@ public class DtlsMessageSequenceProbe extends TlsProbe {
         }
     }
 
-    private TestResult startsWithInvalidMessageNumber() {
+    private TestResult acceptsStartedWithInvalidMessageNumber() {
         Config config = getConfig();
         WorkflowTrace trace =
             new WorkflowConfigurationFactory(config).createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
         trace.addTlsAction(0, new ChangeContextValueAction("dtlsWriteHandshakeMessageSequence", 3));
         trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
+        trace.addTlsAction(new SendAction(new ClientHelloMessage(config)));
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
 
         State state = new State(config, trace);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.HELLO_VERIFY_REQUEST, state.getWorkflowTrace())) {
+        if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, state.getWorkflowTrace())) {
             return TestResult.TRUE;
         } else {
             return TestResult.FALSE;

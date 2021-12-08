@@ -40,10 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class NamedCurvesProbe extends TlsProbe {
 
     private boolean testUsingRsa = true;
@@ -323,11 +319,6 @@ public class NamedCurvesProbe extends TlsProbe {
         Config tlsConfig = getScannerConfig().createConfig();
         tlsConfig.setQuickReceive(true);
         tlsConfig.setStopActionsAfterIOException(true);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);

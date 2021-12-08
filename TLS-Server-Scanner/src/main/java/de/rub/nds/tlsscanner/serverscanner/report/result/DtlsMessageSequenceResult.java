@@ -14,33 +14,33 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DtlsMessageSequenceResult extends ProbeResult {
 
-    private TestResult startsWithInvalidMessageNumber;
-    private TestResult skippsMessageNumbersOnce;
-    private TestResult skippsMessageNumbersMultiple;
+    private TestResult acceptsStartedWithInvalidMessageNumber;
+    private TestResult acceptsSkippedMessageNumbersOnce;
+    private TestResult acceptsSkippedMessageNumbersMultiple;
     private TestResult acceptsRandomMessageNumbers;
 
-    public DtlsMessageSequenceResult(TestResult startsWithInvalidMessageNumber, TestResult skippsMessageNumbersOnce,
-        TestResult skippsMessageNumbersMultiple, TestResult acceptsRandomMessageNumbers) {
+    public DtlsMessageSequenceResult(TestResult acceptsStartedWithInvalidMessageNumber,
+        TestResult acceptsSkippedMessageNumbersOnce, TestResult acceptsSkippedMessageNumbersMultiple,
+        TestResult acceptsRandomMessageNumbers) {
         super(ProbeType.DTLS_MESSAGE_SEQUENCE_NUMBER);
-        this.startsWithInvalidMessageNumber = startsWithInvalidMessageNumber;
-        this.skippsMessageNumbersOnce = skippsMessageNumbersOnce;
-        this.skippsMessageNumbersMultiple = skippsMessageNumbersMultiple;
+        this.acceptsStartedWithInvalidMessageNumber = acceptsStartedWithInvalidMessageNumber;
+        this.acceptsSkippedMessageNumbersOnce = acceptsSkippedMessageNumbersOnce;
+        this.acceptsSkippedMessageNumbersMultiple = acceptsSkippedMessageNumbersMultiple;
         this.acceptsRandomMessageNumbers = acceptsRandomMessageNumbers;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.STARTS_WITH_INVALID_MESSAGE_SEQUENCE, startsWithInvalidMessageNumber);
-        report.putResult(AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_ONCE, skippsMessageNumbersOnce);
-        report.putResult(AnalyzedProperty.SKIPPS_MESSAGE_SEQUENCE_MULTIPLE, skippsMessageNumbersMultiple);
-        report.putResult(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_NUMBERS, acceptsRandomMessageNumbers);
-        if (skippsMessageNumbersOnce == TestResult.FALSE || skippsMessageNumbersMultiple == TestResult.FALSE
+        report.putResult(AnalyzedProperty.ACCEPTS_STARTED_WITH_INVALID_MESSAGE_SEQUENCE,
+            acceptsStartedWithInvalidMessageNumber);
+        report.putResult(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_ONCE, acceptsSkippedMessageNumbersOnce);
+        report.putResult(AnalyzedProperty.ACCEPTS_SKIPPED_MESSAGE_SEQUENCES_MULTIPLE,
+            acceptsSkippedMessageNumbersMultiple);
+        report.putResult(AnalyzedProperty.ACCEPTS_RANDOM_MESSAGE_SEQUENCES, acceptsRandomMessageNumbers);
+        if (acceptsSkippedMessageNumbersOnce == TestResult.FALSE
+            || acceptsSkippedMessageNumbersMultiple == TestResult.FALSE
             || acceptsRandomMessageNumbers == TestResult.FALSE) {
             report.putResult(AnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResult.FALSE);
         } else {

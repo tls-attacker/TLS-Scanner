@@ -21,10 +21,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/**
- *
- * @author ic0ns
- */
 public class SiteReportPrinterTest {
 
     public SiteReportPrinterTest() {

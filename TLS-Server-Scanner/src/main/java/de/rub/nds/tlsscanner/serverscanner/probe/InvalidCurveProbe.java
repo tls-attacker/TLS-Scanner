@@ -55,10 +55,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class InvalidCurveProbe extends TlsProbe {
 
     /**

@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.constants;
 
-/**
- *
- * @author Pierre Tilhaus {@literal <pierre.tilhaus@rub.de>}
- */
 public class AnsiEscapeSequence {
 
     public static final String ANSI_ONE_LINE_UP = "\033[1A";

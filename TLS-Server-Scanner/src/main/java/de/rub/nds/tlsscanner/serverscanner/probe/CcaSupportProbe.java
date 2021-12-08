@@ -10,10 +10,7 @@
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
@@ -24,10 +21,6 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.CcaSupportResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class CcaSupportProbe extends TlsProbe {
 
@@ -69,27 +62,11 @@ public class CcaSupportProbe extends TlsProbe {
     private Config generateConfig() {
         Config config = getScannerConfig().createConfig();
         config.setAutoSelectCertificate(false);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            config.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
-        List<CipherSuite> ciphersuites = new LinkedList<>();
-        ciphersuites.addAll(Arrays.asList(CipherSuite.values()));
-        ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
-        ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
-        config.setDefaultClientSupportedCipherSuites(ciphersuites);
-        List<CompressionMethod> compressionList = new ArrayList<>(Arrays.asList(CompressionMethod.values()));
-        config.setDefaultClientSupportedCompressionMethods(compressionList);
-        config.setEnforceSettings(false);
         config.setQuickReceive(true);
         config.setEarlyStop(true);
         config.setStopReceivingAfterFatal(true);
         config.setStopActionsAfterFatal(true);
         config.setStopActionsAfterIOException(true);
-        config.setAddECPointFormatExtension(true);
-        config.setAddEllipticCurveExtension(true);
-        config.setAddSignatureAndHashAlgorithmsExtension(true);
         return config;
     }
 }

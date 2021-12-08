@@ -36,31 +36,30 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class BleichenbacherProbe extends TlsProbe {
+
+    private static int numberOfIterations;
+    private static int numberOfAddtionalIterations;
 
     private List<VersionSuiteListPair> serverSupportedSuites;
 
     public BleichenbacherProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, ProbeType.BLEICHENBACHER, config);
+        this.numberOfIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 3 : 1;
+        this.numberOfAddtionalIterations = scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL) ? 7 : 9;
     }
 
     @Override
     public ProbeResult executeTest() {
         try {
+            LOGGER.debug("Starting evaluation");
             List<BleichenbacherWorkflowType> workflowTypeList = createWorkflowTypeList();
             List<InformationLeakTest<BleichenbacherOracleTestInfo>> testResultList = new LinkedList<>();
             for (BleichenbacherWorkflowType workflowType : workflowTypeList) {
                 for (VersionSuiteListPair pair : serverSupportedSuites) {
-                    if (pair.getVersion() == ProtocolVersion.TLS10 || pair.getVersion() == ProtocolVersion.TLS11
-                        || pair.getVersion() == ProtocolVersion.TLS12 || pair.getVersion() == ProtocolVersion.DTLS10
-                        || pair.getVersion() == ProtocolVersion.DTLS12) {
+                    if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
                         for (CipherSuite suite : pair.getCipherSuiteList()) {
-                            if (!suite.isPsk()
-                                && AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
+                            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) == KeyExchangeAlgorithm.RSA
                                 && CipherSuite.getImplemented().contains(suite)) {
                                 BleichenbacherCommandConfig bleichenbacherConfig =
                                     createBleichenbacherCommandConfig(pair.getVersion(), suite);
@@ -71,21 +70,17 @@ public class BleichenbacherProbe extends TlsProbe {
                     }
                 }
             }
-            // If we found some difference in the server behavior we need to
+            LOGGER.debug("Finished evaluation");
             if (isPotentiallyVulnerable(testResultList)
                 || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
-                LOGGER.debug("We found non-determinism during the bleichenbacher scan");
-                LOGGER.debug("Starting non-determinism evaluation");
+                LOGGER.debug("Starting extended evaluation");
                 for (InformationLeakTest<BleichenbacherOracleTestInfo> fingerprint : testResultList) {
                     if (fingerprint.isDistinctAnswers()
                         || scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.DETAILED)) {
-                        LOGGER.debug("Found a candidate for the non-determinism eval:"
-                            + fingerprint.getTestInfo().getCipherSuite() + " - "
-                            + fingerprint.getTestInfo().getCipherSuite());
-                        extendFingerPrint(fingerprint, 7);
+                        extendFingerPrint(fingerprint, numberOfAddtionalIterations);
                     }
                 }
-                LOGGER.debug("Finished non-determinism evaluation");
+                LOGGER.debug("Finished extended evaluation");
             }
             return new BleichenbacherResult(testResultList);
         } catch (Exception e) {
@@ -97,9 +92,9 @@ public class BleichenbacherProbe extends TlsProbe {
     private List<BleichenbacherWorkflowType> createWorkflowTypeList() {
         List<BleichenbacherWorkflowType> vectorTypeList = new LinkedList<>();
         vectorTypeList.add(BleichenbacherWorkflowType.CKE_CCS_FIN);
+        vectorTypeList.add(BleichenbacherWorkflowType.CKE);
+        vectorTypeList.add(BleichenbacherWorkflowType.CKE_CCS);
         if (scannerConfig.getScanDetail() == ScannerDetail.ALL) {
-            vectorTypeList.add(BleichenbacherWorkflowType.CKE);
-            vectorTypeList.add(BleichenbacherWorkflowType.CKE_CCS);
             vectorTypeList.add(BleichenbacherWorkflowType.CKE_FIN);
         }
         return vectorTypeList;
@@ -114,16 +109,10 @@ public class BleichenbacherProbe extends TlsProbe {
         delegate.setSniHostname(getScannerConfig().getClientDelegate().getSniHostname());
         StarttlsDelegate starttlsDelegate = (StarttlsDelegate) bleichenbacherConfig.getDelegate(StarttlsDelegate.class);
         starttlsDelegate.setStarttlsType(scannerConfig.getStarttlsDelegate().getStarttlsType());
-        BleichenbacherCommandConfig.Type recordGeneratorType;
+        bleichenbacherConfig.setNumberOfIterations(numberOfIterations);
+        BleichenbacherCommandConfig.Type recordGeneratorType = BleichenbacherCommandConfig.Type.FAST;
         if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.ALL)) {
             recordGeneratorType = BleichenbacherCommandConfig.Type.FULL;
-            bleichenbacherConfig.setNumberOfIterations(3);
-        } else if (scannerConfig.getScanDetail().isGreaterEqualTo(ScannerDetail.NORMAL)) {
-            recordGeneratorType = BleichenbacherCommandConfig.Type.FAST;
-            bleichenbacherConfig.setNumberOfIterations(3);
-        } else {
-            recordGeneratorType = BleichenbacherCommandConfig.Type.FAST;
-            bleichenbacherConfig.setNumberOfIterations(1);
         }
         bleichenbacherConfig.setType(recordGeneratorType);
         bleichenbacherConfig.getCipherSuiteDelegate().setCipherSuites(cipherSuite);

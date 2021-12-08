@@ -18,10 +18,6 @@ import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget {@literal <robert.merget@rub.de>}
- */
 public class BleichenbacherResult extends ProbeResult {
 
     private final List<InformationLeakTest<BleichenbacherOracleTestInfo>> resultList;

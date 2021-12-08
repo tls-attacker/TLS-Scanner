@@ -48,10 +48,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CommonBugProbe extends TlsProbe {
 
     // does it handle unknown extensions correctly?
@@ -151,23 +147,27 @@ public class CommonBugProbe extends TlsProbe {
         return serializer.serialize().length;
     }
 
+    private WorkflowTrace getWorkflowTrace(Config config, ClientHelloMessage clientHello) {
+        WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
+        WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
+        trace.addTlsAction(new SendAction(clientHello));
+        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
+            trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
+            trace.addTlsAction(new SendAction(clientHello));
+        }
+        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+        return trace;
+    }
+
     private TestResult hasExtensionIntolerance() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
-
             ClientHelloMessage message = new ClientHelloMessage(config);
             UnknownExtensionMessage extension = new UnknownExtensionMessage();
             extension.setTypeConfig(new byte[] { (byte) 3F, (byte) 3F });
             extension.setDataConfig(new byte[] { 00, 11, 22, 33 });
             message.getExtensions().add(extension);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -181,17 +181,10 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasBigClientHelloIntolerance() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             config.setAddPaddingExtension(true);
             config.setDefaultPaddingExtensionBytes(new byte[14000]);
             ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -205,8 +198,6 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasIgnoresSigHashAlgoOfferingBug() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             config.setAddSignatureAndHashAlgorithmsExtension(false);
             List<CipherSuite> suiteList = new LinkedList<>();
             for (CipherSuite suite : CipherSuite.getImplemented()) {
@@ -221,12 +212,7 @@ public class CommonBugProbe extends TlsProbe {
             SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
             extension.setSignatureAndHashAlgorithms(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
             message.addExtension(extension);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.TRUE
@@ -240,8 +226,6 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasIgnoresNamedGroupsOfferingBug() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             config.setAddSignatureAndHashAlgorithmsExtension(true);
             List<CipherSuite> suiteList = new LinkedList<>();
             for (CipherSuite suite : CipherSuite.getImplemented()) {
@@ -256,12 +240,7 @@ public class CommonBugProbe extends TlsProbe {
             EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
             extension.setSupportedGroups(Modifiable.explicit(new byte[] { (byte) 0xED, (byte) 0xED }));
             message.addExtension(extension);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace)) {
@@ -278,18 +257,10 @@ public class CommonBugProbe extends TlsProbe {
 
     private void adjustCipherSuiteSelectionBugs() {
         try {
-
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
             message.setCipherSuites(Modifiable.explicit(new byte[] { (byte) 0xEE, (byte) 0xCC }));
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
@@ -318,8 +289,6 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasSignatureAndHashAlgorithmIntolerance() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             config.setAddSignatureAndHashAlgorithmsExtension(false);
             List<CipherSuite> suiteList = new LinkedList<>();
             for (CipherSuite suite : CipherSuite.getImplemented()) {
@@ -334,12 +303,7 @@ public class CommonBugProbe extends TlsProbe {
             SignatureAndHashAlgorithmsExtensionMessage extension = new SignatureAndHashAlgorithmsExtensionMessage();
             extension.setSignatureAndHashAlgorithms(Modifiable.insert(new byte[] { (byte) 0xED, (byte) 0xED }, 0));
             message.addExtension(extension);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -353,8 +317,6 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasNamedGroupIntolerance() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             config.setAddSignatureAndHashAlgorithmsExtension(true);
             List<CipherSuite> suiteList = new LinkedList<>();
             for (CipherSuite suite : CipherSuite.getImplemented()) {
@@ -368,12 +330,7 @@ public class CommonBugProbe extends TlsProbe {
             ClientHelloMessage message = new ClientHelloMessage(config);
             EllipticCurvesExtensionMessage extension = new EllipticCurvesExtensionMessage();
             message.addExtension(extension);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
@@ -396,8 +353,6 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasOnlySecondCipherSuiteByteEvaluatedBug() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             for (CipherSuite suite : CipherSuite.values()) {
@@ -410,12 +365,7 @@ public class CommonBugProbe extends TlsProbe {
                 }
             }
             message.setCipherSuites(Modifiable.explicit(stream.toByteArray()));
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             boolean receivedShd = WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace);
@@ -429,17 +379,10 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasEmptyLastExtensionIntolerance() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
             ExtendedMasterSecretExtensionMessage extension = new ExtendedMasterSecretExtensionMessage();
             message.getExtensions().add(extension);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -453,16 +396,9 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasVersionIntolerance() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
             message.setProtocolVersion(Modifiable.explicit(new byte[] { 0x03, 0x05 }));
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -476,16 +412,9 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasCompressionIntolerance() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
             message.setCompressions(new byte[] { (byte) 0xFF, (byte) 0x00 });
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -504,15 +433,8 @@ public class CommonBugProbe extends TlsProbe {
             toTestList.remove(CipherSuite.TLS_FALLBACK_SCSV);
             toTestList.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
             config.setDefaultClientSupportedCipherSuites(toTestList);
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -526,16 +448,9 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasCipherSuiteIntolerance() {
         try {
             Config config = getWorkingConfig();
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
             message.setCipherSuites(Modifiable.insert(new byte[] { (byte) 0xCF, (byte) 0xAA }, 1));
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -556,15 +471,8 @@ public class CommonBugProbe extends TlsProbe {
             }
             alpnProtocols.add("This is not an ALPN Protocol");
             config.setDefaultProposedAlpnProtocols(alpnProtocols);
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -578,14 +486,9 @@ public class CommonBugProbe extends TlsProbe {
     private TestResult hasClientHelloLengthIntolerance() {
         try {
             Config config = ConfigSelector.getNiceConfig(scannerConfig);
-
             config.setAddAlpnExtension(true);
             config.setAddPaddingExtension(true);
-
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-
             int newLength = 512 - 4 - getClientHelloLength(message, config);
             if (newLength > 0) {
                 config.setDefaultPaddingExtensionBytes(new byte[newLength]);
@@ -593,12 +496,7 @@ public class CommonBugProbe extends TlsProbe {
                 // TODO this is currently not working as intended
             }
             message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE
@@ -632,15 +530,8 @@ public class CommonBugProbe extends TlsProbe {
 
     private TestResult hasGreaseIntolerance(Config config) {
         try {
-            WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
-            WorkflowTrace trace = factory.createTlsEntryWorkflowTrace(config.getDefaultClientConnection());
             ClientHelloMessage message = new ClientHelloMessage(config);
-            trace.addTlsAction(new SendAction(message));
-            if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-                trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage(config)));
-                trace.addTlsAction(new SendAction(message));
-            }
-            trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage(config)));
+            WorkflowTrace trace = getWorkflowTrace(config, message);
             State state = new State(config, trace);
             executeState(state);
             return WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.SERVER_HELLO_DONE, trace) ? TestResult.FALSE

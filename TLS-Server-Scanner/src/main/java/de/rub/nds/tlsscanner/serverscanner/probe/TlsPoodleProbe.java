@@ -24,10 +24,6 @@ import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.TlsPoodleResult;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class TlsPoodleProbe extends TlsProbe {
 
     public TlsPoodleProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {

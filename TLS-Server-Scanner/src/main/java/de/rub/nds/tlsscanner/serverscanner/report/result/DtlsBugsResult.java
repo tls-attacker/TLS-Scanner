@@ -14,24 +14,24 @@ import de.rub.nds.tlsscanner.serverscanner.rating.TestResult;
 import de.rub.nds.tlsscanner.serverscanner.report.AnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DtlsBugsResult extends ProbeResult {
 
     private TestResult isEarlyFinished;
-    private TestResult isAcceptUnencryptedAppData;
+    private TestResult isAcceptingUnencryptedAppData;
+    private TestResult isAcceptingUnencryptedFinished;
 
-    public DtlsBugsResult(TestResult isAcceptUnencryptedAppData, TestResult isEarlyFinished) {
+    public DtlsBugsResult(TestResult isAcceptingUnencryptedFinished, TestResult isAcceptingUnencryptedAppData,
+        TestResult isEarlyFinished) {
         super(ProbeType.DTLS_COMMON_BUGS);
-        this.isAcceptUnencryptedAppData = isAcceptUnencryptedAppData;
+        this.isAcceptingUnencryptedFinished = isAcceptingUnencryptedFinished;
+        this.isAcceptingUnencryptedAppData = isAcceptingUnencryptedAppData;
         this.isEarlyFinished = isEarlyFinished;
     }
 
     @Override
     protected void mergeData(SiteReport report) {
-        report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptUnencryptedAppData);
+        report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_FINISHED, isAcceptingUnencryptedFinished);
+        report.putResult(AnalyzedProperty.ACCEPTS_UNENCRYPTED_APP_DATA, isAcceptingUnencryptedAppData);
         report.putResult(AnalyzedProperty.HAS_EARLY_FINISHED_BUG, isEarlyFinished);
     }
 

@@ -29,10 +29,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CompressionsProbe extends TlsProbe {
 
     public CompressionsProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -58,11 +54,6 @@ public class CompressionsProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);

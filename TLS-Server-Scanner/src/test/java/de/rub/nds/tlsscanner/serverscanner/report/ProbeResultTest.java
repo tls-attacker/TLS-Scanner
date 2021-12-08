@@ -25,10 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.reflections.Reflections;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class ProbeResultTest {
 
     private static final Logger LOGGER = LogManager.getLogger();

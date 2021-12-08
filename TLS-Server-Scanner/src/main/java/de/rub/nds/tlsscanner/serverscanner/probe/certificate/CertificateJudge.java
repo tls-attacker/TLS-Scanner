@@ -11,18 +11,16 @@ package de.rub.nds.tlsscanner.serverscanner.probe.certificate;
 
 import de.rub.nds.tlsattacker.core.constants.HashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.SignatureAlgorithm;
+
+import java.io.ByteArrayInputStream;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
 import java.security.SignatureException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import org.bouncycastle.asn1.x509.Certificate;
-import sun.security.x509.X509CertImpl;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CertificateJudge {
 
     private final Certificate certificate;
@@ -111,7 +109,9 @@ public class CertificateJudge {
     public Boolean isSelfSigned() {
         try {
             // Try to verify certificate signature with its own public key
-            X509Certificate cert = new X509CertImpl(certificate.getEncoded());
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            X509Certificate cert =
+                (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(certificate.getEncoded()));
             PublicKey publicKey = cert.getPublicKey();
             cert.verify(publicKey);
             return true;

@@ -11,10 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.trust;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- *
- * @author ic0ns
- */
 public class CertificateEntry {
 
     @JsonProperty("subject_name")

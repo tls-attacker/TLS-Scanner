@@ -27,6 +27,7 @@ import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProtocolType;
 import de.rub.nds.tlsscanner.serverscanner.constants.ScannerDetail;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.BleichenbacherOracleTestInfo;
+import de.rub.nds.tlsscanner.serverscanner.guideline.GuidelineReport;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.DirectRaccoonOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.info.PaddingOracleTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.certificate.CertificateChain;
@@ -46,6 +47,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ocsp.OcspCertificateResult;
 import de.rub.nds.tlsscanner.serverscanner.report.result.raccoonattack.RaccoonAttackProbabilities;
 import de.rub.nds.tlsscanner.serverscanner.vectorstatistics.InformationLeakTest;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -59,7 +61,7 @@ public class SiteReport extends Observable implements Serializable {
     private List<PerformanceData> performanceList;
 
     private final String host;
-    private final int port;
+    private final Integer port;
 
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
@@ -82,7 +84,9 @@ public class SiteReport extends Observable implements Serializable {
     private Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnesses;
     private Map<NamedGroup, NamedCurveWitness> supportedNamedGroupsWitnessesTls13;
     private List<NamedGroup> supportedTls13Groups = null;
-    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms = null;
+    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsCert = null;
+    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsSke = null;
+    private List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsTls13 = null;
     private List<TokenBindingVersion> supportedTokenBindingVersion = null;
     private List<TokenBindingKeyParameters> supportedTokenBindingKeyParameters = null;
     private List<String> supportedAlpns = null;
@@ -139,7 +143,7 @@ public class SiteReport extends Observable implements Serializable {
     // DTLS
     private Integer totalReceivedRetransmissions = 0;
     private Map<HandshakeMessageType, Integer> retransmissionCounters;
-    private Integer cookieLength = -1;
+    private Integer cookieLength = null;
 
     // PublicKey Params
     private Set<CommonDhValues> usedCommonDhValueList = null;
@@ -157,6 +161,9 @@ public class SiteReport extends Observable implements Serializable {
     private Boolean ccaRequired = null;
     private List<CcaTestResult> ccaTestResultList;
 
+    // Guidelines
+    private List<GuidelineReport> guidelineReports = new ArrayList<>();
+
     private List<ProbeType> probeTypeList;
 
     private int performedTcpConnections = 0;
@@ -172,7 +179,7 @@ public class SiteReport extends Observable implements Serializable {
     public SiteReport() {
         resultMap = new HashMap<>();
         host = null;
-        port = -1;
+        port = null;
     }
 
     public SiteReport(String host, int port) {
@@ -208,14 +215,6 @@ public class SiteReport extends Observable implements Serializable {
 
     public synchronized void markProbeAsExecuted(ProbeType type) {
         executedProbes.add(type);
-    }
-
-    public List<String> getSupportedAlpnProtocols() {
-        return supportedAlpns;
-    }
-
-    public void setSupportedAlpnProtocols(List<String> supportedAlpns) {
-        this.supportedAlpns = supportedAlpns;
     }
 
     public synchronized Long getSessionTicketLengthHint() {
@@ -378,12 +377,41 @@ public class SiteReport extends Observable implements Serializable {
     }
 
     public synchronized List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithms() {
-        return supportedSignatureAndHashAlgorithms;
+        HashSet<SignatureAndHashAlgorithm> combined = new HashSet<>();
+        if (supportedSignatureAndHashAlgorithmsCert != null) {
+            combined.addAll(supportedSignatureAndHashAlgorithmsCert);
+        }
+        if (supportedSignatureAndHashAlgorithmsSke != null) {
+            combined.addAll(supportedSignatureAndHashAlgorithmsSke);
+        }
+        return new ArrayList<>(combined);
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsTls13() {
+        return supportedSignatureAndHashAlgorithmsTls13;
+    }
+
+    public void setSupportedSignatureAndHashAlgorithmsTls13(
+        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithmsTls13) {
+        this.supportedSignatureAndHashAlgorithmsTls13 = supportedSignatureAndHashAlgorithmsTls13;
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsCert() {
+        return supportedSignatureAndHashAlgorithmsCert;
+    }
+
+    public synchronized void setSupportedSignatureAndHashAlgorithmsCert(
+        List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+        this.supportedSignatureAndHashAlgorithmsCert = supportedSignatureAndHashAlgorithms;
     }
 
     public synchronized void
-        setSupportedSignatureAndHashAlgorithms(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
-        this.supportedSignatureAndHashAlgorithms = supportedSignatureAndHashAlgorithms;
+        setSupportedSignatureAndHashAlgorithmsSke(List<SignatureAndHashAlgorithm> supportedSignatureAndHashAlgorithms) {
+        this.supportedSignatureAndHashAlgorithmsSke = supportedSignatureAndHashAlgorithms;
+    }
+
+    public List<SignatureAndHashAlgorithm> getSupportedSignatureAndHashAlgorithmsSke() {
+        return supportedSignatureAndHashAlgorithmsSke;
     }
 
     public synchronized List<ExtensionType> getSupportedExtensions() {
@@ -442,11 +470,11 @@ public class SiteReport extends Observable implements Serializable {
         this.totalReceivedRetransmissions = totalReceivedRetransmissions;
     }
 
-    public Map<HandshakeMessageType, Integer> getRetransmissionCounters() {
+    public synchronized Map<HandshakeMessageType, Integer> getRetransmissionCounters() {
         return retransmissionCounters;
     }
 
-    public void setRetransmissionCounters(Map<HandshakeMessageType, Integer> retransmissionCounters) {
+    public synchronized void setRetransmissionCounters(Map<HandshakeMessageType, Integer> retransmissionCounters) {
         this.retransmissionCounters = retransmissionCounters;
     }
 
@@ -794,27 +822,35 @@ public class SiteReport extends Observable implements Serializable {
         this.scoreReport = scoreReport;
     }
 
-    public int getMinimumRsaCertKeySize() {
+    public synchronized int getMinimumRsaCertKeySize() {
         return minimumRsaCertKeySize;
     }
 
-    public void setMinimumRsaCertKeySize(int minimumRsaCertKeySize) {
+    public synchronized void setMinimumRsaCertKeySize(int minimumRsaCertKeySize) {
         this.minimumRsaCertKeySize = minimumRsaCertKeySize;
     }
 
-    public int getMinimumDssCertKeySize() {
+    public synchronized int getMinimumDssCertKeySize() {
         return minimumDssCertKeySize;
     }
 
-    public void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
+    public synchronized void setMinimumDssCertKeySize(int minimumDssCertKeySize) {
         this.minimumDssCertKeySize = minimumDssCertKeySize;
     }
 
-    public List<EntropyReport> getEntropyReportList() {
+    public synchronized List<GuidelineReport> getGuidelineReports() {
+        return guidelineReports;
+    }
+
+    public synchronized void setGuidelineReports(List<GuidelineReport> guidelineReports) {
+        this.guidelineReports = guidelineReports;
+    }
+
+    public synchronized List<EntropyReport> getEntropyReportList() {
         return entropyReportList;
     }
 
-    public void setEntropyReportList(List<EntropyReport> entropyReportList) {
+    public synchronized void setEntropyReportList(List<EntropyReport> entropyReportList) {
         this.entropyReportList = entropyReportList;
     }
 }

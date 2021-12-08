@@ -12,10 +12,6 @@ package de.rub.nds.tlsscanner.serverscanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author robert
- */
 public class ConsoleLogger {
 
     public static final Logger CONSOLE = LogManager.getLogger("Direct");

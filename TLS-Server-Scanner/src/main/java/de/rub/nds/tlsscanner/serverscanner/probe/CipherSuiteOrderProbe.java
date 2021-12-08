@@ -27,10 +27,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class CipherSuiteOrderProbe extends TlsProbe {
 
     public CipherSuiteOrderProbe(ScannerConfig config, ParallelExecutor parallelExecutor) {
@@ -60,11 +56,6 @@ public class CipherSuiteOrderProbe extends TlsProbe {
         tlsConfig.setEarlyStop(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(toTestList);
         tlsConfig.setStopActionsAfterIOException(true);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         tlsConfig.setEnforceSettings(true);
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);

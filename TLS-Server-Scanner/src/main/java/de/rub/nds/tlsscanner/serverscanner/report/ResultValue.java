@@ -9,10 +9,6 @@
 
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-/**
- *
- * @author Robert Merget - {@literal <robert.merget@rub.de>}
- */
 public class ResultValue {
 
     private String field;

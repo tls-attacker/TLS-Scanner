@@ -79,11 +79,6 @@ public class CertificateTransparencyProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
@@ -180,7 +175,7 @@ public class CertificateTransparencyProbe extends TlsProbe {
             }
 
             meetsChromeCTPolicy = hasGoogleAndNonGoogleScts(combinedSctList);
-        } else {
+        } else if (precertificateSctList != null) {
             Date endDate = serverCertChain.getCertificateAt(0).getEndDate().getDate();
             Date startDate = serverCertChain.getCertificateAt(0).getStartDate().getDate();
             Duration validityDuration = Duration.between(startDate.toInstant(), endDate.toInstant());

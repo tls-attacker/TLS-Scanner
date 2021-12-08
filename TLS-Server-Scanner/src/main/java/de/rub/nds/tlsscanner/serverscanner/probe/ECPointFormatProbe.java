@@ -102,11 +102,6 @@ public class ECPointFormatProbe extends TlsProbe {
         }
         Config config = getScannerConfig().createConfig();
         config.setDefaultClientSupportedCipherSuites(ourECDHCipherSuites);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            config.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         config.setDefaultSelectedCipherSuite(ourECDHCipherSuites.get(0));
         config.setEnforceSettings(true);
         config.setAddEllipticCurveExtension(true);

@@ -23,7 +23,7 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.serverscanner.config.ScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.constants.ProbeType;
 import static de.rub.nds.tlsscanner.serverscanner.probe.TlsProbe.LOGGER;
-import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnProbeResult;
+import de.rub.nds.tlsscanner.serverscanner.report.result.AlpnResult;
 import de.rub.nds.tlsscanner.serverscanner.report.SiteReport;
 import de.rub.nds.tlsscanner.serverscanner.report.result.ProbeResult;
 import java.util.Arrays;
@@ -40,10 +40,10 @@ public class AlpnProbe extends TlsProbe {
     public ProbeResult executeTest() {
         try {
             List<String> supportedAlpnProtocols = getSupportedAlpnProtocols();
-            return new AlpnProbeResult(supportedAlpnProtocols);
+            return new AlpnResult(supportedAlpnProtocols);
         } catch (Exception E) {
             LOGGER.error("Could not scan for " + getProbeName(), E);
-            return new AlpnProbeResult(null);
+            return new AlpnResult(null);
         }
     }
 
@@ -55,11 +55,6 @@ public class AlpnProbe extends TlsProbe {
         ciphersuites.remove(CipherSuite.TLS_FALLBACK_SCSV);
         ciphersuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setDefaultClientSupportedCipherSuites(ciphersuites);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
@@ -122,7 +117,7 @@ public class AlpnProbe extends TlsProbe {
 
     @Override
     public ProbeResult getCouldNotExecuteResult() {
-        return new AlpnProbeResult(new LinkedList<>());
+        return new AlpnResult(new LinkedList<>());
     }
 
     @Override

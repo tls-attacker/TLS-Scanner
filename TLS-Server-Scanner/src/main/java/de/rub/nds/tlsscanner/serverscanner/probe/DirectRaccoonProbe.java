@@ -40,10 +40,6 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DirectRaccoonProbe extends TlsProbe {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -62,9 +58,7 @@ public class DirectRaccoonProbe extends TlsProbe {
         try {
             List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList = new LinkedList<>();
             loop: for (VersionSuiteListPair pair : serverSupportedSuites) {
-                if (pair.getVersion() == ProtocolVersion.SSL3 || pair.getVersion() == ProtocolVersion.TLS10
-                    || pair.getVersion() == ProtocolVersion.TLS11 || pair.getVersion() == ProtocolVersion.TLS12
-                    || pair.getVersion() == ProtocolVersion.DTLS10 || pair.getVersion() == ProtocolVersion.DTLS12) {
+                if (pair.getVersion() != ProtocolVersion.SSL2 && !pair.getVersion().isTLS13()) {
                     for (CipherSuite suite : pair.getCipherSuiteList()) {
                         if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
                             InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =

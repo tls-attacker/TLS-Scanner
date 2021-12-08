@@ -21,10 +21,6 @@ import de.rub.nds.tlsattacker.transport.TransportHandlerType;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
-/**
- *
- * @author Nurullah Erinola - nurullah.erinola@rub.de
- */
 public class DtlsDelegate extends Delegate {
 
     @Parameter(names = "-dtls", required = false, description = "Scan DTLS")

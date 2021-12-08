@@ -55,10 +55,6 @@ import java.util.List;
 import java.util.Random;
 import org.bouncycastle.crypto.tls.Certificate;
 
-/**
- *
- * @author Nils Hanke - {@literal nils.hanke@rub.de}
- */
 public class OcspProbe extends TlsProbe {
 
     private List<CertificateChain> serverCertChains;
@@ -167,7 +163,7 @@ public class OcspProbe extends TlsProbe {
 
             // If nonce is supported used, check if server actually replies
             // with a different one immediately after
-            if (certResult.getFirstResponse().getNonce() != null) {
+            if (certResult.getFirstResponse() != null && certResult.getFirstResponse().getNonce() != null) {
                 certResult.setSupportsNonce(true);
                 OCSPRequestMessage ocspSecondRequestMessage = ocspRequest.createDefaultRequestMessage();
                 ocspSecondRequestMessage.setNonce(new BigInteger(String.valueOf(NONCE_TEST_VALUE_2)));
@@ -178,7 +174,7 @@ public class OcspProbe extends TlsProbe {
                 certResult.setSupportsNonce(false);
             }
         } catch (Exception e) {
-            LOGGER.error("OCSP probe failed.");
+            LOGGER.error("OCSP probe failed.", e);
         }
     }
 
@@ -219,11 +215,6 @@ public class OcspProbe extends TlsProbe {
         cipherSuites.remove(CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV);
         tlsConfig.setQuickReceive(true);
         tlsConfig.setDefaultClientSupportedCipherSuites(cipherSuites);
-        if (getScannerConfig().getDtlsDelegate().isDTLS()) {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-        } else {
-            tlsConfig.setHighestProtocolVersion(ProtocolVersion.TLS12);
-        }
         tlsConfig.setEnforceSettings(false);
         tlsConfig.setEarlyStop(true);
         tlsConfig.setStopReceivingAfterFatal(true);
